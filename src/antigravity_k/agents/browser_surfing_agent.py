@@ -15,6 +15,11 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import Protocol, cast, final
 
+from antigravity_k.tools.browser_observation import (
+    BrowserObservationError,
+    drop_browser_observer,
+    observer_for_owner,
+)
 from antigravity_k.tools.browser_session_owner import (
     current_browser_owner,
     get_browser_session_owner,
@@ -31,8 +36,6 @@ class _PageLike(Protocol):
     async def goto(self, url: str, *, wait_until: str, timeout: int) -> object: ...
 
     async def screenshot(self, *, type: str, quality: int) -> object: ...
-
-    async def click(self, selector: str, *, timeout: int) -> object: ...
 
     async def wait_for_load_state(self, state: str, *, timeout: int) -> object: ...
 
@@ -112,7 +115,7 @@ class BrowserAction:
     """Represents a single browser navigation or interaction action."""
 
     action: str  # "click", "scroll_down", "extract", "done"
-    target_selector: str = ""
+    target_ref: str = ""
     reason: str = ""
     extracted_data: str = ""
 
@@ -187,6 +190,7 @@ class BrowserSurfingAgent:
                 reuse = reservation.reuse
                 assert reuse is not None
                 page = cast(_PageLike, reuse.page)
+                lease = reuse
             else:
                 if self._browser is None:
                     return "Error: Browser not initialized"
@@ -194,9 +198,11 @@ class BrowserSurfingAgent:
                 context = await self._browser.new_context()
                 _ = session_owner.remember_foreign_pages(list(getattr(context, "pages", []) or []))
                 page = await context.new_page()
-                _ = session_owner.commit(reservation, page=page)
+                lease = session_owner.commit(reservation, page=page)
                 committed = True
             assert page is not None
+            # model 에게 보이는 것은 **관찰**과 그 관찰이 발급한 ref 뿐이다(selector·JS 는 계약에 없다).
+            observer = observer_for_owner(browser_owner, lease=lease)
             _ = await page.goto(url, wait_until="networkidle", timeout=15000)
 
             step = 0
@@ -204,10 +210,11 @@ class BrowserSurfingAgent:
                 step += 1
                 logger.info("[BrowserSurfing] Step %s: Analyzing page state...", step)
 
-                # 1. 페이지 상태 분석 (스크린샷 및 DOM 요약)
+                # 1. 페이지 상태 분석 (스크린샷 및 관찰 요약)
                 screenshot_value = await page.screenshot(type="jpeg", quality=60)
                 screenshot_bytes = screenshot_value if isinstance(screenshot_value, bytes) else b""
-                dom_summary = await self._extract_interactive_elements(page)
+                observation = await observer.observe()
+                dom_summary = observation.to_summary()
 
                 # 2. Vision 모델에 상태 전달 후 다음 행동 결정
                 action = await self._decide_next_action(goal, dom_summary, screenshot_bytes)
@@ -217,16 +224,19 @@ class BrowserSurfingAgent:
                     action.reason,
                 )
 
-                # 3. 행동 실행
-                if action.action == "click" and action.target_selector:
+                # 3. 행동 실행 — ref 는 **방금 관찰**의 것이어야 한다(모델이 selector 를 지어내도 문이 없다).
+                if action.action == "click" and action.target_ref:
                     try:
-                        _ = await page.click(action.target_selector, timeout=5000)
-                        _ = await page.wait_for_load_state("networkidle", timeout=10000)
-                    except Exception:
-                        logger.exception("Click failed on %s", action.target_selector)
+                        outcome = await observer.act("click", ref=action.target_ref)
+                    except BrowserObservationError as exc:
+                        # 낡은/없는 ref 는 계약이 거절한 것이다. 다음 루프에서 다시 관찰한다.
+                        logger.warning("[BrowserSurfing] ref rejected (%s): %s", exc.code, exc)
+                        continue
+                    if not outcome.goal_verified:
+                        logger.info("[BrowserSurfing] click performed without a verified effect: %s", outcome.detail)
 
                 elif action.action == "scroll_down":
-                    _ = await page.mouse.wheel(0, 800)
+                    _ = await observer.act("scroll", delta=800)
                     await asyncio.sleep(1)
 
                 elif action.action == "extract":
@@ -252,6 +262,7 @@ class BrowserSurfingAgent:
                 # 이 번 탐색이 연 세션은 이 번에 닫는다(소유자 원장에서도 빠진다).
                 if context is not None:
                     _ = await context.close()
+                _ = drop_browser_observer(browser_owner)
                 if committed:
                     _ = session_owner.release(browser_owner)
                 else:
@@ -261,35 +272,6 @@ class BrowserSurfingAgent:
             await self._close_browser()
 
         return final_result
-
-    async def _extract_interactive_elements(self, page: _PageLike) -> str:
-        """클릭 가능한 요소들의 CSS 셀렉터와 텍스트를 추출 (DOM 요약)."""
-        js_code = """
-        () => {
-
-            const elements = document.querySelectorAll('a, button, [role="button"]');
-            const result = [];
-            for (let i=0; i<Math.min(elements.length, 50); i++) {
-                const el = elements[i];
-                if (el.innerText && el.innerText.trim() !== '') {
-                    // 간단한 셀렉터 생성
-                    let selector = el.tagName.toLowerCase();
-                    if (el.id) selector += '#' + el.id;
-                    if (el.className && typeof el.className === 'string') {
-                        selector += '.' + el.className.split(' ').join('.');
-                    }
-                    result.push(`[${i}] ${selector} : ${el.innerText.trim()}`);
-                }
-            }
-            return result.join('\\n');
-        }
-        """
-        try:
-            result = await page.evaluate(js_code)
-            return result if isinstance(result, str) else str(result)
-        except Exception:
-            logger.exception("Unhandled exception")
-            return "Failed to extract elements"
 
     async def _decide_next_action(
         self,
@@ -310,15 +292,16 @@ class BrowserSurfingAgent:
 
         현재 목표: {goal}
 
-        아래는 현재 화면의 상호작용 가능한 요소 목록입니다:
+        아래는 현재 화면의 관찰 결과입니다(ref 는 **이 관찰에서만** 유효한 opaque 핸들입니다):
         {dom_summary}
 
         다음 중 하나의 액션을 JSON 형식으로 선택하세요:
-        1. {{"action": "click", "target_selector": "<selector>", "reason": "..."}}
+        1. {{"action": "click", "ref": "<위 목록의 ref>", "reason": "..."}}
         2. {{"action": "scroll_down", "reason": "..."}}
         3. {{"action": "extract", "extracted_data": "<최종 텍스트 요약>", "reason": "..."}}
         4. {{"action": "done", "reason": "더 이상 진행할 수 없거나 목표 달성"}}
 
+        ref 외의 selector·XPath·JavaScript 는 받아들여지지 않습니다.
         JSON 포맷으로만 응답하세요.
         """
 
@@ -355,7 +338,7 @@ class BrowserSurfingAgent:
             data = _as_action_data(decoded)
             return BrowserAction(
                 action=_as_text(data.get("action"), "done"),
-                target_selector=_as_text(data.get("target_selector")),
+                target_ref=_as_text(data.get("ref")),
                 reason=_as_text(data.get("reason")),
                 extracted_data=_as_text(data.get("extracted_data")),
             )

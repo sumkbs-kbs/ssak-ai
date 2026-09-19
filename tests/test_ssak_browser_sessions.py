@@ -382,7 +382,9 @@ def test_every_entrypoint_routes_navigation_through_the_owner() -> None:
         "browser_tools.py": "get_browser_session_owner().validate_navigation",
         "browser_tool.py": "get_browser_session_owner().validate_navigation",
         "browser_surfing_agent.py": "session_owner.validate_navigation",
-        "agent_tools.py": "get_browser_session_owner().validate_navigation",
+        # task 17 부터 API 의 이동은 **관찰/행동 계약**을 지난다. 계약은 규칙을 다시 쓰지 않고
+        # 소유자에게 위임하므로, 두 파일을 함께 검사해 사슬을 고정한다(한쪽만 보면 우회를 못 잡는다).
+        "agent_tools.py": "_BROWSER_CONTRACT_ACTIONS",
         "harness.py": "session_owner.validate_navigation(self.dashboard_url, allow_local=True)",
         "autonomous_qa.py": "session_owner.validate_navigation(target_url, allow_local=True)",
     }
@@ -390,6 +392,11 @@ def test_every_entrypoint_routes_navigation_through_the_owner() -> None:
         found = [path for path in (REPO / "src").rglob(name) if path.is_file() and "dashboard_dist" not in str(path)]
         assert found, f"{name} 를 찾지 못했다"
         assert snippet in found[0].read_text(encoding="utf-8"), f"{name} 가 소유자의 egress 규칙을 지나지 않는다"
+
+    contract = (REPO / "src" / "antigravity_k" / "tools" / "browser_observation.py").read_text(encoding="utf-8")
+    assert "validate_navigation(url, allow_local=allow_local)" in contract, (
+        "관찰/행동 계약이 소유자의 egress 규칙에 위임하지 않는다"
+    )
 
 
 # ── 정책 설정과 종료 ────────────────────────────────────────────────────────

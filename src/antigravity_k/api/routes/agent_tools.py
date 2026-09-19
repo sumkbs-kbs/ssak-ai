@@ -13,6 +13,8 @@ from typing import TYPE_CHECKING, Annotated, Protocol, cast
 if TYPE_CHECKING:
     from playwright.async_api import Page as _AsyncPage
 
+    from antigravity_k.tools.browser_observation import BrowserObserver, Observation, ObservationPolicy
+
 from fastapi import APIRouter, Body, HTTPException, Request
 from pydantic import BaseModel, Field
 
@@ -51,6 +53,15 @@ browser_sessions = BrowserSessionRegistry(
     max_sessions=get_browser_session_owner().max_active_sessions,
     default_state=browser_state,
 )
+# task 17 계약으로 가는 action 이름. `type` 은 `fill` 의 옛 이름이다(없애지 않고 이유를 남긴다).
+_BROWSER_CONTRACT_ACTIONS = frozenset(
+    {"observe", "goto", "click", "fill", "type", "scroll", "select", "upload", "download"},
+)
+_CONTRACT_ACTION_ALIASES = {"type": "fill"}
+# 운영자가 지정한 QA 대상(보통 루프백)을 API 경로가 두드릴 수 있게 하는 **명시 옵트인**.
+_BROWSER_API_ALLOW_LOCAL_ENV = "AGK_BROWSER_API_ALLOW_LOCAL"
+_TRUTHY = frozenset({"1", "true", "yes", "on"})
+
 _MAX_CONSOLE_ENTRIES = 500
 _BROWSER_SESSION_HEADER = "X-AGK-Browser-Session"
 _BROWSER_TASK_HEADER = "X-AGK-Task-Id"
@@ -186,6 +197,58 @@ def _browser_error_status(error: Exception) -> int:
     return 500
 
 
+def _observation_status(code: str) -> int:
+    """관찰/행동 계약 위반을 HTTP 로 옮긴다(코드는 본문에 그대로 남는다)."""
+    from antigravity_k.tools.browser_observation import (
+        DOWNLOAD_TOO_LARGE,
+        POLICY_DENIED,
+        SESSION_MISMATCH,
+        STALE_SNAPSHOT,
+    )
+
+    if code in {POLICY_DENIED, SESSION_MISMATCH}:
+        return 403
+    if code == STALE_SNAPSHOT:
+        return 409
+    if code == DOWNLOAD_TOO_LARGE:
+        return 413
+    return 400
+
+
+def _browser_observation_policy(session_id: str, *, with_sandbox: bool) -> "ObservationPolicy":
+    """task 샌드박스 경로를 정한다 — 다운로드/업로드는 **세션 전용 디렉터리** 밖으로 나가지 못한다."""
+    from antigravity_k.tools.browser_observation import ObservationPolicy
+
+    root = Path(config.paths.data_dir) / "browser" / session_id
+    download_dir = root / "downloads"
+    upload_root = root / "uploads"
+    if with_sandbox:
+        for directory in (download_dir, upload_root):
+            try:
+                directory.mkdir(parents=True, exist_ok=True)
+            except OSError as exc:  # pragma: no cover - 권한/디스크 문제
+                logger.warning("browser sandbox directory unavailable: %s", exc)
+    # 로컬 주소는 **운영자가 명시할 때만** 허용한다(기본은 닫힘 — 에이전트가 스스로 고른
+    # 주소를 로컬로 열어 주면 egress 정책이 무의미해진다).
+    allow_local = str(os.environ.get(_BROWSER_API_ALLOW_LOCAL_ENV, "")).strip().lower() in _TRUTHY
+    return ObservationPolicy(
+        download_dir=download_dir,
+        upload_root=upload_root,
+        allow_local=allow_local,
+    )
+
+
+def _browser_observer(request: Request, state: BrowserSessionState, *, with_sandbox: bool) -> "BrowserObserver":
+    """요청 → 관찰자. 세션 소유자가 준 페이지에만 붙고, 정책은 요청마다 다시 세운다(샌드박스 경로)."""
+    from antigravity_k.tools.browser_observation import observer_for_owner
+
+    session_id, _ = _browser_state_for(request)
+    observer = observer_for_owner(_browser_owner(request))
+    observer.configure_policy(_browser_observation_policy(session_id, with_sandbox=with_sandbox))
+    observer.register_page(state.page)
+    return observer
+
+
 async def _accessibility_tree(page: object) -> str | None:
     page_obj = cast(_PageLike, page)
     if hasattr(page_obj, "aria_snapshot"):
@@ -210,8 +273,11 @@ async def _guard_browser_route(route: object, request: object) -> None:
     if scheme not in {"http", "https"}:
         _ = await route_obj.abort(error_code="blockedbyclient")
         return
+    # 운영자가 로컬 QA 대상을 명시했으면 **차단 계층도 같은 문을 연다** — 한쪽만 열면
+    # "정책은 통과했는데 네트워크가 막는" 모순이 생긴다(그 모순을 시험에서 만났다).
+    allow_local = str(os.environ.get(_BROWSER_API_ALLOW_LOCAL_ENV, "")).strip().lower() in _TRUTHY
     try:
-        _ = validate_egress_url(request_obj.url, allow_local=False)
+        _ = validate_egress_url(request_obj.url, allow_local=allow_local)
     except EgressPolicyError:
         _ = await route_obj.abort(error_code="blockedbyclient")
         return
@@ -491,21 +557,78 @@ class BrowserActionRequest(BaseModel):
     Bases: BaseModel
     """
 
-    action: str  # "launch", "goto", "click", "type", "snapshot", "close"
+    action: str  # "launch", "goto", "click", "type", "snapshot", "close", "observe", "act"
     url: str | None = None
     selector: str | None = None
     text: str | None = None
+    # 관찰/행동 계약(task 17): ref 는 직전 관찰이 발급한 opaque 핸들이다.
+    ref: str | None = None
+    value: str | None = None
+    path: str | None = None
+    delta: int = 800
+    screenshot: bool = False
+
+
+async def _browser_observe(request: Request, state: BrowserSessionState, *, screenshot: bool) -> "Observation":
+    from antigravity_k.tools.browser_observation import BrowserObservationError
+
+    observer = _browser_observer(request, state, with_sandbox=False)
+    try:
+        return await observer.observe(screenshot=screenshot)
+    except BrowserObservationError as exc:
+        raise HTTPException(status_code=_observation_status(exc.code), detail=exc.to_dict()) from exc
+
+
+async def _browser_contract_action(
+    req: BrowserActionRequest,
+    request: Request,
+    state: BrowserSessionState,
+) -> dict[str, object]:
+    """task 17 의 관찰/행동 계약 경로. selector·임의 JS 는 여기 없다(계약에 문이 없다)."""
+    from antigravity_k.tools.browser_observation import (
+        ALLOWED_ACTIONS,
+        FORBIDDEN_ACTIONS,
+        BrowserObservationError,
+    )
+
+    if req.action in FORBIDDEN_ACTIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"action {req.action!r} is not exposed by the browser contract",
+        )
+    action = _CONTRACT_ACTION_ALIASES.get(req.action, req.action)
+    if action == "observe":
+        observation = await _browser_observe(request, state, screenshot=req.screenshot)
+        return {"ok": True, "observation": observation.to_dict(), "summary": observation.to_summary()}
+    if action not in ALLOWED_ACTIONS:
+        raise HTTPException(status_code=400, detail=f"Unknown action: {req.action}")
+
+    observer = _browser_observer(request, state, with_sandbox=True)
+    try:
+        result = await observer.act(
+            action,
+            ref=req.ref,
+            url=req.url,
+            text=req.text,
+            value=req.value,
+            path=req.path,
+            delta=req.delta,
+        )
+    except BrowserObservationError as exc:
+        raise HTTPException(status_code=_observation_status(exc.code), detail=exc.to_dict()) from exc
+    payload = result.to_dict()
+    return {"ok": True, "result": payload, "summary": f"{payload['action']}: {payload['detail']}"}
 
 
 @router.post("/api/agent/tools/browser/action")
 async def browser_action(req: BrowserActionRequest, request: Request):
     """Playwright 기반 브라우저 자동화 엔진 API."""
-    risk_level = "safe" if req.action in {"snapshot", "console_errors"} else "medium"
+    risk_level = "safe" if req.action in {"snapshot", "console_errors", "observe"} else "medium"
     if req.action == "goto":
         risk_level = "high"
     _require_allowed(
         "browser_action",
-        {"action": req.action, "url": req.url, "selector": req.selector},
+        {"action": req.action, "url": req.url, "selector": req.selector, "ref": req.ref},
         risk_level,
     )
     session_id, state = _browser_state_for(request)
@@ -588,54 +711,28 @@ async def browser_action(req: BrowserActionRequest, request: Request):
                 detail="Browser is not launched. Call 'launch' first.",
             )
 
-        if req.action == "goto":
-            if not req.url:
-                raise HTTPException(status_code=400, detail="URL is required for goto")
-            try:
-                # egress 규칙은 소유자 한 곳에 있다(task 16) — 다른 진입점과 같은 코드를 지난다.
-                _ = get_browser_session_owner().validate_navigation(req.url)
-            except EgressPolicyError as exc:
-                raise HTTPException(status_code=403, detail="Browser navigation target is not public.") from exc
-            _ = await state.page.goto(req.url, wait_until="networkidle")
-            return {"ok": True, "url": req.url}
-
-        elif req.action == "click":
-            if not req.selector:
-                raise HTTPException(status_code=400, detail="Selector is required for click")
-            await state.page.click(req.selector)
-            return {"ok": True, "selector": req.selector}
-
-        elif req.action == "type":
-            if not req.selector or req.text is None:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Selector and text are required for type",
-                )
-            await state.page.fill(req.selector, req.text)
-            return {"ok": True, "selector": req.selector, "text": req.text}
-
-        elif req.action == "snapshot":
-            # Accessibility Tree + Screenshot + Console errors
-            screenshot_bytes = await state.page.screenshot()
-            screenshot_b64 = base64.b64encode(screenshot_bytes).decode("utf-8")
-
-            # Accessibility Tree (compact text representation for LLM)
-            a11y_tree = None
-            try:
-                a11y_tree = await _accessibility_tree(state.page)
-            except (Error, TimeoutError, TypeError) as exc:
-                logger.warning("Accessibility snapshot unavailable: %s", exc)
-
+        if req.action == "snapshot":
+            # 스냅숏도 **관찰**이다(task 17) — 그래야 비밀 필드 마스킹을 같은 코드가 지킨다.
+            # 예전 구현은 마스킹 없는 스크린샷을 그대로 돌려줬다.
+            observation = await _browser_observe(request, state, screenshot=True)
             return {
                 "ok": True,
-                "screenshot_base64": screenshot_b64,
-                "accessibility_tree": a11y_tree,
+                "screenshot_base64": observation.screenshot,
+                "accessibility_tree": observation.accessibility,
+                "refs": [item.to_dict() for item in observation.refs],
+                "snapshot_id": observation.snapshot_id,
+                "generation": observation.generation,
+                "screenshot_masked": observation.screenshot_masked,
+                "masked_regions": observation.masked_regions,
                 "console_errors": state.console_errors[-20:],
                 "console_logs_count": len(state.console_logs),
-                "url": state.page.url,
+                "url": observation.url,
             }
 
-        elif req.action == "console_errors":
+        if req.action in _BROWSER_CONTRACT_ACTIONS:
+            return await _browser_contract_action(req, request, state)
+
+        if req.action == "console_errors":
             return {
                 "ok": True,
                 "errors": state.console_errors,
