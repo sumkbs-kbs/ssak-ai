@@ -158,14 +158,18 @@ export function ApprovalQueue({
                 >
                   거절
                 </button>
-                <button
-                  type="button"
-                  disabled={pendingRequestId === selected.request_id}
-                  onClick={() => onResolve(selected.request_id, 'always_allow')}
-                  aria-label={`${selected.tool_name} 도구를 항상 허용 (이후 모든 호출을 승인 없이 실행)`}
-                >
-                  항상 허용
-                </button>
+                {/* '항상 허용' 을 서버가 거절하는 도구(브라우저 효과)에는 버튼을 주지 않는다.
+                    버튼이 있으면 사용자는 눌렀는데 403 을 보게 된다 — 화면은 서버 판정을 따른다. */}
+                {selected.always_allow_allowed !== false && (
+                  <button
+                    type="button"
+                    disabled={pendingRequestId === selected.request_id}
+                    onClick={() => onResolve(selected.request_id, 'always_allow')}
+                    aria-label={`${selected.tool_name} 도구를 항상 허용 (이후 모든 호출을 승인 없이 실행)`}
+                  >
+                    항상 허용
+                  </button>
+                )}
                 <button
                   type="button"
                   className="is-primary"
@@ -176,11 +180,18 @@ export function ApprovalQueue({
                   승인
                 </button>
               </div>
-              <p className="approval-queue-note">
-                &lsquo;항상 허용&rsquo;은 이 요청이 아니라 <strong>{selected.tool_name} 도구 전체</strong>를 덮습니다 —
-                이후 그 도구의 모든 호출이 인자·경로·프로젝트와 무관하게 승인 없이 실행되고,
-                서버를 다시 시작하거나 위 목록에서 해제할 때까지 유지됩니다.
-              </p>
+              {selected.always_allow_allowed === false ? (
+                <p className="approval-queue-note" data-testid="approval-always-allow-unavailable">
+                  이 도구에는 &lsquo;항상 허용&rsquo; 을 줄 수 없습니다 — <strong>{selected.tool_name}</strong> 의
+                  매 호출은 그 대상·내용·페이지 상태에 묶인 승인이 따로 필요합니다.
+                </p>
+              ) : (
+                <p className="approval-queue-note">
+                  &lsquo;항상 허용&rsquo;은 이 요청이 아니라 <strong>{selected.tool_name} 도구 전체</strong>를 덮습니다 —
+                  이후 그 도구의 모든 호출이 인자·경로·프로젝트와 무관하게 승인 없이 실행되고,
+                  서버를 다시 시작하거나 위 목록에서 해제할 때까지 유지됩니다.
+                </p>
+              )}
             </div>
           )}
         </div>

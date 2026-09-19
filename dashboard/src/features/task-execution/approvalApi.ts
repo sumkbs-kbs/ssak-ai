@@ -22,6 +22,9 @@ export const ApprovalRequestSchema = z.object({
   created_at: z.number().nonnegative(),
   timeout_sec: z.number().int().positive(),
   auto_review: ApprovalReviewSchema.nullable(),
+  // 서버 판정: 이 도구에 '항상 허용' 을 줄 수 있는가(task 18 — 브라우저 효과는 없다).
+  // 옵션인 이유는 구버전 서버·기존 fixture 와의 호환이다(없으면 허용으로 본다).
+  always_allow_allowed: z.boolean().optional(),
 }).readonly();
 
 const ApprovalListResponseSchema = z.object({

@@ -9,6 +9,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from antigravity_k.engine.approval_manager import (
+    NO_ALWAYS_ALLOW_TOOLS,
     ApprovalDecision,
     get_approval_manager,
 )
@@ -100,6 +101,22 @@ async def resolve_approval(request_id: str, response: ApprovalResponse):
             status_code=400,
             detail=f"잘못된 결정 값: {response.decision}. approve/deny/always_allow 중 하나",
         )
+
+    # '항상 허용' 이 성립하지 않는 도구는 **여기서** 막는다(승인 창이 그런 버튼을 보여 주면
+    # 사용자는 눌렀는데 실행이 거절되는 것을 보게 된다). 정책은 엔진이 갖고 라우트는 묻기만 한다.
+    if decision is ApprovalDecision.ALWAYS_ALLOW:
+        existing = manager.get_request(request_id)
+        if existing is not None and existing.tool_name in NO_ALWAYS_ALLOW_TOOLS:
+            raise HTTPException(
+                status_code=403,
+                detail={
+                    "error_code": "always_allow_forbidden",
+                    "detail": (
+                        f"'{existing.tool_name}' 에는 '항상 허용' 을 줄 수 없습니다: 매 행동에 대해 "
+                        "그 대상·내용·페이지 상태에 묶인 승인이 필요합니다"
+                    ),
+                },
+            )
 
     success = manager.resolve(request_id, decision)
     if not success:

@@ -73,6 +73,36 @@ describe('ApprovalQueue', () => {
     expect(screen.getByText(/인자·경로·프로젝트와 무관하게/)).toBeInTheDocument();
   });
 
+  it("'항상 허용' 을 서버가 거절하는 도구에는 그 버튼을 주지 않는다 (task 18)", () => {
+    // 브라우저 효과는 매 행동에 묶인 승인이 필요하다. 버튼이 있으면 사용자는 눌렀는데 403 을 보고,
+    // 화면이 약속한 것과 서버가 하는 일이 갈라진다 — 그래서 화면은 **서버 판정**을 따른다.
+    const browserEffect = ApprovalRequestSchema.parse({
+      ...approval,
+      request_id: 'approval-2',
+      tool_name: 'browser_effect',
+      description: 'http://127.0.0.1:52370 에서 Send message 을(를) click 합니다',
+      diff_preview: '',
+      always_allow_allowed: false,
+    });
+
+    render(
+      <ApprovalQueue
+        approvals={[browserEffect]}
+        alwaysAllowed={[]}
+        pendingRequestId={null}
+        error={null}
+        onResolve={vi.fn()}
+        onRevokeAlwaysAllowed={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByRole('button', { name: /browser_effect 도구를 항상 허용/ })).toBeNull();
+    expect(screen.getByTestId('approval-always-allow-unavailable')).toHaveTextContent(/매 호출/);
+    // 승인·거절은 그대로 남는다(막는 것이 아니라 '항상' 만 없앤다).
+    expect(screen.getByRole('button', { name: /승인$/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /거절$/ })).toBeInTheDocument();
+  });
+
   it('lists the standing grants with their reason and unconsented run count (F-33)', () => {
     const grant = AlwaysAllowGrantSchema.parse({
       tool_name: 'run_bash_command',

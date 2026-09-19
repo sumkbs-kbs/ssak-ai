@@ -12,6 +12,7 @@ import { useAgentMonitorStore } from '../stores/agentMonitorStore';
 import { useEventWebSocket } from '../hooks/useEventWebSocket';
 import { useUiStore } from '../stores/uiStore';
 import { checkHealth, fetchSystemMetrics } from '../api/client';
+import { BrowserApprovalSection } from '../features/browser-approval/BrowserApprovalSection';
 import { TaskExecutionPanel } from '../features/task-execution/TaskExecutionPanel';
 import { PersistentAgencyPanel } from '../features/persistent-agency/PersistentAgencyPanel';
 
@@ -175,6 +176,8 @@ const AgentPage: React.FC = () => {
       <AgentMonitorPanel />
       <PersistentAgencyPanel />
       <TaskExecutionPanel />
+      {/* task 18: 에이전트의 브라우저 **효과**는 사람이 승인한다(일반 도구 승인과 다른 계약). */}
+      <BrowserApprovalSection />
     </div>
   );
 };

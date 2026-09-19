@@ -15,15 +15,39 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import Protocol, cast, final
 
+from antigravity_k.engine.approval_manager import ApprovalStatus, get_approval_manager
+from antigravity_k.tools.browser_approval import (
+    ApprovalBinding,
+    classify_effect,
+    detect_user_handoff,
+    get_browser_approval_gate,
+    origin_of,
+    payload_fingerprint,
+    summarize_effect,
+)
 from antigravity_k.tools.browser_observation import (
     BrowserObservationError,
     drop_browser_observer,
     observer_for_owner,
 )
 from antigravity_k.tools.browser_session_owner import (
+    BrowserOwner,
     current_browser_owner,
     get_browser_session_owner,
 )
+
+# 승인 요청을 등록할 도구 이름(task 18). API 경로와 **같은 이름**을 쓴다 — 일반 도구 승인의
+# "항상 허용" 목록에 이 이름이 있으면 브라우저 효과를 자동 승인해 버리므로, 그 경우에는
+# 실행하지 않고 멈춘다.
+_BROWSER_EFFECT_TOOL = "browser_effect"
+
+
+class _ObserverFactLike(Protocol):
+    """승인 판정에 필요한 **서버가 본 사실**만 요구한다(관찰자 전체를 요구하지 않는다)."""
+
+    session_tag: str
+
+    def element_fact(self, ref: str | None, page_key: str | None = None) -> dict[str, object] | None: ...
 
 
 class _MouseLike(Protocol):
@@ -226,6 +250,20 @@ class BrowserSurfingAgent:
 
                 # 3. 행동 실행 — ref 는 **방금 관찰**의 것이어야 한다(모델이 selector 를 지어내도 문이 없다).
                 if action.action == "click" and action.target_ref:
+                    # 사람이 해야 하는 단계(MFA·CAPTCHA)면 멈춘다 — 자동으로 넘길 수 없는 일이다.
+                    handoff = await detect_user_handoff(page)
+                    if handoff is not None:
+                        final_result = (
+                            f"waiting_user({handoff.kind}): {handoff.reason} "
+                            "(자동 재시도 없음 — 사람이 끝낸 뒤 다시 요청하세요)"
+                        )
+                        break
+                    # 위험도를 **서버가** 요소의 의미로 판정한다(task 18). 승인이 필요한 효과는
+                    # 스스로 누르지 않는다 — 사람의 승인 창을 띄우고 멈춘다.
+                    blocked = await self._approval_block(observer, browser_owner, action.target_ref)
+                    if blocked is not None:
+                        final_result = blocked
+                        break
                     try:
                         outcome = await observer.act("click", ref=action.target_ref)
                     except BrowserObservationError as exc:
@@ -272,6 +310,69 @@ class BrowserSurfingAgent:
             await self._close_browser()
 
         return final_result
+
+    async def _approval_block(self, observer: _ObserverFactLike, browser_owner: BrowserOwner, ref: str) -> str | None:
+        """승인이 필요한 클릭이면 요청을 등록하고 **사람에게 넘기는 문장**을 준다(아니면 None).
+
+        이 에이전트는 자율 루프라 승인 창을 직접 띄울 수 없다. 그래서 할 수 있는 일은
+        스스로 누르지 않고 멈추는 것이다 — 무엇을 승인해야 하는지(요청 ID·효과·위험도·문장)를
+        남기면 대시보드/승인 API 가 그 요청을 처리하고, 재요청 시 이 ID 로 이어받는다.
+        """
+        fact = observer.element_fact(ref)
+        if fact is None:  # 사실을 못 얻으면 계약이 판정하게 둔다(낡은 ref 등)
+            return None
+        decision = classify_effect(
+            "click",
+            role=str(fact.get("role") or ""),
+            name=str(fact.get("name") or ""),
+            tag=str(fact.get("tag") or ""),
+            url=str(fact.get("url") or ""),
+            secret=bool(fact.get("secret")),
+            disabled=bool(fact.get("disabled")),
+        )
+        if not decision.requires_approval:
+            return None
+        binding = ApprovalBinding(
+            owner_key=browser_owner.key,
+            session_tag=str(observer.session_tag),
+            origin=origin_of(str(fact.get("url") or "")),
+            action="click",
+            ref=ref,
+            payload_hash=payload_fingerprint(action="click"),
+            generation=int(cast("int", fact.get("generation") or 0)),
+            effect=decision.effect.value,
+        )
+        summary = summarize_effect(
+            decision,
+            action="click",
+            origin=binding.origin,
+            name=str(fact.get("name") or ""),
+            role=str(fact.get("role") or ""),
+        )
+        manager_request = get_approval_manager().request_approval(
+            tool_name=_BROWSER_EFFECT_TOOL,
+            tool_args={
+                "origin": binding.origin,
+                "action": "click",
+                "effect": decision.effect.value,
+                "binding": binding.fingerprint[:16],
+            },
+            risk_level=decision.risk,
+            description=summary,
+        )
+        if manager_request.status is not ApprovalStatus.PENDING:
+            return (
+                "blocked: every browser effect needs its own approval and 'always allow' is not accepted "
+                f"(status={manager_request.status.value})"
+            )
+        requirement = get_browser_approval_gate().register(
+            binding, decision, summary=summary, request_id=manager_request.request_id
+        )
+        logger.info("[BrowserSurfing] approval required: %s", requirement.summary)
+        return (
+            f"approval_required(request={requirement.request_id}, effect={decision.effect.value}, "
+            f"risk={decision.risk}): {requirement.summary}"
+        )
 
     async def _decide_next_action(
         self,

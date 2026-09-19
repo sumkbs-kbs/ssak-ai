@@ -264,3 +264,20 @@ def _reset_browser_session_owner(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     reset_browser_session_owner()
     yield
     reset_browser_session_owner()
+
+
+@pytest.fixture(autouse=True)
+def _reset_browser_approval_state() -> Iterator[None]:
+    """시험마다 브라우저 승인 원장·비밀 보관소·일반 승인 관리자를 비운다(task 18).
+
+    셋 다 **프로세스 전역**이다. 하나라도 남으면 다음 시험이 남의 승인 토큰이나 "항상 허용"
+    부여를 물려받아, 통과가 이 시험의 결과가 아니게 된다(그리고 승인은 남으면 안 되는 상태다).
+    """
+    from antigravity_k.engine.approval_manager import reset_approval_manager
+    from antigravity_k.tools.browser_approval import reset_browser_approval
+
+    reset_browser_approval()
+    reset_approval_manager()
+    yield
+    reset_browser_approval()
+    reset_approval_manager()

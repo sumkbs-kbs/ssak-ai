@@ -6,6 +6,7 @@ import hashlib
 import inspect
 import logging
 import os
+import time
 from collections.abc import Awaitable, Callable, Mapping
 from pathlib import Path
 from typing import TYPE_CHECKING, Annotated, Protocol, cast
@@ -31,7 +32,35 @@ from antigravity_k.api.contracts.shell import (
 )
 from antigravity_k.config import config
 from antigravity_k.engine.access_mode import AccessMode, get_access_mode
+from antigravity_k.engine.approval_manager import (
+    ApprovalStatus,
+    get_approval_manager,
+)
 from antigravity_k.engine.sandbox import SandboxRunner, _minimal_child_env, _python_runtime_read_paths
+from antigravity_k.tools.browser_approval import (
+    ALWAYS_ALLOW_FORBIDDEN,
+    APPROVAL_BINDING_CHANGED,
+    APPROVAL_EXPIRED,
+    APPROVAL_REJECTED,
+    APPROVAL_REPLAYED,
+    APPROVAL_REQUIRED,
+    MODEL_CLAIM_REFUSED,
+    MODEL_TOKEN_REFUSED,
+    SECRET_HANDLE_UNKNOWN,
+    SECRET_ORIGIN_MISMATCH,
+    SECRET_VALUE_NOT_ALLOWED,
+    ApprovalBinding,
+    BrowserApprovalError,
+    HumanResolution,
+    classify_effect,
+    detect_user_handoff,
+    get_browser_approval_gate,
+    get_browser_secret_vault,
+    guard_request_claims,
+    origin_of,
+    payload_fingerprint,
+    summarize_effect,
+)
 from antigravity_k.tools.browser_session_owner import (
     DEFAULT_SCOPE,
     BrowserOwner,
@@ -567,6 +596,9 @@ class BrowserActionRequest(BaseModel):
     path: str | None = None
     delta: int = 800
     screenshot: bool = False
+    # 승인 계약(task 18): 토큰은 **서버가** 발급한 것만 통하고, 비밀은 handle 로만 가리킨다.
+    approval_token: str | None = None
+    secret_ref: str | None = None
 
 
 async def _browser_observe(request: Request, state: BrowserSessionState, *, screenshot: bool) -> "Observation":
@@ -577,6 +609,180 @@ async def _browser_observe(request: Request, state: BrowserSessionState, *, scre
         return await observer.observe(screenshot=screenshot)
     except BrowserObservationError as exc:
         raise HTTPException(status_code=_observation_status(exc.code), detail=exc.to_dict()) from exc
+
+
+# ── 브라우저 효과의 위험도·승인(task 18) ─────────────────────────────────────
+# 승인 요청을 등록할 도구 이름. `browser_action` 을 쓰지 **않는다** — 일반 도구 승인에서 한 번
+# "항상 허용" 을 받으면 그것이 브라우저 효과를 통째로 자동 승인해 버리기 때문이다. 이 이름이
+# "항상 허용" 목록에 들어 있으면 실행하지 않고 거절한다(무조건 자동 승인 금지).
+_BROWSER_EFFECT_TOOL = "browser_effect"
+
+_APPROVAL_HTTP_STATUS = {
+    APPROVAL_REQUIRED: 428,
+    MODEL_TOKEN_REFUSED: 403,
+    MODEL_CLAIM_REFUSED: 400,
+    APPROVAL_REJECTED: 403,
+    ALWAYS_ALLOW_FORBIDDEN: 403,
+    APPROVAL_REPLAYED: 409,
+    APPROVAL_EXPIRED: 410,
+    APPROVAL_BINDING_CHANGED: 409,
+    SECRET_VALUE_NOT_ALLOWED: 400,
+    SECRET_HANDLE_UNKNOWN: 403,
+    SECRET_ORIGIN_MISMATCH: 403,
+}
+
+
+def _approval_status(code: str) -> int:
+    return _APPROVAL_HTTP_STATUS.get(code, 403)
+
+
+def _payload_value(req: BrowserActionRequest, *, secret_field: bool, action: str) -> tuple[str | None, str]:
+    """승인 지문에 쓸 값. 비밀 필드는 **handle 만** 넘긴다(평문은 어느 필드로 와도 거절한다)."""
+    carried = req.value or req.text
+    if secret_field and carried:
+        raise HTTPException(
+            status_code=400,
+            detail=BrowserApprovalError(
+                SECRET_VALUE_NOT_ALLOWED,
+                "a secret field is filled from a stored handle (secret_ref), never from a value the model carries",
+            ).to_dict(),
+        )
+    if req.secret_ref:
+        return req.secret_ref, "secret_handle"
+    if action == "select":
+        return req.value, "text"
+    return req.text, "text"
+
+
+# ref 가 있어야만 성립하는 행동. ref 가 현재 관찰의 것이 아니면 **승인을 묻지 않는다** —
+# 계약이 STALE_SNAPSHOT/UNKNOWN_REF 로 거절하는 것이 맞는 답이고, 엉뚱한 승인 창을 띄우면
+# 사용자가 무엇을 승인하는지 알 수 없다.
+_REF_ACTIONS: frozenset[str] = frozenset({"click", "fill", "select", "upload", "download"})
+
+
+async def _screen_browser_effect(
+    req: BrowserActionRequest,
+    request: Request,
+    observer: "BrowserObserver",
+    action: str,
+) -> dict[str, object]:
+    """행동 직전 **서버가** 효과를 분류하고, 필요하면 사람의 승인을 요구하거나 소비한다.
+
+    반환값은 판정 재료(분류 결과·바인딩)·소비 사실이다. 승인이 필요 없으면 분류만 돌려준다 —
+    자동으로 지나가는 효과가 무엇인지 응답에 드러내기 위해서다.
+    """
+    fact = observer.element_fact(req.ref)
+    if fact is None:
+        if action in _REF_ACTIONS:
+            return {
+                "effect": {
+                    "effect": "unknown",
+                    "requires_approval": False,
+                    "reason": "this ref is not part of the current observation: the action contract decides",
+                }
+            }
+        fact = observer.page_fact()
+    secret_field = bool(fact.get("secret"))
+    payload_value, value_kind = _payload_value(req, secret_field=secret_field, action=action)
+    target_url = str(req.url or "") if action == "goto" else str(fact.get("url") or "")
+    page_url = str(fact.get("url") or "")
+    decision = classify_effect(
+        action,
+        role=str(fact.get("role") or ""),
+        name=str(fact.get("name") or ""),
+        tag=str(fact.get("tag") or ""),
+        url=target_url,
+        text=req.text,
+        value=payload_value,
+        path=req.path,
+        secret=secret_field or bool(req.secret_ref),
+        disabled=bool(fact.get("disabled")),
+    )
+    result: dict[str, object] = {"effect": decision.to_dict()}
+    binding = ApprovalBinding(
+        owner_key=_browser_owner(request).key,
+        session_tag=observer.session_tag,
+        origin=origin_of(target_url) if action == "goto" else origin_of(page_url),
+        action=action,
+        ref=str(req.ref or ""),
+        payload_hash=payload_fingerprint(
+            action=action,
+            url=req.url,
+            text=req.text,
+            value=payload_value,
+            path=req.path,
+            delta=req.delta,
+            value_kind=value_kind,
+        ),
+        generation=int(cast("int", fact.get("generation") or 0)) or observer.generation,
+        effect=decision.effect.value,
+    )
+    result["binding"] = binding.to_dict()
+    if not decision.requires_approval:
+        return result
+
+    gate = get_browser_approval_gate()
+    if req.approval_token:
+        try:
+            ticket = gate.authorize(req.approval_token, binding)
+        except BrowserApprovalError as exc:
+            raise HTTPException(status_code=_approval_status(exc.code), detail=exc.to_dict()) from exc
+        result["approval"] = {"consumed": True, "ticket_id": ticket.ticket_id, "action": action}
+        return result
+
+    vault = get_browser_secret_vault()
+    summary = summarize_effect(
+        decision,
+        action=action,
+        origin=binding.origin,
+        name=str(fact.get("name") or ""),
+        role=str(fact.get("role") or ""),
+        text=req.text,
+        value=req.value,
+        value_kind=value_kind,
+        secret_name=vault.name_of(req.secret_ref or ""),
+    )
+    manager_request = get_approval_manager().request_approval(
+        tool_name=_BROWSER_EFFECT_TOOL,
+        tool_args={
+            "origin": binding.origin,
+            "action": action,
+            "effect": decision.effect.value,
+            "risk": decision.risk,
+            "binding": binding.fingerprint[:16],
+        },
+        risk_level=decision.risk,
+        description=summary,
+    )
+    if manager_request.status is not ApprovalStatus.PENDING:
+        raise HTTPException(
+            status_code=403,
+            detail=BrowserApprovalError(
+                ALWAYS_ALLOW_FORBIDDEN,
+                "this effect needs its own approval: 'always allow' is not accepted for browser effects",
+                details={"status": manager_request.status.value},
+            ).to_dict(),
+        )
+    requirement = gate.register(binding, decision, summary=summary, request_id=manager_request.request_id)
+    raise HTTPException(
+        status_code=428,
+        detail={
+            "error_code": APPROVAL_REQUIRED,
+            "status": "approval_required",
+            "requirement": requirement.to_dict(),
+            "grant_url": f"/api/agent/tools/browser/approval/{requirement.request_id}/grant",
+        },
+    )
+
+
+async def _handoff_or_none(state: BrowserSessionState) -> dict[str, object] | None:
+    """MFA·CAPTCHA 면 사람 차례다 — 행동을 수행하지 않고 그 사실을 그대로 알린다."""
+    if state.page is None:
+        return None
+    signal = await detect_user_handoff(state.page)
+    if signal is None:
+        return None
+    return {**signal.to_dict(), "error_code": "HANDOFF_REQUIRED"}
 
 
 async def _browser_contract_action(
@@ -599,30 +805,85 @@ async def _browser_contract_action(
     action = _CONTRACT_ACTION_ALIASES.get(req.action, req.action)
     if action == "observe":
         observation = await _browser_observe(request, state, screenshot=req.screenshot)
-        return {"ok": True, "observation": observation.to_dict(), "summary": observation.to_summary()}
+        payload: dict[str, object] = {
+            "ok": True,
+            "observation": observation.to_dict(),
+            "summary": observation.to_summary(),
+        }
+        # 관찰은 막지 않는다(사람이 화면을 봐야 한다) — 다만 **사람 차례**라는 사실을 같이 알린다.
+        handoff = await _handoff_or_none(state)
+        if handoff is not None:
+            payload["handoff"] = handoff
+        return payload
     if action not in ALLOWED_ACTIONS:
         raise HTTPException(status_code=400, detail=f"Unknown action: {req.action}")
 
     observer = _browser_observer(request, state, with_sandbox=True)
+    # 사람이 해야 하는 단계면 여기서 멈춘다(자동 재시도·자동 승인 없음).
+    handoff = await _handoff_or_none(state)
+    if handoff is not None and action not in {"goto", "scroll"}:
+        raise HTTPException(status_code=409, detail=handoff)
+    screening = await _screen_browser_effect(req, request, observer, action)
+
+    # 비밀은 **여기서만** 값이 된다. 승인된 뒤에 꺼내므로, 승인되지 않은 호출은 보관소를 건드리지도
+    # 않는다. 해석은 서버가 하고 모델에게는 handle 조차 응답으로 돌아가지 않는다.
+    act_text = req.text
+    if action == "fill" and req.secret_ref:
+        vault = get_browser_secret_vault()
+        fact = observer.element_fact(req.ref) or observer.page_fact()
+        try:
+            act_text, _grant = vault.resolve(
+                req.secret_ref,
+                owner_key=_browser_owner(request).key,
+                origin=origin_of(str(fact.get("url") or "")),
+            )
+        except BrowserApprovalError as exc:
+            raise HTTPException(status_code=_approval_status(exc.code), detail=exc.to_dict()) from exc
+
     try:
         result = await observer.act(
             action,
             ref=req.ref,
             url=req.url,
-            text=req.text,
+            text=act_text,
             value=req.value,
             path=req.path,
             delta=req.delta,
         )
     except BrowserObservationError as exc:
         raise HTTPException(status_code=_observation_status(exc.code), detail=exc.to_dict()) from exc
-    payload = result.to_dict()
-    return {"ok": True, "result": payload, "summary": f"{payload['action']}: {payload['detail']}"}
+    result_payload = result.to_dict()
+    return {
+        "ok": True,
+        "result": result_payload,
+        "summary": f"{result_payload['action']}: {result_payload['detail']}",
+        **screening,
+    }
+
+
+async def _reject_model_claims(request: Request) -> None:
+    """본문에 "안전하다/승인됐다"는 주장이 있으면 거절한다(task 18).
+
+    위험도는 **서버가** 요소의 의미로 판정하고 사람이 승인한다. 호출자가 `risk`/`approved` 같은
+    필드로 그 판정을 낮출 수 있으면 판정이 의미를 잃는다 — 그래서 "무시" 가 아니라 **거절**이다
+    (`ignore` 는 조용한 통과를 만들고, 통과는 승인 UI 에 아무것도 남기지 않는다).
+    """
+    try:
+        raw = await request.json()
+    except Exception:  # noqa: BLE001 - 본문이 없거나 JSON 이 아니면 주장할 것도 없다
+        return
+    if not isinstance(raw, Mapping):
+        return
+    try:
+        guard_request_claims(cast("Mapping[str, object]", raw))
+    except BrowserApprovalError as exc:
+        raise HTTPException(status_code=_approval_status(exc.code), detail=exc.to_dict()) from exc
 
 
 @router.post("/api/agent/tools/browser/action")
 async def browser_action(req: BrowserActionRequest, request: Request):
     """Playwright 기반 브라우저 자동화 엔진 API."""
+    await _reject_model_claims(request)
     risk_level = "safe" if req.action in {"snapshot", "console_errors", "observe"} else "medium"
     if req.action == "goto":
         risk_level = "high"
@@ -715,7 +976,7 @@ async def browser_action(req: BrowserActionRequest, request: Request):
             # 스냅숏도 **관찰**이다(task 17) — 그래야 비밀 필드 마스킹을 같은 코드가 지킨다.
             # 예전 구현은 마스킹 없는 스크린샷을 그대로 돌려줬다.
             observation = await _browser_observe(request, state, screenshot=True)
-            return {
+            snapshot_payload: dict[str, object] = {
                 "ok": True,
                 "screenshot_base64": observation.screenshot,
                 "accessibility_tree": observation.accessibility,
@@ -728,6 +989,10 @@ async def browser_action(req: BrowserActionRequest, request: Request):
                 "console_logs_count": len(state.console_logs),
                 "url": observation.url,
             }
+            handoff = await _handoff_or_none(state)
+            if handoff is not None:
+                snapshot_payload["handoff"] = handoff
+            return snapshot_payload
 
         if req.action in _BROWSER_CONTRACT_ACTIONS:
             return await _browser_contract_action(req, request, state)
@@ -745,6 +1010,140 @@ async def browser_action(req: BrowserActionRequest, request: Request):
         raise
     except (Error, OSError, TimeoutError) as e:
         raise HTTPException(status_code=_browser_error_status(e), detail=str(e))
+
+
+# ─── 브라우저 효과 승인·비밀 handle(task 18) ────────────────────
+@router.get("/api/agent/tools/browser/approval/pending")
+async def list_browser_approvals() -> dict[str, object]:
+    """대기 중인 브라우저 효과 승인. **서버가 발급한** 요청만 나온다(모델이 만든 것은 없다)."""
+    gate = get_browser_approval_gate()
+    pending = gate.list_pending()
+    return {"pending": [item.to_dict() for item in pending], "count": len(pending), "gate": gate.describe()}
+
+
+@router.post("/api/agent/tools/browser/approval/{request_id}/grant")
+async def grant_browser_approval(request_id: str, request: Request) -> dict[str, object]:
+    """사람이 승인한 요청에 **서버가** 일회용 토큰을 발급한다.
+
+    토큰은 사람의 해결(ApprovalManager 의 승인 상태)에만 묶여 나온다 — 승인되지 않은 요청에는
+    아무것도 발급되지 않고, 한 번 발급된 토큰은 그 행동에 한 번만 쓸 수 있다.
+    """
+    gate = get_browser_approval_gate()
+    requirement = gate.pending(request_id)
+    if requirement is None:
+        raise HTTPException(status_code=404, detail="unknown or already used browser approval request")
+    manager_request = get_approval_manager().get_request(request_id)
+    if manager_request is None:
+        raise HTTPException(status_code=404, detail="unknown browser approval request")
+    if manager_request.status is not ApprovalStatus.APPROVED:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "error_code": APPROVAL_REJECTED,
+                "status": manager_request.status.value,
+                "detail": "the browser effect is not approved yet",
+            },
+        )
+    # 발급은 **지금의 상태**로 한다 — 사람이 보고 누른 사이에 페이지가 바뀌었으면(주소·DOM)
+    # 발급 자체가 거절되어 다시 물어보게 된다(승인한 것과 실행될 것이 달라지지 않게).
+    current = _live_state_binding(requirement.binding, request)
+    resolution = HumanResolution(
+        request_id=request_id,
+        decision="approve",
+        resolved_at=manager_request.resolved_at or time.time(),
+    )
+    try:
+        ticket = gate.issue(current, resolution)
+    except BrowserApprovalError as exc:
+        raise HTTPException(status_code=_approval_status(exc.code), detail=exc.to_dict()) from exc
+    return {"ok": True, "ticket": ticket.to_dict(include_token=True), "summary": requirement.summary}
+
+
+@router.post("/api/agent/tools/browser/approval/{request_id}/withdraw")
+async def withdraw_browser_approval(request_id: str) -> dict[str, object]:
+    """사람이 거절했거나 끝난 요청을 대기 목록에서 뺀다.
+
+    거절의 **기록**은 ApprovalManager 가 갖는다(그 경로가 감사 대상이다). 여기서는 발급되지
+    않은 승인이 TTL(60초)까지 화면에 남아 사용자에게 되묻는 일만 막는다.
+    """
+    withdrawn = get_browser_approval_gate().withdraw(request_id)
+    return {"ok": True, "request_id": request_id, "withdrawn": withdrawn}
+
+
+def _live_state_binding(recorded: ApprovalBinding, request: Request) -> ApprovalBinding:
+    """승인 기록에서 **동일성 축**은 그대로 두고 상태 축(origin·generation)만 지금 것으로 바꾼다.
+
+    요청자가 다른 사용자면 여기서 거절한다 — 남의 승인 창을 자기 것으로 바꿔 발급받는 길을 막는다.
+    """
+    owner = _browser_owner(request)
+    if owner.key != recorded.owner_key:
+        raise HTTPException(
+            status_code=403,
+            detail=BrowserApprovalError(
+                APPROVAL_BINDING_CHANGED,
+                "this approval belongs to a different user session",
+                details={"changed": ["owner_key"]},
+            ).to_dict(),
+        )
+    state = browser_sessions.get(_browser_session_id(request))
+    page_url = str(getattr(state.page, "url", "") or "")
+    observer = _browser_observer(request, state, with_sandbox=False)
+    return ApprovalBinding(
+        owner_key=owner.key,
+        session_tag=observer.session_tag,
+        origin=recorded.origin if recorded.action == "goto" else origin_of(page_url),
+        action=recorded.action,
+        ref=recorded.ref,
+        payload_hash=recorded.payload_hash,
+        generation=observer.generation,
+        effect=recorded.effect,
+    )
+
+
+class BrowserSecretStoreRequest(BaseModel):
+    """운영자가 비밀을 넣는 요청. 응답에는 handle 만 나가고 **값은 다시 나오지 않는다**."""
+
+    name: str
+    value: str
+    origins: list[str] = Field(default_factory=list)
+
+
+@router.post("/api/agent/tools/browser/secrets")
+async def store_browser_secret(req: BrowserSecretStoreRequest, request: Request) -> dict[str, object]:
+    """비밀을 넣고 opaque handle 을 받는다(로그인은 이 handle 로만 지정된다)."""
+    _require_allowed("browser_secret_store", {"name": req.name}, "high")
+    vault = get_browser_secret_vault()
+    handle = vault.put(
+        req.name,
+        req.value,
+        owner_key=_browser_owner(request).key,
+        origins=req.origins,
+    )
+    return {"ok": True, "handle": handle, "name": req.name, "origins": list(req.origins)}
+
+
+@router.get("/api/agent/tools/browser/secrets")
+async def list_browser_secrets(request: Request) -> dict[str, object]:
+    """보관된 비밀의 **이름·handle·origin 핀** 만 준다(값은 어느 경로로도 나오지 않는다)."""
+    _require_allowed("browser_secret_store", {"name": "list"}, "safe")
+    secrets = get_browser_secret_vault().describe_for_owner(_browser_owner(request).key)
+    return {"secrets": secrets, "count": len(secrets)}
+
+
+@router.delete("/api/agent/tools/browser/secrets/{handle}")
+async def discard_browser_secret(handle: str, request: Request) -> dict[str, object]:
+    """비밀을 버린다. handle 은 owner 에 묶여 있어 남의 것을 지울 수 없다."""
+    _require_allowed("browser_secret_store", {"name": "discard"}, "high")
+    vault = get_browser_secret_vault()
+    if not vault.owned_by(handle, _browser_owner(request).key):
+        raise HTTPException(
+            status_code=403,
+            detail=BrowserApprovalError(
+                SECRET_HANDLE_UNKNOWN, "this secret handle is unknown or belongs to a different user session"
+            ).to_dict(),
+        )
+    _ = vault.discard(handle)
+    return {"ok": True, "handle": handle, "discarded": True}
 
 
 # ─── Accessibility Tree Flattener ─────────────────────────────

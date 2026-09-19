@@ -30,7 +30,7 @@ import uuid
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Protocol, TypedDict
+from typing import Final, Protocol, TypedDict
 
 from pydantic import JsonValue
 
@@ -75,6 +75,15 @@ class _ApprovalRequestPayload(TypedDict):
     created_at: float
     timeout_sec: int
     auto_review: _AutoReviewPayload | None
+    #: 이 도구에 '항상 허용' 을 줄 수 있는가. 화면이 **서버 판정**을 그대로 그리게 한다 —
+    #: UI 가 "이 도구는 안 된다" 를 스스로 알면 그 정책이 두 곳으로 갈라진다.
+    always_allow_allowed: bool
+
+
+#: '항상 허용' 을 줄 수 **없는** 도구. 브라우저 효과가 그렇다(task 18): 승인은 그 순간의
+#: `owner·session·origin·action·ref·payload·generation` 에 묶인 한 건이고, 한 도구에 "항상" 을
+#: 주면 그 묶음이 통째로 사라진다(다음 행동은 다른 페이지·다른 금액일 수 있다).
+NO_ALWAYS_ALLOW_TOOLS: Final[frozenset[str]] = frozenset({"browser_effect"})
 
 
 class ApprovalStatus(str, Enum):
@@ -118,6 +127,11 @@ class ApprovalRequest:
             return False
         return (time.time() - self.created_at) > self.timeout_sec
 
+    @property
+    def always_allow_allowed(self) -> bool:
+        """이 요청에 '항상 허용' 을 줄 수 있는가(도구 정책이 정한다)."""
+        return self.tool_name not in NO_ALWAYS_ALLOW_TOOLS
+
     def to_dict(self) -> _ApprovalRequestPayload:
         """API 응답용 dict."""
         return {
@@ -129,6 +143,7 @@ class ApprovalRequest:
             "status": self.status.value,
             "created_at": self.created_at,
             "timeout_sec": self.timeout_sec,
+            "always_allow_allowed": self.always_allow_allowed,
             "auto_review": None
             if self.auto_review is None
             else {

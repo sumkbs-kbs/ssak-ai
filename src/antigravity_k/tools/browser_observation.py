@@ -1010,6 +1010,43 @@ class BrowserObserver:
             warnings=outcome.warnings,
         )
 
+    # ── 승인 재료(task 18) ───────────────────────────────────────────────────
+    def element_fact(self, ref: str | None, page_key: str | None = None) -> dict[str, object] | None:
+        """관찰이 발급한 ref 의 **서버가 본** 사실(역할·이름·태그·비밀 여부·당시 주소).
+
+        승인 바인딩과 위험도 분류는 이 값으로만 만든다 — 모델이 `role`/`name` 을 주장하게
+        두면 "이건 그냥 검색 버튼입니다" 로 송금 버튼을 통과시킬 수 있다.
+        ref 가 없거나 현재 관찰의 것이 아니면 `None` 이다(판정은 실제 수행 단계가 한다).
+        """
+        if not ref or self._current is None:
+            return None
+        snapshot = self._snapshots.get(self._current)
+        if snapshot is None:
+            return None
+        binding = snapshot.bindings.get(ref)
+        if binding is None:
+            return None
+        return {
+            "ref": binding.token,
+            "role": binding.role,
+            "name": binding.name,
+            "tag": binding.tag,
+            "secret": binding.secret,
+            "disabled": binding.disabled,
+            "frame": binding.frame_label,
+            "page_key": binding.page_key,
+            "url": snapshot.url,
+            "snapshot_id": snapshot.snapshot_id,
+            "generation": self.generation,
+        }
+
+    def page_fact(self, page_key: str | None = None) -> dict[str, object]:
+        """현재 페이지의 사실(주소·generation). ref 없는 행동(goto/scroll)의 승인 재료다."""
+        key = page_key or self._primary
+        page = self._pages.get(key)
+        url = str(getattr(page, "url", "") or "") if page is not None else ""
+        return {"page_key": key, "url": url, "generation": self.generation, "snapshot_id": self._current or ""}
+
     def _current_snapshot(self) -> _Snapshot:
         snapshot = self._snapshots.get(self._current) if self._current else None
         if snapshot is None:
