@@ -247,15 +247,20 @@ def _isolate_ssak_bundle_locations() -> Iterator[None]:
 
 
 @pytest.fixture(autouse=True)
-def _reset_browser_session_owner() -> Iterator[None]:
-    """시험마다 브라우저 세션 소유자를 버린다(task 16).
+def _reset_browser_session_owner(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    """시험마다 브라우저 세션 소유자와 **호스트 전역 원장**을 버린다(task 16 · task 16 후속).
 
     소유자와 그 원장은 호스트 전역이다. 한 시험이 브라우저를 열고 닫지 않으면, 다음 시험이 같은
     owner 로 `begin()` 을 부를 때 "이미 네 세션이 있다"로 **재사용**되고 아무것도 실행하지 않는다 —
     실제로 그렇게 8개 시험이 깨졌다(단독으로 돌리면 통과해서 더 찾기 어려웠다).
+
+    task 16 후속으로 그 원장은 **파일**이 됐다(프로세스 경계 너머 상한). 시험이 그것을 그대로
+    쓰면 개발자의 `~/.antigravity-k` 를 오염시키고, 시험끼리도 서로의 자리를 센다 — 그래서
+    시험마다 빈 디렉터리로 격리한다(번들 격리와 같은 규칙).
     """
     from antigravity_k.tools.browser_session_owner import reset_browser_session_owner
 
+    monkeypatch.setenv("AGK_BROWSER_SESSION_STATE", str(tmp_path / "browser_sessions" / "sessions.json"))
     reset_browser_session_owner()
     yield
     reset_browser_session_owner()

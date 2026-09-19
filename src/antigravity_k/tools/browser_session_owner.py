@@ -11,7 +11,10 @@
    `begin()` 이 그 owner 의 세션인지 확인한다. 같은 owner 는 같은 세션을 **재사용**한다.
 2. **호스트는 기본 2개만 연다.** 상한을 넘는 요청은 `BrowserSessionLimitError`(HTTP 429)로 끝나고,
    놀고 있는 세션(기본 15분)과 작업 시간을 넘긴 세션(기본 10분)은 **회수**된다 — 전에는 상한만 있고
-   시간 축이 없어서, 죽은 태스크의 브라우저가 무한히 남았다.
+   시간 축이 없어서, 죽은 태스크의 브라우저가 무한히 남았다. 이 상한은 **프로세스 경계를 넘는다**:
+   자리 수는 프로세스 메모리가 아니라 공유 원장(`browser_session_ledger.py`)에서 세므로, 앱이 2개를
+   열어 두면 CLI 의 세 번째 시도가 거절된다(반대도 같다). 죽은 프로세스의 자리는 **다른 프로세스가**
+   즉시 걷어낸다.
 3. **기본은 격리된 일회용 컨텍스트다.** persistent profile 은 **명시 연결 + 명시 owner scope** 일 때만
    허용한다(`begin(..., persistent_profile=...)`). 익명/기본 scope 로 개인 프로필을 열 수 없다.
 4. **남의 페이지를 채택하지 않는다.** 개인 Chrome 이나 Node CDP 가 열어 둔 페이지는 **관찰만** 하고
@@ -38,6 +41,8 @@ from contextvars import ContextVar
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol, TypeVar, cast, final
+
+from antigravity_k.tools.browser_session_ledger import STATE_ENV, HostSessionLedger, LedgerDecision
 
 logger = logging.getLogger(__name__)
 
@@ -134,6 +139,8 @@ class BrowserLease:
     opened_at: float = 0.0
     last_used_at: float = 0.0
     foreign_pages: tuple[str, ...] = ()
+    #: 공유 원장의 자리 표식 — 호스트 전역 상한의 근거. 퇴화 모드에서는 빈 문자열이다.
+    slot: str = ""
 
     def touch(self, now: float) -> None:
         self.last_used_at = now
@@ -146,6 +153,7 @@ class BrowserLease:
 
     def to_dict(self, now: float) -> dict[str, object]:
         return {
+            "slot": self.slot,
             "owner": self.owner.describe(),
             "purpose": self.purpose,
             "persistent": bool(self.persistent_profile),
@@ -168,6 +176,8 @@ class SessionReservation:
     purpose: str
     reuse: BrowserLease | None = None
     reserved_at: float = 0.0
+    #: 공유 원장의 자리 표식(호스트 전역 상한의 근거). 퇴화 모드에서는 빈 문자열이다.
+    slot: str = ""
 
     @property
     def is_reuse(self) -> bool:
@@ -189,6 +199,8 @@ class BrowserSessionOwner:
         idle_ttl_seconds: float = DEFAULT_IDLE_TTL_SECONDS,
         task_deadline_seconds: float = DEFAULT_TASK_DEADLINE_SECONDS,
         clock: Callable[[], float] = time.monotonic,
+        wall_clock: Callable[[], float] = time.time,
+        ledger: HostSessionLedger | None = None,
     ) -> None:
         if max_active_sessions < 1:
             raise ValueError("max_active_sessions must be positive")
@@ -198,9 +210,14 @@ class BrowserSessionOwner:
         self.idle_ttl_seconds: float = float(idle_ttl_seconds)
         self.task_deadline_seconds: float = float(task_deadline_seconds)
         self._clock = clock
+        # 자리 수는 **공유 원장**에서 센다 — 앱과 CLI 가 같은 호스트에서 서로를 세지 못하던 결함의
+        # 수리 지점이다(task 16 후속). 벽시계는 원장에 실리는 시각용이고, 프로세스 안 TTL 판정은
+        # 단조 시계(`clock`)를 그대로 쓴다(두 시계를 섞으면 한쪽이 다른 쪽의 기준을 오해한다).
+        self._ledger = ledger if ledger is not None else HostSessionLedger(wall_clock=wall_clock)
         self._leases: dict[str, BrowserLease] = {}
         self._reservations: dict[str, SessionReservation] = {}
         self._reaped: list[dict[str, object]] = []
+        self._host_reclaimed: list[dict[str, object]] = []
 
     # ── 정책 읽기 ────────────────────────────────────────────────────────────
 
@@ -231,8 +248,22 @@ class BrowserSessionOwner:
 
     @property
     def active_count(self) -> int:
-        """살아 있는 세션 + 예약. 상한은 이 수를 기준으로 판정한다."""
+        """**이 프로세스**가 붙잡은 세션 + 예약.
+
+        상한 판정은 이 값이 아니라 공유 원장(`host_active_count`)을 기준으로 한다 — 프로세스 안
+        수만 세면 앱과 CLI 가 서로를 세지 못한다. 이 값은 진단·호환용으로 남긴다.
+        """
         return len(self._leases) + len(self._reservations)
+
+    @property
+    def host_active_count(self) -> int:
+        """호스트 전체가 점유한 자리 수(다른 프로세스·다른 호스트까지 포함)."""
+        return self._ledger.host_active()
+
+    @property
+    def ledger(self) -> HostSessionLedger:
+        """공유 원장(진단·시험용)."""
+        return self._ledger
 
     def lease_for(self, owner: BrowserOwner) -> BrowserLease | None:
         return self._leases.get(owner.key)
@@ -247,6 +278,13 @@ class BrowserSessionOwner:
             "reservations": len(self._reservations),
             "sessions": [lease.to_dict(now) for lease in self._leases.values()],
             "reaped": list(self._reaped[-20:]),
+            "host": {
+                # 호스트 전역 상한의 실제 판정 근거. 원장을 못 쓰면 `degraded` 가 그 사실을 말한다.
+                "max_active_sessions": self.max_active_sessions,
+                "active": self._ledger.host_active(),
+                "ledger": self._ledger.status(),
+                "reclaimed": list(self._host_reclaimed[-20:]),
+            },
         }
 
     # ── 회수 ────────────────────────────────────────────────────────────────
@@ -267,6 +305,11 @@ class BrowserSessionOwner:
             descriptor = lease.to_dict(now)
             descriptor["reason"] = reason
             self._leases.pop(key, None)
+            # 자리도 함께 반납한다 — 원장의 TTL 판정은 **벽시계**라, 프로세스 안에서 회수한
+            # 세션의 자리를 남겨 두면 만료된 세션이 호스트 상한을 계속 차지한다(그러면 살아 있는
+            # 사용자가 영원히 429 를 받는다).
+            if lease.slot:
+                _ = self._ledger.release(slot=lease.slot)
             _close_quietly(lease)
             reaped.append(descriptor)
             logger.info("[Browser] reaped session (%s): %s", reason, lease.owner.describe())
@@ -274,11 +317,30 @@ class BrowserSessionOwner:
             # 예약은 페이지가 아직 없으므로 TTL 로만 정리한다(launch 가 매달린 채 죽은 경우).
             if now - reservation.reserved_at >= self.task_deadline_seconds:
                 self._reservations.pop(token, None)
+                if reservation.slot:
+                    _ = self._ledger.release(slot=reservation.slot)
                 reaped.append({"owner": reservation.owner.describe(), "reason": "abandoned_reservation"})
         if reaped:
             self._reaped.extend(reaped)
             del self._reaped[:-40]
         return reaped
+
+    # ── 공유 원장과의 정합(프로세스 경계 너머) ───────────────────────────────
+
+    def _drop_reclaimed_lease(self, key: str, lease: BrowserLease) -> dict[str, object]:
+        """다른 프로세스가 걷어간 자리의 세션을 닫는다(협조적 회수 — 닫는 일은 소유자가 한다)."""
+        self._leases.pop(key, None)
+        descriptor = lease.to_dict(self._clock())
+        descriptor["reason"] = "host_reclaimed"
+        _close_quietly(lease)
+        self._reaped.append(descriptor)
+        del self._reaped[:-40]
+        logger.info(
+            "[Browser] closed a session that another process reclaimed: %s (slot=%s)",
+            lease.owner.describe(),
+            lease.slot,
+        )
+        return descriptor
 
     # ── 열기 ────────────────────────────────────────────────────────────────
 
@@ -312,17 +374,9 @@ class BrowserSessionOwner:
         """
         self.reap()
         resolved_owner = owner or BrowserOwner.anonymous()
+        # 다른 프로세스가 우리 자리를 걷어갔는지는 **원장의 판정**이 알려 준다(재사용 대신 새 자리를
+        # 내준다). 여기서 따로 판단하지 않는다 — 두 곳이 판단하면 둘이 어긋나는 순간이 생긴다.
         existing = self._leases.get(resolved_owner.key)
-        if existing is not None:
-            existing.touch(self._clock())
-            return SessionReservation(
-                token="",
-                owner=resolved_owner,
-                persistent_profile=existing.persistent_profile,
-                purpose=purpose or existing.purpose,
-                reuse=existing,
-                reserved_at=self._clock(),
-            )
         in_flight = next(
             (item for item in self._reservations.values() if item.owner.key == resolved_owner.key),
             None,
@@ -335,10 +389,41 @@ class BrowserSessionOwner:
         if persistent_profile is not None:
             authorized = self._authorize_persistent(resolved_owner, persistent_profile)
 
-        if self.active_count >= self.max_active_sessions:
+        # 자리 판정은 **공유 원장**이 한다: 이 프로세스의 수가 아니라 호스트 전체의 수를 세고,
+        # 죽은 프로세스·유지 TTL·작업 deadline 을 지난 자리를 그 자리에서 걷어낸다. **재사용
+        # 여부도 이 판정 하나에서 나온다** — 두 곳(프로세스 안·원장)이 따로 판단하면 "원장에는
+        # 없는 자리를 재사용하는" 구간이 생긴다.
+        decision = self._admit(resolved_owner, purpose=purpose, persistent=authorized is not None)
+        if decision.kind == "degraded":
+            # 원장을 못 쓴다(상태 디렉터리 불가·잠금 실패) — 기동을 막지 않고 프로세스 안
+            # 규칙으로 퇴화한다. 그 사실은 `status()["host"]["ledger"]["degraded"]` 로 드러난다.
+            if existing is not None:
+                existing.touch(self._clock())
+                return self._reuse(resolved_owner, existing, purpose)
+            if self.active_count >= self.max_active_sessions:
+                raise BrowserSessionLimitError(
+                    f"Too many active browser sessions ({self.active_count}/{self.max_active_sessions})",
+                )
+        elif decision.kind == "reuse" and existing is not None:
+            existing.touch(self._clock())
+            return self._reuse(resolved_owner, existing, purpose)
+        elif decision.kind == "reuse":
+            # 원장에는 우리 자리가 살아 있는데 이 프로세스에 임대가 없다(원장만 살아남은 경우).
+            # 그 자리를 반납하고 다시 요청한다 — 안 그러면 같은 자리를 두 번 세게 된다.
+            _ = self._ledger.release(slot=decision.slot or "")
+            decision = self._admit(resolved_owner, purpose=purpose, persistent=authorized is not None)
+
+        if decision.kind != "degraded" and not decision.granted:
             raise BrowserSessionLimitError(
-                f"Too many active browser sessions ({self.active_count}/{self.max_active_sessions})",
+                f"Too many active browser sessions on this host ({decision.host_active}/{decision.max_active})",
             )
+        if decision.reclaimed:
+            self._host_reclaimed.extend(decision.reclaimed)
+            del self._host_reclaimed[:-40]
+        if existing is not None:
+            # 남아 있던 임대가 있는데 원장이 새 자리를 내줬다면, 그 자리는 다른 프로세스가
+            # 걷어간 것이다 — 그 세션을 그대로 쓰면 상한이 세지 않는 브라우저가 생긴다.
+            _ = self._drop_reclaimed_lease(resolved_owner.key, existing)
 
         reservation = SessionReservation(
             token=uuid.uuid4().hex[:12],
@@ -346,9 +431,33 @@ class BrowserSessionOwner:
             persistent_profile=authorized,
             purpose=purpose,
             reserved_at=self._clock(),
+            slot=decision.slot or "",
         )
         self._reservations[reservation.token] = reservation
         return reservation
+
+    def _admit(self, owner: BrowserOwner, *, purpose: str, persistent: bool) -> LedgerDecision:
+        """원장에 자리를 요청한다(정책 값은 이 소유자 것을 그대로 넘긴다)."""
+        return self._ledger.admit(
+            owner_key=owner.key,
+            max_active=self.max_active_sessions,
+            idle_ttl=self.idle_ttl_seconds,
+            task_deadline=self.task_deadline_seconds,
+            purpose=purpose,
+            persistent=persistent,
+        )
+
+    def _reuse(self, owner: BrowserOwner, lease: BrowserLease, purpose: str) -> SessionReservation:
+        """이미 있는 세션을 그대로 쓰는 예약(자리를 새로 세지 않는다)."""
+        return SessionReservation(
+            token="",
+            owner=owner,
+            persistent_profile=lease.persistent_profile,
+            purpose=purpose or lease.purpose,
+            reuse=lease,
+            reserved_at=self._clock(),
+            slot=lease.slot,
+        )
 
     def commit(
         self,
@@ -368,6 +477,25 @@ class BrowserSessionOwner:
             if foreign:
                 lease.foreign_pages = tuple(dict.fromkeys((*lease.foreign_pages, *foreign)))
             return lease
+        # 원장에서 예약을 **세션으로 확정**한다. 그 사이 다른 프로세스가 걷어갔다면 원장이 다시
+        # 자리를 요청하고, 그마저 안 되면(다른 프로세스가 먼저 가져감) 확정하지 않는다 —
+        # 브라우저는 이미 떠 있으므로 호출자의 실패 경로(`abort()`)가 정리한다.
+        decision = self._ledger.commit(
+            reservation.slot,
+            owner_key=reservation.owner.key,
+            max_active=self.max_active_sessions,
+            idle_ttl=self.idle_ttl_seconds,
+            task_deadline=self.task_deadline_seconds,
+            purpose=reservation.purpose,
+            persistent=reservation.persistent_profile is not None,
+        )
+        if not decision.granted:
+            raise BrowserSessionLimitError(
+                f"Too many active browser sessions on this host ({decision.host_active}/{decision.max_active})",
+            )
+        if decision.reclaimed:
+            self._host_reclaimed.extend(decision.reclaimed)
+            del self._host_reclaimed[:-40]
         self._reservations.pop(reservation.token, None)
         lease = BrowserLease(
             owner=reservation.owner,
@@ -378,6 +506,7 @@ class BrowserSessionOwner:
             opened_at=now,
             last_used_at=now,
             foreign_pages=foreign,
+            slot=decision.slot or reservation.slot,
         )
         self._leases[reservation.owner.key] = lease
         logger.info(
@@ -392,12 +521,19 @@ class BrowserSessionOwner:
         """launch 가 실패했을 때 예약을 돌려준다(자리를 붙잡은 채 남기지 않는다)."""
         if reservation.token:
             self._reservations.pop(reservation.token, None)
+        if reservation.slot:
+            _ = self._ledger.release(slot=reservation.slot)
 
     def release(self, owner: BrowserOwner) -> bool:
         """owner 의 세션을 닫고 원장에서 지운다. 닫을 것이 없으면 False."""
         lease = self._leases.pop(owner.key, None)
         if lease is None:
             return False
+        if lease.slot:
+            _ = self._ledger.release(slot=lease.slot)
+        else:
+            # 퇴화 모드에서 열린 세션 — 원장이 나중에 살아났다면 owner 기준으로 남은 자리를 치운다.
+            _ = self._ledger.release(owner_key=owner.key)
         _close_quietly(lease)
         return True
 
@@ -418,8 +554,16 @@ class BrowserSessionOwner:
         count = 0
         for lease in list(self._leases.values()):
             count += 1
+            if lease.slot:
+                _ = self._ledger.release(slot=lease.slot)
+            else:
+                _ = self._ledger.release(owner_key=lease.owner.key)
             _close_quietly(lease)
         self._leases.clear()
+        # launch 중 죽은 채 남긴 자리도 반납한다(원장에 실려 있다).
+        for reservation in list(self._reservations.values()):
+            if reservation.slot:
+                _ = self._ledger.release(slot=reservation.slot)
         self._reservations.clear()
         if count:
             logger.info("[Browser] closed %d session(s) on shutdown", count)
@@ -479,6 +623,8 @@ def configure_browser_session_owner(
     idle_ttl_seconds: float | None = None,
     task_deadline_seconds: float | None = None,
     clock: Callable[[], float] | None = None,
+    wall_clock: Callable[[], float] | None = None,
+    ledger: HostSessionLedger | None = None,
 ) -> BrowserSessionOwner:
     """정책을 명시적으로 세운다(호스트 기동·시험). 인자를 주지 않은 축은 환경/기본값을 따른다."""
     global _owner
@@ -490,6 +636,8 @@ def configure_browser_session_owner(
         idle_ttl_seconds=base.idle_ttl_seconds if idle_ttl_seconds is None else idle_ttl_seconds,
         task_deadline_seconds=(base.task_deadline_seconds if task_deadline_seconds is None else task_deadline_seconds),
         clock=clock if clock is not None else time.monotonic,
+        wall_clock=wall_clock if wall_clock is not None else time.time,
+        ledger=ledger,
     )
     return _owner
 
@@ -551,16 +699,26 @@ def personal_profile_allowed(env: Mapping[str, str] | None = None) -> bool:
 def describe_policy(owner: BrowserSessionOwner | None = None) -> dict[str, object]:
     """진단용 정책 요약(비밀 없음)."""
     target = owner or get_browser_session_owner()
+    ledger = target.ledger
     return {
         "max_active_sessions": target.max_active_sessions,
         "idle_ttl_seconds": target.idle_ttl_seconds,
         "task_deadline_seconds": target.task_deadline_seconds,
         "personal_profile_allowed": personal_profile_allowed(),
+        # 상한이 **프로세스 경계 너머**에서도 같은지: 자리 수를 세는 공유 원장의 상태.
+        # 파일 경로는 이름만 노출한다(사용자 이름이 상태 응답으로 새어 나가면 안 된다).
+        "host_sessions": {
+            "cap_is_host_wide": True,
+            "shared_ledger_file": ledger.path().name,
+            "shared_ledger_degraded": ledger.degraded,
+            "shared_ledger_degrade_reason": ledger.degrade_reason,
+        },
         "env": {
             "max_sessions": MAX_SESSIONS_ENV,
             "idle_ttl": IDLE_TTL_ENV,
             "task_deadline": TASK_DEADLINE_ENV,
             "personal_profile": PERSONAL_PROFILE_ENV,
+            "session_state": STATE_ENV,
         },
     }
 
@@ -574,12 +732,14 @@ __all__ = [
     "IDLE_TTL_ENV",
     "MAX_SESSIONS_ENV",
     "PERSONAL_PROFILE_ENV",
+    "STATE_ENV",
     "TASK_DEADLINE_ENV",
     "BrowserLease",
     "BrowserOwner",
     "BrowserSessionLimitError",
     "BrowserSessionOwner",
     "BrowserSessionRefusedError",
+    "HostSessionLedger",
     "SessionReservation",
     "bound_browser_owner",
     "configure_browser_session_owner",
