@@ -369,6 +369,9 @@ def test_shutdown_clean_flag_is_derived_from_the_child_list(
     monkeypatch.setattr(type(runtime), "child_pids", lambda self: [424242])
     status = runtime.shutdown(timeout=20)
     assert status["shutdown_clean"] is False, "종료 증거가 실제 child 목록에서 계산되지 않는다"
+    # 위조한 목록은 이 시험 안에서만 살아야 한다. monkeypatch 해제가 fixture 정리보다 늦으면
+    # 정리 단계의 `child_pids == []` 단언이 **영원히** 빨강이 된다(task 24 가 발견: 3회 연속 실패).
+    monkeypatch.undo()
 
 
 def test_runtime_can_be_restarted_after_shutdown(runtimes: list[SsakSearchRuntime], tmp_path: Path) -> None:

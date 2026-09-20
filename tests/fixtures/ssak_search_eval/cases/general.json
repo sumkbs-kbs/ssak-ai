@@ -1,0 +1,226 @@
+{
+  "category": "general",
+  "intent": "everyday",
+  "cases": [
+    {
+      "case_id": "general-01",
+      "query": "김치 냉장고 보관 온도 적정 범위",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://ko.wikipedia.org/wiki/%EA%B9%80%EC%B9%98%EB%83%89%EC%9E%A5%EA%B3%A0", "김치냉장고 - 위키백과", "보관 온도와 숙성 원리 개요", 2],
+        ["https://blog.naver.com/kitchen-note/223100111", "김치 보관 온도 실험", "0도부터 5도까지 직접 재본 결과", 3],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "김치 맛있게 보관하는 법", "영상 요약", 0],
+        ["https://cafe.daum.net/cooking/4455", "우리 집 냉장고 설정", "회원 경험담", 1]
+      ]
+    },
+    {
+      "case_id": "general-02",
+      "query": "등산화 고르는 기준 발볼 넓은 사람",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://blog.naver.com/hiking-gear/223200222", "발볼 넓은 사람 등산화 고르기", "실착 후기와 사이즈 팁", 3],
+        ["https://ko.wikipedia.org/wiki/%EB%93%B1%EC%82%B0%ED%99%94", "등산화 - 위키백과", "등산화의 종류와 구조", 2],
+        ["https://info-hub-daily.com/ads/shoes", "등산화 특가 세일", "광고", 0],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "등산화 리뷰 모음", "유튜브 리뷰", 1]
+      ]
+    },
+    {
+      "case_id": "general-03",
+      "query": "커피 원두 보관 방법 냉동",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://blog.naver.com/coffee-lab/223300333", "원두 냉동 보관 6개월 후기", "밀봉·해동 방법을 직접 비교", 3],
+        ["https://ko.wikipedia.org/wiki/%EC%BB%A4%ED%94%BC", "커피 - 위키백과", "원두 산화와 보관 개요", 2],
+        ["https://cafe.daum.net/coffee/5566", "냉동 보관 괜찮나요", "카페 의견", 1],
+        ["https://info-hub-daily.com/ads/coffee", "원두 정기구독 이벤트", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-04",
+      "query": "전세 계약서 특약사항 주의",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.korea.kr/news/policyNewsView.do?newsId=148900000", "전세 계약 특약 주의사항", "정책 브리핑이 정리한 위험 조항", 3],
+        ["https://blog.naver.com/realty-law/223400444", "특약사항 사례 모음", "실제 분쟁 사례 정리", 2],
+        ["https://cafe.daum.net/rent/6677", "계약서 좀 봐주세요", "카페 질문", 0],
+        ["https://info-hub-daily.com/ads/realty", "전세 대출 상담", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-05",
+      "query": "무릎 통증 스쿼트 자세",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://blog.naver.com/fit-coach/223500555", "무릎 안 아픈 스쿼트 자세", "코치가 정리한 관절 정렬", 3],
+        ["https://ko.wikipedia.org/wiki/%EC%8A%A4%EC%BF%BC%ED%8A%B8", "스쿼트 - 위키백과", "동작 설명과 근육", 2],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "스쿼트 자세 교정 영상", "유튜브", 1],
+        ["https://info-hub-daily.com/ads/health", "헬스 회원 모집", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-06",
+      "query": "강아지 사료 급여량 계산",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://blog.naver.com/dog-care/223600666", "체중별 사료 급여량 표", "직접 계산한 표와 주의점", 3],
+        ["https://ko.wikipedia.org/wiki/%EA%B0%95%EC%95%84%EC%A7%80", "개 - 위키백과", "반려견 영양 개요", 1],
+        ["https://cafe.daum.net/dog/7788", "얼마나 줘야 하나요", "카페 답변", 1],
+        ["https://info-hub-daily.com/ads/pet", "사료 할인 이벤트", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-07",
+      "query": "여행용 캐리어 크기 기내 반입 기준",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.koreanair.com/content/koreanair/kr/ko/traveling/baggage/", "대한항공 수하물 규정", "기내 반입 크기·무게 기준", 3],
+        ["https://blog.naver.com/travel-gear/223700777", "기내 캐리어 실측 비교", "항공사별 허용 크기 정리", 2],
+        ["https://cafe.daum.net/travel/8899", "이 캐리어 되나요", "카페 질문", 0],
+        ["https://info-hub-daily.com/ads/travel", "항공권 특가", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-08",
+      "query": "홈트 초보 루틴 주 3회",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://blog.naver.com/home-trainer/223800888", "초보 홈트 3개월 루틴", "주 3회 구성과 부상 방지", 3],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "초보 홈트 따라하기", "영상 루틴", 2],
+        ["https://cafe.daum.net/fitness/9900", "홈트 얼마나 하나요", "카페", 0],
+        ["https://info-hub-daily.com/ads/gym", "온라인 PT 이벤트", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-09",
+      "query": "에어프라이어 감자 조리 시간",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://blog.naver.com/airfryer/223900999", "감자 종류별 에어프라이어 시간", "온도·시간 표와 실패 사례", 3],
+        ["https://ko.wikipedia.org/wiki/%EC%97%90%EC%96%B4%ED%94%84%EB%9D%BC%EC%9D%B4%EC%96%B4", "에어프라이어 - 위키백과", "작동 원리", 1],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "감자튀김 실패 없이", "영상", 1],
+        ["https://info-hub-daily.com/ads/kitchen", "주방가전 할인", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-10",
+      "query": "중고차 구매 시 확인 서류",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.car365.go.kr/portal/usedcar/checklist.do", "자동차365 중고차 거래 안내", "확인해야 할 서류와 절차", 3],
+        ["https://blog.naver.com/car-check/224001000", "중고차 서류 체크리스트", "실거래 경험 정리", 2],
+        ["https://cafe.daum.net/car/1010", "서류 뭐 챙기나요", "카페", 0],
+        ["https://info-hub-daily.com/ads/car", "중고차 시세 조회", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-11",
+      "query": "아파트 관리비 항목 이해",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.k-apt.go.kr/kaptinfo/openData/list.do", "공동주택관리정보시스템 관리비", "관리비 항목과 공개 기준", 3],
+        ["https://blog.naver.com/apt-living/224101111", "관리비 항목별 뜻 정리", "생활 정보 정리", 2],
+        ["https://cafe.daum.net/apt/1122", "이 항목 뭔가요", "카페 질문", 0],
+        ["https://info-hub-daily.com/ads/moving", "이사 견적 이벤트", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-12",
+      "query": "요요 없는 다이어트 유지 방법",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://blog.naver.com/diet-note/224202222", "감량 후 6개월 유지 기록", "요요 없이 유지한 방법", 3],
+        ["https://ko.wikipedia.org/wiki/%EB%8B%A4%EC%9D%B4%EC%96%B4%ED%8A%B8", "다이어트 - 위키백과", "체중 조절 개요", 1],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "유지어터 브이로그", "영상", 1],
+        ["https://info-hub-daily.com/ads/diet", "다이어트 보조제 광고", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-13",
+      "query": "노트북 배터리 오래 쓰는 충전 습관",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://support.apple.com/ko-kr/HT201585", "Apple 노트북 배터리 관리 안내", "충전 습관과 배터리 수명 공식 안내", 3],
+        ["https://blog.naver.com/tech-note/224303333", "배터리 80% 충전 실험", "1년간 측정한 결과", 2],
+        ["https://cafe.daum.net/laptop/1234", "항상 꽂아두나요", "카페", 0],
+        ["https://info-hub-daily.com/ads/laptop", "노트북 교체 이벤트", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-14",
+      "query": "베란다 텃밭 상추 키우기 초보",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://blog.naver.com/urban-farm/224404444", "베란다 상추 키우기 기록", "파종부터 수확까지 사진 기록", 3],
+        ["https://ko.wikipedia.org/wiki/%EC%83%81%EC%B6%94", "상추 - 위키백과", "재배 특성", 2],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "상추 키우기 영상", "영상", 1],
+        ["https://info-hub-daily.com/ads/seed", "씨앗 세일", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-15",
+      "query": "자동차 타이어 공기압 계절별",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.ts2020.kr/contents/view.do?idx=1100", "한국타이어 안전정보 타이어 공기압", "계절별 권장 공기압 안내", 3],
+        ["https://blog.naver.com/car-care/224505555", "겨울 공기압 실측", "온도별 측정값", 2],
+        ["https://cafe.daum.net/carfan/2345", "몇 psi 넣나요", "카페", 0],
+        ["https://info-hub-daily.com/ads/tire", "타이어 교체 할인", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-16",
+      "query": "수면 자세 허리 디스크",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://blog.naver.com/spine-note/224606666", "허리 디스크 수면 자세", "베개 높이와 옆으로 누운 자세", 3],
+        ["https://ko.wikipedia.org/wiki/%EB%94%94%EC%8A%A4%ED%81%AC", "추간판 탈출증 - 위키백과", "증상과 일반적 관리", 1],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "허리 편한 자세 영상", "영상", 1],
+        ["https://info-hub-daily.com/ads/bed", "매트리스 할인", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-17",
+      "query": "통신 요금제 비교 알뜰폰",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.mobilekorea.or.kr/portal/rate/compare.do", "알뜰폰 요금제 비교 공시", "요금제 공시 자료 비교표", 3],
+        ["https://blog.naver.com/phone-note/224707777", "알뜰폰 3년 사용기", "품질·해지 경험 정리", 2],
+        ["https://cafe.daum.net/phone/3456", "어디가 싼가요", "카페", 0],
+        ["https://info-hub-daily.com/ads/phone", "요금제 추천 광고", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-18",
+      "query": "곰팡이 제거 베이킹소다 식초",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://blog.naver.com/clean-home/224808888", "곰팡이 제거 실험", "베이킹소다·식초·락스를 비교", 3],
+        ["https://ko.wikipedia.org/wiki/%EA%B3%B0%ED%8C%A1%EC%9D%B4", "곰팡이 - 위키백과", "생장 조건과 건강 영향", 2],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "욕실 곰팡이 제거 영상", "영상", 1],
+        ["https://info-hub-daily.com/ads/clean", "청소 업체 이벤트", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-19",
+      "query": "영어 회화 독학 순서",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://blog.naver.com/eng-study/224909999", "독학 2년 회화 루틴", "단계별 학습 순서와 교재", 3],
+        ["https://ko.wikipedia.org/wiki/%EC%98%81%EC%96%B4", "영어 - 위키백과", "언어 개요", 0],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "회화 공부법 영상", "영상", 1],
+        ["https://info-hub-daily.com/ads/english", "학원 등록 이벤트", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "general-20",
+      "query": "캠핑 장비 최소 구성 초보",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://blog.naver.com/camp-minimal/225001111", "미니멀 캠핑 장비 목록", "초보가 실제로 쓴 장비만 정리", 3],
+        ["https://ko.wikipedia.org/wiki/%EC%BA%A0%ED%95%91", "캠핑 - 위키백과", "캠핑 형태 개요", 1],
+        ["https://cafe.daum.net/camping/4567", "필수 장비 뭔가요", "카페", 1],
+        ["https://info-hub-daily.com/ads/camp", "캠핑 용품 할인", "광고", 0]
+      ]
+    }
+  ]
+}

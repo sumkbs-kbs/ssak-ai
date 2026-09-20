@@ -1,0 +1,226 @@
+{
+  "category": "latest",
+  "intent": "freshness",
+  "cases": [
+    {
+      "case_id": "latest-01",
+      "query": "Python 3.14 릴리스 노트 새 기능",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://docs.python.org/3/whatsnew/3.14.html", "What's New In Python 3.14", "릴리스 노트 원문: 자유 스레딩, typing 변경", 3],
+        ["https://blog.example-python.com/python-312-recap", "Python 3.12 정리 (2024)", "2년 전 글이라 최신이 아니다", 0],
+        ["https://github.com/python/cpython/releases/tag/v3.14.0", "CPython 3.14.0 릴리스", "릴리스 태그와 체인지로그", 2],
+        ["https://www.reddit.com/r/Python/comments/latest314", "3.14 쓰는 사람 있나요", "개인 의견 댓글", 0]
+      ]
+    },
+    {
+      "case_id": "latest-02",
+      "query": "Node.js 24 LTS 일정 변경점",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://nodejs.org/en/blog/announcements/v24-lts", "Node.js 24 is now LTS", "공식 릴리스 공지와 지원 일정", 3],
+        ["https://nodejs.org/en/about/previous-releases", "Node.js releases schedule", "릴리스 일정 표", 2],
+        ["https://blog.example-node.com/node-20-eol", "Node 20 EOL 정리", "오래된 글", 0],
+        ["https://stackoverflow.com/questions/79004444/node24-break", "Why did Node 24 break my build?", "커뮤니티 질문", 0]
+      ]
+    },
+    {
+      "case_id": "latest-03",
+      "query": "Kubernetes 1.34 릴리스 변경 사항",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://kubernetes.io/blog/2026/09/01/kubernetes-v1-34-release/", "Kubernetes v1.34: release announcement", "공식 릴리스 블로그", 3],
+        ["https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.34.md", "CHANGELOG-1.34", "릴리스 변경 목록", 2],
+        ["https://blog.example-k8s.com/upgrade-1-30", "1.30 업그레이드 가이드", "구버전 가이드", 0],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "1.34 신기능 요약 영상", "영상 요약", 1]
+      ]
+    },
+    {
+      "case_id": "latest-04",
+      "query": "React 20 릴리스 발표 요약",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://react.dev/blog/2026/06/25/react-20", "React 20", "공식 릴리스 발표와 마이그레이션 요약", 3],
+        ["https://github.com/facebook/react/releases/tag/v20.0.0", "React v20.0.0", "릴리스 노트", 2],
+        ["https://blog.example-front.com/react-19-review", "React 19 리뷰", "이전 버전 리뷰", 1],
+        ["https://medium.com/@somebody/react20-hot-take", "React 20 첫인상", "개인 의견", 0]
+      ]
+    },
+    {
+      "case_id": "latest-05",
+      "query": "PostgreSQL 18 릴리스 노트",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.postgresql.org/docs/18/release-18.html", "PostgreSQL 18 release notes", "공식 릴리스 노트", 3],
+        ["https://www.postgresql.org/about/news/postgresql-18-released-3000/", "PostgreSQL 18 released", "공식 뉴스 공지", 2],
+        ["https://blog.example-db.com/pg16-tuning", "PG16 튜닝 노트", "구버전 기준", 0],
+        ["https://stackoverflow.com/questions/79005555/pg18-break", "Upgrading to 18: what breaks?", "커뮤니티 질문", 0]
+      ]
+    },
+    {
+      "case_id": "latest-06",
+      "query": "드라마 최신 회차 방영 일정 changed",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.imbc.com/broad/tv/drama/schedule/", "MBC 드라마 편성표", "방영 일정 공식 편성 정보", 3],
+        ["https://blog.naver.com/drama-fan/224100222", "이번 주 드라마 일정 정리", "팬 블로그 정리", 1],
+        ["https://cafe.daum.net/drama/9988", "방영 시간 바뀐 거 맞나요", "카페 질문", 0],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "지난 회차 리뷰 영상", "리뷰 영상", 0]
+      ]
+    },
+    {
+      "case_id": "latest-07",
+      "query": "OpenAI API changelog 2026 new models",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://platform.openai.com/docs/changelog", "API changelog", "공식 체인지로그 — 신규 모델과 파라미터", 3],
+        ["https://platform.openai.com/docs/models", "Models overview", "공식 모델 목록", 2],
+        ["https://blog.example-ai.com/model-roundup-2025", "2025 모델 총정리", "작년 글", 0],
+        ["https://www.reddit.com/r/OpenAI/comments/newmodel", "새 모델 써본 후기", "개인 후기", 0]
+      ]
+    },
+    {
+      "case_id": "latest-08",
+      "query": "삼성전자 실적 발표 일정 공시",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.samsung.com/sec/ir/schedule/", "삼성전자 IR 일정", "실적 발표 일정 공식 안내", 3],
+        ["https://dart.fss.or.kr/dsab007/main.do", "DART 공시 검색", "공시 원문 조회", 2],
+        ["https://blog.naver.com/stock-note/224200333", "실적 달력 정리", "개인 정리 글", 1],
+        ["https://info-hub-daily.com/ads/stock", "무료 주식 상담", "광고 페이지", 0]
+      ]
+    },
+    {
+      "case_id": "latest-09",
+      "query": "Ubuntu 26.04 LTS 릴리스 일정",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://discourse.ubuntu.com/t/2604-release-schedule/", "Ubuntu 26.04 LTS release schedule", "공식 일정 공지", 3],
+        ["https://wiki.ubuntu.com/Releases", "Ubuntu Releases wiki", "릴리스 목록과 지원 기간", 2],
+        ["https://blog.example-linux.com/ubuntu-2404-review", "24.04 리뷰", "구버전 리뷰", 0],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "26.04 미리보기", "영상", 0]
+      ]
+    },
+    {
+      "case_id": "latest-10",
+      "query": "Vue 4 마이그레이션 가이드 최신",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://vuejs.org/guide/migration/introduction.html", "Migration Guide", "공식 마이그레이션 가이드", 3],
+        ["https://blog.vuejs.org/posts/vue-4-release", "Vue 4 발표", "공식 블로그", 2],
+        ["https://github.com/vuejs/core/releases", "vuejs/core releases", "릴리스 노트", 2],
+        ["https://medium.com/@somebody/vue4-pain", "Vue 4 업그레이드 후기", "개인 후기", 0]
+      ]
+    },
+    {
+      "case_id": "latest-11",
+      "query": "환율 고시 최신 기준",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.koreaexim.go.kr/site/main/index001", "한국수출입은행 환율 고시", "매일 고시되는 최신 기준 환율", 3],
+        ["https://blog.naver.com/fx-daily/224300444", "오늘 환율 정리", "개인 정리", 1],
+        ["https://cafe.daum.net/travel-fx/1122", "환전 어디가 싼가요", "카페 글", 0],
+        ["https://info-hub-daily.com/ads/fx", "환전 수수료 우대 이벤트", "광고", 0]
+      ]
+    },
+    {
+      "case_id": "latest-12",
+      "query": "TypeScript 6.0 what's new",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://devblogs.microsoft.com/typescript/announcing-typescript-6-0/", "Announcing TypeScript 6.0", "공식 발표 블로그", 3],
+        ["https://www.typescriptlang.org/docs/handbook/release-notes/typescript-6-0.html", "TypeScript 6.0 release notes", "공식 릴리스 노트", 3],
+        ["https://blog.example-ts.com/ts-5-8-notes", "TS 5.8 노트", "이전 버전", 0],
+        ["https://stackoverflow.com/questions/79006666/ts6-break", "TS 6.0 breaks my build", "커뮤니티", 0]
+      ]
+    },
+    {
+      "case_id": "latest-13",
+      "query": "전기차 보조금 변경 2026",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.ev.or.kr/portal/buyersGuide/subsidy", "무공해차 통합누리집 보조금 안내", "연도별 보조금 변경 공식 안내", 3],
+        ["https://www.moenv.go.kr/kor/policy/policyData/ev/subsidy.do", "환경부 전기차 보조금 정책", "정책 공지", 2],
+        ["https://blog.naver.com/car-money/224400555", "보조금 계산 정리", "개인 정리 글", 1],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "보조금 축소 분석", "유튜브 분석", 0]
+      ]
+    },
+    {
+      "case_id": "latest-14",
+      "query": "Rust 1.90 release notes",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://blog.rust-lang.org/2026/08/28/Rust-1.90.0/", "Announcing Rust 1.90.0", "공식 릴리스 공지", 3],
+        ["https://doc.rust-lang.org/releases.html", "Rust release notes index", "릴리스 노트 색인", 2],
+        ["https://blog.example-rust.com/rust-180", "Rust 1.80 정리", "구버전", 0],
+        ["https://www.reddit.com/r/rust/comments/190release", "1.90 후기", "개인 후기", 0]
+      ]
+    },
+    {
+      "case_id": "latest-15",
+      "query": "Apple WWDC 2026 발표 요약",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://developer.apple.com/videos/wwdc2026/", "WWDC26 session videos", "공식 세션 영상과 Keynote", 3],
+        ["https://www.apple.com/newsroom/2026/06/apple-unveils-wwdc26/", "Apple Newsroom: WWDC26", "공식 보도자료 요약", 3],
+        ["https://blog.example-apple.com/wwdc25-recap", "WWDC25 정리", "작년 요약", 0],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "WWDC26 총정리", "유튜브 요약", 1]
+      ]
+    },
+    {
+      "case_id": "latest-16",
+      "query": "Gemini API new release notes",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://ai.google.dev/gemini-api/docs/changelog", "Gemini API changelog", "공식 체인지로그", 3],
+        ["https://ai.google.dev/gemini-api/docs/models", "Gemini models", "공식 모델 목록", 2],
+        ["https://blog.example-ai.com/gemini-vs-gpt", "Gemini vs GPT 비교", "작년 비교 글", 0],
+        ["https://www.reddit.com/r/LocalLLaMA/comments/gemini", "Gemini 최신 후기", "개인 후기", 0]
+      ]
+    },
+    {
+      "case_id": "latest-17",
+      "query": "서울 지하철 요금 인상 시점",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.seoulmetro.co.kr/kr/board.do?menuIdx=551", "서울교통공사 요금 안내", "운임 조정 공지와 시행 시점", 3],
+        ["https://news.seoul.go.kr/traffic/archives/520000", "서울시 교통 요금 발표", "시 보도자료", 2],
+        ["https://blog.naver.com/subway-note/224500666", "요금 인상 정리", "개인 정리", 1],
+        ["https://cafe.daum.net/seoul-live/3344", "인상됐나요", "카페 질문", 0]
+      ]
+    },
+    {
+      "case_id": "latest-18",
+      "query": "Go 1.25 release notes generics",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://go.dev/doc/go1.25", "Go 1.25 Release Notes", "공식 릴리스 노트", 3],
+        ["https://go.dev/blog/go1.25", "Go 1.25 is released", "공식 블로그", 2],
+        ["https://blog.example-go.com/go123", "Go 1.23 정리", "구버전", 0],
+        ["https://stackoverflow.com/questions/79007777/go125-break", "Go 1.25 build issue", "커뮤니티", 0]
+      ]
+    },
+    {
+      "case_id": "latest-19",
+      "query": "기상청 태풍 경로 최신 예보",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.kma.go.kr/neng/typ/typ_03.jsp", "기상청 태풍 정보", "현재 태풍 위치와 예상 경로 공식 예보", 3],
+        ["https://www.weather.go.kr/w/weather/warning/typhoon.do", "태풍 예보·특보", "특보 발효 현황", 2],
+        ["https://blog.naver.com/weather-fan/224600777", "태풍 경로 정리", "개인 정리", 0],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "태풍 실시간 분석", "유튜브", 0]
+      ]
+    },
+    {
+      "case_id": "latest-20",
+      "query": "Electron 40 breaking changes",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.electronjs.org/blog/electron-40-0", "Electron 40.0.0", "공식 릴리스 블로그와 호환성 변경", 3],
+        ["https://www.electronjs.org/docs/latest/breaking-changes", "Breaking Changes", "공식 마이그레이션 문서", 3],
+        ["https://blog.example-desktop.com/electron-28", "Electron 28 노트", "구버전", 0],
+        ["https://github.com/electron/electron/releases", "electron releases", "릴리스 목록", 2]
+      ]
+    }
+  ]
+}

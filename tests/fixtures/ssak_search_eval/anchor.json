@@ -1,0 +1,78 @@
+{
+  "task": "task-24",
+  "created_at": "2026-09-20T23:02:23Z",
+  "reason": "task 24 승인 기준선 — 봉인된 100 고정 검색셋 + 30 추출 fixture, task 8/13/14 경로 위에서 측정(2026-09-21)",
+  "actor": "mr.k",
+  "fixture_version": "ssak-search-eval/2026-09-21",
+  "fixture_sha256": "8fa9a04a263c8082bd5a06fcb0cda10d38faa7b197031ada8ce1ba935fb625a4",
+  "machine": {
+    "platform": "Darwin",
+    "machine": "arm64",
+    "python": "3.13.12",
+    "cpu_count": 18
+  },
+  "config": {
+    "paired": true,
+    "runs": 3,
+    "provider": "both",
+    "k": 5,
+    "limit": null,
+    "inject": null,
+    "inject_delay_ms": 0
+  },
+  "thresholds": {
+    "contract_min_pass_rate": 1.0,
+    "ndcg_drop_max": 0.02,
+    "valid_source_drop_max": 0.0,
+    "p95_increase_max": 0.1,
+    "cost_increase_max": 0.05
+  },
+  "arms": {
+    "legacy": {
+      "metrics": {
+        "case_count": 100,
+        "recall_at_k": 0.8691666666666668,
+        "ndcg_at_k": 0.8123800840584486,
+        "valid_source_ratio": 0.8965000000000001,
+        "authority_satisfied_rate": 1.0,
+        "grounding_rate": null,
+        "empty_rate": 0.0,
+        "error_count": 0,
+        "tokens_per_query": 292.67,
+        "p95_cold_ms": 1.442,
+        "p50_cold_ms": 1.011,
+        "p95_warm_ms": 0.914,
+        "runs": 3
+      }
+    },
+    "integrated": {
+      "metrics": {
+        "case_count": 100,
+        "recall_at_k": 0.8691666666666668,
+        "ndcg_at_k": 0.8201586798638929,
+        "valid_source_ratio": 0.8965000000000001,
+        "authority_satisfied_rate": 1.0,
+        "grounding_rate": null,
+        "empty_rate": 0.0,
+        "error_count": 0,
+        "tokens_per_query": 289.76,
+        "p95_cold_ms": 0.546,
+        "p50_cold_ms": 0.496,
+        "p95_warm_ms": 0.522,
+        "runs": 3
+      }
+    }
+  },
+  "comparison": {
+    "ndcg_gap": 0.007778595805444266,
+    "valid_source_ratio_gap": 0.0,
+    "p95_ratio": 0.3786407766990292,
+    "token_ratio": 0.990057060853521
+  },
+  "extraction": {
+    "case_count": 30,
+    "grounding_rate": 0.8333333333333334,
+    "junk_rate": 1.0,
+    "label_rate": 1.0
+  }
+}

@@ -48,6 +48,33 @@ from .web_search_quality import (
 
 logger = logging.getLogger("web_search")
 
+#: 본문 추출에서 **버리는** 태그. 남기면 답변 근거에 내비게이션·스크립트가 섞인다.
+_DROPPED_HTML_TAGS: tuple[str, ...] = ("script", "style", "nav", "footer", "header", "aside")
+
+
+def html_to_text(html_text: str, max_chars: int = 5000) -> str:
+    """HTML 한 장에서 사람이 읽는 본문만 남긴다(순수 함수 — 네트워크·정책 없음).
+
+    `PageScraper.extract_text` 가 가져온 HTML 에 적용하는 규칙이 여기 한 곳에 있다. 벤치마크가
+    **가져오기 없이** 같은 규칙을 잴 수 있도록 분리했다(task 24): 추출 품질(필요한 사실이 남는가 /
+    군더더기가 사라지는가)은 측정 가능한 계약이어야 한다.
+
+    Args:
+        html_text: 원본 HTML(또는 이미 텍스트인 본문).
+        max_chars: 반환 본문 상한.
+    """
+    cleaned = html_text
+    for tag in _DROPPED_HTML_TAGS:
+        cleaned = re.sub(
+            rf"<{tag}[^>]*>.*?</{tag}>",
+            "",
+            cleaned,
+            flags=re.DOTALL | re.IGNORECASE,
+        )
+    text = re.sub(r"<[^>]+>", " ", cleaned)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text[:max_chars]
+
 
 def _json_object(value: object) -> dict[str, object]:
     if not isinstance(value, dict):
@@ -853,18 +880,7 @@ class PageScraper:
             if resp.status_code != 200:
                 return f"[HTTP {resp.status_code}]"
 
-            html = resp.text
-            for tag in ["script", "style", "nav", "footer", "header", "aside"]:
-                html = re.sub(
-                    rf"<{tag}[^>]*>.*?</{tag}>",
-                    "",
-                    html,
-                    flags=re.DOTALL | re.IGNORECASE,
-                )
-
-            text = re.sub(r"<[^>]+>", " ", html)
-            text = re.sub(r"\s+", " ", text).strip()
-            return text[:max_chars]
+            return html_to_text(resp.text, max_chars=max_chars)
         return "[차단됨: redirect limit 초과]"
 
     async def close(self):
@@ -876,4 +892,5 @@ __all__ = [
     "PageScraper",
     "WebSearchEngine",
     "_boost_by_trusted_domains",
+    "html_to_text",
 ]

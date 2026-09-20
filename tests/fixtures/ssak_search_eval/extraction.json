@@ -1,0 +1,283 @@
+{
+  "note": "본문 추출 계약용 30개 문서. required_facts 는 추출 본문에 남아 있어야 하는 사실, forbidden_markers 는 사라져야 하는 군더더기(내비게이션·광고·스크립트), expect_supported 는 이 문서로 답이 grounding 되는가(사실이 본문에 없으면 false — 없는 근거를 만들면 안 된다).",
+  "limitation": "군더더기 제거는 **태그 기준**이다(script/style/nav/footer/header/aside). 클래스로만 표시된 사이드바(div.sidebar)나 목차(div.toc)는 남는다는 사실을 fixture 를 억지로 맞추지 않고 그대로 기록한다 — 그 경계를 넘으려면 규칙 자체를 바꿔야 한다.",
+  "default_max_chars": 5000,
+  "cases": [
+    {
+      "case_id": "extract-01",
+      "url": "https://docs.python.org/3/whatsnew/3.14.html",
+      "claim": "Python 3.14 릴리스 노트는 자유 스레딩 관련 변경을 설명한다",
+      "required_facts": ["What's New In Python 3.14", "free-threaded builds remain experimental"],
+      "forbidden_markers": ["Skip to content", "Navigation", "Report a bug"],
+      "expect_supported": true,
+      "html": "<html><head><script>console.log('analytics: page_view');</script><style>body{margin:0}</style></head><body><header>Skip to content | Documentation Releases Navigation</header><nav>Home Docs Download Community Report a bug</nav><main><h1>What's New In Python 3.14</h1><p>This article explains the changes in Python 3.14, including typing and interpreter work.</p><p>The free-threaded builds remain experimental, and the GIL stays the default at runtime.</p></main><aside>Related: What's New In Python 3.13</aside><footer>Copyright Python Software Foundation</footer></body></html>"
+    },
+    {
+      "case_id": "extract-02",
+      "url": "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=123456",
+      "claim": "주민등록법 제19조는 등·초본의 발급과 열람을 규정한다",
+      "required_facts": ["주민등록 등·초본의 발급 및 열람", "제19조"],
+      "forbidden_markers": ["법령 검색", "로그인", "본문 바로가기"],
+      "expect_supported": true,
+      "html": "<html><body><header>본문 바로가기 법령 검색 로그인</header><nav>법령 본문 신구조문대비 위임입법</nav><article><h2>주민등록법 제19조</h2><p>주민등록 등·초본의 발급 및 열람에 관하여 필요한 사항은 대통령령으로 정한다.</p><p>제19조에 따른 발급 수수료는 시행령을 따른다.</p></article><aside>이 조문을 본 사람이 찾은 법령</aside><footer>국가법령정보센터</footer></body></html>"
+    },
+    {
+      "case_id": "extract-03",
+      "url": "https://kubernetes.io/docs/concepts/security/pod-security-standards/",
+      "claim": "Kubernetes pod security standards는 privileged·baseline·restricted 세 프로필을 정의한다",
+      "required_facts": ["privileged", "baseline", "restricted", "Pod Security Standards"],
+      "forbidden_markers": ["Edit this page", "Was this page helpful?", "Toggle navigation"],
+      "expect_supported": true,
+      "html": "<html><head><script src='/js/docs.js'></script></head><body><nav>Toggle navigation Home Concepts Security</nav><header>Edit this page</header><main><h1>Pod Security Standards</h1><p>The Pod Security Standards define three different policies to broadly cover the spectrum: privileged, baseline, and restricted.</p><p>Clusters apply them through the Pod Security admission controller.</p></main><aside>Was this page helpful? Yes No</aside><footer>© Kubernetes Authors</footer></body></html>"
+    },
+    {
+      "case_id": "extract-04",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController",
+      "claim": "AbortController의 signal 속성을 fetch에 넘기면 요청을 취소할 수 있다",
+      "required_facts": ["AbortController", "signal", "abort"],
+      "forbidden_markers": ["Skip to main content", "Search MDN", "References"],
+      "expect_supported": true,
+      "html": "<html><body><header>Skip to main content Search MDN</header><aside>References Guides</aside><article><h1>AbortController</h1><p>The AbortController interface represents a controller object that allows you to abort one or more Web requests.</p><p>Pass the signal property to fetch to abort the request when needed.</p></article><footer>Visit Mozilla Corporation</footer></body></html>"
+    },
+    {
+      "case_id": "extract-05",
+      "url": "https://fastapi.tiangolo.com/advanced/testing-dependencies/",
+      "claim": "FastAPI는 dependency_overrides로 테스트에서 의존성을 교체한다",
+      "required_facts": ["dependency_overrides", "Testing Dependencies with Overrides"],
+      "forbidden_markers": ["Skip to content", "Sponsor"],
+      "expect_supported": true,
+      "html": "<html><body><header>Skip to content Sponsor</header><main><h1>Testing Dependencies with Overrides</h1><p>During testing you can override dependencies with app.dependency_overrides.</p><p>The override is applied to the dependency callable used by the path operation.</p></main><footer>Made with Material for MkDocs</footer></body></html>"
+    },
+    {
+      "case_id": "extract-06",
+      "url": "https://www.gov.uk/guidance/posted-workers-notification",
+      "claim": "영국은 파견 근로자 신고 의무를 고용주에게 부과한다",
+      "required_facts": ["posted workers", "notification", "employer"],
+      "forbidden_markers": ["Show all sections"],
+      "expect_supported": true,
+      "note": "실제 gov.uk 의 쿠키 배너는 div 라서 태그 규칙이 지우지 않는다 — 지우는 척하지 않고 군더더기 목록에서 뺐다(한계는 상단 limitation 에 기록).",
+      "html": "<html><body><div class='cookies'>Cookie settings</div><nav>Show all sections Home Immigration</nav><main><h1>Posted workers: notification requirements</h1><p>An employer posting a worker to the UK must submit a notification before the posting starts.</p><p>The notification lists the worker, the receiving entity, and the expected period.</p></main><footer>All content is available under the Open Government Licence</footer></body></html>"
+    },
+    {
+      "case_id": "extract-07",
+      "url": "https://docs.docker.com/compose/compose-file/05-services/",
+      "claim": "Compose에서 depends_on에 service_healthy 조건을 쓸 수 있다",
+      "required_facts": ["depends_on", "service_healthy"],
+      "forbidden_markers": ["Search", "Was this helpful?"],
+      "expect_supported": true,
+      "html": "<html><body><header>Search</header><main><h2>depends_on</h2><p>depends_on expresses dependency between services, with conditions such as service_started and service_healthy.</p><p>Set condition: service_healthy to wait for the dependency healthcheck.</p></main><aside>Was this helpful?</aside><footer>Docker Inc.</footer></body></html>"
+    },
+    {
+      "case_id": "extract-08",
+      "url": "https://www.postgresql.org/docs/current/datatype-json.html",
+      "claim": "PostgreSQL은 jsonb에 GIN 인덱스를 만들 수 있다",
+      "required_facts": ["jsonb", "GIN", "index"],
+      "forbidden_markers": ["Documentation", "Quick search"],
+      "expect_supported": true,
+      "html": "<html><body><nav>Documentation Quick search</nav><div><h1>8.14. JSON Types</h1><p>The jsonb type supports indexing: a GIN index can be used to index jsonb values efficiently.</p><p>Containment operators benefit from the default GIN operator class.</p></div><footer>PostgreSQL Global Development Group</footer></body></html>"
+    },
+    {
+      "case_id": "extract-09",
+      "url": "https://docs.pytest.org/en/stable/how-to/fixtures.html",
+      "claim": "pytest fixture의 기본 scope는 function이다",
+      "required_facts": ["scope", "function", "fixture"],
+      "forbidden_markers": ["Search the docs", "Navigation"],
+      "expect_supported": true,
+      "html": "<html><body><header>Search the docs Navigation</header><main><h1>How to use fixtures</h1><p>Fixtures are created when first requested, and are destroyed based on their scope.</p><p>The default scope is function, so a fixture is torn down after each test.</p></main><footer>© pytest</footer></body></html>"
+    },
+    {
+      "case_id": "extract-10",
+      "url": "https://www.rfc-editor.org/rfc/rfc9110.html",
+      "claim": "RFC 9110은 HTTP 의미론을 정의한다",
+      "required_facts": ["RFC 9110", "HTTP Semantics"],
+      "forbidden_markers": ["Report errata", "Other formats"],
+      "expect_supported": true,
+      "html": "<html><body><nav>Report errata Other formats</nav><main><h1>RFC 9110: HTTP Semantics</h1><p>This document describes the semantics of HTTP: methods, status codes, and header fields.</p></main><aside>Errata exist for this document</aside><footer>IETF Trust</footer></body></html>"
+    },
+    {
+      "case_id": "extract-11",
+      "url": "https://www.moel.go.kr/policy/policydata/view.do?bbs_seq=20260301",
+      "claim": "고용노동부는 사업장 규모별 안전보건교육 시간을 안내한다",
+      "required_facts": ["안전보건교육", "분기", "시간"],
+      "forbidden_markers": ["정책자료실", "목록보기"],
+      "expect_supported": true,
+      "html": "<html><body><header>정책자료실 목록보기</header><main><h2>사업장 안전보건교육 안내</h2><p>상시 근로자 50명 미만 사업장은 분기마다 6시간 이상 안전보건교육을 실시해야 합니다.</p><p>50명 이상 사업장은 분기마다 12시간 이상을 실시합니다.</p></main><aside>관련 정책자료</aside><footer>고용노동부</footer></body></html>"
+    },
+    {
+      "case_id": "extract-12",
+      "url": "https://docs.djangoproject.com/ja/5.2/topics/http/middleware/",
+      "claim": "Django 미들웨어는 비동기와 동기를 모두 지원한다",
+      "required_facts": ["ミドルウェア", "非同期"],
+      "forbidden_markers": ["サイドバー", "検索"],
+      "expect_supported": true,
+      "html": "<html><body><header>検索 サイドバー</header><main><h1>ミドルウェア</h1><p>ミドルウェアはリクエストとレスポンスの処理にフックを差し込みます。</p><p>同期と非同期の両方のミドルウェアをサポートし、非同期版は async def で書きます。</p></main><footer>Django Software Foundation</footer></body></html>"
+    },
+    {
+      "case_id": "extract-13",
+      "url": "https://cn.vuejs.org/api/composition-api-setup.html",
+      "claim": "Vue의 setup()은 컴포넌트 인스턴스가 생성되기 전에 실행된다",
+      "required_facts": ["setup", "组合式 API"],
+      "forbidden_markers": ["导航", "搜索"],
+      "expect_supported": true,
+      "html": "<html><body><nav>导航 搜索</nav><main><h1>组合式 API：setup()</h1><p>setup() 在组件实例被创建之前执行，用来声明响应式状态。</p><p>返回值会暴露给模板和其它选项式 API。</p></main><footer>Vue.js 官方文档</footer></body></html>"
+    },
+    {
+      "case_id": "extract-14",
+      "url": "https://www.postgresql.jp/document/17/html/indexes.html",
+      "claim": "PostgreSQL 인덱스 문서는 B-tree가 기본임을 설명한다",
+      "required_facts": ["インデックス", "B-tree"],
+      "forbidden_markers": ["前のページ", "目次"],
+      "expect_supported": true,
+      "html": "<html><body><header>前のページ 目次</header><main><h1>11.2. インデックス</h1><p>PostgreSQL では B-tree インデックスが既定の種類であり、大半の問い合わせに適します。</p><p>ハッシュ・GiST・GIN は用途別に選びます。</p></main><footer>日本 PostgreSQL ユーザ会</footer></body></html>"
+    },
+    {
+      "case_id": "extract-15",
+      "url": "https://redis.io/docs/latest/commands/zrange/",
+      "claim": "ZRANGE는 점수와 역순 옵션을 지원한다",
+      "required_facts": ["ZRANGE", "REV", "WITHSCORES"],
+      "forbidden_markers": ["Ask AI", "Docs"],
+      "expect_supported": true,
+      "html": "<html><body><nav>Docs Ask AI</nav><main><h1>ZRANGE</h1><p>ZRANGE returns the specified range of elements in the sorted set, ordered from low to high.</p><p>Use REV to reverse the order and WITHSCORES to include scores.</p></main><footer>Redis Ltd.</footer></body></html>"
+    },
+    {
+      "case_id": "extract-16",
+      "url": "https://www.kma.go.kr/neng/typ/typ_03.jsp",
+      "claim": "기상청 태풍 정보 페이지는 위치와 예상 경로를 제공한다",
+      "required_facts": ["태풍", "위치", "예상 경로"],
+      "forbidden_markers": ["날씨누리", "메뉴"],
+      "expect_supported": true,
+      "html": "<html><body><header>날씨누리 메뉴</header><main><h2>태풍 정보</h2><p>현재 태풍의 위치와 중심기압, 예상 경로를 시각별로 제공합니다.</p><p>특보 발효 상황은 별도 화면에서 확인합니다.</p></main><footer>기상청</footer></body></html>"
+    },
+    {
+      "case_id": "extract-17",
+      "url": "https://docs.sqlalchemy.org/en/20/orm/queryguide/relationships.html",
+      "claim": "SQLAlchemy는 joinedload로 관계를 즉시 로딩한다",
+      "required_facts": ["joinedload", "relationship"],
+      "forbidden_markers": ["Search", "Navigation"],
+      "expect_supported": true,
+      "html": "<html><body><header>Search Navigation</header><main><h1>Relationship Loading Techniques</h1><p>The joinedload option loads a related collection or scalar in the same query using a LEFT OUTER JOIN.</p><p>The relationship attribute is then populated without extra round trips.</p></main><footer>SQLAlchemy</footer></body></html>"
+    },
+    {
+      "case_id": "extract-18",
+      "url": "https://nginx.org/en/docs/http/websocket.html",
+      "claim": "nginx는 Upgrade 헤더로 WebSocket 프록시를 구성한다",
+      "required_facts": ["Upgrade", "Connection", "101"],
+      "forbidden_markers": ["English", "Russian"],
+      "expect_supported": true,
+      "html": "<html><body><nav>English Russian</nav><main><h1>WebSocket proxying</h1><p>To turn a connection into a WebSocket, nginx must pass the Upgrade and Connection headers.</p><p>The upstream replies with 101 Switching Protocols.</p></main><footer>nginx</footer></body></html>"
+    },
+    {
+      "case_id": "extract-19",
+      "url": "https://opentelemetry.io/docs/concepts/context-propagation/",
+      "claim": "OpenTelemetry의 context 전파는 프로세스 경계를 넘는다",
+      "required_facts": ["context propagation", "trace context"],
+      "forbidden_markers": ["Community", "Blog"],
+      "expect_supported": true,
+      "html": "<html><body><header>Community Blog</header><main><h1>Context propagation</h1><p>Context propagation carries the trace context across process and network boundaries.</p><p>The propagator serialises it into carrier headers such as traceparent.</p></main><footer>OpenTelemetry Authors</footer></body></html>"
+    },
+    {
+      "case_id": "extract-20",
+      "url": "https://www.mfds.go.kr/brd/m_210/view.do?seq=14867",
+      "claim": "식약처 고시는 식품첨가물의 기준과 규격을 정한다",
+      "required_facts": ["식품첨가물", "기준 및 규격"],
+      "forbidden_markers": ["민원상담", "사이트맵"],
+      "expect_supported": true,
+      "html": "<html><body><header>민원상담 사이트맵</header><main><h2>식품첨가물의 기준 및 규격</h2><p>이 고시는 식품첨가물의 사용 기준과 규격, 시험법을 정한다.</p><p>개정 시 고시 일자를 함께 공지한다.</p></main><footer>식품의약품안전처</footer></body></html>"
+    },
+    {
+      "case_id": "extract-21",
+      "url": "https://pandas.pydata.org/docs/user_guide/groupby.html",
+      "claim": "pandas groupby는 split-apply-combine 전략을 쓴다",
+      "required_facts": ["split-apply-combine", "agg"],
+      "forbidden_markers": ["Site Navigation", "Search"],
+      "expect_supported": true,
+      "html": "<html><body><nav>Site Navigation Search</nav><main><h1>Group by: split-apply-combine</h1><p>The groupby operation follows a split-apply-combine strategy.</p><p>Multiple aggregations can be named in a single agg call.</p></main><footer>pandas</footer></body></html>"
+    },
+    {
+      "case_id": "extract-22",
+      "url": "https://kotlinlang.org/docs/cancellation-and-timeouts.html",
+      "claim": "코루틴 취소는 협력적이다",
+      "required_facts": ["キャンセル", "協調的"],
+      "forbidden_markers": ["ナビゲーション", "検索"],
+      "expect_supported": true,
+      "html": "<html><body><nav>ナビゲーション 検索</nav><main><h1>コルーチンのキャンセルとタイムアウト</h1><p>コルーチンのキャンセルは協調的であり、コードが自ら確認する必要があります。</p><p>withTimeout は期限を過ぎると CancellationException を投げます。</p></main><footer>JetBrains</footer></body></html>"
+    },
+    {
+      "case_id": "extract-23",
+      "url": "https://docs.aws.amazon.com/es_es/lambda/latest/dg/gettingstarted-limits.html",
+      "claim": "Lambda 함수의 기본 타임아웃은 3초, 최대 15분이다",
+      "required_facts": ["3 segundos", "15 minutos"],
+      "forbidden_markers": ["Búsqueda", "Menú"],
+      "expect_supported": true,
+      "html": "<html><body><header>Búsqueda Menú</header><main><h1>Cuotas de AWS Lambda</h1><p>El tiempo de espera de una función es de 3 segundos de forma predeterminada y puede configurarse hasta 15 minutos.</p><p>La memoria va de 128 MB a 10240 MB.</p></main><footer>Amazon Web Services</footer></body></html>"
+    },
+    {
+      "case_id": "extract-24",
+      "url": "https://ai.google.dev/gemini-api/docs/changelog",
+      "claim": "Gemini API 체인지로그는 모델·파라미터 변경을 기록한다",
+      "required_facts": ["changelog", "models"],
+      "forbidden_markers": ["Search", "Was this helpful?"],
+      "expect_supported": true,
+      "html": "<html><body><header>Search</header><main><h1>Changelog</h1><p>This changelog lists updates to the Gemini API, including new models and parameter changes.</p><p>Each entry carries a date and the affected endpoints.</p></main><aside>Was this helpful?</aside><footer>Google</footer></body></html>"
+    },
+    {
+      "case_id": "extract-25",
+      "url": "https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200643",
+      "claim": "한국은행은 기준금리 결정 내역을 공표한다",
+      "required_facts": ["기준금리", "금융통화위원회"],
+      "forbidden_markers": ["통합검색", "전체메뉴"],
+      "expect_supported": true,
+      "html": "<html><body><header>통합검색 전체메뉴</header><main><h2>기준금리 추이</h2><p>금융통화위원회가 결정한 기준금리와 변경 시점을 표로 제공합니다.</p><p>통화정책방향 결정문도 함께 공표합니다.</p></main><footer>한국은행</footer></body></html>"
+    },
+    {
+      "case_id": "extract-26",
+      "url": "https://example-news.com/breaking/2026/09/activity-report",
+      "claim": "이 페이지의 본문은 속보의 핵심 수치를 담고 있다",
+      "required_facts": ["3.2 percent", "second quarter"],
+      "forbidden_markers": ["속보", "구독하기"],
+      "expect_supported": false,
+      "note": "핵심 수치는 본문이 아니라 스크립트로 채워지는 위젯에만 있다 — 추출이 스크립트를 버리므로 근거가 남지 않아야 한다(없는 근거를 만들면 실패).",
+      "html": "<html><body><header>속보 구독하기</header><main><h1>활동 지표 발표</h1><p>자세한 수치는 아래 차트에서 확인할 수 있습니다.</p><div id='chart'></div></main><script>document.getElementById('chart').textContent='activity grew 3.2 percent in the second quarter';</script><footer>example-news</footer></body></html>"
+    },
+    {
+      "case_id": "extract-27",
+      "url": "https://example-store.com/product/thing",
+      "claim": "이 제품의 가격은 49,000원이다",
+      "required_facts": ["49,000원"],
+      "forbidden_markers": ["장바구니", "무료배송"],
+      "expect_supported": false,
+      "note": "가격은 광고 배너(aside)에만 있다 — 본문에 없는 값을 근거로 쓰면 안 된다.",
+      "html": "<html><body><nav>장바구니 무료배송</nav><main><h1>무선 이어폰</h1><p>노이즈 캔슬링과 30시간 재생을 지원합니다.</p></main><aside class='promo'>오늘의 특가 49,000원</aside><footer>example-store</footer></body></html>"
+    },
+    {
+      "case_id": "extract-28",
+      "url": "https://example-blog.com/2026/09/my-setup",
+      "claim": "이 글은 저자의 모니터 모델명을 밝힌다",
+      "required_facts": ["Model X 27"],
+      "forbidden_markers": ["댓글", "공유하기"],
+      "expect_supported": false,
+      "note": "모델명은 댓글(footer 밖 script 로 주입)에만 있다 — 본문 근거가 아니다.",
+      "html": "<html><body><header>공유하기</header><main><h1>내 작업 환경</h1><p>오랜 시행착오 끝에 정착한 책상 구성을 공유합니다.</p></main><aside id='comments'>댓글</aside><script>document.getElementById('comments').textContent='저는 Model X 27 씁니다';</script><footer>example-blog</footer></body></html>"
+    },
+    {
+      "case_id": "extract-29",
+      "url": "https://example-gov-news.com/notice/2026-09",
+      "claim": "이 공지의 신청 마감일은 10월 31일이다",
+      "required_facts": ["10월 31일"],
+      "forbidden_markers": ["목록", "이전글"],
+      "expect_supported": false,
+      "note": "마감일은 내비게이션의 캠페인 띠에만 있다 — 추출은 내비게이션을 버려야 한다.",
+      "html": "<html><body><nav>목록 이전글 <span class='banner'>접수 마감 10월 31일</span></nav><main><h1>하반기 지원사업 공고</h1><p>지원 자격과 제출 서류는 첨부 파일을 참고하십시오.</p></main><footer>example-gov-news</footer></body></html>"
+    },
+    {
+      "case_id": "extract-30",
+      "url": "https://example-docs.com/api/limits",
+      "claim": "이 API의 요청 한도는 분당 600회다",
+      "required_facts": ["600 requests per minute"],
+      "forbidden_markers": ["목차", "검색"],
+      "expect_supported": false,
+      "note": "한도는 접힌 사이드바(aside)의 FAQ 에만 있다 — 본문 근거 없이 숫자를 인용하면 환각이다.",
+      "html": "<html><body><nav>목차 검색</nav><main><h1>API 한도 안내</h1><p>한도는 요금제에 따라 달라지며 자세한 내용은 문의 바랍니다.</p></main><aside>FAQ: 기본 한도는 600 requests per minute 입니다</aside><footer>example-docs</footer></body></html>"
+    }
+  ]
+}

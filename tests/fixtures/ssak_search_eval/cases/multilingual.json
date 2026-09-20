@@ -1,0 +1,226 @@
+{
+  "category": "multilingual",
+  "intent": "cross_language",
+  "cases": [
+    {
+      "case_id": "multi-01",
+      "query": "Django ミドルウェア ドキュメント 非同期",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://docs.djangoproject.com/ja/5.2/topics/http/middleware/", "ミドルウェア | Django ドキュメント", "公式ドキュメント: 非同期対応ミドルウェア", 3],
+        ["https://docs.djangoproject.com/ja/5.2/topics/async/", "非同期サポート | Django ドキュメント", "公式ドキュメント", 2],
+        ["https://blog.example-jp.com/django-middleware", "Django ミドルウェア入門", "個人ブログ", 1],
+        ["https://qiita.com/example/items/django-async", "Django 非同期の注意点", "Qiita 記事", 2]
+      ]
+    },
+    {
+      "case_id": "multi-02",
+      "query": "Vue.js 中文文档 组合式 API setup",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://cn.vuejs.org/api/composition-api-setup.html", "组合式 API：setup()", "官方中文文档", 3],
+        ["https://cn.vuejs.org/guide/introduction.html", "简介 | Vue.js", "官方中文指南", 2],
+        ["https://juejin.cn/post/7300000001", "Vue3 组合式 API 实践", "掘金文章", 1],
+        ["https://blog.example-cn.com/vue2-vs-vue3", "Vue2 与 Vue3 对比", "个人博客", 0]
+      ]
+    },
+    {
+      "case_id": "multi-03",
+      "query": "React hooks documentation française useEffect",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://fr.react.dev/reference/react/useEffect", "useEffect – React", "documentation officielle en français", 3],
+        ["https://fr.react.dev/learn/synchronizing-with-effects", "Synchroniser avec les effets", "documentation officielle", 2],
+        ["https://blog.example-fr.com/react-hooks", "Comprendre les hooks", "blog personnel", 1],
+        ["https://stackoverflow.com/questions/79222222/useeffect-fr", "useEffect double exécution", "discussion communautaire", 0]
+      ]
+    },
+    {
+      "case_id": "multi-04",
+      "query": "Docker compose documentación español healthcheck",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://docs.docker.com/compose/compose-file/05-services/", "Referencia de servicios de Compose", "documentación oficial (inglés)", 3],
+        ["https://blog.example-es.com/docker-healthcheck", "Healthcheck en Docker Compose", "blog técnico en español", 2],
+        ["https://es.stackoverflow.com/questions/79233333/healthcheck", "depends_on no espera", "Stack Overflow en español", 1],
+        ["https://medium.com/@somebody/docker-es", "Docker para principiantes", "artículo personal", 0]
+      ]
+    },
+    {
+      "case_id": "multi-05",
+      "query": "Kubernetes Dokumentation deutsch Ressourcen limits",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://kubernetes.io/de/docs/concepts/configuration/manage-resources-containers/", "Ressourcen für Container verwalten", "offizielle deutsche Dokumentation", 3],
+        ["https://kubernetes.io/de/docs/concepts/workloads/pods/", "Pods", "offizielle Dokumentation", 2],
+        ["https://blog.example-de.com/k8s-limits", "Kubernetes Limits erklärt", "Blog", 1],
+        ["https://www.reddit.com/r/kubernetes/comments/de", "Limits in der Praxis", "Diskussion", 0]
+      ]
+    },
+    {
+      "case_id": "multi-06",
+      "query": "pandas 中文 文档 groupby 聚合",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://pandas.pydata.org/docs/user_guide/groupby.html", "Group by: split-apply-combine", "官方英文文档：聚合", 3],
+        ["https://blog.example-cn.com/pandas-groupby", "pandas groupby 用法详解", "中文技术博客", 2],
+        ["https://juejin.cn/post/7300000002", "pandas 聚合性能", "掘金文章", 1],
+        ["https://www.zhihu.com/question/730000003", "groupby 怎么用", "知乎问答", 0]
+      ]
+    },
+    {
+      "case_id": "multi-07",
+      "query": "PostgreSQL 日本語 ドキュメント インデックス",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.postgresql.jp/document/17/html/indexes.html", "インデックス", "PostgreSQL 日本語公式ドキュメント", 3],
+        ["https://www.postgresql.jp/document/17/html/performance-tips.html", "性能に関するヒント", "日本語公式ドキュメント", 2],
+        ["https://qiita.com/example/items/pg-index", "インデックスが使われない理由", "Qiita", 2],
+        ["https://blog.example-jp.com/pg-explain", "EXPLAIN の読み方", "個人ブログ", 1]
+      ]
+    },
+    {
+      "case_id": "multi-08",
+      "query": "Rust 书籍 中文 所有权",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://kaisery.github.io/trpl-zh-cn/ch04-00-understanding-ownership.html", "认识所有权 - Rust 程序设计语言", "中文译本（官方书）", 3],
+        ["https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html", "Understanding Ownership", "官方英文原文", 2],
+        ["https://blog.example-cn.com/rust-ownership", "Rust 所有权笔记", "个人博客", 1],
+        ["https://www.zhihu.com/question/730000004", "所有权难在哪", "知乎", 0]
+      ]
+    },
+    {
+      "case_id": "multi-09",
+      "query": "git rebase 日本語 解説",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://git-scm.com/book/ja/v2/Git-%E3%81%AE%E3%83%96%E3%83%A9%E3%83%B3%E3%83%81%E6%A9%9F%E8%83%BD-%E3%83%AA%E3%83%99%E3%83%BC%E3%82%B9", "リベース | Pro Git", "日本語版 Pro Git（公式）", 3],
+        ["https://git-scm.com/docs/git-rebase/ja", "git-rebase", "公式日本語リファレンス", 2],
+        ["https://qiita.com/example/items/rebase-onto", "rebase --onto の使い方", "Qiita", 2],
+        ["https://blog.example-jp.com/git-flow", "Git 運用フロー", "個人ブログ", 0]
+      ]
+    },
+    {
+      "case_id": "multi-10",
+      "query": "TensorFlow 中文 教程 迁移学习",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://tensorflow.google.cn/tutorials/images/transfer_learning", "迁移学习与微调", "TensorFlow 官方中文教程", 3],
+        ["https://www.tensorflow.org/tutorials/images/transfer_learning", "Transfer learning and fine-tuning", "官方英文教程", 2],
+        ["https://blog.example-cn.com/tf-transfer", "迁移学习实战", "技术博客", 1],
+        ["https://juejin.cn/post/7300000005", "微调踩坑记录", "掘金", 0]
+      ]
+    },
+    {
+      "case_id": "multi-11",
+      "query": "AWS Lambda documentación español límites",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://docs.aws.amazon.com/es_es/lambda/latest/dg/gettingstarted-limits.html", "Cuotas de AWS Lambda", "documentación oficial en español", 3],
+        ["https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html", "Lambda quotas", "documentación oficial (inglés)", 2],
+        ["https://blog.example-es.com/lambda-cold-start", "Cold start en Lambda", "blog", 1],
+        ["https://es.stackoverflow.com/questions/79244444/lambda", "Límite de tiempo", "Stack Overflow", 0]
+      ]
+    },
+    {
+      "case_id": "multi-12",
+      "query": "Dart Flutter documentation française widget",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://docs.flutter.dev/ui/widgets", "Widgets - Flutter", "documentation officielle (anglais)", 3],
+        ["https://blog.example-fr.com/flutter-widgets", "Les widgets Flutter", "blog en français", 2],
+        ["https://stackoverflow.com/questions/79255555/flutter-widget", "Widget rebuild trop souvent", "discussion", 0],
+        ["https://medium.com/@somebody/flutter-fr", "Débuter avec Flutter", "article personnel", 1]
+      ]
+    },
+    {
+      "case_id": "multi-13",
+      "query": "Spring Boot 中文文档 配置属性",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://docs.spring.io/spring-boot/appendix/application-properties/index.html", "Application Properties", "官方文档：配置属性", 3],
+        ["https://blog.example-cn.com/springboot-config", "Spring Boot 配置详解", "中文博客", 2],
+        ["https://juejin.cn/post/7300000006", "配置文件优先级", "掘金", 1],
+        ["https://www.zhihu.com/question/730000007", "配置不生效", "知乎", 0]
+      ]
+    },
+    {
+      "case_id": "multi-14",
+      "query": "MySQL 日本語 ドキュメント 照合順序",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://dev.mysql.com/doc/refman/8.4/en/charset-collation.html", "照合順序のサポート", "MySQL 日本語ドキュメント", 3],
+        ["https://dev.mysql.com/doc/refman/8.4/en/charset-charsets.html", "文字セット", "公式ドキュメント", 2],
+        ["https://qiita.com/example/items/collation", "照合順序の選び方", "Qiita", 1],
+        ["https://blog.example-jp.com/mysql-utf8", "utf8mb4 の設定", "個人ブログ", 0]
+      ]
+    },
+    {
+      "case_id": "multi-15",
+      "query": "CSS grid documentation française zones",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://developer.mozilla.org/fr/docs/Web/CSS/CSS_grid_layout", "CSS Grid Layout - MDN", "documentation officielle en français", 3],
+        ["https://developer.mozilla.org/fr/docs/Web/CSS/grid-template-areas", "grid-template-areas - MDN", "documentation officielle", 2],
+        ["https://blog.example-fr.com/css-grid", "Comprendre CSS Grid", "blog", 1],
+        ["https://stackoverflow.com/questions/79266666/grid-areas", "grid-template-areas non appliqué", "discussion", 0]
+      ]
+    },
+    {
+      "case_id": "multi-16",
+      "query": "Node.js Dokumentation deutsch Streams",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://nodejs.org/api/stream.html", "Stream", "offizielle Dokumentation (englisch)", 3],
+        ["https://blog.example-de.com/node-streams", "Node.js Streams erklärt", "deutscher Blog", 2],
+        ["https://stackoverflow.com/questions/79277777/node-stream", "Backpressure ignoriert", "Diskussion", 0],
+        ["https://medium.com/@somebody/node-de", "Node.js für Einsteiger", "Artikel", 1]
+      ]
+    },
+    {
+      "case_id": "multi-17",
+      "query": "SwiftUI 中文文档 State 绑定",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://developer.apple.com/documentation/swiftui/state", "State | Apple Developer Documentation", "官方文档：状态管理", 3],
+        ["https://blog.example-cn.com/swiftui-state", "SwiftUI 状态管理详解", "中文博客", 2],
+        ["https://juejin.cn/post/7300000007", "State 与 Binding 区别", "掘金", 1],
+        ["https://www.zhihu.com/question/730000008", "视图不刷新", "知乎", 0]
+      ]
+    },
+    {
+      "case_id": "multi-18",
+      "query": "Terraform documentation française state",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://developer.hashicorp.com/terraform/language/state", "État (state) - Terraform", "documentation officielle", 3],
+        ["https://developer.hashicorp.com/terraform/language/state/remote", "État distant", "documentation officielle", 2],
+        ["https://blog.example-fr.com/terraform-state", "Gérer le state Terraform", "blog", 1],
+        ["https://stackoverflow.com/questions/79288888/terraform-state", "State lock bloqué", "discussion", 0]
+      ]
+    },
+    {
+      "case_id": "multi-19",
+      "query": "Kotlin 日本語 コルーチン キャンセル",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://kotlinlang.org/docs/cancellation-and-timeouts.html", "コルーチンのキャンセルとタイムアウト", "Kotlin 公式日本語ドキュメント", 3],
+        ["https://kotlinlang.org/docs/coroutines-basics.html", "コルーチンの基本", "公式ドキュメント", 2],
+        ["https://qiita.com/example/items/coroutine-cancel", "キャンセルが伝わらない理由", "Qiita", 2],
+        ["https://blog.example-jp.com/kotlin-flow", "Flow とキャンセル", "個人ブログ", 0]
+      ]
+    },
+    {
+      "case_id": "multi-20",
+      "query": "SQLAlchemy 中文文档 关系加载",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://docs.sqlalchemy.org/en/20/orm/queryguide/relationships.html", "Relationship Loading Techniques", "官方文档：关系加载", 3],
+        ["https://blog.example-cn.com/sqlalchemy-relationship", "SQLAlchemy 关系加载详解", "中文博客", 2],
+        ["https://juejin.cn/post/7300000008", "N+1 问题排查", "掘金", 1],
+        ["https://stackoverflow.com/questions/79299999/sqlalchemy-load", "joinedload 无效", "discussion", 0]
+      ]
+    }
+  ]
+}

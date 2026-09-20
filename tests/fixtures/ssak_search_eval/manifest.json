@@ -1,0 +1,22 @@
+{
+  "version": "ssak-search-eval/2026-09-21",
+  "frozen_at": "2026-09-21",
+  "k": 5,
+  "max_results": 8,
+  "categories": [
+    { "name": "official", "file": "cases/official.json", "expected_cases": 20 },
+    { "name": "latest", "file": "cases/latest.json", "expected_cases": 20 },
+    { "name": "general", "file": "cases/general.json", "expected_cases": 20 },
+    { "name": "dev", "file": "cases/dev.json", "expected_cases": 20 },
+    { "name": "multilingual", "file": "cases/multilingual.json", "expected_cases": 20 }
+  ],
+  "extraction_file": "extraction.json",
+  "expected_extraction_cases": 30,
+  "case_schema": {
+    "case_id": "고정 식별자. 실행 간 비교의 열쇠이므로 절대 바뀌지 않는다.",
+    "query": "사용자 질의 원문(한글·영문·다국어 혼합).",
+    "authority_expectation": "satisfied = 권위 의도가 있고 payload 안에 권위 출처가 있다(상위 5 안에 반드시 남아야 한다) / absent = 의도는 있으나 payload 에 권위 출처가 없다(지어내면 안 된다) / n/a = 의도 없음.",
+    "payload": "provider 가 돌려준 순서 그대로. [url, title, snippet, grade] 4-튜플이며 grade 는 사람이 붙인 관련도(3=정답, 2=유용, 1=주변, 0=무관)."
+  },
+  "grader_note": "gold 관련도는 이 파일 안에만 있다 — 벤치마크가 재는 코드는 이 파일을 읽지 않는다(그레이더는 엔진 바깥)."
+}

@@ -1,0 +1,226 @@
+{
+  "category": "dev",
+  "intent": "technical",
+  "cases": [
+    {
+      "case_id": "dev-01",
+      "query": "FastAPI background tasks lifecycle",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://fastapi.tiangolo.com/tutorial/background-tasks/", "Background Tasks - FastAPI", "공식 문서: 응답 후 실행되는 작업", 3],
+        ["https://stackoverflow.com/questions/79011111/fastapi-bg", "Background task dies after response?", "커뮤니티 답변", 1],
+        ["https://blog.example-python.com/fastapi-queues", "FastAPI 작업 큐 비교", "블로그 비교", 2],
+        ["https://www.reddit.com/r/FastAPI/comments/bg", "bg tasks vs celery", "의견 댓글", 0]
+      ]
+    },
+    {
+      "case_id": "dev-02",
+      "query": "pandas groupby multiple aggregations rename",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://pandas.pydata.org/docs/user_guide/groupby.html", "Group by: split-apply-combine", "공식 문서: 다중 집계와 이름 지정", 3],
+        ["https://pandas.pydata.org/docs/reference/api/pandas.core.groupby.DataFrameGroupBy.agg.html", "pandas.DataFrameGroupBy.agg", "공식 API 레퍼런스", 2],
+        ["https://stackoverflow.com/questions/79022222/pandas-agg-names", "How to rename agg columns", "커뮤니티 답변", 1],
+        ["https://blog.example-data.com/pandas-tricks", "pandas 잔기술 모음", "블로그", 0]
+      ]
+    },
+    {
+      "case_id": "dev-03",
+      "query": "docker compose healthcheck depends_on condition",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://docs.docker.com/compose/compose-file/05-services/", "Compose file services reference", "공식 문서: healthcheck와 depends_on", 3],
+        ["https://docs.docker.com/reference/compose-file/services/#depends_on", "depends_on", "공식 레퍼런스: service_healthy 조건", 3],
+        ["https://stackoverflow.com/questions/79033333/compose-healthy", "depends_on healthy not waiting", "커뮤니티 답변", 1],
+        ["https://medium.com/@somebody/compose-mistakes", "Compose 실수 모음", "개인 글", 0]
+      ]
+    },
+    {
+      "case_id": "dev-04",
+      "query": "git rebase --onto 범위 지정",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://git-scm.com/docs/git-rebase", "git-rebase documentation", "공식 문서: --onto 설명과 예제", 3],
+        ["https://git-scm.com/book/en/v2/Git-Branching-Rebasing", "Git Book: Rebasing", "공식 교재", 2],
+        ["https://stackoverflow.com/questions/79044444/rebase-onto", "git rebase --onto explained", "커뮤니티 설명", 1],
+        ["https://blog.example-dev.com/git-horror", "rebase 사고 복구", "블로그", 0]
+      ]
+    },
+    {
+      "case_id": "dev-05",
+      "query": "pytest fixture scope session autouse",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://docs.pytest.org/en/stable/how-to/fixtures.html", "How to use fixtures", "공식 문서: scope와 autouse", 3],
+        ["https://docs.pytest.org/en/stable/reference/fixtures.html", "pytest fixtures reference", "공식 레퍼런스", 2],
+        ["https://stackoverflow.com/questions/79055555/pytest-scope", "session fixture reused across tests", "커뮤니티 답변", 1],
+        ["https://blog.example-test.com/fixture-smell", "fixture 안티패턴", "블로그", 0]
+      ]
+    },
+    {
+      "case_id": "dev-06",
+      "query": "TypeScript satisfies operator narrowing",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html", "TypeScript 4.9 release notes: satisfies", "공식 릴리스 노트", 3],
+        ["https://www.typescriptlang.org/docs/handbook/2/narrowing.html", "Narrowing", "공식 핸드북", 2],
+        ["https://stackoverflow.com/questions/79066666/satisfies-narrow", "satisfies vs as const", "커뮤니티", 1],
+        ["https://medium.com/@somebody/ts-satisfies", "satisfies 정리", "개인 글", 0]
+      ]
+    },
+    {
+      "case_id": "dev-07",
+      "query": "PostgreSQL index on jsonb path query plan",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.postgresql.org/docs/current/datatype-json.html", "JSON Types", "공식 문서: jsonb 연산자와 GIN 인덱스", 3],
+        ["https://www.postgresql.org/docs/current/indexes-types.html", "Index Types", "공식 문서: GIN 설명", 2],
+        ["https://stackoverflow.com/questions/79077777/jsonb-index", "Why is my jsonb index unused?", "커뮤니티 답변", 1],
+        ["https://blog.example-db.com/jsonb-guide", "jsonb 실전 가이드", "블로그", 0]
+      ]
+    },
+    {
+      "case_id": "dev-08",
+      "query": "asyncio timeout cancel cleanup",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://docs.python.org/3/library/asyncio-task.html", "Coroutines and Tasks", "공식 문서: timeout과 취소 전파", 3],
+        ["https://docs.python.org/3/library/asyncio-exceptions.html", "Exceptions", "공식 레퍼런스: CancelledError 와 취소 전파", 2],
+        ["https://stackoverflow.com/questions/79088888/asyncio-timeout", "Task not cancelled on timeout", "커뮤니티 답변", 1],
+        ["https://www.reddit.com/r/Python/comments/asyncio", "asyncio 함정", "댓글", 0]
+      ]
+    },
+    {
+      "case_id": "dev-09",
+      "query": "nginx reverse proxy websocket upgrade",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://nginx.org/en/docs/http/websocket.html", "WebSocket proxying", "공식 문서: Upgrade 헤더와 101", 3],
+        ["https://nginx.org/en/docs/http/ngx_http_proxy_module.html", "ngx_http_proxy_module", "공식 레퍼런스", 2],
+        ["https://stackoverflow.com/questions/79099999/nginx-ws", "WebSocket 400 after proxy", "커뮤니티", 1],
+        ["https://blog.example-ops.com/nginx-ws", "nginx WebSocket 삽질", "블로그", 0]
+      ]
+    },
+    {
+      "case_id": "dev-10",
+      "query": "SQLite WAL checkpoint busy timeout",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://sqlite.org/wal.html", "Write-Ahead Logging", "공식 문서: 체크포인트와 동시성", 3],
+        ["https://sqlite.org/pragma.html#pragma_busy_timeout", "PRAGMA busy_timeout", "공식 레퍼런스", 2],
+        ["https://stackoverflow.com/questions/79111111/sqlite-wal", "Database is locked with WAL", "커뮤니티", 1],
+        ["https://blog.example-data.com/sqlite-wal", "WAL 운영 노트", "블로그", 0]
+      ]
+    },
+    {
+      "case_id": "dev-11",
+      "query": "Rust tokio select cancellation safety",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://docs.rs/tokio/latest/tokio/macro.select.html", "tokio::select!", "공식 API 문서: 취소 안전성 경고", 3],
+        ["https://tokio.rs/tokio/tutorial/select", "Select - Tokio tutorial", "공식 튜토리얼", 3],
+        ["https://stackoverflow.com/questions/79122222/tokio-select", "select! drops my future", "커뮤니티", 1],
+        ["https://blog.example-rust.com/select-patterns", "select 패턴 정리", "블로그", 0]
+      ]
+    },
+    {
+      "case_id": "dev-12",
+      "query": "React useEffect cleanup fetch abort",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://react.dev/reference/react/useEffect", "useEffect - React", "공식 문서: 정리 함수와 경쟁 조건", 3],
+        ["https://react.dev/learn/synchronizing-with-effects", "Synchronizing with Effects", "공식 학습 문서", 2],
+        ["https://stackoverflow.com/questions/79133333/useeffect-abort", "AbortController in useEffect", "커뮤니티", 1],
+        ["https://blog.example-front.com/useeffect-traps", "useEffect 함정", "블로그", 0]
+      ]
+    },
+    {
+      "case_id": "dev-13",
+      "query": "HTTP 429 retry after backoff client",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After", "Retry-After header - MDN", "공식 문서: 초 또는 날짜 형식", 3],
+        ["https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429", "429 Too Many Requests - MDN", "공식 문서", 2],
+        ["https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/", "Exponential Backoff And Jitter", "AWS 아키텍처 블로그", 2],
+        ["https://stackoverflow.com/questions/79144444/retry-after", "Parsing Retry-After", "커뮤니티", 1]
+      ]
+    },
+    {
+      "case_id": "dev-14",
+      "query": "Kubernetes liveness vs readiness probe",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/", "Configure Liveness, Readiness and Startup Probes", "공식 문서", 3],
+        ["https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/", "Pod Lifecycle", "공식 문서: 조건과 상태", 2],
+        ["https://stackoverflow.com/questions/79155555/probe-restart", "Readiness probe restarts pod?", "커뮤니티", 1],
+        ["https://medium.com/@somebody/probes", "probe 잘 쓰는 법", "개인 글", 0]
+      ]
+    },
+    {
+      "case_id": "dev-15",
+      "query": "Python dataclass frozen slots inheritance",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://docs.python.org/3/library/dataclasses.html", "dataclasses — Data Classes", "공식 문서: frozen·slots·상속 규칙", 3],
+        ["https://docs.python.org/3/reference/datamodel.html#slots", "__slots__", "공식 레퍼런스", 2],
+        ["https://stackoverflow.com/questions/79166666/dataclass-slots", "dataclass slots inheritance error", "커뮤니티", 1],
+        ["https://blog.example-python.com/dataclass-2026", "dataclass 최신 정리", "블로그", 0]
+      ]
+    },
+    {
+      "case_id": "dev-16",
+      "query": "OpenTelemetry span context propagation python",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://opentelemetry.io/docs/languages/python/instrumentation/", "Python instrumentation", "공식 문서: span과 context 전파", 3],
+        ["https://opentelemetry.io/docs/concepts/context-propagation/", "Context propagation", "공식 개념 문서", 2],
+        ["https://stackoverflow.com/questions/79177777/otel-context", "Span context lost in thread", "커뮤니티", 1],
+        ["https://blog.example-ops.com/otel-notes", "OTel 도입 노트", "블로그", 0]
+      ]
+    },
+    {
+      "case_id": "dev-17",
+      "query": "bash set -e pipefail trap ERR",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html", "The Set Builtin", "GNU 공식 매뉴얼: -e와 pipefail", 3],
+        ["https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html", "Bourne Shell Builtins: trap", "GNU 공식 매뉴얼", 2],
+        ["https://stackoverflow.com/questions/79188888/bash-errexit", "set -e not failing inside if", "커뮤니티", 1],
+        ["https://blog.example-dev.com/bash-strict", "bash strict mode", "블로그", 0]
+      ]
+    },
+    {
+      "case_id": "dev-18",
+      "query": "Redis sorted set leaderboard range pagination",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://redis.io/docs/latest/commands/zrange/", "ZRANGE", "공식 문서: 점수 범위와 페이지네이션", 3],
+        ["https://redis.io/docs/latest/develop/data-types/sorted-sets/", "Sorted sets", "공식 데이터 타입 문서", 2],
+        ["https://stackoverflow.com/questions/79199999/zrange-page", "Paginating a Redis leaderboard", "커뮤니티", 1],
+        ["https://medium.com/@somebody/redis-rank", "Redis 랭킹 구현", "개인 글", 0]
+      ]
+    },
+    {
+      "case_id": "dev-19",
+      "query": "pydantic v2 model_validator mode before",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://docs.pydantic.dev/latest/concepts/validators/", "Validators", "공식 문서: mode=before/after", 3],
+        ["https://docs.pydantic.dev/latest/concepts/models/", "Models", "공식 문서", 2],
+        ["https://stackoverflow.com/questions/79200001/pydantic-validator", "model_validator not called", "커뮤니티", 1],
+        ["https://blog.example-python.com/pydantic2-migration", "pydantic 2 마이그레이션", "블로그", 0]
+      ]
+    },
+    {
+      "case_id": "dev-20",
+      "query": "GitHub Actions cache between jobs",
+      "authority_expectation": "n/a",
+      "payload": [
+        ["https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows", "Caching dependencies", "공식 문서: 캐시 키와 복원 규칙", 3],
+        ["https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts", "Storing workflow data as artifacts", "공식 문서: artifact와 cache 차이", 2],
+        ["https://stackoverflow.com/questions/79211111/actions-cache", "Cache miss between jobs", "커뮤니티", 1],
+        ["https://blog.example-ci.com/actions-tips", "Actions 팁 모음", "블로그", 0]
+      ]
+    }
+  ]
+}

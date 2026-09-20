@@ -1,0 +1,234 @@
+{
+  "category": "official",
+  "intent": "authoritative",
+  "cases": [
+    {
+      "case_id": "official-01",
+      "query": "정부24 주민등록등본 발급 official 안내",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://www.gov.kr/portal/service/serviceInfo/131000000000", "정부24 주민등록등본 발급 안내", "주민등록등본 온라인 발급 절차와 수수료 official 안내", 3],
+        ["https://blog.naver.com/daily-money/223556677", "주민등록등본 5분 발급 후기", "집에서 바로 뽑은 개인 경험담", 0],
+        ["https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=123456", "주민등록법 제19조", "주민등록 등·초본의 발급 및 열람 official 조문", 3],
+        ["https://info-hub-daily.com/ads/rank1", "무료 발급 대행 상담", "클릭 한 번이면 전문가가 대신 발급합니다", 0],
+        ["https://www.mois.go.kr/frt/sub/a06/b08/residentRegistration/screen.do", "행정안전부 주민등록 등초본 안내", "등본과 초본의 차이, 발급 대상 official 기준", 2]
+      ]
+    },
+    {
+      "case_id": "official-02",
+      "query": "전자세금계산서 발급 세액공제 official 기준",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?mi=2287", "국세청 전자세금계산서 발급 안내", "전자세금계산서 발급 의무와 세액공제 official 기준", 3],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "세금계산서 3분 정리 영상", "어려운 세무를 쉽게 설명합니다", 0],
+        ["https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=245678", "조세특례제한법 제5조", "전자세금계산서 발급·전송에 대한 세액공제 official 조문", 3],
+        ["https://www.hometax.go.kr/websquare/websquare.html?w2xPath=/ui/pp/index.xml", "홈택스 전자세금계산서 발급 화면", "발급·전송·수정 official 업무 화면", 2],
+        ["https://medium.com/@somebody/gov-service", "내가 겪은 세금계산서 실수", "개인 블로그의 경험담", 0]
+      ]
+    },
+    {
+      "case_id": "official-03",
+      "query": "Kubernetes pod security standards official docs",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://kubernetes.io/docs/concepts/security/pod-security-standards/", "Pod Security Standards", "official docs for the privileged, baseline, and restricted profiles", 3],
+        ["https://www.reddit.com/r/kubernetes/comments/abc123/psa_experience", "PSA in production: what broke", "anecdotal thread, no profile definitions", 0],
+        ["https://kubernetes.io/docs/tasks/configure-pod-container/security-context/", "Configure a Security Context for a Pod", "official docs: capabilities, seccomp, runAsNonRoot", 2],
+        ["https://blog.example-cluster.com/psa-cheatsheet", "PSA cheatsheet 2026", "third-party summary of the profiles", 1]
+      ]
+    },
+    {
+      "case_id": "official-04",
+      "query": "Python 3.14 official documentation typing changes",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://docs.python.org/3/whatsnew/3.14.html", "What's New In Python 3.14", "official notes on typing and interpreter changes", 3],
+        ["https://stackoverflow.com/questions/79000001/python314-typing", "Why did my annotation break on 3.14?", "community answers, partially outdated", 0],
+        ["https://docs.python.org/3/library/typing.html", "typing — Support for type hints", "official library reference", 2],
+        ["https://medium.com/@somebody/python314-tips", "Python 3.14 tips I wish I knew", "personal blog post", 0],
+        ["https://peps.python.org/pep-0649/", "PEP 649: Deferred Evaluation of Annotations", "official PEP text", 2]
+      ]
+    },
+    {
+      "case_id": "official-05",
+      "query": "사업장 안전보건교육 official 의무 시간",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=267890", "산업안전보건법 시행규칙 제26조", "정기 안전보건교육의 official 실시 시간 기준", 3],
+        ["https://cafe.daum.net/safety-first/5678", "안전교육 안 하면 어떻게 되나요", "카페 회원들의 경험", 0],
+        ["https://www.moel.go.kr/policy/policydata/view.do?bbs_seq=20260301", "고용노동부 안전보건교육 안내", "사업장 규모별 official 교육 시간", 3],
+        ["https://info-hub-daily.com/ads/safety", "안전교육 대행 신청", "저렴한 대행 서비스 광고", 0],
+        ["https://www.kosha.or.kr/kosha/business/edu.do", "안전보건공단 교육 과정", "공단이 운영하는 교육 과정 안내", 1]
+      ]
+    },
+    {
+      "case_id": "official-06",
+      "query": "MDN official docs fetch abort signal",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://developer.mozilla.org/en-US/docs/Web/API/AbortController", "AbortController - MDN", "official docs for aborting fetches", 3],
+        ["https://developer.mozilla.org/en-US/docs/Web/API/fetch", "fetch() - MDN", "official reference including the signal option", 3],
+        ["https://blog.example-frontend.com/abort-fetch-trick", "The abort trick everyone copies", "a blog post repeating MDN", 1],
+        ["https://stackoverflow.com/questions/78000002/abort-fetch", "How do I cancel a fetch in 2026?", "accepted answer links back to MDN", 0]
+      ]
+    },
+    {
+      "case_id": "official-07",
+      "query": "부가가치세 신고 기한 official 안내",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?mi=2295", "국세청 부가가치세 신고 안내", "과세기간별 신고 납부 기한 official 안내", 3],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "부가세 신고 한 방에 끝내기", "영상으로 보는 요약", 0],
+        ["https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=278901", "부가가치세법 제49조", "신고와 납부 기한 official 조문", 3],
+        ["https://blog.naver.com/tax-easy/223661234", "부가세 신고 달력 정리", "개인이 정리한 일정표", 1]
+      ]
+    },
+    {
+      "case_id": "official-08",
+      "query": "RFC 9110 official standard HTTP semantics",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://www.rfc-editor.org/rfc/rfc9110.html", "RFC 9110: HTTP Semantics", "official standard text", 3],
+        ["https://datatracker.ietf.org/doc/html/rfc9110", "rfc9110", "IETF datatracker copy of the official standard", 3],
+        ["https://developer.mozilla.org/en-US/docs/Web/HTTP/Status", "HTTP response status codes - MDN", "official docs summarising the standard codes", 2],
+        ["https://medium.com/@somebody/http-in-plain-english", "HTTP in plain English", "informal explainer", 0]
+      ]
+    },
+    {
+      "case_id": "official-09",
+      "query": "국가통계포털 인구주택총조사 official 자료",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://kostat.go.kr/portal/korea/kor_nw/1/1/index.board", "국가통계포털 인구주택총조사", "총조사 결과표와 official 통계표 제공", 3],
+        ["https://info-hub-daily.com/ads/stats", "통계 분석 대행 이벤트", "연말 할인 광고", 0],
+        ["https://kostat.go.kr/portal/korea/kor_ko/5/2/index.board", "통계청 총조사 개요", "조사 항목과 공표 일정 official 안내", 2],
+        ["https://cafe.daum.net/data-talk/9012", "총조사 자료 어디서 받나요", "회원 간 질의응답", 0]
+      ]
+    },
+    {
+      "case_id": "official-10",
+      "query": "FastAPI official documentation dependency overrides",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://fastapi.tiangolo.com/advanced/testing-dependencies/", "Testing Dependencies with Overrides", "official docs for dependency_overrides in tests", 3],
+        ["https://fastapi.tiangolo.com/tutorial/dependencies/", "Dependencies - FastAPI", "official dependency injection tutorial", 2],
+        ["https://stackoverflow.com/questions/79000123/fastapi-override", "Overriding a dependency per test", "community answer citing the docs", 1],
+        ["https://blog.example-python.com/fastapi-patterns", "FastAPI patterns I use daily", "blog summary", 0]
+      ]
+    },
+    {
+      "case_id": "official-11",
+      "query": "건축물대장 발급 official 절차 수수료",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://www.gov.kr/portal/service/serviceInfo/132000000000", "정부24 건축물대장 발급", "건축물대장 열람·발급 official 절차와 수수료", 3],
+        ["https://www.eais.go.kr/ctrt/api/ctrtapi.do", "세움터 건축물대장 발급", "건축행정시스템 official 발급 창구", 2],
+        ["https://blog.naver.com/realty-note/223700111", "건축물대장 떼는 법 정리", "블로그 정리 글", 0],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "등기부등본과 대장 차이", "영상 설명", 0]
+      ]
+    },
+    {
+      "case_id": "official-12",
+      "query": "posted worker notification official requirements UK",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://www.gov.uk/guidance/posted-workers-notification", "Posted workers: notification requirements", "official guidance for employers posting workers", 3],
+        ["https://www.legislation.gov.uk/uksi/2023/1234/regulation/3", "Posted Workers Regulations 2023, regulation 3", "official statutory instrument text", 2],
+        ["https://forum.example-relocation.com/t/posted-workers-uk", "Posted workers: forum thread", "mixed experiences from members", 0],
+        ["https://info-hub-daily.com/ads/relocation", "Relocation support package", "paid service advertisement", 0]
+      ]
+    },
+    {
+      "case_id": "official-13",
+      "query": "국세청 예규 official 해석례 확인 방법",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?mi=2300", "국세청 법령해석·예규 안내", "예규와 해석례를 official 창구에서 확인하는 방법", 3],
+        ["https://www.law.go.kr/LSW/lsSc.do?query=%EA%B5%AD%EC%84%B8%EA%B8%B0%EB%B3%B8%EB%B2%95", "국세기본법 조문 조회", "법령 원문 official 열람", 2],
+        ["https://medium.com/@somebody/tax-rulings", "How to read a tax ruling", "personal essay", 0],
+        ["https://cafe.daum.net/tax-study/3344", "예규 찾는 팁 공유", "회원들의 경험 공유", 1]
+      ]
+    },
+    {
+      "case_id": "official-14",
+      "query": "OCI image spec official documentation annotations",
+      "authority_expectation": "absent",
+      "note": "정답 원문은 github.com(opencontainers)이다 — 규칙상 github.com 은 권위로 세지 않으므로 이 케이스는 '권위 출처 없음'으로 표시한다(규칙의 한계를 숨기지 않는다).",
+      "payload": [
+        ["https://github.com/opencontainers/image-spec/blob/main/annotations.md", "image-spec/annotations.md", "official spec for OCI annotations", 3],
+        ["https://github.com/opencontainers/image-spec/blob/main/config.md", "image-spec/config.md", "official config schema", 2],
+        ["https://stackoverflow.com/questions/79000234/oci-annotations", "Which OCI annotations are standard?", "community summary", 1],
+        ["https://blog.example-cloud.com/oci-notes", "OCI notes from the field", "operator blog", 0]
+      ]
+    },
+    {
+      "case_id": "official-15",
+      "query": "산업재해 요양급여 신청 official 절차",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=289012", "산업재해보상보험법 제40조", "요양급여 신청 official 조문", 3],
+        ["https://www.moel.go.kr/policy/policydata/view.do?bbs_seq=20260401", "고용노동부 산재 신청 안내", "요양급여 청구 절차 official 안내", 2],
+        ["https://www.comwel.or.kr/comwel/main.jsp", "근로복지공단 산재보험", "공단 접수 창구와 서류 목록", 1],
+        ["https://blog.naver.com/worker-help/223812345", "산재 신청 후기", "개인 경험담", 0],
+        ["https://info-hub-daily.com/ads/labor", "노무사 무료 상담", "광고성 페이지", 0]
+      ]
+    },
+    {
+      "case_id": "official-16",
+      "query": "NIST SP 800-63 official digital identity guidance",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://pages.nist.gov/800-63-3/sp800-63b.html", "SP 800-63B: Authentication and Lifecycle Management", "official digital identity guidance", 3],
+        ["https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-63-3.pdf", "NIST SP 800-63-3 (PDF)", "official publication PDF", 2],
+        ["https://www.reddit.com/r/iam/comments/xyz/80063b", "800-63B in practice", "practitioner thread", 0],
+        ["https://medium.com/@somebody/mfa-levels", "MFA levels explained", "blog explainer", 0]
+      ]
+    },
+    {
+      "case_id": "official-17",
+      "query": "한국은행 기준금리 official 발표 일정",
+      "authority_expectation": "absent",
+      "note": "금리 발표의 실제 원천은 bok.or.kr 이며 규칙상 권위(≥0.9)가 아니다 — 없는 권위를 요구하지 않는다.",
+      "payload": [
+        ["https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200643", "한국은행 기준금리 추이", "금통위 결정 기준금리와 발표 일정", 3],
+        ["https://www.bok.or.kr/portal/main/main.do", "한국은행 통화정책방향", "통화정책방향 결정문 원문", 2],
+        ["https://blog.naver.com/econ-note/223900777", "기준금리 달력 정리", "개인이 정리한 일정", 1],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "금리 전망 총정리", "유튜브 해설", 0]
+      ]
+    },
+    {
+      "case_id": "official-18",
+      "query": "식품첨가물 기준규격 official 식약처 고시",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://www.mfds.go.kr/brd/m_210/view.do?seq=14867", "식품첨가물의 기준 및 규격 고시", "식약처 official 고시 전문", 3],
+        ["https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=290123", "식품위생법 제7조", "기준·규격 설정 근거 official 조문", 2],
+        ["https://cafe.daum.net/food-lab/7788", "첨가물 규격 어디 보나요", "카페 질문글", 0],
+        ["https://info-hub-daily.com/ads/food", "식품 검사 대행", "유료 대행 광고", 0]
+      ]
+    },
+    {
+      "case_id": "official-19",
+      "query": "W3C WCAG official standard success criteria",
+      "authority_expectation": "absent",
+      "note": "표준 원문은 w3.org(0.55)다 — 도메인 규칙이 표준기구를 권위로 세지 않는 사실을 그대로 기록한다.",
+      "payload": [
+        ["https://www.w3.org/TR/WCAG22/", "Web Content Accessibility Guidelines (WCAG) 2.2", "official W3C Recommendation with success criteria", 3],
+        ["https://www.w3.org/WAI/WCAG22/quickref/", "How to Meet WCAG 2.2 (Quick Reference)", "official quick reference", 2],
+        ["https://developer.mozilla.org/en-US/docs/Web/Accessibility", "Accessibility - MDN", "official docs overview of a11y", 1],
+        ["https://blog.example-design.com/wcag-audit", "How we audit for WCAG", "agency blog post", 0]
+      ]
+    },
+    {
+      "case_id": "official-20",
+      "query": "지방세 납부 official 위택스 안내",
+      "authority_expectation": "satisfied",
+      "payload": [
+        ["https://www.wetax.go.kr/main/main.do", "위택스 지방세 납부 안내", "지방세 전자납부 official 창구", 3],
+        ["https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=301234", "지방세법 제20조", "납부 기한과 절차 official 조문", 3],
+        ["https://blog.naver.com/local-tax/223998877", "지방세 납부 달력", "블로그 정리", 0],
+        ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "재산세 계산 방법", "영상 요약", 1]
+      ]
+    }
+  ]
+}
