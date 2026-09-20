@@ -37,6 +37,7 @@ import httpx
 import pytest
 
 from antigravity_k.agents.browser_surfing_agent import BrowserSurfingAgent
+from antigravity_k.agents.browser_task_loop import PlannedAction
 from antigravity_k.api.routes import agent_tools
 from antigravity_k.api.server import app
 from antigravity_k.config import config
@@ -1153,11 +1154,16 @@ async def test_the_autonomous_agent_stops_and_asks_instead_of_clicking_a_risky_e
     agent = BrowserSurfingAgent(model_manager=MagicMock())
     owner = BrowserOwner(subject="surfer", scope="approval-test")
     block = cast(
-        Callable[[object, BrowserOwner, str], Awaitable[str | None]],
+        Callable[[object, BrowserOwner, str, PlannedAction], Awaitable[str | None]],
         getattr(agent, "_approval_block"),
     )
 
-    message = await block(_FakeObserverFacts(_button("Send message")), owner, "tag001-snap-main-e1")
+    message = await block(
+        _FakeObserverFacts(_button("Send message")),
+        owner,
+        "tag001-snap-main-e1",
+        PlannedAction(action="click", ref="tag001-snap-main-e1"),
+    )
     assert message is not None, "위험 효과를 만나면 멈춰야 한다"
     assert message.startswith("approval_required(request="), message
     assert "effect=transmit" in message
@@ -1172,10 +1178,10 @@ async def test_the_autonomous_agent_stops_and_asks_instead_of_clicking_a_risky_e
 
     # 안전한 이동은 사람을 부르지 않는다(모든 클릭에 승인이 붙으면 아무도 읽지 않는다).
     safe = _FakeObserverFacts(_button("Next page", role="link", tag="a"))
-    assert await block(safe, owner, "tag001-snap-main-e2") is None
+    assert await block(safe, owner, "tag001-snap-main-e2", PlannedAction(action="click")) is None
 
     # 사실을 못 얻으면(낡은 ref) 승인이 아니라 **계약**이 판정하게 둔다.
-    assert await block(_FakeObserverFacts(None), owner, "tag001-snap-main-e3") is None
+    assert await block(_FakeObserverFacts(None), owner, "tag001-snap-main-e3", PlannedAction(action="click")) is None
 
 
 async def test_injected_page_instruction_cannot_lower_the_verdict(site: _Site) -> None:

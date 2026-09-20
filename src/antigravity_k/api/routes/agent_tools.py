@@ -697,6 +697,7 @@ async def _screen_browser_effect(
         path=req.path,
         secret=secret_field or bool(req.secret_ref),
         disabled=bool(fact.get("disabled")),
+        eager=bool(fact.get("eager")),
     )
     result: dict[str, object] = {"effect": decision.to_dict()}
     binding = ApprovalBinding(

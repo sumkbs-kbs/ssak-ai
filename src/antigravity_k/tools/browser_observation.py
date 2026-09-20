@@ -36,6 +36,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import hashlib
+import ipaddress
 import json
 import logging
 import os
@@ -46,6 +47,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, Protocol, cast
+from urllib.parse import urlsplit
 from uuid import uuid4
 
 from antigravity_k.tools.browser_session_owner import BrowserOwner, current_browser_owner
@@ -54,6 +56,40 @@ if TYPE_CHECKING:  # pragma: no cover - 정적 분석 전용
     from antigravity_k.tools.browser_session_owner import BrowserLease
 
 logger = logging.getLogger(__name__)
+
+# ── 사설망 서브리소스 차단(task 23) ─────────────────────────────────────────
+# 페이지 **스스로** 만드는 요청(스크립트·이미지·fetch·WebSocket)이 브라우저를 경유해 사설 주소를
+# 두드리는 것을 막는 방어선의 재료. 문서 이동(navigation)은 이 규칙이 아니라 egress 정책과
+# 승인이 심사한다. 같은 페이지의 출처 호스트는 로컬이라도 그대로 둔다(로컬 앱·fixture 자신).
+_PRIVATE_LOCAL_NAMES: Final = frozenset(
+    {"localhost", "localhost.localdomain", "ip6-localhost", "ip6-loopback", "metadata", "instance-data"}
+)
+_PRIVATE_NAME_SUFFIXES: Final = (".localhost", ".local", ".internal", ".in-addr.arpa", ".ip6.arpa")
+
+
+def is_private_hostname(host: str) -> bool:
+    """주소가 **브라우저가 못 가야 할** 사설·예약·루프백인가.
+
+    리터럴 IP 와 예약 이름만 판정한다 — 일반 호스트명의 DNS 추적은 하지 않는다(정직한 한계:
+    호스트명을 사설 IP 로 푸는 rebinding 은 문서 이동의 DoH 선점검이 담당한다).
+    """
+    name = (host or "").strip().strip("[]").casefold()
+    if not name:
+        return False
+    if name in _PRIVATE_LOCAL_NAMES or name.endswith(_PRIVATE_NAME_SUFFIXES):
+        return True
+    try:
+        address = ipaddress.ip_address(name)
+    except ValueError:
+        return False
+    return bool(
+        address.is_private
+        or address.is_loopback
+        or address.is_link_local
+        or address.is_reserved
+        or address.is_unspecified
+    )
+
 
 OBSERVATION_SCHEMA: Final = "ssak.browser.observation/1.0"
 ACTION_SCHEMA: Final = "ssak.browser.action/1.0"
@@ -218,6 +254,9 @@ _COLLECT_JS = """
     const tag = el.tagName.toLowerCase();
     const type = (el.getAttribute('type') || '').toLowerCase();
     const secret = type === 'password' || el.hasAttribute('data-ssak-secret');
+    // 값이 바뀌는 순간 무언가를 하는 칸(인라인 처리기만 보인다 — addEventListener 는 DOM 에 없다).
+    const eager = !!(el.getAttribute('oninput') || el.getAttribute('onchange')
+      || el.getAttribute('onkeyup') || el.getAttribute('onblur') || el.hasAttribute('data-ssak-eager'));
     const disabled = el.disabled === true || el.getAttribute('aria-disabled') === 'true';
     let name = (el.getAttribute('aria-label') || '').trim();
     if (!name) name = (el.innerText || '').trim().split('\\n')[0];
@@ -236,7 +275,7 @@ _COLLECT_JS = """
     const marker = String(out.length);
     el.setAttribute('data-ssak-ref', marker);
     out.push({ref: marker, tag, role: roleOf(el, tag), name: name.slice(0, %NAME%), type,
-              secret, disabled, filled, value, actionable: !disabled});
+              secret, disabled, filled, value, actionable: !disabled, eager});
   }
   return out;
 })()
@@ -339,6 +378,8 @@ class ElementRef:
     disabled: bool = False
     secret: bool = False
     filled: bool = False
+    #: 값이 바뀌는 순간 서버로 나갈 수 있는 칸(인라인 자동저장 처리기) — 승인 판정의 재료다.
+    eager: bool = False
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -351,6 +392,7 @@ class ElementRef:
             "disabled": self.disabled,
             "secret": self.secret,
             "filled": self.filled,
+            "eager": self.eager,
         }
 
 
@@ -581,6 +623,7 @@ class _RefBinding:
     tag: str
     secret: bool
     disabled: bool
+    eager: bool = False
 
 
 @dataclass
@@ -630,6 +673,7 @@ class BrowserObserver:
         self.generation: int = 0
         self._pages: dict[str, object] = {}
         self._primary: str = "main"
+        self._guarded: set[int] = set()
         self._snapshots: dict[str, _Snapshot] = {}
         self._current: str | None = None
         self._secrets: list[str] = []
@@ -646,8 +690,93 @@ class BrowserObserver:
 
     def register_page(self, page: object, key: str = "main") -> None:
         self._pages[key] = page
+        self._guarded.discard(id(page))
         if key == "main":
             self._primary = "main"
+        # 루프가 돌고 있으면 **지금** 가드를 장착한다 — 첫 문서 로드 때 이미 서브리소스가
+        # 나가므로 첫 관찰까지 기다리면 한 세대를 놓친다.
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            return
+        loop.create_task(self._ensure_network_guards())
+
+    async def arm_network_guards(self) -> None:
+        """네트워크 가드를 **지금** 장착한다(첫 관찰·행동을 기다리지 않는다).
+
+        페이지를 처음 여는 경로(`browser_task_host`)는 `goto` 전에 이걸 불러야 한다.
+        """
+        await self._ensure_network_guards()
+
+    # ── 사설망 서브리소스 가드(task 23) ─────────────────────────────────────
+    async def _ensure_network_guards(self) -> None:
+        """관찰·행동이 일어나는 모든 페이지(main·popup)에 요청 가드를 붙인다(멱등, 1회 시도).
+
+        가드는 **문서 이동은 그대로** 통과시킨다(egress 정책·승인이 심사한다) — 막는 것은 페이지
+        스스로 만드는 서브리소스 요청이 다른 호스트의 **사설 주소**로 나가는 것뿐이다. 가짜 페이지
+        (시험 대역)는 `route` 가 없어 그냥 지나간다.
+        """
+        for page in list(self._pages.values()):
+            if id(page) in self._guarded:
+                continue
+            self._guarded.add(id(page))
+            try:
+                await self._guard_page_network(page)
+            except Exception:
+                logger.debug("[BrowserObserve] network guard unavailable for a page", exc_info=True)
+
+    async def _guard_page_network(self, page: object) -> None:
+        route = getattr(page, "route", None)
+        ws_route = getattr(page, "route_web_socket", None)
+        if not callable(route) and not callable(ws_route):
+            return
+
+        def _origin_of(url: object) -> tuple[str, str]:
+            """(호스트, 정규화된 포트). 포트가 없으면 스킴 기본값 — 출처 비교의 단위다."""
+            try:
+                parts = urlsplit(str(url or ""))
+            except ValueError:
+                return ("", "")
+            host = (parts.hostname or "").casefold()
+            scheme = (parts.scheme or "http").casefold()
+            port = parts.port or (443 if scheme in {"https", "wss"} else 80)
+            return (host, str(port))
+
+        async def http_guard(route_obj: object, request: object) -> None:
+            try:
+                is_navigation = bool(getattr(request, "is_navigation_request", lambda: False)())
+                target_origin = _origin_of(getattr(request, "url", ""))
+                page_origin = _origin_of(getattr(page, "url", ""))
+                host = target_origin[0]
+                if not is_navigation and host and target_origin != page_origin and is_private_hostname(host):
+                    logger.info("[BrowserObserve] blocked a private-network subresource: %s", host)
+                    await _maybe_await(getattr(route_obj, "abort")("blockedbyclient"))
+                    return
+                await _maybe_await(getattr(route_obj, "continue_")())
+            except Exception:
+                logger.debug("[BrowserObserve] subresource route guard error", exc_info=True)
+
+        async def websocket_guard(ws: object) -> None:
+            try:
+                target_origin = _origin_of(getattr(ws, "url", ""))
+                page_origin = _origin_of(getattr(page, "url", ""))
+                host = target_origin[0]
+                if host and target_origin != page_origin and is_private_hostname(host):
+                    logger.info("[BrowserObserve] blocked a private-network websocket: %s", host)
+                    close = getattr(ws, "close", None)
+                    if callable(close):
+                        await _maybe_await(close(code=1008, reason="private network subresource"))
+                    return
+                connect = getattr(ws, "connect_to_server", None)
+                if callable(connect):
+                    await _maybe_await(connect())
+            except Exception:
+                logger.debug("[BrowserObserve] websocket guard error", exc_info=True)
+
+        if callable(route):
+            await _maybe_await(route("**/*", http_guard))
+        if callable(ws_route):
+            await _maybe_await(ws_route("**/*", websocket_guard))
 
     def status(self) -> dict[str, object]:
         return {
@@ -691,6 +820,7 @@ class BrowserObserver:
         if registered is None:
             raise BrowserObservationError(UNKNOWN_REF, f"no page registered as {key!r}", stage="observe")
         page = cast("_PageLike", registered)
+        await self._ensure_network_guards()
 
         collected: list[tuple[tuple[int, ...], str, list[dict[str, object]]]] = []
         frames: list[FrameInfo] = []
@@ -732,6 +862,7 @@ class BrowserObserver:
                     tag=str(item.get("tag", "")),
                     secret=bool(item.get("secret")),
                     disabled=bool(item.get("disabled")),
+                    eager=bool(item.get("eager")),
                 )
                 bindings[token] = binding
                 refs.append(
@@ -978,6 +1109,7 @@ class BrowserObserver:
         page = self._pages.get(key)
         if page is None:
             raise BrowserObservationError(UNKNOWN_REF, f"no page registered as {key!r}", stage="act")
+        await self._ensure_network_guards()
         url_before = str(cast("_PageLike", page).url)
 
         if action == "goto":
@@ -1033,6 +1165,7 @@ class BrowserObserver:
             "tag": binding.tag,
             "secret": binding.secret,
             "disabled": binding.disabled,
+            "eager": binding.eager,
             "frame": binding.frame_label,
             "page_key": binding.page_key,
             "url": snapshot.url,

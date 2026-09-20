@@ -374,6 +374,12 @@ class BrowserSurfingAgent:
         try:
             page = session.page
             assert page is not None
+            # goto **전에** 네트워크 가드를 장착한다(task 23) — 첫 문서 로드 때 이미 서브리소스가 나간다.
+            arm = getattr(session.observer, "arm_network_guards", None)
+            if callable(arm):
+                result = arm()
+                if hasattr(result, "__await__"):
+                    await cast("Awaitable[None]", result)
             _ = await page.goto(url, wait_until="networkidle", timeout=15000)
             yield _ObserverLoopHost(self, session)
         finally:
@@ -483,6 +489,12 @@ class BrowserSurfingAgent:
         observer = cast(_LoopObserverLike, session.observer)
         browser_owner = session.owner
         try:
+            # goto 전 가드 장착(browser_task_host 와 같은 규칙).
+            arm = getattr(observer, "arm_network_guards", None)
+            if callable(arm):
+                result = arm()
+                if hasattr(result, "__await__"):
+                    await cast("Awaitable[None]", result)
             _ = await page.goto(url, wait_until="networkidle", timeout=15000)
 
             step = 0
@@ -516,7 +528,12 @@ class BrowserSurfingAgent:
                         break
                     # 위험도를 **서버가** 요소의 의미로 판정한다(task 18). 승인이 필요한 효과는
                     # 스스로 누르지 않는다 — 사람의 승인 창을 띄우고 멈춘다.
-                    blocked = await self._approval_block(observer, browser_owner, action.target_ref)
+                    blocked = await self._approval_block(
+                        observer,
+                        browser_owner,
+                        action.target_ref,
+                        PlannedAction(action="click", ref=action.target_ref),
+                    )
                     if blocked is not None:
                         final_result = blocked
                         break
@@ -557,32 +574,43 @@ class BrowserSurfingAgent:
 
         return final_result
 
-    async def _approval_block(self, observer: _ObserverFactLike, browser_owner: BrowserOwner, ref: str) -> str | None:
-        """승인이 필요한 클릭이면 요청을 등록하고 **사람에게 넘기는 문장**을 준다(아니면 None).
+    async def _approval_block(
+        self,
+        observer: _ObserverFactLike,
+        browser_owner: BrowserOwner,
+        ref: str,
+        action: PlannedAction,
+    ) -> str | None:
+        """승인이 필요한 행동이면 요청을 등록하고 **사람에게 넘기는 문장**을 준다(아니면 None).
 
         이 에이전트는 자율 루프라 승인 창을 직접 띄울 수 없다. 그래서 할 수 있는 일은
         스스로 누르지 않고 멈추는 것이다 — 무엇을 승인해야 하는지(요청 ID·효과·위험도·문장)를
         남기면 대시보드/승인 API 가 그 요청을 처리하고, 재요청 시 이 ID 로 이어받는다.
+
+        ref 를 가진 행동 전부(click·fill·select·upload)가 이 문을 지난다(task 23) — click 만
+        검사하면 "메시지 칸 채우기"·"자동저장 칸 채우기"가 승인 없이 새어 나간다.
         """
         fact = observer.element_fact(ref)
         if fact is None:  # 사실을 못 얻으면 계약이 판정하게 둔다(낡은 ref 등)
             return None
-        decision = _classify_fact("click", fact)
+        decision = _classify_fact(action.action, fact)
         if not decision.requires_approval:
             return None
         binding = ApprovalBinding(
             owner_key=browser_owner.key,
             session_tag=str(observer.session_tag),
             origin=origin_of(str(fact.get("url") or "")),
-            action="click",
+            action=action.action,
             ref=ref,
-            payload_hash=payload_fingerprint(action="click"),
+            payload_hash=payload_fingerprint(
+                action=action.action, text=action.text, value=action.value, path=action.path
+            ),
             generation=int(cast("int", fact.get("generation") or 0)),
             effect=decision.effect.value,
         )
         summary = summarize_effect(
             decision,
-            action="click",
+            action=action.action,
             origin=binding.origin,
             name=str(fact.get("name") or ""),
             role=str(fact.get("role") or ""),
@@ -743,6 +771,7 @@ def _classify_fact(action: str, fact: Mapping[str, object]) -> EffectDecision:
         url=str(fact.get("url") or ""),
         secret=bool(fact.get("secret")),
         disabled=bool(fact.get("disabled")),
+        eager=bool(fact.get("eager")),
     )
 
 
@@ -790,11 +819,12 @@ class _ObserverLoopHost:
                     f"waiting_user({handoff.kind}): {handoff.reason} — 사람이 끝낸 뒤 다시 요청하세요",
                     kind="handoff",
                 )
-            # 위험도를 **서버가** 요소의 의미로 판정한다(task 18). 승인이 필요한 효과는 스스로 누르지 않는다.
-            if action.ref:
-                blocked = await self._agent._approval_block(self._observer, self._owner, action.ref)
-                if blocked is not None:
-                    raise TaskBlocked(blocked, kind="approval")
+        # 위험도를 **서버가** 요소의 의미로 판정한다(task 18). 승인이 필요한 효과는 스스로 누르지
+        # 않는다 — ref 를 가진 행동 전부가 이 문을 지난다(task 23: fill·select·upload 포함).
+        if action.ref and action.action in {"click", "fill", "select", "upload"}:
+            blocked = await self._agent._approval_block(self._observer, self._owner, action.ref, action)
+            if blocked is not None:
+                raise TaskBlocked(blocked, kind="approval")
         try:
             return await self._observer.act(
                 action.action,

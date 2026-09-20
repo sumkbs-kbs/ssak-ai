@@ -396,6 +396,7 @@ def classify_effect(
     path: str | None = None,
     secret: bool = False,
     disabled: bool = False,
+    eager: bool = False,
 ) -> EffectDecision:
     """행동 + 대상의 **의미**로 효과를 판정한다. 불확실하면 승인 쪽으로 기운다.
 
@@ -470,6 +471,15 @@ def classify_effect(
         payload = f"{text or ''} {value or ''}".lower()
         if path and not payload.strip():
             return EffectDecision(Effect.UPLOAD, True, _RISK_BY_EFFECT[Effect.UPLOAD], "파일 경로를 넣는 입력이다")
+        if eager:
+            # 값이 바뀌는 순간 무언가 나가는 칸(자동저장 처리기) — 이름이 무해해도 채우는 것은 전송이다.
+            return EffectDecision(
+                Effect.TRANSMIT,
+                True,
+                _RISK_BY_EFFECT[Effect.TRANSMIT],
+                "값이 바뀌는 순간 서버로 나가는 칸이다(자동저장 처리기)",
+                "autosave-handler",
+            )
         hit = _match(f"{haystack} {payload}", _MESSAGE_FIELD_HINTS)
         if hit:
             return EffectDecision(
