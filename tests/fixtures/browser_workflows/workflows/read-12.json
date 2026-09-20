@@ -1,0 +1,41 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "read-12",
+  "kind": "read",
+  "tags": [
+    "by_design:ok"
+  ],
+  "goal": "활성 사용자 수를 확인한다",
+  "entry": "/page",
+  "pages": {
+    "/page": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>통계 대시보드</title></head>\n<body>\n<h1>통계 대시보드</h1>\n<ul><li>활성 사용자 8,214명</li><li>신규 가입 331명</li></ul>\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "text_contains",
+      "value": "활성 사용자 8,214명",
+      "description": "활성 사용자 8,214명 이(가) 보인다"
+    }
+  ],
+  "script": [
+    {
+      "action": "done",
+      "reason": "통계 대시보드 페이지에서 내용을 확인했다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 0,
+    "reads_min": {
+      "/page": 1
+    },
+    "content": [
+      {
+        "route": "/page",
+        "contains": [
+          "활성 사용자 8,214명"
+        ]
+      }
+    ]
+  },
+  "notes": ""
+}

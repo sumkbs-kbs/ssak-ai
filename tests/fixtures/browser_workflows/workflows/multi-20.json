@@ -1,0 +1,38 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "multi-20",
+  "kind": "multi",
+  "tags": [
+    "by_design:unreachable"
+  ],
+  "goal": "레거시 CRM 고객 목록을 연다",
+  "entry": "/portal",
+  "pages": {
+    "/portal": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>포털</title></head>\n<body>\n<h1>포털</h1>\n<p>이 경로는 fixture 서버에 등록돼 있지만 작업은 닫힌 포트로 간다.</p>\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "text_contains",
+      "value": "실적",
+      "description": "리포트 내용이 보인다"
+    }
+  ],
+  "script": [
+    {
+      "action": "goto",
+      "target": "/portal"
+    },
+    {
+      "action": "done",
+      "reason": "포털을 열어 확인한다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 0,
+    "reads_min": {
+      "/portal": 1
+    },
+    "content": []
+  },
+  "notes": "입력 주소가 닫힌 포트를 가리킨다 — 실패로 집계되고 분모에서 빠지지 않는다."
+}

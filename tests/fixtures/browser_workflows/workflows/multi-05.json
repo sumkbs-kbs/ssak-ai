@@ -1,0 +1,51 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "multi-05",
+  "kind": "multi",
+  "tags": [
+    "by_design:ok"
+  ],
+  "goal": "주문 마법사를 끝까지 진행해 입력 요약을 확인한다",
+  "entry": "/wizard/1",
+  "pages": {
+    "/wizard/1": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>주문 마법사 1단계</title></head>\n<body>\n<h1>주문 마법사 1단계</h1>\n<p>1단계: 기본 정보 · 배송지 · 확인 중 '1단계 완료' 를 봅니다.</p><a href=\"@/wizard/2\" aria-label=\"2단계 계속하기\">2단계로</a>\n</body></html>\n",
+    "/wizard/2": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>주문 마법사 2단계</title></head>\n<body>\n<h1>주문 마법사 2단계</h1>\n<p>2단계: 기본 정보 · 배송지 · 확인 중 '2단계 완료' 를 봅니다.</p><a href=\"@/wizard/3\" aria-label=\"3단계 계속하기\">3단계로</a>\n</body></html>\n",
+    "/wizard/3": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>주문 마법사 3단계</title></head>\n<body>\n<h1>주문 마법사 3단계</h1>\n<p>3단계: 기본 정보 · 배송지 · 확인 중 '3단계 완료' 를 봅니다.</p><p>입력 요약: 위젯 프로 1개 · 서울 강남 · 요청사항 없음</p>\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "text_contains",
+      "value": "위젯 프로 1개",
+      "description": "요약이 보인다"
+    }
+  ],
+  "script": [
+    {
+      "action": "click",
+      "target": "2단계 계속하기"
+    },
+    {
+      "action": "click",
+      "target": "3단계 계속하기"
+    },
+    {
+      "action": "done",
+      "reason": "마지막 단계 요약을 확인했다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 0,
+    "reads_min": {
+      "/wizard/3": 1
+    },
+    "content": [
+      {
+        "route": "/wizard/3",
+        "contains": [
+          "위젯 프로 1개"
+        ]
+      }
+    ]
+  },
+  "notes": ""
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "multi-16",
+  "kind": "multi",
+  "tags": [
+    "by_design:approval"
+  ],
+  "goal": "공지에 댓글을 등록한다",
+  "entry": "/shop",
+  "pages": {
+    "/shop": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>주문</title></head>\n<body>\n<h1>주문</h1>\n<h2>공지: 점검 안내</h2>\n<textarea aria-label=\"댓글\" id=\"comment\"></textarea>\n<button aria-label=\"등록\" onclick=\"fetch('@/api/comment',{method:'POST'}).then(function(){document.body.dataset.commented='1'})\">등록</button>\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "flag_equals",
+      "key": "commented",
+      "value": "1",
+      "description": "댓글이 등록됐다"
+    }
+  ],
+  "script": [
+    {
+      "action": "fill",
+      "target": "댓글",
+      "value": "점검 시간 확인 감사합니다"
+    },
+    {
+      "action": "click",
+      "target": "등록"
+    },
+    {
+      "action": "done",
+      "reason": "댓글을 등록했다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 1,
+    "reads_min": {
+      "/shop": 1
+    },
+    "content": []
+  },
+  "notes": "댓글 필드/등록은 TRANSMIT 효과 — 사람 확인 필요."
+}

@@ -1,0 +1,51 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "multi-10",
+  "kind": "multi",
+  "tags": [
+    "by_design:ok"
+  ],
+  "goal": "상태를 새로고침해 최신 배지를 확인한다",
+  "entry": "/shop",
+  "pages": {
+    "/shop": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>작업 상태</title></head>\n<body>\n<h1>작업 상태</h1>\n<p>상태: 집계 중</p>\n<button aria-label=\"refresh\" onclick=\"document.body.dataset.refreshed='1';document.getElementById('state').textContent='상태: 집계 완료 (배치 B-77)'\">refresh</button>\n<p id=\"state\">상태: 집계 중</p>\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "flag_equals",
+      "key": "refreshed",
+      "value": "1",
+      "description": "새로고침이 실행됐다"
+    },
+    {
+      "kind": "text_contains",
+      "value": "배치 B-77",
+      "description": "최신 상태가 보인다"
+    }
+  ],
+  "script": [
+    {
+      "action": "click",
+      "target": "refresh"
+    },
+    {
+      "action": "done",
+      "reason": "새로고침 후 상태를 확인했다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 0,
+    "reads_min": {
+      "/shop": 1
+    },
+    "content": [
+      {
+        "route": "/shop",
+        "contains": [
+          "집계 중"
+        ]
+      }
+    ]
+  },
+  "notes": "grader 내용 검사는 서버가 준 원본(집계 중)을 본다 — 새로고침 결과(배치 B-77)는 클라이언트 측 측정이 담당한다."
+}

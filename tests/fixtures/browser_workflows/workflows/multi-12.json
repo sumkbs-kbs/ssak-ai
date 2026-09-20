@@ -1,0 +1,64 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "multi-12",
+  "kind": "multi",
+  "tags": [
+    "by_design:ok"
+  ],
+  "goal": "검색해 페이지를 넘겨 가젯 라이트를 연다",
+  "entry": "/shop",
+  "pages": {
+    "/shop": "<h2>제품 검색</h2>\n<input id=\"q\" aria-label=\"검색어\" placeholder=\"예: 위젯\">\n<button aria-label=\"검색\" onclick=\"doSearch()\">검색</button>\n<ul id=\"list\">\n<li><a href=\"@/detail/widget\" aria-label=\"위젯 프로 상세\">위젯 프로</a> — 즉시 출시</li>\n<li>가젯 라이트 — 1페이지에는 링크 없음 (2페이지 참조)</li>\n<li><a href=\"@/detail/dojo\" aria-label=\"도조 미니 상세\">도조 미니</a> — 일시 품절</li>\n</ul>\n<p><a href=\"@/page2\" aria-label=\"다음 페이지\">다음 페이지</a></p>\n<script>\nfunction doSearch() {\n  const q = document.getElementById('q').value.trim().toLowerCase();\n  document.body.dataset.searched = '1';\n  document.querySelectorAll('#list li').forEach(function (li) {\n    li.hidden = q !== '' && !li.textContent.toLowerCase().includes(q);\n  });\n}\n</script>",
+    "/page2": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>검색 2페이지</title></head>\n<body>\n<h1>검색 2페이지</h1>\n<ul><li><a href=\"@/detail/gadget\" aria-label=\"가젯 라이트 상세\">가젯 라이트</a> — 예약 판매</li></ul>\n</body></html>\n",
+    "/detail/widget": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>위젯 프로</title></head>\n<body>\n<h1>위젯 프로</h1>\n<p>위젯 프로 제품 설명: 12코어 · 팬리스 · 산업용 등급.</p>\n<p>출시일 2026-04-02 · 정가 ₩1,290,000</p>\n</body></html>\n",
+    "/detail/gadget": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>가젯 라이트</title></head>\n<body>\n<h1>가젯 라이트</h1>\n<p>가젯 라이트 제품 설명: 휴대용 · 블루투스 5.3.</p><p>정가 ₩129,000</p>\n</body></html>\n",
+    "/detail/dojo": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>도조 미니</title></head>\n<body>\n<h1>도조 미니</h1>\n<p>도조 미니 제품 설명: 데스크톱 · 32GB 통합 메모리.</p><p>일시 품절</p>\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "url_contains",
+      "value": "/detail/gadget",
+      "description": "2페이지에서 상세에 도달했다"
+    }
+  ],
+  "script": [
+    {
+      "action": "fill",
+      "target": "검색어",
+      "value": "가젯"
+    },
+    {
+      "action": "click",
+      "target": "검색"
+    },
+    {
+      "action": "click",
+      "target": "다음 페이지"
+    },
+    {
+      "action": "click",
+      "target": "가젯 라이트 상세"
+    },
+    {
+      "action": "done",
+      "reason": "2페이지에서 상세를 확인했다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 0,
+    "reads_min": {
+      "/shop": 1,
+      "/page2": 1,
+      "/detail/gadget": 1
+    },
+    "content": [
+      {
+        "route": "/detail/gadget",
+        "contains": [
+          "가젯 라이트 제품 설명"
+        ]
+      }
+    ]
+  },
+  "notes": ""
+}

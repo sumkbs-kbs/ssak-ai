@@ -1,0 +1,41 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "read-05",
+  "kind": "read",
+  "tags": [
+    "by_design:ok"
+  ],
+  "goal": "2.4.0 릴리스 날짜를 확인한다",
+  "entry": "/page",
+  "pages": {
+    "/page": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>변경 이력</title></head>\n<body>\n<h1>변경 이력</h1>\n<ul>\n<li>2.5.0 — 2026-09-15: 검색 캐시 추가</li>\n<li>2.4.0 — 2026-08-30: 스키마 v2 마이그레이션</li>\n<li>2.3.1 — 2026-08-02: 핫픽스</li>\n</ul>\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "text_contains",
+      "value": "2.4.0 — 2026-08-30",
+      "description": "2.4.0 — 2026-08-30 이(가) 보인다"
+    }
+  ],
+  "script": [
+    {
+      "action": "done",
+      "reason": "변경 이력 페이지에서 내용을 확인했다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 0,
+    "reads_min": {
+      "/page": 1
+    },
+    "content": [
+      {
+        "route": "/page",
+        "contains": [
+          "2.4.0 — 2026-08-30"
+        ]
+      }
+    ]
+  },
+  "notes": ""
+}

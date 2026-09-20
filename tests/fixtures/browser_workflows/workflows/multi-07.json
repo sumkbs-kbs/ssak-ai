@@ -1,0 +1,62 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "multi-07",
+  "kind": "multi",
+  "tags": [
+    "by_design:ok"
+  ],
+  "goal": "도시로 재고를 필터해 서울 창고를 연다",
+  "entry": "/shop",
+  "pages": {
+    "/shop": "<h2>지역별 재고</h2>\n<input id=\"city\" aria-label=\"도시\">\n<button aria-label=\"필터 적용\" onclick=\"filterCity()\">필터 적용</button>\n<ul id=\"stores\">\n<li><a href=\"@/stores/seoul\" aria-label=\"서울 창고 상세\">서울 창고</a> — 위젯 120개</li>\n<li><a href=\"@/stores/busan\" aria-label=\"부산 창고 상세\">부산 창고</a> — 위젯 3개</li>\n</ul>\n<script>\nfunction filterCity() {\n  const city = document.getElementById('city').value.trim();\n  document.body.dataset.filtered = city || 'all';\n  document.querySelectorAll('#stores li').forEach(function (li) {\n    li.hidden = city !== '' && !li.textContent.includes(city);\n  });\n}\n</script>",
+    "/stores/seoul": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>서울 창고</title></head>\n<body>\n<h1>서울 창고</h1>\n<p>서울 창고: 위젯 프로 120개 · 가젯 40개</p>\n</body></html>\n",
+    "/stores/busan": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>부산 창고</title></head>\n<body>\n<h1>부산 창고</h1>\n<p>부산 창고: 위젯 프로 3개</p>\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "url_contains",
+      "value": "/stores/seoul",
+      "description": "서울 창고 상세에 도달했다"
+    },
+    {
+      "kind": "text_contains",
+      "value": "가젯 40개",
+      "description": "창고 재고가 보인다"
+    }
+  ],
+  "script": [
+    {
+      "action": "fill",
+      "target": "도시",
+      "value": "서울"
+    },
+    {
+      "action": "click",
+      "target": "필터 적용"
+    },
+    {
+      "action": "click",
+      "target": "서울 창고 상세"
+    },
+    {
+      "action": "done",
+      "reason": "창고 재고를 확인했다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 0,
+    "reads_min": {
+      "/shop": 1,
+      "/stores/seoul": 1
+    },
+    "content": [
+      {
+        "route": "/stores/seoul",
+        "contains": [
+          "위젯 프로 120개"
+        ]
+      }
+    ]
+  },
+  "notes": ""
+}

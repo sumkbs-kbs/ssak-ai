@@ -1,0 +1,63 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "multi-02",
+  "kind": "multi",
+  "tags": [
+    "by_design:ok"
+  ],
+  "goal": "필터를 적용해 도조 미니 상세를 연다",
+  "entry": "/shop",
+  "pages": {
+    "/shop": "<h2>제품 검색</h2>\n<input id=\"q\" aria-label=\"검색어\" placeholder=\"예: 위젯\">\n<button aria-label=\"검색\" onclick=\"doSearch()\">검색</button>\n<ul id=\"list\">\n<li><a href=\"@/detail/widget\" aria-label=\"위젯 프로 상세\">위젯 프로</a> — 즉시 출시</li>\n<li><a href=\"@/detail/gadget\" aria-label=\"가젯 라이트 상세\">가젯 라이트</a> — 예약 판매</li>\n<li><a href=\"@/detail/dojo\" aria-label=\"도조 미니 상세\">도조 미니</a> — 일시 품절</li>\n</ul>\n<script>\nfunction doSearch() {\n  const q = document.getElementById('q').value.trim().toLowerCase();\n  document.body.dataset.searched = '1';\n  document.querySelectorAll('#list li').forEach(function (li) {\n    li.hidden = q !== '' && !li.textContent.toLowerCase().includes(q);\n  });\n}\n</script>",
+    "/detail/widget": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>위젯 프로</title></head>\n<body>\n<h1>위젯 프로</h1>\n<p>위젯 프로 제품 설명: 12코어 · 팬리스 · 산업용 등급.</p>\n<p>출시일 2026-04-02 · 정가 ₩1,290,000</p>\n</body></html>\n",
+    "/detail/gadget": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>가젯 라이트</title></head>\n<body>\n<h1>가젯 라이트</h1>\n<p>가젯 라이트 제품 설명: 휴대용 · 블루투스 5.3.</p><p>정가 ₩129,000</p>\n</body></html>\n",
+    "/detail/dojo": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>도조 미니</title></head>\n<body>\n<h1>도조 미니</h1>\n<p>도조 미니 제품 설명: 데스크톱 · 32GB 통합 메모리.</p><p>일시 품절</p>\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "url_contains",
+      "value": "/detail/dojo",
+      "description": "도조 미니 상세에 도달했다"
+    },
+    {
+      "kind": "text_contains",
+      "value": "32GB",
+      "description": "제원이 보인다"
+    }
+  ],
+  "script": [
+    {
+      "action": "fill",
+      "target": "검색어",
+      "value": "도조"
+    },
+    {
+      "action": "click",
+      "target": "검색"
+    },
+    {
+      "action": "click",
+      "target": "도조 미니 상세"
+    },
+    {
+      "action": "done",
+      "reason": "필터 결과에서 상세를 확인했다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 0,
+    "reads_min": {
+      "/shop": 1,
+      "/detail/dojo": 1
+    },
+    "content": [
+      {
+        "route": "/detail/dojo",
+        "contains": [
+          "도조 미니 제품 설명"
+        ]
+      }
+    ]
+  },
+  "notes": ""
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "read-20",
+  "kind": "read",
+  "tags": [
+    "by_design:ok"
+  ],
+  "goal": "대표 메뉴 칼로리를 확인한다",
+  "entry": "/page",
+  "pages": {
+    "/page": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>영양정보</title></head>\n<body>\n<h1>영양정보</h1>\n<table><tr><td>불고기 정식</td><td>칼로리 620kcal</td></tr></table>\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "text_contains",
+      "value": "칼로리 620kcal",
+      "description": "칼로리 620kcal 이(가) 보인다"
+    }
+  ],
+  "script": [
+    {
+      "action": "done",
+      "reason": "영양정보 페이지에서 내용을 확인했다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 0,
+    "reads_min": {
+      "/page": 1
+    },
+    "content": [
+      {
+        "route": "/page",
+        "contains": [
+          "칼로리 620kcal"
+        ]
+      }
+    ]
+  },
+  "notes": ""
+}

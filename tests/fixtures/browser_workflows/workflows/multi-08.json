@@ -1,0 +1,55 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "multi-08",
+  "kind": "multi",
+  "tags": [
+    "by_design:ok"
+  ],
+  "goal": "안내 문구를 펼쳐 확인하고 원본 링크를 복사한다",
+  "entry": "/shop",
+  "pages": {
+    "/shop": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>다운로드 안내</title></head>\n<body>\n<h1>다운로드 안내</h1>\n<p id=\"note\" hidden>다운로드 링크는 24시간 동안 유효합니다.</p>\n<button aria-label=\"더 보기\" onclick=\"document.getElementById('note').hidden=false;document.body.dataset.expanded='1'\">더 보기</button>\n<button aria-label=\"copy link\" onclick=\"document.body.dataset.copied='1'\">copy link</button>\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "text_contains",
+      "value": "24시간 동안 유효",
+      "description": "유효 시간이 보인다"
+    },
+    {
+      "kind": "flag_equals",
+      "key": "copied",
+      "value": "1",
+      "description": "링크가 복사됐다"
+    }
+  ],
+  "script": [
+    {
+      "action": "click",
+      "target": "더 보기"
+    },
+    {
+      "action": "click",
+      "target": "copy link"
+    },
+    {
+      "action": "done",
+      "reason": "안내를 확인하고 링크를 복사했다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 0,
+    "reads_min": {
+      "/shop": 1
+    },
+    "content": [
+      {
+        "route": "/shop",
+        "contains": [
+          "24시간 동안 유효"
+        ]
+      }
+    ]
+  },
+  "notes": ""
+}

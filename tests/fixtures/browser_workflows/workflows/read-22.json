@@ -1,0 +1,41 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "read-22",
+  "kind": "read",
+  "tags": [
+    "by_design:ok"
+  ],
+  "goal": "치명 버그 건수를 확인한다",
+  "entry": "/page",
+  "pages": {
+    "/page": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>버그 목록</title></head>\n<body>\n<h1>버그 목록</h1>\n<p>이번 스프린트: 치명 1건 · 보통 6건 · 경미 14건</p>\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "text_contains",
+      "value": "치명 1건",
+      "description": "치명 1건 이(가) 보인다"
+    }
+  ],
+  "script": [
+    {
+      "action": "done",
+      "reason": "버그 목록 페이지에서 내용을 확인했다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 0,
+    "reads_min": {
+      "/page": 1
+    },
+    "content": [
+      {
+        "route": "/page",
+        "contains": [
+          "치명 1건"
+        ]
+      }
+    ]
+  },
+  "notes": ""
+}

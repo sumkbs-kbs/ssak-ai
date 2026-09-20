@@ -1,0 +1,41 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "read-18",
+  "kind": "read",
+  "tags": [
+    "by_design:ok"
+  ],
+  "goal": "설문 응답 수를 확인한다",
+  "entry": "/page",
+  "pages": {
+    "/page": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>설문 결과</title></head>\n<body>\n<h1>설문 결과</h1>\n<p>2026 사용자 만족도 조사: 응답 342건 (회수율 71%)</p>\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "text_contains",
+      "value": "응답 342건",
+      "description": "응답 342건 이(가) 보인다"
+    }
+  ],
+  "script": [
+    {
+      "action": "done",
+      "reason": "설문 결과 페이지에서 내용을 확인했다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 0,
+    "reads_min": {
+      "/page": 1
+    },
+    "content": [
+      {
+        "route": "/page",
+        "contains": [
+          "응답 342건"
+        ]
+      }
+    ]
+  },
+  "notes": ""
+}

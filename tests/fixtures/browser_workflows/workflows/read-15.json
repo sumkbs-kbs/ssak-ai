@@ -1,0 +1,41 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "read-15",
+  "kind": "read",
+  "tags": [
+    "by_design:ok"
+  ],
+  "goal": "제주도 배송 소요일을 확인한다",
+  "entry": "/page",
+  "pages": {
+    "/page": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>배송 안내</title></head>\n<body>\n<h1>배송 안내</h1>\n<p>수도권: 당일</p><p>제주도 익일 배송 (오전 10시 이전 주문)</p>\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "text_contains",
+      "value": "제주도 익일 배송",
+      "description": "제주도 익일 배송 이(가) 보인다"
+    }
+  ],
+  "script": [
+    {
+      "action": "done",
+      "reason": "배송 안내 페이지에서 내용을 확인했다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 0,
+    "reads_min": {
+      "/page": 1
+    },
+    "content": [
+      {
+        "route": "/page",
+        "contains": [
+          "제주도 익일 배송"
+        ]
+      }
+    ]
+  },
+  "notes": ""
+}

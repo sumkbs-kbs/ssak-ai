@@ -1,0 +1,41 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "read-01",
+  "kind": "read",
+  "tags": [
+    "by_design:ok"
+  ],
+  "goal": "주문 내역에서 총 반품 건수를 확인한다",
+  "entry": "/page",
+  "pages": {
+    "/page": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>주문 내역</title></head>\n<body>\n<h1>주문 내역</h1>\n<table>\n<tr><th>주문번호</th><th>품목</th><th>상태</th></tr>\n<tr><td>ORD-1001</td><td>무선 마우스</td><td>배송중</td></tr>\n<tr><td>ORD-1002</td><td>기계식 키보드</td><td>반품 처리중</td></tr>\n<tr><td>ORD-1003</td><td>USB-C 허브</td><td>반품 완료</td></tr>\n<tr><td>ORD-1004</td><td>웹캠</td><td>배송 완료</td></tr>\n</table>\n<p>요약: 반품 3건 · 배송중 5건 · 완료 12건</p>\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "text_contains",
+      "value": "반품 3건",
+      "description": "반품 3건 이(가) 보인다"
+    }
+  ],
+  "script": [
+    {
+      "action": "done",
+      "reason": "주문 내역 페이지에서 내용을 확인했다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 0,
+    "reads_min": {
+      "/page": 1
+    },
+    "content": [
+      {
+        "route": "/page",
+        "contains": [
+          "반품 3건"
+        ]
+      }
+    ]
+  },
+  "notes": ""
+}

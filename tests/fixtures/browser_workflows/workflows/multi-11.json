@@ -1,0 +1,56 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "multi-11",
+  "kind": "multi",
+  "tags": [
+    "by_design:ok"
+  ],
+  "goal": "문서를 세 홉 따라가 에스컬레이션 코드를 확인한다",
+  "entry": "/shop",
+  "pages": {
+    "/shop": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>문서 색인</title></head>\n<body>\n<h1>문서 색인</h1>\n<a href=\"@/docs/a\" aria-label=\"설치 문서 열기\">설치 문서</a>\n</body></html>\n",
+    "/docs/a": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>설치</title></head>\n<body>\n<h1>설치</h1>\n<p>설치: uv sync 후 make dev.</p><a href=\"@/docs/b\" aria-label=\"구성 문서 열기\">구성 문서</a>\n</body></html>\n",
+    "/docs/b": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>구성</title></head>\n<body>\n<h1>구성</h1>\n<p>구성: config.yaml 의 search 섹션.</p><a href=\"@/docs/c\" aria-label=\"문제 해결 문서 열기\">문제 해결</a>\n</body></html>\n",
+    "/docs/c": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>문제 해결</title></head>\n<body>\n<h1>문제 해결</h1>\n<p>문제 해결: 로그는 data/logs 에 있습니다.escalation 코드 ESC-42 참조.</p>\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "text_contains",
+      "value": "ESC-42",
+      "description": "에스컬레이션 코드가 보인다"
+    }
+  ],
+  "script": [
+    {
+      "action": "click",
+      "target": "설치 문서 열기"
+    },
+    {
+      "action": "click",
+      "target": "구성 문서 열기"
+    },
+    {
+      "action": "click",
+      "target": "문제 해결 문서 열기"
+    },
+    {
+      "action": "done",
+      "reason": "문서 끝의 코드를 확인했다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 0,
+    "reads_min": {
+      "/docs/c": 1
+    },
+    "content": [
+      {
+        "route": "/docs/c",
+        "contains": [
+          "ESC-42"
+        ]
+      }
+    ]
+  },
+  "notes": ""
+}

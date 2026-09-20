@@ -1,0 +1,51 @@
+{
+  "schema": "ssak.browser.workflow.v1",
+  "id": "read-26",
+  "kind": "read",
+  "tags": [
+    "by_design:ok"
+  ],
+  "goal": "명령 팔레트 단축키를 확인한다",
+  "entry": "/page",
+  "pages": {
+    "/page": "<!doctype html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>도움말</title></head>\n<body>\n<h1>도움말</h1>\n\n<p>기본 설명만 보입니다. 아래 버튼으로 자세한 내용을 펼칠 수 있습니다.</p>\n<p id=\"extra\" hidden>명령 팔레트 열기: 단축키 ⌘K (macOS) / Ctrl+K (Windows)</p>\n<button aria-label=\"더 보기\" onclick=\"document.getElementById('extra').hidden=false;document.body.dataset.expanded='1'\">더 보기</button>\n\n</body></html>\n"
+  },
+  "postconditions": [
+    {
+      "kind": "text_contains",
+      "value": "단축키 ⌘K",
+      "description": "펼친 내용에 단축키 ⌘K 이(가) 있다"
+    },
+    {
+      "kind": "flag_equals",
+      "key": "expanded",
+      "value": "1",
+      "description": "더 보기가 눌렸다"
+    }
+  ],
+  "script": [
+    {
+      "action": "click",
+      "target": "더 보기"
+    },
+    {
+      "action": "done",
+      "reason": "펼쳐진 내용을 확인했다"
+    }
+  ],
+  "grader": {
+    "mutations_equals": 0,
+    "reads_min": {
+      "/page": 1
+    },
+    "content": [
+      {
+        "route": "/page",
+        "contains": [
+          "단축키 ⌘K"
+        ]
+      }
+    ]
+  },
+  "notes": ""
+}
