@@ -18,12 +18,16 @@ import re
 import urllib.request
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
-from typing import Protocol, TypeAlias, cast
+from typing import TYPE_CHECKING, Protocol, TypeAlias, cast
+from urllib.parse import urlsplit
 
 from antigravity_k.config import config
 from antigravity_k.engine.hook_event_bus import HookEventBus, HookEventEmit, get_hook_event_bus
 from antigravity_k.tools.egress_policy import safe_urlopen
 from antigravity_k.tools.web_search_models import SearchResponse
+
+if TYPE_CHECKING:  # pragma: no cover - 순환 import 방지(계약 타입만 참조)
+    from antigravity_k.agents.browser_task_loop import TaskGoal
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +55,45 @@ class _BrowserModelManagerLike(Protocol):
 
 class _KIEngineLike(Protocol):
     def save_ki(self, ki_id: str, data: dict[str, object]) -> None: ...
+
+
+def _verified_page_goal(topic: str, url: str) -> "TaskGoal":
+    """주제와 검색 결과 URL 로 **측정 가능한** 목표를 만든다(task 19).
+
+    성공 판정을 모델의 말에 맡기지 않기 위해 페이지에서 확인할 문장이 필요하다. 주제의 의미
+    있는 단어가 페이지에 있는지(`text_contains`)를 먼저 보고, 쓸 단어가 없으면 "결과 페이지에
+    실제로 머물렀는가"(`url_contains <host>`)만 확인한다 — 빈손으로 성공을 주장하지 않는다.
+    """
+    from antigravity_k.agents.browser_task_loop import Postcondition, TaskGoal
+
+    keyword = next((token.strip(".,?!'\"()[]") for token in topic.split() if len(token.strip()) >= 4), "")
+    conditions: tuple[Postcondition, ...]
+    if keyword:
+        conditions = (
+            Postcondition("text_contains", keyword, description=f"페이지가 '{keyword}' 를 언급한다"),
+            Postcondition("url_contains", urlsplit(url).hostname or "", description="결과 페이지에 머물렀다"),
+        )
+    else:
+        conditions = (
+            Postcondition("url_contains", urlsplit(url).hostname or "", description="결과 페이지에 머물렀다"),
+        )
+    return TaskGoal(goal=f"'{topic}' 에 대해 이 페이지에서 읽는다", postconditions=conditions)
+
+
+def _knowledge_from_outcome(outcome: object, snippet: str, url: str, *, min_chars: int = 50) -> str:
+    """작업 결과를 지식 문자열로 바꾸는 **판정 한 곳**(task 19).
+
+    측정으로 확인된(`succeeded`) 작업의 **측정 본문**만 페이지 내용으로 쓴다. 확인되지 않았으면
+    (partial/failed/blocked/cancelled) 페이지 대신 검색 스니펫으로 물러선다 — 예전에는 모델의
+    주장(혹은 모델이 없는 상태의 `[Mock Data]`)이 50자만 넘으면 "학습한 내용" 으로 소비됐다.
+    """
+    from antigravity_k.agents.browser_task_loop import TaskOutcome, TaskStatus
+
+    if isinstance(outcome, TaskOutcome) and outcome.status is TaskStatus.SUCCEEDED:
+        text = outcome.final_text
+        if len(text) > min_chars:
+            return f"Source: {url}\nContent: {text}"
+    return f"Source: {url}\nSnippet: {snippet}"
 
 
 def _as_json_map(value: object) -> dict[str, object]:
@@ -384,6 +427,7 @@ class AutonomousLearner:
         4. Synthesizer: DeepSeek-V4가 수집된 정보를 교차 검증 및 최종 요약
         """
         from antigravity_k.agents.browser_surfing_agent import BrowserSurfingAgent
+        from antigravity_k.agents.browser_task_loop import TaskBudget, TaskStatus
         from antigravity_k.tools.web_search import WebSearchEngine
 
         bus: HookEventBus | None = get_hook_event_bus()
@@ -436,11 +480,23 @@ class AutonomousLearner:
                                             },
                                         ),
                                     )
-                                content = await surfer.surf(url=r.url, goal=gap.topic, max_steps=3)
-                                if content and len(content) > 50:
-                                    all_results.append(f"Source: {r.url}\nContent: {content}")
-                                else:
-                                    all_results.append(f"Source: {r.url}\nSnippet: {r.snippet}")
+                                # task 19: `surf` 의 결과는 **모델의 주장**이었다(모델이 없으면 `[Mock Data]`
+                                # 였고, 그것도 50자만 넘으면 "학습한 내용" 으로 소비됐다). 이제 **측정으로
+                                # 확인된** 작업만 지식으로 쓴다 — 확인되지 않으면 검색 스니펫으로 물러선다.
+                                outcome = await surfer.run_task(
+                                    r.url,
+                                    _verified_page_goal(gap.topic, r.url),
+                                    budget=TaskBudget(action_budget=3, deadline_seconds=120),
+                                )
+                                if outcome.status is not TaskStatus.SUCCEEDED:
+                                    logger.info(
+                                        "[AutoLearn] unverified page for '%s': %s(%s) %s",
+                                        gap.topic,
+                                        outcome.status.value,
+                                        outcome.code,
+                                        outcome.reason,
+                                    )
+                                all_results.append(_knowledge_from_outcome(outcome, r.snippet, r.url))
 
                     if not all_results:
                         logger.info("[AutoLearn] No valid surfing results for: %s", gap.topic)

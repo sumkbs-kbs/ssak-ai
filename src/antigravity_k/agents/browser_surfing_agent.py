@@ -11,10 +11,26 @@ import base64
 import inspect
 import json
 import logging
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass
-from typing import Protocol, cast, final
+from pathlib import Path
+from typing import Final, Protocol, cast, final
 
+from antigravity_k.agents.browser_task_loop import (
+    MODEL_UNAVAILABLE,
+    BrowserTaskError,
+    BrowserTaskLoop,
+    ModelPlanner,
+    PlannedAction,
+    Planner,
+    TaskBlocked,
+    TaskBudget,
+    TaskGoal,
+    TaskMeasurement,
+    TaskOutcome,
+    TaskRetryable,
+    TaskStep,
+)
 from antigravity_k.engine.approval_manager import ApprovalStatus, get_approval_manager
 from antigravity_k.tools.browser_approval import (
     ApprovalBinding,
@@ -26,12 +42,16 @@ from antigravity_k.tools.browser_approval import (
     summarize_effect,
 )
 from antigravity_k.tools.browser_observation import (
+    ActionResult,
     BrowserObservationError,
+    Observation,
     drop_browser_observer,
     observer_for_owner,
 )
 from antigravity_k.tools.browser_session_owner import (
     BrowserOwner,
+    BrowserSessionOwner,
+    SessionReservation,
     current_browser_owner,
     get_browser_session_owner,
 )
@@ -102,6 +122,30 @@ class _ModelManagerLike(Protocol):
     def generate(self, **kwargs: object) -> object: ...
 
 
+class _LoopObserverLike(Protocol):
+    """루프 호스트가 쓰는 관찰자 표면 — 관찰·행동·사실 조회."""
+
+    session_tag: str
+    policy: object
+
+    def element_fact(self, ref: str | None, page_key: str | None = None) -> dict[str, object] | None: ...
+
+    async def observe(self) -> Observation: ...
+
+    async def act(
+        self,
+        action: str,
+        *,
+        ref: str | None = None,
+        url: str | None = None,
+        text: str | None = None,
+        value: str | None = None,
+        path: str | None = None,
+        delta: int = 800,
+        page_key: str | None = None,
+    ) -> ActionResult: ...
+
+
 async_playwright: Callable[[], _PlaywrightController] | None
 try:
     from playwright.async_api import async_playwright as _async_playwright
@@ -144,6 +188,21 @@ class BrowserAction:
     extracted_data: str = ""
 
 
+@dataclass
+class _SurfSession:
+    """`surf` 와 `run_task` 가 공유하는 세션 수명 상태(획득과 반납이 한 모양이 되게)."""
+
+    owner: BrowserOwner
+    session_owner: BrowserSessionOwner | None = None
+    reservation: SessionReservation | None = None
+    page: _PageLike | None = None
+    observer: object | None = None
+    context: object | None = None
+    committed: bool = False
+    reused: bool = False
+    released: bool = False
+
+
 @final
 class BrowserSurfingAgent:
     """Playwright + Vision LLM 연동 자율 웹 서퍼."""
@@ -184,6 +243,100 @@ class BrowserSurfingAgent:
             _ = await self._playwright.stop()
             self._playwright = None
 
+    async def _open_session(self, url: str) -> _SurfSession:
+        """egress 검사 → 소유자에게 자리 예약 → (재사용 또는 일회용 컨텍스트) → 관찰자.
+
+        `surf` 와 `run_task` 가 **같은** 세션 수명 규칙을 지나게 한 곳으로 모은다(task 19).
+        """
+        session_owner = get_browser_session_owner()
+        owner = current_browser_owner()
+        # 다른 진입점과 같은 egress 규칙(task 16) — 서퍼가 아무 주소나 열게 두지 않는다.
+        _ = session_owner.validate_navigation(url)
+        # 세션 자리를 소유자에게 받는다(상한을 넘으면 여기서 거절된다).
+        reservation = session_owner.begin(owner, purpose="browser_surfing_agent")
+        session = _SurfSession(owner=owner, session_owner=session_owner, reservation=reservation)
+        try:
+            if reservation.is_reuse:
+                reuse = reservation.reuse
+                assert reuse is not None
+                session.reused = True
+                page = cast(_PageLike, reuse.page)
+                lease = reuse
+            else:
+                if self._browser is None:
+                    raise RuntimeError("Browser not initialized")
+                # 격리된 일회용 컨텍스트 — 사용자 프로필/기존 페이지를 쓰지 않는다.
+                context = await self._browser.new_context()
+                _ = session_owner.remember_foreign_pages(list(getattr(context, "pages", []) or []))
+                page = await context.new_page()
+                lease = session_owner.commit(reservation, page=page)
+                session.context = context
+                session.committed = True
+            # model 에게 보이는 것은 **관찰**과 그 관찰이 발급한 ref 뿐이다(selector·JS 는 계약에 없다).
+            session.page = page
+            session.observer = observer_for_owner(owner, lease=lease)
+        except BaseException:
+            await self._release_session(session)
+            raise
+        return session
+
+    async def _release_session(self, session: _SurfSession) -> None:
+        """이 번이 연 세션은 이 번에 닫는다(소유자 원장에서도 빠진다). 예약만 잡힌 경우도 돌려준다."""
+        if session.reused or session.released:
+            return
+        session.released = True
+        context = session.context
+        if context is not None:
+            closer = getattr(context, "close", None)
+            if callable(closer):
+                _ = await cast("Awaitable[object]", closer())
+        _ = drop_browser_observer(session.owner)
+        owner_sessions = session.session_owner
+        if owner_sessions is None:  # 세션 소유자를 거치지 않은 시험용 세션(상위에서 자리를 쥐고 있다)
+            return
+        if session.committed:
+            _ = owner_sessions.release(session.owner)
+        elif session.reservation is not None:
+            # launch/이동이 실패했으면 **예약만** 돌려준다 — 안 그러면 자리가 남은 채
+            # deadline 까지 아무도 그 슬롯을 못 쓴다.
+            owner_sessions.abort(session.reservation)
+
+    async def run_task(
+        self,
+        url: str,
+        goal: TaskGoal,
+        *,
+        budget: TaskBudget | None = None,
+        planner: Planner | None = None,
+        should_cancel: Callable[[], bool] | None = None,
+        on_step: Callable[[TaskStep], None] | None = None,
+    ) -> TaskOutcome:
+        """observe → plan → act → verify 루프를 돌리고 **검증된 결말**을 돌려준다(task 19).
+
+        `surf` 와 다른 점: 결과가 문자열(모델의 주장)이 아니라 `TaskOutcome` 이고, 성공은 완료
+        조건을 페이지에서 **측정**했을 때만이다. 모델이 없으면 `MODEL_UNAVAILABLE` 을 그대로 올린다
+        (성공을 지어내지 않는다).
+        """
+        if planner is None and self.model_manager is None:
+            # 브라우저를 띄우거나 세션 자리를 잡기 **전에** 말한다 — 계획할 주체가 없다.
+            raise BrowserTaskError(
+                MODEL_UNAVAILABLE,
+                "no model is configured for browser tasks: set a model or inject a planner",
+            )
+        await self._init_browser()
+        active_planner: Planner = planner or ModelPlanner(self.model_manager, vision_model_name=self.vision_model_name)
+        session = await self._open_session(url)
+        try:
+            page = session.page
+            assert page is not None
+            _ = await page.goto(url, wait_until="networkidle", timeout=15000)
+            host = _ObserverLoopHost(self, session)
+            loop = BrowserTaskLoop(active_planner, budget=budget, should_cancel=should_cancel, on_step=on_step)
+            return await loop.run(goal, host)
+        finally:
+            await self._release_session(session)
+            await self._close_browser()
+
     async def surf(self, url: str, goal: str, max_steps: int = 5) -> str:
         """주어진 URL로 이동하여 목표(goal)를 달성하기 위해 브라우저를 탐색합니다.
 
@@ -193,40 +346,23 @@ class BrowserSurfingAgent:
             max_steps: 최대 행동 횟수
 
         Returns:
-            추출된 텍스트 결과
+            추출된 텍스트 결과 — **모델의 주장**이다(측정으로 검증하지 않는다). 검증된 결말이
+            필요한 호출자는 `run_task` 를 쓴다.
 
         """
+        if self.model_manager is None:
+            # 모델이 없으면 계획할 주체가 없다 — 브라우저를 띄우기 전에 그 사실을 말한다
+            # (예전에는 `[Mock Data] <goal>` 을 돌려주며 성공한 척했다).
+            return f"Error: {MODEL_UNAVAILABLE} — no model is configured for browser surfing: set a model and retry"
         await self._init_browser()
         final_result = ""
 
-        page = None
-        context = None
-        session_owner = get_browser_session_owner()
-        browser_owner = current_browser_owner()
-        reservation = None
-        committed = False
+        session = await self._open_session(url)
+        page = session.page
+        assert page is not None
+        observer = cast(_LoopObserverLike, session.observer)
+        browser_owner = session.owner
         try:
-            # 다른 진입점과 같은 egress 규칙(task 16) — 서퍼가 아무 주소나 열게 두지 않는다.
-            _ = session_owner.validate_navigation(url)
-            # 세션 자리를 소유자에게 받는다(상한을 넘으면 여기서 거절된다).
-            reservation = session_owner.begin(browser_owner, purpose="browser_surfing_agent")
-            if reservation.is_reuse:
-                reuse = reservation.reuse
-                assert reuse is not None
-                page = cast(_PageLike, reuse.page)
-                lease = reuse
-            else:
-                if self._browser is None:
-                    return "Error: Browser not initialized"
-                # 격리된 일회용 컨텍스트 — 사용자 프로필/기존 페이지를 쓰지 않는다.
-                context = await self._browser.new_context()
-                _ = session_owner.remember_foreign_pages(list(getattr(context, "pages", []) or []))
-                page = await context.new_page()
-                lease = session_owner.commit(reservation, page=page)
-                committed = True
-            assert page is not None
-            # model 에게 보이는 것은 **관찰**과 그 관찰이 발급한 ref 뿐이다(selector·JS 는 계약에 없다).
-            observer = observer_for_owner(browser_owner, lease=lease)
             _ = await page.goto(url, wait_until="networkidle", timeout=15000)
 
             step = 0
@@ -296,17 +432,7 @@ class BrowserSurfingAgent:
             logger.exception("Browser surfing error on %s", url)
             final_result = f"Error during surfing: {e}"
         finally:
-            if reservation is not None and not reservation.is_reuse:
-                # 이 번 탐색이 연 세션은 이 번에 닫는다(소유자 원장에서도 빠진다).
-                if context is not None:
-                    _ = await context.close()
-                _ = drop_browser_observer(browser_owner)
-                if committed:
-                    _ = session_owner.release(browser_owner)
-                else:
-                    # launch/이동이 실패했으면 **예약만** 돌려준다 — 안 그러면 자리가 남은 채
-                    # deadline 까지 아무도 그 슬롯을 못 쓴다.
-                    session_owner.abort(reservation)
+            await self._release_session(session)
             await self._close_browser()
 
         return final_result
@@ -385,8 +511,13 @@ class BrowserSurfingAgent:
         실제 환경에서는 self.model_manager.generate()에 이미지를 첨부합니다.
         """
         if not self.model_manager:
-            # Mock behavior if model manager is not injected
-            return BrowserAction(action="extract", extracted_data="[Mock Data] " + goal)
+            # 예전에는 여기서 `[Mock Data] <goal>` 를 돌려주며 **성공한 척**했다(task 19 이전).
+            # 그 문자열은 상위 계층(자율 학습기)에서 "학습한 내용" 으로 소비된다 — 모델이 없으면
+            # 계획할 주체가 없다는 사실을 숨기지 않는다.
+            raise BrowserTaskError(
+                MODEL_UNAVAILABLE,
+                "no model is configured for browser surfing: set a model before asking for a browsing task",
+            )
 
         prompt = f"""
         당신은 자율 웹 서핑 에이전트입니다.
@@ -446,3 +577,117 @@ class BrowserSurfingAgent:
         except Exception as e:
             logger.exception("Vision model decision failed")
             return BrowserAction(action="done", reason=f"Model error: {e}")
+
+
+#: 사후조건 판정에 쓰는 표식(`document.body.dataset.*`)을 그대로 읽는다.
+_DATASET_JS: Final = (
+    "(() => { const out = {}; const body = document.body; const data = body && body.dataset; "
+    "if (data) { for (const key of Object.keys(data)) { out[key] = String(data[key]); } } return out; })()"
+)
+_BODY_TEXT_JS: Final = "document.body ? document.body.innerText : ''"
+
+
+async def _evaluate(page: object, expression: str) -> object:
+    """페이지 평가는 **실패해도 작업을 죽이지 않는다**(측정 불가 = 근거 없음 → partial/failed)."""
+    evaluate = getattr(page, "evaluate", None)
+    if not callable(evaluate):
+        return None
+    try:
+        value = evaluate(expression)
+        if inspect.isawaitable(value):
+            value = await cast("Awaitable[object]", value)
+    except Exception:
+        logger.debug("page evaluate failed: %s", expression, exc_info=True)
+        return None
+    return value
+
+
+def _as_flags(value: object) -> Mapping[str, str]:
+    """dataset 을 dict 로 정규화한다(문자열 JSON 도 받아 준다)."""
+    if isinstance(value, Mapping):
+        raw = cast("Mapping[object, object]", value)
+        return {str(key): str(item) for key, item in raw.items()}
+    if isinstance(value, str):
+        try:
+            decoded = json.loads(value)
+        except (json.JSONDecodeError, ValueError):
+            return {}
+        if isinstance(decoded, Mapping):
+            raw = cast("Mapping[object, object]", decoded)
+            return {str(key): str(item) for key, item in raw.items()}
+    return {}
+
+
+@final
+class _ObserverLoopHost:
+    """루프가 브라우저를 만지는 유일한 통로: 관찰·행동·**측정**.
+
+    `act` 는 사람이 필요한 경우(승인·MFA/CAPTCHA) `TaskBlocked` 를, 계약이 거절했지만 다시
+    관찰하면 회복될 수 있는 경우(낡은 ref 등) `TaskRetryable` 을 던진다 — 루프는 그 둘을
+    성공으로 접지 않는다.
+    """
+
+    def __init__(self, agent: BrowserSurfingAgent, session: _SurfSession) -> None:
+        page = session.page
+        assert page is not None
+        self._agent = agent
+        self._observer = cast(_LoopObserverLike, session.observer)
+        self._page = page
+        self._owner = session.owner
+
+    async def observe(self) -> Observation:
+        return await self._observer.observe()
+
+    async def act(self, action: PlannedAction) -> ActionResult:
+        if action.action == "click":
+            # 사람이 해야 하는 단계(MFA·CAPTCHA)면 수행하지 않는다.
+            handoff = await detect_user_handoff(self._page)
+            if handoff is not None:
+                raise TaskBlocked(
+                    f"waiting_user({handoff.kind}): {handoff.reason} — 사람이 끝낸 뒤 다시 요청하세요",
+                    kind="handoff",
+                )
+            # 위험도를 **서버가** 요소의 의미로 판정한다(task 18). 승인이 필요한 효과는 스스로 누르지 않는다.
+            if action.ref:
+                blocked = await self._agent._approval_block(self._observer, self._owner, action.ref)
+                if blocked is not None:
+                    raise TaskBlocked(blocked, kind="approval")
+        try:
+            return await self._observer.act(
+                action.action,
+                ref=action.ref,
+                url=action.url,
+                text=action.text,
+                value=action.value,
+                path=action.path,
+                delta=action.delta,
+            )
+        except BrowserObservationError as exc:
+            if exc.retryable:
+                raise TaskRetryable(f"{exc.code}: {exc}", code=exc.code) from exc
+            raise TaskBlocked(f"{exc.code}: {exc}", kind="contract") from exc
+
+    async def measure(self) -> TaskMeasurement:
+        """성공 판정의 근거를 **페이지에서** 읽어 온다(모델의 말이 아니라 관찰과 DOM 이다)."""
+        observation = await self.observe()
+        flags = _as_flags(await _evaluate(self._page, _DATASET_JS))
+        text = await _evaluate(self._page, _BODY_TEXT_JS)
+        return TaskMeasurement(
+            url=observation.url,
+            title=observation.title,
+            text=text if isinstance(text, str) else "",
+            flags=flags,
+            ref_names=frozenset(item.name for item in observation.refs),
+            downloads=self._downloads(),
+            generation=observation.generation,
+        )
+
+    def _downloads(self) -> tuple[str, ...]:
+        """세션 샌드박스에 실제로 생긴 파일만 센다(다운로드가 목표일 때의 근거)."""
+        directory = getattr(getattr(self._observer, "policy", None), "download_dir", None)
+        if directory is None:
+            return ()
+        try:
+            return tuple(sorted(item.name for item in Path(directory).iterdir() if item.is_file()))
+        except OSError:
+            return ()
