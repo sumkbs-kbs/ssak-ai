@@ -11,7 +11,8 @@ import base64
 import inspect
 import json
 import logging
-from collections.abc import Awaitable, Callable, Mapping
+from collections.abc import AsyncIterator, Awaitable, Callable, Mapping
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Final, Protocol, cast, final
@@ -20,6 +21,7 @@ from antigravity_k.agents.browser_task_loop import (
     MODEL_UNAVAILABLE,
     BrowserTaskError,
     BrowserTaskLoop,
+    LoopHost,
     ModelPlanner,
     PlannedAction,
     Planner,
@@ -29,11 +31,14 @@ from antigravity_k.agents.browser_task_loop import (
     TaskMeasurement,
     TaskOutcome,
     TaskRetryable,
+    TaskStatus,
     TaskStep,
 )
 from antigravity_k.engine.approval_manager import ApprovalStatus, get_approval_manager
 from antigravity_k.tools.browser_approval import (
     ApprovalBinding,
+    Effect,
+    EffectDecision,
     classify_effect,
     detect_user_handoff,
     get_browser_approval_gate,
@@ -55,6 +60,7 @@ from antigravity_k.tools.browser_session_owner import (
     current_browser_owner,
     get_browser_session_owner,
 )
+from antigravity_k.tools.browser_task_journal import BrowserTaskJournal, ResumePlan
 
 # 승인 요청을 등록할 도구 이름(task 18). API 경로와 **같은 이름**을 쓴다 — 일반 도구 승인의
 # "항상 허용" 목록에 이 이름이 있으면 브라우저 효과를 자동 승인해 버리므로, 그 경우에는
@@ -310,12 +316,19 @@ class BrowserSurfingAgent:
         planner: Planner | None = None,
         should_cancel: Callable[[], bool] | None = None,
         on_step: Callable[[TaskStep], None] | None = None,
+        journal: BrowserTaskJournal | None = None,
+        task_id: str = "",
+        idempotency_key: str | None = None,
     ) -> TaskOutcome:
         """observe → plan → act → verify 루프를 돌리고 **검증된 결말**을 돌려준다(task 19).
 
         `surf` 와 다른 점: 결과가 문자열(모델의 주장)이 아니라 `TaskOutcome` 이고, 성공은 완료
         조건을 페이지에서 **측정**했을 때만이다. 모델이 없으면 `MODEL_UNAVAILABLE` 을 그대로 올린다
         (성공을 지어내지 않는다).
+
+        저널을 넘기면(task 20) 작업은 **디스크에** 남는다: 같은 `idempotency_key` 의 두 번째 요청은
+        실행되지 않고 기록된 결말을 돌려주고, 미확정인 행동(되돌릴 수 없는 효과를 보냈는데 결과를
+        모르는 상태)이 있으면 **자동 재실행을 거부**하고 `UNKNOWN_OUTCOME` 으로 끝난다.
         """
         if planner is None and self.model_manager is None:
             # 브라우저를 띄우거나 세션 자리를 잡기 **전에** 말한다 — 계획할 주체가 없다.
@@ -323,19 +336,95 @@ class BrowserSurfingAgent:
                 MODEL_UNAVAILABLE,
                 "no model is configured for browser tasks: set a model or inject a planner",
             )
-        await self._init_browser()
+        active_task_id = task_id or str(idempotency_key or "")
+        if journal is not None and active_task_id:
+            duplicate = self._resume_or_refuse(journal, active_task_id, goal, idempotency_key=idempotency_key)
+            if duplicate is not None:
+                return duplicate
         active_planner: Planner = planner or ModelPlanner(self.model_manager, vision_model_name=self.vision_model_name)
+        async with self.browser_task_host(url) as host:
+            loop = BrowserTaskLoop(
+                active_planner,
+                budget=budget,
+                should_cancel=should_cancel,
+                on_step=on_step,
+                journal=journal,
+                task_id=active_task_id if journal is not None else "",
+            )
+            return await loop.run(goal, host)
+
+    @asynccontextmanager
+    async def browser_task_host(self, url: str) -> AsyncIterator[LoopHost]:
+        """세션을 열고 주소로 이동한 뒤, 루프가 쓸 호스트를 넘긴다(수명은 이 컨텍스트가 소유한다).
+
+        `run_task` 가 쓰는 것과 **같은** 수명 규칙이다 — 루프를 다른 방식으로 돌리는 호출자
+        (재개 하네스·통합 시험)가 세션 획득/반납과 `goto` 를 따로 구현하지 않게 한다.
+        """
+        await self._init_browser()
         session = await self._open_session(url)
         try:
             page = session.page
             assert page is not None
             _ = await page.goto(url, wait_until="networkidle", timeout=15000)
-            host = _ObserverLoopHost(self, session)
-            loop = BrowserTaskLoop(active_planner, budget=budget, should_cancel=should_cancel, on_step=on_step)
-            return await loop.run(goal, host)
+            yield _ObserverLoopHost(self, session)
         finally:
             await self._release_session(session)
             await self._close_browser()
+
+    def _resume_or_refuse(
+        self,
+        journal: BrowserTaskJournal,
+        task_id: str,
+        goal: TaskGoal,
+        *,
+        idempotency_key: str | None = None,
+    ) -> TaskOutcome | None:
+        """이 작업을 **이어받아도 되는가**. 이어받을 수 없으면 그 사실을 결말로 돌려준다.
+
+        돌려주는 값이 `None` 이면 실행해도 된다(새 작업이거나, 미결 행동이 읽기뿐인 경우).
+        돌려주는 값이 있으면 **브라우저를 열지 않는다** — 중복 실행과 자동 재실행을 막는 자리다.
+        """
+        opened = journal.open_task(
+            task_id,
+            goal=goal.goal,
+            postconditions=[item.to_dict() for item in goal.postconditions],
+            idempotency_key=idempotency_key or task_id,
+        )
+        if not opened.duplicate:
+            return None
+        # 중복은 **원래 작업**의 이야기를 읽어야 한다 — 방금 온 새 id 는 저널에 없다.
+        plan = journal.resume_plan(opened.task_id)
+        if plan.finished is not None:
+            # 이미 끝난 요청을 다시 받았다 — **실행하지 않고** 그 결말을 그대로 돌려준다.
+            return self._recorded_outcome(goal, plan)
+        if plan.replay_allowed:
+            journal.record_resumed(opened.task_id, must_reobserve=True)
+            return None
+        return self._recorded_outcome(goal, plan)
+
+    @staticmethod
+    def _recorded_outcome(goal: TaskGoal, plan: ResumePlan) -> TaskOutcome:
+        """저널이 아는 결말로 `TaskOutcome` 을 만든다(모르는 것은 모른다고 적는다)."""
+        finished = plan.finished or {}
+        status = TaskStatus.UNKNOWN_OUTCOME
+        if plan.phase == "finished" and finished:
+            try:
+                status = TaskStatus(str(finished.get("status", "")))
+            except ValueError:  # 알 수 없는 상태 문자열은 실패로 읽는다(성공으로 승격하지 않는다)
+                status = TaskStatus.FAILED
+        return TaskOutcome(
+            goal=goal.goal,
+            status=status,
+            code=plan.code,
+            reason=plan.reason,
+            postconditions=(),
+            steps=(),
+            actions_performed=int(cast("int", finished.get("actions") or 0)),
+            elapsed_seconds=0.0,
+            tokens_used=0,
+            cancel_mode="" if plan.cancel is None else "cooperative",
+            forced_shutdown=plan.phase == "unknown_outcome",
+        )
 
     async def surf(self, url: str, goal: str, max_steps: int = 5) -> str:
         """주어진 URL로 이동하여 목표(goal)를 달성하기 위해 브라우저를 탐색합니다.
@@ -447,15 +536,7 @@ class BrowserSurfingAgent:
         fact = observer.element_fact(ref)
         if fact is None:  # 사실을 못 얻으면 계약이 판정하게 둔다(낡은 ref 등)
             return None
-        decision = classify_effect(
-            "click",
-            role=str(fact.get("role") or ""),
-            name=str(fact.get("name") or ""),
-            tag=str(fact.get("tag") or ""),
-            url=str(fact.get("url") or ""),
-            secret=bool(fact.get("secret")),
-            disabled=bool(fact.get("disabled")),
-        )
+        decision = _classify_fact("click", fact)
         if not decision.requires_approval:
             return None
         binding = ApprovalBinding(
@@ -618,6 +699,22 @@ def _as_flags(value: object) -> Mapping[str, str]:
     return {}
 
 
+def _classify_fact(action: str, fact: Mapping[str, object]) -> EffectDecision:
+    """요소의 **사실**로 효과를 판정하는 한 곳(task 18 의 분류를 승인과 저널이 함께 쓴다).
+
+    두 곳이 각자 분류하면 "승인은 필요 없는데 저널은 위험하다고 보는" 어긋남이 생긴다.
+    """
+    return classify_effect(
+        action,
+        role=str(fact.get("role") or ""),
+        name=str(fact.get("name") or ""),
+        tag=str(fact.get("tag") or ""),
+        url=str(fact.get("url") or ""),
+        secret=bool(fact.get("secret")),
+        disabled=bool(fact.get("disabled")),
+    )
+
+
 @final
 class _ObserverLoopHost:
     """루프가 브라우저를 만지는 유일한 통로: 관찰·행동·**측정**.
@@ -637,6 +734,21 @@ class _ObserverLoopHost:
 
     async def observe(self) -> Observation:
         return await self._observer.observe()
+
+    def effect_of(self, action: PlannedAction) -> str:
+        """이 행동의 효과를 **요소의 사실**로 판정한다(task 18 의 분류를 그대로 쓴다).
+
+        저널은 이 값을 `되돌릴 수 있는가` 로 읽는다. 사실을 얻지 못하면 빈 문자열을 돌려주고,
+        루프가 `unknown`(되돌릴 수 없는 쪽)으로 처리한다 — 모르면 조용히 다시 누르지 않는다.
+        """
+        if action.action == "goto":
+            return Effect.NAVIGATE.value
+        if not action.ref:
+            return ""
+        fact = self._observer.element_fact(action.ref)
+        if fact is None:
+            return ""
+        return _classify_fact(action.action, fact).effect.value
 
     async def act(self, action: PlannedAction) -> ActionResult:
         if action.action == "click":

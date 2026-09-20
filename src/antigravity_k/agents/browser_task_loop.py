@@ -35,6 +35,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Final, Protocol, cast
 
+from antigravity_k.tools import browser_task_journal as task_journal
 from antigravity_k.tools.browser_observation import ALLOWED_ACTIONS, ActionResult, Observation
 
 logger = logging.getLogger("browser_task_loop")
@@ -54,12 +55,23 @@ TOKEN_BUDGET_EXHAUSTED: Final = "TOKEN_BUDGET_EXHAUSTED"
 CANCELLED: Final = "CANCELLED"
 BLOCKED: Final = "BLOCKED"
 GOAL_VERIFIED: Final = "GOAL_VERIFIED"
+ACTION_FAILED: Final = "ACTION_FAILED"
+#: 보냈지만 결과를 모르는 행동 — 되돌릴 수 없는 효과라면 **자동 재실행 금지**(task 20).
+UNKNOWN_OUTCOME: Final = "UNKNOWN_OUTCOME"
 
 DEFAULT_ACTION_BUDGET: Final = 30
 DEFAULT_DEADLINE_SECONDS: Final = 600.0
 DEFAULT_REPEATS_ALLOWED: Final = 3
 DEFAULT_MAX_PLAN_ERRORS: Final = 3
 DEFAULT_NO_PROGRESS_LIMIT: Final = 5
+
+#: 취소 요청이 관측되기까지 기다리는 시간(초) — 계획의 "2초 내 협력 취소". 넘으면 timeout 으로 보고한다.
+DEFAULT_CANCEL_GRACE_SECONDS: Final = task_journal.DEFAULT_CANCEL_GRACE_SECONDS
+
+#: 호스트가 효과를 분류하지 못할 때의 기본값. 읽기로 **단정하지 않는다** — 모르면 되돌릴 수 없는
+#: 쪽으로 기운다(재개가 조용히 다시 누르는 것보다 사람을 부르는 편이 싸다).
+_READ_ONLY_ACTIONS: Final = frozenset({"scroll"})
+_UNCLASSIFIED_EFFECT: Final = "unknown"
 #: 상위 계층에 돌려주는 측정 본문의 상한(전문을 옮기면 비밀·개인정보가 함께 나간다).
 MAX_FINAL_TEXT_CHARS: Final = 4_000
 #: 호스트 정책을 못 읽었을 때의 폴백. 토큰 예산이 없으면 루프는 **멈추지 않는다**(행동·시간 축이 남아 있다).
@@ -116,6 +128,7 @@ class TaskStatus(str, Enum):
     FAILED = "failed"
     BLOCKED = "blocked"
     CANCELLED = "cancelled"
+    UNKNOWN_OUTCOME = "unknown_outcome"
 
 
 # ── 측정: 성공을 모델의 말이 아니라 **관찰 가능한 사실**로 판정한다 ─────────────
@@ -419,6 +432,10 @@ class TaskOutcome:
     #: 마지막으로 **측정한** 페이지 본문(성공했을 때만 상위 계층이 쓴다 — 모델의 주장이 아니다).
     final_text: str = ""
     blocked_kind: str = ""
+    #: 취소가 어떻게 끝났는가(task 20): `""`(취소 아님) · `cooperative`(제때 멈춤) · `timeout`.
+    cancel_mode: str = ""
+    #: `timeout` 이면 **강제 종료**다 — 진행 중이던 행동은 끝났지만 그 뒤 검증은 하지 않았다.
+    forced_shutdown: bool = False
     schema: str = TASK_SCHEMA
 
     @property
@@ -446,6 +463,8 @@ class TaskOutcome:
             "claimed": self.claimed,
             "final_text_chars": len(self.final_text),
             "blocked_kind": self.blocked_kind,
+            "cancel_mode": self.cancel_mode,
+            "forced_shutdown": self.forced_shutdown,
         }
 
     def to_summary(self) -> str:
@@ -656,6 +675,15 @@ def _usage_tokens(response: object, prompt: str, text: str) -> int:
     return max(1, (len(prompt) + len(text)) // 4)
 
 
+@dataclass(frozen=True)
+class _CancelSignal:
+    """취소를 **어떻게** 멈추는지. `mode` 는 `cooperative`(제때) 또는 `timeout`(강제 종료)."""
+
+    reason: str
+    mode: str
+    forced: bool
+
+
 # ── 루프 ─────────────────────────────────────────────────────────────────────
 class BrowserTaskLoop:
     """observe → plan → act → verify. 예산·반복·무진전을 스스로 끊는다."""
@@ -670,6 +698,10 @@ class BrowserTaskLoop:
         no_progress_limit: int = DEFAULT_NO_PROGRESS_LIMIT,
         should_cancel: Callable[[], bool] | None = None,
         on_step: Callable[[TaskStep], None] | None = None,
+        journal: task_journal.BrowserTaskJournal | None = None,
+        task_id: str = "",
+        cancel_grace_seconds: float | None = None,
+        on_dispatch: Callable[[task_journal.TaskIntent], None] | None = None,
     ) -> None:
         self.planner = planner
         self.budget = budget or TaskBudget()
@@ -678,6 +710,15 @@ class BrowserTaskLoop:
         self.no_progress_limit = max(2, no_progress_limit)
         self._should_cancel = should_cancel
         self._on_step = on_step
+        #: 저널은 선택이다 — 없으면 루프는 task 19 와 **똑같이** 동작한다(메모리만).
+        self._journal = journal
+        self._task_id = task_id
+        self.cancel_grace_seconds = (
+            DEFAULT_CANCEL_GRACE_SECONDS if cancel_grace_seconds is None else max(0.0, cancel_grace_seconds)
+        )
+        #: 발송 기록이 디스크에 남은 **직후** 불리는 관측 지점(계측·감사). 이 시점과 결과 기록 사이의
+        #: 창(window)이 "보냈는데 결과를 모른다" 이고, 그 창을 재현할 수 있어야 시험이 계약을 잰다.
+        self._on_dispatch = on_dispatch
 
     async def run(self, goal: TaskGoal, host: LoopHost) -> TaskOutcome:
         started = self.budget.clock()
@@ -707,18 +748,21 @@ class BrowserTaskLoop:
             )
 
         while True:
-            if self._cancelled():
+            cancel = self._cancel_signal()
+            if cancel is not None:
                 return self._finish(
                     goal,
                     TaskStatus.CANCELLED,
                     CANCELLED,
-                    "취소 요청을 받아 멈췄다",
+                    cancel.reason,
                     results,
                     steps,
                     actions,
                     started,
                     tokens,
                     measurement,
+                    cancel_mode=cancel.mode,
+                    forced_shutdown=cancel.forced,
                 )
             if actions >= self.budget.action_budget:
                 return self._finish(
@@ -877,11 +921,15 @@ class BrowserTaskLoop:
                     claimed=planned.extracted_data or planned.reason,
                 )
 
+            # 의도 → 발송 순서로 **디스크에** 남긴 뒤에 손을 밸다(task 20). 여기서 프로세스가
+            # 죽으면 "보냈는데 결과를 모른다"가 저널에 남고, 재개는 그 사실을 보고 멈춘다.
+            intent = self._journal_intent(planned, observation, host)
             try:
                 outcome = await host.act(planned)
             except TaskRetryable as exc:
                 # 실행되지 않았다(계약이 거절). 다시 관찰하면 회복될 수 있으므로 예산은 쓰지 않지만,
                 # 같은 계획이 반복되면 반복 판정이 먼저 끊는다.
+                self._journal_outcome(intent, performed=False, detail=exc.code)
                 plan_errors += 1
                 step = self._step(
                     len(steps) + 1,
@@ -909,6 +957,7 @@ class BrowserTaskLoop:
                     )
                 continue
             except TaskBlocked as exc:
+                self._journal_outcome(intent, performed=False, detail=exc.kind)
                 measurement = await host.measure()
                 results = verify_postconditions(goal, measurement)
                 step = self._step(
@@ -935,8 +984,47 @@ class BrowserTaskLoop:
                     measurement,
                     blocked_kind=exc.kind,
                 )
+            except Exception as exc:  # 브라우저·네트워크가 무너진 경우 — 결과를 모른다
+                self._journal_uncertain(intent, exc)
+                return self._finish(
+                    goal,
+                    TaskStatus.UNKNOWN_OUTCOME if (intent is not None and intent.consequential) else TaskStatus.FAILED,
+                    UNKNOWN_OUTCOME if (intent is not None and intent.consequential) else ACTION_FAILED,
+                    f"행동을 보낸 뒤 결과를 알 수 없다: {type(exc).__name__}: {exc}",
+                    results,
+                    steps,
+                    actions,
+                    started,
+                    tokens,
+                    measurement,
+                )
 
             actions += 1
+            self._journal_outcome(
+                intent,
+                performed=outcome.performed,
+                goal_verified=outcome.goal_verified,
+                detail=outcome.detail,
+                url_after=str(getattr(outcome, "url_after", "") or ""),
+            )
+            # 행동 직후 체크포인트: 진행 중에 들어온 취소는 **여기서** 관측된다(제때면 협력,
+            # 오래 걸렸으면 timeout + 강제 종료로 보고한다).
+            cancel = self._cancel_signal()
+            if cancel is not None:
+                return self._finish(
+                    goal,
+                    TaskStatus.CANCELLED,
+                    CANCELLED,
+                    cancel.reason,
+                    results,
+                    steps,
+                    actions,
+                    started,
+                    tokens,
+                    measurement,
+                    cancel_mode=cancel.mode,
+                    forced_shutdown=cancel.forced,
+                )
             measurement = await host.measure()
             results = verify_postconditions(goal, measurement)
             verified = tuple(item.description for item in results if item.verified)
@@ -992,6 +1080,123 @@ class BrowserTaskLoop:
             return bool(self._should_cancel())
         except Exception:  # pragma: no cover - 취소 확인 실패가 작업을 계속하게 두지 않는다
             return True
+
+    def _cancel_signal(self) -> _CancelSignal | None:
+        """취소해야 하는가 — 그리고 **어떻게** 멈추는가.
+
+        두 통로를 본다: 호출자의 콜백(`should_cancel`, task 19)과 **저널의 취소 요청**(task 20).
+        저널 쪽은 요청 시각을 알고 있으므로 협력이었는지 시간초과였는지 말할 수 있다:
+
+        - 요청이 `cancel_grace_seconds` 안에 관측됐다 → `cooperative`(다음 행동 전에 멈췄다)
+        - 그보다 오래 걸렸다(진행 중 행동이 끝나기를 기다렸다) → `timeout` + `forced_shutdown=True`.
+          이때 진행 중이던 행동은 **이미 끝났고 그 결과는 기록됐지만**, 그 뒤 검증은 건너뛴다.
+        """
+        if self._journal is None or not self._task_id:
+            return (
+                _CancelSignal(reason="취소 요청을 받아 멈췄다", mode="cooperative", forced=False)
+                if self._cancelled()
+                else None
+            )
+        try:
+            request = self._journal.cancel_request(self._task_id)
+        except task_journal.JournalError:  # 저널을 읽을 수 없으면 콜백 판정으로 물러선다
+            request = None
+        if request is None:
+            if self._cancelled():
+                return _CancelSignal(reason="취소 요청을 받아 멈췄다", mode="cooperative", forced=False)
+            return None
+        # 지연은 **저널의 시계**로 잰다 — 예산의 시계(단조)와 원점이 다르면 시간초과가 사라진다.
+        elapsed = max(0.0, self._journal.now() - request.requested_at)
+        late = elapsed > self.cancel_grace_seconds
+        try:
+            self._journal.record_cancel_observed(self._task_id, mode="timeout" if late else "cooperative", forced=late)
+        except task_journal.JournalError:  # pragma: no cover - 관측 기록 실패가 멈춤을 막지 않는다
+            logger.debug("cancel observation could not be journaled", exc_info=True)
+        if late:
+            return _CancelSignal(
+                reason=(
+                    f"취소 요청이 {elapsed:.1f}초 뒤에 관측됐다(기한 {self.cancel_grace_seconds:.1f}초) — "
+                    "진행 중이던 행동은 끝났고 그 뒤 검증 없이 강제 종료한다"
+                ),
+                mode="timeout",
+                forced=True,
+            )
+        return _CancelSignal(
+            reason=f"취소 요청을 {elapsed:.1f}초 만에 관측해 다음 행동 전에 멈췄다", mode="cooperative", forced=False
+        )
+
+    def _effect_of(self, planned: PlannedAction, host: LoopHost) -> str:
+        """이 행동의 효과. **호스트의 요소 사실**에서 나온다(모델의 말이나 페이지 문구가 아니다).
+
+        호스트가 분류하지 못하면 `unknown` 이다 — 저널이 그것을 `되돌릴 수 없는 효과` 로 다루므로
+        "모르면 다시 누르지 않는다"가 기본값이 된다. `scroll` 만 읽기로 단정한다.
+        """
+        classifier = getattr(host, "effect_of", None)
+        if callable(classifier):
+            try:
+                value = str(classifier(planned) or "").strip().lower()
+            except Exception:  # 분류 실패는 작업 실패가 아니다 — 모르는 것으로 둔다
+                logger.debug("host effect classification failed", exc_info=True)
+                value = ""
+            if value:
+                return value
+        return "read" if planned.action in _READ_ONLY_ACTIONS else _UNCLASSIFIED_EFFECT
+
+    def _journal_intent(
+        self, planned: PlannedAction, observation: Observation, host: LoopHost
+    ) -> task_journal.TaskIntent | None:
+        """의도 + 발송을 기록한다. 저널이 없으면 아무 일도 일어나지 않는다(task 19 동작 보존)."""
+        if self._journal is None or not self._task_id:
+            return None
+        try:
+            intent = self._journal.record_intent(
+                self._task_id,
+                action=planned.action,
+                target=planned.target_name,
+                effect=self._effect_of(planned, host),
+                ref=planned.ref or "",
+                generation=observation.generation,
+            )
+            self._journal.record_dispatch(self._task_id, intent.seq)
+        except task_journal.JournalError:
+            logger.warning("[BrowserTask] intent could not be journaled", exc_info=True)
+            return None
+        self._notify_dispatch(intent)
+        return intent
+
+    def _journal_outcome(
+        self,
+        intent: task_journal.TaskIntent | None,
+        *,
+        performed: bool,
+        goal_verified: bool = False,
+        detail: str = "",
+        url_after: str = "",
+    ) -> None:
+        """결과를 닫는다 — 열린 의도가 남으면 재개가 **모르는 일**로 본다(그게 안전한 기본값이다)."""
+        if intent is None or self._journal is None:
+            return
+        try:
+            self._journal.record_outcome(
+                self._task_id,
+                intent.seq,
+                performed=performed,
+                goal_verified=goal_verified,
+                detail=detail,
+                url_after=url_after,
+            )
+        except task_journal.JournalError:  # pragma: no cover - 결과 기록 실패는 저널에 사실을 남긴다
+            logger.warning("[BrowserTask] outcome could not be journaled", exc_info=True)
+
+    def _journal_uncertain(self, intent: task_journal.TaskIntent | None, exc: BaseException) -> None:
+        """결과를 **모르는** 경우: 결과 기록을 쓰지 않는다(그것이 이 작업의 뜻이다).
+
+        의도와 발송 기록만 남으므로 재개 판정이 `UNKNOWN_OUTCOME`(되돌릴 수 없는 효과) 또는
+        `SAFE_RETRY`(읽기)로 갈라진다.
+        """
+        if intent is None or self._journal is None:
+            return
+        logger.error("[BrowserTask] dispatched action %s has an unknown outcome: %s", intent.seq, exc)
 
     def _planner_tokens(self) -> int:
         value = getattr(self.planner, "last_tokens", 0)
@@ -1052,6 +1257,25 @@ class BrowserTaskLoop:
             rejected=rejected,
         )
 
+    def _journal_finish(self, outcome: TaskOutcome) -> None:
+        """작업의 결말을 저널에 남긴다.
+
+        **`UNKNOWN_OUTCOME` 은 남기지 않는다** — 결말을 적으면 재개가 "이미 끝난 작업" 으로 읽고
+        미확정인 행동을 덮어 버린다. 그 상태의 작업은 열린 채로 남아 사람이 확인해야 한다.
+        """
+        if self._journal is None or not self._task_id or outcome.code == UNKNOWN_OUTCOME:
+            return
+        try:
+            self._journal.finish_task(
+                self._task_id,
+                status=outcome.status.value,
+                code=outcome.code,
+                reason=outcome.reason,
+                actions=outcome.actions_performed,
+            )
+        except task_journal.JournalError:  # pragma: no cover - 결말 기록 실패가 결과를 바꾸지 않는다
+            logger.warning("[BrowserTask] outcome could not be journaled as finished", exc_info=True)
+
     def _notify(self, step: TaskStep) -> None:
         if self._on_step is None:
             return
@@ -1059,6 +1283,12 @@ class BrowserTaskLoop:
             self._on_step(step)
         except Exception:  # pragma: no cover - 관찰 훅 실패가 루프를 죽이지 않는다
             logger.debug("on_step hook failed", exc_info=True)
+
+    def _notify_dispatch(self, intent: task_journal.TaskIntent) -> None:
+        """발송 직후 관측 지점. 훅이 죽으면 그것은 **호출자의 선택**이다(여기서 삼키지 않는다)."""
+        if self._on_dispatch is None:
+            return
+        self._on_dispatch(intent)
 
     def _finish(
         self,
@@ -1075,6 +1305,8 @@ class BrowserTaskLoop:
         *,
         claimed: str = "",
         blocked_kind: str = "",
+        cancel_mode: str = "",
+        forced_shutdown: bool = False,
     ) -> TaskOutcome:
         outcome = TaskOutcome(
             goal=goal.goal,
@@ -1090,7 +1322,10 @@ class BrowserTaskLoop:
             claimed=claimed,
             final_text=_clip(measurement.text, MAX_FINAL_TEXT_CHARS),
             blocked_kind=blocked_kind,
+            cancel_mode=cancel_mode,
+            forced_shutdown=forced_shutdown,
         )
+        self._journal_finish(outcome)
         logger.info(
             "[BrowserTask] %s(%s) verified=%d/%d actions=%d tokens=%d url=%s",
             outcome.status.value,
@@ -1106,9 +1341,11 @@ class BrowserTaskLoop:
 
 # 예산을 넘긴 planner 호출을 두 번 세지 않기 위한 편의(시험·호스트가 쓴다).
 __all__ = [
+    "ACTION_FAILED",
     "BUDGET_EXHAUSTED",
     "BLOCKED",
     "CANCELLED",
+    "DEFAULT_CANCEL_GRACE_SECONDS",
     "DEFAULT_ACTION_BUDGET",
     "DEFAULT_DEADLINE_SECONDS",
     "DEADLINE_EXCEEDED",
@@ -1119,6 +1356,7 @@ __all__ = [
     "MODEL_UNAVAILABLE",
     "NO_PROGRESS",
     "TOKEN_BUDGET_EXHAUSTED",
+    "UNKNOWN_OUTCOME",
     "BrowserTaskError",
     "BrowserTaskLoop",
     "LoopHost",

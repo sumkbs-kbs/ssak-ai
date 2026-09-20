@@ -267,6 +267,18 @@ def _reset_browser_session_owner(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 
 
 @pytest.fixture(autouse=True)
+def _isolate_browser_task_journal(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    """시험마다 브라우저 작업 저널을 빈 파일로 격리한다(task 20).
+
+    저널의 기본 경로는 `~/.antigravity-k/browser_tasks.jsonl` 이다. 시험이 그대로 쓰면 개발자의
+    실제 기록에 "이미 본 요청" 이 남아 다음 실행이 **중복으로 판정**되고, 시험끼리도 서로의 결말을
+    물려받는다(그러면 통과가 이 시험의 결과가 아니게 된다) — task 16 후속의 원장과 같은 규칙이다.
+    """
+    monkeypatch.setenv("AGK_BROWSER_TASK_JOURNAL", str(tmp_path / "browser_tasks" / "tasks.jsonl"))
+    yield
+
+
+@pytest.fixture(autouse=True)
 def _reset_browser_approval_state() -> Iterator[None]:
     """시험마다 브라우저 승인 원장·비밀 보관소·일반 승인 관리자를 비운다(task 18).
 
