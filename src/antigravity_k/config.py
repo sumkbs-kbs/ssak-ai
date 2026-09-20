@@ -446,6 +446,28 @@ class SearchConfig(BaseSettings):
     model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(env_prefix="AGK_SEARCH_")
 
 
+class BrowserTaskMemoryConfig(BaseSettings):
+    """출처 있는 브라우저 작업 기억 설정(task 21).
+
+    기본은 **꺼짐**이다: 사용자가 켜지 않은 브라우징 이력은 수집하지 않는다. 꺼진 상태에서도
+    삭제·만료는 동작한다(`browser_task_memory.integration_purge`) — 망각이 설정에 막히면 그건 삭제가 아니다.
+
+    - ``enabled``: 켜야 검증된 절차·실패 패턴이 남는다.
+    - ``retention_days``: 기록 시각 기준 보관 기간(만료 뒤 `recall` 이 보지 않는다).
+    - ``allow_sites``: 비어 있으면 "동의한 사이트는 어디든", 값이 있으면 그 출처만.
+    - ``max_body_chars``: 조립된 본문 상한(넘으면 잘라내지 않고 거절한다).
+    - ``require_consent``: 끄면 동의 없이 저장한다 — 기본은 참이다.
+    """
+
+    enabled: bool = Field(default=False, description="브라우저 작업 기억 사용(opt-in)")
+    retention_days: int = Field(default=30, description="보관 기간(일)")
+    allow_sites: list[str] = Field(default_factory=list, description="허용 출처 목록(비면 동의 범위 전체)")
+    max_body_chars: int = Field(default=1200, description="기억 본문 최대 길이")
+    require_consent: bool = Field(default=True, description="저장 전 동의 필수")
+
+    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(env_prefix="AGK_BROWSER_TASK_MEMORY_")
+
+
 @final
 class AppConfig:
     """전체 애플리케이션 설정을 통합합니다."""
@@ -475,6 +497,10 @@ class AppConfig:
         )
         self.search: SearchConfig = _build_settings(
             SearchConfig, _section_overrides(raw_config, "search", SearchConfig)
+        )
+        self.browser_task_memory: BrowserTaskMemoryConfig = _build_settings(
+            BrowserTaskMemoryConfig,
+            _section_overrides(raw_config, "browser_task_memory", BrowserTaskMemoryConfig),
         )
 
     def ensure_directories(self):

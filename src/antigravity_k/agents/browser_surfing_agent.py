@@ -11,9 +11,9 @@ import base64
 import inspect
 import json
 import logging
-from collections.abc import AsyncIterator, Awaitable, Callable, Mapping
+from collections.abc import AsyncIterator, Awaitable, Callable, Iterable, Mapping
 from contextlib import asynccontextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Final, Protocol, cast, final
 
@@ -61,6 +61,7 @@ from antigravity_k.tools.browser_session_owner import (
     get_browser_session_owner,
 )
 from antigravity_k.tools.browser_task_journal import BrowserTaskJournal, ResumePlan
+from antigravity_k.tools.browser_task_memory import site_of
 
 # 승인 요청을 등록할 도구 이름(task 18). API 경로와 **같은 이름**을 쓴다 — 일반 도구 승인의
 # "항상 허용" 목록에 이 이름이 있으면 브라우저 효과를 자동 승인해 버리므로, 그 경우에는
@@ -319,6 +320,8 @@ class BrowserSurfingAgent:
         journal: BrowserTaskJournal | None = None,
         task_id: str = "",
         idempotency_key: str | None = None,
+        memory: object | None = None,
+        owner: str = "",
     ) -> TaskOutcome:
         """observe → plan → act → verify 루프를 돌리고 **검증된 결말**을 돌려준다(task 19).
 
@@ -329,6 +332,11 @@ class BrowserSurfingAgent:
         저널을 넘기면(task 20) 작업은 **디스크에** 남는다: 같은 `idempotency_key` 의 두 번째 요청은
         실행되지 않고 기록된 결말을 돌려주고, 미확정인 행동(되돌릴 수 없는 효과를 보냈는데 결과를
         모르는 상태)이 있으면 **자동 재실행을 거부**하고 `UNKNOWN_OUTCOME` 으로 끝난다.
+
+        `memory`(task 21)를 넘기면 **이전에 이 사이트에서 확인된 절차**를 계획의 참고로 올린다. 이때도
+        기억은 근거가 아니라 참고다: 성공 판정은 여전히 페이지 측정(task 19)이 한다. 기억이 꺼져 있거나
+        동의가 없으면 아무 일도 일어나지 않는다(힌트가 비고, `notes` 도 그대로다). 기억을 **남기는** 일은
+        호출자의 몫이다(`record_from_outcome`) — 읽기와 쓰기의 동의는 다르다.
         """
         if planner is None and self.model_manager is None:
             # 브라우저를 띄우거나 세션 자리를 잡기 **전에** 말한다 — 계획할 주체가 없다.
@@ -341,6 +349,7 @@ class BrowserSurfingAgent:
             duplicate = self._resume_or_refuse(journal, active_task_id, goal, idempotency_key=idempotency_key)
             if duplicate is not None:
                 return duplicate
+        goal = self._goal_with_memory(goal, memory, url, owner=owner)
         active_planner: Planner = planner or ModelPlanner(self.model_manager, vision_model_name=self.vision_model_name)
         async with self.browser_task_host(url) as host:
             loop = BrowserTaskLoop(
@@ -370,6 +379,28 @@ class BrowserSurfingAgent:
         finally:
             await self._release_session(session)
             await self._close_browser()
+
+    @staticmethod
+    def _goal_with_memory(goal: TaskGoal, memory: object | None, url: str, *, owner: str) -> TaskGoal:
+        """같은 사이트에서 확인된 절차를 목표의 `notes` 로 올린다(task 21).
+
+        실패해도 작업은 그대로 진행한다(기억은 있으면 좋은 것이지, 필요한 것이 아니다). 소유자 없이는
+        물어보지 않는다 — 격리 단위가 없으면 남의 기억을 읽을 수 있기 때문이다.
+        """
+        hints = getattr(memory, "hints", None)
+        if memory is None or not callable(hints) or not owner.strip():
+            return goal
+        try:
+            found = tuple(
+                str(line) for line in cast("Iterable[object]", hints(goal.goal, owner=owner, origin=site_of(url)))
+            )
+        except Exception:  # 기억을 읽지 못하는 것이 작업을 막지는 않는다
+            logger.debug("browser task memory hints unavailable", exc_info=True)
+            return goal
+        if not found:
+            return goal
+        note = "\n".join(found)
+        return replace(goal, notes=f"{goal.notes}\n{note}".strip() if goal.notes else note)
 
     def _resume_or_refuse(
         self,

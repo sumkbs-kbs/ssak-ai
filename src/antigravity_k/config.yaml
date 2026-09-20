@@ -583,6 +583,14 @@ search:
     fallback: legacy_on_transient
     artifact_path: null
     manifest_path: null
+# 브라우저 작업 기억 (task 21). 기본은 꺼짐 — 켜지 않은 브라우징 이력은 수집하지 않는다.
+# 꺼져 있어도 삭제·만료는 동작한다. 켤 때는 보관 기간과 동의 범위를 함께 정한다.
+browser_task_memory:
+  enabled: false
+  retention_days: 30
+  allow_sites: []
+  max_body_chars: 1200
+  require_consent: true
 agent:
   default_entry: unified
   headroom: true

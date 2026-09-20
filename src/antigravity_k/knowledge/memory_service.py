@@ -84,6 +84,34 @@ class StatsPayload(TypedDict):
 logger = logging.getLogger(__name__)
 
 
+def _browser_memory_purge(
+    service: MemoryService,
+    *,
+    mode: str,
+    max_age_days: int | None = None,
+) -> int:
+    """브라우저 작업 기억(task 21)도 같은 운영 경로로 지운다.
+
+    지연 임포트다: 이 서비스를 쓰는 `browser_task_memory` 와 이 서비스가 지우는 관계는 잎 모듈
+    (`browser_task_memory_store`)을 통해서만 만나야 순환 import 가 생기지 않는다(basedpyright 가
+    순환을 오류로 잡는다). 모듈이 없으면(구버전 트리) 조용히 0 이다.
+    """
+    try:
+        from antigravity_k.tools.browser_task_memory_store import integration_purge
+    except Exception:
+        logger.debug("browser task memory module unavailable for purge", exc_info=True)
+        return 0
+    try:
+        if mode == "expired":
+            return integration_purge(service, mode="expired", max_age_days=max_age_days)
+        if mode == "redact":
+            return integration_purge(service, mode="redact")
+        return integration_purge(service, mode="all")
+    except Exception:
+        logger.exception("browser task memory purge failed")
+        return 0
+
+
 @final
 class MemoryService:
     """에이전트 팀의 지속적 메모리(GBrain 모델)를 담당합니다.
@@ -371,7 +399,9 @@ class MemoryService:
 
         if self._vector_store is not None:
             _ = self._vector_store.clear()
-        return knowledge_count + snapshot_count
+        # 브라우저 작업 기억(task 21)도 같은 DB 를 쓴다 — 전체 삭제가 그것만 남기면 거짓말이 된다.
+        browser_count = _browser_memory_purge(self, mode="all")
+        return knowledge_count + snapshot_count + browser_count
 
     def export_all(self) -> list[dict[str, object]]:
         with self._get_connection() as conn:
@@ -410,6 +440,8 @@ class MemoryService:
                     )
                     changed += 1
             conn.commit()
+        # 브라우저 기억은 항목 단위로 색인을 지운다(전체 clear 는 vault 청크까지 지운다).
+        changed += _browser_memory_purge(self, mode="redact")
         if changed and self._vector_store is not None:
             _ = self._vector_store.clear()
             _ = self.rebuild_embeddings()
@@ -428,7 +460,7 @@ class MemoryService:
         if knowledge and self._vector_store is not None:
             _ = self._vector_store.clear()
             _ = self.rebuild_embeddings()
-        return knowledge + snapshots
+        return knowledge + snapshots + _browser_memory_purge(self, mode="expired", max_age_days=max_age_days)
 
     def get_stats(self) -> StatsPayload:
         """메모리 서비스 통계."""

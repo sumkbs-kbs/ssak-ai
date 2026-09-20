@@ -228,6 +228,23 @@ class VectorStore:
             )
         return results
 
+    def delete_embedding(self, source_table: str, source_id: int) -> bool:
+        """한 임베딩만 지운다 — 색인에서 **그 항목 하나**를 무효화하는 유일한 방법이다.
+
+        `clear()` 를 대신 쓰면 안 된다: 그 컬렉션에는 vault note 청크까지 들어 있어서, 기억 하나를
+        지우는 일이 **남의 색인**을 지운다. 그래서 삭제는 `{source_table}:{source_id}` id 하나로 한다.
+
+        돌려주는 값은 "지웠다" 가 아니라 "지우려 시도했고 실패가 없었다" 는 뜻이다(색인에 원래
+        없던 항목을 지워도 참이다) — 색인의 진실은 `search_similar` 로 확인한다.
+        """
+        embedding_id = f"{source_table}:{source_id}"
+        try:
+            _ = self._require_collection().delete(ids=[embedding_id])
+        except Exception:
+            logger.exception("Failed to delete embedding %s", embedding_id)
+            return False
+        return True
+
     def fit_tfidf(self, documents: list[str]) -> None:
         _ = documents
         return None
