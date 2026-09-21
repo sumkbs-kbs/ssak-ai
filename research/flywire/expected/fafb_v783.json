@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "dataset_id": "flywire-fafb-v783-princeton",
+  "release": "fafb_v783",
+  "release_markers": {
+    "synapse_table": "fafb_v783_princeton_synapse_table.csv.gz",
+    "skeleton_archive": "sk_lod1_783_healed.zip"
+  },
+  "release_must_contain": [
+    "v783"
+  ],
+  "required_inputs": [
+    "neurons.csv.gz",
+    "classification.csv.gz",
+    "connections_princeton.csv.gz"
+  ],
+  "allowed_edge_tables": [
+    "connections_princeton.csv.gz"
+  ],
+  "forbidden_edge_tables": {
+    "connections_princeton_no_threshold.csv.gz": "별도 데이터셋(무임계 Princeton) — thresholded 표와 합치면 그래프가 부풀려진다",
+    "connections_buhmann_no_threshold.csv.gz": "별도 데이터셋(Buhmann) — 같은 root_id 라도 릴리스·분류 호환이 다르다"
+  },
+  "reference": {
+    "note": "아래 수치는 이 저장소의 **독립 분석 스냅숏**(DuckDB, threads=4, memory_limit=3GB)에서 온 값이다. 검증기는 .omo 를 읽지 않는다(gitignore) — 해시는 provenance 기록용이다.",
+    "files": {
+      ".omo/reference/ssak-webapp-assessment-2026-09-18/fly-analysis.sql": "7eea24f3bcaa20a7a527c15ce74ad76a94d18f38024b90c47d877964643f1452",
+      ".omo/reference/ssak-webapp-assessment-2026-09-18/fly-stats.json": "38a24703c3de97fb15286b3fba82bb64f6afff8e1b9226a917f4841bec656776",
+      ".omo/reference/ssak-webapp-assessment-2026-09-18/fly-extra.json": "4fea6a97a5e386faa351408a7af5f26f7bfa5385b68052350400ce11f97733a3",
+      ".omo/reference/ssak-webapp-assessment-2026-09-18/fly-skeleton-check.json": "5aae1bbf9965fa0c39dbd368d74d97da828a779859a27738bdf5ecb83c1161de"
+    }
+  },
+  "tables": {
+    "neurons": {
+      "file": "neurons.csv.gz",
+      "rows": 139255,
+      "distinct_ids": 139255,
+      "id_column": "root_id",
+      "nt_unknown": 19658,
+      "nt_low_confidence": 28991,
+      "nt_type_counts": {
+        "ACH": 82298,
+        "GLUT": 19605,
+        "GABA": 16017,
+        "SER": 1021,
+        "DA": 584,
+        "OCT": 72
+      }
+    },
+    "classification": {
+      "file": "classification.csv.gz",
+      "rows": 139255,
+      "class_null": 31664,
+      "super_class_counts": {
+        "optic": 77873,
+        "central": 32381,
+        "sensory": 16938,
+        "visual_projection": 7684,
+        "ascending": 1750,
+        "descending": 1305,
+        "sensory_ascending": 612,
+        "visual_centrifugal": 522,
+        "motor": 110,
+        "endocrine": 80
+      }
+    },
+    "edges": {
+      "file": "connections_princeton.csv.gz",
+      "rows": 5342446,
+      "distinct_pairs": 3732460,
+      "synapses": 50666648,
+      "min_row_syn": 1,
+      "max_row_syn": 2633,
+      "min_pair_syn": 5,
+      "pair_threshold": 5,
+      "neuropils": 79,
+      "self_pairs": 0,
+      "duplicate_rows": 0,
+      "fk_missing": 0
+    },
+    "known_edge_profiles": {
+      "connections_princeton.csv.gz": {
+        "row_count": 5342446,
+        "synapses": 50666648,
+        "distinct_pairs": 3732460,
+        "min_row_syn": 1,
+        "max_row_syn": 2633
+      },
+      "connections_princeton_no_threshold.csv.gz": {
+        "row_count": 22285323,
+        "synapses": 76944499,
+        "distinct_pairs": 19773733,
+        "min_row_syn": 1,
+        "max_row_syn": 2633
+      },
+      "connections_buhmann_no_threshold.csv.gz": {
+        "row_count": 16847997,
+        "synapses": 54492922,
+        "distinct_pairs": 15091983,
+        "min_row_syn": 1,
+        "max_row_syn": 2405
+      }
+    }
+  },
+  "filtering_rule": {
+    "edge_table": "connections_princeton.csv.gz",
+    "pair_aggregation": "neuropil 행을 (pre_root_id, post_root_id) 로 합산한다. 행 최소 syn(=1)과 pair 최소 합(=5)을 혼동하지 않는다.",
+    "threshold": 5,
+    "self_loops": "제외(관측 0건)",
+    "table_mixing": "금지 — no-threshold Princeton / Buhmann 은 별도 데이터셋이다"
+  },
+  "unknown_nt_policy": "미상(None) 19,658 과 confidence<0.5 28,991 을 **보존**한다. 평균·대체값으로 채우지 않고, 부호(흥분/억제)를 추정하지 않는다. 민감도 분석은 별도 조건으로만 한다.",
+  "groups": {
+    "ALPN": {
+      "source_column": "class",
+      "source_values": [
+        "ALPN"
+      ],
+      "count": 685,
+      "note": "antennal-lobe projection neuron. sub_class 는 multiglomerular 399 · uniglomerular 278 · None 8 이지만 집단 정의는 class 로만 한다.",
+      "cross_source": {
+        "table": "consolidated_cell_types.csv.gz",
+        "column": "primary_type",
+        "patterns": [
+          "PN"
+        ],
+        "min_coverage": 0.95,
+        "min_resolved_share": 0.5,
+        "min_agreement": 0.95
+      }
+    },
+    "Kenyon_Cell": {
+      "source_column": "class",
+      "source_values": [
+        "Kenyon_Cell"
+      ],
+      "count": 5177,
+      "note": "sub_class KCg 2,490 + None 2,687. label 이름이 아니라 class 컬럼으로 정의한다.",
+      "cross_source": {
+        "table": "consolidated_cell_types.csv.gz",
+        "column": "primary_type",
+        "patterns": [
+          "^KC"
+        ],
+        "min_coverage": 0.95,
+        "min_resolved_share": 0.95,
+        "min_agreement": 0.95
+      }
+    },
+    "MBON": {
+      "source_column": "class",
+      "source_values": [
+        "MBON"
+      ],
+      "count": 96,
+      "cross_source": {
+        "table": "consolidated_cell_types.csv.gz",
+        "column": "primary_type",
+        "patterns": [
+          "^MBON"
+        ],
+        "min_coverage": 0.95,
+        "min_resolved_share": 0.95,
+        "min_agreement": 0.95
+      }
+    },
+    "MBIN": {
+      "source_column": "class",
+      "source_values": [
+        "MBIN"
+      ],
+      "count": 4,
+      "note": "class='MBIN' 4건의 교차 출처 primary_type 은 APL/DPM 이다 — 두 주석이 **다른 어휘**를 쓰므로 회로 mask 의 근거로 삼지 않는다(INCONCLUSIVE). 어휘 대응은 주석 문서/사람 확인이 필요하다.",
+      "cross_source": {
+        "table": "consolidated_cell_types.csv.gz",
+        "column": "primary_type",
+        "patterns": [],
+        "min_coverage": 0.95,
+        "min_resolved_share": 0.5,
+        "min_agreement": 0.95
+      }
+    }
+  },
+  "circuits": {
+    "_note": "pairs = (pre,post) 고유 수 · rows = neuropil 행 수(같은 pair 가 여러 neuropil 로 쪼개져 있다) · synapses = 합. 2026-09-21 DuckDB 실측.",
+    "PN_to_KC": {
+      "pre_group": "ALPN",
+      "post_group": "Kenyon_Cell",
+      "expected_pairs": 22298,
+      "expected_rows": 22569,
+      "expected_synapses": 366946
+    },
+    "KC_to_MBON": {
+      "pre_group": "Kenyon_Cell",
+      "post_group": "MBON",
+      "expected_pairs": 26937,
+      "expected_rows": 49236,
+      "expected_synapses": 226932
+    },
+    "KC_to_MBIN": {
+      "pre_group": "Kenyon_Cell",
+      "post_group": "MBIN",
+      "expected_pairs": 10246,
+      "expected_rows": 48022,
+      "expected_synapses": 254835
+    }
+  },
+  "skeleton": {
+    "file": "sk_lod1_783_healed.zip",
+    "optional": false,
+    "entries": 139273,
+    "swc_entries": 139273,
+    "extra_count": 18,
+    "missing_count": 0,
+    "note": "skeleton 추가 18/누락 0 은 원자료 관측치다. 초기 런타임에는 쓰지 않는다."
+  },
+  "license": {
+    "decision": "research_only_noncommercial_attribution",
+    "license": "CC BY-NC 4.0",
+    "evidence": [
+      "https://home.flywire.ai/guidelines (2026-09-21 조회: 'Public Release … made available under license CC BY-NC 4.0')",
+      "https://codex.flywire.ai/faq?dataset=fafb (조회 시 403 — 브라우저 확인 필요)"
+    ],
+    "attribution": "FlyWire Consortium / Princeton Neuroscience Institute, FAFB v783 스냅숏(2023-10). 인용은 FlyWire citation guidelines 를 따른다.",
+    "constraints": "비상업 연구 전용. 원자료(약 17.5 GB)와 파생물은 제품 패키지·Git 에 넣지 않는다. 파생 mask/manifest 만 provenance 와 함께 연구 산출물로 둔다."
+  },
+  "approved_hashes": {
+    "classification.csv.gz": {
+      "sha256": "e946b552f4056dfc977707be0674609832c3f64332a22d69dc0d9615e7aae663",
+      "bytes": 934402
+    },
+    "connections_princeton.csv.gz": {
+      "sha256": "445f996bf6c4b1803b9ba186189138a3061ff8623aa94c0abcf38af30a5bd48b",
+      "bytes": 68456801
+    },
+    "fafb_v783_princeton_synapse_table.csv.gz": {
+      "sha256": "780a0ebd9320847b9fce2b05056b3d57a56da097549dae7847b8e55c488f1e29",
+      "bytes": 2695106039
+    },
+    "neurons.csv.gz": {
+      "sha256": "6a6b3759e635f0f35a677d169052362131ec61d95f55919298b55c43fce4e719",
+      "bytes": 1679884
+    },
+    "sk_lod1_783_healed.zip": {
+      "sha256": "2e09264207895c4159bafc15129ec8e1537e391c86306bf141b87acfeeb43a56",
+      "bytes": 13873645070
+    }
+  },
+  "approved_hashes_reason": "task 25 승인 실행: 참조 수치(139255/3732460/50666648, FK 0, skeleton +18/0)가 독립 분석 스냅숏과 일치함을 확인한 뒤 입력 해시를 고정한다",
+  "approved_hashes_at": "2026-09-21T09:18:27Z"
+}
