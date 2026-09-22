@@ -1,0 +1,288 @@
+{
+  "command": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--tb=no",
+    "-p",
+    "no:cacheprovider",
+    "-m",
+    "not slow and not benchmark"
+  ],
+  "runs": [
+    {
+      "scope": "flat-001-080",
+      "seed": 101,
+      "junit": ".regression-ledger/flat-001-080__seed-101.xml",
+      "tests": 1024,
+      "skipped": 2,
+      "aborted": false,
+      "red": []
+    },
+    {
+      "scope": "flat-001-080",
+      "seed": 202,
+      "junit": ".regression-ledger/flat-001-080__seed-202.xml",
+      "tests": 1024,
+      "skipped": 2,
+      "aborted": false,
+      "red": []
+    },
+    {
+      "scope": "flat-081-220",
+      "seed": 101,
+      "junit": ".regression-ledger/flat-081-220__seed-101.xml",
+      "tests": 1860,
+      "skipped": 21,
+      "aborted": false,
+      "red": [
+        "tests/test_cr14_fence_movement_detection.py::test_declared_fingerprint_is_the_fingerprint_of_head_within_the_fence",
+        "tests/test_cr14_fence_movement_detection.py::test_no_code_scope_commit_after_the_declared_candidate"
+      ]
+    },
+    {
+      "scope": "flat-081-220",
+      "seed": 202,
+      "junit": ".regression-ledger/flat-081-220__seed-202.xml",
+      "tests": 1860,
+      "skipped": 21,
+      "aborted": false,
+      "red": [
+        "tests/test_cr14_fence_movement_detection.py::test_declared_fingerprint_is_the_fingerprint_of_head_within_the_fence",
+        "tests/test_cr14_fence_movement_detection.py::test_no_code_scope_commit_after_the_declared_candidate"
+      ]
+    },
+    {
+      "scope": "flat-221-314",
+      "seed": 101,
+      "junit": ".regression-ledger/flat-221-314__seed-101.xml",
+      "tests": 1286,
+      "skipped": 0,
+      "aborted": false,
+      "red": [
+        "tests/test_model_registry.py::test_bundled_default_config_matches_repository_default",
+        "tests/test_nx07_doc_consistency.py::test_soak_phases_stay_separated",
+        "tests/test_nx07_doc_consistency.py::test_teeth_soak_done_promotion_is_detected"
+      ]
+    },
+    {
+      "scope": "flat-221-314",
+      "seed": 202,
+      "junit": ".regression-ledger/flat-221-314__seed-202.xml",
+      "tests": 1286,
+      "skipped": 0,
+      "aborted": false,
+      "red": [
+        "tests/test_model_registry.py::test_bundled_default_config_matches_repository_default",
+        "tests/test_nx07_doc_consistency.py::test_soak_phases_stay_separated",
+        "tests/test_nx07_doc_consistency.py::test_teeth_soak_done_promotion_is_detected"
+      ]
+    },
+    {
+      "scope": "flat-315-338",
+      "seed": 101,
+      "junit": ".regression-ledger/flat-315-338__seed-101.xml",
+      "tests": 346,
+      "skipped": 0,
+      "aborted": false,
+      "red": []
+    },
+    {
+      "scope": "flat-315-338",
+      "seed": 202,
+      "junit": ".regression-ledger/flat-315-338__seed-202.xml",
+      "tests": 346,
+      "skipped": 0,
+      "aborted": false,
+      "red": []
+    },
+    {
+      "scope": "flat-339-380",
+      "seed": 101,
+      "junit": ".regression-ledger/flat-339-380__seed-101.xml",
+      "tests": 676,
+      "skipped": 0,
+      "aborted": false,
+      "red": []
+    },
+    {
+      "scope": "flat-339-380",
+      "seed": 202,
+      "junit": ".regression-ledger/flat-339-380__seed-202.xml",
+      "tests": 676,
+      "skipped": 0,
+      "aborted": false,
+      "red": []
+    },
+    {
+      "scope": "flat-381-408",
+      "seed": 101,
+      "junit": ".regression-ledger/flat-381-408__seed-101.xml",
+      "tests": 727,
+      "skipped": 4,
+      "aborted": false,
+      "red": []
+    },
+    {
+      "scope": "flat-381-408",
+      "seed": 202,
+      "junit": ".regression-ledger/flat-381-408__seed-202.xml",
+      "tests": 727,
+      "skipped": 4,
+      "aborted": false,
+      "red": []
+    },
+    {
+      "scope": "flat-409-456",
+      "seed": 101,
+      "junit": ".regression-ledger/flat-409-456__seed-101.xml",
+      "tests": 786,
+      "skipped": 0,
+      "aborted": false,
+      "red": [
+        "tests/test_trn02_timeout_resource.py::TestTrainingJobsApi::test_cancel_sets_termination_cancelled"
+      ]
+    },
+    {
+      "scope": "flat-409-456",
+      "seed": 202,
+      "junit": ".regression-ledger/flat-409-456__seed-202.xml",
+      "tests": 786,
+      "skipped": 0,
+      "aborted": false,
+      "red": [
+        "tests/test_trn02_timeout_resource.py::TestTrainingJobsApi::test_cancel_sets_termination_cancelled"
+      ]
+    },
+    {
+      "scope": "flat-457-502",
+      "seed": 101,
+      "junit": ".regression-ledger/flat-457-502__seed-101.xml",
+      "tests": 631,
+      "skipped": 7,
+      "aborted": false,
+      "red": [
+        "tests/test_ws01_project_binding.py::test_active_project_switch_does_not_change_inflight_root",
+        "tests/test_ws01_project_binding.py::test_concurrent_a_b_requests_do_not_share_roots",
+        "tests/test_ws01_project_binding.py::test_di_get_memory_manager_uses_request_root",
+        "tests/test_ws01_project_binding.py::test_route_to_runtime_capture_preserves_project_id",
+        "tests/test_ws01_project_binding.py::test_session_binding_allows_resolve_without_project_id"
+      ]
+    },
+    {
+      "scope": "flat-457-502",
+      "seed": 202,
+      "junit": ".regression-ledger/flat-457-502__seed-202.xml",
+      "tests": 631,
+      "skipped": 7,
+      "aborted": false,
+      "red": [
+        "tests/test_ws01_project_binding.py::test_active_project_switch_does_not_change_inflight_root",
+        "tests/test_ws01_project_binding.py::test_concurrent_a_b_requests_do_not_share_roots",
+        "tests/test_ws01_project_binding.py::test_di_get_memory_manager_uses_request_root",
+        "tests/test_ws01_project_binding.py::test_route_to_runtime_capture_preserves_project_id",
+        "tests/test_ws01_project_binding.py::test_session_binding_allows_resolve_without_project_id"
+      ]
+    },
+    {
+      "scope": "subdirs",
+      "seed": 101,
+      "junit": ".regression-ledger/subdirs__seed-101.xml",
+      "tests": 399,
+      "skipped": 0,
+      "aborted": false,
+      "red": []
+    },
+    {
+      "scope": "subdirs",
+      "seed": 202,
+      "junit": ".regression-ledger/subdirs__seed-202.xml",
+      "tests": 399,
+      "skipped": 0,
+      "aborted": false,
+      "red": []
+    }
+  ],
+  "scopes": {
+    "flat-001-080": 2,
+    "flat-081-220": 2,
+    "flat-221-314": 2,
+    "flat-315-338": 2,
+    "flat-339-380": 2,
+    "flat-381-408": 2,
+    "flat-409-456": 2,
+    "flat-457-502": 2,
+    "subdirs": 2
+  },
+  "incomplete_scopes": [],
+  "aborted_scopes": [],
+  "deterministic": [
+    "tests/test_cr14_fence_movement_detection.py::test_declared_fingerprint_is_the_fingerprint_of_head_within_the_fence",
+    "tests/test_cr14_fence_movement_detection.py::test_no_code_scope_commit_after_the_declared_candidate",
+    "tests/test_model_registry.py::test_bundled_default_config_matches_repository_default",
+    "tests/test_nx07_doc_consistency.py::test_soak_phases_stay_separated",
+    "tests/test_nx07_doc_consistency.py::test_teeth_soak_done_promotion_is_detected",
+    "tests/test_trn02_timeout_resource.py::TestTrainingJobsApi::test_cancel_sets_termination_cancelled",
+    "tests/test_ws01_project_binding.py::test_active_project_switch_does_not_change_inflight_root",
+    "tests/test_ws01_project_binding.py::test_concurrent_a_b_requests_do_not_share_roots",
+    "tests/test_ws01_project_binding.py::test_di_get_memory_manager_uses_request_root",
+    "tests/test_ws01_project_binding.py::test_route_to_runtime_capture_preserves_project_id",
+    "tests/test_ws01_project_binding.py::test_session_binding_allows_resolve_without_project_id"
+  ],
+  "drift": [],
+  "owners": {
+    "tests/test_cr14_fence_movement_detection.py::test_declared_fingerprint_is_the_fingerprint_of_head_within_the_fence": {
+      "lane": "cr14-lane",
+      "reason": "선언 후보~HEAD 커밋 이동·트리 지문 비교 — 기록 커밋 규율(커밋을 만들지 않은 상태의 기준선)"
+    },
+    "tests/test_cr14_fence_movement_detection.py::test_no_code_scope_commit_after_the_declared_candidate": {
+      "lane": "cr14-lane",
+      "reason": "선언 후보~HEAD 커밋 이동·트리 지문 비교 — 기록 커밋 규율(커밋을 만들지 않은 상태의 기준선)"
+    },
+    "tests/test_model_registry.py::test_bundled_default_config_matches_repository_default": {
+      "lane": "config-owner",
+      "reason": "루트 config.yaml 이 번들 기본값과 다름 — 그 파일은 소유자가 동기화하는 자리"
+    },
+    "tests/test_nx07_doc_consistency.py::test_soak_phases_stay_separated": {
+      "lane": "release-owner",
+      "reason": "EX-05 대장 행의 지표/귀속 두 단계 분리 — 오너 판정 브리프(docs/qa/2026-09-16-followup/nx10/EX05_PROMOTION_CONFLICT.md §5 B)"
+    },
+    "tests/test_nx07_doc_consistency.py::test_teeth_soak_done_promotion_is_detected": {
+      "lane": "release-owner",
+      "reason": "EX-05 대장 행의 지표/귀속 두 단계 분리 — 오너 판정 브리프(docs/qa/2026-09-16-followup/nx10/EX05_PROMOTION_CONFLICT.md §5 B)"
+    },
+    "tests/test_trn02_timeout_resource.py::TestTrainingJobsApi::test_cancel_sets_termination_cancelled": {
+      "lane": "trn02-lane",
+      "reason": "학습 job cancel API 가 ok=False 를 돌려준다 — 단독 실행으로 재현되는 결정적 실패(다른 레인 소관)"
+    },
+    "tests/test_ws01_project_binding.py::test_active_project_switch_does_not_change_inflight_root": {
+      "lane": "ws01/cr01-lane",
+      "reason": "ConversationStorageMigrationRequiredError — 이 체크아웃의 대화 저장소가 v2 마이그레이션 전이라request root 를 resolve 하는 단계에서 fail-closed 된다(단독 실행으로도 재현 · CR-01 런북 소관)"
+    },
+    "tests/test_ws01_project_binding.py::test_concurrent_a_b_requests_do_not_share_roots": {
+      "lane": "ws01/cr01-lane",
+      "reason": "ConversationStorageMigrationRequiredError — 이 체크아웃의 대화 저장소가 v2 마이그레이션 전이라request root 를 resolve 하는 단계에서 fail-closed 된다(단독 실행으로도 재현 · CR-01 런북 소관)"
+    },
+    "tests/test_ws01_project_binding.py::test_di_get_memory_manager_uses_request_root": {
+      "lane": "ws01/cr01-lane",
+      "reason": "ConversationStorageMigrationRequiredError — 이 체크아웃의 대화 저장소가 v2 마이그레이션 전이라request root 를 resolve 하는 단계에서 fail-closed 된다(단독 실행으로도 재현 · CR-01 런북 소관)"
+    },
+    "tests/test_ws01_project_binding.py::test_route_to_runtime_capture_preserves_project_id": {
+      "lane": "ws01/cr01-lane",
+      "reason": "ConversationStorageMigrationRequiredError — 이 체크아웃의 대화 저장소가 v2 마이그레이션 전이라request root 를 resolve 하는 단계에서 fail-closed 된다(단독 실행으로도 재현 · CR-01 런북 소관)"
+    },
+    "tests/test_ws01_project_binding.py::test_session_binding_allows_resolve_without_project_id": {
+      "lane": "ws01/cr01-lane",
+      "reason": "ConversationStorageMigrationRequiredError — 이 체크아웃의 대화 저장소가 v2 마이그레이션 전이라request root 를 resolve 하는 단계에서 fail-closed 된다(단독 실행으로도 재현 · CR-01 런북 소관)"
+    }
+  },
+  "unowned": [],
+  "counts": {
+    "runs": 18,
+    "scopes": 9,
+    "deterministic": 11,
+    "drift": 0,
+    "unowned": 0
+  }
+}

@@ -189,3 +189,7 @@ data/auth_hash.bak*
 # 그래야 저장소에 64MB 바이너리가 영구히 들어오지 않고도 설치 패키지에는 정확한 바이트가 실린다.
 src/antigravity_k/vendor/ssak_search/bin/
 src/antigravity_k/vendor/ssak_search/release/
+
+# 전량 회귀 원장의 회차 산출물(`scripts/regression_ledger.py`) — seed 별 junit XML·pytest 로그.
+# 원장 요약(JSON)만 추적하고, 회차 원문은 로컬에 남긴다(수십 MB·기계 의존).
+.regression-ledger/
