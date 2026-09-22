@@ -22,7 +22,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
    그대로 담고 있는가.
 6. 이 문서의 `<!-- measured:key=value -->` 마커가 실제 측정값과 일치하는가.
 7. 전량 회귀 원장(`evidence/regression_ledger.json`)이 **scope 별로 두 회차**를 갖고, 결정적 실패에 전부
-   소유자가 있는가. 한 회차짜리 scope 는 "결정적"과 "seed 민감"을 구분하지 못하므로 수치로 쓰지 않는다.
+   소유자가 있는가. 서로 다른 variant 두 회차가 없는 scope 는 "결정적"과 "variant 민감"을 구분하지 못하므로 수치로 쓰지 않는다.
 
 ```sh
 .venv/bin/python scripts/architecture_review.py                 # 검사 + 요약 표
@@ -42,9 +42,9 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 388 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 392 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
-| regression_runs | 18 | scope 당 두 회차(hash seed 101·202) · 중단 회차는 판정에서 제외 |
+| regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
 | regression_drift | 0 | seed 를 바꾸면 달라지는 실패 |
 | regression_unowned | 0 | 소유자 없는 결정적 실패 |
@@ -57,9 +57,9 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=388 -->
+<!-- measured:cognitive_tests=392 -->
 <!-- measured:regression_scopes=9 -->
-<!-- measured:regression_runs=18 -->
+<!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
 <!-- measured:regression_drift=0 -->
 <!-- measured:regression_unowned=0 -->
@@ -83,7 +83,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | type | `.venv/bin/python -m mypy <cognitive·surface·cli·5 scripts>` | 0 | Success: no issues found in 29 source files |
 | schema | `.venv/bin/python scripts/generate_record_schema.py --check` | 0 | schema up to date (record-entities/record-envelope) |
 | architecture review | `.venv/bin/python scripts/architecture_review.py` | 0 | 9 checks PASS(회귀 원장 계약 포함) |
-| 회귀 원장 | `.venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger --gate` | 0 | 9 scope · 18 회차(seed 101·202) · **결정적 11 · seed 민감 0 · 무소유 0** — 같은 scope 를 두 hash seed 로 돌려 교집합/대칭차로 분리(§1.2) |
+| 회귀 원장 | `.venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger --gate` | 0 | 9 scope · 21 회차(seed 101·202 + 순서 뒤집은 3회) · **결정적 11 · variant 민감 0 · 무소유 0** — 같은 scope 를 variant 를 바꿔 돌려 교집합/대칭차로 분리(§1.2) |
 | enum identity 감사 | `.venv/bin/python scripts/audit_enum_identity.py` | 0 | 위반 0건 (cognitive core 95곳을 `same_enum`으로 통일) |
 | namespace purge 감사 | `.venv/bin/python scripts/audit_test_namespace_purge.py` | 0 | 위반 0건 (수집 대상 시험 파일에 조건 없는 import 시점 purge 없음) |
 | build(wheel/sdist) | `uv build --no-sources` + 배포 검증 | NOT_RUN | 릴리스 CI job 소관이며 이 체크아웃에서 실행하지 않았다 |
@@ -125,22 +125,24 @@ sweep 후 전체 회귀를 다시 측정했다: **94 failed / 7571 passed / 14 s
 **미러 리허설은 그대로 돈다**: `rehearse_flush.sh` PASS 17 · FAIL 0(P1 적용 전 3 failed 로 이빨이 물고, P2 적용 뒤 9 passed).
 재현·수정·리허설 관찰 전문은 `evidence/T14_namespace_isolation.md` 에 있다.
 
-### 1.2 전량 회귀 — 두 seed 원장으로 측정한 현재 기준선
+### 1.2 전량 회귀 — variant 원장으로 측정한 현재 기준선
 
-회귀 수치는 **서술이 아니라 원장에서만** 인용한다. `scripts/regression_ledger.py` 가 같은 scope 를 **두 hash seed**
-(101·202)로 돌리고 junit XML 만 읽어 **교집합(결정적)** 과 **대칭차(seed 민감)** 를 계산한다. 502개 파일을 8구간 +
-subdir 로 나눠 **18회** 쟀다.
+회귀 수치는 **서술이 아니라 원장에서만** 인용한다. `scripts/regression_ledger.py` 가 같은 scope 를 **variant 를 바꿔**
+(기본 `seed-101`·`seed-202`, 일부 scope 는 **수집 순서를 뒤집은** `rev-seed-101` 도)로 돌리고 junit XML 만 읽어 **교집합(결정적)** 과 **대칭차(variant 민감)** 를 계산한다. 502개 파일을 8구간 +
+subdir 로 나눠 **21회**(그중 3회는 수집 순서를 뒤집었다) 쟀다.
 
 | 항목 | 값 | 의미 |
 |---|---|---|
-| scope / 회차 | 9 / 18 | scope 당 두 회차 · 중단 회차는 판정 제외 |
+| scope / 회차 | 9 / 21 | scope 당 두 회차 이상(variant: seed·수집 순서) · 중단 회차는 판정 제외 |
 | 결정적 실패 | **11** | 두 회차 모두에서 같은 실패(전부 소유자 지정) |
-| seed 민감 실패 | **0** | seed 를 바꾸면 달라지는 실패 |
+| variant 민감 실패 | **0** | seed 또는 수집 순서를 바꾸면 달라지는 실패 |
 | 무소유 | **0** | 소유자가 없는 결정적 실패 |
 
-회차별 `failed` 수도 seed 쌍마다 같았다(예: `flat-221-314` 는 두 회차 모두 `3 failed, 1283 passed`,
-`flat-081-220` 은 두 회차 모두 `2 failed, 1837 passed`). 즉 이 체크아웃에서 **빨간 합이 seed 로 움직이지 않는다** —
-"순서 artifact" 라는 이전 서술은 seed 효과를 분리한 측정이 아니었고, 이 원장으로 **대체**한다.
+회차별 `failed` 수도 variant 쌍마다 같았다(예: `flat-221-314` 는 두 회차 모두 `3 failed, 1283 passed`,
+`flat-081-220` 은 두 회차 모두 `2 failed, 1837 passed`). **수집 순서를 뒤집은 회차도 같은 집합을 냈다** — 3 scope
+(`flat-001-080` 0건 · `flat-081-220` 2건 · `flat-457-502` 5건)에서 파일 목록을 역순으로 돌렸고, 결정적 실패도
+수집 수도 같았다. 즉 이 체크아웃에서 **빨간 합이 seed 로도 순서로도 움직이지 않는다** — "순서 artifact" 라는 이전
+서술은 그 효과를 분리한 측정이 아니었고, 이 원장으로 **대체**한다.
 
 | 결정적 실패 | 건수 | 소유자 |
 |---|---|---|
@@ -379,11 +381,11 @@ Secondary Brain 계열은 Core로 승격하지 않았다(SELF_IMPROVEMENT_POLICY
   build job은 별도이며, wheel/sdist build는 실행하지 않았다(NOT_RUN).
 - 전체 회귀 실패는 오류 signature와 선택 재실행(3개 파일)으로 분류했다. 39개 실패 파일 전량을 단독 재실행해
   "기존 실패"와 "순서 artifact"를 확정하지는 않았다 — 그 비용은 다음 회차로 남긴다.
-- **회귀 수치는 원장에서만 인용한다(§1.2).** 과거 네 측정이 94 / 10 / 7 / 5 failed 로 갈렸지만, 그 비교는 트리·수집 오염·실행 선택이 함께 달랐던 상태였다 — 두 seed 를 고정한 원장에서는 **결정적 11 · seed 민감 0** 이다. 그중
+- **회귀 수치는 원장에서만 인용한다(§1.2).** 과거 네 측정이 94 / 10 / 7 / 5 failed 로 갈렸지만, 그 비교는 트리·수집 오염·실행 선택이 함께 달랐던 상태였다 — 두 seed 를 고정한 원장에서는 **결정적 11 · variant 민감 0** 이다(그중 3 scope 는 수집 순서를 뒤집어도 같았다). 그중
   **원인 하나**(import 시점 namespace purge)는 §1.1 ④에서 제거하고 감사로 고정했지만, 남은 차이는 여전히 순서·
   동시 실행 artifact 이므로 "이전 실패와 동일"을 고정 baseline 으로 주장하지 않고 **가장 보수적인 값(④의 5건)** 을 기록한다.
   원장이 남긴 11건은 5개 파일이다 — cr14 fence 2 · nx07 2 · `config.yaml` 1 · ws01 5 · trn02 1이며 전부 소유자(레인)가 지정돼 있다. 이 카드가 결정할 항목은 없다.
-- **원장은 scope 안의 순서만 비교한다.** 502 파일을 9 scope 로 나눠 돌렸으므로 **구간 경계의 수집 순서 효과**는 재지 않았다(§1.1 ④ 부류는 구간 안에서 재현되지 않았다). 502개를 한 프로세스로 돌릴 수 없어 두 seed 를 한 호출에 넣지 못했다.
+- **원장이 재는 순서는 scope 안의 순서다.** 순서를 뒤집은 variant 는 9 scope 중 3개에만 있다(수집이 섞이는 범위가 곱해져 502개를 한 호출에 넣을 수 없어서다). **scope 사이의 순서**(예: `tests/cognitive`가 다른 구간보다 먼저 import 되는 경우)는 이 원장의 범위 밖이며, §1.1 ④ 의 오염 부류는 구간 안에서 재현되지 않았다.
 - **중단된 회차는 판정에서 제외한다.** 실측 1회(seed 202 · `flat-081-220`)가 시험이 stdout fd 를 닫아 `sys.stdout.flush()` 에서 죽었고(수집 1860 중 1078 만 기록), 원장은 그런 회차를 `aborted` 로 막았다. 원인 시험은 임시 plugin 으로 60파일을 뒤져도 잡지 못했다(제품 코드 결함 증거 없음).
 - 고정 순서(`-p no:randomly`) 전량 회귀는 **한 번 중단(exit 120)** 되었다 — `engine/rag_indexer.py` 가
   `OSError: [Errno 9] Bad file descriptor` 를 받고 내부 오류로 끝났다. 원인을 추적하려고 plugin 으로 열린 fd 를

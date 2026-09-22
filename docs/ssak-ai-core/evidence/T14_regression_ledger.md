@@ -1,6 +1,6 @@
-# T14 증거 — 전량 회귀 원장 (결정적 실패 vs seed 민감 실패)
+# T14 증거 — 전량 회귀 원장 (결정적 실패 vs variant 민감 실패)
 
-`scripts/regression_ledger.py` · `tests/cognitive/test_regression_ledger.py` (23 시험) ·
+`scripts/regression_ledger.py` · `tests/cognitive/test_regression_ledger.py` (27 시험) ·
 `evidence/regression_ledger.json`(원장) · `scripts/architecture_review.py` 의 `regression_ledger` 검사.
 
 작성 2026-09-23 · source head `codex/m1-task-events` (커밋하지 않은 트리, `docs/`+`scripts/`+`tests/` 편집분 포함).
@@ -21,12 +21,14 @@ T14 회귀는 `N failed` 만 적어 왔고, 그 수가 회차마다 달랐다(94
 
 `scripts/regression_ledger.py`:
 
-1. **scope** 를 정해 pytest 를 실행한다(`--extra` 로 선택을 넘긴다). 회차는 `PYTHONHASHSEED` 를
-   **명시적으로** 박고(상속된 값에 기대지 않는다), junit XML(`--junitxml`)을 남긴다.
+1. **scope** 를 정해 pytest 를 실행한다(`--extra` 로 선택을 넘긴다). 회차는 `variant` 로 식별되며
+   (기본 `seed-<n>`, 순서를 뒤집은 회차는 `rev-seed-<n>`), `PYTHONHASHSEED` 를 **명시적으로** 박고
+   (상속된 값에 기대지 않는다) junit XML(`--junitxml`)을 남긴다.
 2. XML 만 읽는다 — **로그 문자열을 긁지 않는다**. `failure` 와 `error` 를 모두 빨강으로 세고,
    `skipped`/`xfail` 은 빨강이 아니다.
-3. scope 안에서 회차들의 **교집합 = 결정적 실패**, **대칭차 = seed 민감 실패** 로 나눈다.
-   scope 가 섞이면 없던 "결정적"이 생기므로 판정은 **scope 단위**다.
+3. scope 안에서 회차들의 **교집합 = 결정적 실패**, **대칭차 = variant 민감 실패** 로 나눈다. scope 가
+   섞이면 없던 "결정적"이 생기고, 같은 variant 를 두 번 재면 아무것도 분리되지 않으므로 판정은
+   **scope 단위·서로 다른 variant 2개 이상**이다.
 4. 결정적 실패에 **소유자**(레인·사유)를 붙인다. 분류표에 없으면 `unowned` 로 남고 `--gate` 가 실패한다.
 5. **중단된 회차는 판정에서 뺀다**(§5) — 끝까지 돌지 않은 회차의 "안 나온 실패"는 통과가 아니다.
 
@@ -43,7 +45,7 @@ $ for scope in flat-001-080 flat-081-220 flat-221-314 flat-315-338 flat-339-380 
 $ .venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger --gate
 ```
 
-| scope | 파일 선택 | 회차 | 수집(합) | 빨강(합) | 결정적 | seed 민감 |
+| scope | 파일 선택 | 회차 | 수집(합) | 빨강(합) | 결정적 | variant 민감 |
 |---|---|---|---|---|---|---|
 | flat-001-080 | 1~80 | 2 (101·202) | 2048 | 0 | 0 | 0 |
 | flat-081-220 | 81~220 | 2 | 3720 | 4 | 2 | 0 |
@@ -54,11 +56,26 @@ $ .venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger 
 | flat-409-456 | 409~456 | 2 | 1572 | 2 | 1 | 0 |
 | flat-457-502 | 457~502 | 2 | 1262 | 10 | 6 | 0 |
 | subdirs | `tests/cognitive`·`curriculum`·`evals` | 2 | 798 | 0 | 0 | 0 |
-| **합계** | **502 + 3 구간** | **18** | **—** | **—** | **11** | **0** |
+| **합계** | **502 + 3 구간** | **21** | **—** | **—** | **11** | **0** |
 
 **회차별 `failed` 수도 동일하다**(예: flat-221-314 는 두 회차 모두 `3 failed, 1283 passed`). 즉 이
 체크아웃에서 **hash seed 를 바꿔도 빨간 집합이 움직이지 않는다** — 회차 사이의 차이는 seed 탓이 아니었고,
 그 서술은 이 원장으로 **대체**한다.
+
+### 3b. 수집 **순서**를 뒤집어도 같은 집합이었다 (3 scope)
+
+seed 만 바꾸면 “같은 순서로 돌렸을 때”만 말한다. 그래서 파일 목록을 **역순**으로 준 회차(`rev-seed-101`)를
+실패 프로필이 다른 세 구간에 넣어 같은 scope 안에서 비교했다(앞의 두 회차와 교집합에 함께 들어간다).
+
+| scope | 알파벳순 회차 | 역순 회차 | 결정적 | 판정 |
+|---|---|---|---|---|
+| `flat-001-080` | 0 red (seed 101·202) | **0 red** | 0 | 동일 |
+| `flat-081-220` | 2 red (cr14 fence) | **2 red** (같은 두 건) | 2 | 동일 |
+| `flat-457-502` | 5 red (seed 101·202) | **5 red** | 5 | 동일 |
+
+즉 **수집 순서를 뒤집어도 실패 집합과 수집 수가 같았다**(1024 · 1860 · 631). 앞서 “순서 artifact”라고
+적었던 서술은 이 측정으로 뒤집혔다 — 그 차이는 seed 나 순서가 아니라 **트리·수집 오염·실행 선택**의
+차이였고, 원장은 그중 트리·오염이 고정된 상태의 관찰이다.
 
 결정적 실패 11건(전부 소유자 있음 · `unowned` 0):
 
@@ -122,6 +139,8 @@ fd 원인 조사도 했다: `os.close`/`os.dup2`/`os.closerange` 를 감시하�
 
 ## 6. 한계
 
+* **순서 뒤집기 회차는 9 scope 중 3개에만** 넣었다(수집이 곱해져 502개를 한 호출에 넣을 수 없다).
+  **scope 사이의 순서**(예: `tests/cognitive`가 다른 구간보다 먼저 import 되는 경우)는 범위 밖이다.
 * **scope 안의 순서만** 비교한다. `tests/test_*.py` 502개를 8구간으로 나눠 돌렸으므로
   **구간 사이의 수집 순서 효과**는 이 원장이 재지 않는다(구간 경계에서 module 이 먼저·나중에 import 되는
   차이는 남는다). §1.1 ④ 의 오염 부류는 구간 안에서 재현되지 않았다.

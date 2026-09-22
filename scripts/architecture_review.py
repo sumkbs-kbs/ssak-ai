@@ -900,14 +900,14 @@ def check_regression_ledger(ledger: dict[str, object] | None) -> CheckResult:
         passed=True,
         detail=(
             f"scope {len(scopes)}개 · 회차 {len(entries)}개 · 결정적 실패 {len(deterministic)}건 전부 "
-            f"소유자 있음 · seed 민감 {len(drift)}건"
+            f"소유자 있음 · variant 민감 {len(drift)}건"
         ),
         observed=len(deterministic),
     )
 
 
 def regression_measured(ledger: dict[str, object]) -> dict[str, int]:
-    """원장에서 리뷰 마커로 고정할 값(scope·회차·결정적·seed 민감·무소유)."""
+    """원장에서 리뷰 마커로 고정할 값(scope·회차·결정적·variant 민감·무소유)."""
 
     return {
         "regression_scopes": len(_as_dict(ledger.get("scopes"))),

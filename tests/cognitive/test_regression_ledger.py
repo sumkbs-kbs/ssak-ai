@@ -105,6 +105,7 @@ def test_aborted_run_is_excluded_from_judgement() -> None:
 
     aborted = ledger_module.RunResult(
         scope="chunk",
+        variant="seed-202",
         seed=202,
         junit="chunk__seed-202.xml",
         tests=100,
@@ -144,9 +145,10 @@ def test_missing_testsuite_raises() -> None:
 # --------------------------------------------------------------------------- 분리
 
 
-def _run(seed: int, red: frozenset[str], *, scope: str = "chunk") -> object:
+def _run(seed: int, red: frozenset[str], *, scope: str = "chunk", variant: str | None = None) -> object:
+    name = variant or f"seed-{seed}"
     return ledger_module.RunResult(
-        scope=scope, seed=seed, junit=f"{scope}__seed-{seed}.xml", tests=10, red=red, skipped=0
+        scope=scope, variant=name, seed=seed, junit=f"{scope}__{name}.xml", tests=10, red=red, skipped=0
     )
 
 
@@ -178,19 +180,52 @@ def test_scopes_are_judged_separately() -> None:
 
 
 def test_single_run_scope_is_incomplete_not_deterministic() -> None:
-    """한 회차뿐인 scope 는 판정하지 않는다(결정적과 seed 민감을 구분할 수 없다)."""
+    """한 회차뿐인 scope 는 판정하지 않는다(결정적과 variant 민감을 구분할 수 없다)."""
+
+    ledger = ledger_module.build_ledger([_run(101, frozenset({ALWAYS_RED}), scope="only")])
+
+    assert ledger.incomplete == ("only",)
+    assert ledger.deterministic == frozenset()
+    assert any("variant" in problem for problem in ledger_module.gate_failures(ledger, drift_allowance=0))
+
+
+def test_same_variant_twice_is_not_a_comparison() -> None:
+    """같은 조건(variant)을 두 번 재면 아무것도 분리하지 못한다 — 두 회차로 세지 않는다."""
+
+    ledger = ledger_module.build_ledger([_run(101, frozenset(), scope="twice"), _run(101, frozenset(), scope="twice")])
+
+    assert ledger.incomplete == ("twice",)
+    assert ledger.deterministic == frozenset()
+
+
+def test_same_seed_with_another_variant_is_a_comparison() -> None:
+    """seed 가 같아도 조건이 다르면(예: 수집 순서 뒤집기) 비교 대상이다."""
 
     ledger = ledger_module.build_ledger(
         [
-            _run(101, frozenset({ALWAYS_RED}), scope="only"),
-            _run(101, frozenset(), scope="twice"),
-            _run(101, frozenset(), scope="twice"),
+            _run(101, frozenset({ALWAYS_RED}), scope="flat"),
+            _run(101, frozenset({ALWAYS_RED}), scope="flat", variant="rev-seed-101"),
         ]
     )
 
-    assert ledger.incomplete == ("only", "twice"), "seed 가 겹치면 두 회차로 보지 않는다"
-    assert ledger.deterministic == frozenset()
-    assert any("scope" in problem for problem in ledger_module.gate_failures(ledger, drift_allowance=0))
+    assert ledger.incomplete == ()
+    assert ledger.deterministic == {ALWAYS_RED}
+    assert ledger.drift == frozenset()
+
+
+def test_reversed_order_run_can_show_drift() -> None:
+    """수집 순서를 뒤집었더니 실패 집합이 달라지면 deterministic 이 아니라 drift 다."""
+
+    ledger = ledger_module.build_ledger(
+        [
+            _run(101, frozenset({ALWAYS_RED}), scope="flat"),
+            _run(101, frozenset({ALWAYS_RED, FLIPS}), scope="flat", variant="rev-seed-101"),
+        ]
+    )
+
+    assert ledger.drift == {FLIPS}
+    assert ledger.deterministic == {ALWAYS_RED}
+    assert any("허용" in problem for problem in ledger_module.gate_failures(ledger, drift_allowance=0))
 
 
 def test_identical_runs_have_no_drift() -> None:
@@ -267,15 +302,23 @@ def test_owner_registry_has_reasons() -> None:
 def test_load_runs_reads_seed_from_file_name(tmp_path: Path) -> None:
     """`--from-junit` 경로: 재실행 없이 기존 XML 만으로 원장을 다시 만든다."""
 
-    for seed in (101, 202):
-        report = _report(_case("tests/test_model_registry.py", "test_always_red"))
-        (tmp_path / f"chunk-a__seed-{seed}.xml").write_text(report, encoding="utf-8")
+    report = _report(_case("tests/test_model_registry.py", "test_always_red"))
+    (tmp_path / "chunk-a__seed-101.xml").write_text(report, encoding="utf-8")
+    (tmp_path / "chunk-a__rev-seed-202.xml").write_text(report, encoding="utf-8")
 
     runs = ledger_module.load_runs(tmp_path)
 
-    assert [run.seed for run in runs] == [101, 202]
+    assert [run.variant for run in runs] == ["rev-seed-202", "seed-101"], "이름순으로 읽는다"
+    assert [run.seed for run in runs] == [202, 101]
     assert {run.scope for run in runs} == {"chunk-a"}
     assert all(run.red == frozenset({ALWAYS_RED}) for run in runs)
+
+
+def test_variant_without_a_seed_is_recorded_as_minus_one() -> None:
+    """variant 이름에 seed 가 없으면 숫자는 기록용일 뿐이다(판정은 variant 로 한다)."""
+
+    assert ledger_module.variant_seed("rev-seed-101") == 101
+    assert ledger_module.variant_seed("manual") == -1
 
 
 def test_load_runs_ignores_files_without_the_name_shape(tmp_path: Path) -> None:
@@ -313,14 +356,20 @@ def test_run_once_pins_the_hash_seed(tmp_path: Path, monkeypatch: pytest.MonkeyP
     monkeypatch.setattr(ledger_module.subprocess, "run", fake_run)
 
     result = ledger_module.run_once(
-        scope="chunk-a", seed=303, directory=tmp_path, pattern="not slow", extra=["tests/cognitive"]
+        scope="chunk-a",
+        variant="rev-seed-303",
+        seed=303,
+        directory=tmp_path,
+        pattern="not slow",
+        extra=["tests/cognitive"],
     )
 
     env = captured["env"]
     assert isinstance(env, dict)
     assert env["PYTHONHASHSEED"] == "303"
     assert result.scope == "chunk-a"
-    assert result.junit.endswith("chunk-a__seed-303.xml")
+    assert result.variant == "rev-seed-303"
+    assert result.junit.endswith("chunk-a__rev-seed-303.xml")
     assert "tests/cognitive" in captured["command"], "scope 선택이 pytest 인자에 실려야 한다"  # type: ignore[operator]
     assert result.red == frozenset({ALWAYS_RED})
     assert "--junitxml=" in " ".join(captured["command"])  # type: ignore[arg-type]

@@ -6,17 +6,21 @@
 회귀를 한 번 돌려 `N failed` 만 적으면 두 종류를 뭉갠다.
 
   * **결정적 실패** — 같은 scope·같은 명령이면 매번 같은 집합. 오너가 정리할 몫이다.
-  * **seed 민감 실패** — 프로세스마다 달라지는 것(hash seed·동시 실행·tmp 충돌·공유 상태)에 따라
-    집합이 바뀐다. 이걸 뭉개면 “우연히 초록”과 “우연히 빨강”이 구별되지 않는다.
+  * **variant 민감 실패** — 프로세스·순서 조건에 따라 집합이 바뀐다(hash seed·수집 순서·동시 실행·
+    tmp 충돌·공유 상태). 이걸 뭉개면 “우연히 초록”과 “우연히 빨강”이 구별되지 않는다.
 
 그래서 **같은 scope** 를 명시적 hash seed 로 두 번 이상 돌리고, junit XML(구조화된 산출물)을 읽어
 교집합(=결정적)과 대칭차(=seed 민감)를 계산한다. 로그 문자열을 긁지 않는다.
 
-scope
-=====
-`scope` 는 “무엇을, 어떤 선택으로 돌렸는가”의 이름이다(예: `flat-001-060`, `cognitive`). 원장은
-**scope 별로** 두 회차를 요구한다 — 서로 다른 scope 의 실패를 교집합하면 없던 결정적 실패가 생긴다.
-한 회차뿐인 scope 는 판정하지 못하므로 `incomplete` 로 보고하고 게이트가 실패로 만든다.
+scope 와 variant
+================
+`scope` 는 **무엇을** 돌렸는지(예: `flat-001-060`, `cognitive`), `variant` 는 **어떤 조건으로** 돌렸는지의
+이름이다(기본 `seed-<n>`, 수집 순서를 뒤집은 회차는 예컨대 `rev-seed-101`). 원장은 **scope 별로** 두 개
+이상의 **서로 다른 variant** 를 요구한다 — 서로 다른 scope 의 실패를 교집합하면 없던 결정적 실패가 생기고,
+같은 variant 를 두 번 재도 “같은 조건을 두 번” 잰 것이라 아무것도 분리하지 못한다.
+
+그래서 이 원장이 재는 것은 "seed 를 바꾸면 달라지는가" 하나가 아니다 — scope 안에서 **variant 를 바꿨을 때
+빨강 집합이 달라지는가**이고, variant 에 수집 순서를 넣으면 **순서 민감성**이 같은 계산에 들어온다.
 
 긴 suite 를 한 번에 못 돌리는 환경(단일 호출 상한)에서는 scope 를 나눠 여러 번 호출하면 된다.
 각 호출은 자기 scope 의 xml 을 남기고, 마지막에 `--from-junit` 으로 합쳐 읽는다.
@@ -26,7 +30,7 @@ scope
 * `--run` 없이 `--from-junit` 으로 **이미 받아 둔 XML 만** 다시 읽을 수 있다(재실행 0회).
 * 분류표(`OWNERS`)에 없는 결정적 실패는 **무소유(unowned)** 로 보고한다. 새 빨강을 “누군가 알아서”
   로 넘기지 않기 위해서다.
-* `--gate` 를 주면 ① 무소유 결정적 실패 ② 한 회차뿐인 scope ③ seed 민감 집합이 허용치를 넘는 경우
+* `--gate` 를 주면 ① 무소유 결정적 실패 ② variant 가 둘 미만인 scope ③ variant 민감 집합이 허용치를 넘는 경우
   중 하나라도 있으면 exit 1.
 
 실행:    .venv/bin/python scripts/regression_ledger.py --run 2 --scope cognitive --extra 'tests/cognitive'
@@ -35,8 +39,13 @@ scope
   .venv/bin/python scripts/regression_ledger.py --run 2 --scope flat-001-060 --extra "$FILES"
   .venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger --gate
 
-회차가 남기는 것: `<scope>__seed-<n>.xml`(판정 근거) · `<scope>__seed-<n>.log`(pytest 출력 원문) ·
-원장 JSON(요약). scope·seed·명령이 원장에 그대로 남으므로 나중에 같은 조건을 재현할 수 있다.
+회차가 남기는 것: `<scope>__<variant>.xml`(판정 근거) · `<scope>__<variant>.log`(pytest 출력 원문) ·
+원장 JSON(요약). scope·variant·명령이 원장에 그대로 남으므로 나중에 같은 조건을 재현할 수 있다.
+
+순서 민감성 측정(수집 순서를 뒤집은 회차):
+  FILES=$(ls tests/test_*.py | sed -n '1,80p' | tac | tr '\n' ' ')
+  .venv/bin/python scripts/regression_ledger.py --seeds 101 --variant rev-seed-101 \
+      --scope flat-001-080 --extra "$FILES"
 """
 
 from __future__ import annotations
@@ -99,7 +108,7 @@ OWNERS: Final[tuple[tuple[str, str, str], ...]] = (
 DEFAULT_DRIFT_ALLOWANCE: Final[int] = 0
 
 _RED_TAGS: Final[frozenset[str]] = frozenset({"failure", "error"})
-_REPORT_NAME: Final[re.Pattern[str]] = re.compile(r"^(?P<scope>.+)__seed-(?P<seed>\d+)\.xml$")
+_REPORT_NAME: Final[re.Pattern[str]] = re.compile(r"^(?P<scope>.+)__(?P<variant>[^/]+)\.xml$")
 
 
 @dataclass(frozen=True)
@@ -131,9 +140,13 @@ class Report:
 
 @dataclass(frozen=True)
 class RunResult:
-    """한 scope 의 한 회차 관찰."""
+    """한 scope 의 한 회차 관찰.
+
+    `variant` 가 회차의 정체성이다(기본 `seed-<n>`). 같은 scope 안에서 variant 가 서로 달라야 비교가 된다.
+    """
 
     scope: str
+    variant: str
     seed: int
     junit: str
     tests: int
@@ -144,6 +157,7 @@ class RunResult:
     def as_mapping(self) -> dict[str, object]:
         return {
             "scope": self.scope,
+            "variant": self.variant,
             "seed": self.seed,
             "junit": self.junit,
             "tests": self.tests,
@@ -291,12 +305,12 @@ def build_ledger(runs: Iterable[RunResult]) -> Ledger:
     incomplete: list[str] = []
     aborted_scopes: list[str] = []
     for scope, entries in sorted(by_scope.items()):
-        seeds = {entry.seed for entry in entries}
+        variants = {entry.variant for entry in entries}
         if any(entry.aborted for entry in entries):
             aborted_scopes.append(scope)
             incomplete.append(scope)
             continue
-        if len(entries) < 2 or len(seeds) < 2:
+        if len(entries) < 2 or len(variants) < 2:
             incomplete.append(scope)
             continue
         sets = [entry.red for entry in entries]
@@ -321,10 +335,16 @@ def build_ledger(runs: Iterable[RunResult]) -> Ledger:
     return ledger
 
 
-def report_path(directory: Path, scope: str, seed: int) -> Path:
-    """회차 산출물 경로 — scope 와 seed 가 파일명에 그대로 남는다."""
+def default_variant(seed: int) -> str:
+    """기본 variant 이름 — hash seed 하나만 바꿔 돌린 회차."""
 
-    return directory / f"{slug(scope)}__seed-{seed}.xml"
+    return f"seed-{seed}"
+
+
+def report_path(directory: Path, scope: str, variant: str) -> Path:
+    """회차 산출물 경로 — scope 와 variant 가 파일명에 그대로 남는다."""
+
+    return directory / f"{slug(scope)}__{slug(variant)}.xml"
 
 
 def load_runs(directory: Path) -> list[RunResult]:
@@ -336,10 +356,12 @@ def load_runs(directory: Path) -> list[RunResult]:
         if match is None:
             continue
         report = parse_junit(path.read_text(encoding="utf-8"), source=str(path))
+        variant = match.group("variant")
         runs.append(
             RunResult(
                 scope=match.group("scope"),
-                seed=int(match.group("seed")),
+                variant=variant,
+                seed=variant_seed(variant),
                 junit=display_path(path),
                 tests=report.tests,
                 red=report.red,
@@ -350,6 +372,13 @@ def load_runs(directory: Path) -> list[RunResult]:
     if not runs:
         raise SystemExit(f"junit 산출물이 없다: {display_path(directory)} — 먼저 --run 으로 돌려야 한다")
     return runs
+
+
+def variant_seed(variant: str) -> int:
+    """variant 이름에서 hash seed 를 복원한다(모르면 -1 — 기록용 숫자일 뿐이다)."""
+
+    match = re.search(r"seed-(\d+)", variant)
+    return int(match.group(1)) if match else -1
 
 
 def pytest_command(*, pattern: str, extra: Sequence[str]) -> list[str]:
@@ -369,15 +398,15 @@ def pytest_command(*, pattern: str, extra: Sequence[str]) -> list[str]:
     ]
 
 
-def run_once(*, scope: str, seed: int, directory: Path, pattern: str, extra: Sequence[str]) -> RunResult:
-    """한 회차 실행 — scope 선택을 그리고 hash seed 를 명시적으로 고정한다."""
+def run_once(*, scope: str, variant: str, seed: int, directory: Path, pattern: str, extra: Sequence[str]) -> RunResult:
+    """한 회차 실행 — scope·variant 를 그리고 hash seed 를 명시적으로 고정한다."""
 
     directory.mkdir(parents=True, exist_ok=True)
-    report = report_path(directory, scope, seed)
+    report = report_path(directory, scope, variant)
     log = report.with_suffix(".log")
     env = dict(os.environ, PYTHONHASHSEED=str(seed))
     command = [*pytest_command(pattern=pattern, extra=extra), f"--junitxml={report}"]
-    print(f"[regression-ledger] {scope} · seed={seed} → {report.name}", flush=True)
+    print(f"[regression-ledger] {scope} · {variant} · PYTHONHASHSEED={seed} → {report.name}", flush=True)
     completed = subprocess.run(  # noqa: S603
         command, cwd=REPO_ROOT, env=env, capture_output=True, text=True, check=False
     )
@@ -393,6 +422,7 @@ def run_once(*, scope: str, seed: int, directory: Path, pattern: str, extra: Seq
         print(f"  경고: 이 회차는 pytest 내부 오류로 중단됐다({parsed.tests} 까지만 기록) — 다시 돌려야 한다")
     return RunResult(
         scope=scope,
+        variant=variant,
         seed=seed,
         junit=display_path(report),
         tests=parsed.tests,
@@ -408,20 +438,24 @@ def describe(ledger: Ledger) -> str:
     lines = ["# 전량 회귀 원장", ""]
     for scope, count in ledger.scopes.items():
         entries = [run for run in ledger.runs if run.scope == scope]
-        seeds = ", ".join(str(run.seed) for run in entries)
+        seeds = ", ".join(run.variant for run in entries)
         tests = sum(run.tests for run in entries)
         reds = sum(len(run.red) for run in entries)
         mark = ""
         if scope in ledger.incomplete:
-            mark = "  ← 중단된 회차가 있다(판정 제외)" if scope in ledger.aborted else "  ← 한 회차뿐(판정 불가)"
-        lines.append(f"* {scope}: 회차 {count}(seed {seeds}) · 수집 {tests} · 빨강 합 {reds}{mark}")
+            mark = (
+                "  ← 중단된 회차가 있다(판정 제외)"
+                if scope in ledger.aborted
+                else "  ← 서로 다른 variant 가 둘 미만(판정 불가)"
+            )
+        lines.append(f"* {scope}: 회차 {count}({seeds}) · 수집 {tests} · 빨강 합 {reds}{mark}")
     lines.append("")
     lines.append(f"* 결정적 실패 {len(ledger.deterministic)}건(모든 scope 에서 같은 집합)")
     for node in sorted(ledger.deterministic):
         owner = ledger.owners.get(node)
         mark = f"[{owner.lane}] {owner.reason}" if owner else "**무소유**"
         lines.append(f"  - {node} — {mark}")
-    lines.append(f"* seed 민감 실패 {len(ledger.drift)}건(회차마다 달라짐)")
+    lines.append(f"* variant 민감 실패 {len(ledger.drift)}건(회차 조건마다 달라짐)")
     for node in sorted(ledger.drift):
         lines.append(f"  - {node}")
     if ledger.unowned:
@@ -442,10 +476,13 @@ def gate_failures(ledger: Ledger, *, drift_allowance: int) -> list[str]:
         )
     still_incomplete = tuple(scope for scope in ledger.incomplete if scope not in ledger.aborted)
     if still_incomplete:
-        problems.append("두 회차(서로 다른 seed)가 없는 scope: " + ", ".join(still_incomplete))
+        problems.append(
+            "서로 다른 variant 두 회차가 없는 scope(같은 조건을 두 번 재면 아무것도 분리되지 않는다): "
+            + ", ".join(still_incomplete)
+        )
     if len(ledger.drift) > drift_allowance:
         problems.append(
-            f"seed 민감 실패 {len(ledger.drift)}건 > 허용 {drift_allowance}건: " + ", ".join(sorted(ledger.drift))
+            f"variant 민감 실패 {len(ledger.drift)}건 > 허용 {drift_allowance}건: " + ", ".join(sorted(ledger.drift))
         )
     return problems
 
@@ -459,6 +496,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="회차의 hash seed 를 직접 지정한다(쉼표 구분). 중단된 회차 하나만 다시 돌릴 때 쓴다",
     )
     parser.add_argument("--scope", default=DEFAULT_SCOPE, help="이번 회차가 재는 선택의 이름(예: cognitive)")
+    parser.add_argument(
+        "--variant",
+        default=None,
+        help="회차 조건의 이름(기본 seed-<seed>). 수집 순서를 바꾼 회차는 rev-seed-<seed> 처럼 적는다",
+    )
     parser.add_argument("--junit-dir", type=Path, default=DEFAULT_JUNIT_DIR, help="junit XML 을 두는 자리")
     parser.add_argument(
         "--from-junit",
@@ -493,6 +535,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     runs = [
         run_once(
             scope=parsed.scope,
+            variant=parsed.variant or default_variant(seed),
             seed=seed,
             directory=parsed.junit_dir,
             pattern=parsed.pattern,

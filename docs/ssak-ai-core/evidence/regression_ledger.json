@@ -13,6 +13,17 @@
   "runs": [
     {
       "scope": "flat-001-080",
+      "variant": "rev-seed-101",
+      "seed": 101,
+      "junit": ".regression-ledger/flat-001-080__rev-seed-101.xml",
+      "tests": 1024,
+      "skipped": 2,
+      "aborted": false,
+      "red": []
+    },
+    {
+      "scope": "flat-001-080",
+      "variant": "seed-101",
       "seed": 101,
       "junit": ".regression-ledger/flat-001-080__seed-101.xml",
       "tests": 1024,
@@ -22,6 +33,7 @@
     },
     {
       "scope": "flat-001-080",
+      "variant": "seed-202",
       "seed": 202,
       "junit": ".regression-ledger/flat-001-080__seed-202.xml",
       "tests": 1024,
@@ -31,6 +43,20 @@
     },
     {
       "scope": "flat-081-220",
+      "variant": "rev-seed-101",
+      "seed": 101,
+      "junit": ".regression-ledger/flat-081-220__rev-seed-101.xml",
+      "tests": 1860,
+      "skipped": 21,
+      "aborted": false,
+      "red": [
+        "tests/test_cr14_fence_movement_detection.py::test_declared_fingerprint_is_the_fingerprint_of_head_within_the_fence",
+        "tests/test_cr14_fence_movement_detection.py::test_no_code_scope_commit_after_the_declared_candidate"
+      ]
+    },
+    {
+      "scope": "flat-081-220",
+      "variant": "seed-101",
       "seed": 101,
       "junit": ".regression-ledger/flat-081-220__seed-101.xml",
       "tests": 1860,
@@ -43,6 +69,7 @@
     },
     {
       "scope": "flat-081-220",
+      "variant": "seed-202",
       "seed": 202,
       "junit": ".regression-ledger/flat-081-220__seed-202.xml",
       "tests": 1860,
@@ -55,6 +82,7 @@
     },
     {
       "scope": "flat-221-314",
+      "variant": "seed-101",
       "seed": 101,
       "junit": ".regression-ledger/flat-221-314__seed-101.xml",
       "tests": 1286,
@@ -68,6 +96,7 @@
     },
     {
       "scope": "flat-221-314",
+      "variant": "seed-202",
       "seed": 202,
       "junit": ".regression-ledger/flat-221-314__seed-202.xml",
       "tests": 1286,
@@ -81,6 +110,7 @@
     },
     {
       "scope": "flat-315-338",
+      "variant": "seed-101",
       "seed": 101,
       "junit": ".regression-ledger/flat-315-338__seed-101.xml",
       "tests": 346,
@@ -90,6 +120,7 @@
     },
     {
       "scope": "flat-315-338",
+      "variant": "seed-202",
       "seed": 202,
       "junit": ".regression-ledger/flat-315-338__seed-202.xml",
       "tests": 346,
@@ -99,6 +130,7 @@
     },
     {
       "scope": "flat-339-380",
+      "variant": "seed-101",
       "seed": 101,
       "junit": ".regression-ledger/flat-339-380__seed-101.xml",
       "tests": 676,
@@ -108,6 +140,7 @@
     },
     {
       "scope": "flat-339-380",
+      "variant": "seed-202",
       "seed": 202,
       "junit": ".regression-ledger/flat-339-380__seed-202.xml",
       "tests": 676,
@@ -117,6 +150,7 @@
     },
     {
       "scope": "flat-381-408",
+      "variant": "seed-101",
       "seed": 101,
       "junit": ".regression-ledger/flat-381-408__seed-101.xml",
       "tests": 727,
@@ -126,6 +160,7 @@
     },
     {
       "scope": "flat-381-408",
+      "variant": "seed-202",
       "seed": 202,
       "junit": ".regression-ledger/flat-381-408__seed-202.xml",
       "tests": 727,
@@ -135,6 +170,7 @@
     },
     {
       "scope": "flat-409-456",
+      "variant": "seed-101",
       "seed": 101,
       "junit": ".regression-ledger/flat-409-456__seed-101.xml",
       "tests": 786,
@@ -146,6 +182,7 @@
     },
     {
       "scope": "flat-409-456",
+      "variant": "seed-202",
       "seed": 202,
       "junit": ".regression-ledger/flat-409-456__seed-202.xml",
       "tests": 786,
@@ -157,6 +194,23 @@
     },
     {
       "scope": "flat-457-502",
+      "variant": "rev-seed-101",
+      "seed": 101,
+      "junit": ".regression-ledger/flat-457-502__rev-seed-101.xml",
+      "tests": 631,
+      "skipped": 7,
+      "aborted": false,
+      "red": [
+        "tests/test_ws01_project_binding.py::test_active_project_switch_does_not_change_inflight_root",
+        "tests/test_ws01_project_binding.py::test_concurrent_a_b_requests_do_not_share_roots",
+        "tests/test_ws01_project_binding.py::test_di_get_memory_manager_uses_request_root",
+        "tests/test_ws01_project_binding.py::test_route_to_runtime_capture_preserves_project_id",
+        "tests/test_ws01_project_binding.py::test_session_binding_allows_resolve_without_project_id"
+      ]
+    },
+    {
+      "scope": "flat-457-502",
+      "variant": "seed-101",
       "seed": 101,
       "junit": ".regression-ledger/flat-457-502__seed-101.xml",
       "tests": 631,
@@ -172,6 +226,7 @@
     },
     {
       "scope": "flat-457-502",
+      "variant": "seed-202",
       "seed": 202,
       "junit": ".regression-ledger/flat-457-502__seed-202.xml",
       "tests": 631,
@@ -187,6 +242,7 @@
     },
     {
       "scope": "subdirs",
+      "variant": "seed-101",
       "seed": 101,
       "junit": ".regression-ledger/subdirs__seed-101.xml",
       "tests": 399,
@@ -196,6 +252,7 @@
     },
     {
       "scope": "subdirs",
+      "variant": "seed-202",
       "seed": 202,
       "junit": ".regression-ledger/subdirs__seed-202.xml",
       "tests": 399,
@@ -205,14 +262,14 @@
     }
   ],
   "scopes": {
-    "flat-001-080": 2,
-    "flat-081-220": 2,
+    "flat-001-080": 3,
+    "flat-081-220": 3,
     "flat-221-314": 2,
     "flat-315-338": 2,
     "flat-339-380": 2,
     "flat-381-408": 2,
     "flat-409-456": 2,
-    "flat-457-502": 2,
+    "flat-457-502": 3,
     "subdirs": 2
   },
   "incomplete_scopes": [],
@@ -279,7 +336,7 @@
   },
   "unowned": [],
   "counts": {
-    "runs": 18,
+    "runs": 21,
     "scopes": 9,
     "deterministic": 11,
     "drift": 0,
