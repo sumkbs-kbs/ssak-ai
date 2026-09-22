@@ -1,0 +1,423 @@
+"""P11 표면 opt-in adapter 시험.
+
+검증 범위:
+- 설정이 없거나 enabled=false거나 mode가 이상하면 OFF로 fail-closed 하고 legacy 경로를 유지한다.
+- OFF에서는 shadow/active가 조용히 실행되지 않고 거부된다.
+- SHADOW는 실제 dispatcher를 쓰되 port가 없어 dispatch가 0이다(REFUSED_ACTION / NO_DISPATCH_PORT).
+- ACTIVE는 사람 승인·dispatch port·governance gate가 모두 있을 때만 실행된다.
+- 상태 조회는 실행 없이 읽히고, 마지막 episode·판정·dispatch 수를 반영한다.
+- 표면 도달 실측은 import 그래프 기준으로 legacy/core 도달을 구분한다.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import uuid
+from dataclasses import replace
+from datetime import UTC, datetime
+from pathlib import Path
+
+import pytest
+from typer.testing import CliRunner
+
+from antigravity_k.cli import app
+from antigravity_k.engine.cognitive.actions import DispatchOutcome, PolicyClearance
+from antigravity_k.engine.cognitive.authority import AuthorityDecision, AuthorityVerdict
+from antigravity_k.engine.cognitive.governance import GovernanceGate
+from antigravity_k.engine.cognitive.models import AuthorityDimension, RiskProfile
+from antigravity_k.engine.cognitive.readiness import (
+    ActionScope,
+    EvidenceRef,
+    HardConstraint,
+    ReadinessInputs,
+    check_readiness,
+)
+from antigravity_k.engine.cognitive.runtime import ThinkOutcome
+from antigravity_k.engine.cognitive_surface import (
+    CORE_MODULE,
+    LEGACY_MODULE,
+    CognitiveCoreSettings,
+    CognitiveSurfaceAdapter,
+    SurfaceDisabledError,
+    SurfaceEpisodeRequest,
+    SurfaceIntentRequest,
+    SurfaceMode,
+    SurfaceNotReadyError,
+    SurfaceSource,
+    measure_surface_reach,
+)
+
+AUTHORITY_REVISION = 3
+DECISION_REVISION = 7
+STATE_REVISION = 11
+POLICY_VERSION = "surface-v1"
+ACTION_KEY = "surface:append:1"
+
+
+def surface_intent(*, with_clearance: bool = True, readiness: object | None = "auto") -> SurfaceIntentRequest:
+    request = raw_surface_intent()
+    digest = request.to_intent().args_digest()
+    decision = AuthorityDecision(
+        allowed=True,
+        verdict=AuthorityVerdict.ALLOWED,
+        reason="surface test clearance",
+        dimension=AuthorityDimension.TOOL_WRITE,
+        resource_scope="surface-test",
+        profile_revision=AUTHORITY_REVISION,
+    )
+    result = check_readiness(
+        ReadinessInputs(
+            action=ActionScope(
+                tool="surface_write",
+                scope="surface-test",
+                expected_outcome="appended",
+                action_digest=digest,
+            ),
+            authorized_action_digest=digest,
+            decision_revision=DECISION_REVISION,
+            state_revision=STATE_REVISION,
+            authority_revision=AUTHORITY_REVISION,
+            policy_version=POLICY_VERSION,
+            grounds=("evidence:surface",),
+            evidence_refs=(
+                EvidenceRef(
+                    evidence_id="evidence:surface",
+                    provenance_uri="fixtures/surface/evidence.json",
+                    provenance_digest="sha256:" + hashlib.sha256(b"evidence").hexdigest(),
+                    observed_at=datetime(2026, 9, 22, 4, 0, 0, tzinfo=UTC),
+                ),
+            ),
+            constraints=(HardConstraint(name="no_network", satisfied=True),),
+            risk=RiskProfile(),
+            authority_decision=decision,
+        )
+    )
+    return replace(
+        request,
+        readiness=result if readiness == "auto" else readiness,  # type: ignore[arg-type]
+        clearance=(PolicyClearance(authority=decision, revision=AUTHORITY_REVISION) if with_clearance else None),
+    )
+
+
+def raw_surface_intent() -> SurfaceIntentRequest:
+    """clearance/readiness 없이 의도만 만든다(readiness를 digest에 결박하려면 먼저 필요하다)."""
+
+    return SurfaceIntentRequest(
+        action_key=ACTION_KEY,
+        tool="surface_write",
+        arguments={"value": "shadow"},
+        scope="surface-test",
+        dimension=AuthorityDimension.TOOL_WRITE,
+        policy_version=POLICY_VERSION,
+        decision_revision=DECISION_REVISION,
+        state_revision=STATE_REVISION,
+        authority_revision=AUTHORITY_REVISION,
+    )
+
+
+class StubThink:
+    def __init__(self, judgment_ref: str = "judgment:surface") -> None:
+        self.judgment_ref = judgment_ref
+        self.calls = 0
+
+    def think(self, *, context_ref: str, request_signature: str, attempt: int) -> ThinkOutcome:
+        _ = (context_ref, request_signature, attempt)
+        self.calls += 1
+        return ThinkOutcome(judgment_ref=self.judgment_ref)
+
+
+class StubDispatchPort:
+    """ACTIVE 경로 확인용. 실제 도구 대신 dispatch 수락만 돌려준다."""
+
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, dict[str, object]]] = []
+
+    def dispatch(self, tool: str, arguments: object, *, action_id: str) -> DispatchOutcome:
+        _ = action_id
+        self.calls.append((tool, dict(arguments)))  # type: ignore[arg-type]
+        return DispatchOutcome(accepted=True, external_ref=f"stub:{tool}", detail="stub accepted")
+
+
+def episode_request(*, intent: SurfaceIntentRequest | None = None) -> SurfaceEpisodeRequest:
+    return SurfaceEpisodeRequest(
+        episode_id="episode:surface:1",
+        context_ref="context:surface:1",
+        goal_ref="goal:surface",
+        intent=intent,
+        expected_outcome="appended",
+        policy_version=POLICY_VERSION,
+    )
+
+
+# ─── 설정 fail-closed ─────────────────────────────────────────────
+
+
+def test_missing_section_is_off() -> None:
+    settings = CognitiveCoreSettings.from_config({})
+    assert settings.enabled is False
+    assert settings.effective_mode is SurfaceMode.OFF
+    assert "설정이 없다" in settings.note
+
+
+def test_enabled_false_forces_off_even_with_mode() -> None:
+    settings = CognitiveCoreSettings.from_config({"cognitive_core": {"enabled": False, "mode": "active"}})
+    assert settings.effective_mode is SurfaceMode.OFF
+    assert settings.requested_mode == "active"
+
+
+def test_unknown_mode_fails_closed() -> None:
+    settings = CognitiveCoreSettings.from_config({"cognitive_core": {"enabled": True, "mode": "sometimes"}})
+    assert settings.enabled is False
+    assert settings.effective_mode is SurfaceMode.OFF
+    assert "fail-closed" in settings.note
+
+
+def test_enabled_shadow_is_effective() -> None:
+    settings = CognitiveCoreSettings.from_config(
+        {"cognitive_core": {"enabled": True, "mode": "shadow", "project_id": "project:surface"}}
+    )
+    assert settings.effective_mode is SurfaceMode.SHADOW
+    assert settings.project_id == "project:surface"
+
+
+def test_config_object_with_private_raw_is_supported() -> None:
+    class ConfigLike:
+        def __init__(self) -> None:
+            self._raw = {"cognitive_core": {"enabled": True, "mode": "shadow"}}
+
+    assert CognitiveCoreSettings.from_config(ConfigLike()).effective_mode is SurfaceMode.SHADOW
+
+
+# ─── OFF에서는 아무 것도 실행하지 않는다 ──────────────────────────
+
+
+def test_off_surface_reports_legacy_and_refuses_to_run() -> None:
+    adapter = CognitiveSurfaceAdapter(CognitiveCoreSettings(), think=StubThink())
+    status = adapter.status()
+    assert status.source is SurfaceSource.LEGACY
+    assert status.mode is SurfaceMode.OFF
+    assert status.legacy_module == LEGACY_MODULE
+    assert status.core_module == CORE_MODULE
+    with pytest.raises(SurfaceDisabledError, match="legacy 경로를 그대로 쓴다"):
+        adapter.run_shadow(episode_request(intent=surface_intent()))
+    with pytest.raises(SurfaceNotReadyError, match="mode가 ACTIVE가 아니다"):
+        adapter.run_active(episode_request(intent=surface_intent()))
+
+
+def test_shadow_without_brain_port_is_refused() -> None:
+    adapter = CognitiveSurfaceAdapter(CognitiveCoreSettings(enabled=True, mode=SurfaceMode.SHADOW))
+    with pytest.raises(SurfaceNotReadyError, match="Primary Brain port"):
+        adapter.run_shadow(episode_request(intent=surface_intent()))
+
+
+# ─── SHADOW: action 0 ────────────────────────────────────────────
+
+
+def test_shadow_runs_episode_without_dispatching() -> None:
+    adapter = CognitiveSurfaceAdapter(CognitiveCoreSettings(enabled=True, mode=SurfaceMode.SHADOW), think=StubThink())
+    run = adapter.run_shadow(episode_request(intent=surface_intent()))
+    assert run.dispatched_actions == 0
+    assert run.refusal == "NO_DISPATCH_PORT"
+    assert run.action_status == "BLOCKED"
+    assert run.termination == "REFUSED_ACTION"
+    assert run.planned_records == ()  # 거부는 receipt·planned record를 만들지 않는다
+    assert "ACTION" in run.states
+    status = adapter.status()
+    assert status.source is SurfaceSource.CORE_SHADOW
+    assert status.last_episode_id == "episode:surface:1"
+    assert status.last_termination == "REFUSED_ACTION"
+    assert status.dispatched_actions == 0
+    assert status.refused_actions == 1
+
+
+def test_shadow_records_missing_clearance_as_not_authorized() -> None:
+    adapter = CognitiveSurfaceAdapter(CognitiveCoreSettings(enabled=True, mode=SurfaceMode.SHADOW), think=StubThink())
+    run = adapter.run_shadow(episode_request(intent=surface_intent(with_clearance=False)))
+    assert run.refusal == "NOT_AUTHORIZED"
+    assert run.dispatched_actions == 0
+
+
+def test_shadow_without_planned_action_does_not_touch_dispatch() -> None:
+    adapter = CognitiveSurfaceAdapter(CognitiveCoreSettings(enabled=True, mode=SurfaceMode.SHADOW), think=StubThink())
+    run = adapter.run_shadow(episode_request(intent=None))
+    assert run.dispatched_actions == 0
+    assert run.action_status is None
+    assert "계획된 action 없음" in run.note
+
+
+def test_readiness_bound_to_another_action_is_refused() -> None:
+    adapter = CognitiveSurfaceAdapter(CognitiveCoreSettings(enabled=True, mode=SurfaceMode.SHADOW), think=StubThink())
+    other = surface_intent()
+    # action digest는 tool·scope·arguments로 정해진다 → arguments를 바꾸면 결박이 끊긴다.
+    mismatched = replace(other, arguments={"value": "different"})
+    with pytest.raises(SurfaceNotReadyError, match="결박되지 않았다"):
+        adapter.run_shadow(episode_request(intent=mismatched))
+
+
+def test_shadow_is_not_refused_by_readiness_failure() -> None:
+    adapter = CognitiveSurfaceAdapter(CognitiveCoreSettings(enabled=True, mode=SurfaceMode.SHADOW), think=StubThink())
+    run = adapter.run_shadow(episode_request(intent=surface_intent(readiness=None)))
+    assert run.dispatched_actions == 0
+    assert run.termination == "BLOCKED_READINESS"
+
+
+# ─── ACTIVE: 사람 승인 + 실행 경계 ───────────────────────────────
+
+
+ACTIVE_PROJECT_ID = "project:" + str(uuid.uuid5(uuid.NAMESPACE_URL, "surface-test-project"))
+
+
+def active_settings(**overrides: object) -> CognitiveCoreSettings:
+    base = CognitiveCoreSettings(enabled=True, mode=SurfaceMode.ACTIVE, project_id=ACTIVE_PROJECT_ID)
+    return replace(base, **overrides) if overrides else base
+
+
+def test_active_requires_human_approval_and_ports() -> None:
+    settings = active_settings()
+    no_ports = CognitiveSurfaceAdapter(settings, think=StubThink())
+    with pytest.raises(SurfaceNotReadyError, match="dispatch port와 governance gate"):
+        no_ports.activate(approver="human:owner", reason="P11 승인")
+    with pytest.raises(SurfaceNotReadyError, match="사람 승인 기록이 없다"):
+        no_ports.run_active(episode_request(intent=surface_intent()))
+
+    adapter = CognitiveSurfaceAdapter(
+        settings, think=StubThink(), governance=GovernanceGate(), dispatch_port=StubDispatchPort()
+    )
+    with pytest.raises(SurfaceNotReadyError, match="사람 승인"):
+        adapter.activate(approver="  ", reason="승인")
+    activation = adapter.activate(
+        approver="human:owner", reason="P11 승인", now=datetime(2026, 9, 22, 5, 0, 0, tzinfo=UTC)
+    )
+    assert activation.approver == "human:owner"
+    run = adapter.run_active(episode_request(intent=surface_intent()))
+    assert run.dispatched_actions == 1
+    status = adapter.status()
+    assert status.source is SurfaceSource.CORE_ACTIVE
+    assert status.activation is not None and status.activation.approver == "human:owner"
+    assert status.dispatched_actions == 1
+
+
+def test_active_requires_canonical_project_id() -> None:
+    adapter = CognitiveSurfaceAdapter(
+        active_settings(project_id="surface-test"),
+        think=StubThink(),
+        governance=GovernanceGate(),
+        dispatch_port=StubDispatchPort(),
+    )
+    with pytest.raises(SurfaceNotReadyError, match="canonical project id"):
+        adapter.activate(approver="human:owner", reason="P11 승인")
+
+
+def test_active_activation_is_impossible_in_shadow_mode() -> None:
+    adapter = CognitiveSurfaceAdapter(
+        CognitiveCoreSettings(enabled=True, mode=SurfaceMode.SHADOW),
+        think=StubThink(),
+        governance=GovernanceGate(),
+        dispatch_port=StubDispatchPort(),
+    )
+    with pytest.raises(SurfaceNotReadyError, match="mode가 ACTIVE가 아니다"):
+        adapter.activate(approver="human:owner", reason="승인")
+
+
+# ─── 표면 도달 실측 ───────────────────────────────────────────────
+
+
+def test_measurement_separates_legacy_and_core_reach() -> None:
+    measurement = measure_surface_reach()
+    by_module = {item.module: item for item in measurement.entrypoints}
+    legacy_entry = by_module["antigravity_k.engine.tool_loop"]
+    assert legacy_entry.reaches_legacy is True
+    assert legacy_entry.reaches_core is False
+    assert legacy_entry.legacy_via[-1] == LEGACY_MODULE
+    # 실행 경로(대화·legacy loop 소유)는 아직 신규 core에 도달하지 않는다(P11 통합 전 기준선).
+    for execution_path in (
+        "antigravity_k.api.routes.chat",
+        "antigravity_k.api.routes.agent_stream_api",
+        "antigravity_k.engine.orchestrator.agent",
+        "antigravity_k.engine.engine_context",
+    ):
+        assert by_module[execution_path].reaches_core is False, execution_path
+    # core 도달은 read-only 조회 표면(CLI 명령 + API 라우터)뿐이다.
+    assert {item.module for item in measurement.entrypoints if item.reaches_core} == {
+        "antigravity_k.cli",
+        "antigravity_k.api.server",
+    }
+    assert measurement.legacy_count >= 5
+    payload = measurement.as_mapping()
+    assert payload["legacy_module"] == LEGACY_MODULE
+    assert payload["core_module"] == CORE_MODULE
+
+
+def test_measurement_resolves_relative_imports(tmp_path: Path) -> None:
+    """상대 import로 연결된 모듈도 도달로 센다(패키지 __init__ 경유)."""
+
+    root = tmp_path / "src"
+    core = root / "antigravity_k" / "engine" / "cognitive"
+    core.mkdir(parents=True)
+    (root / "antigravity_k" / "__init__.py").write_text("", encoding="utf-8")
+    (root / "antigravity_k" / "engine" / "__init__.py").write_text("", encoding="utf-8")
+    (core / "__init__.py").write_text("", encoding="utf-8")
+    (core / "runtime.py").write_text("", encoding="utf-8")
+    routes = root / "antigravity_k" / "routes"
+    routes.mkdir()
+    (routes / "__init__.py").write_text("from . import surface_api\n", encoding="utf-8")
+    (routes / "surface_api.py").write_text(
+        "from ..engine.cognitive.runtime import CognitiveRuntime\n", encoding="utf-8"
+    )
+    (root / "antigravity_k" / "entry.py").write_text("from .routes import surface_api\n", encoding="utf-8")
+    measurement = measure_surface_reach(source_root=root, entrypoints=(("entry", "antigravity_k.entry"),))
+    reach = measurement.entrypoints[0]
+    assert reach.reaches_core is True
+    assert reach.core_via[-1] == CORE_MODULE
+    assert "antigravity_k.routes.surface_api" in reach.core_via
+
+
+def test_measurement_detects_core_reach_in_synthetic_package(tmp_path: Path) -> None:
+    root = tmp_path / "src"
+    core = root / "antigravity_k" / "engine" / "cognitive"
+    core.mkdir(parents=True)
+    (root / "antigravity_k" / "__init__.py").write_text("", encoding="utf-8")
+    (root / "antigravity_k" / "engine" / "__init__.py").write_text("", encoding="utf-8")
+    (core / "__init__.py").write_text("", encoding="utf-8")
+    (core / "runtime.py").write_text("", encoding="utf-8")
+    (root / "antigravity_k" / "surface.py").write_text(
+        "from antigravity_k.engine.cognitive.runtime import CognitiveRuntime\n", encoding="utf-8"
+    )
+    (root / "antigravity_k" / "missing_dep.py").write_text("", encoding="utf-8")
+    measurement = measure_surface_reach(
+        source_root=root,
+        entrypoints=(
+            ("new surface", "antigravity_k.surface"),
+            ("없는 표면", "antigravity_k.not_there"),
+        ),
+    )
+    reach = {item.module: item for item in measurement.entrypoints}
+    assert reach["antigravity_k.surface"].reaches_core is True
+    assert reach["antigravity_k.surface"].reaches_legacy is False
+    assert reach["antigravity_k.not_there"].exists is False
+    assert reach["antigravity_k.not_there"].reaches_core is False
+    assert measurement.core_count == 1
+
+
+# ─── CLI ─────────────────────────────────────────────────────────
+
+
+def test_cli_cognitive_status_is_read_only() -> None:
+    runner = CliRunner()
+    result = runner.invoke(app, ["cognitive", "status"])
+    assert result.exit_code == 0, result.output
+    assert "cognitive_core" in result.output
+    assert "legacy" in result.output
+
+    as_json = runner.invoke(app, ["cognitive", "status", "--json"])
+    assert as_json.exit_code == 0, as_json.output
+    assert '"source": "legacy"' in as_json.output.replace("'", '"')
+
+
+def test_cli_cognitive_surface_prints_measurement(tmp_path: Path) -> None:
+    output = tmp_path / "surface.json"
+    result = CliRunner().invoke(app, ["cognitive", "surface", "--output", str(output)])
+    assert result.exit_code == 0, result.output
+    assert "legacy 도달" in result.output
+    assert output.is_file()
+    assert '"core_module"' in output.read_text(encoding="utf-8")

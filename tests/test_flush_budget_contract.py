@@ -12,6 +12,12 @@
   `NX10_FLUSH_TREE=/tmp/mirror .venv/bin/python -m pytest docs/qa/2026-09-16-followup/nx10/fsync/test_flush_budget_contract.py -q`
 검사 대상 트리를 **명시적으로** 고르는 이유: 이 시험은 “적용 전에는 빨갛고 적용 뒤에는 초록”이어야
 계약이지, 초록으로 고정된 문장이 아니다(nx10/PROMOTION_PLAN §1h 의 P1/P2 시나리오).
+
+namespace 규율:
+  `sys.modules` 에서 `antigravity_k.*` 를 비우는 것은 **미러 리허설(`NX10_FLUSH_TREE` 지정)에서만** 한다.
+  승격된 이 파일은 `tests/` 에서 일반 suite 와 함께 수집되므로, 조건 없이 비우면 나중에 import 되는
+  module 이 같은 이름으로 다시 만들어져 **class identity 가 갈라진다**(실측 · ARCHITECTURE_REVIEW §1.1 ④).
+
 """
 
 from __future__ import annotations
@@ -22,11 +28,12 @@ from pathlib import Path
 from typing import Any
 
 HERE = Path(__file__).resolve().parent
+TREE_ENV = "NX10_FLUSH_TREE"
 
 
 def _tree_root() -> Path:
     """검사 대상 트리: `NX10_FLUSH_TREE` 가 있으면 그곳, 없으면 `pyproject.toml` 을 위로 찾아 올라간다."""
-    override = os.environ.get("NX10_FLUSH_TREE")
+    override = os.environ.get(TREE_ENV)
     if override:
         return Path(override).resolve()
     for candidate in (HERE, *HERE.parents):
@@ -40,8 +47,12 @@ SRC = TREE / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 # 다른 트리를 검사할 때 이전 임포트가 남아 있으면 조용히 옛 바이트를 검사한다(승격 때 실제로 겪은 부류).
-for name in [key for key in list(sys.modules) if key.startswith("antigravity_k")]:
-    del sys.modules[name]
+# 그래서 비우는 것은 **미러 리허설에서만** 한다 — 이 파일은 승격 뒤 `tests/` 에서 일반 suite 와 함께 수집되므로,
+# 조건 없이 비우면 아직 import 되지 않은 module 이 나중에 같은 이름으로 다시 만들어져 class identity 가 갈라진다
+# (실측: 전량 회귀에서 `authority.AuthorityProfile` 이 두 객체가 됐다 · ARCHITECTURE_REVIEW §1.1 ④).
+if os.environ.get(TREE_ENV):
+    for name in [key for key in list(sys.modules) if key.startswith("antigravity_k")]:
+        del sys.modules[name]
 
 
 def _imports() -> tuple[Any, Any, Any]:

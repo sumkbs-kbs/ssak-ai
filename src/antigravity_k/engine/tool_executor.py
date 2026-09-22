@@ -83,6 +83,37 @@ class _GatePipelineLike(Protocol):
     def evaluate(self, context: object) -> _GateDecisionLike: ...
 
 
+class _ReshapedActionLike(Protocol):
+    @property
+    def arguments(self) -> Mapping[str, object]: ...
+
+
+class _GovernanceOutcomeLike(Protocol):
+    """P05 GovernanceOutcome의 최소 표면. disposition/reason은 로그·차단 사유에 쓴다."""
+
+    @property
+    def disposition(self) -> object: ...
+
+    @property
+    def reason(self) -> str: ...
+
+    @property
+    def admits_execution(self) -> bool: ...
+
+    @property
+    def reshaped_action(self) -> _ReshapedActionLike | None: ...
+
+
+class _GovernanceGateLike(Protocol):
+    def admit(
+        self,
+        tool_name: str,
+        args: Mapping[str, object],
+        *,
+        execution_mode: str = "interactive",
+    ) -> _GovernanceOutcomeLike: ...
+
+
 class _VaultEngineLike(Protocol):
     def create_snapshot(self, message: str) -> str | None: ...
 
@@ -162,6 +193,8 @@ class ToolExecutor:
         self.gate_pipeline: _GatePipelineLike | None = (
             cast(_GatePipelineLike, gate_pipeline) if gate_pipeline is not None else None
         )
+        # P05 cognitive request governance (opt-in). 연결 전에는 기존 동작 그대로다.
+        self._governance_gate: _GovernanceGateLike | None = None
         self._consecutive_errors = 0
         self.current_objective = ""
         self.failure_registry = RecoveryStrategyRegistry()
@@ -184,6 +217,15 @@ class ToolExecutor:
     def set_objective(self, objective: str) -> None:
         """현재 턴 목표를 capability policy 판단에 제공합니다."""
         self.current_objective = objective or ""
+
+    def set_governance_gate(self, gate: _GovernanceGateLike | None) -> None:
+        """P05 Cognitive Request governance adapter를 연결한다(None이면 기존 동작).
+
+        adapter는 ``admit(tool, args, execution_mode=...)``로 판정하고, 실행 불가면
+        ``admits_execution``이 False다. RESHAPE 결과는 ``reshaped_action``의 args로 실행한다.
+        """
+
+        self._governance_gate = gate
 
     def execute(
         self,
@@ -223,6 +265,20 @@ class ToolExecutor:
                     f"Here's the error traceback: [BLOCKED] {policy_denial}\n"
                     f"Please continue without this tool."
                 )
+
+            # ─── P05: Cognitive Request Governance (opt-in adapter) ───
+            if self._governance_gate is not None:
+                governance = self._governance_gate.admit(name, args, execution_mode=execution_mode)
+                if not governance.admits_execution:
+                    logger.info("Governance %s blocked '%s': %s", governance.disposition, name, governance.reason)
+                    return (
+                        f"There was an error when executing the function: {name}\n"
+                        f"Here's the error traceback: [GOVERNANCE {governance.disposition}] {governance.reason}\n"
+                        f"Please reconsider your approach."
+                    )
+                reshaped = governance.reshaped_action
+                if reshaped is not None:
+                    args = dict(reshaped.arguments)
 
             # ─── Phase 1 D3: PlanGuard 모드 기반 도구 차단 ───
             if self.plan_guard is not None:

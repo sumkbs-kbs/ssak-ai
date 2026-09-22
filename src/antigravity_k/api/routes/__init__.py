@@ -16,6 +16,7 @@ from .approval_api import router as approval_router
 from .chat import router as chat_router
 from .code_api import router as code_router
 from .code_intel_api import router as code_intel_router
+from .cognitive_surface_api import router as cognitive_surface_router
 from .conversation_api import router as conversation_router
 from .disclosure_api import router as disclosure_router
 from .events import router as events_router
@@ -87,6 +88,7 @@ api_router.include_router(git_router, tags=["git"])
 api_router.include_router(code_router, tags=["code"])
 api_router.include_router(code_intel_router, tags=["code"])
 api_router.include_router(disclosure_router, tags=["session"])
+api_router.include_router(cognitive_surface_router, tags=["cognitive"])
 api_router.include_router(recipes_router, tags=["recipes"])
 api_router.include_router(responses_router, tags=["responses"])
 api_router.include_router(vault_api_router, tags=["vault"])

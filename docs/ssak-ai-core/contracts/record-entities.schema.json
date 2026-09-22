@@ -1,0 +1,2972 @@
+{
+  "$defs": {
+    "ActionExecutionStatus": {
+      "enum": [
+        "PLANNED",
+        "AUTHORIZED",
+        "DISPATCHED",
+        "SUCCEEDED",
+        "FAILED",
+        "UNKNOWN",
+        "CANCELLED",
+        "BLOCKED"
+      ],
+      "title": "ActionExecutionStatus",
+      "type": "string"
+    },
+    "ActionPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "args_digest": {
+          "minLength": 1,
+          "title": "Args Digest",
+          "type": "string"
+        },
+        "entity_type": {
+          "const": "Action",
+          "default": "Action",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "execution_status": {
+          "$ref": "#/$defs/ActionExecutionStatus",
+          "default": "PLANNED"
+        },
+        "guards": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Guards",
+          "type": "array"
+        },
+        "idempotency_key": {
+          "minLength": 1,
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Receipt"
+        },
+        "risk_profile": {
+          "$ref": "#/$defs/RiskProfile"
+        },
+        "scope": {
+          "minLength": 1,
+          "title": "Scope",
+          "type": "string"
+        },
+        "tool": {
+          "minLength": 1,
+          "title": "Tool",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tool",
+        "args_digest",
+        "scope",
+        "risk_profile",
+        "idempotency_key"
+      ],
+      "title": "ActionPayload",
+      "type": "object"
+    },
+    "AlternativePayload": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "Alternative",
+          "default": "Alternative",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "expected_outcome": {
+          "minLength": 1,
+          "title": "Expected Outcome",
+          "type": "string"
+        },
+        "proposed_action": {
+          "minLength": 1,
+          "title": "Proposed Action",
+          "type": "string"
+        },
+        "selection_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Selection Reason"
+        },
+        "tradeoffs": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Tradeoffs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "proposed_action",
+        "expected_outcome"
+      ],
+      "title": "AlternativePayload",
+      "type": "object"
+    },
+    "ApplicabilityLevel": {
+      "enum": [
+        "MATCH",
+        "PARTIAL",
+        "MISMATCH",
+        "UNKNOWN"
+      ],
+      "title": "ApplicabilityLevel",
+      "type": "string"
+    },
+    "ApplicabilityProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "action_match": {
+          "$ref": "#/$defs/ApplicabilityLevel",
+          "default": "UNKNOWN"
+        },
+        "constraint_match": {
+          "$ref": "#/$defs/ApplicabilityLevel",
+          "default": "UNKNOWN"
+        },
+        "context_drift": {
+          "$ref": "#/$defs/ApplicabilityLevel",
+          "default": "UNKNOWN"
+        },
+        "context_match": {
+          "$ref": "#/$defs/ApplicabilityLevel",
+          "default": "UNKNOWN"
+        },
+        "environment_match": {
+          "$ref": "#/$defs/ApplicabilityLevel",
+          "default": "UNKNOWN"
+        },
+        "goal_match": {
+          "$ref": "#/$defs/ApplicabilityLevel",
+          "default": "UNKNOWN"
+        },
+        "known_exception": {
+          "$ref": "#/$defs/ApplicabilityLevel",
+          "default": "UNKNOWN"
+        }
+      },
+      "title": "ApplicabilityProfile",
+      "type": "object"
+    },
+    "ArchitectureDecisionPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "alternatives": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Alternatives",
+          "type": "array"
+        },
+        "compatibility": {
+          "default": "",
+          "title": "Compatibility",
+          "type": "string"
+        },
+        "context": {
+          "minLength": 1,
+          "title": "Context",
+          "type": "string"
+        },
+        "decision": {
+          "minLength": 1,
+          "title": "Decision",
+          "type": "string"
+        },
+        "entity_type": {
+          "const": "ArchitectureDecision",
+          "default": "ArchitectureDecision",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "problem": {
+          "minLength": 1,
+          "title": "Problem",
+          "type": "string"
+        },
+        "rollback": {
+          "default": "",
+          "title": "Rollback",
+          "type": "string"
+        },
+        "tradeoffs": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Tradeoffs",
+          "type": "array"
+        },
+        "validation": {
+          "default": "",
+          "title": "Validation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "context",
+        "problem",
+        "decision"
+      ],
+      "title": "ArchitectureDecisionPayload",
+      "type": "object"
+    },
+    "AssumptionPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "Assumption",
+          "default": "Assumption",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/AssumptionStatus",
+          "default": "UNTESTED"
+        },
+        "validity_scope": {
+          "minLength": 1,
+          "title": "Validity Scope",
+          "type": "string"
+        }
+      },
+      "required": [
+        "statement",
+        "validity_scope"
+      ],
+      "title": "AssumptionPayload",
+      "type": "object"
+    },
+    "AssumptionStatus": {
+      "enum": [
+        "UNTESTED",
+        "HELD",
+        "FAILED",
+        "RETIRED"
+      ],
+      "title": "AssumptionStatus",
+      "type": "string"
+    },
+    "AuthorityDimension": {
+      "enum": [
+        "REASONING_FREEDOM",
+        "MEMORY_READ",
+        "TOOL_READ",
+        "TOOL_WRITE",
+        "SECONDARY_BRAIN",
+        "CODE_MODIFICATION",
+        "EXTERNAL_ACTION",
+        "RESOURCE",
+        "FINANCIAL",
+        "CONSTITUTIONAL"
+      ],
+      "title": "AuthorityDimension",
+      "type": "string"
+    },
+    "AuthorityGrant": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_operations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Allowed Operations",
+          "type": "array"
+        },
+        "constraints": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Constraints",
+          "type": "array"
+        },
+        "dimension": {
+          "$ref": "#/$defs/AuthorityDimension"
+        },
+        "expires_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expires At"
+        },
+        "granted_by": {
+          "minLength": 1,
+          "title": "Granted By",
+          "type": "string"
+        },
+        "issued_at": {
+          "format": "date-time",
+          "title": "Issued At",
+          "type": "string"
+        },
+        "resource_scope": {
+          "minLength": 1,
+          "title": "Resource Scope",
+          "type": "string"
+        },
+        "revision": {
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "revoked_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Revoked At"
+        },
+        "subject": {
+          "minLength": 1,
+          "title": "Subject",
+          "type": "string"
+        }
+      },
+      "required": [
+        "subject",
+        "dimension",
+        "resource_scope",
+        "allowed_operations",
+        "granted_by",
+        "issued_at",
+        "revision"
+      ],
+      "title": "AuthorityGrant",
+      "type": "object"
+    },
+    "AuthorityProfilePayload": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "AuthorityProfile",
+          "default": "AuthorityProfile",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "grants": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/AuthorityGrant"
+          },
+          "title": "Grants",
+          "type": "array"
+        },
+        "human_ceiling_ref": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Human Ceiling Ref"
+        },
+        "revision": {
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "revision"
+      ],
+      "title": "AuthorityProfilePayload",
+      "type": "object"
+    },
+    "BehaviorChangeTracePayload": {
+      "additionalProperties": false,
+      "properties": {
+        "actual_selection": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Actual Selection",
+          "type": "array"
+        },
+        "difference": {
+          "default": "",
+          "title": "Difference",
+          "type": "string"
+        },
+        "entity_type": {
+          "const": "BehaviorChangeTrace",
+          "default": "BehaviorChangeTrace",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "outcome_ref": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outcome Ref"
+        },
+        "policy_version": {
+          "minLength": 1,
+          "title": "Policy Version",
+          "type": "string"
+        },
+        "shadow_selection": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Shadow Selection",
+          "type": "array"
+        },
+        "task_id": {
+          "minLength": 1,
+          "title": "Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "policy_version",
+        "task_id"
+      ],
+      "title": "BehaviorChangeTracePayload",
+      "type": "object"
+    },
+    "BrainJudgmentPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "alternatives": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Alternatives",
+          "type": "array"
+        },
+        "assumptions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "brain_version": {
+          "minLength": 1,
+          "title": "Brain Version",
+          "type": "string"
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "confidence_reason": {
+          "default": "",
+          "title": "Confidence Reason",
+          "type": "string"
+        },
+        "context_digest": {
+          "minLength": 1,
+          "title": "Context Digest",
+          "type": "string"
+        },
+        "current_judgment": {
+          "minLength": 1,
+          "title": "Current Judgment",
+          "type": "string"
+        },
+        "entity_type": {
+          "const": "BrainJudgment",
+          "default": "BrainJudgment",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "grounds": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Grounds",
+          "type": "array"
+        },
+        "requests": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Requests",
+          "type": "array"
+        },
+        "unknowns": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Unknowns",
+          "type": "array"
+        }
+      },
+      "required": [
+        "current_judgment",
+        "grounds",
+        "confidence",
+        "brain_version",
+        "context_digest"
+      ],
+      "title": "BrainJudgmentPayload",
+      "type": "object"
+    },
+    "CheckStatus": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNKNOWN",
+        "N_A"
+      ],
+      "title": "CheckStatus",
+      "type": "string"
+    },
+    "ClosureState": {
+      "enum": [
+        "open",
+        "closed_for_action",
+        "reopened"
+      ],
+      "title": "ClosureState",
+      "type": "string"
+    },
+    "CognitiveRequestPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "args_digest": {
+          "minLength": 1,
+          "title": "Args Digest",
+          "type": "string"
+        },
+        "budget": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ResourceBudget"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "entity_type": {
+          "const": "CognitiveRequest",
+          "default": "CognitiveRequest",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "expected_decision_impact": {
+          "minLength": 1,
+          "title": "Expected Decision Impact",
+          "type": "string"
+        },
+        "expected_value": {
+          "minLength": 1,
+          "title": "Expected Value",
+          "type": "string"
+        },
+        "purpose": {
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "request_type": {
+          "$ref": "#/$defs/CognitiveRequestType"
+        },
+        "target": {
+          "minLength": 1,
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_type",
+        "purpose",
+        "target",
+        "expected_value",
+        "expected_decision_impact",
+        "args_digest"
+      ],
+      "title": "CognitiveRequestPayload",
+      "type": "object"
+    },
+    "CognitiveRequestType": {
+      "enum": [
+        "MORE_CONTEXT",
+        "MEMORY",
+        "TOOL",
+        "TEST_OR_SIMULATION",
+        "SECONDARY_BRAIN",
+        "EXTERNAL_EVIDENCE"
+      ],
+      "title": "CognitiveRequestType",
+      "type": "string"
+    },
+    "ConfidenceProfile": {
+      "additionalProperties": false,
+      "description": "단일 confidence scalar를 Core 표현으로 쓰지 않는다.",
+      "properties": {
+        "context_coverage": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Context Coverage",
+          "type": "number"
+        },
+        "contradiction": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Contradiction",
+          "type": "number"
+        },
+        "evidence_strength": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Evidence Strength",
+          "type": "number"
+        },
+        "independence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Independence",
+          "type": "number"
+        },
+        "replication": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Replication",
+          "type": "number"
+        }
+      },
+      "required": [
+        "evidence_strength",
+        "independence",
+        "replication",
+        "contradiction",
+        "context_coverage"
+      ],
+      "title": "ConfidenceProfile",
+      "type": "object"
+    },
+    "ConstitutionRulePayload": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "ConstitutionRule",
+          "default": "ConstitutionRule",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "principle_number": {
+          "maximum": 24,
+          "minimum": 1,
+          "title": "Principle Number",
+          "type": "integer"
+        },
+        "source_digest": {
+          "minLength": 1,
+          "title": "Source Digest",
+          "type": "string"
+        },
+        "verbatim_text": {
+          "minLength": 1,
+          "title": "Verbatim Text",
+          "type": "string"
+        },
+        "version": {
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "principle_number",
+        "verbatim_text",
+        "source_digest",
+        "version"
+      ],
+      "title": "ConstitutionRulePayload",
+      "type": "object"
+    },
+    "ContextBudget": {
+      "additionalProperties": false,
+      "properties": {
+        "l0_reserved_tokens": {
+          "minimum": 0,
+          "title": "L0 Reserved Tokens",
+          "type": "integer"
+        },
+        "token_budget": {
+          "minimum": 0,
+          "title": "Token Budget",
+          "type": "integer"
+        },
+        "tokens_used": {
+          "minimum": 0,
+          "title": "Tokens Used",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "token_budget",
+        "tokens_used",
+        "l0_reserved_tokens"
+      ],
+      "title": "ContextBudget",
+      "type": "object"
+    },
+    "ContextExclusion": {
+      "additionalProperties": false,
+      "properties": {
+        "reason_excluded": {
+          "minLength": 1,
+          "title": "Reason Excluded",
+          "type": "string"
+        },
+        "record_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Record Id",
+          "type": "string"
+        },
+        "token_estimate": {
+          "minimum": 0,
+          "title": "Token Estimate",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "record_id",
+        "reason_excluded",
+        "token_estimate"
+      ],
+      "title": "ContextExclusion",
+      "type": "object"
+    },
+    "ContextHandleRef": {
+      "additionalProperties": false,
+      "description": "handle은 capability token이 아니다. 조회 시 현재 권한을 다시 확인한다.",
+      "properties": {
+        "content_digest": {
+          "minLength": 1,
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "disclosure_level": {
+          "$ref": "#/$defs/DisclosureLevel"
+        },
+        "expires_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expires At"
+        },
+        "handle_id": {
+          "minLength": 1,
+          "title": "Handle Id",
+          "type": "string"
+        },
+        "owner_scope": {
+          "minLength": 1,
+          "title": "Owner Scope",
+          "type": "string"
+        },
+        "project_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Project Id",
+          "type": "string"
+        },
+        "record_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Record Id",
+          "type": "string"
+        },
+        "record_revision": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Record Revision"
+        }
+      },
+      "required": [
+        "handle_id",
+        "project_id",
+        "owner_scope",
+        "record_id",
+        "content_digest",
+        "disclosure_level"
+      ],
+      "title": "ContextHandleRef",
+      "type": "object"
+    },
+    "ContextItem": {
+      "additionalProperties": false,
+      "properties": {
+        "applicability": {
+          "$ref": "#/$defs/ApplicabilityLevel",
+          "default": "UNKNOWN"
+        },
+        "disclosure_level": {
+          "$ref": "#/$defs/DisclosureLevel"
+        },
+        "reason_selected": {
+          "minLength": 1,
+          "title": "Reason Selected",
+          "type": "string"
+        },
+        "record_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Record Id",
+          "type": "string"
+        },
+        "token_estimate": {
+          "minimum": 0,
+          "title": "Token Estimate",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "record_id",
+        "reason_selected",
+        "token_estimate",
+        "disclosure_level"
+      ],
+      "title": "ContextItem",
+      "type": "object"
+    },
+    "ContextPackagePayload": {
+      "additionalProperties": false,
+      "properties": {
+        "budget": {
+          "$ref": "#/$defs/ContextBudget"
+        },
+        "entity_type": {
+          "const": "ContextPackage",
+          "default": "ContextPackage",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "exclusions": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ContextExclusion"
+          },
+          "title": "Exclusions",
+          "type": "array"
+        },
+        "goal_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Goal Id",
+          "type": "string"
+        },
+        "handles": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ContextHandleRef"
+          },
+          "title": "Handles",
+          "type": "array"
+        },
+        "integrity": {
+          "$ref": "#/$defs/IntegrityStatus",
+          "default": "COMPLETE"
+        },
+        "l0_constraints": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ContextItem"
+          },
+          "title": "L0 Constraints",
+          "type": "array"
+        },
+        "l1_state": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ContextItem"
+          },
+          "title": "L1 State",
+          "type": "array"
+        },
+        "l2_history": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ContextItem"
+          },
+          "title": "L2 History",
+          "type": "array"
+        },
+        "l3_evidence": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ContextItem"
+          },
+          "title": "L3 Evidence",
+          "type": "array"
+        },
+        "missing_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing Ids",
+          "type": "array"
+        },
+        "policy_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Policy Version"
+        },
+        "projection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProjectionState"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "state_revision": {
+          "minimum": 1,
+          "title": "State Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "goal_id",
+        "state_revision",
+        "budget"
+      ],
+      "title": "ContextPackagePayload",
+      "type": "object"
+    },
+    "DecisionAssurance": {
+      "additionalProperties": false,
+      "description": "readiness check 결과 집합. 단일 scalar로 축약하지 않는다.",
+      "properties": {
+        "action_digest": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Action Digest"
+        },
+        "authority_revision": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Authority Revision"
+        },
+        "check_results": {
+          "items": {
+            "$ref": "#/$defs/ReadinessCheckResult"
+          },
+          "title": "Check Results",
+          "type": "array"
+        },
+        "decision_revision": {
+          "minimum": 1,
+          "title": "Decision Revision",
+          "type": "integer"
+        },
+        "policy_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Policy Version"
+        },
+        "state_revision": {
+          "minimum": 1,
+          "title": "State Revision",
+          "type": "integer"
+        },
+        "verdict": {
+          "$ref": "#/$defs/ReadinessVerdict"
+        }
+      },
+      "required": [
+        "verdict",
+        "check_results",
+        "decision_revision",
+        "state_revision"
+      ],
+      "title": "DecisionAssurance",
+      "type": "object"
+    },
+    "DecisionPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_revision": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Authority Revision"
+        },
+        "closure": {
+          "$ref": "#/$defs/ClosureState",
+          "default": "open"
+        },
+        "entity_type": {
+          "const": "Decision",
+          "default": "Decision",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "expected_outcome": {
+          "minLength": 1,
+          "title": "Expected Outcome",
+          "type": "string"
+        },
+        "readiness": {
+          "$ref": "#/$defs/DecisionAssurance"
+        },
+        "reopen_triggers": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ReopenTrigger"
+          },
+          "title": "Reopen Triggers",
+          "type": "array"
+        },
+        "selected_action": {
+          "minLength": 1,
+          "title": "Selected Action",
+          "type": "string"
+        },
+        "unknowns_assessed": {
+          "title": "Unknowns Assessed",
+          "type": "boolean"
+        },
+        "why_not_selected": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Why Not Selected",
+          "type": "array"
+        },
+        "why_selected": {
+          "minLength": 1,
+          "title": "Why Selected",
+          "type": "string"
+        }
+      },
+      "required": [
+        "selected_action",
+        "why_selected",
+        "expected_outcome",
+        "readiness",
+        "unknowns_assessed"
+      ],
+      "title": "DecisionPayload",
+      "type": "object"
+    },
+    "DisclosureLevel": {
+      "enum": [
+        "L0_SIGNAL",
+        "L1_SUMMARY",
+        "L2_DETAIL",
+        "L3_RAW"
+      ],
+      "title": "DisclosureLevel",
+      "type": "string"
+    },
+    "EntityType": {
+      "description": "canonical record의 entity 종류. envelope JSON Schema의 enum과 일치한다.",
+      "enum": [
+        "Project",
+        "Goal",
+        "Evidence",
+        "BrainJudgment",
+        "Assumption",
+        "Unknown",
+        "Alternative",
+        "CognitiveRequest",
+        "GovernanceDecision",
+        "Decision",
+        "Action",
+        "Observation",
+        "Outcome",
+        "Experience",
+        "Pattern",
+        "Hypothesis",
+        "Strategy",
+        "Principle",
+        "Policy",
+        "AuthorityProfile",
+        "ConstitutionRule",
+        "ArchitectureDecision",
+        "ContextPackage",
+        "Interpretation",
+        "Reassessment",
+        "ValidationReport",
+        "PolicyActivation",
+        "BehaviorChangeTrace",
+        "Event",
+        "ExecutionReceipt"
+      ],
+      "title": "EntityType",
+      "type": "string"
+    },
+    "EventPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "caused_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Caused By"
+        },
+        "entity_type": {
+          "const": "Event",
+          "default": "Event",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "episode_id": {
+          "minLength": 1,
+          "title": "Episode Id",
+          "type": "string"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "state": {
+          "$ref": "#/$defs/LoopState"
+        },
+        "state_revision": {
+          "minimum": 1,
+          "title": "State Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sequence",
+        "episode_id",
+        "state",
+        "state_revision"
+      ],
+      "title": "EventPayload",
+      "type": "object"
+    },
+    "EvidenceKind": {
+      "enum": [
+        "FACT",
+        "OBSERVATION",
+        "EXPERIENCE",
+        "INFERENCE",
+        "PRINCIPLE",
+        "HYPOTHESIS",
+        "UNKNOWN",
+        "HUMAN_INPUT",
+        "MODEL_JUDGMENT"
+      ],
+      "title": "EvidenceKind",
+      "type": "string"
+    },
+    "EvidencePayload": {
+      "additionalProperties": false,
+      "properties": {
+        "claim": {
+          "minLength": 1,
+          "title": "Claim",
+          "type": "string"
+        },
+        "digest": {
+          "minLength": 1,
+          "title": "Digest",
+          "type": "string"
+        },
+        "entity_type": {
+          "const": "Evidence",
+          "default": "Evidence",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "independence_group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Independence Group"
+        },
+        "kind": {
+          "$ref": "#/$defs/EvidenceKind"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "time": {
+          "format": "date-time",
+          "title": "Time",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "claim",
+        "provenance",
+        "time",
+        "digest"
+      ],
+      "title": "EvidencePayload",
+      "type": "object"
+    },
+    "ExecutionReceiptPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "action_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Action Id",
+          "type": "string"
+        },
+        "dispatch_attempt": {
+          "minimum": 1,
+          "title": "Dispatch Attempt",
+          "type": "integer"
+        },
+        "effects_observed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Effects Observed"
+        },
+        "entity_type": {
+          "const": "ExecutionReceipt",
+          "default": "ExecutionReceipt",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "external_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "External Ref"
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finished At"
+        },
+        "idempotency_key": {
+          "minLength": 1,
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "reconciliation": {
+          "default": "",
+          "title": "Reconciliation",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/ReceiptStatus"
+        }
+      },
+      "required": [
+        "action_id",
+        "idempotency_key",
+        "dispatch_attempt",
+        "started_at",
+        "status"
+      ],
+      "title": "ExecutionReceiptPayload",
+      "type": "object"
+    },
+    "ExperiencePayload": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "Experience",
+          "default": "Experience",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "future_attention": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Future Attention",
+          "type": "array"
+        },
+        "historical_refs": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Historical Refs",
+          "type": "array"
+        },
+        "integrity": {
+          "$ref": "#/$defs/IntegrityStatus",
+          "default": "COMPLETE"
+        },
+        "missing_references": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing References",
+          "type": "array"
+        },
+        "remaining_unknowns": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Remaining Unknowns",
+          "type": "array"
+        },
+        "trigger": {
+          "minLength": 1,
+          "title": "Trigger",
+          "type": "string"
+        }
+      },
+      "required": [
+        "trigger"
+      ],
+      "title": "ExperiencePayload",
+      "type": "object"
+    },
+    "GoalPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "constraints": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Constraints",
+          "type": "array"
+        },
+        "entity_type": {
+          "const": "Goal",
+          "default": "Goal",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/GoalStatus",
+          "default": "PROPOSED"
+        },
+        "success_criteria": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Success Criteria",
+          "type": "array"
+        }
+      },
+      "required": [
+        "statement",
+        "success_criteria"
+      ],
+      "title": "GoalPayload",
+      "type": "object"
+    },
+    "GoalStatus": {
+      "enum": [
+        "PROPOSED",
+        "ACTIVE",
+        "ACHIEVED",
+        "BLOCKED",
+        "ABANDONED"
+      ],
+      "title": "GoalStatus",
+      "type": "string"
+    },
+    "GovernanceDecisionPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "alternatives": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Alternatives",
+          "type": "array"
+        },
+        "changes": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Changes",
+          "type": "array"
+        },
+        "disposition": {
+          "$ref": "#/$defs/GovernanceDisposition"
+        },
+        "entity_type": {
+          "const": "GovernanceDecision",
+          "default": "GovernanceDecision",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "feedback": {
+          "$ref": "#/$defs/GovernanceFeedback"
+        },
+        "limits": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Limits",
+          "type": "array"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "disposition",
+        "reason",
+        "feedback"
+      ],
+      "title": "GovernanceDecisionPayload",
+      "type": "object"
+    },
+    "GovernanceDisposition": {
+      "enum": [
+        "APPROVE",
+        "APPROVE_WITH_LIMITS",
+        "RESHAPE",
+        "DEFER",
+        "DENY"
+      ],
+      "title": "GovernanceDisposition",
+      "type": "string"
+    },
+    "GovernanceFeedback": {
+      "additionalProperties": false,
+      "properties": {
+        "available_alternatives": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Available Alternatives",
+          "type": "array"
+        },
+        "execution_receipt_id": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Execution Receipt Id"
+        },
+        "original_request_digest": {
+          "minLength": 1,
+          "title": "Original Request Digest",
+          "type": "string"
+        },
+        "remaining_constraints": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Remaining Constraints",
+          "type": "array"
+        },
+        "what_changed": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "What Changed",
+          "type": "array"
+        },
+        "why_changed": {
+          "default": "",
+          "title": "Why Changed",
+          "type": "string"
+        }
+      },
+      "required": [
+        "original_request_digest"
+      ],
+      "title": "GovernanceFeedback",
+      "type": "object"
+    },
+    "HypothesisPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "claim": {
+          "minLength": 1,
+          "title": "Claim",
+          "type": "string"
+        },
+        "entity_type": {
+          "const": "Hypothesis",
+          "default": "Hypothesis",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "evaluation_plan": {
+          "minLength": 1,
+          "title": "Evaluation Plan",
+          "type": "string"
+        },
+        "falsification_criteria": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Falsification Criteria",
+          "type": "array"
+        }
+      },
+      "required": [
+        "claim",
+        "falsification_criteria",
+        "evaluation_plan"
+      ],
+      "title": "HypothesisPayload",
+      "type": "object"
+    },
+    "IntegrityStatus": {
+      "enum": [
+        "COMPLETE",
+        "INCOMPLETE"
+      ],
+      "title": "IntegrityStatus",
+      "type": "string"
+    },
+    "InterpretationPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "applicability_profile": {
+          "$ref": "#/$defs/ApplicabilityProfile"
+        },
+        "author": {
+          "$ref": "#/$defs/Producer"
+        },
+        "confidence_profile": {
+          "$ref": "#/$defs/ConfidenceProfile"
+        },
+        "entity_type": {
+          "const": "Interpretation",
+          "default": "Interpretation",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "experience_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Experience Id",
+          "type": "string"
+        },
+        "meaning": {
+          "minLength": 1,
+          "title": "Meaning",
+          "type": "string"
+        },
+        "revision": {
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "supersedes": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Supersedes"
+        }
+      },
+      "required": [
+        "experience_id",
+        "revision",
+        "author",
+        "meaning",
+        "confidence_profile",
+        "applicability_profile"
+      ],
+      "title": "InterpretationPayload",
+      "type": "object"
+    },
+    "InvestigationStatus": {
+      "enum": [
+        "NOT_ASSESSED",
+        "NOT_INVESTIGATED",
+        "IN_PROGRESS",
+        "RESOLVED",
+        "UNRESOLVED",
+        "DEEMED_UNNECESSARY"
+      ],
+      "title": "InvestigationStatus",
+      "type": "string"
+    },
+    "KnowledgeLifecycle": {
+      "enum": [
+        "CANDIDATE",
+        "PROVISIONAL",
+        "SUPPORTED",
+        "ESTABLISHED",
+        "CHALLENGED",
+        "SCOPED",
+        "REVISED",
+        "RETIRED"
+      ],
+      "title": "KnowledgeLifecycle",
+      "type": "string"
+    },
+    "LoopState": {
+      "enum": [
+        "PREPARE",
+        "THINK",
+        "GOVERN",
+        "EXECUTE",
+        "FEEDBACK",
+        "TARGETED_RETHINK",
+        "COMMIT",
+        "ACTION",
+        "OBSERVE",
+        "EXPERIENCE",
+        "LEARN",
+        "BLOCKED_CONTEXT",
+        "BLOCKED_READINESS",
+        "BRAIN_FAILED",
+        "DEFERRED",
+        "WAITING_RESOURCE",
+        "ACTION_OUTCOME_UNKNOWN",
+        "OBSERVATION_PENDING",
+        "PERSISTENCE_FAILED",
+        "VALIDATION_PENDING",
+        "CANCELLED"
+      ],
+      "title": "LoopState",
+      "type": "string"
+    },
+    "MetricResult": {
+      "additionalProperties": false,
+      "properties": {
+        "denominator": {
+          "default": "",
+          "title": "Denominator",
+          "type": "string"
+        },
+        "measured_window": {
+          "default": "",
+          "title": "Measured Window",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "unit": {
+          "default": "",
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "value"
+      ],
+      "title": "MetricResult",
+      "type": "object"
+    },
+    "ObservationPayload": {
+      "additionalProperties": false,
+      "description": "원시 관측만 담는다. meaning/interpretation 필드는 의도적으로 존재하지 않는다.",
+      "properties": {
+        "entity_type": {
+          "const": "Observation",
+          "default": "Observation",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "method": {
+          "minLength": 1,
+          "title": "Method",
+          "type": "string"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "raw_measurement_or_handle": {
+          "minLength": 1,
+          "title": "Raw Measurement Or Handle",
+          "type": "string"
+        },
+        "source": {
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/ObservationStatus"
+        }
+      },
+      "required": [
+        "raw_measurement_or_handle",
+        "observed_at",
+        "method",
+        "source",
+        "status"
+      ],
+      "title": "ObservationPayload",
+      "type": "object"
+    },
+    "ObservationStatus": {
+      "enum": [
+        "COMPLETE",
+        "PARTIAL",
+        "DELAYED",
+        "UNAVAILABLE",
+        "FAILED"
+      ],
+      "title": "ObservationStatus",
+      "type": "string"
+    },
+    "OutcomePayload": {
+      "additionalProperties": false,
+      "properties": {
+        "delta": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Delta"
+        },
+        "entity_type": {
+          "const": "Outcome",
+          "default": "Outcome",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "expected": {
+          "minLength": 1,
+          "title": "Expected",
+          "type": "string"
+        },
+        "observed": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Observed"
+        },
+        "status": {
+          "$ref": "#/$defs/OutcomeStatus"
+        }
+      },
+      "required": [
+        "expected",
+        "observed",
+        "delta",
+        "status"
+      ],
+      "title": "OutcomePayload",
+      "type": "object"
+    },
+    "OutcomeStatus": {
+      "enum": [
+        "PENDING",
+        "UNKNOWN",
+        "MATCH",
+        "DEVIATION",
+        "PARTIAL",
+        "FAILED"
+      ],
+      "title": "OutcomeStatus",
+      "type": "string"
+    },
+    "PatternPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "counterexamples": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Counterexamples",
+          "type": "array"
+        },
+        "entity_type": {
+          "const": "Pattern",
+          "default": "Pattern",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "independence_count": {
+          "minimum": 0,
+          "title": "Independence Count",
+          "type": "integer"
+        },
+        "scope": {
+          "minLength": 1,
+          "title": "Scope",
+          "type": "string"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "statement",
+        "scope",
+        "independence_count"
+      ],
+      "title": "PatternPayload",
+      "type": "object"
+    },
+    "PolicyActivationPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "PolicyActivation",
+          "default": "PolicyActivation",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "expected_active_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Active Version"
+        },
+        "policy_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "validation_report_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Validation Report Id",
+          "type": "string"
+        },
+        "version": {
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "policy_id",
+        "version",
+        "validation_report_id",
+        "reason"
+      ],
+      "title": "PolicyActivationPayload",
+      "type": "object"
+    },
+    "PolicyPayload": {
+      "additionalProperties": false,
+      "description": "allowlist된 운영 설정만 담는다. 임의 Python/shell 문자열은 들어갈 수 없다.",
+      "properties": {
+        "compatibility": {
+          "default": "",
+          "title": "Compatibility",
+          "type": "string"
+        },
+        "entity_type": {
+          "const": "Policy",
+          "default": "Policy",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/KnowledgeLifecycle",
+          "default": "CANDIDATE"
+        },
+        "parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "title": "Parameters",
+          "type": "object"
+        },
+        "rollback_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rollback Version"
+        },
+        "rule": {
+          "minLength": 1,
+          "title": "Rule",
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/PolicyTarget"
+        },
+        "version": {
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "rule",
+        "version"
+      ],
+      "title": "PolicyPayload",
+      "type": "object"
+    },
+    "PolicyTarget": {
+      "description": "§36 개선 영역의 운영 knob만 policy target이 될 수 있다(헌법·권한은 제외).",
+      "enum": [
+        "CONTEXT_SELECTION",
+        "CONTEXT_DEPTH",
+        "EXPERIENCE_RETRIEVAL",
+        "BRAIN_ENGAGEMENT_DEPTH",
+        "COGNITIVE_EXPANSION",
+        "TOOL_SELECTION",
+        "SECONDARY_BRAIN_USAGE",
+        "CONFLICT_INVESTIGATION",
+        "UNKNOWN_INVESTIGATION",
+        "CLOSURE_TIMING",
+        "RISK_SHAPING",
+        "VERIFICATION_DEPTH",
+        "ACTION_GOVERNANCE",
+        "AUTHORITY_DELEGATION"
+      ],
+      "title": "PolicyTarget",
+      "type": "string"
+    },
+    "PrinciplePayload": {
+      "additionalProperties": false,
+      "properties": {
+        "applicability": {
+          "$ref": "#/$defs/ApplicabilityProfile"
+        },
+        "confidence_profile": {
+          "$ref": "#/$defs/ConfidenceProfile"
+        },
+        "entity_type": {
+          "const": "Principle",
+          "default": "Principle",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/KnowledgeLifecycle",
+          "default": "CANDIDATE"
+        },
+        "scope": {
+          "minLength": 1,
+          "title": "Scope",
+          "type": "string"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "statement",
+        "scope",
+        "confidence_profile",
+        "applicability"
+      ],
+      "title": "PrinciplePayload",
+      "type": "object"
+    },
+    "Producer": {
+      "additionalProperties": false,
+      "properties": {
+        "actor_id": {
+          "minLength": 1,
+          "title": "Actor Id",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ProducerKind"
+        }
+      },
+      "required": [
+        "kind",
+        "actor_id"
+      ],
+      "title": "Producer",
+      "type": "object"
+    },
+    "ProducerKind": {
+      "enum": [
+        "human",
+        "brain",
+        "body",
+        "tool"
+      ],
+      "title": "ProducerKind",
+      "type": "string"
+    },
+    "ProjectPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "Project",
+          "default": "Project",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "human_partner_ref": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Human Partner Ref"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "premise": {
+          "minLength": 1,
+          "title": "Premise",
+          "type": "string"
+        },
+        "protected_constraints": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Protected Constraints",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "premise"
+      ],
+      "title": "ProjectPayload",
+      "type": "object"
+    },
+    "ProjectionState": {
+      "additionalProperties": false,
+      "properties": {
+        "last_event_sequence": {
+          "minimum": 0,
+          "title": "Last Event Sequence",
+          "type": "integer"
+        },
+        "projection_version": {
+          "minLength": 1,
+          "title": "Projection Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "projection_version",
+        "last_event_sequence"
+      ],
+      "title": "ProjectionState",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Evidence의 출처. 모델 판단과 관측을 같은 kind로 평탄화하지 않는다.",
+      "properties": {
+        "access_scope": {
+          "default": "project",
+          "title": "Access Scope",
+          "type": "string"
+        },
+        "content_digest": {
+          "minLength": 1,
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "ingested_at": {
+          "format": "date-time",
+          "title": "Ingested At",
+          "type": "string"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "source_uri": {
+          "minLength": 1,
+          "title": "Source Uri",
+          "type": "string"
+        },
+        "source_version": {
+          "default": "",
+          "title": "Source Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_uri",
+        "content_digest",
+        "observed_at",
+        "ingested_at"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "ReadinessCheck": {
+      "description": "원문 §16의 9개 readiness check. semantic correctness는 포함하지 않는다.",
+      "enum": [
+        "GROUND_EXISTS",
+        "EVIDENCE_PROVENANCE_LINKED",
+        "MATERIAL_UNKNOWN_EXPLICIT",
+        "HARD_CONSTRAINTS_SATISFIED",
+        "RESIDUAL_RISK_MANAGEABLE",
+        "AUTHORITY_SUFFICIENT",
+        "VERIFICATION_SUFFICIENT",
+        "ROLLBACK_SUFFICIENT",
+        "ACTION_SCOPE_CLEAR"
+      ],
+      "title": "ReadinessCheck",
+      "type": "string"
+    },
+    "ReadinessCheckResult": {
+      "additionalProperties": false,
+      "properties": {
+        "check": {
+          "$ref": "#/$defs/ReadinessCheck"
+        },
+        "evidence_refs": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/CheckStatus"
+        }
+      },
+      "required": [
+        "check",
+        "status",
+        "reason"
+      ],
+      "title": "ReadinessCheckResult",
+      "type": "object"
+    },
+    "ReadinessVerdict": {
+      "enum": [
+        "READY",
+        "READY_WITH_GUARDS",
+        "NOT_READY"
+      ],
+      "title": "ReadinessVerdict",
+      "type": "string"
+    },
+    "ReassessmentPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "changed_understanding": {
+          "minLength": 1,
+          "title": "Changed Understanding",
+          "type": "string"
+        },
+        "entity_type": {
+          "const": "Reassessment",
+          "default": "Reassessment",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "resolution": {
+          "default": "",
+          "title": "Resolution",
+          "type": "string"
+        },
+        "smallest_scope": {
+          "minLength": 1,
+          "title": "Smallest Scope",
+          "type": "string"
+        },
+        "target_record_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Target Record Id",
+          "type": "string"
+        },
+        "trigger": {
+          "$ref": "#/$defs/ReopenTrigger"
+        }
+      },
+      "required": [
+        "target_record_id",
+        "trigger",
+        "changed_understanding",
+        "smallest_scope"
+      ],
+      "title": "ReassessmentPayload",
+      "type": "object"
+    },
+    "ReceiptStatus": {
+      "enum": [
+        "DISPATCHED",
+        "COMPLETED",
+        "FAILED",
+        "UNKNOWN",
+        "CANCELLED"
+      ],
+      "title": "ReceiptStatus",
+      "type": "string"
+    },
+    "Reference": {
+      "additionalProperties": false,
+      "description": "typed reference. target 존재·타입·project 범위는 resolver가 확인한다.",
+      "properties": {
+        "expected_type": {
+          "$ref": "#/$defs/EntityType"
+        },
+        "relation": {
+          "minLength": 1,
+          "title": "Relation",
+          "type": "string"
+        },
+        "target_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Target Id",
+          "type": "string"
+        },
+        "target_revision": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Revision"
+        }
+      },
+      "required": [
+        "relation",
+        "target_id",
+        "expected_type"
+      ],
+      "title": "Reference",
+      "type": "object"
+    },
+    "ReopenTrigger": {
+      "enum": [
+        "NEW_MATERIAL_EVIDENCE",
+        "UNEXPECTED_OUTCOME",
+        "MATERIAL_CONTRADICTION",
+        "CONTEXT_DRIFT",
+        "ASSUMPTION_FAILURE",
+        "RISK_CHANGE",
+        "AUTHORITY_CHANGE",
+        "HUMAN_REOPEN"
+      ],
+      "title": "ReopenTrigger",
+      "type": "string"
+    },
+    "ResourceBudget": {
+      "additionalProperties": false,
+      "properties": {
+        "cost_usd": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cost Usd"
+        },
+        "rounds": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rounds"
+        },
+        "seconds": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Seconds"
+        },
+        "tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tokens"
+        }
+      },
+      "title": "ResourceBudget",
+      "type": "object"
+    },
+    "RiskLevel": {
+      "enum": [
+        "LOW",
+        "MODERATE",
+        "HIGH",
+        "SEVERE",
+        "UNKNOWN"
+      ],
+      "title": "RiskLevel",
+      "type": "string"
+    },
+    "RiskProfile": {
+      "additionalProperties": false,
+      "description": "10개 차원을 따로 기록한다. 하나의 risk score로 합성하지 않는다.",
+      "properties": {
+        "authority_sensitivity": {
+          "$ref": "#/$defs/RiskLevel",
+          "default": "UNKNOWN"
+        },
+        "blast_radius": {
+          "$ref": "#/$defs/RiskLevel",
+          "default": "UNKNOWN"
+        },
+        "cost": {
+          "$ref": "#/$defs/RiskLevel",
+          "default": "UNKNOWN"
+        },
+        "data_state_loss": {
+          "$ref": "#/$defs/RiskLevel",
+          "default": "UNKNOWN"
+        },
+        "external_impact": {
+          "$ref": "#/$defs/RiskLevel",
+          "default": "UNKNOWN"
+        },
+        "goal_premise_impact": {
+          "$ref": "#/$defs/RiskLevel",
+          "default": "UNKNOWN"
+        },
+        "reversibility": {
+          "$ref": "#/$defs/RiskLevel",
+          "default": "UNKNOWN"
+        },
+        "rollback": {
+          "$ref": "#/$defs/RiskLevel",
+          "default": "UNKNOWN"
+        },
+        "security_privacy": {
+          "$ref": "#/$defs/RiskLevel",
+          "default": "UNKNOWN"
+        },
+        "verification": {
+          "$ref": "#/$defs/RiskLevel",
+          "default": "UNKNOWN"
+        }
+      },
+      "title": "RiskProfile",
+      "type": "object"
+    },
+    "StrategyPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "applicability": {
+          "$ref": "#/$defs/ApplicabilityProfile"
+        },
+        "entity_type": {
+          "const": "Strategy",
+          "default": "Strategy",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "exceptions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Exceptions",
+          "type": "array"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/KnowledgeLifecycle",
+          "default": "CANDIDATE"
+        },
+        "operational_rule": {
+          "minLength": 1,
+          "title": "Operational Rule",
+          "type": "string"
+        }
+      },
+      "required": [
+        "operational_rule",
+        "applicability"
+      ],
+      "title": "StrategyPayload",
+      "type": "object"
+    },
+    "UnknownCategory": {
+      "enum": [
+        "DEFINITION",
+        "CONTEXT",
+        "VERSION_TIME",
+        "MEASUREMENT",
+        "SOURCE",
+        "EXECUTION",
+        "SEMANTIC",
+        "RESOURCE",
+        "AUTHORITY",
+        "OTHER"
+      ],
+      "title": "UnknownCategory",
+      "type": "string"
+    },
+    "UnknownMateriality": {
+      "enum": [
+        "ACCEPTABLE",
+        "MATERIAL",
+        "BLOCKING",
+        "LATENT"
+      ],
+      "title": "UnknownMateriality",
+      "type": "string"
+    },
+    "UnknownPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/UnknownCategory"
+        },
+        "disposition_reason": {
+          "default": "",
+          "title": "Disposition Reason",
+          "type": "string"
+        },
+        "entity_type": {
+          "const": "Unknown",
+          "default": "Unknown",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "investigation_cost": {
+          "default": "",
+          "title": "Investigation Cost",
+          "type": "string"
+        },
+        "investigation_status": {
+          "$ref": "#/$defs/InvestigationStatus",
+          "default": "NOT_ASSESSED"
+        },
+        "materiality": {
+          "$ref": "#/$defs/UnknownMateriality"
+        },
+        "materiality_reason": {
+          "minLength": 1,
+          "title": "Materiality Reason",
+          "type": "string"
+        },
+        "potential_action_change": {
+          "title": "Potential Action Change",
+          "type": "boolean"
+        },
+        "question": {
+          "minLength": 1,
+          "title": "Question",
+          "type": "string"
+        }
+      },
+      "required": [
+        "question",
+        "category",
+        "materiality",
+        "materiality_reason",
+        "potential_action_change"
+      ],
+      "title": "UnknownPayload",
+      "type": "object"
+    },
+    "ValidationReportPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Candidate Id",
+          "type": "string"
+        },
+        "entity_type": {
+          "const": "ValidationReport",
+          "default": "ValidationReport",
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "independent_episode_count": {
+          "minimum": 0,
+          "title": "Independent Episode Count",
+          "type": "integer"
+        },
+        "limitations": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "method": {
+          "minLength": 1,
+          "title": "Method",
+          "type": "string"
+        },
+        "metrics": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/MetricResult"
+          },
+          "title": "Metrics",
+          "type": "array"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "split_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Split Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "split_ids",
+        "method",
+        "passed",
+        "independent_episode_count"
+      ],
+      "title": "ValidationReportPayload",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Generated from engine/cognitive/models.py. Envelope와 typed payload union을 포함한다. reference 존재 여부/권한은 저장소(P02) 검증 대상이며 이 schema가 보장하지 않는다.",
+  "properties": {
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "entity_type": {
+      "$ref": "#/$defs/EntityType"
+    },
+    "id": {
+      "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "title": "Id",
+      "type": "string"
+    },
+    "payload": {
+      "discriminator": {
+        "mapping": {
+          "Action": "#/$defs/ActionPayload",
+          "Alternative": "#/$defs/AlternativePayload",
+          "ArchitectureDecision": "#/$defs/ArchitectureDecisionPayload",
+          "Assumption": "#/$defs/AssumptionPayload",
+          "AuthorityProfile": "#/$defs/AuthorityProfilePayload",
+          "BehaviorChangeTrace": "#/$defs/BehaviorChangeTracePayload",
+          "BrainJudgment": "#/$defs/BrainJudgmentPayload",
+          "CognitiveRequest": "#/$defs/CognitiveRequestPayload",
+          "ConstitutionRule": "#/$defs/ConstitutionRulePayload",
+          "ContextPackage": "#/$defs/ContextPackagePayload",
+          "Decision": "#/$defs/DecisionPayload",
+          "Event": "#/$defs/EventPayload",
+          "Evidence": "#/$defs/EvidencePayload",
+          "ExecutionReceipt": "#/$defs/ExecutionReceiptPayload",
+          "Experience": "#/$defs/ExperiencePayload",
+          "Goal": "#/$defs/GoalPayload",
+          "GovernanceDecision": "#/$defs/GovernanceDecisionPayload",
+          "Hypothesis": "#/$defs/HypothesisPayload",
+          "Interpretation": "#/$defs/InterpretationPayload",
+          "Observation": "#/$defs/ObservationPayload",
+          "Outcome": "#/$defs/OutcomePayload",
+          "Pattern": "#/$defs/PatternPayload",
+          "Policy": "#/$defs/PolicyPayload",
+          "PolicyActivation": "#/$defs/PolicyActivationPayload",
+          "Principle": "#/$defs/PrinciplePayload",
+          "Project": "#/$defs/ProjectPayload",
+          "Reassessment": "#/$defs/ReassessmentPayload",
+          "Strategy": "#/$defs/StrategyPayload",
+          "Unknown": "#/$defs/UnknownPayload",
+          "ValidationReport": "#/$defs/ValidationReportPayload"
+        },
+        "propertyName": "entity_type"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ProjectPayload"
+        },
+        {
+          "$ref": "#/$defs/GoalPayload"
+        },
+        {
+          "$ref": "#/$defs/EvidencePayload"
+        },
+        {
+          "$ref": "#/$defs/BrainJudgmentPayload"
+        },
+        {
+          "$ref": "#/$defs/AssumptionPayload"
+        },
+        {
+          "$ref": "#/$defs/UnknownPayload"
+        },
+        {
+          "$ref": "#/$defs/AlternativePayload"
+        },
+        {
+          "$ref": "#/$defs/CognitiveRequestPayload"
+        },
+        {
+          "$ref": "#/$defs/GovernanceDecisionPayload"
+        },
+        {
+          "$ref": "#/$defs/DecisionPayload"
+        },
+        {
+          "$ref": "#/$defs/ActionPayload"
+        },
+        {
+          "$ref": "#/$defs/ObservationPayload"
+        },
+        {
+          "$ref": "#/$defs/OutcomePayload"
+        },
+        {
+          "$ref": "#/$defs/ExperiencePayload"
+        },
+        {
+          "$ref": "#/$defs/PatternPayload"
+        },
+        {
+          "$ref": "#/$defs/HypothesisPayload"
+        },
+        {
+          "$ref": "#/$defs/StrategyPayload"
+        },
+        {
+          "$ref": "#/$defs/PrinciplePayload"
+        },
+        {
+          "$ref": "#/$defs/PolicyPayload"
+        },
+        {
+          "$ref": "#/$defs/AuthorityProfilePayload"
+        },
+        {
+          "$ref": "#/$defs/ConstitutionRulePayload"
+        },
+        {
+          "$ref": "#/$defs/ArchitectureDecisionPayload"
+        },
+        {
+          "$ref": "#/$defs/ContextPackagePayload"
+        },
+        {
+          "$ref": "#/$defs/InterpretationPayload"
+        },
+        {
+          "$ref": "#/$defs/ReassessmentPayload"
+        },
+        {
+          "$ref": "#/$defs/ValidationReportPayload"
+        },
+        {
+          "$ref": "#/$defs/PolicyActivationPayload"
+        },
+        {
+          "$ref": "#/$defs/BehaviorChangeTracePayload"
+        },
+        {
+          "$ref": "#/$defs/EventPayload"
+        },
+        {
+          "$ref": "#/$defs/ExecutionReceiptPayload"
+        }
+      ],
+      "title": "Payload"
+    },
+    "producer": {
+      "$ref": "#/$defs/Producer"
+    },
+    "project_id": {
+      "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "title": "Project Id",
+      "type": "string"
+    },
+    "references": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Reference"
+      },
+      "title": "References",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "entity_type",
+    "project_id",
+    "created_at",
+    "producer",
+    "payload"
+  ],
+  "title": "SSAK-AI Canonical Record v1",
+  "type": "object"
+}

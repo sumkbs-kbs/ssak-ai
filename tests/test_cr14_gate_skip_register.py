@@ -52,6 +52,7 @@ import shutil
 import subprocess
 from collections import Counter
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 from typing import Any, cast
@@ -186,9 +187,9 @@ def test_observed_files_cover_every_declared_skip_and_exist() -> None:
     for entry_id, closed in cast(Mapping[str, Mapping[str, object]], _register().get("closed") or {}).items():
         assert int(cast(int, closed["skips"])) > 0, f"closed.{entry_id}: 닫은 스킵 수가 0 이다"
         assert str(closed["how"]).strip(), f"closed.{entry_id}: 어떻게 닫았는지 적어라"
-        for name in cast(Sequence[object], closed["files"]):
-            assert str(name) in observed, (
-                f"closed.{entry_id}: 닫은 파일 {name} 이 관측 목록에 없다 — 닫은 자리가 다시 열려도 보이지 않는다"
+        for closed_file in cast(Sequence[object], closed["files"]):
+            assert str(closed_file) in observed, (
+                f"closed.{entry_id}: 닫은 파일 {closed_file} 이 관측 목록에 없다 — 닫은 자리가 다시 열려도 보이지 않는다"
             )
 
 
@@ -302,8 +303,115 @@ VALID_ATTRIBUTIONS = ("per_test", "no_skip_concept")
 VALID_OBSERVATIONS = ("registered", "close_check", "none")
 # 스크립트 게이트의 스킵 채널 — `--skip-*` 플래그와 `SKIP_*` 변수가 그 흔적이다.
 SCRIPT_SKIP_MARKER = re.compile(r"--skip-[a-z0-9][a-z0-9-]*|SKIP_[A-Z][A-Z0-9_]*")
-# vitest·playwright 소스의 스킵 마커 — 지금은 0건이고, 생기면 이 계약이 먼저 본다.
+# vitest·playwright 소스의 스킵 마커 — 등록되지 않은 마커가 생기면 이 계약이 먼저 본다.
 DASHBOARD_TEST_MARKER = re.compile(r"\b(?:it|test|describe)\.(?:skip|todo|only)\b|\btest\.(?:skip|fixme|only)\b")
+
+
+@dataclass(frozen=True)
+class RegisteredSkip:
+    """소스에 남긴 조건부 스킵 하나의 회계 — 사유·owner·재검토 기한."""
+
+    count: int
+    condition: str
+    reason: str
+    owner: str
+    review_due: date
+
+
+# 소스 마커의 회계. 등록부(`gate_skip_register.json`)의 `entries`·`observed_files` 는 **python-tests
+# 게이트의 스킵 집합**을 대조하는 자리라(등록부 scope 참조) playwright 소스 마커를 담을 채널이 없다.
+# 그래서 소스 마커는 그 마커를 세는 이 contract 옆에 등록한다 — 등록은 **양방향**이다: 등록되지 않은
+# 마커는 실패하고, 조건 토큰이 사라진 등록도 실패한다(등록이 면죄부가 되지 않게). review_due 는 그
+# 자리를 다시 보라는 규율이다(audit 예외의 만료와 같은 형태 — 등록부 `KNOWN_GAP` 규칙).
+DASHBOARD_SKIP_REGISTER: dict[str, RegisteredSkip] = {
+    "dashboard/e2e/ssak-web-integration.spec.ts": RegisteredSkip(
+        count=1,
+        condition="AGK_E2E_SSAK_BUNDLE",
+        reason=(
+            "S1 만 **실 번들 바이너리**(64MB)를 요구한다 — 번들이 없는 환경에서 그 케이스를 통과로 위장하지 "
+            "않으려고 조건부 skip 으로 두고, 건너뛴 이유를 이름과 사유로 말한다(opt-in 계약의 기록: "
+            ".omo/evidence/ssak-ai-web-integration/2026-09-18T1112Z/task-14/assertions.json)"
+        ),
+        owner="dashboard/e2e/ssak-web-integration.spec.ts (dashboard-e2e-witnesses 게이트)",
+        review_due=date(2026, 12, 31),
+    ),
+}
+
+
+@dataclass(frozen=True)
+class SkipAudit:
+    """소스 마커 회계의 판정 — 양방향(등록되지 않은 마커 / 낡은 등록)과 전제 위반."""
+
+    unregistered: tuple[str, ...]
+    stale: tuple[str, ...]
+    registration: tuple[str, ...]
+
+    @property
+    def clean(self) -> bool:
+        return not (self.unregistered or self.stale or self.registration)
+
+    def describe(self) -> str:
+        parts: list[str] = []
+        if self.unregistered:
+            parts.append(f"등록되지 않은 스킵 마커: {list(self.unregistered)}")
+        if self.stale:
+            parts.append(f"등록만 남은 스킵 마커(등록 정리 필요): {list(self.stale)}")
+        parts.extend(self.registration)
+        return " / ".join(parts)
+
+
+def audit_dashboard_skips(
+    markers: Mapping[str, list[str]] | None = None,
+    *,
+    texts: Mapping[str, str] | None = None,
+    today: date | None = None,
+) -> SkipAudit:
+    """소스 마커와 등록을 대조한다.
+
+    `markers`·`texts`·`today` 를 주면 그 값으로 판정한다 — 이빨(등록 없이 늘어난 마커, 조건 토큰이
+    사라진 등록, 기한 경과)을 실물 없이 시험할 수 있게 한다.
+    """
+
+    observed = dashboard_skip_markers() if markers is None else dict(markers)
+    reference = today or date.today()
+
+    def text_of(path: str) -> str:
+        if texts is not None:
+            return texts.get(path, "")
+        return (REPO_ROOT / path).read_text(encoding="utf-8")
+
+    registration: list[str] = []
+    for path, entry in sorted(DASHBOARD_SKIP_REGISTER.items()):
+        hits = observed.get(path)
+        if hits is None:
+            continue
+        if len(hits) > entry.count:
+            registration.append(f"{path}: 마커 {len(hits)}건 > 등록 {entry.count}건 — 등록 없이 늘었다 {hits}")
+        if entry.condition not in text_of(path):
+            registration.append(f"{path}: 조건 {entry.condition!r} 이 사라졌다 — 등록된 스킵의 전제가 바뀌었다")
+        if reference > entry.review_due:
+            registration.append(f"{path}: 재검토 기한 {entry.review_due.isoformat()} 이 지났다(owner: {entry.owner})")
+
+    return SkipAudit(
+        unregistered=tuple(sorted(path for path in observed if path not in DASHBOARD_SKIP_REGISTER)),
+        stale=tuple(sorted(path for path in DASHBOARD_SKIP_REGISTER if path not in observed)),
+        registration=tuple(registration),
+    )
+
+
+def dashboard_skip_markers() -> dict[str, list[str]]:
+    """vitest·playwright 가 수집하는 소스의 스킵 마커 — 파일 → ["경로:줄", ...]."""
+    markers: dict[str, list[str]] = {}
+    roots = (REPO_ROOT / "dashboard" / "src", REPO_ROOT / "dashboard" / "e2e")
+    for base in roots:
+        for path in sorted(base.rglob("*.ts")) + sorted(base.rglob("*.tsx")):
+            if "node_modules" in path.parts:
+                continue
+            relative = path.relative_to(REPO_ROOT).as_posix()
+            for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+                if DASHBOARD_TEST_MARKER.search(line):
+                    markers.setdefault(relative, []).append(f"{relative}:{number}")
+    return markers
 
 
 def _required_gates() -> list[dict[str, Any]]:
@@ -401,25 +509,47 @@ def test_non_pytest_gates_report_skip_names() -> None:
 
 
 def test_dashboard_sources_have_no_unregistered_skip_markers() -> None:
-    """vitest·playwright 가 수집하는 소스의 스킵 마커 — 지금은 **0건**이다(tripwire).
+    """소스 스킵 마커 — **등록된 것만** 허용하고, 등록이 낡으면 그쪽도 실패한다(양방향 tripwire).
 
-    마커가 생기면 vitest 는 그 테스트를 건너뛰고 게이트는 초록으로 남는다(이름은 verbose 리포터가
-    내지만, 등록부는 그 사실을 모른다). 그래서 새 마커는 **여기서 먼저 멈춘다** — 등록부에 적거나
-    제거하라는 뜻이다.
+    마커가 생기면 vitest·playwright 는 그 테스트를 건너뛰고 게이트는 초록으로 남는다(이름은 verbose
+    리포터가 내지만, 등록은 사람이 해야 한다). 그래서 새 마커는 **여기서 먼저 멈춘다**. 등록된 마커도
+    **전제(조건 토큰)가 사라지거나 재검토 기한이 지나면** 멈춘다 — 등록이 면죄부가 되지 않게 한다.
     """
-    hits: list[str] = []
-    roots = (REPO_ROOT / "dashboard" / "src", REPO_ROOT / "dashboard" / "e2e")
-    for base in roots:
-        for path in sorted(base.rglob("*.ts")) + sorted(base.rglob("*.tsx")):
-            if "node_modules" in path.parts:
-                continue
-            for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
-                if DASHBOARD_TEST_MARKER.search(line):
-                    hits.append(f"{path.relative_to(REPO_ROOT)}:{number}")
-    assert not hits, (
-        f"dashboard 테스트 소스에 스킵 마커가 생겼다: {hits}"
-        " — vitest·playwright 는 그 테스트를 건너뛰면서 게이트는 초록으로 남는다. 등록부에 적거나 제거하라"
+    audit = audit_dashboard_skips()
+    assert audit.clean, (
+        f"{audit.describe()} — vitest·playwright 는 스킵된 테스트를 건너뛰면서 게이트는 초록으로 남는다. "
+        "등록하거나 제거하라(등록은 사유·owner·재검토 기한을 갖는다)"
     )
+    assert DASHBOARD_SKIP_REGISTER, "등록부가 비었는데 스킵이 0건이라는 주장은 근거가 없다"
+
+
+def test_dashboard_skip_marker_accounting_has_teeth() -> None:
+    """등록이 면죄부가 되지 않는지 — 가짜 마커·가짜 텍스트로 네 가지 위반을 모두 재현한다."""
+
+    real = "dashboard/e2e/ssak-web-integration.spec.ts"
+    registered_text = (REPO_ROOT / real).read_text(encoding="utf-8")
+
+    # ① 등록되지 않은 파일의 마커
+    audit = audit_dashboard_skips({"dashboard/src/새파일.test.ts": ["dashboard/src/새파일.test.ts:3"]})
+    assert audit.unregistered == ("dashboard/src/새파일.test.ts",)
+
+    # ② 등록된 파일인데 조건 토큰이 사라졌다
+    audit = audit_dashboard_skips({real: [f"{real}:191"]}, texts={real: "test.skip(!BUNDLE, 'no bundle')"})
+    assert audit.registration and "조건" in audit.registration[0]
+
+    # ③ 마커가 등록 건수를 넘었다
+    audit = audit_dashboard_skips({real: [f"{real}:191", f"{real}:200"]}, texts={real: registered_text})
+    assert audit.registration and "등록 없이 늘었다" in audit.registration[0]
+
+    # ④ 재검토 기한 경과
+    entry = DASHBOARD_SKIP_REGISTER[real]
+    audit = audit_dashboard_skips(
+        {real: [f"{real}:191"]}, texts={real: registered_text}, today=date(entry.review_due.year + 1, 1, 1)
+    )
+    assert audit.registration and "재검토 기한" in audit.registration[0]
+
+    # ⑤ 등록만 남았다(마커가 사라졌는데 등록이 살아 있다)
+    assert audit_dashboard_skips({}).stale == (real,)
 
 
 def test_script_gates_declare_their_skip_channels_and_the_gate_uses_none() -> None:

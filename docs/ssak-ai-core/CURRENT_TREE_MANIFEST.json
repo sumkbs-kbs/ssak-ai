@@ -1,0 +1,22 @@
+{
+  "basis": "current working tree including uncommitted changes; not HEAD-only",
+  "root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "observed_at": "2026-09-22T02:44:20.429504+00:00",
+  "head": "79582ccd556c103b8ff7c4237e348c38e2eeb025",
+  "files": {
+    "pyproject.toml": "60ecdd0e576aca673f307f3ef30931486bc353e07edb4ae23acef87c0449ad2a",
+    "src/antigravity_k/engine/agent_runtime.py": "259bed6e29a3c6151c7e9ccfe733362479c45f18ce31bea9eb4a8c710ee03eee",
+    "src/antigravity_k/engine/vault.py": "a1bc36503e18b5b7aca1ead3ebbc25a2a394019a37ffb591a31624659306f15c",
+    "src/antigravity_k/engine/context_shaper.py": "3ffa80968ef54e9ddb6b8f00345955fd0728b84894b19f051c24510ed3c23846",
+    "src/antigravity_k/knowledge/memory_service.py": "a72b7fa45d21253f2fdcc331b3080bb55753af9fed0f759c5cbaac5c3954996c",
+    "src/antigravity_k/engine/self_evolution_coordinator.py": "052beea468c649b81188477f043774d55c1fb66edd2719816279f7083f675f6b",
+    "src/antigravity_k/engine/tool_executor.py": "645aa56e7171051d5039f37c0564a17fd7f2ad9f57b9ddcd3b66a5ab62ac3ca7",
+    "src/antigravity_k/engine/task_state_store.py": "7894542e57b3ebc105c5d19502ab50d5ce1f67f25bfe49edba9afd9ab1db12ed",
+    "src/antigravity_k/engine/benchmark_harness.py": "d89d30e0960c000ba70e582d257fa680c94c8ce56fa8dec869a81fad30cf3eb1",
+    "src/antigravity_k/engine/model_router.py": "312d0daeb44e9bda72c231ad7b46963ca5ad376a0c9f3f02172b8d469a87ed8a",
+    "src/antigravity_k/engine/orchestrator/agent.py": "6b82bc2ad453a3c56487692f27c44b6e582d3522851b87fac997662c91252f6f",
+    "src/antigravity_k/engine/persistent_agency.py": "97a2a2e7af41804c84853d98420a0532d03565ed0b7278815fae5aa382fc9ffc",
+    "src/antigravity_k/engine/persistent_agency_store.py": "d0cc2cda1ed658eff0ef6ff05cc1db79861c5fac06dc0799c4f00288f0176d46",
+    "src/antigravity_k/engine/cognitive_loop.py": "360960d2fb2dd670760480ca36b1a48a4318ec38ec8563d62a3fbdfde6e2c5c3"
+  }
+}

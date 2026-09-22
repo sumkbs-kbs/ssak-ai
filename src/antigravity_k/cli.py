@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 from collections.abc import Mapping
 from pathlib import Path
@@ -40,6 +41,8 @@ error_app = typer.Typer(help="Inspect runtime error journal and AI agent fix pro
 app.add_typer(error_app, name="error", help="Inspect runtime errors for agentic AI")
 diagnostics_app = typer.Typer(help="Export safe support diagnostics (allowlist ZIP)")
 app.add_typer(diagnostics_app, name="diagnostics", help="Export safe support diagnostics")
+cognitive_app = typer.Typer(help="Inspect the opt-in cognitive core surface (read-only)")
+app.add_typer(cognitive_app, name="cognitive", help="Inspect cognitive surface")
 console = Console()
 
 
@@ -239,6 +242,73 @@ def status() -> None:
             "api_base": config.model.api_base,
         },
     )
+
+
+@cognitive_app.command("status")
+def cognitive_status(
+    as_json: Annotated[bool, typer.Option("--json", help="Print the raw status JSON instead of a table.")] = False,
+) -> None:
+    """Show whether user surfaces run the legacy loop or the opt-in cognitive core.
+
+    Read-only: no episode is executed and no store is written. ``cognitive_core`` 설정이 없으면
+    기본 OFF이며 legacy 경로가 그대로 동작한다.
+    """
+    from antigravity_k.engine.cognitive_surface import CognitiveCoreSettings, CognitiveSurfaceAdapter
+
+    settings = CognitiveCoreSettings.from_config(config)
+    status = CognitiveSurfaceAdapter(settings).status()
+    payload = status.as_mapping()
+    if as_json:
+        console.print_json(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+        return
+    lines = [
+        ("설정 섹션", "cognitive_core"),
+        ("enabled", str(status.enabled)),
+        ("requested mode", status.requested_mode or "(없음)"),
+        ("effective mode", status.mode.value),
+        ("surface source", status.source.value),
+        ("legacy path", status.legacy_module),
+        ("core path", status.core_module),
+        ("policy target", status.policy_target or "(미설정)"),
+        ("last episode", status.last_episode_id or "(없음)"),
+        ("last termination", status.last_termination or "(없음)"),
+        ("dispatched / refused", f"{status.dispatched_actions} / {status.refused_actions}"),
+    ]
+    table = Table(title="Cognitive surface (opt-in)")
+    table.add_column("항목", style="cyan")
+    table.add_column("값")
+    for key, value in lines:
+        table.add_row(key, value)
+    console.print(table)
+    for note in status.notes:
+        console.print(f"[yellow]· {note}[/yellow]")
+
+
+@cognitive_app.command("surface")
+def cognitive_surface(
+    output: Annotated[Path | None, typer.Option("--output", help="Write the measurement JSON artifact.")] = None,
+) -> None:
+    """Measure which entrypoints reach the legacy loop vs the cognitive core (static import graph)."""
+    from antigravity_k.engine.cognitive_surface import measure_surface_reach
+
+    measurement = measure_surface_reach()
+    table = Table(title="Surface reach (static import graph)")
+    table.add_column("surface", style="cyan")
+    table.add_column("legacy")
+    table.add_column("core")
+    table.add_column("reached via")
+    for item in measurement.entrypoints:
+        via = " → ".join(item.legacy_via[1:]) if item.legacy_via else "-"
+        table.add_row(item.label, str(item.reaches_legacy), str(item.reaches_core), via)
+    console.print(table)
+    console.print(
+        f"legacy 도달 {measurement.legacy_count}/{len(measurement.entrypoints)} · "
+        f"core 도달 {measurement.core_count}/{len(measurement.entrypoints)}"
+    )
+    if output is not None:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(measurement.to_json() + "\n", encoding="utf-8")
+        console.print(f"wrote {output}")
 
 
 @app.command("run")

@@ -147,6 +147,11 @@ ALLOWLIST: dict[str, Rule] = {
     "tools/ast_grep_tool.py": Rule(FIXED_ARGV, "ast-grep 바이너리 고정 호출(스캔 전용)"),
     "tools/impact_analyzer.py": Rule(FIXED_ARGV, "분석 전용 고정 호출"),
     "tools/db_migration.py": Rule(FIXED_ARGV, "alembic 고정 서브커맨드 — _run_subprocess 단일 지점 샌드박스화 과제"),
+    "tools/ssak_bundle_store.py": Rule(
+        FIXED_ARGV,
+        "번들 바이너리 selftest(`[binary, '--version']`) — 신뢰 루트 확인·sha256 일치·platform/arch 일치를 "
+        "**모두 통과한 뒤에만** 실행하고 argv 가 고정되어 모델 명령 주입 불가",
+    ),
     # ── engine/ : 인프라 자체 ──
     "engine/sandbox.py": Rule(INFRA_RUNNER, "샌드박스 러너 본체(seatbelt/docker 실행 주체)"),
     "engine/limited_process_runner.py": Rule(INFRA_RUNNER, "자원 제한 저수준 러너 — 상위 계층이 게이트 담당"),
@@ -154,6 +159,10 @@ ALLOWLIST: dict[str, Rule] = {
     "engine/task_runner.py": Rule(
         INTERNAL_FIXED,
         "worktree merge-back git 파이프라인(status/add/commit/merge-tree/merge) — 고정 argv, 모델 입력 없음 (DAT-02)",
+    ),
+    "engine/cognitive/store.py": Rule(
+        INTERNAL_FIXED,
+        "canonical store Git persistence(init/rev-parse/add/commit) — 고정 argv, 모델 입력 없음 (P02/P03)",
     ),
     "engine/workspace_service_runtime.py": Rule(
         INFRA_RUNNER,

@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SSAK-AI Record Envelope v1",
+  "description": "Envelope only; entity payload and reference integrity require domain validation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "entity_type",
+    "project_id",
+    "created_at",
+    "producer",
+    "references",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "id": {
+      "$ref": "#/$defs/id"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "Project",
+        "Goal",
+        "Evidence",
+        "BrainJudgment",
+        "Assumption",
+        "Unknown",
+        "Alternative",
+        "CognitiveRequest",
+        "GovernanceDecision",
+        "Decision",
+        "Action",
+        "Observation",
+        "Outcome",
+        "Experience",
+        "Pattern",
+        "Hypothesis",
+        "Strategy",
+        "Principle",
+        "Policy",
+        "AuthorityProfile",
+        "ConstitutionRule",
+        "ArchitectureDecision",
+        "ContextPackage",
+        "Interpretation",
+        "Reassessment",
+        "ValidationReport",
+        "PolicyActivation",
+        "BehaviorChangeTrace",
+        "Event",
+        "ExecutionReceipt"
+      ]
+    },
+    "project_id": {
+      "$ref": "#/$defs/id"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|\\+00:00)$"
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "actor_id"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "human",
+            "brain",
+            "body",
+            "tool"
+          ]
+        },
+        "actor_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "relation",
+          "target_id",
+          "expected_type"
+        ],
+        "properties": {
+          "relation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target_id": {
+            "$ref": "#/$defs/id"
+          },
+          "expected_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target_revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "payload": {
+      "type": "object"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    }
+  }
+}

@@ -16,7 +16,16 @@ Claw Code의 PermissionPolicy 아키텍처를 이식.
 import logging
 import os
 import re
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
+
+from antigravity_k.engine.cognitive.protected_targets import (
+    ActorKind,
+    HumanApproval,
+    ProtectedWriteGuard,
+    ProtectedWriteRequest,
+    WriteChannel,
+    WriteOperation,
+)
 
 from .tool_contracts import Permission, PermissionDecision, ToolArgument, ToolInvocation, ToolSpec
 from .tool_path import (
@@ -28,6 +37,27 @@ from .tool_path import (
 )
 
 logger = logging.getLogger(__name__)
+
+#: shell 도구 이름 — 동일한 보호 경계를 지나야 한다.
+SHELL_TOOL_NAMES = ("run_bash_command", "bash", "run_persistent_command", "shell", "terminal")
+#: 이름에 이 조각이 있으면 쓰기 도구로 취급한다.
+WRITE_TOOL_HINTS = (
+    "write",
+    "edit",
+    "replace",
+    "patch",
+    "create",
+    "delete",
+    "remove",
+    "move",
+    "rename",
+    "append",
+    "mkdir",
+    "copy",
+    "restore",
+    "snapshot",
+)
+PATH_ARG_KEYS = ("file_path", "path", "target", "dir_path", "target_path", "src", "dest")
 
 
 class PermissionGate:
@@ -91,16 +121,96 @@ class PermissionGate:
         # 승인 캐시 (세션 내 반복 승인 방지)
         self._approval_cache: set[str] = set()
 
+        # cognitive protected target(P03) — 헌법/authority/premise/이력 쓰기 allowlist
+        self._protection_guard: ProtectedWriteGuard | None = None
+        self._protection_guard_root: str | None = None
+        self._protection_approvals: tuple[HumanApproval, ...] = ()
+
         logger.info("PermissionGate initialized: mode=%s, project_root=%s", mode, self.project_root)
 
     def set_project_root(self, new_root: str) -> None:
         """런타임 중에 프로젝트 루트를 변경하고 권한 모드를 자동화 모드로 설정합니다."""
         self.project_root = os.path.abspath(new_root)
         self.mode = "auto-pilot"  # 사용자의 개입 최소화를 위해 내부 파일 작업 자동 승인
+        self._protection_guard = None  # root가 바뀌면 protected root를 다시 계산한다
         logger.info(
             "PermissionGate project_root updated to: %s (mode set to auto-pilot)",
             self.project_root,
         )
+
+    def set_protection_guard(self, guard: ProtectedWriteGuard | None) -> None:
+        """protected target 판정기를 주입한다(None이면 project_root 기준 기본값으로 재생성)."""
+
+        self._protection_guard = guard
+
+    def set_protection_approvals(self, approvals: Sequence[HumanApproval]) -> None:
+        """사람 승인 record를 등록한다. 승인이 없으면 protected 쓰기는 거부된다."""
+
+        self._protection_approvals = tuple(approvals)
+
+    @property
+    def protection_guard(self) -> ProtectedWriteGuard:
+        """request-scoped root(effective_root)를 반영해 protected root를 계산한다."""
+
+        root = os.path.realpath(self.effective_root())
+        if self._protection_guard is None or self._protection_guard_root != root:
+            self._protection_guard = ProtectedWriteGuard(root)
+            self._protection_guard_root = root
+        return self._protection_guard
+
+    def _check_cognitive_protection(self, tool_name: str, args: Mapping[str, ToolArgument]) -> str | None:
+        """헌법·authority·premise·이력 쓰기 시도를 거부한다. 거부 사유가 없으면 None."""
+
+        guard = self.protection_guard
+        if tool_name in SHELL_TOOL_NAMES:
+            raw_command = args.get("command")
+            command = raw_command if isinstance(raw_command, str) else ""
+            if not command:
+                return None
+            decision = guard.evaluate_shell_command(
+                command,
+                actor_kind=ActorKind.BODY,
+                actor_id="body:permission-gate",
+                approvals=self._protection_approvals,
+            )
+            if not decision.allowed:
+                return f"Protected cognitive target ({decision.code.value}): {decision.detail}"
+            return None
+
+        if not any(hint in tool_name.lower() for hint in WRITE_TOOL_HINTS):
+            return None
+
+        targets = self._protection_targets(tool_name, args)
+        if not targets:
+            return None
+        decision = guard.evaluate(
+            ProtectedWriteRequest(
+                channel=WriteChannel.FILE_TOOL,
+                actor_kind=ActorKind.BODY,
+                actor_id="body:permission-gate",
+                targets=targets,
+                operation=WriteOperation.UPDATE,
+                project_root=self.project_root,
+                approvals=self._protection_approvals,
+            )
+        )
+        if not decision.allowed:
+            return f"Protected cognitive target ({decision.code.value}): {decision.detail}"
+        return None
+
+    @staticmethod
+    def _protection_targets(tool_name: str, args: Mapping[str, ToolArgument]) -> tuple[str, ...]:
+        targets: list[str] = []
+        for key in PATH_ARG_KEYS:
+            value = args.get(key)
+            if isinstance(value, str) and value:
+                targets.append(value)
+            elif isinstance(value, (list, tuple)):
+                targets.extend(item for item in value if isinstance(item, str) and item)
+        raw_patch = args.get("patch")
+        if isinstance(raw_patch, str) and raw_patch:
+            targets.extend(extract_apply_patch_paths(raw_patch))
+        return tuple(dict.fromkeys(targets))
 
     def set_override(self, tool_name: str, permission: Permission) -> None:
         """특정 도구에 대한 권한을 명시적으로 설정합니다."""
@@ -176,6 +286,19 @@ class PermissionGate:
                         inspected_path=None,
                         executed_path=None,
                     )
+
+        # 2c. cognitive protected target (P03) — 헌법/authority/premise/이력 쓰기 allowlist
+        protection_reason = self._check_cognitive_protection(tool_name, args)
+        if protection_reason is not None:
+            logger.warning("DENIED protected cognitive target write: %s", protection_reason)
+            return PermissionDecision(
+                spec=invocation.spec,
+                permission=Permission.DENY,
+                source="cognitive_protection",
+                reason=protection_reason,
+                inspected_path=None,
+                executed_path=None,
+            )
 
         # 3. 경로 기반 샌드박싱 (파일 도구) — inspected path == executed path (WS-02)
         path_decision = None

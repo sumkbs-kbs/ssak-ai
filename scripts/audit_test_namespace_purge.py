@@ -1,0 +1,215 @@
+"""시험 module이 **import 시점에** `antigravity_k.*` namespace 를 비우는지 감사한다.
+
+계약(이 감사가 지키는 문장):
+  pytest 는 실행 전에 모든 시험 module 을 **수집(import) 단계**에서 읽는다. 어떤 시험 파일이 module 수준에서
+  `sys.modules` 를 지우면, 그 뒤에 import 되는 module 은 **같은 이름 · 다른 객체**가 되고 먼저 import 된 시험
+  파일은 옛 객체를 참조한다. 그러면 같은 판정이 **실행 순서에 따라** 달라진다 (실측: 전량 회귀에서
+  `authority.AuthorityProfile` 이 두 객체가 되어 유효한 grant 가 DEFER 로 떨어졌다 · ARCHITECTURE_REVIEW §1.1 ④).
+
+  판정은 **namespace 를 가리지 않는다** — comprehension 의 조건(`if key.startswith(...)`)을 평가하지 않으므로
+  다른 namespace 를 대상으로 한 purge 도 위반으로 본다. 오탐이 아니라 보수적 판정이며, 어느 namespace 든
+  수집 단계에서 지우면 뒤따르는 시험 파일의 import 결과가 달라진다.
+
+허용 형태는 하나뿐이다 — module 수준 purge 를 **명시적 트리 override**(환경변수)로 감싼 것. nx10 미러
+리허설이 트렁크가 아니라 미러의 바이트를 검사하기 위해 쓰는 형태다.
+
+경계(감사하지 않는 것): **함수 본문 안의** purge 는 실행 시점이라 수집 단계가 아니므로 이 감사의 범위 밖이다.
+(`docs/qa/.../probe_view_throttle_benefit.py` 처럼 트리를 바꿔가며 재는 단독 probe 가 그 형태다.)
+
+실행:
+  .venv/bin/python scripts/audit_test_namespace_purge.py
+  .venv/bin/python scripts/audit_test_namespace_purge.py --json /tmp/namespace-audit.json
+"""
+
+from __future__ import annotations
+
+import argparse
+import ast
+import json
+import sys
+from collections.abc import Iterator, Sequence
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Final
+
+REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
+SCAN_DIRS: Final[tuple[Path, ...]] = (REPO_ROOT / "tests", REPO_ROOT / "docs" / "qa")
+ENV_TOKENS: Final[tuple[str, ...]] = ("environ", "getenv")
+MODULE_SCOPE_NODES: Final[tuple[type[ast.stmt], ...]] = (
+    ast.FunctionDef,
+    ast.AsyncFunctionDef,
+    ast.ClassDef,
+)
+
+
+@dataclass(frozen=True)
+class Violation:
+    """import 시점에 namespace 를 비우는 module 수준 문장."""
+
+    file: str
+    line: int
+    kind: str
+    expression: str
+
+    def as_mapping(self) -> dict[str, object]:
+        return {"file": self.file, "line": self.line, "kind": self.kind, "expression": self.expression}
+
+
+def _is_sys_modules(node: ast.AST) -> bool:
+    """`sys.modules` attribute 인가."""
+    return (
+        isinstance(node, ast.Attribute)
+        and node.attr == "modules"
+        and isinstance(node.value, ast.Name)
+        and node.value.id == "sys"
+    )
+
+
+def _is_purge_call(node: ast.AST) -> bool:
+    """`sys.modules.pop(...)` / `sys.modules.clear()`."""
+    if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute):
+        return False
+    if not _is_sys_modules(node.func.value):
+        return False
+    return node.func.attr in {"pop", "clear"}
+
+
+def _is_purge_delete(node: ast.AST) -> bool:
+    """`del sys.modules[...]`."""
+    if not isinstance(node, ast.Delete):
+        return False
+    return any(isinstance(target, ast.Subscript) and _is_sys_modules(target.value) for target in node.targets)
+
+
+def _iter_pruned(node: ast.AST) -> Iterator[ast.AST]:
+    """자식 node 를 돌되 **함수·class 본문으로는 내려가지 않는다**(실행 시점 코드는 범위 밖)."""
+    for child in ast.iter_child_nodes(node):
+        if isinstance(child, (*MODULE_SCOPE_NODES, ast.Lambda)):
+            continue
+        yield child
+        yield from _iter_pruned(child)
+
+
+def contains_purge(node: ast.AST) -> bool:
+    """이 문장이 수집 단계에서 `sys.modules` 를 지우는가(문장 자체가 purge 일 수도 있다)."""
+    if _is_purge_call(node) or _is_purge_delete(node):
+        return True
+    return any(_is_purge_call(child) or _is_purge_delete(child) for child in _iter_pruned(node))
+
+
+def _guarded_by_env(test: ast.AST) -> bool:
+    """`if os.environ.get(...)` 처럼 환경변수 조회로 감싼 조건인가."""
+    for node in ast.walk(test):
+        if isinstance(node, ast.Attribute) and node.attr in ENV_TOKENS:
+            return True
+        if isinstance(node, ast.Name) and node.id in ENV_TOKENS:
+            return True
+    return False
+
+
+def _expression(node: ast.stmt) -> str:
+    try:
+        text = ast.unparse(node)
+    except Exception:  # pragma: no cover - unparse 실패는 관찰용 문자열만 포기한다
+        return f"<line {node.lineno}>"
+    first = text.splitlines()[0] if text else ""
+    return first[:100]
+
+
+def scan_source(source: str, *, file: str) -> tuple[Violation, ...]:
+    """source 한 건을 검사한다 — 감싸이지 않은 module 수준 purge 만 위반이다."""
+    tree = ast.parse(source, filename=file)
+    violations: list[Violation] = []
+
+    def visit(statement: ast.stmt, guarded: bool) -> None:
+        if isinstance(statement, ast.If):
+            inner = guarded or _guarded_by_env(statement.test)
+            for child in statement.body:
+                visit(child, inner)
+            for child in statement.orelse:
+                visit(child, guarded)
+            return
+        if isinstance(statement, (ast.For, ast.AsyncFor, ast.While)):
+            for child in statement.body:
+                visit(child, guarded)
+            for child in statement.orelse:
+                visit(child, guarded)
+            return
+        if isinstance(statement, (ast.With, ast.AsyncWith)):
+            for child in statement.body:
+                visit(child, guarded)
+            return
+        if isinstance(statement, ast.Try):
+            for child in (*statement.body, *statement.orelse, *statement.finalbody):
+                visit(child, guarded)
+            for handler in statement.handlers:
+                for child in handler.body:
+                    visit(child, guarded)
+            return
+        if isinstance(statement, MODULE_SCOPE_NODES):
+            return  # 실행 시점 purge — 수집 단계가 아니므로 범위 밖
+        if not guarded and contains_purge(statement):
+            violations.append(
+                Violation(
+                    file=file,
+                    line=statement.lineno,
+                    kind="unguarded_purge",
+                    expression=_expression(statement),
+                )
+            )
+
+    for statement in tree.body:
+        visit(statement, False)
+    return tuple(violations)
+
+
+def _is_collected(path: Path) -> bool:
+    """pytest 가 수집하는 이름인가(`conftest.py` 또는 `test_*.py`)."""
+    return path.name == "conftest.py" or (path.suffix == ".py" and path.name.startswith("test_"))
+
+
+def _display(path: Path) -> str:
+    try:
+        return path.relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
+def scan_paths(paths: Sequence[Path] | None = None) -> tuple[Violation, ...]:
+    """수집 대상 시험 파일 전체를 검사한다."""
+    roots = tuple(paths) if paths is not None else SCAN_DIRS
+    violations: list[Violation] = []
+    for root in roots:
+        if not root.is_dir():
+            continue
+        for path in sorted(root.rglob("*.py")):
+            if "__pycache__" in path.parts or not _is_collected(path):
+                continue
+            violations.extend(scan_source(path.read_text(encoding="utf-8"), file=_display(path)))
+    return tuple(violations)
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="import 시점 namespace purge 감사")
+    _ = parser.add_argument("--json", type=Path, default=None, help="결과를 JSON 으로 남길 경로")
+    args = parser.parse_args(argv)
+
+    violations = scan_paths()
+    payload = {
+        "violations": [violation.as_mapping() for violation in violations],
+        "count": len(violations),
+    }
+    if args.json is not None:
+        args.json.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    if violations:
+        print(f"import 시점 namespace purge 위반 {len(violations)}건")
+        for violation in violations:
+            print(f"  · {violation.file}:{violation.line} {violation.expression}")
+        return 1
+    print("import 시점 namespace purge 없음 (수집 대상 시험 파일 전체)")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
