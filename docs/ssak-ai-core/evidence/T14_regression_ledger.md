@@ -147,6 +147,49 @@ fd 원인 조사도 했다: `os.close`/`os.dup2`/`os.closerange` 를 감시하�
 **깨진 fd 를 잡지 못했다**(그 구간에서 재현되지 않음). 원인 시험은 특정하지 못했고, 그 사실을 한계로
 남긴다(제품 코드 결함이라는 증거는 없다 — 회차 중단은 pytest 종료 경로에서 발생한다).
 
+### 5a. 중단을 다시 재현하고 사이트를 짚었다 (2026-09-23)
+
+중단을 "환경 문제" 로 남기지 않기 위해 같은 절차를 반복해 **재현**하고, 죽는 자리를 짚었다.
+명령은 원장이 쓰는 것과 같다(파일 81~220번, `PYTHONHASHSEED=202`, `-q --tb=no -p no:cacheprovider`).
+
+| 시도 | 결과 | 관찰 |
+|---|---|---|
+| 1 | **중단** | `2 failed, 1055 passed … ` 기록 후 `OSError: [Errno 9] Bad file descriptor` (기록 1057 / 수집 1860) |
+| 2·3·4 | 정상 | `2 failed, 1837 passed …` |
+| 5 | 정상 | `2 failed, 1837 passed …` |
+
+즉 중단은 **재현되지만 간헐적**이다(5회 중 1회 — 이전 관찰과 합치면 6회 중 2회). 중단 시
+traceback 의 마지막 세 줄은 다음과 같다(전체는 137줄이다):
+
+```
+_pytest/terminal.py", line 699, in pytest_runtest_logreport
+    self.flush()
+_pytest/terminal.py", line 532, in flush
+    self._tw.flush()
+_pytest/_io/terminalwriter.py", line 187, in flush
+    self._file.flush()
+OSError: [Errno 9] Bad file descriptor
+```
+
+죽는 자리는 **pytest 자신의 terminal writer flush** 이고, 그 `_file` 의 fd 는 **1** 이다(probe 로 확인 —
+writer fd `{'terminal_writer': 1}`). 즉 시험이 pytest 의 출력 fd 를 닫으면 *그 시험이 아니라 그 뒤의 보고*가
+죽는다. 그래서 실패가 특정 시험이 아니라 회차 중간에 나타나고, 남은 시험은 기록되지 않는다.
+
+**못 잡은 것과 그 이유.** 시험마다 fd 유효성을 확인하는 probe(`os.fstat` → 0 byte `os.write`)와
+`os.close`/`os.closerange`/`os.dup2` 를 가로채는 tracer(호출 스택 기록)를 붙여 돌렸다:
+
+* fd 0/1/2 의 유효성 확인은 중단을 **못 잡았다** — 확인을 통과한 **직후** flush 가 깨졌다.
+* tracer 는 중단이 나지 않은 회차에서 fd 1/2 로 가는 `dup2` 를 모두 기록했는데, **전부 pytest capture 의
+  suspend/resume** 이었다(`capture.py:781·790`). Python 에서 보이는 `os.close(1)` 는 한 건도 없었다.
+* 그래서 남는 후보는 **C 수준 경로**(`file.close()` 내부, 소켓·임시파일 정리) 또는 **fd 번호 재사용**이다.
+  둘 다 Python 수준에서 가로챌 수 없고, macOS 에서는 `dtrace` 가 root 를 요구한다.
+* 첫 tracer 시도는 내 도구가 `io.TextIOWrapper`(불변 타입)를 patch 하려 해 회차를 **스스로 망가뜨렸다**
+  (`TypeError: cannot set 'close' attribute of immutable type`) — 그 실행은 측정에서 뺐다.
+
+**결론과 완화.** 원인 시험은 여전히 **특정하지 못했다**. 대신 원장은 그 회차를 잃지 않는다 —
+중단되면 같은 조건으로 한 번 자동 재실행하고(`--retry-aborted`), 횟수·로그를 회차 기록에 남긴다(§5).
+중단은 원장 판정에 **영향을 주지 않았다**(최종 원장 `aborted_scopes: []`).
+
 ## 6. 한계
 
 * **순서 뒤집기 회차는 9 scope 중 3개에만** 넣었다(수집이 곱해져 502개를 한 호출에 넣을 수 없다).

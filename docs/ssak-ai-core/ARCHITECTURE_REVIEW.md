@@ -154,7 +154,7 @@ subdir 로 나눠 **21회**(그중 3회는 수집 순서를 뒤집었다) 쟀다
 
 ws01·trn02 6건은 이전 회차 기준선(5건)에 없던 항목이다. 같은 트리에서 단독 실행으로도 재현되므로 회차 조건 탓이
 아니지만(6 failed / 32 passed), "무관하다"고 단정하지 않고 **레인 이름을 붙여 원장에 남겼다**. 방법·이빨·한계·중단된
-회차 처리는 `evidence/T14_regression_ledger.md` 에 있다.
+회차 처리는 `evidence/T14_regression_ledger.md` 에 있다(중단 재현·죽는 사이트·probe 실패 이유는 §5a).
 
 #### 과거 회차(94 → 10 → 7 → 5)의 재해석
 
@@ -386,7 +386,7 @@ Secondary Brain 계열은 Core로 승격하지 않았다(SELF_IMPROVEMENT_POLICY
   동시 실행 artifact 이므로 "이전 실패와 동일"을 고정 baseline 으로 주장하지 않고 **가장 보수적인 값(④의 5건)** 을 기록한다.
   원장이 남긴 11건은 5개 파일이다 — cr14 fence 2 · nx07 2 · `config.yaml` 1 · ws01 5 · trn02 1이며 전부 소유자(레인)가 지정돼 있다. 이 카드가 결정할 항목은 없다.
 - **원장이 재는 순서는 scope 안의 순서다.** 순서를 뒤집은 variant 는 9 scope 중 3개에만 있다(수집이 섞이는 범위가 곱해져 502개를 한 호출에 넣을 수 없어서다). **scope 사이의 순서**(예: `tests/cognitive`가 다른 구간보다 먼저 import 되는 경우)는 이 원장의 범위 밖이며, §1.1 ④ 의 오염 부류는 구간 안에서 재현되지 않았다.
-- **중단된 회차는 판정에서 제외한다.** 실측 1회(seed 202 · `flat-081-220`)가 시험이 stdout fd 를 닫아 `sys.stdout.flush()` 에서 죽었고(수집 1860 중 1078 만 기록), 원장은 그런 회차를 `aborted` 로 막았다. 원인 시험은 임시 plugin 으로 60파일을 뒤져도 잡지 못했다(제품 코드 결함 증거 없음).
+- **중단된 회차는 판정에서 제외하고, 원인은 아직 특정하지 못했다.** `flat-081-220`·seed 202 에서 같은 조건으로 5회 더 돌려 **1회 재현**했다(누적 6회 중 2회 · 기록 1057/1860). 죽는 자리는 **pytest 자신의 terminal writer flush**(`terminal.py:699 → 532 → terminalwriter.py:187 self._file.flush()`)이고 그 `_file` 의 fd 는 **1** 이다 — 즉 시험이 pytest 의 출력 fd 를 닫으면 *그 시험이 아니라 그 뒤의 보고*가 죽는다. 시험마다 fd 유효성을 확인하는 probe 와 `os.close`/`dup2` 를 가로채는 tracer 로 쫓았으나 Python 이 보이는 경로에서는 잡히지 않았다(중단이 안 난 회차의 `dup2→1` 은 전부 pytest capture 의 suspend/resume 이었다). 남는 후보는 C 수준 close 경로나 fd 번호 재사용이며, macOS 에서는 `dtrace` 가 root 를 요구한다. 그래서 중단은 **완충**으로 처리한다 — 회차가 중단되면 같은 조건으로 한 번 자동 재실행하고(`--retry-aborted`) 횟수·시도 로그를 원장에 남긴다(§1.2 · `evidence/T14_regression_ledger.md` §5·§5a). 최종 원장에는 중단된 회차가 없다(`aborted_scopes: []`).
 - 고정 순서(`-p no:randomly`) 전량 회귀는 **한 번 중단(exit 120)** 되었다 — `engine/rag_indexer.py` 가
   `OSError: [Errno 9] Bad file descriptor` 를 받고 내부 오류로 끝났다. 원인을 추적하려고 plugin 으로 열린 fd 를
   시험마다 관찰했다(수집 종료 시점 기준선과 `os.fstat` 대조 · macOS `/dev/fd` 목록은 닫힌 slot 을 포함해 오탐이 난다).
