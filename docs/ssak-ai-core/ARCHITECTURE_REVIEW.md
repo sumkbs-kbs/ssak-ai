@@ -40,14 +40,19 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
     (“눈이 멀었을 수 있다”) 실패한다.
 12. 하한이 **지금 저장소에서 실제로 무는가**(`harness_canary`) — 각 harness 를 일부러 눈멀게 한 사본
     (`observed=0`)이 막히는지, 차단 문장이 그 harness 가 기록한 근거를 함께 내는지 본다.
-13. 층들이 **한 번에 도는 명령**(`scripts/evidence_gate.py`)으로 묶여 있는가(`evidence_gate`) — stage 가
+13. “이 저장소에는 어떤 하한이 있고 무엇을 보고 누가 승인했는가” 를 **한 명령이 답하는가**(`floor_ledger`) —
+    열 개 파일에 흩어진 하한을 카나리아와 **같은 눈**(기록이 있으면 저장본, 없으면 직접 측정)으로 모아 관측·하한값·
+    여유·근거를 한 표로 내고, 층마다 승인(기록의 승인 문장·날짜, 없으면 그 근거 파일의 마지막 커밋)을 적으며,
+    아무도 읽지 않는 하한 기록(`floors` 를 담았는데 어떤 harness 도 안 읽음)과 근거 없는 하한을 실패로 만든다.
+    자기 자신도 같은 규칙으로 판정된다 — 자기 행은 캔버스에 안 들어간다(자기를 세면 저절로 참이 된다).
+14. 층들이 **한 번에 도는 명령**(`scripts/evidence_gate.py`)으로 묶여 있는가(`evidence_gate`) — stage 가
     비어 있지 않고 요구된 이름이 전부 있으며 각 스크립트가 실재하는가, tier 가 아는 값인가, 게이트의
     **자기시험**(종류 구분·tier 필터·roster 정합·수치 추출)이 있고 통과하는가, 하한의 근거가 적혀 있는가,
     그리고 **비교할 기준 파일이 기록돼 있는가**(무엇을 보고 승인했는지·언제인지가 없으면 기준이 아니다 —
     깨진 기준을 “기준 없음” 으로 삼키지 않는다).
     리뷰는 게이트를 **돌리지 않고 명세만 읽는다** — 게이트의 stage 중 하나가 이 리뷰라서 돌리면 서로를
     불러 끝나지 않는다(단방향 계약).
-14. “위반 0건” 이 **관찰**인지 **미관찰**인지 — 저장소 밖 트리에 **진짜 파일로 위반을 심어** 그 감사가
+15. “위반 0건” 이 **관찰**인지 **미관찰**인지 — 저장소 밖 트리에 **진짜 파일로 위반을 심어** 그 감사가
     실제로 빨간을 내는지 확인했는가(`red_rehearsal`). 심은 트리는 exit 1 이고 **심은 파일을 지목**해야 하며
     (JSON 과 사람이 보는 출력 양쪽), 같은 자리에 허용 형태를 넣은 **대조군은 초록**이어야 하고, 없는 트리는
     차단(exit 1)돼야 한다. 또한 **경계 사례**(허용 형태의 다른 모양)를 같은 실행에 함께 심어 그것들이 지목되지
@@ -55,7 +60,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
     위반으로 보거나 경계 사례가 하나도 없으면 실패다). 리허설되지 않는 층은 **이유와 함께 선언**돼야 하며(게이트
     자기시험이 stage·카나리아 roster 와 대조한다), 이유 없는 생략 · 대조군 오탐 · 사고(traceback)로 죽는 것은
     모두 실패다.
-15. 이 문서의 `<!-- measured:key=value -->` 마커가 실제 측정값과 일치하는가(`measured_markers`).
+16. 이 문서의 `<!-- measured:key=value -->` 마커가 실제 측정값과 일치하는가(`measured_markers`).
 
 ```sh
 .venv/bin/python scripts/architecture_review.py                 # 검사 + 요약 표
@@ -75,7 +80,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 705 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 715 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
@@ -91,9 +96,11 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | state_claims_stale | 0 | 정정 없이 남은 낡은 주장 |
 | state_claim_mentions | 6 | node 를 지목한 산문 줄 수 — 상태 어휘가 없어도 세는 상한 집합(탐지력 하한 1) |
 | state_claim_probe_cases | 17 | 매 실행 자기시험이 다시 재판정한 항목 수(어휘·요구 어휘·펜스·정정 창·상태 계산) — 0이면 검사하지 않은 것이다 |
-| canary_harnesses | 9 | 하한 카나리아가 눈멀게 한 사본으로 시험한 harness 수(여섯 측정 harness + 증거 게이트 + red 리허설 + 배포 산출물) |
-| canary_ok | 9 | 그중 정상 통과·사본 차단·근거 동봉을 모두 만족한 harness 수 |
-| evidence_gate_stages | 10 | 한 번에 도는 증거 게이트의 stage 수(여섯 harness + 리뷰 + red 리허설 + 로컬 전용 둘: 배포 산출물·회귀 원장) |
+| canary_harnesses | 10 | 하한 카나리아가 눈멀게 한 사본으로 시험한 harness 수(여섯 측정 harness + 증거 게이트 + red 리허설 + 배포 산출물 + 하한 원장) |
+| canary_ok | 10 | 그중 정상 통과·사본 차단·근거 동봉을 모두 만족한 harness 수 |
+| evidence_gate_stages | 11 | 한 번에 도는 증거 게이트의 stage 수(여섯 harness + 리뷰 + red 리허설 + 하한 원장 + 로컬 전용 둘: 배포 산출물·회귀 원장) |
+| ledger_layers | 10 | 하한 원장이 한 표에 실은 층 수(카나리아 roster 9 + 원장 자신 1) |
+| ledger_floors | 19 | 그 표가 실은 하한 수(기록 넷 12 + 직접 다섯 6 + 원장 자신 1) |
 | rehearsal_layers | 2 | 저장소 밖 트리에 **진짜 위반을 심어** red 재현을 확인한 층 수(위반 0건이던 두 감사) |
 | rehearsal_ok | 2 | 그중 심은 트리 exit 1·지목·대조군 초록·빈 트리 차단을 모두 만족한 층 수 |
 
@@ -105,7 +112,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=705 -->
+<!-- measured:cognitive_tests=715 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -121,9 +128,11 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:state_claims_stale=0 -->
 <!-- measured:state_claim_mentions=6 -->
 <!-- measured:state_claim_probe_cases=17 -->
-<!-- measured:canary_harnesses=9 -->
-<!-- measured:canary_ok=9 -->
-<!-- measured:evidence_gate_stages=10 -->
+<!-- measured:canary_harnesses=10 -->
+<!-- measured:canary_ok=10 -->
+<!-- measured:evidence_gate_stages=11 -->
+<!-- measured:ledger_layers=10 -->
+<!-- measured:ledger_floors=19 -->
 <!-- measured:rehearsal_layers=2 -->
 <!-- measured:rehearsal_ok=2 -->
 
@@ -145,9 +154,10 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | format | `.venv/bin/python -m ruff format --check src/ tests/ scripts/` | 0 | 1162 files already formatted |
 | type | `.venv/bin/python -m mypy <cognitive·surface·cli·5 scripts>` | 0 | Success: no issues found in 29 source files |
 | schema | `.venv/bin/python scripts/generate_record_schema.py --check` | 0 | schema up to date (record-entities/record-envelope) |
-| architecture review | `.venv/bin/python scripts/architecture_review.py` | 0 | 15 checks PASS(회귀 원장 · 인용 추적 · digest 측정 · 상태 주장 재판정 · 하한 카나리아 · red 리허설 · 증거 게이트) |
+| architecture review | `.venv/bin/python scripts/architecture_review.py` | 0 | 16 checks PASS(회귀 원장 · 인용 추적 · digest 측정 · 상태 주장 재판정 · 하한 카나리아 · **하한 원장** · red 리허설 · 증거 게이트) |
+| 하한 원장 | `.venv/bin/python scripts/floor_ledger.py --gate` | 0 | 층 10개 · 하한 19개를 한 표로 — 각 행에 관측·하한값·여유·근거·**승인(누가 언제)**. 기록 artifact 가 승인 문장을 담은 층은 그것을, 나머지는 그 근거 파일의 마지막 커밋을 적는다. 다른 층에서 본 하한 18개 ≥ 하한 15(자기 행은 캔버스에 안 든다) · 고아 기록 0 · 자기시험 16건 · 4초 |
 | red 리허설 | `.venv/bin/python scripts/red_rehearsal.py --gate` | 0 | 층 2개에 진짜 파일로 위반을 심어 red 재현 — 심은 트리 exit 1·지목, **대조군(허용 형태) 초록**, 없는 트리 차단 |
-| 증거 게이트(층 전부 한 번에) | `.venv/bin/python scripts/evidence_gate.py --tier full` | 0 | stage 10개 전부 PASS(리뷰 · 카나리아 · digest · 상태 주장 · enum · namespace · 표면 · red 리허설 · **배포 산출물** · 회귀 원장) + **층별 수치를 기준과 대조** — `--tier fast` 는 로컬 회차가 필요한 회귀 원장·배포 산출물을 **'보지 않은 층'** 으로 적는다 |
+| 증거 게이트(층 전부 한 번에) | `.venv/bin/python scripts/evidence_gate.py --tier full` | 0 | stage 11개 전부 PASS(리뷰 · 카나리아 · **하한 원장** · digest · 상태 주장 · enum · namespace · 표면 · red 리허설 · **배포 산출물** · 회귀 원장) + **층별 수치를 기준과 대조** — `--tier fast` 는 로컬 회차가 필요한 회귀 원장·배포 산출물을 **'보지 않은 층'** 으로 적는다 |
 | 회귀 원장 | `.venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger --gate` | 0 | 9 scope · 21 회차(seed 101·202 + 순서 뒤집은 3회) · **결정적 11 · variant 민감 0 · 무소유 0** — 같은 scope 를 variant 를 바꿔 돌려 교집합/대칭차로 분리(§1.2) |
 | enum identity 감사 | `.venv/bin/python scripts/audit_enum_identity.py` | 0 | 위반 0건 (cognitive core 95곳을 `same_enum`으로 통일) |
 | namespace purge 감사 | `.venv/bin/python scripts/audit_test_namespace_purge.py` | 0 | 위반 0건 (수집 대상 시험 파일에 조건 없는 import 시점 purge 없음) |
@@ -393,8 +403,8 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 기록이 갖춰져도 남는 경우가 있다: `minimum=0` 이거나 비교가 뒤집혀 있으면 “기록도 있고 자기시험도 통과”
 하는데 **아무것도 막지 못한다**. 카나리아(`scripts/harness_canary.py`)가 각 harness 의 하한을 **일부러 눈멀게 한
 사본**(`observed=0`)으로 평가해 세 가지를 본다 — ① 정상 측정은 막지 않고, ② 사본은 막으며, ③ 실패 문장이
-**기록된 근거를 함께 낸다**. 현재 아홉까지 본다 — 여섯 측정 harness + 증거 게이트 + red 리허설 + 배포 산출물(기록으로)이 전부 통과한다
-(`harness_canary` 검사 · marker `canary_harnesses` 9 · `canary_ok` 9).
+**기록된 근거를 함께 낸다**. 현재 열까지 본다 — 여섯 측정 harness + 증거 게이트 + red 리허설 + 배포 산출물(기록으로) + 하한 원장이 전부 통과한다
+(`harness_canary` 검사 · marker `canary_harnesses` 10 · `canary_ok` 10).
 
 기준을 어디서 가져오는지도 적어 두었다: `digest_drift`·`regression_ledger`·`audit_state_claims` 는 **기록 artifact**
 (리뷰가 읽는 것과 같은 자리), 나머지 다섯은 저장소를 직접 재서 얻는다 — 회차 산출물(junit)이 있어야 관측값이 나오는
@@ -410,6 +420,32 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 남는 모순(빈 목록에 대한 `all()` 이 참이라는 함정)을 없앴다. 배포 산출물 계약이 합류하면서 하나가 더 늘었다(12건):
 **빌드가 필요한 층은 기록으로 판정한다** — 카나리아가 보는 하한이 그 층의 현재 판단과 같은 이름·값이고(기록이 그 층의
 코드가 아니라 옛 사본을 보고 있으면 여기서 갈린다), 그 여섯이 정상 관측을 막지 않으면서 사본은 막는지를 고정한다.
+
+#### 하한을 한 자리에서 — 어떤 하한이 있고 무엇을 보고 누가 승인했는가
+
+하한은 다섯 harness 의 코드 상수와 네 개의 기록 artifact 에 흩어져 있었고, “이 저장소에는 어떤 하한이 있고 **무엇을 보고**
+누가 승인했는가” 를 묻는 자리는 사람의 기억뿐이었다 — 값만 읽고서는 나중에 그것을 낮출 수 있는지 판단할 수 없다.
+`scripts/floor_ledger.py` 가 그 물음에 한 표로 답한다. 이 표는 하한을 **다시 구현하지 않는다**: 카나리아와 **같은
+눈**으로 읽는다(기록이 있는 네 층은 저장본, 나머지는 저장소를 직접 재서) — 두 번째 구현을 만들면 표와 판정이 갈라진다.
+행마다 관측·하한값·여유·근거를 싣고, **승인** 칸에는 기록 artifact 가 담은 승인 문장·날짜를(없으면 그 근거 파일의
+마지막 커밋에서 날짜·사람·해시를) 적는다 — 커밋은 하한만 바뀐 커밋이 아닐 수 있으므로 그 사실도 행마다 적는다(모르는
+것을 아는 척하지 않는다).
+
+표가 실패로 보는 것은 여섯이다: **하한 없는 층** · **근거 없는 하한**(왜 그 값인지 물을 수 없으면 내려도 되는지 판단할 수
+없다) · **못 읽는 기록** · **아무도 읽지 않는 기록**(`floors` 를 담았는데 어떤 harness 도 안 읽음 — 기록을 남긴 층이
+사라져도 아무도 모르는 면죄부다) · **승인을 못 읽음** · **표에 실린 하한이 자기 하한 미만**. 자기 자신도 같은 규칙으로
+판정되는데 **자기 행은 캔버스에 안 든다**(자기를 세면 저절로 참이 된다). 이 회차에 실제로 잡은 결함이 그것이다 — 자기 행을
+읽는 루프 밖에서 만들던 첫 구현은 자기 승인 검사를 건너뛰었다(표에는 “못 읽음” 이라 적히는데 판정은 통과). 지금은 같은
+규칙이 붙어서, 새 층의 파일이 아직 커밋되지 않았으면 원장이 **자기 행 하나 때문에** 실패한다(승인 없는 하한은 승인이 아니다).
+
+배선은 셋이다: 게이트의 fast stage(11번째) · 카나리아의 열 번째 harness(자기 하한이 장식이 아닌지 — 눈멀게 한 사본은
+문다) · red 회계에 **이유와 함께 선언**(읽는 대상이 다른 층의 코드라 저장소 밖 트리에 심는 방식이 맞지 않는다 — 심으려면
+그 층들의 코드를 고쳐야 한다). 리뷰에는 16번째 검사(`floor_ledger`)가 붙어 **표가 자기 합계와 어긋나지 않는지**를 묻는다:
+헤더의 하한 합계 = 항목 합 · 고아 수 = 목록 길이 · 승인을 못 읽은 층 없음 · 근거 없는 하한 없음 · 원장이 자기 판정(`verdict`)과
+종료 코드에서 모순되지 않음(보고는 PASS 인데 exit 1 인 보고는 판정이 아니다). 실측: 층 **10**(카나리아 roster 9 + 원장 자신) ·
+하한 **19**(기록 넷 12 + 직접 다섯 6 + 자기 1) · 다른 층에서 본 캔버스 18 ≥ 하한 15 · 고아 0 · 자기시험 **16건** · 4초.
+**한계도 함께 적어 둔다**: 캔버스는 카나리아 roster 가 아는 층뿐이고(그 밖의 하한은 표에 안 실린다), 승인으로 적힌 커밋은
+그 하한을 바꾼 커밋이 아니라 그 근거 파일의 마지막 커밋일 수 있다.
 
 **종료 코드도 판정이다 — JSON 을 낸다고 성공을 알리면 안 된다.** 처음에는 `--emit-json` 이 결과와 무관하게 exit 0
 이었다. 그래서 그 출력을 읽는 쪽(리뷰·CI)은 “돌았는데 통과했다” 와 “돌았지만 아무것도 못 막았다” 를 종료 코드로
@@ -588,7 +624,7 @@ roster 를 요구한다 — 산출물이 없으면 `unrun` 으로 실패하며 �
 **게이트 자신도 카나리아가 본다.** 게이트는 stage 수에 하한을 들고 있으므로, 그 하한이 장식인지도 확인해야 한다 —
 카나리아 roster 에 `evidence_gate` 를 넣어 눈멀게 한 사본(`observed=0`)이 막히는지 본다(카나리아가 9
 harness 를 본다 · marker `canary_harnesses` 9 · `canary_ok` 9). 게이트 자신을 stage 로 넣으면 재귀라, 그 하한을 보는
-자리는 카나리아뿐이다. 리뷰는 게이트를 **돌리지 않고 명세만** 읽는다(15번째 검사 `evidence_gate`): stage 의 스크립트
+자리는 카나리아뿐이다. 리뷰는 게이트를 **돌리지 않고 명세만** 읽는다(검사 `evidence_gate` — §0 재현 방법 14번): stage 의 스크립트
 실재 · tier 유효 · fast tier 비어 있지 않음 · 자기시험 존재와 통과 · 하한의 근거 기록. 게이트의 자기시험이 카나리아
 roster 와 stage 명단을 대조하므로, 새 harness 를 카나리아에만 넣으면 게이트가 실패한다(예외는 게이트 자신 하나뿐이고,
 그 목록이 늘어나도 실패한다). 리뷰가 `--quiet` 로 돌아도 **실패한 검사의 이름과 이유는 stderr 에 남는다** — 한 명령으로
@@ -831,6 +867,9 @@ Secondary Brain 계열은 Core로 승격하지 않았다(SELF_IMPROVEMENT_POLICY
   탐지된 손실은 **1건뿐**이었고 그 정체는 `/dev/null`(ino 336) 의 중복 fd — pytest capture 기계가 쓰는 자원이다.
   **제품 code 가 잃은 fd 는 없었고**, 같은 고정 순서 실행을 두 번 더 돌리자 정상 종료했다(각 7 failed). 즉 그 중단은
   **재현되지 않은 회차성 artifact** 이며, 현재 고정 순서 회귀는 돈다 — 이 bullet 은 그 관찰의 기록이다.
+- **하한 원장의 캔버스는 카나리아 roster 가 아는 층뿐이다.** 표에 실리지 않은 하한(각 문서의 서술적 하한·아직
+  harness 가 없는 층)은 이 표의 대상이 아니고, 원장은 그것을 **모른다**고 말하지도 않는다(표 밖은 침묵이다).
+  승인으로 적힌 커밋도 그 하한을 바꾼 커밋이 아니라 그 근거 파일의 마지막 커밋일 수 있다 — 그 사실은 행마다 적었다.
 - 이 체크아웃은 **공유 체크아웃**이며 다른 작업자의 변경과 실행 중인 suite가 있었다. 이 머신에는 이틀 전 시작해
   77%에서 멈춘 다른 pytest 프로세스도 남아 있었고(CPU 0% · RSS 약 5GB), 회귀 수치는 그런 조건을 배제하지 못한다.
 - §2의 "실제 관찰"은 대부분 deterministic fixture와 module 시험 범위다. 실 모델·실 vault·실 사용자 표면은 partial로 남겼다.

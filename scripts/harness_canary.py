@@ -56,6 +56,7 @@ HARNESSES: Final[tuple[str, ...]] = (
     "evidence_gate",
     "red_rehearsal",
     "release_artifacts",
+    "floor_ledger",
 )
 
 
@@ -151,6 +152,10 @@ def harness_floors(name: str, module: ModuleType) -> list[Floor]:
     if name in {"evidence_gate", "red_rehearsal"}:
         # 둘 다 저장소를 재지 않고 자기 roster 를 센다(게이트는 stage 수, 리허설은 심는 층 수).
         return list(module.coverage_floors())
+    if name == "floor_ledger":
+        # 원장의 하한이 재는 것은 **다른 층에서 본 하한 수**다 — 그 수는 원장을 한 번 돌려야 나온다.
+        # 원장 자신이 roster 를 읽을 때 자기 이름을 빼므로(무한 재귀 방지), 여기서 부르는 원장은 자기를 부르지 않는다.
+        return list(module.coverage_floors(module.build()))
     raise SystemExit(f"{name} 의 하한을 만드는 방법이 카나리아에 없다")
 
 

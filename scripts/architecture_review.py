@@ -68,6 +68,13 @@ CANARY_SCRIPT: Final[Path] = REPO_ROOT / "scripts" / "harness_canary.py"
 # 위반 0건인 감사가 **실제로 빨간을 낼 수 있는지** 저장소 밖 트리에서 재현하는 red 리허설(`scripts/red_rehearsal.py`).
 REHEARSAL_SCRIPT: Final[Path] = REPO_ROOT / "scripts" / "red_rehearsal.py"
 
+# 하한 원장(`scripts/floor_ledger.py`) — 어떤 하한이 있고 무엇을 보고 언제 누가 승인했는가.
+# 방향은 **리뷰 → 원장** 한 쪽뿐이다: 원장은 카나리아 roster 의 harness 들만 읽고 이 리뷰를 부르지 않으므로
+# (게이트 ↔ 리뷰와 달리) 돌려도 서로를 부르지 않는다.
+LEDGER_SCRIPT: Final[Path] = REPO_ROOT / "scripts" / "floor_ledger.py"
+# 원장이 “승인을 읽지 못했다” 를 적는 문장(`floor_ledger.approval_text`) — 그 문장이 표에 있으면 통과가 아니다.
+UNREAD_APPROVAL: Final[str] = "**못 읽음**"
+
 # 여섯 층을 한 번에 도는 증거 게이트(`scripts/evidence_gate.py`). 리뷰는 이 게이트를 **돌리지 않고** roster 와
 # 자기시험만 읽는다 — 게이트의 stage 중 하나가 이 리뷰라서, 돌리면 서로를 불러 끝나지 않는다(단방향 계약).
 EVIDENCE_GATE_SCRIPT: Final[Path] = REPO_ROOT / "scripts" / "evidence_gate.py"
@@ -1208,6 +1215,98 @@ def canary_measured(report: dict[str, object]) -> dict[str, int]:
     }
 
 
+def measure_floor_ledger() -> dict[str, object] | None:
+    """하한 원장을 돌려 JSON 을 받는다 — 카나리아와 **같은 이음매 규칙**(exit≠0 이어도 JSON 이 읽히면 그대로 쓴다)."""
+
+    if not LEDGER_SCRIPT.exists():
+        return None
+    result = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--emit-json"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    try:
+        report = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(report, dict):
+        return None
+    report["exit_code"] = result.returncode
+    return report
+
+
+def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
+    """하한 원장이 **스스로 말한 것과 같은 것을 말하는가** — 표가 자기 합계와 어긋나면 읽는 사람이 잘못된 수를 믿는다.
+
+    원장은 하한을 한 자리에 모으는 층이므로, 여기서 물을 수 있는 것은 “하한이 있는가” 가 아니라 **보고의 정합성**이다:
+    층별 하한 합계 = 헤더 합계 · 승인을 못 읽은 층이 없음 · 고아 기록 수 = 헤더 수 · 하한에 근거가 있음 ·
+    원장이 자기 판정(`verdict`)과 종료 코드에서 모순되지 않음.
+    """
+
+    if report is None:
+        return CheckResult(
+            name="floor_ledger",
+            passed=False,
+            detail=f"{_display(LEDGER_SCRIPT)} 를 돌리지 못했다 — 하한을 한 자리에서 못 본 실행은 통과시키지 않는다",
+        )
+    layers = [item for item in _as_list(report.get("layers")) if isinstance(item, dict)]
+    counts = _as_dict(report.get("counts"))
+    coverage = _as_dict(report.get("coverage"))
+    orphans = _as_list(report.get("orphans"))
+    floors = [item for item in _as_list(report.get("floors")) if isinstance(item, dict)]
+    summed = sum(len(_as_list(layer.get("floors"))) for layer in layers)
+    unapproved = [str(layer.get("name")) for layer in layers if str(layer.get("approval_text")) == UNREAD_APPROVAL]
+    baseless = [str(floor.get("label")) for floor in floors if not str(floor.get("why", "")).strip()]
+    problems: list[str] = []
+    exit_code = _as_int(report.get("exit_code"))
+    verdict = str(report.get("verdict"))
+    if verdict != "PASS":
+        problems.append(
+            f"원장이 스스로 {verdict} 라고 말했다: {' / '.join(str(item) for item in _as_list(report.get('problems'))[:2])}"
+        )
+    if exit_code != 0 and verdict == "PASS":
+        problems.append(f"원장이 exit {exit_code} 로 스스로 실패했다고 말했는데 보고는 PASS 라고 한다(모순)")
+    if not layers:
+        problems.append("원장이 층을 하나도 보지 않았다(빈 표는 ‘빠진 하한 없음’ 과 구별되지 않는다)")
+    if _as_int(counts.get("floors")) != summed:
+        problems.append(
+            f"표의 하한 합계가 항목과 다르다(헤더 {_as_int(counts.get('floors'))} ≠ 항목 합 {summed}) — "
+            "읽는 사람이 잘못된 수를 믿게 된다"
+        )
+    if unapproved:
+        problems.append(f"승인을 못 읽은 층이 있는데 통과라고 한다: {', '.join(unapproved)}")
+    if _as_int(counts.get("orphans")) != len(orphans):
+        problems.append(f"고아 기록 수가 목록과 다르다({_as_int(counts.get('orphans'))} ≠ {len(orphans)})")
+    if baseless:
+        problems.append(f"근거 없는 하한을 표에 싣고도 통과했다: {', '.join(baseless)}")
+    if _as_int(coverage.get("min_floors")) > _as_int(counts.get("canvas")):
+        problems.append(
+            f"원장이 본 하한({_as_int(counts.get('canvas'))}개)이 자기 하한({_as_int(coverage.get('min_floors'))}개) 아래다"
+        )
+    if problems:
+        return CheckResult(name="floor_ledger", passed=False, detail=" / ".join(problems), observed=len(layers))
+    return CheckResult(
+        name="floor_ledger",
+        passed=True,
+        detail=(f"층 {len(layers)}개 · 하한 {summed}개가 한 표에 있고, 각 층의 승인(누가 언제)이 실려 있다"),
+        observed=summed,
+    )
+
+
+def ledger_measured(report: dict[str, object] | None) -> dict[str, int]:
+    """원장에서 마커로 고정할 값 — 표가 사라지거나 하한이 줄면 문서가 먼저 멈춘다."""
+
+    if report is None:
+        return {}
+    counts = _as_dict(report.get("counts"))
+    return {
+        "ledger_layers": _as_int(counts.get("layers")),
+        "ledger_floors": _as_int(counts.get("floors")),
+    }
+
+
 def measure_red_rehearsal() -> dict[str, object] | None:
     """red 리허설을 돌려 JSON 을 받는다 — 카나리아와 **같은 이음매 규칙**을 쓴다.
 
@@ -1933,6 +2032,9 @@ def measure() -> ReviewMeasurement:
     checks.append(check_harness_canary(canary))
     if canary is not None:
         measured.update(canary_measured(canary))
+    ledger_report = measure_floor_ledger()
+    checks.append(check_floor_ledger(ledger_report))
+    measured.update(ledger_measured(ledger_report))
     rehearsal = measure_red_rehearsal()
     checks.append(check_red_rehearsal(rehearsal))
     if rehearsal is not None:

@@ -123,6 +123,15 @@ STAGES: Final[tuple[Stage, ...]] = (
     ),
     Stage("canary", TIER_FAST, "harness_canary.py", ("--emit-json",), "탐지력 하한이 실제로 무는가", SOURCE_STDOUT),
     Stage(
+        "floor_ledger",
+        TIER_FAST,
+        "floor_ledger.py",
+        ("--emit-json",),
+        "하한을 한 자리에서 — 무엇이 있고, 무엇을 보고, 언제 누가 승인했는가",
+        SOURCE_STDOUT,
+        numbers=("counts", "coverage"),
+    ),
+    Stage(
         "digest_drift",
         TIER_FAST,
         "digest_drift.py",
@@ -198,6 +207,7 @@ STAGES: Final[tuple[Stage, ...]] = (
 REQUIRED_STAGES: Final[tuple[str, ...]] = (
     "review",
     "canary",
+    "floor_ledger",
     "digest_drift",
     "audit_state_claims",
     "audit_enum_identity",
@@ -208,7 +218,7 @@ REQUIRED_STAGES: Final[tuple[str, ...]] = (
     "regression_ledger",
 )
 
-_MIN_STAGES: Final[int] = 10
+_MIN_STAGES: Final[int] = 11
 
 # 카나리아가 아는 harness 중 **stage 가 아닌 것** — 게이트 자신뿐이다. stage 로 넣으면 게이트가 자기를 불러
 # 끝나지 않으므로(재귀) 그 하한은 카나리아가 대신 본다. 이 목록이 늘어나면 자기시험이 실패한다.
@@ -225,8 +235,8 @@ def _stage_floor(stages: tuple[Stage, ...]) -> Floor:
         observed=len(stages),
         minimum=_MIN_STAGES,
         why=(
-            "2026-09-23 기준 관측: 여섯 harness 게이트 + 리뷰 + 회귀 원장 + red 리허설 + 배포 산출물 = 10 stage. "
-            "하한이 잡으려는 것은 '얼마나 많이 도나' 가 아니라 '한 층도 돌지 않고 통과했나' 다. "
+            "2026-09-23 기준 관측: 여섯 harness 게이트 + 리뷰 + 회귀 원장 + red 리허설 + 배포 산출물 + 하한 원장 = "
+            "11 stage. 하한이 잡으려는 것은 '얼마나 많이 도나' 가 아니라 '한 층도 돌지 않고 통과했나' 다. "
             "층이 정말 사라지면 근거를 적고 이 값을 내린다."
         ),
     )
