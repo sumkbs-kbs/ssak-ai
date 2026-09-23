@@ -45,6 +45,10 @@ EVIDENCE_DIR: Final[Path] = DOCS_ROOT / "evidence"
 # 전량 회귀 원장(`scripts/regression_ledger.py`)의 산출물 — 리뷰가 인용하는 회귀 수치의 출처.
 REGRESSION_LEDGER: Final[Path] = EVIDENCE_DIR / "regression_ledger.json"
 
+# 증거가 못 박은 sha256 의 현재 일치 여부(`scripts/digest_drift.py`)의 산출물.
+DIGEST_DRIFT_SCRIPT: Final[Path] = REPO_ROOT / "scripts" / "digest_drift.py"
+DIGEST_DRIFT_ARTIFACT: Final[Path] = EVIDENCE_DIR / "digest_drift.json"
+
 Status = Literal["covered", "partial", "gap"]
 Answer = Literal["yes", "yes_with_limits", "no"]
 
@@ -928,6 +932,101 @@ def check_citation_tracking(docs_root: Path | None = None, *, on: str | None = N
     )
 
 
+def read_digest_drift() -> dict[str, object] | None:
+    """artifact 를 읽는다. 없거나 깨졌으면 None(호출자가 실패로 처리)."""
+
+    if not DIGEST_DRIFT_ARTIFACT.exists():
+        return None
+    try:
+        return json.loads(DIGEST_DRIFT_ARTIFACT.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+
+
+def measure_digest_drift() -> dict[str, object] | None:
+    """`digest_drift.py --emit-json` 으로 지금 값을 다시 잰다(저장본이 썩지 않게)."""
+
+    result = subprocess.run(
+        [sys.executable, str(DIGEST_DRIFT_SCRIPT), "--emit-json"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        return None
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return None
+
+
+def _as_int(value: object) -> int:
+    """JSON 에서 온 값을 int 로 — 수치가 아니면 0(판정은 호출자가 한다)."""
+
+    return value if isinstance(value, int) else 0
+
+
+def check_digest_report(stored: dict[str, object] | None, fresh: dict[str, object] | None) -> CheckResult:
+    """증거가 못 박은 digest 의 현재 일치 여부가 **측정 artifact 로 최신으로** 남아 있는가.
+
+    파일이 바뀌면 그 증거는 지나간 revision 을 가리키게 된다. 그것을 문서만 읽어 추정하지 않도록
+    측정해 두고, 이 검사가 저장본과 방금 잰 값을 대조한다 — 저장본이 낡으면 실패한다.
+    """
+
+    if stored is None:
+        return CheckResult(
+            name="digest_report",
+            passed=False,
+            detail=(
+                f"{_display(DIGEST_DRIFT_ARTIFACT)} 가 없거나 읽히지 않는다 — "
+                "scripts/digest_drift.py 를 먼저 돌려야 한다"
+            ),
+        )
+    if fresh is None:
+        return CheckResult(
+            name="digest_report",
+            passed=False,
+            detail="digest 를 다시 재지 못했다(scripts/digest_drift.py 가 실패했다) — 확인 불가를 통과로 쓰지 않는다",
+        )
+    keys = ("counts", "docs", "pins")
+    stale = [key for key in keys if stored.get(key) != fresh.get(key)]
+    counts = _as_dict(fresh.get("counts"))
+    broken = _as_int(counts.get("missing"))
+    problems: list[str] = []
+    if stale:
+        problems.append(f"artifact 가 최신이 아니다({', '.join(stale)} 불일치) — digest_drift.py 를 다시 돌려야 한다")
+    if broken:
+        problems.append(f"파일이 없는데 digest 를 못 박은 항목 {broken}건")
+    if problems:
+        return CheckResult(
+            name="digest_report",
+            passed=False,
+            detail=" / ".join(problems),
+            observed=_as_int(counts.get("drift")),
+        )
+    return CheckResult(
+        name="digest_report",
+        passed=True,
+        detail=(
+            f"digest pin {len(_as_list(fresh.get('pins')))}개 — 그대로 {_as_int(counts.get('match'))} · "
+            f"움직임 {_as_int(counts.get('drift'))}(그 파일들이 그 뒤에 바뀌었다)"
+        ),
+        observed=_as_int(counts.get("drift")),
+    )
+
+
+def digest_measured(drift: dict[str, object]) -> dict[str, int]:
+    """digest 측정에서 리뷰 마커로 고정할 값."""
+
+    counts = _as_dict(drift.get("counts"))
+    return {
+        "digest_pinned": len(_as_list(drift.get("pins"))),
+        "digest_drifted": _as_int(counts.get("drift")),
+        "digest_missing": _as_int(counts.get("missing")),
+    }
+
+
 def check_review_document(principles: tuple[Principle, ...]) -> CheckResult:
     """리뷰 문서가 24원칙·§63·§52를 다루고 매핑 artifact 경로를 담고 있는지 확인한다."""
 
@@ -1157,6 +1256,10 @@ def measure() -> ReviewMeasurement:
     checks.append(check_regression_ledger(ledger))
     if ledger is not None:
         measured.update(regression_measured(ledger))
+    drift = measure_digest_drift()
+    checks.append(check_digest_report(read_digest_drift(), drift))
+    if drift is not None:
+        measured.update(digest_measured(drift))
     checks.append(check_review_document(principles))
     checks.append(check_measured_markers(measured))
     return ReviewMeasurement(

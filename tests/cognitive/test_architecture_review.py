@@ -303,6 +303,70 @@ def test_glob_and_elided_citations_are_not_judged(review: Any, tmp_path: Path, m
     assert result.observed == 0, "패턴을 인용으로 셌다"
 
 
+def _drift_report(*, drift_count: int = 0, missing: int = 0) -> dict[str, object]:
+    """digest 측정 artifact 의 최소 형태 — 판정에 쓰는 키만 담는다."""
+
+    pins = [
+        {
+            "doc": "T01a.md",
+            "path": "src/antigravity_k/engine/cognitive/models.py",
+            "recorded": "a",
+            "actual": "a",
+            "status": "match",
+        }
+    ]
+    return {
+        "counts": {"match": len(pins), "drift": drift_count, "missing": missing},
+        "docs": {"T01a.md": {"match": 1, "drift": drift_count, "missing": missing}},
+        "pins": pins,
+    }
+
+
+def test_stale_digest_report_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """저장본이 방금 잰 값과 다르면 실패한다 — 파일이 바뀐 뒤 낡은 수치를 인용하지 않는다."""
+
+    result = review.check_digest_report(_drift_report(), _drift_report(drift_count=3))
+    assert result.passed is False
+    assert "최신이 아니다" in result.detail
+
+
+def test_missing_digest_report_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """측정 artifact 가 없으면 실패한다 — 증거의 digest 가 아직 그 파일인지 알 길이 없다."""
+
+    result = review.check_digest_report(None, _drift_report())
+    assert result.passed is False
+    assert "없거나" in result.detail
+
+
+def test_broken_digest_pin_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """파일이 없는데 digest 를 못 박은 항목은 실패다(가리키는 것이 없는 주장)."""
+
+    report = _drift_report(missing=1)
+    result = review.check_digest_report(report, report)
+    assert result.passed is False
+    assert "파일이 없는데" in result.detail
+
+
+def test_digest_drift_alone_does_not_fail_the_check(review: Any) -> None:  # noqa: ANN401
+    """움직임 자체는 실패가 아니다 — 그 파일이 그 뒤에 바뀌었다는 관찰이며, 기록으로 남긴다."""
+
+    report = _drift_report(drift_count=21)
+    result = review.check_digest_report(report, report)
+    assert result.passed is True
+    assert result.observed == 21
+    assert "움직임 21" in result.detail
+
+
+def test_repository_digest_report_is_current_and_counted(measurement: Any) -> None:  # noqa: ANN401
+    """이 저장소의 digest 측정은 최신이고, 마커로 고정된 값과 같다."""
+
+    check = next(c for c in measurement.checks if c.name == "digest_report")
+    assert check.passed is True, check.detail
+    assert measurement.measured["digest_pinned"] > 0
+    assert measurement.measured["digest_missing"] == 0
+    assert measurement.measured["digest_drifted"] >= 0
+
+
 def test_missing_regression_ledger_is_rejected(review: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:  # noqa: ANN401
     """원장 artifact 가 없으면 리뷰가 실패한다 — 회귀 수치의 출처 없이 수치를 쓰지 않는다."""
 
