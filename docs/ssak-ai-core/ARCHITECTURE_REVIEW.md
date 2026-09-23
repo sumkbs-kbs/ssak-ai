@@ -80,7 +80,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 715 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 717 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
@@ -112,7 +112,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=715 -->
+<!-- measured:cognitive_tests=717 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -609,10 +609,10 @@ build job 이 그 자리를 맡는다(둘을 합치면 모든 변경이 덮인�
 **게이트를 도는 자리 — 층을 한 번에.** harness 마다 게이트가 있어도 그것을 도는 자리는 사람의 기억뿐이었다:
 CI 는 하나도 돌리지 않았고, 어디가 얇은지 보려면 여덟 개 명령을 손으로 쳐야 했다. `scripts/evidence_gate.py` 가 그
 자리를 하나로 묶는다 — stage 마다 **독립 process** 로 돌리고 종료 코드·소요 시간·**첫 실패 문장**을 모아 어느 층이
-빨간지 이름으로 말한다(fast tier 7 stage · 17초). 이 도구도 같은 병을 앓을 수 있어(스크립트 이름이 틀려 아무것도
+빨간지 이름으로 말한다(fast tier 9 stage · 34초 · full 11 stage · 96초). 이 도구도 같은 병을 앓을 수 있어(스크립트 이름이 틀려 아무것도
 실행되지 않거나, stage 목록이 줄거나, tier 밖 층이 초록으로 덮이는 것) 같은 규율을 적용했다: **없는 스크립트·없는
 산출물·제한 시간 초과는 `unrun`(실패)** 이고 `exit_code` 가 없는 결과는 판정이 아니며, `stage` 수에 하한과 근거가 있고
-(`why` 에 “여섯 harness + 리뷰 + 회귀 원장 + red 리허설 = 9”), 자기시험 **43건**이 종류 구분·tier 필터·roster 정합·
+(`why` 에 “여섯 harness 게이트 + 리뷰 + 회귀 원장 + red 리허설 + 배포 산출물 + 하한 원장 = 11”), 자기시험 **47건**이 종류 구분·tier 필터·roster 정합·
 red 회계를 매 실행 다시
 물어본다. 자기시험이 실제로 즉시 잡은 결함이 둘 있다: ① stage 이름과 카나리아가 아는 harness 이름이 달라 네 층이
 “사라진” 것으로 보고됐고(이름을 harness 에 맞춰 통일했다), ② 판정 문장에 `Stage` 를 넘겨 죽었다.
@@ -621,16 +621,23 @@ red 회계를 매 실행 다시
 그 층을 돌릴 수 없다. `--tier fast`(기본)는 그 층을 **“이 실행이 보지 않은 층”** 으로 적고, `--tier full`(로컬)은 전체
 roster 를 요구한다 — 산출물이 없으면 `unrun` 으로 실패하며 왜 못 돌리는지 말한다(초록으로 덮지 않는다).
 
+**기준을 기록할 때 좁은 tier 는 승인을 지운다.** 이 규칙은 실수로 겪은 결함에서 나왔다: 기준을 fast 로 기록하자
+full 전용 둘(`regression_ledger`·`release_artifacts`)이 기준에서 조용히 사라졌고(층 10 → 9), 다음 full 실행은 그것들을
+“기준 없음” 으로 봤다 — 기록은 “지금 이 층이 이렇다” 는 승인인데 **보지 않은 층의 승인을 지워 버린다**(그 사실은 기록을
+만든 실행의 보고에만 남고, 추이는 끊긴다). 그래서 `--record-baseline` 은 **게이트가 아직 도는 층을 기준에서 빼는 기록을
+거부**하고 그 층들의 이름을 남긴다(`--tier full` 로 다시 돌려 기록하라). 반대쪽 문도 열어 두었다 — stage 목록에서
+**진짜로 사라진 층**은 빼도 된다(그래서 예외 플래그가 필요 없다: 사라짐이 결정이면 stage 목록에도 이미 없다).
+
 **게이트 자신도 카나리아가 본다.** 게이트는 stage 수에 하한을 들고 있으므로, 그 하한이 장식인지도 확인해야 한다 —
-카나리아 roster 에 `evidence_gate` 를 넣어 눈멀게 한 사본(`observed=0`)이 막히는지 본다(카나리아가 9
-harness 를 본다 · marker `canary_harnesses` 9 · `canary_ok` 9). 게이트 자신을 stage 로 넣으면 재귀라, 그 하한을 보는
+카나리아 roster 에 `evidence_gate` 를 넣어 눈멀게 한 사본(`observed=0`)이 막히는지 본다(카나리아가 10
+harness 를 본다 · marker `canary_harnesses` 10 · `canary_ok` 10). 게이트 자신을 stage 로 넣으면 재귀라, 그 하한을 보는
 자리는 카나리아뿐이다. 리뷰는 게이트를 **돌리지 않고 명세만** 읽는다(검사 `evidence_gate` — §0 재현 방법 14번): stage 의 스크립트
 실재 · tier 유효 · fast tier 비어 있지 않음 · 자기시험 존재와 통과 · 하한의 근거 기록. 게이트의 자기시험이 카나리아
 roster 와 stage 명단을 대조하므로, 새 harness 를 카나리아에만 넣으면 게이트가 실패한다(예외는 게이트 자신 하나뿐이고,
 그 목록이 늘어나도 실패한다). 리뷰가 `--quiet` 로 돌아도 **실패한 검사의 이름과 이유는 stderr 에 남는다** — 한 명령으로
 여섯 층을 도는 게이트가 그 출력에서 실패 이유를 읽는다(조용한 실행이 `exit 1` 만 남기면 그 층을 다시 돌려야 한다).
 
-이빨은 게이트 계약 **34건**(`tests/cognitive/test_evidence_gate.py`) + red 리허설 계약 **12건**
+이빨은 게이트 계약 **36건**(`tests/cognitive/test_evidence_gate.py`) + red 리허설 계약 **12건**
 (`tests/cognitive/test_red_rehearsal.py`) + 리뷰 계약(증거 게이트 15건 · red 리허설 9건)이다: 없는 스크립트·없는
 산출물·제한 시간 초과가 `pass` 가 아닌지, tier 밖 층이 통과로 세어지지 않는지, roster 에서 한 층을 지우면 자기시험이
 **그 이름을 짚는지**, **리허설되지도 선언되지도 않은 층이 있으면 걸리는지**, 빨간 층이 보고서와 문제 문장에 이름으로

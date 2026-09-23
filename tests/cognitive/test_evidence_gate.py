@@ -287,6 +287,78 @@ def test_recording_a_baseline_needs_a_method(gate: Any, tmp_path: Path) -> None:
     assert target.exists() is False, "method 없이 기준을 썼다"
 
 
+def test_a_record_may_not_drop_a_layer_the_gate_still_runs(
+    gate: Any, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:  # noqa: ANN401
+    """tier 를 좁혀 기록하면 **보지 않은 층의 승인 수치가 사라진다** — 그 기록을 거부하고 이름을 남긴다.
+
+    실측으로 겪었다: full 전용 둘(regression_ledger·release_artifacts)이 fast 기록으로 기준에서 빠졌다.
+    지워진 층은 다음 실행에서 “기준 없음” 으로 나타나 추이가 끊기고, 그 사실은 기록을 만든 실행의 보고에만 남는다.
+    """
+
+    target = tmp_path / "baseline.json"
+    full_only = [stage.name for stage in gate.STAGES if stage.tier == gate.TIER_FULL]
+    assert full_only, "full 전용 stage 가 없으면 이 계약이 공허하다"
+    previous = {stage.name: {"n": 1} for stage in gate.STAGES}
+    target.write_text(
+        json.dumps({"recorded_on": "2026-01-01", "method": "옛 승인", "layers": previous}),
+        encoding="utf-8",
+    )
+    before = target.read_text(encoding="utf-8")
+
+    assert (
+        gate.main(
+            [
+                "--tier",
+                gate.TIER_FAST,
+                "--record-baseline",
+                "--baseline",
+                str(target),
+                "--method",
+                "좁은 tier 로 기록",
+                "--quiet",
+            ]
+        )
+        == gate.EXIT_GATE
+    )
+    captured = capsys.readouterr()
+    for layer in full_only:
+        assert layer in captured.err, f"사라지는 층을 이름으로 말하지 않았다: {layer}"
+    assert target.read_text(encoding="utf-8") == before, "거부한 기록이 기준을 덮어썼다"
+
+
+def test_a_record_may_drop_a_layer_the_gate_no_longer_knows(gate: Any, tmp_path: Path) -> None:  # noqa: ANN401
+    """반대쪽 문도 있다 — stage 목록에서 진짜로 빠진 층은 빼도 된다(그래서 예외 플래그가 필요 없다)."""
+
+    target = tmp_path / "baseline.json"
+    seen = [stage.name for stage in gate.STAGES if stage.tier == gate.TIER_FAST]
+    previous = {name: {"n": 1} for name in seen}
+    previous["층_없음"] = {"n": 9}
+    target.write_text(
+        json.dumps({"recorded_on": "2026-01-01", "method": "옛 승인", "layers": previous}),
+        encoding="utf-8",
+    )
+
+    assert (
+        gate.main(
+            [
+                "--tier",
+                gate.TIER_FAST,
+                "--record-baseline",
+                "--baseline",
+                str(target),
+                "--method",
+                "사라진 층을 정리하는 기록",
+                "--quiet",
+            ]
+        )
+        == gate.EXIT_OK
+    )
+    payload = json.loads(target.read_text(encoding="utf-8"))
+    assert "층_없음" not in payload["layers"], "게이트가 더는 모르는 층을 기준에 남겼다"
+    assert set(payload["layers"]) == set(seen)
+
+
 def test_recording_a_baseline_round_trips(gate: Any, tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:  # noqa: ANN401
     """기록한 기준으로 바로 다음 실행이 비교한다 — 첫 실행은 전부 '그대로' 다."""
 

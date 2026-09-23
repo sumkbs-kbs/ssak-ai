@@ -689,6 +689,20 @@ def read_baseline(path: Path) -> tuple[dict[str, dict[str, int]], str]:
     return snapshot, ""
 
 
+def dropped_layers(current: dict[str, dict[str, int]], previous: dict[str, dict[str, int]]) -> list[str]:
+    """기준에서 사라질 **아직 살아 있는 층** — 사라짐이 판단인지 손실인지 가른다.
+
+    새 기록이 지난 기록의 층을 빼면, 그 층은 다음 실행에서 “기준 없음” 으로 나타나 추이가 끊긴다.
+    실측으로 겪었다: `--tier fast` 로 기록하자 full 전용 둘(regression_ledger·release_artifacts)이
+    기준에서 사라졌다(층 10 → 9) — 기록은 “지금 이 층이 이렇다” 는 승인인데, **보지 않은 층의 승인을
+    지워 버린다**. 게이트가 아직 도는 층이면 그것은 결정이 아니라 손실이다(진짜로 사라진 층은
+    stage 목록에서도 빠져 있으므로 그때는 빼도 된다 — 그래서 예외 플래그가 필요 없다).
+    """
+
+    live = {stage.name for stage in STAGES}
+    return sorted(layer for layer in set(previous) - set(current) if layer in live)
+
+
 def baseline_payload(current: dict[str, dict[str, int]], *, method: str, recorded_on: str) -> dict[str, object]:
     """기준 파일의 내용 — **무엇을 보고 승인했는지**(method·날짜)를 수치와 함께 남긴다."""
 
@@ -901,6 +915,24 @@ def self_probe(stages: tuple[Stage, ...] | None = None) -> Probe:
     # ⑩ 기준 파일 — 깨진 기준은 "비교 불가" 로 삼기지 않는다.
     cases.equal("없는 기준 파일은 '기준 없음' 이다", read_baseline(REPO_ROOT / ".no-such-baseline.json"), ({}, ""))
 
+    # ⑪ 기준에서 층을 지우는 기록 — 게이트가 아직 보는 층이면 손실이다(tier 를 좁힌 기록이 승인을 지운다).
+    live_stage = stages[0].name
+    cases.equal(
+        "살아 있는 층을 빼는 기록을 알아본다",
+        dropped_layers({stages[-1].name: {"x": 1}}, {live_stage: {"x": 1}, stages[-1].name: {"x": 1}}),
+        [live_stage],
+    )
+    cases.equal("층이 그대로면 뺄 것이 없다", dropped_layers({live_stage: {"x": 1}}, {live_stage: {"x": 2}}), [])
+    cases.equal(
+        "게이트가 더 이상 모르는 층은 빼도 된다(진짜로 사라진 층)",
+        dropped_layers({live_stage: {"x": 1}}, {live_stage: {"x": 1}, "층_없음": {"x": 9}}),
+        [],
+    )
+    cases.check(
+        "못 돌린 층의 빈 수치를 기록하지 않는 규칙이 있다(0 을 '그대로' 로 쓰지 않는다)",
+        snapshot((Outcome(stages[0], KIND_UNRUN, None, 0.0, "죽었다"),)) == {},
+    )
+
     return cases.probe()
 
 
@@ -987,6 +1019,17 @@ def main(argv: list[str] | None = None) -> int:
             print("[FAIL] 기록할 수치가 없다 — 돌아가지 않은 실행을 기준으로 삼지 않는다", file=sys.stderr)
             return EXIT_GATE
         target = args.baseline or BASELINE
+        previous, _ = read_baseline(target)
+        dropped = dropped_layers(current, previous)
+        if dropped:
+            print(
+                "[FAIL] 게이트가 아직 도는 층을 기준에서 지우는 기록이다: "
+                f"{', '.join(dropped)} — 기준은 게이트가 볼 수 있는 층을 전부 담아야 한다"
+                "(tier 를 좁혀 기록하면 보지 않은 층의 승인 수치가 조용히 사라지고, 다음 실행은 그것을 '기준 없음'"
+                " 으로 본다). `--tier full` 로 다시 돌려 기록하라",
+                file=sys.stderr,
+            )
+            return EXIT_GATE
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(
             json.dumps(
