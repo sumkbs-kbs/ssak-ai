@@ -83,14 +83,14 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=476 -->
+<!-- measured:cognitive_tests=479 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
 <!-- measured:regression_drift=0 -->
 <!-- measured:regression_unowned=0 -->
 <!-- measured:digest_pinned=50 -->
-<!-- measured:digest_reverified=21 -->
+<!-- measured:digest_reverified=22 -->
 <!-- measured:digest_drifted=0 -->
 <!-- measured:digest_stale=0 -->
 <!-- measured:digest_missing=0 -->
@@ -279,7 +279,7 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 질문이고, "실환경에서도 서는가" 는 여전히 열려 있다.
 
 재확인은 영구 면제가 아니다 — 그 파일이 **또** 바뀌면 재확인은 무효(`stale_reverification`)가 되고 게이트가 실패한다.
-그래서 `digest_report` 는 "재확인 21건이 지금도 유효한가" 를 매 실행마다 본다.
+그래서 `digest_report` 는 "재확인 22건이 지금도 유효한가" 를 매 실행마다 본다.
 
 재확인 과정에서 증거 문장 하나가 낡은 것도 드러났다: `T01b_protection.md` 가 `tools/ssak_bundle_store.py` 때문에
 **"기존 red"** 라고 적은 시험은 §1.5 의 등록으로 이미 green 이었다 — 그 문장에 정정을 붙였다(역사는 지우지 않았다).
@@ -333,7 +333,8 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 상태 주장 감사에 붙인 자기시험·하한은 그 감사만의 것이 아니었다. **측정 harness 는 모두 같은 방식으로 눈이 멀 수 있다**:
 문서 형식이 바뀌어 pin 을 하나도 못 찾으면 digest 측정은 “pin 0 · 움직임 0” 으로, junit 을 못 읽으면 원장은
 “결정적 0 · drift 0” 으로, 패턴을 바꿔 인용을 못 찾으면 리뷰는 “인용 0건 모두 추적됨” 으로 통과한다.
-그래서 두 장치를 공통 module 로 올렸다(`Probe`/`Cases` · `Floor`).
+그래서 두 장치를 공통 module 로 올렸다(`Probe`/`Cases` · `Floor`). 이 회차에 여섯 harness 가 계약을 쓴다 — 마지막 하나
+(`measure_cognitive_surface`)는 **게이트 자체가 없어서** 빈 표를 내도 exit 0 이었다(실측 artifact 를 내는데도).
 
 | harness | 자기시험 (매 실행 재판정) | 탐지력 하한 |
 |---|---|---|
@@ -342,6 +343,7 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 | `audit_state_claims` | **17건** — 어휘·요구 어휘·펜스·정정 창·상태 계산 (앞선 회차) | mention **6** · 주장 **4** |
 | `audit_enum_identity` | **5건** — identity 비교 2건(종류 구분), 값 비교·리터럴 제외, 제외 목록·스캔 범위 | 스캔한 파일 **≥10** |
 | `audit_test_namespace_purge` | **6건** — 미가드 purge 1건, `del` 형태, 트리 override 허용, 함수 본문 제외, 무관한 mapping | 수집 대상 파일 ≥1 (실제 **537**) |
+| `measure_cognitive_surface` | **6건** — 실재 모듈 식별, core 도달 판독, 없는 모듈 배제, entrypoint 표 유지, 판독기 예외도 실패로 보고 | entrypoint **9** · 실재 **9** (하한 1·1) |
 
 하한은 **“찾은 것이 없다” 와 “볼 수 없다” 를 가르는 값**이라 낮게 잡았다(하한 1). 올려 잡으면 새 문서가 생길 때마다
 숫자 싸움이 되고, 낮게 잡아도 판독 규칙이 죽는 순간은 잡는다. 하한을 **내리는 것은 근거와 함께 사람이 하는 결정**이며,

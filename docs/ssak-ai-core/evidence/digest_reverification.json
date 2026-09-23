@@ -114,10 +114,17 @@
     },
     {
       "doc": "T11_surface.md",
+      "path": "scripts/measure_cognitive_surface.py",
+      "verified_digest": "bf3f81b02671f70e22412d02f04c5e2d5abd2aec5680739447c5b8c01abdaf5b",
+      "verified_on": "2026-09-23",
+      "method": "두 pin 을 각각 확인했다: (1) scripts/measure_cognitive_surface.py 를 다시 돌려 표면 표 legacy 7/9 · core 2/9 를 재현했고 빈 표가 exit 1 이 되는 것을 봤다 (2) src/antigravity_k/engine/cognitive_surface.py 는 이를 인용한 시험을 돌려 tests/test_cognitive_surface_api.py + tests/cognitive/test_surface.py 31 passed, CLI cognitive status 도 정상 출력임을 확인했다"
+    },
+    {
+      "doc": "T11_surface.md",
       "path": "src/antigravity_k/engine/cognitive_surface.py",
       "verified_digest": "2380d6d0b7ea6bf1f9171740445f314a9b26a986a1acdf0ed61775417bfa849d",
       "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_surface.py 20 passed(20과 일치) + tests/test_cognitive_surface_api.py 11 passed + measure_cognitive_surface.py 재실행(legacy/core reach 산출). cognitive_surface.py 647→681 lines은 이 카드의 배선 작업."
+      "method": "두 pin 을 각각 확인했다: (1) scripts/measure_cognitive_surface.py 를 다시 돌려 표면 표 legacy 7/9 · core 2/9 를 재현했고 빈 표가 exit 1 이 되는 것을 봤다 (2) src/antigravity_k/engine/cognitive_surface.py 는 이를 인용한 시험을 돌려 tests/test_cognitive_surface_api.py + tests/cognitive/test_surface.py 31 passed, CLI cognitive status 도 정상 출력임을 확인했다"
     },
     {
       "doc": "T13_growth.md",
@@ -152,6 +159,6 @@
     "python",
     "scripts/digest_drift.py",
     "--record",
-    "T13_live_pilot.md"
+    "T11_surface.md"
   ]
 }

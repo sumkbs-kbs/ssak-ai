@@ -85,6 +85,12 @@ core에 도달하지 않는다.** 이번 작업은 실제 통합이 아니라 **
 측정 method 보정: 초기 측정은 상대 import(`from . import x`)를 보지 못해 legacy 6/8로 나왔다. 이후 해석을
 추가하고 entrypoint 1건(engine_context)을 보강해 7/9·2/9로 재측정했다(정적 reachability, 실행 trace 아님).
 
+> **2026-09-23 재확인(정정 아님).** `scripts/measure_cognitive_surface.py` 가 그 뒤 자기시험·탐지력 하한을
+> 갖게 되면서 이 문서가 못 박은 digest 가 움직었다(감사 API 로 잡혔다). 그 파일을 다시 돌려 **이 절의 수치가
+> 그대로임을 확인했다** — 표면 표는 legacy **7/9** · core **2/9** 이고, 이제 빈 entrypoint 표를 내면 exit 1 이다
+> (측정 artifact 에 `probe` 6건 · `coverage` 가 함께 남는다). 위 `working_tree_manifest` 의 sha256·line 수는
+> **그 시점의 snapshot** 이므로 갱신하지 않는다.
+
 `legacy` hook 지점(코드로 확인): `engine_context`가 `ctx.cognitive_loop`를 만들고(`amplification.cognitive.enabled`,
 기본 true), `tool_loop`이 `reflect` / `verify_tool_result` / `adapt_strategy`를 호출한다.
 

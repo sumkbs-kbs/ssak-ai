@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import importlib.util
 import sys
+from dataclasses import replace
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -28,6 +29,7 @@ HARNESSES = (
     "audit_state_claims",
     "audit_enum_identity",
     "audit_test_namespace_purge",
+    "measure_cognitive_surface",
 )
 
 
@@ -173,6 +175,46 @@ def test_namespace_audit_probe_notices_a_broken_reader(monkeypatch: pytest.Monke
     monkeypatch.setattr(module, "scan_source", lambda source, *, file: ())
     assert module.self_probe().ok is False
     assert module.main([]) == 1
+
+
+def test_surface_harness_rejects_an_empty_entrypoint_table(monkeypatch: pytest.MonkeyPatch) -> None:
+    """표면 표가 비면 “legacy 도달 0/0” 이 아니라 실패다 — 실측 harness 가 빈 표를 증거로 내지 않는다."""
+
+    module = load("measure_cognitive_surface")
+    empty = module.measure_surface_reach(entrypoints=())
+
+    floors = module.coverage_floors(empty)
+    assert sum(1 for floor in floors if floor.problem() is not None) == 2
+
+    monkeypatch.setattr(module, "measure_surface_reach", lambda **_kwargs: empty)
+    assert module.main([]) == module.EXIT_FAIL
+
+
+def test_surface_harness_probe_notices_a_broken_reach_reader(monkeypatch: pytest.MonkeyPatch) -> None:
+    """도달 판독이 죽으면(항상 False) 자기시험이 잡는다 — 표면 실측도 자기 눈을 확인한다."""
+
+    module = load("measure_cognitive_surface")
+    assert module.self_probe().ok is True
+
+    original = module.measure_surface_reach
+
+    def never_reaches(**kwargs: object) -> object:
+        """실재 모듈은 알아보지만 도달은 항상 False 인 판독기 — `legacy_via`/`core_via` 를 비운다."""
+
+        measurement = original(**kwargs)  # type: ignore[arg-type]
+        return replace(
+            measurement,
+            entrypoints=tuple(
+                replace(item, reaches_legacy=False, reaches_core=False, legacy_via=(), core_via=())
+                for item in measurement.entrypoints
+            ),
+        )
+
+    monkeypatch.setattr(module, "measure_surface_reach", never_reaches)
+    probe = module.self_probe()
+
+    assert probe.ok is False
+    assert any("core 도달" in failure for failure in probe.failures)
 
 
 def test_namespace_audit_probe_notices_an_all_violating_reader(monkeypatch: pytest.MonkeyPatch) -> None:

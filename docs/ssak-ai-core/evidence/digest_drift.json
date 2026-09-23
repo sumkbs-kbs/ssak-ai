@@ -3,10 +3,10 @@
     "python",
     "scripts/digest_drift.py"
   ],
-  "source_head": "afeccab3",
+  "source_head": "cba61df7",
   "counts": {
-    "match": 29,
-    "reverified": 21,
+    "match": 28,
+    "reverified": 22,
     "drift": 0,
     "stale_reverification": 0,
     "missing": 0
@@ -76,8 +76,8 @@
       "missing": 0
     },
     "T11_surface.md": {
-      "match": 7,
-      "reverified": 1,
+      "match": 6,
+      "reverified": 2,
       "drift": 0,
       "stale_reverification": 0,
       "missing": 0
@@ -365,9 +365,9 @@
       "doc": "T11_surface.md",
       "path": "scripts/measure_cognitive_surface.py",
       "recorded": "76d3a88b1b517171",
-      "actual": "76d3a88b1b517171fa12501a0bf17e7bfb1f22a0322efdc29bcdff4d2d931450",
-      "status": "match",
-      "reverified_on": ""
+      "actual": "bf3f81b02671f70e22412d02f04c5e2d5abd2aec5680739447c5b8c01abdaf5b",
+      "status": "reverified",
+      "reverified_on": "2026-09-23"
     },
     {
       "doc": "T11_surface.md",
