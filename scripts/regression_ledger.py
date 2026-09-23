@@ -104,8 +104,11 @@ OWNERS: Final[tuple[tuple[str, str, str], ...]] = (
     ),
 )
 
-# 허용되는 seed 민감 실패 수. 이 수를 넘으면 `--gate` 가 실패한다(추세 감시용).
+# 허용되는 variant 민감 실패 수. 이 수를 넘으면 `--gate` 가 실패한다(추세 감시용).
 DEFAULT_DRIFT_ALLOWANCE: Final[int] = 0
+
+# 중단된 회차를 자동으로 다시 돌리는 횟수. 중단 사실 자체는 원장에 남는다(조용한 재시도가 아니다).
+DEFAULT_ABORTED_RETRIES: Final[int] = 1
 
 _RED_TAGS: Final[frozenset[str]] = frozenset({"failure", "error"})
 _REPORT_NAME: Final[re.Pattern[str]] = re.compile(r"^(?P<scope>.+)__(?P<variant>[^/]+)\.xml$")
@@ -153,6 +156,8 @@ class RunResult:
     red: frozenset[str]
     skipped: int
     aborted: bool = False
+    attempts: int = 1
+    aborted_attempts: int = 0
 
     def as_mapping(self) -> dict[str, object]:
         return {
@@ -163,6 +168,8 @@ class RunResult:
             "tests": self.tests,
             "skipped": self.skipped,
             "aborted": self.aborted,
+            "attempts": self.attempts,
+            "aborted_attempts": self.aborted_attempts,
             "red": sorted(self.red),
         }
 
@@ -189,6 +196,17 @@ class Ledger:
             counts[run.scope] = counts.get(run.scope, 0) + 1
         return counts
 
+    @property
+    def retried(self) -> dict[str, int]:
+        """중단으로 다시 돌린 회차가 있는 scope — 회차 조건 이름으로 묶어 센다."""
+
+        counts: dict[str, int] = {}
+        for run in self.runs:
+            if run.aborted_attempts:
+                label = f"{run.scope}·{run.variant}"
+                counts[label] = counts.get(label, 0) + run.aborted_attempts
+        return counts
+
     def as_mapping(self) -> dict[str, object]:
         return {
             "command": list(self.command),
@@ -196,6 +214,7 @@ class Ledger:
             "scopes": self.scopes,
             "incomplete_scopes": list(self.incomplete),
             "aborted_scopes": list(self.aborted),
+            "retried": self.retried,
             "deterministic": sorted(self.deterministic),
             "drift": sorted(self.drift),
             "owners": {node: owner.as_mapping() for node, owner in sorted(self.owners.items())},
@@ -206,6 +225,7 @@ class Ledger:
                 "deterministic": len(self.deterministic),
                 "drift": len(self.drift),
                 "unowned": len(self.unowned),
+                "retried_scopes": len(self.retried),
             },
         }
 
@@ -398,28 +418,63 @@ def pytest_command(*, pattern: str, extra: Sequence[str]) -> list[str]:
     ]
 
 
-def run_once(*, scope: str, variant: str, seed: int, directory: Path, pattern: str, extra: Sequence[str]) -> RunResult:
-    """한 회차 실행 — scope·variant 를 그리고 hash seed 를 명시적으로 고정한다."""
+def run_once(
+    *,
+    scope: str,
+    variant: str,
+    seed: int,
+    directory: Path,
+    pattern: str,
+    extra: Sequence[str],
+    retries: int = 0,
+) -> RunResult:
+    """한 회차 실행 — scope·variant 를 그리고 hash seed 를 명시적으로 고정한다.
+
+    `retries` 는 **중단된 회차**를 다시 돌리는 횟수다. 재실행은 조용한 재시도가 아니다 — 시도 횟수와
+    중단 횟수를 회차 기록(`attempts`·`aborted_attempts`)에 남기고, 중단된 시도의 로그를
+    `<scope>__<variant>.retry<n>.log` 로 보존한다. 마지막 시도까지 중단되면 `aborted` 로 남는다.
+    """
 
     directory.mkdir(parents=True, exist_ok=True)
     report = report_path(directory, scope, variant)
     log = report.with_suffix(".log")
     env = dict(os.environ, PYTHONHASHSEED=str(seed))
     command = [*pytest_command(pattern=pattern, extra=extra), f"--junitxml={report}"]
-    print(f"[regression-ledger] {scope} · {variant} · PYTHONHASHSEED={seed} → {report.name}", flush=True)
-    completed = subprocess.run(  # noqa: S603
-        command, cwd=REPO_ROOT, env=env, capture_output=True, text=True, check=False
-    )
-    captured_text = (completed.stdout or "") + (completed.stderr or "")
-    log.write_text(captured_text, encoding="utf-8")
-    tail = [line for line in captured_text.splitlines() if line.strip()]
-    if tail:
-        print(f"  {tail[-1].strip()}", flush=True)
-    if not report.is_file():
-        raise SystemExit(f"pytest 가 junit 을 남기지 않았다(exit {completed.returncode}) — 로그: {display_path(log)}")
-    parsed = parse_junit(report.read_text(encoding="utf-8"), source=str(report))
-    if parsed.aborted:
-        print(f"  경고: 이 회차는 pytest 내부 오류로 중단됐다({parsed.tests} 까지만 기록) — 다시 돌려야 한다")
+    attempts = 0
+    aborted_attempts = 0
+
+    while True:
+        attempts += 1
+        print(
+            f"[regression-ledger] {scope} · {variant} · PYTHONHASHSEED={seed} → {report.name}"
+            + (f" (시도 {attempts})" if attempts > 1 else ""),
+            flush=True,
+        )
+        completed = subprocess.run(  # noqa: S603
+            command, cwd=REPO_ROOT, env=env, capture_output=True, text=True, check=False
+        )
+        captured_text = (completed.stdout or "") + (completed.stderr or "")
+        log.write_text(captured_text, encoding="utf-8")
+        tail = [line for line in captured_text.splitlines() if line.strip()]
+        if tail:
+            print(f"  {tail[-1].strip()}", flush=True)
+        if not report.is_file():
+            raise SystemExit(
+                f"pytest 가 junit 을 남기지 않았다(exit {completed.returncode}) — 로그: {display_path(log)}"
+            )
+        parsed = parse_junit(report.read_text(encoding="utf-8"), source=str(report))
+        if not parsed.aborted:
+            break
+        aborted_attempts += 1
+        print(
+            f"  경고: 이 회차는 pytest 내부 오류로 중단됐다({parsed.tests} 까지 기록) — "
+            + ("다시 돌린다" if attempts <= retries else "재시도를 다 썼다"),
+            flush=True,
+        )
+        if attempts > retries:
+            break
+        log.rename(directory / f"{slug(scope)}__{slug(variant)}.retry{attempts}.log")
+
     return RunResult(
         scope=scope,
         variant=variant,
@@ -429,6 +484,8 @@ def run_once(*, scope: str, variant: str, seed: int, directory: Path, pattern: s
         red=parsed.red,
         skipped=parsed.skipped,
         aborted=parsed.aborted,
+        attempts=attempts,
+        aborted_attempts=aborted_attempts,
     )
 
 
@@ -460,6 +517,9 @@ def describe(ledger: Ledger) -> str:
         lines.append(f"  - {node}")
     if ledger.unowned:
         lines.append(f"* 무소유 결정적 실패 {len(ledger.unowned)}건 — 분류표에 없다")
+    if ledger.retried:
+        for label, count in ledger.retried.items():
+            lines.append(f"* 중단 후 재실행: {label} · 중단 {count}회(기록으로 남긴다)")
     return "\n".join(lines)
 
 
@@ -522,7 +582,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--drift-allowance",
         type=int,
         default=DEFAULT_DRIFT_ALLOWANCE,
-        help="허용하는 seed 민감 실패 수",
+        help="허용하는 variant 민감 실패 수",
+    )
+    parser.add_argument(
+        "--retry-aborted",
+        type=int,
+        default=DEFAULT_ABORTED_RETRIES,
+        help="중단된 회차를 다시 돌릴 횟수(중단 횟수와 로그는 원장에 남는다)",
     )
     parsed = parser.parse_args(argv)
 
@@ -540,6 +606,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             directory=parsed.junit_dir,
             pattern=parsed.pattern,
             extra=extra,
+            retries=parsed.retry_aborted,
         )
         for seed in seeds
     ] or load_runs(parsed.from_junit or parsed.junit_dir)

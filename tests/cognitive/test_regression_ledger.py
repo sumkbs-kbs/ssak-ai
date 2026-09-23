@@ -375,6 +375,131 @@ def test_run_once_pins_the_hash_seed(tmp_path: Path, monkeypatch: pytest.MonkeyP
     assert "--junitxml=" in " ".join(captured["command"])  # type: ignore[arg-type]
 
 
+def _aborted_report() -> str:
+    """pytest 내부 오류로 **중단된** 회차의 리포트(수집 도중 죽은 형태)."""
+
+    cases = _case("tests/test_model_registry.py", "test_always_red") + (
+        '<testcase classname="pytest" name="internal" time="0.000"><error message="internal error">'
+        "traceback</error></testcase>"
+    )
+    return _report(cases)
+
+
+def _run_with_attempts(
+    tmp_path: Path,
+    *,
+    retries: int,
+    reports: list[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> tuple[object, list[list[str]]]:
+    """호출마다 다른 리포트를 쓰는 가짜 subprocess.run 으로 회차 하나를 돌린다.
+
+    `reports` 는 시도 순서대로 쓰인다(마지막 것부터 재사용). 시도 횟수를 세기 위해 kwargs 는
+    그대로 받아둔다 — 회차가 seed·argv 를 실제로 넘기는지도 같은 호출에서 확인한다.
+    """
+
+    calls: list[list[str]] = []
+
+    def fake_run(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        calls.append(command)
+        report = Path(next(arg.split("=", 1)[1] for arg in command if arg.startswith("--junitxml=")))
+        report.write_text(reports[min(len(calls), len(reports)) - 1], encoding="utf-8")
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr(ledger_module.subprocess, "run", fake_run)
+
+    result = ledger_module.run_once(
+        scope="chunk-a",
+        variant="seed-101",
+        seed=101,
+        directory=tmp_path,
+        pattern="not slow",
+        extra=[],
+        retries=retries,
+    )
+    return result, calls
+
+
+CLEAN = _report(_case("tests/test_model_registry.py", "test_always_red"))
+
+
+def test_aborted_run_is_retried_and_the_abort_stays_recorded(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """중단된 회차는 다시 돌리되, **중단 사실·시도 횟수·중단된 시도의 로그**를 남긴다(조용한 재시도 금지)."""
+
+    result, calls = _run_with_attempts(tmp_path, retries=1, reports=[_aborted_report(), CLEAN], monkeypatch=monkeypatch)
+
+    assert len(calls) == 2, "중단된 회차를 다시 돌리지 않았다"
+    assert result.aborted is False  # type: ignore[attr-defined]
+    assert result.attempts == 2  # type: ignore[attr-defined]
+    assert result.aborted_attempts == 1  # type: ignore[attr-defined]
+    assert result.red == frozenset({ALWAYS_RED})  # type: ignore[attr-defined]
+    assert (tmp_path / "chunk-a__seed-101.retry1.log").is_file(), "중단된 시도의 로그를 보존하지 않았다"
+
+
+def test_retries_are_bounded_and_an_abort_never_becomes_evidence(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """재시도를 다 써도 중단이면 중단으로 남는다 — 재시도가 증거를 만들어내지 않는다."""
+
+    result, calls = _run_with_attempts(tmp_path, retries=2, reports=[_aborted_report()], monkeypatch=monkeypatch)
+
+    assert len(calls) == 3, "재시도 횟수를 넘겨 돌았다"
+    assert result.aborted is True  # type: ignore[attr-defined]
+    assert result.attempts == 3  # type: ignore[attr-defined]
+    assert result.aborted_attempts == 3  # type: ignore[attr-defined]
+
+
+def test_zero_retries_keeps_a_single_attempt(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """`--retry-aborted 0` 은 재시도를 끈다 — 끈 채로도 중단은 기록된다."""
+
+    result, calls = _run_with_attempts(tmp_path, retries=0, reports=[_aborted_report()], monkeypatch=monkeypatch)
+
+    assert len(calls) == 1
+    assert result.attempts == 1  # type: ignore[attr-defined]
+    assert result.aborted_attempts == 1  # type: ignore[attr-defined]
+
+
+def test_a_clean_run_is_never_retried(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """초록 회차는 다시 돌리지 않는다 — 재시도가 회귀 시간을 늘리지 않는다."""
+
+    result, calls = _run_with_attempts(tmp_path, retries=3, reports=[CLEAN], monkeypatch=monkeypatch)
+
+    assert len(calls) == 1
+    assert result.attempts == 1  # type: ignore[attr-defined]
+    assert result.aborted_attempts == 0  # type: ignore[attr-defined]
+
+
+def test_retried_runs_appear_in_the_ledger_summary() -> None:
+    """재시도한 회차는 원장 요약에 드러난다 — 숨은 재시도는 재현성 주장을 약화시킨다."""
+
+    retried = ledger_module.RunResult(
+        scope="chunk",
+        variant="seed-101",
+        seed=101,
+        junit="chunk__seed-101.xml",
+        tests=2,
+        red=frozenset({ALWAYS_RED}),
+        skipped=0,
+        attempts=2,
+        aborted_attempts=1,
+    )
+    clean = ledger_module.RunResult(
+        scope="chunk",
+        variant="seed-202",
+        seed=202,
+        junit="chunk__seed-202.xml",
+        tests=2,
+        red=frozenset({ALWAYS_RED}),
+        skipped=0,
+    )
+    ledger = ledger_module.build_ledger([retried, clean])
+
+    assert ledger.retried == {"chunk·seed-101": 1}
+    assert "중단 후 재실행" in ledger_module.describe(ledger)
+    assert ledger.as_mapping()["retried"] == {"chunk·seed-101": 1}
+    assert ledger.deterministic == frozenset({ALWAYS_RED}), "재시도는 판정을 바꾸지 않는다"
+
+
 def test_slug_keeps_names_file_safe() -> None:
     """scope 이름이 그대로 파일명이 되므로 구분자·공백을 안전한 문자로 바꿔야 한다."""
 

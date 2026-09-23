@@ -19,6 +19,8 @@
       "tests": 1024,
       "skipped": 2,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": []
     },
     {
@@ -29,6 +31,8 @@
       "tests": 1024,
       "skipped": 2,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": []
     },
     {
@@ -39,6 +43,8 @@
       "tests": 1024,
       "skipped": 2,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": []
     },
     {
@@ -49,6 +55,8 @@
       "tests": 1860,
       "skipped": 21,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": [
         "tests/test_cr14_fence_movement_detection.py::test_declared_fingerprint_is_the_fingerprint_of_head_within_the_fence",
         "tests/test_cr14_fence_movement_detection.py::test_no_code_scope_commit_after_the_declared_candidate"
@@ -62,6 +70,8 @@
       "tests": 1860,
       "skipped": 21,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": [
         "tests/test_cr14_fence_movement_detection.py::test_declared_fingerprint_is_the_fingerprint_of_head_within_the_fence",
         "tests/test_cr14_fence_movement_detection.py::test_no_code_scope_commit_after_the_declared_candidate"
@@ -75,6 +85,8 @@
       "tests": 1860,
       "skipped": 21,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": [
         "tests/test_cr14_fence_movement_detection.py::test_declared_fingerprint_is_the_fingerprint_of_head_within_the_fence",
         "tests/test_cr14_fence_movement_detection.py::test_no_code_scope_commit_after_the_declared_candidate"
@@ -88,6 +100,8 @@
       "tests": 1286,
       "skipped": 0,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": [
         "tests/test_model_registry.py::test_bundled_default_config_matches_repository_default",
         "tests/test_nx07_doc_consistency.py::test_soak_phases_stay_separated",
@@ -102,6 +116,8 @@
       "tests": 1286,
       "skipped": 0,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": [
         "tests/test_model_registry.py::test_bundled_default_config_matches_repository_default",
         "tests/test_nx07_doc_consistency.py::test_soak_phases_stay_separated",
@@ -116,6 +132,8 @@
       "tests": 346,
       "skipped": 0,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": []
     },
     {
@@ -126,6 +144,8 @@
       "tests": 346,
       "skipped": 0,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": []
     },
     {
@@ -136,6 +156,8 @@
       "tests": 676,
       "skipped": 0,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": []
     },
     {
@@ -146,6 +168,8 @@
       "tests": 676,
       "skipped": 0,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": []
     },
     {
@@ -156,6 +180,8 @@
       "tests": 727,
       "skipped": 4,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": []
     },
     {
@@ -166,6 +192,8 @@
       "tests": 727,
       "skipped": 4,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": []
     },
     {
@@ -176,6 +204,8 @@
       "tests": 786,
       "skipped": 0,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": [
         "tests/test_trn02_timeout_resource.py::TestTrainingJobsApi::test_cancel_sets_termination_cancelled"
       ]
@@ -188,6 +218,8 @@
       "tests": 786,
       "skipped": 0,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": [
         "tests/test_trn02_timeout_resource.py::TestTrainingJobsApi::test_cancel_sets_termination_cancelled"
       ]
@@ -200,6 +232,8 @@
       "tests": 631,
       "skipped": 7,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": [
         "tests/test_ws01_project_binding.py::test_active_project_switch_does_not_change_inflight_root",
         "tests/test_ws01_project_binding.py::test_concurrent_a_b_requests_do_not_share_roots",
@@ -216,6 +250,8 @@
       "tests": 631,
       "skipped": 7,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": [
         "tests/test_ws01_project_binding.py::test_active_project_switch_does_not_change_inflight_root",
         "tests/test_ws01_project_binding.py::test_concurrent_a_b_requests_do_not_share_roots",
@@ -232,6 +268,8 @@
       "tests": 631,
       "skipped": 7,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": [
         "tests/test_ws01_project_binding.py::test_active_project_switch_does_not_change_inflight_root",
         "tests/test_ws01_project_binding.py::test_concurrent_a_b_requests_do_not_share_roots",
@@ -248,6 +286,8 @@
       "tests": 399,
       "skipped": 0,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": []
     },
     {
@@ -258,6 +298,8 @@
       "tests": 399,
       "skipped": 0,
       "aborted": false,
+      "attempts": 1,
+      "aborted_attempts": 0,
       "red": []
     }
   ],
@@ -274,6 +316,7 @@
   },
   "incomplete_scopes": [],
   "aborted_scopes": [],
+  "retried": {},
   "deterministic": [
     "tests/test_cr14_fence_movement_detection.py::test_declared_fingerprint_is_the_fingerprint_of_head_within_the_fence",
     "tests/test_cr14_fence_movement_detection.py::test_no_code_scope_commit_after_the_declared_candidate",
@@ -340,6 +383,7 @@
     "scopes": 9,
     "deterministic": 11,
     "drift": 0,
-    "unowned": 0
+    "unowned": 0,
+    "retried_scopes": 0
   }
 }

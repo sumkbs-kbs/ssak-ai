@@ -80,7 +80,7 @@ v1은 Canonical Markdown + explicit references, Git persistence, rebuild 가능�
 | P11 (부분) | [사용자 표면 opt-in](evidence/T11_surface.md): 실측 + adapter + read-only CLI/API(SSE 포함) + feature-off 회귀 PASS (36 시험) | 대화 스트림/background 배선, 실모델 QA, ACTIVE 실검증 이월 |
 | P12 (부분) | [migration dry-run](evidence/T12_migration.md): source read-only·별도 root·mapping·index·rollback PASS (14 시험) | destructive 변환 NOT_RUN, 실사용 DB dry-run 이월 |
 | P12 (T14) | [최종 Architecture Review](ARCHITECTURE_REVIEW.md): 헌법 24원칙(covered 15·partial 9·gap 0)·§63 12질문·§52 10질문 매핑 + 기계 검증 8 checks PASS (18 시험) · 고정 순서 전량 회귀 5 failed/7666 passed(cognitive 실패 0), 남은 5건은 커밋 이력·패키징·문서 기준선으로 분리 · 회귀가 찾은 enum identity 결함을 `same_enum`으로 95곳 통일 + 감사 위반 0 (8 시험) | 실표면 QA(P11)·build job(NOT_RUN)·사람 승인 이월 |
-| P12 (T14 회귀 원장) | [회귀 원장](evidence/T14_regression_ledger.md): 502 파일을 9 scope 로 나눠 **variant(seed 101·202 + 순서 뒤집은 3회)** 로 측정 — 결정적 11 · variant 민감 0 · 무소유 0 (27 시험 + 리뷰 계약) | scope 사이 순서·중단 회차 원인은 이월 |
+| P12 (T14 회귀 원장) | [회귀 원장](evidence/T14_regression_ledger.md): 502 파일을 9 scope 로 나눠 **variant(seed 101·202 + 순서 뒤집은 3회)** 로 측정 — 결정적 11 · variant 민감 0 · 무소유 0, 중단 회차는 자동 재시도하되 횟수·로그를 남김 (32 시험 + 리뷰 계약) | scope 사이 순서·중단 회차 원인은 이월 |
 | P12 (T14 격리) | [namespace 오염 제거](evidence/T14_namespace_isolation.md): import 시점 `sys.modules` purge를 미러 리허설에서만 하도록 조건화 + 감사·계약 시험 (5 시험) · 미러 리허설 PASS 17/FAIL 0 | 남은 순서 민감성은 별도 분리 |
 
 상세 상태는 Acceptance Checklist가 관리한다. 기존 module PASS는 보존하지만 새로운 시험이나 실제 사용자 경로 PASS로 확대하지 않는다. 참고 문서의 과거 완료 표현보다 시험 범위와 근거가 우선한다.
