@@ -79,6 +79,24 @@ def test_full_tier_covers_every_stage(gate: Any) -> None:  # noqa: ANN401
     }
 
 
+def test_fast_tier_needs_no_uncommitted_artifacts(gate: Any) -> None:  # noqa: ANN401
+    """fast tier 는 커밋되지 않는 산출물에 기대지 않는다 — 깨끗한 체크아웃(CI)에서 돌 수 있는 이유다."""
+
+    fast = gate.stages_for(gate.TIER_FAST)
+
+    assert all(stage.requires == () for stage in fast)
+    assert not any(".regression-ledger" in arg for stage in fast for arg in stage.args)
+
+
+def test_the_local_layer_declares_the_artifact_it_needs(gate: Any) -> None:  # noqa: ANN401
+    """회귀 원장은 회차 산출물을 `requires` 로 선언한다 — 없으면 조용히 빠지는 대신 `unrun` 으로 실패한다."""
+
+    ledger = next(stage for stage in gate.STAGES if stage.name == "regression_ledger")
+
+    assert ledger.tier == gate.TIER_FULL
+    assert ledger.requires, "회차 산출물이 필요한 층은 그 사실을 선언해야 한다"
+
+
 def test_unknown_tier_is_refused(gate: Any) -> None:  # noqa: ANN401
     """모르는 tier 는 조용히 기본값으로 흘리지 않고 거부한다(오타가 fast 로 실행되면 안 된다)."""
 
