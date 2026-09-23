@@ -69,6 +69,8 @@ ruff check / ruff format --check / mypy                              → clean
 
 - `tests/test_tool_sandbox_coverage.py::test_all_process_execution_paths_are_accounted_for` — `tools/ssak_bundle_store.py`가 ALLOWLIST 미등록(HEAD 상태와 동일). T01b 증거와 같은 기존 red이며 내 변경과 무관하다.
 
+  > **2026-09-23 정정.** 이 시험은 이후 샌드박스 ALLOWLIST에 `FIXED_ARGV` 로 등록되면서 **green 이 됐다**(`ARCHITECTURE_REVIEW.md` §1.5). 위 문장은 그 시점의 관찰로 남기되, "기존 red" 는 지금 기준으로 낡았다.
+
 ## 남은 것 (다음 카드)
 
 - P05: governance disposition/feedback을 실제 tool gate 흐름에 연결하고 authority grant를 context 요청 승인에 반영한다.

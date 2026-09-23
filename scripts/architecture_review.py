@@ -49,6 +49,9 @@ REGRESSION_LEDGER: Final[Path] = EVIDENCE_DIR / "regression_ledger.json"
 DIGEST_DRIFT_SCRIPT: Final[Path] = REPO_ROOT / "scripts" / "digest_drift.py"
 DIGEST_DRIFT_ARTIFACT: Final[Path] = EVIDENCE_DIR / "digest_drift.json"
 
+# 문서의 “이 시험은 실패한다” 류 상태 주장을 재판정하는 감사(`scripts/audit_state_claims.py`).
+STATE_CLAIMS_SCRIPT: Final[Path] = REPO_ROOT / "scripts" / "audit_state_claims.py"
+
 Status = Literal["covered", "partial", "gap"]
 Answer = Literal["yes", "yes_with_limits", "no"]
 
@@ -1032,6 +1035,79 @@ def digest_measured(drift: dict[str, object]) -> dict[str, int]:
     }
 
 
+def measure_state_claims() -> dict[str, object] | None:
+    """상태 주장 감사를 돌려 JSON 을 받는다 — 몇 초 걸린다(시험을 실제로 돌린다)."""
+
+    result = subprocess.run(
+        [sys.executable, str(STATE_CLAIMS_SCRIPT), "--emit-json"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        return None
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return None
+
+
+def check_state_claims(report: dict[str, object] | None) -> CheckResult:
+    """증거 문서의 **현재 상태 주장**이 방금 돌린 시험과 일치하는가.
+
+    스냅샷(시점 기록)은 낡아도 역사지만, “이 시험은 실패한다” 는 지금 트리에 대한 주장이라 낡으면 틀린 문장이다.
+    낡은 주장은 정정 표기를 붙여 해결한다(지우지 않는다).
+    """
+
+    if report is None:
+        return CheckResult(
+            name="state_claims",
+            passed=False,
+            detail=f"{_display(STATE_CLAIMS_SCRIPT)} 를 돌리지 못했다 — 상태 주장을 판정할 수 없다",
+        )
+    counts = _as_dict(report.get("counts"))
+    stale = _as_int(counts.get("stale"))
+    unknown = _as_int(counts.get("unknown"))
+    problems: list[str] = []
+    if stale:
+        offenders = [
+            f"{item.get('doc')}:{item.get('line')}"
+            for item in _as_list(report.get("claims"))
+            if isinstance(item, dict) and item.get("status") == "stale"
+        ]
+        problems.append(f"지금 트리와 어긋나는 상태 주장 {stale}건(정정 표기 없음): {', '.join(offenders)}")
+    if unknown:
+        problems.append(f"상태를 판정하지 못한 주장 {unknown}건")
+    if problems:
+        return CheckResult(
+            name="state_claims",
+            passed=False,
+            detail=" / ".join(problems),
+            observed=stale,
+        )
+    return CheckResult(
+        name="state_claims",
+        passed=True,
+        detail=(
+            f"상태 주장 {_as_int(counts.get('claims'))}건 — 그대로 {_as_int(counts.get('ok'))} · "
+            f"정정 붙임 {_as_int(counts.get('fixed'))} · 낡음 {stale}"
+        ),
+        observed=_as_int(counts.get("fixed")),
+    )
+
+
+def state_claim_measured(report: dict[str, object]) -> dict[str, int]:
+    """상태 주장 감사에서 마커로 고정할 값."""
+
+    counts = _as_dict(report.get("counts"))
+    return {
+        "state_claims": _as_int(counts.get("claims")),
+        "state_claims_fixed": _as_int(counts.get("fixed")),
+        "state_claims_stale": _as_int(counts.get("stale")),
+    }
+
+
 def check_review_document(principles: tuple[Principle, ...]) -> CheckResult:
     """리뷰 문서가 24원칙·§63·§52를 다루고 매핑 artifact 경로를 담고 있는지 확인한다."""
 
@@ -1265,6 +1341,10 @@ def measure() -> ReviewMeasurement:
     checks.append(check_digest_report(read_digest_drift(), drift))
     if drift is not None:
         measured.update(digest_measured(drift))
+    state_claims = measure_state_claims()
+    checks.append(check_state_claims(state_claims))
+    if state_claims is not None:
+        measured.update(state_claim_measured(state_claims))
     checks.append(check_review_document(principles))
     checks.append(check_measured_markers(measured))
     return ReviewMeasurement(

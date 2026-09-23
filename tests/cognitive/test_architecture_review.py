@@ -384,6 +384,57 @@ def test_repository_digest_report_is_current_and_counted(measurement: Any) -> No
     assert measurement.measured["digest_drifted"] >= 0
 
 
+def _state_claim_report(*, ok: int = 0, fixed: int = 0, stale: int = 0, unknown: int = 0) -> dict[str, object]:
+    """상태 주장 감사 JSON 의 최소 형태."""
+
+    claims: list[dict[str, object]] = []
+    for index in range(ok):
+        claims.append({"doc": "T01a.md", "line": index + 1, "status": "ok"})
+    for index in range(fixed):
+        claims.append({"doc": "T01b.md", "line": index + 1, "status": "fixed"})
+    for index in range(stale):
+        claims.append({"doc": "T03.md", "line": index + 1, "status": "stale"})
+    return {
+        "claims": claims,
+        "counts": {"claims": ok + fixed + stale, "ok": ok, "fixed": fixed, "stale": stale, "unknown": unknown},
+    }
+
+
+def test_stale_state_claim_fails_the_review(review: Any) -> None:  # noqa: ANN401
+    """지금 트리와 어긋나는 상태 주장이 정정 없이 남으면 리뷰가 실패한다."""
+
+    result = review.check_state_claims(_state_claim_report(stale=1))
+    assert result.passed is False
+    assert "어긋나는 상태 주장" in result.detail
+    assert "T03.md" in result.detail
+
+
+def test_corrected_state_claim_passes_and_is_counted(review: Any) -> None:  # noqa: ANN401
+    """정정 표기가 붙은 주장은 통과하고, 몇 건인지 수치로 남는다."""
+
+    result = review.check_state_claims(_state_claim_report(fixed=4))
+    assert result.passed is True
+    assert result.observed == 4
+    assert "정정 붙임 4" in result.detail
+
+
+def test_unjudgeable_state_claim_fails_the_review(review: Any) -> None:  # noqa: ANN401
+    """상태를 판정하지 못한 주장은 통과시키지 않는다 — 확인 불가를 통과로 쓰지 않는다."""
+
+    result = review.check_state_claims(_state_claim_report(unknown=2))
+    assert result.passed is False
+    assert "판정하지 못한" in result.detail
+
+
+def test_repository_state_claims_are_judged(measurement: Any) -> None:  # noqa: ANN401
+    """이 저장소의 상태 주장은 전부 판정돼 있고 낡은 채로 남은 것이 없다."""
+
+    check = next(c for c in measurement.checks if c.name == "state_claims")
+    assert check.passed is True, check.detail
+    assert measurement.measured["state_claims_stale"] == 0
+    assert measurement.measured["state_claims"] >= 1
+
+
 def test_missing_regression_ledger_is_rejected(review: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:  # noqa: ANN401
     """원장 artifact 가 없으면 리뷰가 실패한다 — 회귀 수치의 출처 없이 수치를 쓰지 않는다."""
 

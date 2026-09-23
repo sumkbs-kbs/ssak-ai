@@ -34,7 +34,9 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 10. 증거가 못 박은 sha256 의 현재 일치 여부가 **측정 artifact 로 최신**으로 남아 있는가(`digest_report`) —
     저장본이 낡았거나, 파일 없는 pin 이 있거나, 재확인 뒤에 파일이 또 바뀌어 그 재확인이 무효가 됐으면 실패한다
     (움직임 자체는 실패가 아니다 — 그것은 관찰이다).
-11. 이 문서의 `<!-- measured:key=value -->` 마커가 실제 측정값과 일치하는가(`measured_markers`).
+11. 산문이 지금 트리에 대해 한 **상태 주장**(“이 시험은 실패한다” 류, test node 지정)이 방금 돌린 시험과
+    일치하는가(`state_claims`) — 낡은 주장은 정정 표기로 해결하고, 정정 없이 남으면 실패한다.
+12. 이 문서의 `<!-- measured:key=value -->` 마커가 실제 측정값과 일치하는가(`measured_markers`).
 
 ```sh
 .venv/bin/python scripts/architecture_review.py                 # 검사 + 요약 표
@@ -54,7 +56,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 428 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 442 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
@@ -65,6 +67,9 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | digest_drifted | 0 | 재확인 없이 지나간 revision 을 가리키는 pin |
 | digest_stale | 0 | 재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 |
 | digest_missing | 0 | 파일이 없는데 digest 를 못 박은 항목 |
+| state_claims | 4 | 산문이 지금 트리에 대해 한 상태 주장(test node 지정) 수 |
+| state_claims_fixed | 4 | 그중 실제와 달라 정정 표기를 붙인 주장 |
+| state_claims_stale | 0 | 정정 없이 남은 낡은 주장 |
 
 <!-- measured:principles=24 -->
 <!-- measured:principles_covered=15 -->
@@ -74,7 +79,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=428 -->
+<!-- measured:cognitive_tests=442 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -85,6 +90,9 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:digest_drifted=0 -->
 <!-- measured:digest_stale=0 -->
 <!-- measured:digest_missing=0 -->
+<!-- measured:state_claims=4 -->
+<!-- measured:state_claims_fixed=4 -->
+<!-- measured:state_claims_stale=0 -->
 
 상태 정의:
 
@@ -99,12 +107,12 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | 회귀 | 명령 | exit | 관찰 |
 |---|---|---|---|
 | 테스트(전체 · **과거 회차 이력**) | `.venv/bin/python -m pytest tests/ -m 'not slow and not benchmark' -q` | 1 | **세 번 쟀고 회차마다 달랐다**(트리·수집 오염·실행 선택이 함께 달랐던 비교 — 현재 기준선은 이 표의 아래 원장 행이다) — ①(수정 전 · random) 7723 수집 · **94 failed / 7571 passed / 14 skipped / 20 xfailed**(26:31) ②(random) 7726 수집 · **10 failed / 7660 passed** ③(**고정 순서** `-p no:randomly`) 7726 수집 · **7 failed / 7663 passed / 14 skipped / 24 deselected / 20 xfailed**(21:21) ④(**고정 순서 · 정리 뒤**) 7726 수집 · **5 failed / 7666 passed / 14 skipped / 24 deselected / 20 xfailed**(20:13). 그 차이는 seed 효과가 아니라 트리·오염·실행 선택의 차이였고, seed 를 가른 측정은 §1.2 의 원장이다, ③·④의 실패도 전부 기존 항목이다(그중 둘은 §1.5에서 등록으로 닫았다) |
-| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 428 passed (원장 subdirs scope 2회에서도 결정적 실패 0) |
+| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 442 passed (원장 subdirs scope 2회에서도 결정적 실패 0) |
 | lint | `.venv/bin/python -m ruff check src/ tests/ scripts/` | 0 | All checks passed |
 | format | `.venv/bin/python -m ruff format --check src/ tests/ scripts/` | 0 | 1162 files already formatted |
 | type | `.venv/bin/python -m mypy <cognitive·surface·cli·5 scripts>` | 0 | Success: no issues found in 29 source files |
 | schema | `.venv/bin/python scripts/generate_record_schema.py --check` | 0 | schema up to date (record-entities/record-envelope) |
-| architecture review | `.venv/bin/python scripts/architecture_review.py` | 0 | 11 checks PASS(회귀 원장 계약 · 인용 추적 · digest 측정 포함) |
+| architecture review | `.venv/bin/python scripts/architecture_review.py` | 0 | 12 checks PASS(회귀 원장 · 인용 추적 · digest 측정 · 상태 주장 재판정) |
 | 회귀 원장 | `.venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger --gate` | 0 | 9 scope · 21 회차(seed 101·202 + 순서 뒤집은 3회) · **결정적 11 · variant 민감 0 · 무소유 0** — 같은 scope 를 variant 를 바꿔 돌려 교집합/대칭차로 분리(§1.2) |
 | enum identity 감사 | `.venv/bin/python scripts/audit_enum_identity.py` | 0 | 위반 0건 (cognitive core 95곳을 `same_enum`으로 통일) |
 | namespace purge 감사 | `.venv/bin/python scripts/audit_test_namespace_purge.py` | 0 | 위반 0건 (수집 대상 시험 파일에 조건 없는 import 시점 purge 없음) |
@@ -269,6 +277,37 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 
 재확인 과정에서 증거 문장 하나가 낡은 것도 드러났다: `T01b_protection.md` 가 `tools/ssak_bundle_store.py` 때문에
 **"기존 red"** 라고 적은 시험은 §1.5 의 등록으로 이미 green 이었다 — 그 문장에 정정을 붙였다(역사는 지우지 않았다).
+그러자 같은 부류가 **하나가 아니었다.**
+
+#### 문장 자체를 재판정한다 — 상태 주장 감사
+
+증거 문서에는 두 종류의 문장이 섞여 있다: **시점 기록**(`verified_at` 이 붙은 스냅샷 — 낡아도 역사)과
+**지금 트리에 대한 주장**(“이 시험은 실패한다” — 낡으면 틀린 문장). 뒤엣것을 기계로 재판정한다
+(`scripts/audit_state_claims.py`).
+
+감사 범위를 의도적으로 좁게 잡았다 — 넓게 잡으면 오탐으로 못 쓰게 된다:
+
+* **test node 를 지목한 문장만** 본다(`tests/cognitive/test_state_claims.py::test_claim_that_matches_the_tree_is_ok`). 파일 단위 서술은 “그렇지 않으면 실패한다” 같은
+  조건문과 섞여 기계가 참·거짓을 가를 수 없다.
+* **코드 블록 안은 보지 않는다.** 펜스 안은 그때 돌린 명령·출력의 기록이고, 펜스 밖 산문만 주장이다.
+* 같은 줄에 상태 어휘(red·실패·failed ↔ green·통과·passed)가 있어야 센다.
+* **증거 문서만 본다.** 처음에는 이 리뷰 문서까지 감사했는데, 바로 아래 문단처럼 낡은 문장을 **인용해 해설**하는
+  줄이 주장으로 잡혔다(감사가 4건이 아니라 5건을 보고했다). 관찰을 주장하는 자리는 증거 문서이므로
+  범위를 그쪽으로 좁혔고, 넓히면 자기 해설로 오탐이 난다는 사실도 harness docstring 에 적었다.
+
+| 항목 | 값 | 의미 |
+|---|---|---|
+| 상태 주장 | **4** | 산문이 test node 를 지목해 지금 트리에 대해 한 주장 |
+| 그대로 | **0** | 실제 상태와 일치했던 주장 |
+| 정정 붙임 | **4** | 실제와 달라 **정정 표기**를 붙인 주장 |
+| 낡음 | **0** | 정정 없이 남은 주장 |
+
+넷은 전부 같은 시험에 대한 것이었다 — `tests/test_tool_sandbox_coverage.py::test_all_process_execution_paths_are_accounted_for`
+는 T01b·T03/T04·T06·T07 네 문서가 “기존 red”·“실패는 그대로” 라고 적었지만, 그 시험은 §1.5 의 등록 뒤 **green** 이다.
+네 문서 모두 문장을 지우지 않고 `> **2026-09-23 정정.**` 인용문을 달았다 — 감사는 정정 표기가 붙은 주장을
+`FIXED` 로 보고 통과시키고, **정정 없이 실제와 어긋나는 주장이 하나라도 있으면 리뷰가 실패한다**.
+
+즉 이제 증거는 다섯 층으로 검사된다: **실재 → 추적 → 시점(digest) → 계약(재확인) → 문장(상태 주장)**.
 
 ### 1.5 회귀 실패 중 둘을 닫았다 — 조용한 스킵과 미등록 실행 경로를 등록으로 없‌앴다
 

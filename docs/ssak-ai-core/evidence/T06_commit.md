@@ -90,6 +90,9 @@ verified_at: 2026-09-22T05:10:30Z
 `tests/test_tool_sandbox_coverage.py::test_all_process_execution_paths_are_accounted_for` 실패는 그대로 남아
 있으며 이 카드의 변경으로 새로 생긴 실패는 없다.
 
+> **2026-09-23 정정.** 그 시험은 이후 샌드박스 ALLOWLIST 등록으로 **green 이 됐다**(`ARCHITECTURE_REVIEW.md`
+> §1.5). 위 문장은 그 시점의 관찰로 남기되, "실패는 그대로" 는 지금 기준으로 낡았다.
+
 ## 남은 것 (다음 카드)
 
 - P07: readiness가 요구한 guard receipt를 실제 executor/ToolExecutor 경로에서 생성·검증하고, action receipt와
