@@ -152,6 +152,103 @@ def test_repository_pins_are_all_resolvable(drift: Any) -> None:  # noqa: ANN401
 # --------------------------------------------------------------------------- 산출물·게이트
 
 
+def test_reverification_record_turns_drift_into_reverified(drift: Any, tmp_path: Path) -> None:
+    """재확인 기록이 있고 그 뒤 파일이 그대로면 `reverified` 다 — `drift` 와 구분한다."""
+
+    record = tmp_path / "reverification.json"
+    docs = write_pin(tmp_path, REAL_FILE, "0000000000000000")
+    drifted = drift.measure(docs, reverifications=record)
+    assert next(iter(drifted.pins)).status == drift.STATUS_DRIFT, "기록 전에는 drift 다"
+
+    recorded = drift.Reverification(
+        doc="T99_synthetic.md",
+        path=REAL_FILE,
+        verified_digest=digest_of(REAL_FILE),
+        verified_on="2026-09-23",
+        method="시험용",
+    )
+    record.write_text(json.dumps({"entries": [recorded.as_mapping()]}), encoding="utf-8")
+    reverified = drift.measure(docs, reverifications=record)
+    pin = next(iter(reverified.pins))
+
+    assert pin.status == drift.STATUS_REVERIFIED
+    assert pin.reverified_on == "2026-09-23"
+    assert reverified.counts[drift.STATUS_DRIFT] == 0
+
+
+def test_reverification_goes_stale_when_the_file_moves_again(drift: Any, tmp_path: Path) -> None:
+    """재확인은 면죄부가 아니다 — 그 뒤에 파일이 또 바뀌면 무효이고 게이트가 실패한다."""
+
+    record = tmp_path / "reverification.json"
+    docs = write_pin(tmp_path, REAL_FILE, "0000000000000000")
+    recorded = drift.Reverification(
+        doc="T99_synthetic.md",
+        path=REAL_FILE,
+        verified_digest="1" * 64,
+        verified_on="2026-09-23",
+        method="시험용",
+    )
+    record.write_text(json.dumps({"entries": [recorded.as_mapping()]}), encoding="utf-8")
+
+    result = drift.measure(docs, reverifications=record)
+    assert next(iter(result.pins)).status == drift.STATUS_STALE
+
+    artifact = tmp_path / "digest_drift.json"
+    artifact.write_text(json.dumps(result.as_mapping(), ensure_ascii=False), encoding="utf-8")
+    problems = drift.gate_failures(result, artifact)
+    assert any("무효" in problem for problem in problems)
+
+
+def test_record_writes_only_the_pins_that_moved_along_with_a_method(
+    drift: Any, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """`--record` 는 움직인 pin 만 박고 방법 문장을 함께 남긴다(낡은·과장된 재확인을 만들지 않는다)."""
+
+    record = tmp_path / "reverification.json"
+    docs = write_pin(tmp_path, REAL_FILE, "0000000000000000")
+    measured = drift.measure(docs, reverifications=record)
+
+    exit_code, message = drift.write_reverification(
+        "T99_synthetic.md", measured, method="계약 시험 재실행 후 확인", on="2026-09-23", path=record
+    )
+    payload = json.loads(record.read_text(encoding="utf-8"))
+
+    assert exit_code == 0, message
+    assert len(payload["entries"]) == 1, "움직인 pin 만 기록해야 한다"
+    entry = payload["entries"][0]
+    assert entry["verified_digest"] == digest_of(REAL_FILE)
+    assert entry["verified_on"] == "2026-09-23"
+    assert entry["method"] == "계약 시험 재실행 후 확인"
+    _ = capsys
+
+
+def test_record_does_nothing_when_no_pin_moved(drift: Any, tmp_path: Path) -> None:  # noqa: ANN401
+    """이미 기록과 같은 pin 뿐이면 기록하지 않는다 — 낡은 재확인을 만들지 않는다."""
+
+    record = tmp_path / "reverification.json"
+    docs = write_pin(tmp_path, REAL_FILE, digest_of(REAL_FILE)[:16])
+    measured = drift.measure(docs, reverifications=record)
+
+    exit_code, message = drift.write_reverification(
+        "T99_synthetic.md", measured, method="시험용", on="2026-09-23", path=record
+    )
+
+    assert exit_code == 0
+    assert "기록할 것이 없다" in message
+    assert record.exists() is False
+
+
+def test_record_refuses_without_a_method(drift: Any, tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """무엇을 확인했는지 없이는 재확인이 아니다 — 기록을 거부한다."""
+
+    record = tmp_path / "reverification.json"
+    exit_code = drift.main(["--record", "T01a_typed_model.md", "--reverification", str(record)])
+
+    assert exit_code == 1
+    assert record.exists() is False
+    assert "--method" in capsys.readouterr().err
+
+
 def test_gate_requires_a_current_artifact(drift: Any, tmp_path: Path) -> None:  # noqa: ANN401
     """artifact 가 없으면 `--gate` 는 실패한다 — 측정 없이 수치를 인용하지 않는다."""
 
@@ -164,7 +261,7 @@ def test_stale_artifact_fails_the_gate(drift: Any, tmp_path: Path) -> None:  # n
 
     artifact = tmp_path / "digest_drift.json"
     stored = drift.measure().as_mapping()
-    stored["counts"]["drift"] = 0  # 저장 뒤 파일이 바뀐 상황을 흉내낸다
+    stored["counts"]["match"] = 0  # 저장 뒤에 파일이 바뀐 상황을 흠내낸다
     artifact.write_text(json.dumps(stored), encoding="utf-8")
 
     problems = drift.gate_failures(drift.measure(), artifact)
@@ -207,7 +304,13 @@ def test_emit_json_writes_nothing_to_the_artifact(
 
     assert exit_code == 0
     assert artifact.exists() is False, "--emit-json 이 artifact 를 썼다"
-    assert set(payload["counts"]) == {"match", "drift", "missing"}
+    assert set(payload["counts"]) == {
+        "match",
+        "reverified",
+        "drift",
+        "stale_reverification",
+        "missing",
+    }
     assert payload["source_head"]
 
 

@@ -68,6 +68,8 @@ ruff check / ruff format --check / mypy                              → clean
 
 - `tests/test_tool_sandbox_coverage.py::test_all_process_execution_paths_are_accounted_for`는 `tools/ssak_bundle_store.py`(`subprocess.run`, S603 noqa 포함, HEAD 커밋 상태) 때문에 실패한다. HEAD의 ALLOWLIST에도 미등록이므로 **기존 red**다. 다른 작업 소유 파일이라 수정하지 않았고, 내 `engine/cognitive/store.py` 경로는 등록해 신규 red를 만들지 않았다.
 
+  > **2026-09-23 정정.** 이 시험은 이후 샌드박스 ALLOWLIST에 `FIXED_ARGV` 로 등록되면서 **green 이 됐다**(신뢰 루트·sha256·arch 통과 뒤 고정 argv selftest — `ARCHITECTURE_REVIEW.md` §1.5). 위 문장은 그 시점의 관찰로 남기되, "기존 red" 는 지금 기준으로 낡았다.
+
 ## 남은 것 (다음 카드)
 
 - P05/P06: 사람 승인 record 발급·검증을 governance/readiness와 연결한다(현재는 승인 객체를 호출부가 주입).

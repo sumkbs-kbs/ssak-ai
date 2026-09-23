@@ -1,0 +1,157 @@
+{
+  "entries": [
+    {
+      "doc": "T01a_typed_model.md",
+      "path": "src/antigravity_k/engine/cognitive/models.py",
+      "verified_digest": "1a289a388a9f9e67b119a0a92008a5d7653873b930587460bf4b3e6e3f4ca4f1",
+      "verified_on": "2026-09-23",
+      "method": "계약 시험 재실행 tests/cognitive/test_models.py 58 passed + generate_record_schema.py --check up to date + models.py의 같은-이름 enum helper(same_enum, line 55) 확인. 크기 1069 lines(스냅샷은 그 시점)."
+    },
+    {
+      "doc": "T01b_protection.md",
+      "path": "src/antigravity_k/engine/cognitive/protected_targets.py",
+      "verified_digest": "a6657978ce0dbd0af81832dace7ac62605c5d82964f68bd07e06e12fde7453d0",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_protection.py 19 passed + 우회 4경로(realpath/symlink/shell/policy) 문장을 현재 protected_targets.py에서 재확인. 다만 문서가 '기존 red'로 적은 sandbox coverage 시험은 이후 등록(FIXED_ARGV)으로 green이 됐다 — 그 문장은 낡았다."
+    },
+    {
+      "doc": "T01b_protection.md",
+      "path": "tests/test_tool_sandbox_coverage.py",
+      "verified_digest": "6ec637ab70ed86de3a6586af565a0098f295c0efdea7a7fcdefda9d12165908a",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_protection.py 19 passed + 우회 4경로(realpath/symlink/shell/policy) 문장을 현재 protected_targets.py에서 재확인. 다만 문서가 '기존 red'로 적은 sandbox coverage 시험은 이후 등록(FIXED_ARGV)으로 green이 됐다 — 그 문장은 낡았다."
+    },
+    {
+      "doc": "T02_canonical_store.md",
+      "path": "src/antigravity_k/engine/cognitive/legacy_adapter.py",
+      "verified_digest": "fbd4e1d9ef11aea5160dabf14e1c30afa18ad1a503140d716b973523b30b5334",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_store.py 17 passed + test_legacy_adapter.py 8 passed — append-only·git commit·digest tamper·reopen 계약이 현재 트리에서 그대로 성립."
+    },
+    {
+      "doc": "T02_canonical_store.md",
+      "path": "src/antigravity_k/engine/cognitive/store.py",
+      "verified_digest": "26a65e6f6a2392352283521989964bc98a90ce6f71cba16b5751771c86cd7e36",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_store.py 17 passed + test_legacy_adapter.py 8 passed — append-only·git commit·digest tamper·reopen 계약이 현재 트리에서 그대로 성립."
+    },
+    {
+      "doc": "T03_T04_context_brain.md",
+      "path": "src/antigravity_k/engine/cognitive/context.py",
+      "verified_digest": "dcdc152b90fa3a273cf5131e1b089f13219358181a241c4000d13cbc2fd53af4",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_context.py 13 passed(문서 주장 13과 일치) — L0~L3 handle 주입·budget 초과·project 격리 계약."
+    },
+    {
+      "doc": "T05_governance.md",
+      "path": "src/antigravity_k/engine/cognitive/authority.py",
+      "verified_digest": "814bf64171df56bec05f7317b54c3c26d9a61d29755ee9e8adaa0107f1412daf",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_governance.py 32 passed(문서 주장 31에서 1건 증가: 중복 enum 회귀 시험 추가). disposition 5종·RESHAPE 경계·비escalation 문장 재확인."
+    },
+    {
+      "doc": "T05_governance.md",
+      "path": "src/antigravity_k/engine/cognitive/governance.py",
+      "verified_digest": "1ca59212d8c957a692934c2755545602afc5e249f990c4f6281c7140e0bdb70a",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_governance.py 32 passed(문서 주장 31에서 1건 증가: 중복 enum 회귀 시험 추가). disposition 5종·RESHAPE 경계·비escalation 문장 재확인."
+    },
+    {
+      "doc": "T05_governance.md",
+      "path": "tests/cognitive/test_governance.py",
+      "verified_digest": "35d65e231cbbf738fc04dc2ad2561b07f7ab8e51b76100e45886513690cff2ef",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_governance.py 32 passed(문서 주장 31에서 1건 증가: 중복 enum 회귀 시험 추가). disposition 5종·RESHAPE 경계·비escalation 문장 재확인."
+    },
+    {
+      "doc": "T06_commit.md",
+      "path": "src/antigravity_k/engine/cognitive/decisions.py",
+      "verified_digest": "29c6528a152c02ae6724e38c454be9efa6b961d36aa68c4a5e93998239af2ef0",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_readiness.py 28 passed(문서 주장 28과 일치) — 9 checks·READY_WITH_GUARDS·reopen 최소범위 계약."
+    },
+    {
+      "doc": "T06_commit.md",
+      "path": "src/antigravity_k/engine/cognitive/readiness.py",
+      "verified_digest": "6198600aadcf695ac8c42868400d2a88f1d1391049f529133ae72461114f14f4",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_readiness.py 28 passed(문서 주장 28과 일치) — 9 checks·READY_WITH_GUARDS·reopen 최소범위 계약."
+    },
+    {
+      "doc": "T07_actions.md",
+      "path": "src/antigravity_k/engine/cognitive/actions.py",
+      "verified_digest": "00b0c0edccaf5f50dc3998575063a84f4ed89d94cee14f7a07a5d1fe87eab00d",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_actions.py 17 passed(문서 주장 17과 일치) — dispatcher·readiness bound·dispatch 경계 계약."
+    },
+    {
+      "doc": "T08_T09_episode.md",
+      "path": "src/antigravity_k/engine/cognitive/experience.py",
+      "verified_digest": "9c5d513720e35e2d55259dc895cce508eaebdb737336cd580ff7a1e4dab3be25",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_episode.py 21 passed(문서 주장 21과 일치) — episode lifecycle·experience append-only 계약."
+    },
+    {
+      "doc": "T08_T09_episode.md",
+      "path": "src/antigravity_k/engine/cognitive/runtime.py",
+      "verified_digest": "07f69cbfaf3f5957537fa235d49418c6f1a5437e0c04900aac120dc886b11deb",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_episode.py 21 passed(문서 주장 21과 일치) — episode lifecycle·experience append-only 계약."
+    },
+    {
+      "doc": "T10_learning.md",
+      "path": "src/antigravity_k/engine/cognitive/learning.py",
+      "verified_digest": "7190d690d3a336653aedc82b9463c632137422c99078c80301dd874acd94c55d",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_learning.py 29 passed(문서 주장 29와 일치) — 후보 검증·CAS·rollback 계약. learning.py 1221→1230 lines, policy_store.py 756→757 lines."
+    },
+    {
+      "doc": "T10_learning.md",
+      "path": "src/antigravity_k/engine/cognitive/policy_store.py",
+      "verified_digest": "9da4dd3323d4bbb828f18399ea98265198050654c9efacea561d664829b134a3",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_learning.py 29 passed(문서 주장 29와 일치) — 후보 검증·CAS·rollback 계약. learning.py 1221→1230 lines, policy_store.py 756→757 lines."
+    },
+    {
+      "doc": "T11_surface.md",
+      "path": "src/antigravity_k/engine/cognitive_surface.py",
+      "verified_digest": "2380d6d0b7ea6bf1f9171740445f314a9b26a986a1acdf0ed61775417bfa849d",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_surface.py 20 passed(20과 일치) + tests/test_cognitive_surface_api.py 11 passed + measure_cognitive_surface.py 재실행(legacy/core reach 산출). cognitive_surface.py 647→681 lines은 이 카드의 배선 작업."
+    },
+    {
+      "doc": "T13_growth.md",
+      "path": "scripts/benchmark_cognitive_growth.py",
+      "verified_digest": "9dd830e113c342b21c5a58f88b1a14173a430903626b2fdee39411f009c21bcc",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_growth.py 17 passed(17과 일치) + benchmark_cognitive_growth.py --print-spec이 spec digest 출력(사전 등록 경로 동작). growth.py 2001→2004, benchmark 168→181 lines."
+    },
+    {
+      "doc": "T13_growth.md",
+      "path": "src/antigravity_k/engine/cognitive/growth.py",
+      "verified_digest": "745f1c105fa4ab6b3d92bf087db0e0dc632610389f85eb76db7c199da0d54111",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_growth.py 17 passed(17과 일치) + benchmark_cognitive_growth.py --print-spec이 spec digest 출력(사전 등록 경로 동작). growth.py 2001→2004, benchmark 168→181 lines."
+    },
+    {
+      "doc": "T13_live_pilot.md",
+      "path": "scripts/benchmark_cognitive_growth.py",
+      "verified_digest": "9dd830e113c342b21c5a58f88b1a14173a430903626b2fdee39411f009c21bcc",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_live_pilot.py 12 passed(12와 일치) — LIVE_PILOT spec 등록·NOT_RUN 기록 계약."
+    },
+    {
+      "doc": "T13_live_pilot.md",
+      "path": "src/antigravity_k/engine/cognitive/live_pilot.py",
+      "verified_digest": "16697ffda06f006fd5d7fee3575bcd19c10a98a03db23da240cddca36bf7b374",
+      "verified_on": "2026-09-23",
+      "method": "tests/cognitive/test_live_pilot.py 12 passed(12와 일치) — LIVE_PILOT spec 등록·NOT_RUN 기록 계약."
+    }
+  ],
+  "command": [
+    "python",
+    "scripts/digest_drift.py",
+    "--record",
+    "T13_live_pilot.md"
+  ]
+}

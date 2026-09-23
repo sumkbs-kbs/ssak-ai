@@ -993,11 +993,14 @@ def check_digest_report(stored: dict[str, object] | None, fresh: dict[str, objec
     stale = [key for key in keys if stored.get(key) != fresh.get(key)]
     counts = _as_dict(fresh.get("counts"))
     broken = _as_int(counts.get("missing"))
+    stale_reverification = _as_int(counts.get("stale_reverification"))
     problems: list[str] = []
     if stale:
         problems.append(f"artifact 가 최신이 아니다({', '.join(stale)} 불일치) — digest_drift.py 를 다시 돌려야 한다")
     if broken:
         problems.append(f"파일이 없는데 digest 를 못 박은 항목 {broken}건")
+    if stale_reverification:
+        problems.append(f"재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 {stale_reverification}건")
     if problems:
         return CheckResult(
             name="digest_report",
@@ -1010,9 +1013,9 @@ def check_digest_report(stored: dict[str, object] | None, fresh: dict[str, objec
         passed=True,
         detail=(
             f"digest pin {len(_as_list(fresh.get('pins')))}개 — 그대로 {_as_int(counts.get('match'))} · "
-            f"움직임 {_as_int(counts.get('drift'))}(그 파일들이 그 뒤에 바뀌었다)"
+            f"재확인 {_as_int(counts.get('reverified'))} · 미확인 움직임 {_as_int(counts.get('drift'))}"
         ),
-        observed=_as_int(counts.get("drift")),
+        observed=_as_int(counts.get("reverified")),
     )
 
 
@@ -1022,7 +1025,9 @@ def digest_measured(drift: dict[str, object]) -> dict[str, int]:
     counts = _as_dict(drift.get("counts"))
     return {
         "digest_pinned": len(_as_list(drift.get("pins"))),
+        "digest_reverified": _as_int(counts.get("reverified")),
         "digest_drifted": _as_int(counts.get("drift")),
+        "digest_stale": _as_int(counts.get("stale_reverification")),
         "digest_missing": _as_int(counts.get("missing")),
     }
 

@@ -32,7 +32,8 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 9. 이 문서가 24원칙(`**P{n}**`)·§63 질문(`**Q-key**`)·§52 질문(`**D-key**`)을 모두 다루고, 매핑의 artifact 경로를
    그대로 담고 있는가(`review_document`).
 10. 증거가 못 박은 sha256 의 현재 일치 여부가 **측정 artifact 로 최신**으로 남아 있는가(`digest_report`) —
-    저장본이 낡았거나 파일 없는 pin 이 있으면 실패한다(움직임 자체는 실패가 아니다 — 그것은 관찰이다).
+    저장본이 낡았거나, 파일 없는 pin 이 있거나, 재확인 뒤에 파일이 또 바뀌어 그 재확인이 무효가 됐으면 실패한다
+    (움직임 자체는 실패가 아니다 — 그것은 관찰이다).
 11. 이 문서의 `<!-- measured:key=value -->` 마커가 실제 측정값과 일치하는가(`measured_markers`).
 
 ```sh
@@ -53,14 +54,16 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 422 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 428 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
 | regression_drift | 0 | seed 를 바꾸면 달라지는 실패 |
 | regression_unowned | 0 | 소유자 없는 결정적 실패 |
 | digest_pinned | 50 | 증거 문서가 파일에 못 박은 sha256 수 |
-| digest_drifted | 21 | 그 뒤에 파일이 바뀌어 지나간 revision 을 가리키는 pin |
+| digest_reverified | 21 | 그 뒤에 바뀌었지만 재확인 기록이 있고 그 뒤로 바뀌지 않은 pin |
+| digest_drifted | 0 | 재확인 없이 지나간 revision 을 가리키는 pin |
+| digest_stale | 0 | 재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 |
 | digest_missing | 0 | 파일이 없는데 digest 를 못 박은 항목 |
 
 <!-- measured:principles=24 -->
@@ -71,14 +74,16 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=422 -->
+<!-- measured:cognitive_tests=428 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
 <!-- measured:regression_drift=0 -->
 <!-- measured:regression_unowned=0 -->
 <!-- measured:digest_pinned=50 -->
-<!-- measured:digest_drifted=21 -->
+<!-- measured:digest_reverified=21 -->
+<!-- measured:digest_drifted=0 -->
+<!-- measured:digest_stale=0 -->
 <!-- measured:digest_missing=0 -->
 
 상태 정의:
@@ -94,7 +99,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | 회귀 | 명령 | exit | 관찰 |
 |---|---|---|---|
 | 테스트(전체 · **과거 회차 이력**) | `.venv/bin/python -m pytest tests/ -m 'not slow and not benchmark' -q` | 1 | **세 번 쟀고 회차마다 달랐다**(트리·수집 오염·실행 선택이 함께 달랐던 비교 — 현재 기준선은 이 표의 아래 원장 행이다) — ①(수정 전 · random) 7723 수집 · **94 failed / 7571 passed / 14 skipped / 20 xfailed**(26:31) ②(random) 7726 수집 · **10 failed / 7660 passed** ③(**고정 순서** `-p no:randomly`) 7726 수집 · **7 failed / 7663 passed / 14 skipped / 24 deselected / 20 xfailed**(21:21) ④(**고정 순서 · 정리 뒤**) 7726 수집 · **5 failed / 7666 passed / 14 skipped / 24 deselected / 20 xfailed**(20:13). 그 차이는 seed 효과가 아니라 트리·오염·실행 선택의 차이였고, seed 를 가른 측정은 §1.2 의 원장이다, ③·④의 실패도 전부 기존 항목이다(그중 둘은 §1.5에서 등록으로 닫았다) |
-| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 422 passed (원장 subdirs scope 2회에서도 결정적 실패 0) |
+| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 428 passed (원장 subdirs scope 2회에서도 결정적 실패 0) |
 | lint | `.venv/bin/python -m ruff check src/ tests/ scripts/` | 0 | All checks passed |
 | format | `.venv/bin/python -m ruff format --check src/ tests/ scripts/` | 0 | 1162 files already formatted |
 | type | `.venv/bin/python -m mypy <cognitive·surface·cli·5 scripts>` | 0 | Success: no issues found in 29 source files |
@@ -239,10 +244,31 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 그중 `authority.py`·`actions.py`·`cognitive_surface.py` 등은 **이 카드의 회귀가 찾은 수정**(§1.1 ①·③, T11 배선)이
 들어간 파일이다 — 즉 움직임은 오류가 아니라 이력이다.
 
-이 스크립트가 **하지 않는 것**: digest 를 현재 값으로 갱신하는 일. 갱신은 "그 증거를 다시 확인했다" 는 주장이 되는데,
-그것은 사람이 그 내용을 다시 읽어야 하는 일이다. 그래서 측정만 하고, 움직임을 **이월 항목**으로 남긴다(§5).
-대신 저장본이 썩지 않게 했다: 파일을 고치면 다음 `architecture_review` 실행에서 `digest_report` 가 실패하고,
-다시 재게 만든다. 재생성은 **변경을 인정하는 것**이지 재확인이 아니라는 문장을 artifact 와 출력에 함께 둔다.
+이 스크립트가 **하지 않는 것**: digest 를 자동으로 갱신하는 일. 갱신은 "그 증거를 다시 확인했다" 는 주장이 되는데,
+그것은 사람이 그 내용을 다시 봐야 하는 일이다. 그래서 측정만 하고, 움직인 것을 먼저 **이월 항목**으로 남겼다(§5).
+저장본도 썩지 않게 했다: 파일을 고치면 다음 `architecture_review` 실행에서 `digest_report` 가 실패하고 다시 재게 한다.
+
+#### 그 21건을 다시 확인했다 — 계약 시험 수준에서
+
+이월만 남기면 다음 사람이 같은 일을 처음부터 한다. 그래서 21건을 실제로 다시 확인하고 **재확인 기록**을 남겼다
+(`evidence/digest_reverification.json` · `digest_drift.py --record <문서> --method "..."`). 재확인은 `--method` 없이는
+기록되지 않고, 그 문서에서 **지금 움직인 pin** 만 대상으로 한다(낡은 재확인·과장된 재확인을 만들지 않는다).
+
+| 확인 수준 | 이번에 한 것 |
+|---|---|
+| 계약 시험 재실행 | 증거가 인용한 시험 파일을 현재 트리에서 다시 돌렸다 — `test_models` 58 · `test_store` 17 · `test_legacy_adapter` 8 · `test_context` 13 · `test_governance` 32 · `test_readiness` 28 · `test_actions` 17 · `test_episode` 21 · `test_learning` 29 · `test_surface` 20 (+`test_cognitive_surface_api` 11) · `test_growth` 17 · `test_live_pilot` 12 · `test_protection` 19 — **전부 통과** |
+| 선언 수치 대조 | 문서가 적은 시험 수는 대부분 그대로였다(13·28·17·21·29·20·17·12). `test_governance` 만 31 → **32**(중복 enum 회귀 시험 추가). 파일 크기는 스냅샷 이후 조금씩 늘었다(예: `learning.py` 1221→1230 · `cognitive_surface.py` 647→681 — 뒤는 이 카드의 배선 작업) |
+| 스크립트 재실행 | `generate_record_schema.py --check` up to date · `measure_cognitive_surface.py` 재실행 · `benchmark_cognitive_growth.py --print-spec` spec digest 출력 |
+
+**이번 재확인이 주장하지 않는 것:** 실모델·실 vault·사람 승인 표면에서 다시 본 것이 아니다. 그 부분은 각 증거 문서의
+`limitations` 에 있고, 그대로 미완이다(§5). 즉 여기서 닫힌 것은 "그 파일이 그 뒤 바뀌었는데 계약은 아직 서는가" 라는
+질문이고, "실환경에서도 서는가" 는 여전히 열려 있다.
+
+재확인은 영구 면제가 아니다 — 그 파일이 **또** 바뀌면 재확인은 무효(`stale_reverification`)가 되고 게이트가 실패한다.
+그래서 `digest_report` 는 "재확인 21건이 지금도 유효한가" 를 매 실행마다 본다.
+
+재확인 과정에서 증거 문장 하나가 낡은 것도 드러났다: `T01b_protection.md` 가 `tools/ssak_bundle_store.py` 때문에
+**"기존 red"** 라고 적은 시험은 §1.5 의 등록으로 이미 green 이었다 — 그 문장에 정정을 붙였다(역사는 지우지 않았다).
 
 ### 1.5 회귀 실패 중 둘을 닫았다 — 조용한 스킵과 미등록 실행 경로를 등록으로 없‌앴다
 
@@ -437,7 +463,7 @@ NOT_RUN으로 no-op 비교를 증거에서 제외한다.
 | T04 Brain 교체 | P1, P20 | A/B provider 교체와 state 연속성 실측 | cognitive-core + human |
 | T11 사용자 표면 | P3, P24 | 대화 스트림·background 실행 경로 배선, 실모델 대화 QA, resume/cancel QA, ACTIVE 실도구 검증 | integration + human |
 | T14 회귀·최종 리뷰 | P11 | 이 문서의 검사 PASS(회귀 원장 · 인용 추적 · digest 측정 포함) + 실표면 QA. 실표면 QA가 남아 체크박스는 미완으로 유지 | human (Architecture Review) |
-| T01a~T13 증거의 digest 재확인 | P1, P11 | **21개 pin 이 현재 파일과 다르다**(§1.4) — 그 파일들을 다시 읽고 증거 문장이 아직 참인지 확인한 뒤 digest 를 갱신하거나 한계를 적는다. 재생성만으로는 재확인이 아니다 | 각 카드 레인 |
+| T01a~T13 증거의 실환경 재확인 | P1, P11 | digest 재확인은 **계약 시험 수준에서 끝냈다**(§1.4 — 21건, `digest_reverification.json`). 남은 것은 실모델·실 vault·사람 승인 표면에서 그 증거가 서는지이며, 각 문서의 `limitations` 에 그대로 있다 | 각 카드 레인 + human |
 | Live pilot | P9, P23 | 실제 provider 예산 승인 후 `run_kind=LIVE_PILOT` 등록 spec으로 실행 | human |
 
 판단 근거를 명시하지 않은 채 복잡도를 늘린 항목은 없다. 반대로, live 성능 증거가 없다는 이유로 learned policy와
