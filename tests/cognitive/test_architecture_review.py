@@ -213,6 +213,96 @@ def test_cli_writes_artifact_and_reports_verdict(
     assert "verdict passed=True" in captured.out
 
 
+def _citation_docs(review: Any, tmp_path: Path, body: str) -> Path:
+    """인용 한 줄만 담은 가짜 문서 디렉터리 — 검사기에 그 문장만 보이게 한다."""
+
+    docs_root = tmp_path / "ssak-ai-core"
+    docs_root.mkdir(exist_ok=True)
+    (docs_root / "A.md").write_text(body + "\n", encoding="utf-8")
+    return docs_root
+
+
+def test_citation_of_a_missing_file_is_rejected(review: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """실재하지 않는 경로를 문장으로 인용하면 실패한다 — 등록 없이는 통과하지 않는다."""
+
+    docs_root = _citation_docs(review, tmp_path, "근거: tests/test_t99_not_here.py (없는 파일)")
+    monkeypatch.setattr(review, "_CITATION_EXCEPTIONS", ())
+    result = review.check_citation_tracking(docs_root)
+    assert result.passed is False
+    assert "tests/test_t99_not_here.py" in result.detail
+
+
+def test_citation_of_an_untracked_file_is_rejected(
+    review: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """실재해도 **추적되지 않으면** 실패다 — 이 체크아웃을 잃으면 사라지는 근거를 통과시키지 않는다."""
+
+    docs_root = _citation_docs(review, tmp_path, "근거: tests/cognitive/test_surface.py (추적되는 파일)")
+    monkeypatch.setattr(review, "_CITATION_EXCEPTIONS", ())
+    monkeypatch.setattr(review, "_tracked_paths", lambda: set())
+    result = review.check_citation_tracking(docs_root)
+    assert result.passed is False
+    assert "추적되지 않는 인용" in result.detail
+
+
+def test_registered_citation_is_allowed_but_a_stale_registration_is_rejected(
+    review: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """등록은 통과를 주지만 면죄부는 아니다 — 추적되는 경로를 등록해 두면 낡은 등록으로 실패한다."""
+
+    docs_root = _citation_docs(review, tmp_path, "근거: tests/cognitive/test_surface.py")
+    registered = (
+        review.CitationException(
+            path="tests/cognitive/test_surface.py",
+            owner="cognitive-core",
+            reason="시험용 등록",
+            review_by="2026-12-31",
+        ),
+    )
+    monkeypatch.setattr(review, "_CITATION_EXCEPTIONS", registered)
+    result = review.check_citation_tracking(docs_root, on="2026-09-23")
+    assert result.passed is False, "낡은 등록을 통과시켰다"
+    assert "낡은 등록" in result.detail
+
+
+def test_overdue_citation_registration_is_rejected(
+    review: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """재검토 기한이 지난 등록은 실패한다 — 미추적 인용을 영원히 두지 않는다."""
+
+    docs_root = _citation_docs(review, tmp_path, "근거: tests/test_t99_not_here.py")
+    registered = (
+        review.CitationException(
+            path="tests/test_t99_not_here.py",
+            owner="cognitive-core",
+            reason="시험용 등록",
+            review_by="2026-01-01",
+        ),
+    )
+    monkeypatch.setattr(review, "_CITATION_EXCEPTIONS", registered)
+    result = review.check_citation_tracking(docs_root, on="2026-09-23")
+    assert result.passed is False
+    assert "재검토 기한이 지난 등록" in result.detail
+
+
+def test_citation_resolves_the_repository_shorthand(review: Any) -> None:  # noqa: ANN401
+    """`tools/x.py` 같은 축약 인용을 실제 경로로 해석한다 — 좋은 문서가 오탐으로 깨지지 않게."""
+
+    assert review._resolve_citation("tools/ssak_bundle_store.py") is not None
+    assert review._resolve_citation("tests/test_t99_not_here.py") is None
+    assert review._resolve_citation("docs/ssak-ai-core/architecture_review.py") is None
+
+
+def test_glob_and_elided_citations_are_not_judged(review: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """glob·생략 표기는 파일이 아니라 패턴이다 — 없는 파일로 세지 않는다."""
+
+    docs_root = _citation_docs(review, tmp_path, "대상: tests/test_cr14_*.py · docs/qa/.../probe_view.py · src/**/*.py")
+    monkeypatch.setattr(review, "_CITATION_EXCEPTIONS", ())
+    result = review.check_citation_tracking(docs_root)
+    assert result.passed is True, result.detail
+    assert result.observed == 0, "패턴을 인용으로 셌다"
+
+
 def test_missing_regression_ledger_is_rejected(review: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:  # noqa: ANN401
     """원장 artifact 가 없으면 리뷰가 실패한다 — 회귀 수치의 출처 없이 수치를 쓰지 않는다."""
 

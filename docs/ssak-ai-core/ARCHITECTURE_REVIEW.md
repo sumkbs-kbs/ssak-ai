@@ -14,15 +14,24 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 없으므로, 헌법 24원칙·원문 §63 질문·§52 drift 질문을 카드·시험·증거·module에 매핑하고 그 매핑 자체를
 `scripts/architecture_review.py`가 검사한다. 검사 항목은 다음과 같다.
 
-1. 매핑이 인용한 증거 문서·시험 파일·module이 실제로 존재하는가.
-2. `docs/ssak-ai-core` 안의 상대 link가 전부 해석되는가.
-3. 인수 체크리스트의 모든 항목(T00a~T14)이 원칙 매핑에 등장하고, 매핑의 카드 ID가 실재하는가.
-4. `evidence/` 의 문서가 모두 인용되는가(고아 증거 방지).
-5. 이 문서가 24원칙(`**P{n}**`)·§63 질문(`**Q-key**`)·§52 질문(`**D-key**`)을 모두 다루고, 매핑의 artifact 경로를
-   그대로 담고 있는가.
-6. 이 문서의 `<!-- measured:key=value -->` 마커가 실제 측정값과 일치하는가.
-7. 전량 회귀 원장(`evidence/regression_ledger.json`)이 **scope 별로 두 회차**를 갖고, 결정적 실패에 전부
-   소유자가 있는가. 서로 다른 variant 두 회차가 없는 scope 는 "결정적"과 "variant 민감"을 구분하지 못하므로 수치로 쓰지 않는다.
+1. 헌법 원칙·§63 질문·§52 질문과 매핑이 **같은 수**인가(`source_alignment`).
+2. 매핑이 인용한 증거 문서·시험 파일·module이 실제로 존재하는가(`artifacts_exist`).
+3. `docs/ssak-ai-core` 안의 상대 link가 전부 해석되는가(`doc_links_resolve`).
+4. 인수 체크리스트의 모든 항목(T00a~T14)이 원칙 매핑에 등장하고, 매핑의 카드 ID가 실재하는가
+   (`checklist_coverage`).
+5. `evidence/` 의 문서가 모두 인용되는가(고아 증거 방지 — `evidence_referenced`).
+6. 문서가 **문장으로 인용한 저장소 경로**가 실재하고 **git 에 추적**되는가(`citation_tracking`). 실재만 보면
+   이 체크아웃을 잃었을 때 사라지는 근거가 통과한다 — 실제로 그런 인용이 있었다(§1.3). 해석과 축약 표기 처리는
+   그 절에 있고, 해석되지 않거나
+   추적되지 않는 인용은 등록부에 **이유·소유자·재검토 기한**을 두고, 등록이 추적되는 경로를 가리키거나
+   기한이 지나면 그쪽도 실패한다.
+7. `tests/cognitive` 의 수집 개수를 실제로 세는가(`test_collection`).
+8. 전량 회귀 원장(`evidence/regression_ledger.json`)이 **scope 별로 두 회차**를 갖고, 결정적 실패에 전부
+   소유자가 있는가(`regression_ledger`). 서로 다른 variant 두 회차가 없는 scope 는 "결정적"과 "variant 민감"을
+   구분하지 못하므로 수치로 쓰지 않는다.
+9. 이 문서가 24원칙(`**P{n}**`)·§63 질문(`**Q-key**`)·§52 질문(`**D-key**`)을 모두 다루고, 매핑의 artifact 경로를
+   그대로 담고 있는가(`review_document`).
+10. 이 문서의 `<!-- measured:key=value -->` 마커가 실제 측정값과 일치하는가(`measured_markers`).
 
 ```sh
 .venv/bin/python scripts/architecture_review.py                 # 검사 + 요약 표
@@ -42,7 +51,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 397 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 403 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
@@ -57,7 +66,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=397 -->
+<!-- measured:cognitive_tests=403 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -76,13 +85,13 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 
 | 회귀 | 명령 | exit | 관찰 |
 |---|---|---|---|
-| 테스트(전체 · **과거 회차 이력**) | `.venv/bin/python -m pytest tests/ -m 'not slow and not benchmark' -q` | 1 | **세 번 쟀고 회차마다 달랐다**(트리·수집 오염·실행 선택이 함께 달랐던 비교 — 현재 기준선은 이 표의 아래 원장 행이다) — ①(수정 전 · random) 7723 수집 · **94 failed / 7571 passed / 14 skipped / 20 xfailed**(26:31) ②(random) 7726 수집 · **10 failed / 7660 passed** ③(**고정 순서** `-p no:randomly`) 7726 수집 · **7 failed / 7663 passed / 14 skipped / 24 deselected / 20 xfailed**(21:21) ④(**고정 순서 · 정리 뒤**) 7726 수집 · **5 failed / 7666 passed / 14 skipped / 24 deselected / 20 xfailed**(20:13). 그 차이는 seed 효과가 아니라 트리·오염·실행 선택의 차이였고, seed 를 가른 측정은 §1.2 의 원장이다, ③·④의 실패도 전부 기존 항목이다(그중 둘은 §1.3에서 등록으로 닫았다) |
-| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 397 passed (원장 subdirs scope 2회에서도 결정적 실패 0) |
+| 테스트(전체 · **과거 회차 이력**) | `.venv/bin/python -m pytest tests/ -m 'not slow and not benchmark' -q` | 1 | **세 번 쟀고 회차마다 달랐다**(트리·수집 오염·실행 선택이 함께 달랐던 비교 — 현재 기준선은 이 표의 아래 원장 행이다) — ①(수정 전 · random) 7723 수집 · **94 failed / 7571 passed / 14 skipped / 20 xfailed**(26:31) ②(random) 7726 수집 · **10 failed / 7660 passed** ③(**고정 순서** `-p no:randomly`) 7726 수집 · **7 failed / 7663 passed / 14 skipped / 24 deselected / 20 xfailed**(21:21) ④(**고정 순서 · 정리 뒤**) 7726 수집 · **5 failed / 7666 passed / 14 skipped / 24 deselected / 20 xfailed**(20:13). 그 차이는 seed 효과가 아니라 트리·오염·실행 선택의 차이였고, seed 를 가른 측정은 §1.2 의 원장이다, ③·④의 실패도 전부 기존 항목이다(그중 둘은 §1.4에서 등록으로 닫았다) |
+| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 403 passed (원장 subdirs scope 2회에서도 결정적 실패 0) |
 | lint | `.venv/bin/python -m ruff check src/ tests/ scripts/` | 0 | All checks passed |
 | format | `.venv/bin/python -m ruff format --check src/ tests/ scripts/` | 0 | 1162 files already formatted |
 | type | `.venv/bin/python -m mypy <cognitive·surface·cli·5 scripts>` | 0 | Success: no issues found in 29 source files |
 | schema | `.venv/bin/python scripts/generate_record_schema.py --check` | 0 | schema up to date (record-entities/record-envelope) |
-| architecture review | `.venv/bin/python scripts/architecture_review.py` | 0 | 9 checks PASS(회귀 원장 계약 포함) |
+| architecture review | `.venv/bin/python scripts/architecture_review.py` | 0 | 10 checks PASS(회귀 원장 계약 · 인용 추적 포함) |
 | 회귀 원장 | `.venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger --gate` | 0 | 9 scope · 21 회차(seed 101·202 + 순서 뒤집은 3회) · **결정적 11 · variant 민감 0 · 무소유 0** — 같은 scope 를 variant 를 바꿔 돌려 교집합/대칭차로 분리(§1.2) |
 | enum identity 감사 | `.venv/bin/python scripts/audit_enum_identity.py` | 0 | 위반 0건 (cognitive core 95곳을 `same_enum`으로 통일) |
 | namespace purge 감사 | `.venv/bin/python scripts/audit_test_namespace_purge.py` | 0 | 위반 0건 (수집 대상 시험 파일에 조건 없는 import 시점 purge 없음) |
@@ -167,17 +176,42 @@ ctx/cr 게이트의 대부분은 suite 순서·동시 실행에서 오는 artifa
 
 가장 보수적인 고정 순서 회귀 두 번(③ 21:21 · ④ 20:13)의 실패는 **7건 → 5건**이었다. 그 5개 파일을 단독 실행해도
 같은 집합이 재현된다(정리 전 86 passed / 7 failed · 정리 뒤 89 passed / 5 failed · `-p no:randomly`). 아래 표의 7건 중
-둘은 §1.3 에서 닫았고, 나머지 5건은 그 소유자의 결정이 필요한 항목으로 남긴다.
+둘은 §1.4 에서 닫았고, 나머지 5건은 그 소유자의 결정이 필요한 항목으로 남긴다.
 
 | 실패 | 건수 | 관찰된 원인 | 이 작업과의 관계 |
 |---|---|---|---|
 | `test_cr14_fence_movement_detection.py` | 2 | git 이력 기반: 선언 후보 커밋 뒤에 코드 스코프 커밋이 움직였고, HEAD 트리 지문이 선언값과 다르다 | 무관 — 커밋을 만들지 않았고 두 시험은 **커밋 객체**를 비교한다 |
-| `test_cr14_gate_skip_register.py` | 1 | `dashboard/e2e/ssak-web-integration.spec.ts:191` 의 조건부 skip 마커가 등록 없이 남아 있다 | 무관 — §1.3 에서 **등록으로 닫았다** |
+| `test_cr14_gate_skip_register.py` | 1 | `dashboard/e2e/ssak-web-integration.spec.ts:191` 의 조건부 skip 마커가 등록 없이 남아 있다 | 무관 — §1.4 에서 **등록으로 닫았다** |
 | `test_model_registry.py` | 1 | 번들 `config.yaml` 에 저장소 설정의 `search:` 절이 없다 | 무관 — config 는 다른 작업자가 편집 중인 파일이다 |
 | `test_nx07_doc_consistency.py` | 2 | `docs/20_CURRENT_STATUS.md`·CR-14 대장의 **기준선 자체가 이미 위반**(EX-05 상태 셀) | 무관 — 기존 문서 기준선 |
-| `test_tool_sandbox_coverage.py` | 1 | `tools/ssak_bundle_store.py` 의 `subprocess.run` 이 ALLOWLIST 미등록 | 무관 — §1.3 에서 **등록으로 닫았다** |
+| `test_tool_sandbox_coverage.py` | 1 | `tools/ssak_bundle_store.py` 의 `subprocess.run` 이 ALLOWLIST 미등록 | 무관 — §1.4 에서 **등록으로 닫았다** |
 
-### 1.3 회귀 실패 중 둘을 닫았다 — 조용한 스킵과 미등록 실행 경로를 등록으로 없‌앴다
+### 1.3 인용이 추적되는지까지 본다 — 증거로 인용된 파일이 git 에 없던 건을 닫았다
+
+`evidence/T11_surface.md` 는 `tests/test_cognitive_surface_api.py` 를 **sha256(`2cccfed8d5f499c1…`)과 11 시험**까지
+적어 인용하고 있었는데, 그 파일이 **추적되지 않았다**(내용은 인용된 digest 와 정확히 일치했고 11 시험 모두 통과한다).
+실재만 보는 검사(`artifacts_exist`)로는 이 상태가 통과한다 — 이 체크아웃을 잃으면 근거가 사라지는데도 그렇다.
+
+그래서 검사를 하나 붙였다: 문서가 문장으로 인용한 저장소 경로(`tests`·`scripts`·`src`·`dashboard`·`tools`·`config`·
+`data` 아래의 파일)를 축약 표기까지 해석해서(`tools/ssak_bundle_store.py` → `src/antigravity_k/tools/ssak_bundle_store.py`),
+**실재 + 추적**을
+요구한다. glob·생략 표기(`tests/test_cr14_*.py` · `docs/qa/.../x.py`)는 파일이 아니라 패턴이라 세지 않는다.
+
+등록이 필요한 미추적 인용은 여섯 건이고 성격이 서로 다르다 — 그 차이를 코드에 남겼다:
+
+| 인용 | 왜 추적되지 않는가 |
+|---|---|
+| `tools/ssak_bundle_store.py` · `tools/cowork_delegate.py` | 축약 표기 — 검사가 `src/antigravity_k/` 아래로 해석한다(등록 불필요) |
+| `evidence/benchmark_spec.md` | 아직 만들지 않은 **목표** 산출물(ROADMAP 이 그렇게 명시) |
+| `src/innocent.md` | T01b 의 symlink **예시** 경로 — 실재하는 파일이 아니다 |
+| `tests/test_aa_purge_probe.py` | 순서 오염 재현용 **임시 진단** — 명령 기록만 남기고 파일은 지우는 것이 의도 |
+| `docs/qa/2026-09-16-followup/nx10/fsync{,2}/*` 3건 | 다른 레인의 미추적 QA 산출물 — 이 카드가 커밋 여부를 결정하지 않는다 |
+
+등록은 **면죄부가 아니다**: 등록된 경로가 추적되면 낡은 등록으로 실패하고, 재검토 기한이 지나도 실패한다.
+그 이빨을 시험 여섯 건으로 고정했다(미추적 인용 · 낡은 등록 · 기한 경과 · 축약 해석 · glob/생략 제외 · 저장소 통과).
+현재 검사 대상은 **214건**이고 모두 실재·추적된다.
+
+### 1.4 회귀 실패 중 둘을 닫았다 — 조용한 스킵과 미등록 실행 경로를 등록으로 없‌앴다
 
 ③의 7건 중 둘은 "적혀 있지 않은 상태를 적는" 일이라 이 카드에서 닫았고, 나머지 5건(커밋 이력·패키징·문서 기준선)은
 그 소유자의 결정이 필요해 그대로 남겼다.

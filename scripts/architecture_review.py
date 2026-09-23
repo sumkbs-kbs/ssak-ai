@@ -28,6 +28,7 @@ import re
 import subprocess
 import sys
 from dataclasses import dataclass, field
+from datetime import date
 from pathlib import Path
 from typing import Final, Literal
 
@@ -763,6 +764,170 @@ def check_evidence_referenced(principles: tuple[Principle, ...]) -> CheckResult:
     )
 
 
+# 문서가 문장 안에서 인용하는 저장소 경로. glob·생략(…) 은 시험이 아니라 패턴이므로 해석하지 않는다.
+_CITATION_PATTERN: Final[re.Pattern[str]] = re.compile(
+    r"(?<![\w./-])((?:tests|scripts|src|dashboard|tools|config|data)/[A-Za-z0-9_./\-]+"
+    r"\.(?:py|md|json|jsonl|yaml|yml|ts|tsx|sh|txt|toml))"
+)
+_CITATION_ELISION: Final[tuple[str, ...]] = ("*", "?", "<", ">", "...", "…")
+
+
+@dataclass(frozen=True, slots=True)
+class CitationException:
+    """문서가 인용하지만 **추적되지 않는** 경로 — 이유·소유자·재검토 기한을 함께 둔다.
+
+    면죄부가 되지 않도록 등록은 양방향이다: 등록된 경로가 추적되면(또는 추적되는 파일로 해석되면) 낡은
+    등록으로 실패하고, 기한이 지나도 실패한다.
+    """
+
+    path: str
+    owner: str
+    reason: str
+    review_by: str
+
+
+# 등록부. 여기 없는 경로를 문서가 인용하는데 실재하지 않거나 추적되지 않으면 검사가 실패한다.
+_CITATION_EXCEPTIONS: Final[tuple[CitationException, ...]] = (
+    CitationException(
+        path="docs/ssak-ai-core/evidence/benchmark_spec.md",
+        owner="integration",
+        reason="아직 만들지 않은 목표 산출물 — IMPLEMENTATION_ROADMAP 이 '신규 산출물의 목표'라고 명시한다",
+        review_by="2026-12-31",
+    ),
+    CitationException(
+        path="src/innocent.md",
+        owner="protection",
+        reason="T01b 우회 경로 설명의 **예시 링크 대상**이며 실재 경로가 아니다(symlink 예시)",
+        review_by="2026-12-31",
+    ),
+    CitationException(
+        path="tests/test_aa_purge_probe.py",
+        owner="cognitive-core",
+        reason="순서 오염 재현용 임시 진단 — 명령 기록만 남기고 파일은 삭제하는 것이 의도다",
+        review_by="2026-12-31",
+    ),
+    CitationException(
+        path="docs/qa/2026-09-16-followup/nx10/fsync/rehearse_flush.sh",
+        owner="nx10-qa",
+        reason="다른 레인의 미추적 QA 산출물 — 이 카드가 커밋 여부를 결정하지 않는다(digest 고정 대상)",
+        review_by="2026-12-31",
+    ),
+    CitationException(
+        path="docs/qa/2026-09-16-followup/nx10/fsync/test_flush_budget_contract.py",
+        owner="nx10-qa",
+        reason="승격본의 staged 쌍둥이 — nx10 QA 레인 산출물이라 커밋 여부는 그 레인의 결정이다",
+        review_by="2026-12-31",
+    ),
+    CitationException(
+        path="docs/qa/2026-09-16-followup/nx10/fsync2/test_view_freshness_contract.py",
+        owner="nx10-qa",
+        reason="아직 승격되지 않은 F2 쌍둥이 — nx10 QA 레인 산출물이라 커밋 여부는 그 레인의 결정이다",
+        review_by="2026-12-31",
+    ),
+)
+
+
+def _tracked_paths() -> set[str] | None:
+    """git 이 추적하는 경로 집합. 저장소가 아니거나 git 이 없으면 None(칩목)."""
+
+    result = subprocess.run(
+        ["git", "ls-files", "-z"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        return None
+    return {item.decode("utf-8", "replace") for item in result.stdout.split(b"\0") if item}
+
+
+def _resolve_citation(citation: str) -> Path | None:
+    """문서의 인용을 실제 파일로 해석한다(저장소 관행의 축약 표기를 허용).
+
+    예: `tools/ssak_bundle_store.py` → `src/antigravity_k/tools/ssak_bundle_store.py`.
+    해석되지 않으면 None — 호출자가 실패로 처리한다.
+    """
+
+    candidates = [REPO_ROOT / citation]
+    if not citation.startswith(("src/", "tests/", "docs/")):
+        candidates.append(REPO_ROOT / "src" / "antigravity_k" / citation)
+    candidates.append(REPO_ROOT / "tests" / "cognitive" / citation)
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def check_citation_tracking(docs_root: Path | None = None, *, on: str | None = None) -> CheckResult:
+    """문서가 인용한 저장소 경로가 **실재하고 git 에 추적되는지** 본다.
+
+    실재만 보는 검사(`check_artifacts`)로는 부족하다: 이 체크아웃을 잃으면 사라지는 근거가 통과한다 —
+    실제로 `tests/test_cognitive_surface_api.py` 가 T11 증거로 인용되고도 추적되지 않은 적이 있다.
+    해석되지 않거나 추적되지 않는 인용은 등록부(`_CITATION_EXCEPTIONS`)에 이유와 기한이 있어야 한다.
+    """
+
+    root = docs_root or DOCS_ROOT
+    tracked = _tracked_paths()
+    if tracked is None:
+        return CheckResult(
+            name="citation_tracking",
+            passed=False,
+            detail="git 을 쓸 수 없어 인용이 추적되는지 확인하지 못했다 — 확인 불가를 통과로 쓰지 않는다",
+        )
+    today = date.fromisoformat(on) if on else date.today()
+    registered = {item.path: item for item in _CITATION_EXCEPTIONS}
+    unresolved: list[str] = []
+    untracked: list[str] = []
+    total = 0
+    for doc in sorted(root.rglob("*.md")):
+        text = doc.read_text(encoding="utf-8")
+        for citation in sorted(set(_CITATION_PATTERN.findall(text))):
+            if any(elision in citation for elision in _CITATION_ELISION):
+                continue
+            total += 1
+            resolved = _resolve_citation(citation)
+            if resolved is None:
+                if citation not in registered:
+                    unresolved.append(f"{_display(doc)}:{citation}")
+                continue
+            if resolved.relative_to(REPO_ROOT).as_posix() in tracked:
+                continue
+            if citation not in registered:
+                untracked.append(f"{_display(doc)}:{citation}")
+
+    stale: list[str] = []
+    overdue: list[str] = []
+    for item in _CITATION_EXCEPTIONS:
+        resolved = _resolve_citation(item.path)
+        if resolved is not None and resolved.relative_to(REPO_ROOT).as_posix() in tracked:
+            stale.append(f"{item.path}(이미 추적된다 — 등록이 필요 없다)")
+        elif date.fromisoformat(item.review_by) < today:
+            overdue.append(f"{item.path}(재검토 기한 {item.review_by} 경과)")
+
+    problems: list[str] = []
+    if unresolved:
+        problems.append(f"해석되지 않는 인용 {len(unresolved)}건 — 등록이 필요하다: {', '.join(unresolved)}")
+    if untracked:
+        problems.append(f"추적되지 않는 인용 {len(untracked)}건: {', '.join(untracked)}")
+    if stale:
+        problems.append(f"낡은 등록 {len(stale)}건: {', '.join(stale)}")
+    if overdue:
+        problems.append(f"재검토 기한이 지난 등록 {len(overdue)}건: {', '.join(overdue)}")
+    if problems:
+        return CheckResult(
+            name="citation_tracking",
+            passed=False,
+            detail=" / ".join(problems),
+            observed=total,
+        )
+    return CheckResult(
+        name="citation_tracking",
+        passed=True,
+        detail=(f"인용 {total}건이 모두 실재·추적되고, 등록 {len(_CITATION_EXCEPTIONS)}건은 이유와 기한이 있다"),
+        observed=total,
+    )
+
+
 def check_review_document(principles: tuple[Principle, ...]) -> CheckResult:
     """리뷰 문서가 24원칙·§63·§52를 다루고 매핑 artifact 경로를 담고 있는지 확인한다."""
 
@@ -967,6 +1132,7 @@ def measure() -> ReviewMeasurement:
         check_doc_links(),
         check_checklist_coverage(principles),
         check_evidence_referenced(principles),
+        check_citation_tracking(),
     ]
     cognitive = collect_test_count(REPO_ROOT / "tests" / "cognitive")
     if cognitive is None:
