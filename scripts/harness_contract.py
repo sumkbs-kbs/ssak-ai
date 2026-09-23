@@ -82,22 +82,39 @@ class Cases:
 
 @dataclass(frozen=True, slots=True)
 class Floor:
-    """탐지력 하한 — 본 대상 수와 최소값. 미달이면 그 이유를 문장으로 낸다."""
+    """탐지력 하한 — 본 대상 수·최소값·**그 값의 근거**.
+
+    하한은 판단이므로, 값만 남기면 나중에 누구도 그것을 낮춰도 되는지 판단할 수 없다. `why` 는 그 판단을 만든
+    관측(언제 무엇을 몇 개 봤나)을 함께 기록하는 자리다. `margin` 은 관측과 하한의 여유로, 0이면 그 하한이
+    **지금 관측값에 맞닿아 있다**는 뜻이다(다음에 하나만 줄어도 실패한다).
+    """
 
     label: str
     observed: int
     minimum: int
+    why: str = ""
+
+    @property
+    def margin(self) -> int:
+        return self.observed - self.minimum
 
     def problem(self) -> str | None:
         if self.observed >= self.minimum:
             return None
+        reason = f" (하한 근거: {self.why})" if self.why else ""
         return (
             f"{self.label} {self.observed}개 < 하한 {self.minimum} — "
-            "찾은 것이 없다기보다 **볼 수 없는 상태**일 수 있다."
+            "찾은 것이 없다기보다 **볼 수 없는 상태**일 수 있다." + reason
         )
 
     def as_mapping(self) -> dict[str, object]:
-        return {"label": self.label, "observed": self.observed, "minimum": self.minimum}
+        return {
+            "label": self.label,
+            "observed": self.observed,
+            "minimum": self.minimum,
+            "margin": self.margin,
+            "why": self.why,
+        }
 
 
 def probe_problems(probe: Probe | None, *, name: str) -> list[str]:
@@ -116,6 +133,12 @@ def floor_problems(floors: Iterable[Floor]) -> list[str]:
     """하한 미달을 게이트 문장으로."""
 
     return [problem for floor in floors if (problem := floor.problem()) is not None]
+
+
+def floor_records(floors: Iterable[Floor]) -> list[dict[str, object]]:
+    """하한을 **기록으로** 남기는 형태 — 값·관측·여유·근거를 함께 담는다."""
+
+    return [floor.as_mapping() for floor in floors]
 
 
 def describe_self_test(name: str, probe: Probe) -> str:

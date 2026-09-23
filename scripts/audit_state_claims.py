@@ -51,6 +51,19 @@ REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 DOCS_ROOT: Final[Path] = Path("docs/ssak-ai-core")
 EVIDENCE_DIR: Final[Path] = DOCS_ROOT / "evidence"
 
+# 공통 harness 계약(자기시험 · 탐지력 하한) — scripts/ 는 저장소 안의 도구 모음이라 직접 import 한다.
+_SCRIPTS_DIR: Final[Path] = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from harness_contract import (  # noqa: E402
+    Cases,
+    Floor,
+    Probe,
+    floor_problems,
+    floor_records,
+)
+
 _NODE_PATTERN: Final[re.Pattern[str]] = re.compile(r"(tests/[A-Za-z0-9_/]+\.py)::([A-Za-z0-9_\[\]\-]+)")
 _FAILS: Final[tuple[str, ...]] = ("기존 red", "red", "실패", "failed")
 _PASSES: Final[tuple[str, ...]] = ("통과", "passed", "green")
@@ -61,9 +74,21 @@ _CORRECTION_WINDOW: Final[int] = 5
 _REQUIRED_FAIL_WORDS: Final[tuple[str, ...]] = ("기존 red", "red", "실패", "failed")
 _REQUIRED_PASS_WORDS: Final[tuple[str, ...]] = ("통과", "passed", "green")
 # 탐지력 하한 — 감사가 조용히 눈이 머는 것을 막는다(주장 0건으로 조용히 통과하지 않는다).
-# 증거 문서가 정말로 주장을 그만두면 상수를 **근거와 함께** 사람이 내리고 그 이유를 이 줄에 적는다.
+# 값만 두면 나중에 누구도 그것을 낮춰도 되는지 판단할 수 없으므로 **근거를 값과 함께 기록**한다.
+# 근거는 하한을 정한 시점의 관측이고, 관측이 달라지면 artifact(`state_claims.json`)의 `floors` 가 그 사실을 보여준다.
 _MIN_MENTIONS: Final[int] = 1
 _MIN_CLAIMS: Final[int] = 1
+_WHY_MENTIONS: Final[str] = (
+    "2026-09-23 기준 관측: 증거 문서 16개 중 node(test file::test name)를 산문에서 지목한 줄 6개. "
+    "하한을 1로 둔 것은 ‘얼마나 많이 보이나’ 가 아니라 ‘보는 능력이 0이 됐나’ 를 잡기 위해서다. "
+    "증거 문서가 정말로 시험을 지목하는 문장을 그만두면 이 값을 근거와 함께 내린다."
+)
+_WHY_CLAIMS: Final[str] = (
+    "2026-09-23 기준 관측: 같은 줄에 상태 어휘가 있어 주장으로 센 것 4건(mention 6 중 2줄은 상태 어휘 없음). "
+    "어휘·펜스·범위 규칙이 깨지면 이 수가 0이 되므로, 하한은 그 순간을 잡는 안전선이다."
+)
+# 기록 artifact — 하한의 근거와 그때의 관측을 함께 남긴다(리뷰가 저장본과 새 측정을 대조한다).
+ARTIFACT: Final[Path] = Path("docs/ssak-ai-core/evidence/state_claims.json")
 # 인용문(`>`) 안에 “정정” 과 날짜가 함께 있어야 정정으로 본다 — 날짜 위치는 묻지 않는다.
 _CORRECTION_PATTERN: Final[re.Pattern[str]] = re.compile(r">(?=.*정정)(?=.*\d{4}-\d{2}-\d{2}).*")
 
@@ -205,21 +230,6 @@ def extract_claims(docs: list[Path] | None = None) -> list[Claim]:
     return sorted(unique.values(), key=lambda claim: (claim.doc, claim.line))
 
 
-@dataclass(frozen=True, slots=True)
-class Probe:
-    """운영 자기시험 결과 — 어휘·펜스 처리·정정 창·상태 계산을 합성 입력으로 다시 물어본다."""
-
-    cases: int
-    failures: tuple[str, ...]
-
-    @property
-    def ok(self) -> bool:
-        return not self.failures and self.cases > 0
-
-    def as_mapping(self) -> dict[str, object]:
-        return {"cases": self.cases, "failures": list(self.failures), "ok": self.ok}
-
-
 def self_probe() -> Probe:
     """매 실행 자기시험 — 감사자가 조용히 눈이 머는 것을 막는다.
 
@@ -227,68 +237,49 @@ def self_probe() -> Probe:
     ② 펜스 안 문장은 주장으로 세지 않는가, ③ 정정 창이 가까운 표기만 인정하는가.
     """
 
-    cases = 0
-    failures: list[str] = []
+    cases = Cases()
     node = "tests/x_sample.py::test_y"
+    fence = "`" * 3
 
-    for label, required, vocabulary in (
-        ("실패", _REQUIRED_FAIL_WORDS, _FAILS),
-        ("통과", _REQUIRED_PASS_WORDS, _PASSES),
-    ):
-        cases += 1
-        missing = [word for word in required if word not in vocabulary]
-        if missing:
-            failures.append(f"{label} 어휘가 사라졌다: {missing} — 자기시험은 지워진 단어를 쓸어볼 수 없다")
+    cases.covers("실패 어휘", _REQUIRED_FAIL_WORDS, _FAILS)
+    cases.covers("통과 어휘", _REQUIRED_PASS_WORDS, _PASSES)
 
     for word in _FAILS:
-        cases += 1
         found = claims_from_lines("probe.md", [f"`{node}` 는 {word}."])
-        if len(found) != 1 or found[0].claimed != "fails":
-            failures.append(f"실패 어휘 {word!r} 가 주장으로 판독되지 않는다")
+        cases.check(f"실패 어휘 {word!r} 가 주장으로 판독된다", len(found) == 1 and found[0].claimed == "fails")
     for word in _PASSES:
-        cases += 1
         found = claims_from_lines("probe.md", [f"`{node}` 는 {word}."])
-        if len(found) != 1 or found[0].claimed != "passes":
-            failures.append(f"통과 어휘 {word!r} 가 주장으로 판독되지 않는다")
+        cases.check(f"통과 어휘 {word!r} 가 주장으로 판독된다", len(found) == 1 and found[0].claimed == "passes")
 
-    cases += 1
-    if claims_from_lines("probe.md", ["```", f"`{node}` 는 실패한다.", "```"]):
-        failures.append("펜스 안 문장을 주장으로 센다")
-    cases += 1
-    if claims_from_lines("probe.md", [f"`{node}` 를 돌린다."]):
-        failures.append("상태 어휘 없는 문장을 주장으로 센다")
+    cases.check(
+        "펜스 안 문장을 주장으로 세지 않는다",
+        not claims_from_lines("probe.md", [fence, f"`{node}` 는 실패한다.", fence]),
+    )
+    cases.check(
+        "상태 어휘 없는 문장을 주장으로 세지 않는다", not claims_from_lines("probe.md", [f"`{node}` 를 돌린다."])
+    )
 
-    cases += 1
     near = claims_from_lines("probe.md", [f"`{node}` 는 실패한다.", "", "> **정정 2026-09-23.** 지금은 green 이다."])
-    if len(near) != 1 or not near[0].corrected:
-        failures.append("가까운 정정 표기를 인정하지 않는다")
-    cases += 1
+    cases.check("가까운 정정 표기를 인정한다", len(near) == 1 and near[0].corrected)
     far_lines = (
         [f"`{node}` 는 실패한다."] + [f"산문 {i}" for i in range(_CORRECTION_WINDOW + 2)] + ["> **정정 2026-09-23.**"]
     )
     far = claims_from_lines("probe.md", far_lines)
-    if len(far) != 1 or far[0].corrected:
-        failures.append("먼 정정 표기를 가까운 것으로 본다")
+    cases.check("먼 정정 표기를 가까운 것으로 보지 않는다", len(far) == 1 and not far[0].corrected)
 
-    for actual, corrected, expected in (
-        ("fails", False, "ok"),
-        ("passes", False, "stale"),
-        ("passes", True, "fixed"),
-        ("unknown", False, "unknown"),
-    ):
-        cases += 1
-        status = Claim(
-            doc="probe.md",
-            line=1,
-            node=node,
-            claimed="fails",
-            actual=actual,
-            corrected=corrected,
-        ).status
-        if status != expected:
-            failures.append(f"상태 계산이 틀렸다: 실제 {actual} · 정정 {corrected} → {status}(기대 {expected})")
-
-    return Probe(cases=cases, failures=tuple(failures))
+    statuses = {
+        ("fails", False): "ok",
+        ("passes", False): "stale",
+        ("passes", True): "fixed",
+        ("unknown", False): "unknown",
+    }
+    for (actual, corrected), expected in statuses.items():
+        cases.equal(
+            f"상태 계산(실제 {actual}·정정 {corrected})",
+            Claim(doc="probe.md", line=1, node=node, claimed="fails", actual=actual, corrected=corrected).status,
+            expected,
+        )
+    return cases.probe()
 
 
 def run_node(node: str, timeout: int = 180) -> str:
@@ -340,11 +331,21 @@ def measure(docs: list[Path] | None = None) -> list[Claim]:
     return judged
 
 
+def coverage_floors(mentions: int, claims: int) -> list[Floor]:
+    """하한과 **그 근거**를 함께 돌려준다 — 값·관측·여유·왜 그 값인지."""
+
+    return [
+        Floor("node 지목 산문", mentions, _MIN_MENTIONS, why=_WHY_MENTIONS),
+        Floor("상태 주장", claims, _MIN_CLAIMS, why=_WHY_CLAIMS),
+    ]
+
+
 def as_mapping(claims: list[Claim], mentions: int, probe: Probe, docs: int) -> dict[str, object]:
     return {
         "command": ["python", "scripts/audit_state_claims.py"],
         "claims": [claim.as_mapping() for claim in claims],
         "coverage": {"docs": docs, "mentions": mentions, "min_mentions": _MIN_MENTIONS},
+        "floors": floor_records(coverage_floors(mentions, len(claims))),
         "probe": probe.as_mapping(),
         "counts": {
             "claims": len(claims),
@@ -377,13 +378,7 @@ def gate_failures(claims: list[Claim], mentions: int, probe: Probe) -> list[str]
     problems: list[str] = []
     if not probe.ok:
         problems.append("자기시험 실패(판독 규칙이 깨졌다): " + "; ".join(probe.failures))
-    if mentions < _MIN_MENTIONS:
-        problems.append(f"node 를 지목한 산문이 {mentions}줄뿐이다(하한 {_MIN_MENTIONS}) — 감사가 눈이 멀었을 수 있다.")
-    if len(claims) < _MIN_CLAIMS:
-        problems.append(
-            f"상태 주장이 {len(claims)}건뿐이다(하한 {_MIN_CLAIMS}) — 어휘·범위가 깨졌는지 확인하고, "
-            "정말 주장이 사라졌다면 하한을 근거와 함께 내린다."
-        )
+    problems.extend(floor_problems(coverage_floors(mentions, len(claims))))
     unknown = [claim for claim in claims if claim.actual == "unknown"]
     if unknown:
         problems.append("상태를 판정하지 못한 주장: " + ", ".join(f"{claim.doc}:{claim.node}" for claim in unknown))
@@ -401,6 +396,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--gate", action="store_true", help="낡은 주장·판정 불가·탐지력 하한 미달이면 실패")
     parser.add_argument("--emit-json", action="store_true", help="측정 결과만 stdout 으로 낸다")
     parser.add_argument("--self-test", action="store_true", help="자기시험만 돌리고 끝낸다(시험을 돌리지 않는다)")
+    parser.add_argument("--artifact", type=Path, default=ARTIFACT, help="하한 근거·관측을 남길 artifact 경로")
     args = parser.parse_args(argv)
 
     docs = documents()
@@ -411,10 +407,16 @@ def main(argv: list[str] | None = None) -> int:
 
     claims = measure()
     mentions = count_mentions(docs)
+    payload = as_mapping(claims, mentions, probe, len(docs))
+    args.artifact.parent.mkdir(parents=True, exist_ok=True)
+    args.artifact.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     if args.emit_json:
-        print(json.dumps(as_mapping(claims, mentions, probe, len(docs)), ensure_ascii=False, indent=2))
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
         return EXIT_OK
     print(describe(claims, mentions, probe, len(docs)))
+    for floor in coverage_floors(mentions, len(claims)):
+        print(f"  하한 {floor.label}: 관측 {floor.observed} · 최소 {floor.minimum} · 여유 {floor.margin}")
+    print(f"측정 artifact: {display(args.artifact)}")
     if not args.gate:
         return EXIT_OK
     problems = gate_failures(claims, mentions, probe)

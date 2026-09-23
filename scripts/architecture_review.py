@@ -58,6 +58,7 @@ DIGEST_DRIFT_ARTIFACT: Final[Path] = EVIDENCE_DIR / "digest_drift.json"
 
 # 문서의 “이 시험은 실패한다” 류 상태 주장을 재판정하는 감사(`scripts/audit_state_claims.py`).
 STATE_CLAIMS_SCRIPT: Final[Path] = REPO_ROOT / "scripts" / "audit_state_claims.py"
+STATE_CLAIMS_ARTIFACT: Final[Path] = EVIDENCE_DIR / "state_claims.json"
 
 Status = Literal["covered", "partial", "gap"]
 Answer = Literal["yes", "yes_with_limits", "no"]
@@ -1073,6 +1074,17 @@ def digest_measured(drift: dict[str, object]) -> dict[str, int]:
     }
 
 
+def read_state_claims_artifact() -> dict[str, object] | None:
+    """감사가 남긴 artifact — 하한과 그 근거를 담은 기록. 없거나 깨졌으면 None(호출자가 실패로 처리)."""
+
+    if not STATE_CLAIMS_ARTIFACT.exists():
+        return None
+    try:
+        return json.loads(STATE_CLAIMS_ARTIFACT.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+
+
 def measure_state_claims() -> dict[str, object] | None:
     """상태 주장 감사를 돌려 JSON 을 받는다 — 몇 초 걸린다(시험을 실제로 돌린다)."""
 
@@ -1091,11 +1103,14 @@ def measure_state_claims() -> dict[str, object] | None:
         return None
 
 
-def check_state_claims(report: dict[str, object] | None) -> CheckResult:
-    """증거 문서의 **현재 상태 주장**이 방금 돌린 시험과 일치하는가.
+def check_state_claims(stored: dict[str, object] | None, report: dict[str, object] | None) -> CheckResult:
+    """증거 문서의 **현재 상태 주장**이 방금 돌린 시험과 일치하는가 + 하한의 근거가 기록돼 있는가.
 
     스냅샷(시점 기록)은 낡아도 역사지만, “이 시험은 실패한다” 는 지금 트리에 대한 주장이라 낡으면 틀린 문장이다.
     낡은 주장은 정정 표기를 붙여 해결한다(지우지 않는다).
+
+    감사자의 **탐지력 하한**도 함께 본다 — 하한이 없거나, 기록된 artifact 가 방금 잰 값과 다르거나, 하한의
+    근거(`why`)가 비어 있으면 실패다. 값만 남고 근거가 사라지면 나중에 누구도 그 값을 내려도 되는지 판단할 수 없다.
     """
 
     if report is None:
@@ -1104,6 +1119,18 @@ def check_state_claims(report: dict[str, object] | None) -> CheckResult:
             passed=False,
             detail=f"{_display(STATE_CLAIMS_SCRIPT)} 를 돌리지 못했다 — 상태 주장을 판정할 수 없다",
         )
+    if stored is None:
+        return CheckResult(
+            name="state_claims",
+            passed=False,
+            detail=(
+                f"{_display(STATE_CLAIMS_ARTIFACT)} 가 없거나 읽히지 않는다 — "
+                "감사자가 하한 근거를 기록하지 않은 실행은 증거로 옮기지 않는다"
+            ),
+        )
+    recorded_keys = ("counts", "coverage", "floors", "claims")
+    outdated = [key for key in recorded_keys if stored.get(key) != report.get(key)]
+    floors = [item for item in _as_list(report.get("floors")) if isinstance(item, dict)]
     counts = _as_dict(report.get("counts"))
     coverage = _as_dict(report.get("coverage"))
     probe = _as_dict(report.get("probe"))
@@ -1111,12 +1138,36 @@ def check_state_claims(report: dict[str, object] | None) -> CheckResult:
     unknown = _as_int(counts.get("unknown"))
     mentions = _as_int(coverage.get("mentions"))
     problems: list[str] = []
+    if outdated:
+        problems.append(
+            f"하한 근거 artifact 가 최신이 아니다({', '.join(outdated)} 불일치) — "
+            "scripts/audit_state_claims.py 를 다시 돌려 근거와 관측을 함께 갱신해야 한다"
+        )
+    if not floors:
+        problems.append("탐지력 하한이 artifact 에 없다 — 하한 없는 감사는 ‘주장 0건’ 으로 조용히 통과할 수 있다")
+    without_reason = [str(item.get("label")) for item in floors if not str(item.get("why", "")).strip()]
+    if without_reason:
+        problems.append(
+            f"근거(`why`) 없는 하한: {', '.join(without_reason)} — 값만 남기면 나중에 내려도 되는지 판단할 수 없다"
+        )
     if probe and not probe.get("ok"):
         problems.append(f"감사 자기시험이 실패했다(판독 규칙이 깨졌다): {probe.get('failures')}")
     if not probe:
         problems.append("자기시험 결과가 없다 — 감사가 자기 판독력을 확인하지 않았다")
-    if mentions < _as_int(coverage.get("min_mentions")):
-        problems.append(f"node 를 지목한 산문이 {mentions}줄뿐이다 — 감사가 눈이 멀었을 수 있다")
+    # 하한 판정은 **감사가 기록한 근거**를 그대로 써서 낸다 — 값만 옮겨 적으면 근거가 메시지에서 사라진다.
+    for item in floors:
+        problems.extend(
+            floor_problems(
+                [
+                    Floor(
+                        str(item.get("label")),
+                        _as_int(item.get("observed")),
+                        _as_int(item.get("minimum")),
+                        why=str(item.get("why", "")),
+                    )
+                ]
+            )
+        )
     if stale:
         offenders = [
             f"{item.get('doc')}:{item.get('line')}"
@@ -1140,7 +1191,11 @@ def check_state_claims(report: dict[str, object] | None) -> CheckResult:
             f"상태 주장 {_as_int(counts.get('claims'))}건 — 그대로 {_as_int(counts.get('ok'))} · "
             f"정정 붙임 {_as_int(counts.get('fixed'))} · 낡음 {stale} · "
             f"자기시험 {_as_int(probe.get('cases'))}건 통과(증거 문서 {_as_int(coverage.get('docs'))}개 "
-            f"· node 지목 산문 {mentions}줄)"
+            f"· node 지목 산문 {mentions}줄) · "
+            + " · ".join(
+                f"하한 {item.get('label')} {item.get('observed')}≥{item.get('minimum')}(여유 {item.get('margin')})"
+                for item in floors
+            )
         ),
         observed=_as_int(counts.get("fixed")),
     )
@@ -1395,7 +1450,7 @@ def measure() -> ReviewMeasurement:
     if drift is not None:
         measured.update(digest_measured(drift))
     state_claims = measure_state_claims()
-    checks.append(check_state_claims(state_claims))
+    checks.append(check_state_claims(read_state_claims_artifact(), state_claims))
     if state_claims is not None:
         measured.update(state_claim_measured(state_claims))
     checks.append(check_review_document(principles))

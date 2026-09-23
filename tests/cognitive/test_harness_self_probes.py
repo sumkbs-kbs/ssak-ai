@@ -152,7 +152,7 @@ def test_state_claims_rejects_a_blind_audit() -> None:
     module = load("audit_state_claims")
 
     problems = module.gate_failures([], 0, module.self_probe())
-    assert any("눈이 멀었을 수 있다" in problem for problem in problems)
+    assert any("볼 수 없는" in problem for problem in problems)
 
 
 def test_enum_audit_probe_notices_a_broken_reader(monkeypatch: pytest.MonkeyPatch) -> None:

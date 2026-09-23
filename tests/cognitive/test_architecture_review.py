@@ -468,6 +468,10 @@ def _state_claim_report(
     report: dict[str, object] = {
         "claims": claims,
         "coverage": {"docs": 16, "mentions": mentions, "min_mentions": 1},
+        "floors": [
+            {"label": "node 지목 산문", "observed": mentions, "minimum": 1, "margin": mentions - 1, "why": "기준 관측"},
+            {"label": "상태 주장", "observed": ok + fixed + stale, "minimum": 1, "margin": 0, "why": "기준 관측"},
+        ],
         "counts": {"claims": ok + fixed + stale, "ok": ok, "fixed": fixed, "stale": stale, "unknown": unknown},
     }
     if probe_present:
@@ -479,10 +483,53 @@ def _state_claim_report(
     return report
 
 
+def test_state_claims_need_a_recorded_floor_basis(review: Any) -> None:  # noqa: ANN401
+    """하한 근거를 기록한 artifact 가 없으면 통과하지 않는다 — 값 없는 하한은 판단 근거가 아니다."""
+
+    result = review.check_state_claims(None, _state_claim_report(fixed=4))
+
+    assert result.passed is False
+    assert "하한 근거를 기록하지 않은" in result.detail
+
+
+def test_state_claims_artifact_must_be_current(review: Any) -> None:  # noqa: ANN401
+    """기록된 하한·관측이 새 측정과 다르면 실패한다 — 저장본을 그대로 두고 새 수치를 인용하지 않는다."""
+
+    result = review.check_state_claims(_state_claim_report(fixed=4), _state_claim_report(fixed=4, mentions=7))
+
+    assert result.passed is False
+    assert "최신이 아니다" in result.detail
+
+
+def test_state_claim_floor_without_a_reason_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """하한에 근거(`why`)가 비어 있으면 실패한다 — 나중에 내려도 되는지 판단할 수 없는 값이기 때문이다."""
+
+    report = _state_claim_report(fixed=4)
+    floors = [dict(item) for item in report["floors"]]  # type: ignore[union-attr]
+    floors[0]["why"] = ""
+    report["floors"] = floors
+    result = review.check_state_claims(report, report)
+
+    assert result.passed is False
+    assert "근거(`why`) 없는 하한" in result.detail
+
+
+def test_state_claim_report_without_floors_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """하한이 아예 없는 측정은 통과하지 않는다(주장 0건으로 조용히 통과할 수 있는 상태)."""
+
+    report = _state_claim_report(fixed=4)
+    del report["floors"]
+    result = review.check_state_claims(report, report)
+
+    assert result.passed is False
+    assert "탐지력 하한이 artifact 에 없다" in result.detail
+
+
 def test_stale_state_claim_fails_the_review(review: Any) -> None:  # noqa: ANN401
     """지금 트리와 어긋나는 상태 주장이 정정 없이 남으면 리뷰가 실패한다."""
 
-    result = review.check_state_claims(_state_claim_report(stale=1))
+    report = _state_claim_report(stale=1)
+    result = review.check_state_claims(report, report)
     assert result.passed is False
     assert "어긋나는 상태 주장" in result.detail
     assert "T03.md" in result.detail
@@ -491,7 +538,8 @@ def test_stale_state_claim_fails_the_review(review: Any) -> None:  # noqa: ANN40
 def test_corrected_state_claim_passes_and_is_counted(review: Any) -> None:  # noqa: ANN401
     """정정 표기가 붙은 주장은 통과하고, 몇 건인지 수치로 남는다."""
 
-    result = review.check_state_claims(_state_claim_report(fixed=4))
+    report = _state_claim_report(fixed=4)
+    result = review.check_state_claims(report, report)
     assert result.passed is True
     assert result.observed == 4
     assert "정정 붙임 4" in result.detail
@@ -500,7 +548,8 @@ def test_corrected_state_claim_passes_and_is_counted(review: Any) -> None:  # no
 def test_unjudgeable_state_claim_fails_the_review(review: Any) -> None:  # noqa: ANN401
     """상태를 판정하지 못한 주장은 통과시키지 않는다 — 확인 불가를 통과로 쓰지 않는다."""
 
-    result = review.check_state_claims(_state_claim_report(unknown=2))
+    report = _state_claim_report(unknown=2)
+    result = review.check_state_claims(report, report)
     assert result.passed is False
     assert "판정하지 못한" in result.detail
 
@@ -508,7 +557,8 @@ def test_unjudgeable_state_claim_fails_the_review(review: Any) -> None:  # noqa:
 def test_review_rejects_a_failed_self_probe(review: Any) -> None:  # noqa: ANN401
     """감사자 자기시험이 실패하면 리뷰가 실패한다 — 판독 규칙이 깨진 실행은 증거가 아니다."""
 
-    result = review.check_state_claims(_state_claim_report(probe_ok=False))
+    report = _state_claim_report(probe_ok=False)
+    result = review.check_state_claims(report, report)
     assert result.passed is False
     assert "자기시험" in result.detail
 
@@ -516,7 +566,8 @@ def test_review_rejects_a_failed_self_probe(review: Any) -> None:  # noqa: ANN40
 def test_review_rejects_a_missing_self_probe(review: Any) -> None:  # noqa: ANN401
     """자기시험 결과가 아예 없으면 통과시키지 않는다 — 확인하지 않은 판독력을 인정하지 않는다."""
 
-    result = review.check_state_claims(_state_claim_report(probe_present=False))
+    report = _state_claim_report(probe_present=False)
+    result = review.check_state_claims(report, report)
     assert result.passed is False
     assert "자기시험 결과가 없다" in result.detail
 
@@ -524,9 +575,10 @@ def test_review_rejects_a_missing_self_probe(review: Any) -> None:  # noqa: ANN4
 def test_review_rejects_a_blind_audit(review: Any) -> None:  # noqa: ANN401
     """node 를 지목한 산문이 하나도 안 보이면 리뷰가 실패한다(주장 0건으로 조용히 통과하지 않는다)."""
 
-    result = review.check_state_claims(_state_claim_report(mentions=0))
+    report = _state_claim_report(mentions=0)
+    result = review.check_state_claims(report, report)
     assert result.passed is False
-    assert "눈이 멀었을 수 있다" in result.detail
+    assert "볼 수 없는" in result.detail
 
 
 def test_repository_state_claims_are_judged(measurement: Any) -> None:  # noqa: ANN401

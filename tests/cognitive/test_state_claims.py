@@ -204,8 +204,42 @@ def test_gate_fails_when_no_node_mention_is_found(audit: Any) -> None:  # noqa: 
 
     problems = audit.gate_failures([], 0, audit.self_probe())
 
-    assert any("눈이 멀었을 수 있다" in problem for problem in problems)
-    assert any("하한" in problem for problem in problems)
+    assert any("볼 수 없는" in problem for problem in problems)
+    assert any("하한" in problem and "근거" in problem for problem in problems)
+
+
+def test_floors_record_the_reason_they_are_what_they_are(audit: Any) -> None:  # noqa: ANN401
+    """하한은 값만으로는 판단할 수 없다 — 관측·여유·근거가 함께 돌아온다."""
+
+    floors = audit.coverage_floors(6, 4)
+
+    assert [floor.label for floor in floors] == ["node 지목 산문", "상태 주장"]
+    assert all(floor.why.strip() for floor in floors), "하한 근거가 비었다"
+    assert [floor.margin for floor in floors] == [5, 3]
+    assert all("2026-09-23 기준 관측" in floor.why for floor in floors)
+
+
+def test_emit_json_carries_floor_records(audit: Any, capsys: pytest.CaptureFixture[str]) -> None:  # noqa: ANN401
+    """리뷰가 읽는 JSON 에 하한 기록(값·관측·여유·근거)이 들어 있다."""
+
+    assert audit.main(["--emit-json"]) == 0
+    payload = json.loads(capsys.readouterr().out)
+
+    floors = payload["floors"]
+    assert {floor["label"] for floor in floors} == {"node 지목 산문", "상태 주장"}
+    assert all(floor["why"] for floor in floors)
+    assert all(floor["margin"] == floor["observed"] - floor["minimum"] for floor in floors)
+
+
+def test_artifact_records_the_floor_basis(audit: Any, tmp_path: Path) -> None:  # noqa: ANN401
+    """감사는 하한 근거와 그때의 관측을 artifact 로 남긴다 — 값이 어디서 왔는지 추적 가능해야 한다."""
+
+    artifact = tmp_path / "state_claims.json"
+    assert audit.main(["--artifact", str(artifact)]) == 0
+    payload = json.loads(artifact.read_text(encoding="utf-8"))
+
+    assert payload["floors"] and all(floor["why"] for floor in payload["floors"])
+    assert payload["coverage"]["docs"] >= 1
 
 
 def test_gate_fails_when_the_probe_fails(audit: Any, monkeypatch: pytest.MonkeyPatch) -> None:  # noqa: ANN401
