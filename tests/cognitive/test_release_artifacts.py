@@ -1108,27 +1108,96 @@ def test_self_probe_rejudges_the_rules(release: Any) -> None:  # noqa: ANN401
 # 기록을 카나리아가 읽어 이 층의 하한이 실제로 무는지 본다 — 기록과 판단이 갈라지면 그 시험의 초록은 거짓이 된다.
 
 
+def _recorded_floors(release: Any, stored: dict[str, object]) -> list[Any]:  # noqa: ANN401
+    """기록에 담긴 관측·판단을 그대로 하한으로 되살린다 — 규칙을 **기록의 수치 위에서** 묻기 위해서다."""
+
+    return [
+        release.Floor(str(item["label"]), int(item["observed"]), int(item["minimum"]), why=str(item["why"]))
+        for item in stored["floors"]  # type: ignore[union-attr]
+    ]
+
+
 def test_the_committed_record_is_in_sync_with_the_judgment(release: Any) -> None:  # noqa: ANN401
     """커밋된 하한 기록이 지금 코드의 **판단**과 같다 — 하한을 내리고 다시 기록하지 않으면 여기서 멈춘다."""
 
     stored = release.read_record()
 
     assert stored is not None, "하한 기록이 없다 — 카나리아가 이 층의 하한을 볼 수 없다"
-    assert release.record_problems(release.coverage_floors(), stored) == []
+    fresh = release.coverage_floors()  # 관측은 하한값(가장 얇은 실행) — 판단만 견준다
+    assert release.judged_floors(fresh) == tuple(
+        (str(item["label"]), int(item["minimum"]), str(item["why"]))
+        for item in stored["floors"]  # type: ignore[union-attr]
+    )
+    # 같은 관측으로 다시 물으면 기록은 자기 자신과 모순되지 않는다(형제 검사: 허용 이동이 다시 계산한 값과 같은가).
+    assert release.record_problems(_recorded_floors(release, stored), stored) == []
     assert len(stored["floors"]) == 6
     assert str(stored["method"]).strip() and str(stored["recorded_on"]).strip()
     assert stored["verdict"] == "PASS"
     assert stored["probe"]["ok"] is True
     assert {"compared", "content_compared", "tracked_shipped", "identity_compared"} <= set(stored["counts"])
     assert "seconds" not in stored["counts"]  # 기록은 판단과 관측이지 그날의 속도가 아니다
+    # 만료 규칙(허용 이동)도 기록의 일부다 — 허용을 넓혀 두면 “기록이 낡았는가” 라는 물음 자체가 무력해진다.
+    assert stored["tolerance"]["percent"] == release.TOLERANCE_PERCENT
+    assert str(stored["tolerance"]["why"]).strip()
+    assert all(item["tolerance"] == release.tolerance_for(item["observed"]) for item in stored["floors"])
+
+
+def test_the_record_expires_when_the_observation_shrinks_beyond_tolerance(
+    release: Any, monkeypatch: pytest.MonkeyPatch, capsys: Any
+) -> None:  # noqa: ANN401
+    """기록은 “이 하한은 관측에서 이만큼 떨어져 있다” 는 승인이다 — 관측이 허용 이상 줄면 그 문장이 낡아 게이트가 선다."""
+
+    stored = release.read_record()
+    assert stored is not None
+    today = _recorded_floors(release, stored)
+    label, observed = "비교한 파일", 664
+    allowed = release.tolerance_for(observed)
+
+    def rule(value: int) -> list[str]:
+        """그 하한만 움직였을 때의 기록 판정 — 판정 규칙을 직접 묻는다(빌드 없이)."""
+
+        fresh = [release.Floor(f.label, value if f.label == label else f.observed, f.minimum, why=f.why) for f in today]
+        return release.record_problems(fresh, stored)
+
+    assert allowed == 66  # 큰 관측의 허용은 10% 다
+    assert rule(observed) == []
+    assert rule(observed - allowed) == []  # 허용 경계는 실패가 아니다(회차 사이의 정상 이동)
+    assert rule(observed - allowed - 1)  # 한 칸 넘으면 만료다
+    assert rule(observed + 200) == []  # 늘어난 것은 실패가 아니다(기록이 현재를 과장하지 않는다)
+    assert release.tolerance_for(2) == 0  # 작은 관측에서는 어떤 감소든 판단을 다시 묻는다
+
+    # 그 판정이 게이트로 이어지는지 — 도구를 돌려 종료 코드와 문장을 본다(관측을 허용 밖으로 줄인 측정을 넣는다).
+    monkeypatch.setattr(
+        release, "measure", lambda **kwargs: replace(_healthy(release), compared=observed - allowed - 1)
+    )
+    assert release.main(["--gate"]) == 1
+    err = capsys.readouterr().err
+    assert "허용 감소" in err and f"{observed} → {observed - allowed - 1}" in err
+
+
+def test_a_widened_or_hand_edited_tolerance_is_a_failure(release: Any) -> None:  # noqa: ANN401
+    """허용 이동을 넓힌 기록과 손으로 고친 허용은 둘 다 실패다 — 면죄부와 위조를 같은 자리에서 막는다."""
+
+    stored = release.read_record()
+    assert stored is not None
+    floors = release.coverage_floors()
+    widened = {**stored, "tolerance": {"percent": 90, "why": stored["tolerance"]["why"]}}
+    assert any("허용 이동" in problem for problem in release.record_problems(floors, widened))
+    hand_edited = [
+        {**item, "tolerance": int(item["tolerance"]) + 1}
+        for item in stored["floors"]  # type: ignore[union-attr]
+    ]
+    assert any(
+        "다시 계산한" in problem for problem in release.record_problems(floors, {**stored, "floors": hand_edited})
+    )
 
 
 def test_a_drifting_judgment_is_named_and_a_drifting_observation_is_not(release: Any) -> None:  # noqa: ANN401
     """두 물음을 가른다: 판단(하한 값·근거)이 움직이면 실패, 관측이 움직이는 것은 보고만(트리가 커지면 관측도 는다)."""
 
-    fresh = release.coverage_floors()
     stored = release.read_record()
     assert stored is not None
+    fresh = _recorded_floors(release, stored)
 
     lowered = [release.Floor(f.label, f.observed, f.minimum - 1, why=f.why) for f in fresh]
     problems = release.record_problems(fresh, {**stored, "floors": release.floor_records(lowered)})
@@ -1136,6 +1205,10 @@ def test_a_drifting_judgment_is_named_and_a_drifting_observation_is_not(release:
 
     observed_moved = [release.Floor(f.label, f.observed + 7, f.minimum, why=f.why) for f in fresh]
     assert release.record_problems(observed_moved, stored) == []
+    assert (
+        release.record_problems([release.Floor(f.label, f.observed - 1, f.minimum, why=f.why) for f in fresh], stored)
+        != []
+    )
     assert release.record_moves(observed_moved, stored)  # 움직였으면 보고한다
 
 
@@ -1297,6 +1370,18 @@ def test_the_real_content_matches_the_tree_byte_for_byte(real_measure: Any, rele
     assert real_measure.differing == ()  # sdist 를 거쳐도 내용이 바뀌지 않는다
     assert release.REWRITE_TARGET in real_measure.rehearsal_differing
     assert release.TAMPER_TARGET in real_measure.rehearsal_missing
+
+
+@pytest.mark.slow
+def test_the_real_observation_does_not_expire_the_record(real_measure: Any, release: Any) -> None:  # noqa: ANN401
+    """실물 관측이 오늘의 기록을 만료시키지 않는다 — “기록이 현재를 과장하지 않는다” 의 진짜 확인(로컬 회차)."""
+
+    stored = release.read_record()
+    assert stored is not None
+    problems = release.record_problems(release.coverage_floors(real_measure), stored)
+
+    assert problems == [], problems
+    assert release.record_moves(release.coverage_floors(real_measure), stored) == ()  # 오늘 관측은 기록 그대로다
 
 
 def test_the_report_json_is_readable_by_the_gate(release: Any) -> None:  # noqa: ANN401

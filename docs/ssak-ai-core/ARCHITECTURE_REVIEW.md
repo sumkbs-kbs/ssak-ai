@@ -75,7 +75,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 702 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 705 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
@@ -105,7 +105,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=702 -->
+<!-- measured:cognitive_tests=705 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -151,7 +151,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | 회귀 원장 | `.venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger --gate` | 0 | 9 scope · 21 회차(seed 101·202 + 순서 뒤집은 3회) · **결정적 11 · variant 민감 0 · 무소유 0** — 같은 scope 를 variant 를 바꿔 돌려 교집합/대칭차로 분리(§1.2) |
 | enum identity 감사 | `.venv/bin/python scripts/audit_enum_identity.py` | 0 | 위반 0건 (cognitive core 95곳을 `same_enum`으로 통일) |
 | namespace purge 감사 | `.venv/bin/python scripts/audit_test_namespace_purge.py` | 0 | 위반 0건 (수집 대상 시험 파일에 조건 없는 import 시점 purge 없음) |
-| build(wheel/sdist) | `.venv/bin/python scripts/release_artifacts.py --gate` | 0 | **이 체크아웃에서 실행한다** — `uv build --no-sources` → wheel 31.7MB · sdist 32.5MB, 저장소 밖 신규 venv 설치 뒤 둘 다 CLI·모듈·API·auth PASS, **sdist 왕복**(sdist 안에서 다시 빌드한 wheel 과 **이름 + 내용** 비교 — 664개 · 빠짐 0 · 내용 다름 0), **내용 대조**(배포판 패키지 658개 바이트 = 디스크 트리 · 다름 0 · 견줄 수 없음 6, 실물 변환 프로젝트로 재현 지목), **배포판 vs 추적 트리**(추적 656개가 모두 배포판에 있다 — 빠짐 0 · 생성물 2 · 트리에만 11), **재현 빌드**(같은 pin 두 번 — wheel 동일 664/664 · sdist 는 생성 항목 41개만 다름(커밋된 파일 0 · 목록 차이 0) · 미니 setuptools 셋으로 민감도 확인 · CI build job pin 일치, 59초), 그리고 **red 재현 셋**: ① module 하나를 뺀 wheel → exit 1 로 막힘 ② sdist 에서 파일 하나를 뺀 같은 왕복 → 이름으로 지목 ③ sdist 에서 파일 하나를 뺀 **작은 실물 프로젝트**(git·uv 로 실제 빌드) → 이름으로 지목, 대조군 오탐 0. **하한 기록**(`--record --method` → `evidence/release_artifacts.json`)을 남기므로 카나리아가 **빌드 없이** 여섯 하한이 실제로 무는지 본다(판단이 바뀌면 층이 스스로 실패) — 자기시험 76건 · 62초 |
+| build(wheel/sdist) | `.venv/bin/python scripts/release_artifacts.py --gate` | 0 | **이 체크아웃에서 실행한다** — `uv build --no-sources` → wheel 31.7MB · sdist 32.5MB, 저장소 밖 신규 venv 설치 뒤 둘 다 CLI·모듈·API·auth PASS, **sdist 왕복**(sdist 안에서 다시 빌드한 wheel 과 **이름 + 내용** 비교 — 664개 · 빠짐 0 · 내용 다름 0), **내용 대조**(배포판 패키지 658개 바이트 = 디스크 트리 · 다름 0 · 견줄 수 없음 6, 실물 변환 프로젝트로 재현 지목), **배포판 vs 추적 트리**(추적 656개가 모두 배포판에 있다 — 빠짐 0 · 생성물 2 · 트리에만 11), **재현 빌드**(같은 pin 두 번 — wheel 동일 664/664 · sdist 는 생성 항목 41개만 다름(커밋된 파일 0 · 목록 차이 0) · 미니 setuptools 셋으로 민감도 확인 · CI build job pin 일치, 59초), 그리고 **red 재현 셋**: ① module 하나를 뺀 wheel → exit 1 로 막힘 ② sdist 에서 파일 하나를 뺀 같은 왕복 → 이름으로 지목 ③ sdist 에서 파일 하나를 뺀 **작은 실물 프로젝트**(git·uv 로 실제 빌드) → 이름으로 지목, 대조군 오탐 0. **하한 기록**(`--record --method` → `evidence/release_artifacts.json`)을 남기므로 카나리아가 **빌드 없이** 여섯 하한이 실제로 무는지 본다(판단이 바뀌면 층이 스스로 실패하고, 관측이 기록된 허용(10% · 작은 관측 0) 넘게 줄면 그 기록도 만료로 실패한다) — 자기시험 84건 · 62초 |
 
 ### 1.1 회귀가 찾아낸 것 — 네 부류를 발견해 고쳤다
 
@@ -538,7 +538,7 @@ PASS 문장**으로 읽는다(“설치가 됐다” 와 “설치한 것을 써
 물건이 같아지는 자리다. ⑩ 자기시험 64건이 판정 규칙(빌드 실패·산출물 수·PASS 문장 부재·`ARTIFACT-INPUTS` 부재·왕복
 누락·왕복 내용 불일치·왕복 red 미탐지(빠짐·내용 둘)·추적 파일 누락·재현 재료 소실·실물 재현 미지목·실물 재현 오탐·내용
 불일치·내용 재현 실종·재현 불일치·예외 만료·근거 낡음·민감도 실종·배포 경로 pin 누락·기록 규칙·red 미탐지·사고)을 매 실행
-다시 묻고(자기시험 **76건**), 하한 여섯(산출물 2 · 저장소 밖 PASS 2 · **비교한 파일 100** · **배포판에 실린 추적 파일 600** ·
+다시 묻고(자기시험 **84건**), 하한 여섯(산출물 2 · 저장소 밖 PASS 2 · **비교한 파일 100** · **배포판에 실린 추적 파일 600** ·
 **재현 비교한 산출물 2** · **내용을 견준 패키지 파일 600** — 목록 읽기나 `git ls-files` 가 깨져 0개를 보고 “빠짐 없음”
 으로 통과하는 순간, 재현 비교가 0건에서 “동일” 로, 내용 대조가 0건에서 “차이 없음” 으로 통과하는 순간을 잡는다)이 값과
 근거를 함께 낸다. 실측: 빌드 6초 · 검증 18초 · 왕복 · 세 red 재현 · 내용 재현 둘(1.8초) · 재현 빌드 한 번 더 +
@@ -553,6 +553,13 @@ PASS 문장**으로 읽는다(“설치가 됐다” 와 “설치한 것을 써
 반대로 **관측이 움직인 것은 실패가 아니라 보고**다 — 파일이 늘면 “비교한 파일” 관측은 정당하게 움직이므로 그것을 실패로
 만들면 이 층은 늘 빨개져 무시된다. 기록이 없거나 승인 문장·날짜가 없으면 같은 이유로 실패하고, JSON 보고에도 기록의
 상태·움직임·문제가 실려 게이트가 읽는 출력에서 이유를 읽을 수 있다.
+**만료 — 관측이 얼마나 움직여도 되는가.** 판단을 그대로 두고 관측까지 실패로 만들면 이 층은 파일이 한 줄 늘 때마다 빨개져 무시되고,
+아무것도 묻지 않으면 기록이 오래전 상태를 현재라고 말한다. 그래서 기록에 **허용 이동**을 함께 담는다(`TOLERANCE_PERCENT` 10% ·
+작은 관측(산출물 2)에서는 허용 0 이라 어떤 변화든 판단을 다시 묻는다 — 근거는 상수 옆에 기록했다): 관측이 허용 이상 **줄면** 실패이고
+(기록이 말하는 여유는 그때의 것이며 카나리아는 그 낡은 여유를 본다), 늘어난 것은 **보고만** 한다(기록이 현재를 과장하지 않으면 안전한
+쪽으로 틀린 것이다). 허용 이동을 넓히거나 손으로 고치는 것도 실패다(`--record --method` 로 근거와 함께 다시 기록해야 한다) — 만료 규칙을
+무력하게 만들면 “기록이 낡았는가” 라는 물음 자체가 사라진다. 실측: 허용 경계(664− 66 = 598)는 통과하고 한 칸 넘면(597) 만료로 실패하며
+문장이 그 수치를 남긴다 · 산출물 하한은 2 → 3(증가)은 통과, 2 → 1(감소)은 허용 0 이라 즉시 만료다.
 이 층은 게이트의 **로컬(`--tier full`) stage** 다 — CI 의 fast tier 는 그 층을 **‘보지 않은 층’** 으로 적고, 저장소의
 build job 이 그 자리를 맡는다(둘을 합치면 모든 변경이 덮인다). 카나리아가 이 층을 보지 **않는** 이유도 적어 둔다:
 하한을 재려면 61초짜리 빌드가 필요하므로 카나리아에 **빌드로는** 들어갈 수 없다. 대신 카나리아는 이 층이 남긴 **하한

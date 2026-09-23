@@ -58,8 +58,16 @@ T14 는 `test / lint / type / build` 를 요구하는데 `build` 만 **NOT_RUN**
      사본을 막으며(`bites`) 근거를 함께 내는지(`carries_reason`) 본다. 기록은 `--record --method` 로만 만들어진다.
 
      **기록도 낡을 수 있으므로 이 층이 스스로 대조한다** — 판단(하한 값·근거·개수)이 지금 코드와 다르면 실패한다(판단이 바뀌었으면
-     다시 기록해야 한다). 반대로 **관측이 움직인 것은 실패가 아니라 보고**다: 파일이 늘면 “비교한 파일” 관측은 정당하게 움직이므로
-     그것을 실패로 만들면 이 층은 늘 빨개져 무시된다. 기록이 없거나 승인 문장이 없어도 실패다(카나리아가 볼 것이 없어진다).
+     다시 기록해야 한다). 기록이 없거나 승인 문장·날짜가 없어도, 허용 이동 규칙이 지금과 달라도 실패다(카나리아가 볼 것이 없어지거나
+     만료 규칙이 무력해진다).
+
+     **만료 — 관측이 얼마나 움직여도 되는가.** 판단을 그대로 두고 관측까지 실패로 만들면 이 층은 파일이 한 줄 늘 때마다 빨개져
+     무시되고, 아무것도 묻지 않으면 기록이 오래전 상태를 현재라고 말한다. 그래서 기록에 **허용 이동**을 함께 담는다
+     (`TOLERANCE_PERCENT` 10% · 작은 관측(산출물 2)에서는 허용 0 이라 어떤 변화든 판단을 다시 묻는다 — 근거는 상수 옆에 있다).
+     관측이 허용 이상 **줄면** 실패다(기록이 말하는 여유는 그때의 것이고, 카나리아는 그 낡은 여유를 보고 있다). 반대로 늘어난 것은
+     **보고만** 한다: 기록이 현재를 과장하지 않으면 안전한 쪽으로 틀린 것이므로, 그 실패로 시간을 쓸 이유가 없다. 허용 이동을
+     넓히거나 손으로 고치는 것도 실패다(`--record --method` 로 근거와 함께 다시 기록해야 한다) — 만료 규칙을 무력하게 만들면
+     “기록이 낡았는가” 라는 물음 자체가 사라진다.
 
 ```sh
 .venv/bin/python scripts/release_artifacts.py            # 빌드 + 검증 + red 재현(수십 초)
@@ -170,7 +178,17 @@ _WHY_COMPARED: Final[str] = (
     "비교한 것이 없으면 왕복 검증은 증거가 아니다."
 )
 
-# 배포판이 담아야 할 뿌리 — pyproject.toml 의 `packages = [\"src/antigravity_k\"]`.
+# 하한 기록의 **만료** — 기록된 관측에서 얼마나 줄어들면 그 기록이 현재를 과장한다고 볼 것인가.
+# 기록은 “이 하한은 관측에서 이만큼 떨어져 있다” 는 승인이고, 관측이 줄면 그 문장이 낡는다. 작은 관측(산출물 2)에서는
+# 허용이 0 이 된다: 어떤 변화든 판단을 다시 물어야 한다.
+TOLERANCE_PERCENT: Final[int] = 10
+_WHY_TOLERANCE: Final[str] = (
+    "2026-09-23 기준: 이 층의 관측은 여러 회차에 걸쳐 파일 몇 개 수준으로만 움직였다(배포판 항목 664 · 추적 656 · 내용 658 이 "
+    "회차를 넘겨 그대로 유지됐다). 관측이 10% 넘게 줄면 그것은 회차 사이의 정상 이동이 아니라 트리가 다른 상태라는 뜻이고, "
+    "기록이 말하는 여유는 그때의 것이 된다. 이 비율도 **판단**이므로 기록과 대조한다(바꾸려면 근거를 고쳐 다시 기록해야 한다)."
+)
+
+# 배포판이 담아야 할 뿌리 — pyproject.toml 의 `packages = ["src/antigravity_k"]`.
 PACKAGE_SRC: Final[str] = "src/antigravity_k"
 PACKAGE_NAME: Final[str] = "antigravity_k"
 _MIN_TRACKED: Final[int] = 600
@@ -672,6 +690,12 @@ def judged_floors(floors: list[Floor]) -> tuple[tuple[str, int, str], ...]:
     return tuple((floor.label, floor.minimum, floor.why) for floor in floors)
 
 
+def tolerance_for(observed: int) -> int:
+    """그 관측에서 허용하는 감소폭 — 작은 관측(2)에서는 0 이 된다(어떤 변화도 판단을 다시 묻는다)."""
+
+    return max(observed, 0) * TOLERANCE_PERCENT // 100
+
+
 def read_record(path: Path = RECORD) -> dict[str, object] | None:
     """하한 기록을 읽는다 — 없거나 깨졌으면 None(호출자가 실패로 처리한다)."""
 
@@ -714,10 +738,9 @@ def record_problems(fresh: list[Floor], stored: dict[str, object] | None) -> lis
     recorded = stored.get("floors")
     if not isinstance(recorded, list) or not recorded:
         return ["하한 기록에 `floors` 가 없다 — 카나리아가 이 층의 하한을 볼 수 없다(`--record --method` 로 다시 기록)"]
+    items = [item for item in recorded if isinstance(item, dict)]
     stored_judgment = tuple(
-        (str(item.get("label")), int(item.get("minimum", 0)), str(item.get("why", "")))
-        for item in recorded
-        if isinstance(item, dict)
+        (str(item.get("label")), int(item.get("minimum", 0)), str(item.get("why", ""))) for item in items
     )
     fresh_judgment = judged_floors(fresh)
     if stored_judgment != fresh_judgment:
@@ -736,6 +759,43 @@ def record_problems(fresh: list[Floor], stored: dict[str, object] | None) -> lis
         return [
             f"기록된 하한이 지금 코드와 다르다({detail}) — 하한을 내렸거나 근거를 고쳤으면 `--record --method` 로 다시 기록하라"
             ": 낡은 기록 위에서는 카나리아가 이 층의 현재 판단을 보지 않는다"
+        ]
+    # 만료 규칙도 기록의 일부다 — 허용 이동을 넓혀 두면 “기록이 낡았는가” 라는 물음 자체가 무력해진다(면죄부).
+    tolerance = stored.get("tolerance")
+    if (
+        not isinstance(tolerance, dict)
+        or int(tolerance.get("percent", -1)) != TOLERANCE_PERCENT
+        or not str(tolerance.get("why", "")).strip()
+    ):
+        return [
+            f"기록된 허용 이동이 지금 규칙과 다르다(기록 {tolerance!r} ≠ 지금 {TOLERANCE_PERCENT}%) — 기록은 그 규칙으로 승인된 "
+            "것이므로 바꿨으면 `--record --method` 로 다시 기록하라(허용을 넓혀 두면 만료 규칙이 아무것도 묻지 않는다)"
+        ]
+    wrong_tolerance = [
+        str(item.get("label"))
+        for item in items
+        if int(item.get("tolerance", -1)) != tolerance_for(int(item.get("observed", 0)))
+    ]
+    if wrong_tolerance:
+        return [
+            f"기록의 허용 이동이 다시 계산한 값과 다르다({wrong_tolerance}) — 손으로 고친 기록은 승인된 기록이 아니다"
+            "(`--record --method` 로 다시 기록하라)"
+        ]
+    # 만료 — 기록은 “이 하한은 관측에서 이만큼 떨어져 있다” 는 문장이고, 관측이 그 허용 이상 줄면 그 문장이 낡는다.
+    # 늘어난 것은 실패가 아니다: 기록이 현재를 과장하지 않으므로(더 넉넉한 쪽으로 틀리는 것은 안전한 쪽이다).
+    fresh_observed = {floor.label: floor.observed for floor in fresh}
+    expired: list[str] = []
+    for item in items:
+        label = str(item.get("label"))
+        before, allowed = int(item.get("observed", 0)), int(item.get("tolerance", 0))
+        now = fresh_observed.get(label)
+        if now is None or now >= before - allowed:
+            continue
+        expired.append(f"{label} {before} → {now}(허용 감소 {allowed})")
+    if expired:
+        return [
+            f"기록된 관측이 지금과 어긋난다({', '.join(expired)}) — 기록이 말하는 여유는 그때의 것이므로 `--record --method` 로 "
+            "다시 기록하라(늘어난 관측은 보고만 한다: 기록이 현재를 과장하지 않으면 안전한 쪽으로 틀린 것이다)"
         ]
     return []
 
@@ -788,7 +848,8 @@ def record_payload(
         "method": method,
         "counts": {key: value for key, value in counts.items() if key != "seconds"},
         "coverage": coverage,
-        "floors": floor_records(floors),
+        "floors": [{**floor.as_mapping(), "tolerance": tolerance_for(floor.observed)} for floor in floors],
+        "tolerance": {"percent": TOLERANCE_PERCENT, "why": _WHY_TOLERANCE},
         "probe": probe.as_mapping(),
         "verdict": "PASS",
     }
@@ -2028,6 +2089,50 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
     cases.check(
         "`floors` 가 없는 기록은 실패다(카나리아가 볼 것이 없다)",
         any("floors" in problem for problem in record_problems(floors, {**good, "floors": []})),
+    )
+    # 만료 — 기록은 “이 하한은 관측에서 이만큼 떨어져 있다” 는 승인이다. 관측이 그 허용 이상 줄면 그 문장이 낡는다.
+    cases.check("작은 관측에는 허용 이동이 없다(어떤 변화도 판단을 다시 묻는다)", tolerance_for(_MIN_ARTIFACTS) == 0)
+    cases.check("큰 관측의 허용 이동은 10% 다", tolerance_for(664) == 66)
+    shrunk = [Floor(f.label, f.observed - tolerance_for(f.observed) - 1, f.minimum, why=f.why) for f in floors]
+    shrunk_problems = record_problems(shrunk, good)
+    cases.check(
+        "허용을 넘게 줄어든 관측은 기록을 만료시킨다(이름과 수치를 남긴다)",
+        bool(shrunk_problems)
+        and floors[0].label in " ".join(shrunk_problems)
+        and "허용 감소" in " ".join(shrunk_problems),
+    )
+    cases.check(
+        "허용 안의 감소는 실패가 아니다(회차 사이의 정상 이동)",
+        record_problems(
+            [Floor(f.label, f.observed - tolerance_for(f.observed), f.minimum, why=f.why) for f in floors], good
+        )
+        == [],
+    )
+    cases.check("늘어난 관측은 실패가 아니다(기록이 현재를 과장하지 않는다)", record_problems(moved, good) == [])
+    cases.check(
+        "허용 이동을 넓힌 기록은 실패다(면죄부)",
+        any(
+            "허용 이동" in problem
+            for problem in record_problems(floors, {**good, "tolerance": {"percent": 90, "why": "넓혔다"}})
+        ),
+    )
+    cases.check(
+        "허용 이동에 근거가 없으면 실패다",
+        any(
+            "허용 이동" in problem
+            for problem in record_problems(floors, {**good, "tolerance": {"percent": TOLERANCE_PERCENT, "why": ""}})
+        ),
+    )
+    good_floors = good.get("floors")
+    hand_edited = (
+        [{**item, "tolerance": int(item.get("tolerance", 0)) + 1} for item in good_floors if isinstance(item, dict)]
+        if isinstance(good_floors, list)
+        else []
+    )
+    cases.check(
+        "손으로 고친 허용 이동은 실패다(승인된 기록이 아니다)",
+        bool(hand_edited)
+        and any("다시 계산한" in problem for problem in record_problems(floors, {**good, "floors": hand_edited})),
     )
     cases.check("검증기 스크립트가 실재한다", VERIFIER.is_file())
     cases.check("재현 대상이 wheel 안 경로다(절대 경로가 아니다)", not Path(TAMPER_TARGET).is_absolute())
