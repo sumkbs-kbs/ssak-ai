@@ -1293,9 +1293,17 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
     summed = sum(len(_as_list(layer.get("floors"))) for layer in layers)
     unapproved = [str(layer.get("name")) for layer in layers if str(layer.get("approval_text")) == UNREAD_APPROVAL]
     baseless = [str(floor.get("label")) for floor in floors if not str(floor.get("why", "")).strip()]
+    record = _as_dict(report.get("record"))
+    record_problems = [str(item) for item in _as_list(record.get("problems"))]
     problems: list[str] = []
     exit_code = _as_int(report.get("exit_code"))
     verdict = str(report.get("verdict"))
+    if verdict == "PASS" and not record.get("present"):
+        problems.append(
+            "원장이 통과라고 하는데 **하한 기록이 없다** — 사람이 승인한 목록이 없으면 하한을 내려도 되는지 물을 자리가 없다"
+        )
+    if verdict == "PASS" and record_problems:
+        problems.append("원장이 통과라고 하는데 기록 문제가 함께 실렸다(모순): " + " / ".join(record_problems[:2]))
     if verdict != "PASS":
         problems.append(
             f"원장이 스스로 {verdict} 라고 말했다: {' / '.join(str(item) for item in _as_list(report.get('problems'))[:2])}"
@@ -1324,13 +1332,21 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
     return CheckResult(
         name="floor_ledger",
         passed=True,
-        detail=(f"층 {len(layers)}개 · 하한 {summed}개가 한 표에 있고, 각 층의 승인(누가 언제)이 실려 있다"),
+        detail=(
+            f"층 {len(layers)}개 · 하한 {summed}개가 한 표에 있고, 각 층의 승인(누가 언제)이 실려 있다 — "
+            f"하한 기록 {record.get('recorded_on')} 승인({record.get('floors')}개 · 판단 이동 내려감 {record.get('lowered')} · "
+            f"관측 이동 {len(_as_list(record.get('moves')))}보고)"
+        ),
         observed=summed,
     )
 
 
 def ledger_measured(report: dict[str, object] | None) -> dict[str, int]:
-    """원장에서 마커로 고정할 값 — 표가 사라지거나 하한이 줄면 문서가 먼저 멈춘다."""
+    """원장에서 마커로 고정할 값 — 표가 사라지거나 하한이 줄면 문서가 먼저 멈춘다.
+
+    스캔 규모(후보·선언)도 여기서 고정한다: 후보가 줄면(임계값이 사라지거나 스캔이 눈머는 순간) 문서가 먼저 멈춰
+    사람이 “사라진 하한이 정상적인 리팩터링인가” 를 묻게 된다 — 그 전에는 조용히 지나가는 자리였다.
+    """
 
     if report is None:
         return {}
@@ -1338,6 +1354,9 @@ def ledger_measured(report: dict[str, object] | None) -> dict[str, int]:
     return {
         "ledger_layers": _as_int(counts.get("layers")),
         "ledger_floors": _as_int(counts.get("floors")),
+        "ledger_candidates": _as_int(counts.get("outside_scanned")),
+        "ledger_declared": _as_int(counts.get("outside_declared")),
+        "ledger_recorded_floors": _as_int(counts.get("recorded_floors")),
     }
 
 

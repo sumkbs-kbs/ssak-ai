@@ -45,6 +45,9 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
     여유·근거를 한 표로 내고, 층마다 승인(기록의 승인 문장·날짜, 없으면 그 근거 파일의 마지막 커밋)을 적으며,
     아무도 읽지 않는 하한 기록(`floors` 를 담았는데 어떤 harness 도 안 읽음)과 근거 없는 하한을 실패로 만든다.
     자기 자신도 같은 규칙으로 판정된다 — 자기 행은 캔버스에 안 들어간다(자기를 세면 저절로 참이 된다).
+    여기에 **사람이 승인한 하한 목록과의 대조**가 붙는다: 표가 이름이 하한처럼 생긴 상수를 다 세었는지(배선·선언),
+    그리고 그 목록이 **승인된 기록**(`--record --method`)과 같은지 — 사라진·내려간·근거가 바뀐 하한과 기록에 없는 새 하한은
+    실패이고, 관측이 움직인 것은 보고다(§1.4).
 14. 층들이 **한 번에 도는 명령**(`scripts/evidence_gate.py`)으로 묶여 있는가(`evidence_gate`) — stage 가
     비어 있지 않고 요구된 이름이 전부 있으며 각 스크립트가 실재하는가, tier 가 아는 값인가, 게이트의
     **자기시험**(종류 구분·tier 필터·roster 정합·수치 추출)이 있고 통과하는가, 하한의 근거가 적혀 있는가,
@@ -80,7 +83,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 723 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 733 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
@@ -101,6 +104,9 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | evidence_gate_stages | 11 | 한 번에 도는 증거 게이트의 stage 수(여섯 harness + 리뷰 + red 리허설 + 하한 원장 + 로컬 전용 둘: 배포 산출물·회귀 원장) |
 | ledger_layers | 11 | 하한 원장이 한 표에 실은 층 수(카나리아 roster 10 + 원장 자신 1) |
 | ledger_floors | 21 | 그 표가 실은 하한 수(기록 넷 12 + 직접 여섯 7 + 원장 자신 2) |
+| ledger_recorded_floors | 21 | 사람이 승인한 기록(`evidence/floor_ledger.json`)에 담긴 하한 수 — 표와 다르면 기록이 낡았다 |
+| ledger_candidates | 32 | 표 밖 스캔이 본 하한 후보(이름이 하한처럼 생긴 숫자 상수) 수 — 줄면 문서가 먼저 멈춘다 |
+| ledger_declared | 10 | 그중 “하한이 아니다” 라고 근거·소유자·기한과 함께 선언한 수 |
 | rehearsal_layers | 2 | 저장소 밖 트리에 **진짜 위반을 심어** red 재현을 확인한 층 수(위반 0건이던 두 감사) |
 | rehearsal_ok | 2 | 그중 심은 트리 exit 1·지목·대조군 초록·빈 트리 차단을 모두 만족한 층 수 |
 
@@ -112,7 +118,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=723 -->
+<!-- measured:cognitive_tests=733 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -133,6 +139,9 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:evidence_gate_stages=11 -->
 <!-- measured:ledger_layers=11 -->
 <!-- measured:ledger_floors=21 -->
+<!-- measured:ledger_recorded_floors=21 -->
+<!-- measured:ledger_candidates=32 -->
+<!-- measured:ledger_declared=10 -->
 <!-- measured:rehearsal_layers=2 -->
 <!-- measured:rehearsal_ok=2 -->
 
@@ -155,7 +164,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | type | `.venv/bin/python -m mypy <cognitive·surface·cli·5 scripts>` | 0 | Success: no issues found in 29 source files |
 | schema | `.venv/bin/python scripts/generate_record_schema.py --check` | 0 | schema up to date (record-entities/record-envelope) |
 | architecture review | `.venv/bin/python scripts/architecture_review.py` | 0 | 16 checks PASS(회귀 원장 · 인용 추적 · digest 측정 · 상태 주장 재판정 · 하한 카나리아 · **하한 원장** · red 리허설 · 증거 게이트) |
-| 하한 원장 | `.venv/bin/python scripts/floor_ledger.py --gate` | 0 | 층 11개 · 하한 21개를 한 표로 — 각 행에 관측·하한값·여유·근거·**승인(누가 언제)**. 기록 artifact 가 승인 문장을 담은 층은 그것을, 나머지는 그 근거 파일의 마지막 커밋을 적는다. 다른 층에서 본 하한 19개 ≥ 하한 15(자기 행은 캔버스에 안 든다) · 고아 기록 0 · **표 밖 스캔**(하한처럼 생긴 상수 32개 중 배선 22 · 선언 10) · 자기시험 33건 · 4초 |
+| 하한 원장 | `.venv/bin/python scripts/floor_ledger.py --gate` | 0 | 층 11개 · 하한 21개를 한 표로 — 각 행에 관측·하한값·여유·근거·**승인(누가 언제)**. 기록 artifact 가 승인 문장을 담은 층은 그것을, 나머지는 그 근거 파일의 마지막 커밋을 적는다. 다른 층에서 본 하한 19개 ≥ 하한 15(자기 행은 캔버스에 안 든다) · 고아 기록 0 · **표 밖 스캔**(하한처럼 생긴 상수 32개 중 배선 22 · 선언 10) · **하한 기록과 대조**(`evidence/floor_ledger.json` 2026-09-24 승인 · 하한 21개 · 판단 이동 내려감 0) · 자기시험 50건 · 4초 |
 | red 리허설 | `.venv/bin/python scripts/red_rehearsal.py --gate` | 0 | 층 2개에 진짜 파일로 위반을 심어 red 재현 — 심은 트리 exit 1·지목, **대조군(허용 형태) 초록**, 없는 트리 차단 |
 | 증거 게이트(층 전부 한 번에) | `.venv/bin/python scripts/evidence_gate.py --tier full` | 0 | stage 11개 전부 PASS(리뷰 · 카나리아 · **하한 원장** · digest · 상태 주장 · enum · namespace · 표면 · red 리허설 · **배포 산출물** · 회귀 원장) + **층별 수치를 기준과 대조** — `--tier fast` 는 로컬 회차가 필요한 회귀 원장·배포 산출물을 **'보지 않은 층'** 으로 적는다 |
 | 회귀 원장 | `.venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger --gate` | 0 | 9 scope · 21 회차(seed 101·202 + 순서 뒤집은 3회) · **결정적 11 · variant 민감 0 · 무소유 0** — 같은 scope 를 variant 를 바꿔 돌려 교집합/대칭차로 분리(§1.2) |
@@ -446,9 +455,24 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 그 층들의 코드를 고쳐야 한다). 리뷰에는 16번째 검사(`floor_ledger`)가 붙어 **표가 자기 합계와 어긋나지 않는지**를 묻는다:
 헤더의 하한 합계 = 항목 합 · 고아 수 = 목록 길이 · 승인을 못 읽은 층 없음 · 근거 없는 하한 없음 · 원장이 자기 판정(`verdict`)과
 종료 코드에서 모순되지 않음(보고는 PASS 인데 exit 1 인 보고는 판정이 아니다). 실측: 층 **11**(카나리아 roster 10 + 원장 자신) ·
-하한 **21**(기록 넷 12 + 직접 여섯 7 + 자기 2) · 다른 층에서 본 캔버스 19 ≥ 하한 15 · 고아 0 · 자기시험 **33건** · 4초.
+하한 **21**(기록 넷 12 + 직접 여섯 7 + 자기 2) · 다른 층에서 본 캔버스 19 ≥ 하한 15 · 고아 0 · 자기시험 **50건** · 4초.
 **한계도 함께 적어 둔다**: 캔버스는 카나리아 roster 가 아는 층뿐이고(그 밖의 하한은 표에 안 실린다), 승인으로 적힌 커밋은
 그 하한을 바꾼 커밋이 아니라 그 근거 파일의 마지막 커밋일 수 있다.
+
+**하한을 내리는 판단은 어디에 남는가 — 기록과 승인.** 이 표가 답하는 것은 “지금 어떤 하한이 있는가” 인데,
+그것만으로는 부족한 물음이 하나 남는다: **“어제 승인된 목록에서 무엇이 달라졌는가”** — 하한은 판단이므로, 지우거나
+내리거나 근거를 바꾼 사실이 어디에도 안 남으면(커밋 메시지에만 남는 것은 기록이 아니다) 나중에 “내려도 되는 하한이었나” 를
+물을 자리가 없다. 그래서 표는 **기록**(`docs/ssak-ai-core/evidence/floor_ledger.json`, `--record --method`)과 대조한다:
+기록은 층·하한 이름·**하한값**·**근거**·그때의 관측을 담고, 판정은 **판단의 이동**만 묻는다 — ① 기록보다 내려간 하한값
+(이름·옛값·새값을 함께 낸다) ② 기록에서 사라진 하한(지운 것도 결정이므로 다시 기록해야 한다) ③ 기록에 없는 새 하한
+(승인된 목록이 지금을 대표하지 않는다) ④ 값이 같아도 바뀐 근거(그것은 다른 판단이다). **관측은 판정하지 않는다**:
+관측은 매 회차 움직이고, 각 층의 하한값이 실제로 무는지는 그 층의 게이트가 본다 — 원장이 관측까지 판정하면 두 곳이 같은
+것을 두 번 판정하고, 기록이 잡음으로 낡아 진짜 순간(하한이 내려간 회차)이 그 잡음에 묻힌다. 그래서 관측 이동과 **올라간**
+하한은 **보고**다(안전한 쪽으로 틀리는 것을 실패로 만들면 기록이 잡음이 된다 — 배포 산출물의 만료 규칙과 같은 비대칭).
+기록 없이 도는 실행은 통과가 아니고(승인 없는 하한은 승인이 아니다), **실패한 실행은 기록하지 않는다** — 기록은 “지금의
+하한 목록이 옳다” 는 승인이므로 실패한 표를 승인하면 그 승인이 거짓이 된다. 기록을 만드는 실행은 그 문제 때문에 자기를
+못 만들면 안 되므로(자기가 없어서 자기를 못 만드는 고리), 기록 대조는 표의 문제와 **따로** 실려 호출자가 합친다.
+실측: 기록된 하한 21개 = 표의 하한 21개 · 판단 이동 내려감 0 · 관측 이동 0 · 승인 문장과 날짜가 함께 있다.
 
 **표 밖은 침묵이 아니라 목록이다 — 하한이 어디 있는지 스캔한다.** 표가 아는 것은 **카나리아 roster 가 아는 층**뿐이므로,
 하한처럼 생긴 상수가 어떤 층의 하한 목록에도 안 실린 채 남을 수 있다 — 그 층은 하한이 없는 것과같다(카나리아가 눈멀게 한
@@ -901,6 +925,11 @@ Secondary Brain 계열은 Core로 승격하지 않았다(SELF_IMPROVEMENT_POLICY
   넘긴 하한 · `scripts/` 밖의 하한 · 그리고 각 문서가 산문으로만 말하는 서술적 하한이다 — 침묵과 “없음” 은 다르고,
   그 차이는 이 문장으로만 말할 수 있다. 승인으로 적힌 커밋도 그 하한을 바꾼 커밋이 아니라 그 근거 파일의 마지막
   커밋일 수 있다 — 그 사실은 행마다 적었다.
+- **하한 기록은 관측을 판정하지 않고, 자동으로 갱신되지도 않는다.** 판단(목록·값·근거)이 바뀔 때만 실패하므로, 관측이
+  크게 줄어도 기록은 조용하다 — 그 판정은 각 층의 게이트와 게이트의 추이(기준 대비)의 몫이고, 원장이 그것까지 물으면
+  두 곳이 같은 것을 두 번 판정한다. 또 기록은 **사람의 승인으로만** 갱신된다(자동이면 승인이 사라진다): 하한을 내린
+  회차는 `--record --method` 로 그 판단을 다시 남겨야 하고, 그 승인 문장은 커밋되어야 남는다(기록 파일이 커밋되지
+  않은 체크아웃에서는 원장이 실패한다).
 - 이 체크아웃은 **공유 체크아웃**이며 다른 작업자의 변경과 실행 중인 suite가 있었다. 이 머신에는 이틀 전 시작해
   77%에서 멈춘 다른 pytest 프로세스도 남아 있었고(CPU 0% · RSS 약 5GB), 회귀 수치는 그런 조건을 배제하지 못한다.
 - §2의 "실제 관찰"은 대부분 deterministic fixture와 module 시험 범위다. 실 모델·실 vault·실 사용자 표면은 partial로 남겼다.

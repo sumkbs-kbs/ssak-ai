@@ -9,6 +9,8 @@
   * 아무도 읽지 않는 기록(`floors` 를 담았는데 어떤 harness 도 안 읽음)은 면죄부로 남지 않고 실패로 간다.
   * **표 밖의 하한**이 침묵하지 않는다 — 이름이 하한처럼 생긴 상수는 하한 목록에 실리거나, 왜 아닌지(근거·소유자·기한)
     선언돼야 한다. 선언은 양방향이다(하한이 되거나 사라지면 낡은 선언으로 실패한다 — 면죄부가 다음 결함을 가린다).
+  * **사람이 승인한 하한 기록**과 지금 표가 같다 — 기록에서 하한이 사라지거나, 하한값이 내려가거나, 근거가 바뀌면
+    그 판단이 어디에도 안 남으므로 실패다. 관측이 움직인 것은 보고일 뿐이다(그것까지 실패로 만들면 기록이 잡음이 된다).
   * JSON 을 내는 실행도 **판정을 종료 코드로** 말하고, 소요 시간은 판정 수치에 섞이지 않는다.
 """
 
@@ -159,6 +161,68 @@ def test_the_promoted_review_floor_is_in_the_table(ledger: Any) -> None:  # noqa
     assert rows["review"].approval_text != "**못 읽음**"
 
 
+def test_the_committed_record_matches_the_current_judgment(ledger_module: Any, ledger: Any) -> None:  # noqa: ANN401
+    """커밋된 하한 기록이 지금 판단과 같다 — 내리고·지우고·근거를 고치고 다시 기록하지 않으면 여기서 멈춘다."""
+
+    stored = ledger_module.read_record()
+
+    assert stored is not None, "하한 기록이 없다 — “내려도 되는 하한인가” 를 물을 자리가 없다"
+    assert str(stored.get("method", "")).strip(), "기록에 승인 문장이 없다"
+    assert ledger_module.record_problems(ledger_module.judged_floors(ledger), stored) == []
+    assert ledger.record["problems"] == [] and ledger.record["present"] is True
+
+
+def test_the_record_judges_judgments_and_only_reports_observations(ledger_module: Any, ledger: Any) -> None:  # noqa: ANN401
+    """기록은 **판단**과 대조한다 — 관측은 매 회차 움직이므로 실패가 아니라 보고다(아니면 기록이 잡음이 된다)."""
+
+    stored = ledger_module.read_record()
+    assert stored is not None
+    moved = {
+        **stored,
+        "floors": [{**item, "observed": int(item["observed"]) + 1000} for item in stored["floors"]],  # type: ignore[index]
+    }
+
+    assert ledger_module.record_problems(ledger_module.judged_floors(ledger), moved) == []
+    assert len(ledger_module.record_moves(ledger, moved)) == len(ledger_module.judged_floors(ledger))
+    assert ledger_module.judged_floors(ledger)  # 판단 목록 자체는 관측과 무관하게 서 있다
+
+
+def test_a_lowered_floor_makes_the_record_stale(ledger_module: Any, ledger: Any) -> None:  # noqa: ANN401
+    """승인 없이 하한을 내리면 기록이 낡는다 — 실패 문장이 어느 하한인지 값과 함께 말한다."""
+
+    stored = ledger_module.read_record()
+    assert stored is not None
+    floors = [dict(item) for item in stored["floors"]]  # type: ignore[index]
+    floors[0]["minimum"] = int(floors[0]["minimum"]) + 1  # 기록이 더 높다 = 지금이 그만큼 내려갔다
+    problems = ledger_module.record_problems(ledger_module.judged_floors(ledger), {**stored, "floors": floors})
+
+    assert len(problems) == 1 and "내려간 하한" in problems[0]
+    assert f"{floors[0]['minimum']} → {int(floors[0]['minimum']) - 1}" in problems[0]
+
+
+def test_a_vanished_or_added_floor_makes_the_record_stale(ledger_module: Any, ledger: Any) -> None:  # noqa: ANN401
+    """하한을 지우는 것도, 새 하한을 기록 없이 들이는 것도 결정이다 — 둘 다 다시 기록해야 한다."""
+
+    stored = ledger_module.read_record()
+    assert stored is not None
+    judged = ledger_module.judged_floors(ledger)
+    without = {**stored, "floors": stored["floors"][1:]}  # type: ignore[index]
+    extra = {
+        **stored,
+        "floors": [
+            *stored["floors"],  # type: ignore[index]
+            {"layer": "probe", "label": "수", "minimum": 1, "observed": 1, "why": "근거"},
+        ],
+    }
+
+    # 표에서 사라진 하한 = 기록에는 살아 있는데 지금 표가 안 싣는다.
+    assert any("사라진 하한" in problem for problem in ledger_module.record_problems(judged[1:], stored))
+    # 기록에 없는 하한 = 지금 표가 새로 들였는데 기록이 모른다(기록에서 지운 경우도 같다).
+    assert any("기록에 없는 하한" in problem for problem in ledger_module.record_problems(judged, without))
+    # 기록에만 있는 하한은 “사라진” 쪽이다 — 어느 편에 있든 그 하한은 지금 표에 없다.
+    assert any("사라진 하한" in problem for problem in ledger_module.record_problems(judged, extra))
+
+
 def test_row_rules_bite(ledger_module: Any) -> None:  # noqa: ANN401
     """읽은 행의 규칙(하한·근거·승인)이 각각 따로 문다 — 하나라도 빠지면 통과가 아니다."""
 
@@ -220,6 +284,78 @@ def test_cli_json_speaks_the_same_verdict_as_its_exit_code() -> None:
     assert report["coverage"]["min_floors"] <= report["counts"]["canvas"]
     assert "seconds" not in report["counts"]
     assert report["runtime"]["seconds"] > 0
+
+
+@pytest.mark.slow
+def test_cli_record_requires_an_approval_and_refuses_a_failing_run(tmp_path: Path) -> None:
+    """기록은 사람의 승인이다 — 승인 문장 없이는 쓰지 않고, 이미 실패한 실행은 기록하지 않는다.
+
+    마지막이 중요한 까닭은 기록이 “지금의 하한 목록이 옳다” 는 승인이기 때문이다: 실패한 표를 승인하면 그 승인이 거짓이 된다.
+    """
+
+    evidence = tmp_path / "evidence"
+    evidence.mkdir()
+    record = evidence / "floor_ledger.json"
+    without_approval = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--record", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert without_approval.returncode == 1
+    assert "--method" in without_approval.stderr
+    assert not record.exists(), "승인 없이 기록을 남기면 그 기록은 승인이 아니다"
+
+    # 표 밖 기록이 하나 있으면 그 실행은 실패한다(고아 기록) — 실패한 실행은 기록하지 않는다.
+    (evidence / "orphan.json").write_text(
+        json.dumps({"floors": [{"label": "x", "observed": 1, "minimum": 1, "why": "근거"}]}), "utf-8"
+    )
+    failing = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--record", "--method", "시험 승인", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert failing.returncode == 1
+    assert "기록하지 않았다" in failing.stderr
+    assert not record.exists()
+
+
+@pytest.mark.slow
+def test_cli_record_round_trips_into_a_pass(tmp_path: Path) -> None:
+    """기록을 남기면 그 자리에서 다시 읽혀 판정이 통과로 돌아온다 — 쓰기와 읽기가 같은 것을 말한다."""
+
+    evidence = tmp_path / "evidence"
+    evidence.mkdir()
+    recorded = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--record", "--method", "시험 승인", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert recorded.returncode == 0, recorded.stderr
+    assert (evidence / "floor_ledger.json").exists()
+
+    again = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--emit-json", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    payload = json.loads(again.stdout)
+
+    assert again.returncode == 0, again.stderr
+    assert payload["record"]["present"] is True
+    assert payload["record"]["problems"] == []
+    assert payload["counts"]["recorded_floors"] == payload["counts"]["floors"]
+    assert payload["verdict"] == "PASS"
 
 
 @pytest.mark.slow

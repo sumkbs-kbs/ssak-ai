@@ -1,0 +1,249 @@
+{
+  "command": [
+    "python",
+    "scripts/floor_ledger.py",
+    "--record"
+  ],
+  "recorded_on": "2026-09-24",
+  "method": "2026-09-24 표 밖 하한 회차: 층 11·하한 21(기록 넷 12 · 직접 여섯 7 · 자기 2)의 목록과 근거를 승인한다 — 표 밖 스캔이 후보 32(배선 22 · 선언 10)를 세고, 스캔이 찾아낸 리뷰의 인용 하한이 카나리아 열한째 harness 로 승격했다",
+  "layers": 11,
+  "counts": {
+    "layers": 11,
+    "floors": 21,
+    "canvas": 19,
+    "candidates": 32
+  },
+  "floors": [
+    {
+      "label": "pin",
+      "observed": 50,
+      "minimum": 1,
+      "margin": 49,
+      "why": "2026-09-23 기준 관측: 증거 문서 13개가 파일에 digest 를 박아 pin 50개(그대로 28 · 재확인 22). 하한을 1로 둔 것은 ‘얼마나 많이 보나’ 가 아니라 ‘패턴이 죽어 0이 됐나’ 를 잡기 위해서다.",
+      "layer": "digest_drift",
+      "kind": "기록",
+      "source": "docs/ssak-ai-core/evidence/digest_drift.json"
+    },
+    {
+      "label": "pin 을 박은 문서",
+      "observed": 13,
+      "minimum": 1,
+      "margin": 12,
+      "why": "2026-09-23 기준 관측: pin 을 박은 문서 13개. 문서 집합이 통째로 안 읽히면 ‘움직임 0’ 으로 보이므로 그 순간을 잡는다.",
+      "layer": "digest_drift",
+      "kind": "기록",
+      "source": "docs/ssak-ai-core/evidence/digest_drift.json"
+    },
+    {
+      "label": "회차",
+      "observed": 21,
+      "minimum": 1,
+      "margin": 20,
+      "why": "2026-09-23 기준 관측: 9 scope · 21 회차(502 파일을 8구간 + subdir 로 나눠 두 variant 썩). 하한을 1로 둔 것은 ‘얼마나 많이 돌렸나’ 가 아니라 ‘junit 판독이 죽어 0이 됐나’ 를 잡기 위해서다.",
+      "layer": "regression_ledger",
+      "kind": "기록",
+      "source": "docs/ssak-ai-core/evidence/regression_ledger.json"
+    },
+    {
+      "label": "scope",
+      "observed": 9,
+      "minimum": 1,
+      "margin": 8,
+      "why": "2026-09-23 기준 관측: scope 9개. scope 를 하나도 못 읽으면 교집합/대칭차 계산이 빈 상태로 통과하므로 그 순간을 잡는다.",
+      "layer": "regression_ledger",
+      "kind": "기록",
+      "source": "docs/ssak-ai-core/evidence/regression_ledger.json"
+    },
+    {
+      "label": "node 지목 산문",
+      "observed": 6,
+      "minimum": 1,
+      "margin": 5,
+      "why": "2026-09-23 기준 관측: 증거 문서 16개 중 node(test file::test name)를 산문에서 지목한 줄 6개. 하한을 1로 둔 것은 ‘얼마나 많이 보이나’ 가 아니라 ‘보는 능력이 0이 됐나’ 를 잡기 위해서다. 증거 문서가 정말로 시험을 지목하는 문장을 그만두면 이 값을 근거와 함께 내린다.",
+      "layer": "audit_state_claims",
+      "kind": "기록",
+      "source": "docs/ssak-ai-core/evidence/state_claims.json"
+    },
+    {
+      "label": "상태 주장",
+      "observed": 4,
+      "minimum": 1,
+      "margin": 3,
+      "why": "2026-09-23 기준 관측: 같은 줄에 상태 어휘가 있어 주장으로 센 것 4건(mention 6 중 2줄은 상태 어휘 없음). 어휘·펜스·범위 규칙이 깨지면 이 수가 0이 되므로, 하한은 그 순간을 잡는 안전선이다.",
+      "layer": "audit_state_claims",
+      "kind": "기록",
+      "source": "docs/ssak-ai-core/evidence/state_claims.json"
+    },
+    {
+      "label": "스캔한 파일",
+      "observed": 21,
+      "minimum": 10,
+      "margin": 11,
+      "why": "2026-09-23 기준 관측: cognitive core 경로에서 21개 파일을 스캔(제외 1 = same_enum 파이프). 하한 10은 경로가 통째로 어긋나거나 순회가 빈손으로 끝나는 순간을 잡는 안전선이다 — ’위반 0건’ 과 ’못 봄’ 을 가른다.",
+      "layer": "audit_enum_identity",
+      "kind": "직접 측정",
+      "source": "scripts/audit_enum_identity.py"
+    },
+    {
+      "label": "수집 대상 시험 파일",
+      "observed": 543,
+      "minimum": 1,
+      "margin": 542,
+      "why": "2026-09-23 기준 관측: tests/ 와 docs/qa/ 아래 수집 대상 시험 파일 537개를 스캔. 하한 1은 ’위반 0건’ 과 ’수집 패턴(_is_collected)이 어긋나 한 개도 안 봤다’ 를 가르는 최소선이다.",
+      "layer": "audit_test_namespace_purge",
+      "kind": "직접 측정",
+      "source": "scripts/audit_test_namespace_purge.py"
+    },
+    {
+      "label": "entrypoint",
+      "observed": 9,
+      "minimum": 1,
+      "margin": 8,
+      "why": "2026-09-23 기준 관측: 표본 entrypoint 9개(CLI·API router·대화·스트림·background·runtime 등). 하한 1은 ‘표면이 얼마나 많나’ 가 아니라 ‘표가 통째로 빈손으로 끝났나’ 를 잡기 위해서다.",
+      "layer": "measure_cognitive_surface",
+      "kind": "직접 측정",
+      "source": "scripts/measure_cognitive_surface.py"
+    },
+    {
+      "label": "실재하는 entrypoint",
+      "observed": 9,
+      "minimum": 1,
+      "margin": 8,
+      "why": "2026-09-23 기준 관측: 9개 전부 실재(legacy 도달 7 · core 도달 2). 경로 해석이 어긋나면 \"모듈 없음\" 만 잔뜩 적힌 표가 나오므로, 그 상태를 ‘도달 0’ 증거로 내보내지 않는다.",
+      "layer": "measure_cognitive_surface",
+      "kind": "직접 측정",
+      "source": "scripts/measure_cognitive_surface.py"
+    },
+    {
+      "label": "stage",
+      "observed": 11,
+      "minimum": 11,
+      "margin": 0,
+      "why": "2026-09-23 기준 관측: 여섯 harness 게이트 + 리뷰 + 회귀 원장 + red 리허설 + 배포 산출물 + 하한 원장 = 11 stage. 하한이 잡으려는 것은 '얼마나 많이 도나' 가 아니라 '한 층도 돌지 않고 통과했나' 다. 층이 정말 사라지면 근거를 적고 이 값을 내린다.",
+      "layer": "evidence_gate",
+      "kind": "직접 측정",
+      "source": "scripts/evidence_gate.py"
+    },
+    {
+      "label": "리허설 대상",
+      "observed": 2,
+      "minimum": 2,
+      "margin": 0,
+      "why": "2026-09-23 기준 관측: 저장소 밖에서 red 를 재현할 수 있어야 하는 층 2개(`audit_enum_identity`·`audit_test_namespace_purge` — 그동안 위반 0건이라 실제 green 만 봤다). 하한 2는 ’이 도구가 아무것도 심지 않고 통과했다’ 를 잡는 안전선이고, 다른 층의 red 재현 경로가 생기면 근거와 함께 이 수를 올린다.",
+      "layer": "red_rehearsal",
+      "kind": "직접 측정",
+      "source": "scripts/red_rehearsal.py"
+    },
+    {
+      "label": "배포 산출물",
+      "observed": 2,
+      "minimum": 2,
+      "margin": 0,
+      "why": "2026-09-23 기준 관측: `uv build --no-sources` 가 wheel(33.2MB)·sdist(34.1MB) 를 만든다. 하한 2는 계약 그 자체다 — 하나만 만들고 통과하면 “배포 가능” 이 아니다(sdist 소비자와 wheel 소비자가 다르다).",
+      "layer": "release_artifacts",
+      "kind": "기록",
+      "source": "docs/ssak-ai-core/evidence/release_artifacts.json"
+    },
+    {
+      "label": "저장소 밖 PASS",
+      "observed": 2,
+      "minimum": 2,
+      "margin": 0,
+      "why": "2026-09-23 기준 관측: 저장소 밖 신규 venv 설치 뒤 wheel·sdist 둘 다 CLI/모듈/API/auth 를 통과했다. 하한 2는 “설치가 됐다” 가 아니라 “설치한 것을 실제로 써 봤다” 를 요구한다 — 설치 성공만 보면 빈 배포판도 통과한다.",
+      "layer": "release_artifacts",
+      "kind": "기록",
+      "source": "docs/ssak-ai-core/evidence/release_artifacts.json"
+    },
+    {
+      "label": "비교한 파일",
+      "observed": 664,
+      "minimum": 100,
+      "margin": 564,
+      "why": "2026-09-23 기준 관측: 트리에서 만든 wheel 안 항목 664개(cognitive core·surface·dashboard bundle 포함). 하한 100은 **목록 읽기가 깨져 0~소수에서 ‘차이 없음’ 으로 통과하는 순간**을 잡는 안전선이다 — 비교한 것이 없으면 왕복 검증은 증거가 아니다.",
+      "layer": "release_artifacts",
+      "kind": "기록",
+      "source": "docs/ssak-ai-core/evidence/release_artifacts.json"
+    },
+    {
+      "label": "배포판에 실린 추적 파일",
+      "observed": 656,
+      "minimum": 600,
+      "margin": 56,
+      "why": "2026-09-23 기준 관측: git 추적 파일 656개가 **모두** 배포 wheel 안에 있다(빠짐 0). 하한 600은 `git ls-files` 가 실패하거나(`returncode≠0`) 뿌리 경로가 바뀌어 **0개를 보고 ‘빠짐 없음’** 으로 통과하는 순간을 잡는다 — 추적 대조가 0을 보면 그 초록은 판정이 아니다.",
+      "layer": "release_artifacts",
+      "kind": "기록",
+      "source": "docs/ssak-ai-core/evidence/release_artifacts.json"
+    },
+    {
+      "label": "재현 비교한 산출물",
+      "observed": 2,
+      "minimum": 2,
+      "margin": 0,
+      "why": "2026-09-23 기준 관측: 같은 pin 두 번 빌드에서 wheel 664/664 항목이 pin 시각 · sdist 0/1205 · 비교한 산출물 2종. 하한 2는 **재현 비교가 0~1건에서 ‘차이 없음’ 으로 통과하는 순간**을 잡는다 — 비교한 산출물이 없으면 ‘동일하다’ 는 관측이 아니다.",
+      "layer": "release_artifacts",
+      "kind": "기록",
+      "source": "docs/ssak-ai-core/evidence/release_artifacts.json"
+    },
+    {
+      "label": "내용을 견준 패키지 파일",
+      "observed": 658,
+      "minimum": 600,
+      "margin": 58,
+      "why": "2026-09-23 기준 관측: 배포 wheel 의 패키지 파일 658개가 **디스크 트리 바이트와 전부 일치**했다(다름 0). 하한 600은 경로 매핑이 바뀌어 **0개를 비교하고 ‘차이 없음’** 으로 통과하는 순간을 잡는다 — 비교한 것이 없으면 내용 대조는 증거가 아니다.",
+      "layer": "release_artifacts",
+      "kind": "기록",
+      "source": "docs/ssak-ai-core/evidence/release_artifacts.json"
+    },
+    {
+      "label": "인용",
+      "observed": 270,
+      "minimum": 1,
+      "margin": 269,
+      "why": "2026-09-24 기준 관측: 문서가 지목한 경로 인용이 270건이다. 하한 1 은 작아 보이지만 재는 것이 ‘얼마나 많이 봤나’ 가 아니라 ‘아무것도 못 보고 초록을 냈나’ 다 — 스캔이 깨지거나 문서 뿌리가 사라지면 관측이 0 이 되고, 그때 ‘모두 실재·추적된다’ 가 ‘한 번도 안 봤다’ 와 구별된다. 부분 범위 호출은 이 하한을 소유하지 않는다(그 범위를 정한 호출자가 소유한다).",
+      "layer": "review",
+      "kind": "직접 측정",
+      "source": "scripts/architecture_review.py"
+    },
+    {
+      "label": "원장에 실린 하한",
+      "observed": 19,
+      "minimum": 15,
+      "margin": 4,
+      "why": "2026-09-24 기준 관측: 다른 층을 보는 하한 19개가 실린다(기록 넷: digest 2 · 회귀 원장 2 · 상태 주장 2 · 배포 산출물 6 = 12, 직접 여섯: 열거 1 · namespace 1 · 도달 2 · 게이트 1 · 리허설 1 · 리뷰 1 = 7). 하한 15는 **한 층이 roster 에서 빠져도 정상 측정을 막지 않지만**(가장 큰 층이 6개를 들고 있다) **둘 이상 빠지면(≤ 12) 표를 내주면서 ‘빠진 하한 없음’ 이라고 말하지 못하게** 한다 — 하한이나 출처가 망가지면 여기서 드러난다.",
+      "layer": "floor_ledger",
+      "kind": "자기 판정",
+      "source": "scripts/floor_ledger.py"
+    },
+    {
+      "label": "하한 후보 스캔",
+      "observed": 32,
+      "minimum": 24,
+      "margin": 8,
+      "why": "2026-09-24 기준 관측: 이름이 하한처럼 생긴 숫자 상수가 32개고, 그중 22개는 어떤 층의 `coverage_floors` 가 읽는다.하한 24 는 ‘얼마나 많이 찾았나’ 가 아니라 ‘스캔이 살아 있나’ 를 재다 — AST 파싱이 깨지거나 파일 몇 개가 사라지면 관측이 그 아래로 떨어지고, 그때 ‘표 밖에 아무것도 없다’ 가 ‘한 번도 안 봤다’ 와 구별된다. 후보가 줄어드는 것이 정상인 경우(상수를 지우는 리팩터링)에는 근거를 적고 이 값을 내린다.",
+      "layer": "floor_ledger",
+      "kind": "자기 판정",
+      "source": "scripts/floor_ledger.py"
+    }
+  ],
+  "outside": {
+    "scanned": 32,
+    "declared": [
+      "scripts/benchmark_ssak_search.py:LATENCY_NOISE_FLOOR_MS",
+      "scripts/benchmark_ssak_search.py:VALID_SOURCE_AUTHORITY_MIN",
+      "scripts/evidence_bundle.py:DEFAULT_MIN_SOAK_SECONDS",
+      "scripts/val02_staging.py:RSS_WARMUP_MIN_S",
+      "scripts/val02_staging.py:THROUGHPUT_MIN_RUN_S",
+      "scripts/val02_staging.py:THROUGHPUT_BLOCK_MIN_S",
+      "scripts/val02_staging.py:THROUGHPUT_MIN_BLOCKS_PER_QUARTER",
+      "scripts/val02_staging.py:ATTRIBUTION_MIN_DELTA_RATIO",
+      "scripts/val02_staging.py:DEEP_MIN_WINDOWS",
+      "scripts/val02_staging.py:PATH_MIN_CALLER_SHARE"
+    ]
+  },
+  "probe": {
+    "cases": 50,
+    "failures": [],
+    "ok": true
+  },
+  "verdict": "PASS"
+}

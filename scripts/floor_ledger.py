@@ -24,11 +24,18 @@
     (카나리아가 눈멀게 한 사본으로 시험하지도, 표가 그것을 말하지도 못한다). 하한이면 그 층의 `coverage_floors` 에 실어
     카나리아 앞에 세우고, 아니면 **선언부**(`OUTSIDE` — 근거·소유자·재검토 기한)에 왜 아닌지 적어야 한다. 선언은
     양방향이다: 이제 하한 목록에 실린 것·사라진 상수는 “낡은 선언” 으로 실패한다(낡은 면죄부는 다음 결함을 가린다).
+  * **사람이 승인한 목록과 다른 표** — 하한은 **판단**이므로 “지금 이렇다” 만으로는 부족하다: 어제 승인된 목록에서 하한을
+    지우거나·내리거나·근거를 바꾸면 그 사실이 어디에도 안 남는다(커밋 메시지에만 남는 것은 기록이 아니다). 그래서 표는
+    **기록**(`evidence/floor_ledger.json`, `--record --method`)과 대조한다: 기록에서 **사라진 하한** · **내려간 하한값** ·
+    **바뀐 근거** · **기록에 없는 새 하한**은 실패다(내려간 하한은 이름·옛값·새값을 함께 낸다). **관측**은 대조하지 않는다 —
+    관측은 매 회차 움직이고, 각 층의 하한값이 실제로 무는지는 그 층의 게이트가 판정한다(원장은 목록의 승인을 맡는다).
+    관측 이동은 **보고**일 뿐이고(안전한 쪽으로 틀리는 것을 실패로 만들면 기록이 잡음이 된다), 하한을 늘린 것도 보고다.
 
 ```sh
 .venv/bin/python scripts/floor_ledger.py --gate        # 표 + 판정(하나라도 어긋나면 exit 1)
 .venv/bin/python scripts/floor_ledger.py --emit-json   # 리뷰·게이트 stage 가 읽는다(판정은 종료 코드)
 .venv/bin/python scripts/floor_ledger.py --self-test   # 자기시험만(저장소를 읽지 않는다)
+.venv/bin/python scripts/floor_ledger.py --record --method "무엇을 보고 승인했는가"  # 지금 목록을 승인으로 남긴다
 ```
 """
 
@@ -45,7 +52,7 @@ import tempfile
 import time
 import unicodedata
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from datetime import date
 from pathlib import Path
 from types import ModuleType
@@ -69,6 +76,9 @@ from harness_contract import (  # noqa: E402
 EXIT_OK: Final[int] = 0
 EXIT_FAIL: Final[int] = 1
 EVIDENCE_DIR: Final[Path] = REPO_ROOT / "docs" / "ssak-ai-core" / "evidence"
+# 하한 기록 — “이 하한들과 이 근거를 사람이 승인했다” 는 문장. 표는 이 기록과 대조해 **판단의 이동**을 묻는다.
+# 이름을 `floor_ledger.json` 으로 둔 까닭은 증거 디렉터리의 다른 기록과 같은 관행(층 이름 = 파일 이름)이다.
+RECORD: Final[Path] = EVIDENCE_DIR / "floor_ledger.json"
 KIND_RECORDED: Final[str] = "기록"
 KIND_MEASURED: Final[str] = "직접 측정"
 KIND_SELF: Final[str] = "자기 판정"
@@ -444,6 +454,8 @@ class Ledger:
     candidates: tuple[str, ...] = ()
     covered: tuple[str, ...] = ()
     outside: tuple[OutsideFloor, ...] = ()
+    # 기록 대조의 상태(경로·승인·이동·문제) — JSON 보고에 그대로 실린다.
+    record: dict[str, object] = field(default_factory=dict)
 
     @property
     def canvas(self) -> int:
@@ -457,7 +469,9 @@ class Ledger:
 
     @property
     def ok(self) -> bool:
-        return not self.problems
+        """표와 **기록** 전체의 판정 — 게이트가 종료 코드로 말하는 것과 같아야 한다(JSON 의 `verdict` 가 이것을 쓴다)."""
+
+        return not self.problems and not self.record.get("problems")
 
     def as_mapping(self, probe: Probe) -> dict[str, object]:
         return {
@@ -477,7 +491,11 @@ class Ledger:
                 "outside_declared": len(self.outside),
                 "without_basis": sum(1 for row in self.rows for floor in row.floors if not floor.why.strip()),
                 "undated": sum(1 for row in self.rows if row.commit is None),
+                "recorded_floors": _record_int(self.record, "floors"),
+                "record_lowered": _record_int(self.record, "lowered"),
+                "record_moved": len(_record_lines(self.record, "moves")),
             },
+            "record": dict(self.record),
             "outside": {
                 "scanned": len(self.candidates),
                 "wired": len(self.covered),
@@ -503,6 +521,20 @@ class Ledger:
         }
 
 
+def _record_int(record: dict[str, object], key: str) -> int:
+    """기록 보고에서 수 하나 — 없거나 수가 아니면 0(이 값들은 보고에만 쓰이고 판정은 문장으로 한다)."""
+
+    value = record.get(key)
+    return value if isinstance(value, int) else 0
+
+
+def _record_lines(record: dict[str, object], key: str) -> list[str]:
+    """기록 보고에서 문장 목록 — 없으면 빈 목록."""
+
+    value = record.get(key)
+    return [str(item) for item in value] if isinstance(value, list) else []
+
+
 def ledger_floor(observed: int) -> Floor:
     """이 원장의 하한 — 표에 실린 하한 수(값 + 근거)."""
 
@@ -518,6 +550,242 @@ def coverage_floors(ledger: Ledger | None = None) -> list[Floor]:
         ledger_floor(canvas),
         Floor("하한 후보 스캔", scanned, _MIN_CANDIDATES, why=_WHY_MIN_CANDIDATES),
     ]
+
+
+def judged_floors(ledger: Ledger) -> tuple[tuple[str, str, int, str], ...]:
+    """표가 **지금 판단하는 것** — (층, 하한 이름, 하한값, 근거). 관측(`observed`)은 여기 없다.
+
+    기록과 대조하는 것이 이 목록이다. 관측을 대조하면 기록이 매 회차 낡는다 — 표가 말하는 판단(무엇을 몇 개로 정했고
+    왜인가)과 그날의 관측은 다른 것이고, 관측은 이미 게이트의 추이와 각 층의 게이트가 본다.
+    """
+
+    return tuple((row.name, floor.label, floor.minimum, floor.why) for row in ledger.rows for floor in row.floors)
+
+
+def read_record(path: Path = RECORD) -> dict[str, object] | None:
+    """하한 기록을 읽는다 — 없거나 깨졌으면 None(호출자가 실패로 처리한다)."""
+
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def recorded_floors(stored: dict[str, object] | None) -> dict[tuple[str, str], tuple[int, str]]:
+    """기록에 담긴 판단 — (층, 하한 이름) → (하한값, 근거).
+
+    층 이름까지 키에 넣는 까닭은 “어느 층의 어느 하한이 사라졌나” 를 말할 수 있어야 하기 때문이다(이름만 보면 다른 층의
+    같은 이름과 묶인다).
+    """
+
+    if stored is None:
+        return {}
+    items = stored.get("floors")
+    if not isinstance(items, list):
+        return {}
+    return {
+        (str(item.get("layer")), str(item.get("label"))): (int(item.get("minimum", 0)), str(item.get("why", "")))
+        for item in items
+        if isinstance(item, dict)
+    }
+
+
+def recorded_observations(stored: dict[str, object] | None) -> dict[tuple[str, str], int]:
+    """기록에 담긴 **그때의 관측** — 판정에 안 쓴다. 오직 이동을 보고하려고 읽는다."""
+
+    if stored is None:
+        return {}
+    items = stored.get("floors")
+    if not isinstance(items, list):
+        return {}
+    return {
+        (str(item.get("layer")), str(item.get("label"))): int(item.get("observed", 0))
+        for item in items
+        if isinstance(item, dict)
+    }
+
+
+def record_moves(ledger: Ledger, stored: dict[str, object] | None) -> tuple[str, ...]:
+    """기록된 관측 대비 움직임 — **실패가 아니라 보고**다(각 층의 게이트가 판정하고, 원장은 목록의 승인을 맡는다)."""
+
+    before = recorded_observations(stored)
+    moves: list[str] = []
+    for row in ledger.rows:
+        for floor in row.floors:
+            was = before.get((row.name, floor.label))
+            if was is None or was == floor.observed:
+                continue
+            arrow = "▲" if floor.observed > was else "▼"
+            moves.append(f"{row.name} · {floor.label} {was} → {floor.observed} {arrow}")
+    return tuple(moves)
+
+
+@dataclass(frozen=True, slots=True)
+class RecordChanges:
+    """기록과 지금 표의 차이 — **판단의 이동**만 담는다(관측은 `record_moves` 가 보고로 낸다).
+
+    넷을 나눠 담는 까닭은 실패 문장이 달라야 하기 때문이다: **내려간 하한값**(승인 없는 하향) · **사라진 하한**(지운 것도
+    결정이다) · **기록에 없는 새 하한**(승인된 목록이 지금을 대표하지 않는다) · **근거만 바뀐 하한**(같은 값이라도 판단이다).
+    """
+
+    lowered: tuple[tuple[str, str, int, int], ...] = ()
+    vanished: tuple[tuple[str, str], ...] = ()
+    added: tuple[tuple[str, str], ...] = ()
+    reasons: tuple[tuple[str, str], ...] = ()
+
+    @property
+    def judged_moves(self) -> int:
+        """판단이 움직인 하한 수 — 0 이어야 기록이 지금을 대표한다."""
+
+        return len(self.lowered) + len(self.vanished) + len(self.added) + len(self.reasons)
+
+
+def record_changes(judged: Sequence[tuple[str, str, int, str]], stored: dict[str, object] | None) -> RecordChanges:
+    """기록 대비 판단의 이동 — 관측(`observed`)은 보지 않는다.
+
+    관측을 대조하면 기록이 매 회차 잡음으로 낡고, 기록이 낡는 진짜 순간(하한을 지우거나 내리는 순간)이 그 잡음에 묻힌다.
+    """
+
+    stored_map = recorded_floors(stored)
+    fresh = {(layer, label): (minimum, why) for layer, label, minimum, why in judged}
+    shared = sorted(set(stored_map) & set(fresh))
+    return RecordChanges(
+        lowered=tuple(
+            (layer, label, stored_map[(layer, label)][0], fresh[(layer, label)][0])
+            for layer, label in shared
+            if fresh[(layer, label)][0] < stored_map[(layer, label)][0]
+        ),
+        vanished=tuple(sorted(key for key in stored_map if key not in fresh)),
+        added=tuple(sorted(key for key in fresh if key not in stored_map)),
+        reasons=tuple(
+            (layer, label) for layer, label in shared if fresh[(layer, label)][1] != stored_map[(layer, label)][1]
+        ),
+    )
+
+
+def record_problems(
+    judged: Sequence[tuple[str, str, int, str]],
+    stored: dict[str, object] | None,
+    *,
+    record: Path = RECORD,
+) -> list[str]:
+    """기록된 **판단**이 지금 표와 같은가 — 사라진·내려간·근거 바뀜·새 하한을 모두 실패로 만든다."""
+
+    if stored is None:
+        return [
+            f"하한 기록이 없거나 읽히지 않는다({_display(record)}) — 사람이 승인한 목록이 없으면 “내려도 되는 하한인가” 를 "
+            "물을 자리가 없다: `--record --method` 로 기록해야 한다"
+        ]
+    problems: list[str] = []
+    if not str(stored.get("method", "")).strip():
+        problems.append("하한 기록에 승인 문장(`method`)이 없다 — 무엇을 보고 승인했는지 없는 기록은 기록이 아니다")
+    if not str(stored.get("recorded_on", "")).strip():
+        problems.append("하한 기록에 날짜(`recorded_on`)가 없다 — 언제의 판단인지 모르는 하한은 낡았는지도 알 수 없다")
+    if not recorded_floors(stored):
+        return [
+            *problems,
+            "하한 기록에 `floors` 가 없다 — 기록이 무엇을 승인했는지 말하지 않는다(`--record --method` 로 다시 기록)",
+        ]
+    changes = record_changes(judged, stored)
+    lowered, vanished, added, reasons = changes.lowered, changes.vanished, changes.added, changes.reasons
+    if lowered:
+        detail = ", ".join(f"{layer} · {label} {was} → {now}" for layer, label, was, now in lowered)
+        problems.append(
+            f"기록보다 **내려간 하한**이 있다({detail}) — 하한을 내리는 것은 판단이므로 승인 문장과 함께 다시 기록해야 "
+            "한다(`--record --method`): 지금은 그 판단이 어디에도 남지 않는다"
+        )
+    if vanished:
+        detail = ", ".join(f"{layer} · {label}" for layer, label in vanished)
+        problems.append(
+            f"기록에서 사라진 하한이 있다({detail}) — 지웠으면 `--record --method` 로 다시 기록하라: 면죄부는 지운다"
+        )
+    if added:
+        detail = ", ".join(f"{layer} · {label}" for layer, label in added)
+        problems.append(
+            f"기록에 없는 하한이 생겼다({detail}) — 승인된 목록이 지금을 대표하지 않는다(`--record --method` 로 기록하라)"
+        )
+    if reasons:
+        detail = ", ".join(f"{layer} · {label}" for layer, label in reasons)
+        problems.append(
+            f"기록과 근거가 바뀐 하한이 있다({detail}) — 근거가 바뀌면 그것은 다른 판단이다(`--record --method` 로 다시 기록하라)"
+        )
+    return problems
+
+
+def record_raised(ledger: Ledger, stored: dict[str, object] | None) -> tuple[str, ...]:
+    """기록보다 **올라간** 하한 — 실패가 아니라 보고다(안전한 쪽으로 틀리는 것을 실패로 만들면 기록이 잡음이 된다)."""
+
+    before = recorded_floors(stored)
+    raised: list[str] = []
+    for row in ledger.rows:
+        for floor in row.floors:
+            was = before.get((row.name, floor.label))
+            if was is None or floor.minimum <= was[0]:
+                continue
+            raised.append(f"{row.name} · {floor.label} {was[0]} → {floor.minimum}")
+    return tuple(raised)
+
+
+def record_payload(ledger: Ledger, probe: Probe, *, method: str, on: str) -> dict[str, object]:
+    """기록의 내용 — **판단과 관측을 함께 남긴다**(관측은 판정이 아니라 다음 회차의 보고 기준이다).
+
+    소요 시간은 담지 않는다: 기록은 판단이지 그날의 속도가 아니다.
+    """
+
+    return {
+        "command": ["python", "scripts/floor_ledger.py", "--record"],
+        "recorded_on": on,
+        "method": method,
+        "layers": len(ledger.rows),
+        "counts": {
+            "layers": len(ledger.rows),
+            "floors": ledger.floors,
+            "canvas": ledger.canvas,
+            "candidates": len(ledger.candidates),
+        },
+        "floors": [
+            {**floor.as_mapping(), "layer": row.name, "kind": row.kind, "source": row.source}
+            for row in ledger.rows
+            for floor in row.floors
+        ],
+        "outside": {
+            "scanned": len(ledger.candidates),
+            "declared": [item.name for item in ledger.outside],
+        },
+        "probe": probe.as_mapping(),
+        "verdict": "PASS",
+    }
+
+
+def write_record(path: Path, payload: dict[str, object]) -> None:
+    """기록을 저장소에 남긴다(부모 디렉터리는 만든다)."""
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def record_report(
+    record: Path, stored: dict[str, object] | None, ledger: Ledger, issues: list[str]
+) -> dict[str, object]:
+    """기록의 상태를 JSON 보고에 싣는다 — 게이트와 리뷰가 읽는 출력에서 “왜 실패했나” 를 읽을 수 있어야 한다."""
+
+    changes = record_changes(judged_floors(ledger), stored)
+    return {
+        "path": _display(record),
+        "present": stored is not None,
+        "recorded_on": str(stored.get("recorded_on", "")) if stored else "",
+        "method": str(stored.get("method", "")) if stored else "",
+        "floors": len(recorded_floors(stored)),
+        "judged": len(judged_floors(ledger)),
+        "lowered": len(changes.lowered),
+        "vanished": len(changes.vanished),
+        "added": len(changes.added),
+        "reasons": len(changes.reasons),
+        "moves": list(record_moves(ledger, stored)),
+        "raised": list(record_raised(ledger, stored)),
+        "problems": list(issues),
+    }
 
 
 def read_floor_rows(name: str, canary: ModuleType) -> tuple[LayerRow, str]:
@@ -569,12 +837,18 @@ def _record_approval(path: Path) -> tuple[dict[str, str], str]:
     return approval, note
 
 
-def build(*, evidence_dir: Path = EVIDENCE_DIR) -> Ledger:
-    """원장을 만든다 — roster 는 카나리아가 알고, 하한은 카나리아의 눈으로 읽는다."""
+def build(*, evidence_dir: Path = EVIDENCE_DIR, record: Path | None = None) -> Ledger:
+    """원장을 만든다 — roster 는 카나리아가 알고, 하한은 카나리아의 눈으로 읽는다.
+
+    하한 기록도 이 실행의 대상이다(판단의 이동을 묻는다). 기록의 자리는 증거 디렉터리에서 파생되므로, 다른 자리를
+    넘겨 돌리는 호출(시험)은 그 자리의 기록을 본다 — 저장소의 기록을 우연히 읽거나 쓰지 않는다.
+    """
 
     started = time.monotonic()
+    record_path = record if record is not None else evidence_dir / RECORD.name
     canary = load_canary()
-    known = [REPO_ROOT / str(path) for path in canary.ARTIFACT_FLOORS.values()]
+    # 하한 기록도 **아는 자리**다: 원장이 스스로 읽으므로, 고아 기록으로 세면 자기 기록을 면죄부로 탓하게 된다.
+    known = [REPO_ROOT / str(path) for path in canary.ARTIFACT_FLOORS.values()] + [record_path]
     readings = [read_floor_rows(str(name), canary) for name in canary.HARNESSES if str(name) != SELF_NAME]
     # 자기 하한을 **표의 마지막 행**으로 싣는다 — “이 원장은 몇 개를 보나” 가 표 밖에 있으면 읽는 사람이 못 본다.
     # 자기 하한은 다른 층을 보는 수(캔버스)를 재므로, 자기 자신을 세면 저절로 참이 된다 — 그래서 자기 행은 캔버스에 안 든다.
@@ -613,7 +887,28 @@ def build(*, evidence_dir: Path = EVIDENCE_DIR) -> Ledger:
     )
     ledger = Ledger(rows, orphans, (), 0.0, candidates, covered, OUTSIDE)
     problems.extend(floor_problems(coverage_floors(ledger)))
-    return Ledger(rows, orphans, tuple(problems), time.monotonic() - started, candidates, covered, OUTSIDE)
+    # 기록 대조 — 기록이 없거나 읽히지 않아도 “없음” 을 통과로 삼키지 않는다(그 사실이 판정이다).
+    # 기록 문제를 `problems` 에 **합치지 않는** 까닭은 기록을 만드는 실행(`--record`)이 그 문제 때문에 자기 기록을 못 쓰게
+    # 되기 때문이다(자기가 없어서 자기를 못 만드는 고리). 대신 보고에 따로 실어 호출자가 판정에 합친다.
+    stored = read_record(record_path)
+    record_issues = record_problems(judged_floors(ledger), stored, record=record_path)
+    report = record_report(record_path, stored, ledger, record_issues)
+    return Ledger(
+        rows,
+        orphans,
+        tuple(problems),
+        time.monotonic() - started,
+        candidates,
+        covered,
+        OUTSIDE,
+        report,
+    )
+
+
+def all_problems(ledger: Ledger) -> list[str]:
+    """호출자가 보는 전체 문제 — 표의 문제 + 기록 문제(기록 문제도 **실패**다: 게이트·리뷰가 같은 판정을 본다)."""
+
+    return [*ledger.problems, *_record_lines(ledger.record, "problems")]
 
 
 def row_problems(row: LayerRow, read_problem: str) -> list[str]:
@@ -799,6 +1094,73 @@ def self_probe() -> Probe:
         "기한을 읽지 못하는 선언도 실패한다",
         bool(outside_problems(("scripts/b.py:MIN_Y",), (), (replace(healthy_declaration, review_by="언젠가"),))),
     )
+    # 하한 기록 — **판단의 이동**은 실패, 관측·올림은 보고. 합성 입력으로 다시 묻는다.
+    probe_row = LayerRow("p", KIND_MEASURED, "scripts/p.py", (Floor("수", 3, 1, why="근거"),), {}, _COMMIT_SAMPLE)
+    judged_row = judged_floors(Ledger((probe_row,), (), (), 0.0))
+    recorded: dict[str, object] = {
+        "method": "2026-01-01 시험 승인",
+        "recorded_on": "2026-01-01",
+        "floors": [{"layer": "p", "label": "수", "minimum": 1, "observed": 3, "why": "근거"}],
+    }
+    cases.equal("기록과 지금 판단이 같으면 조용하다", record_problems(judged_row, recorded), [])
+    cases.check("기록이 없으면 실패한다", bool(record_problems(judged_row, None)))
+    cases.check("승인 문장 없는 기록은 기록이 아니다", bool(record_problems(judged_row, {**recorded, "method": ""})))
+    cases.check(
+        "날짜 없는 기록은 낡았는지도 알 수 없다", bool(record_problems(judged_row, {**recorded, "recorded_on": ""}))
+    )
+    cases.check(
+        "`floors` 없는 기록은 무엇을 승인했는지 말하지 않는다",
+        bool(record_problems(judged_row, {**recorded, "floors": []})),
+    )
+    lowered = record_problems(judged_row, {**recorded, "floors": [{**recorded["floors"][0], "minimum": 2}]})  # type: ignore[index]
+    cases.check(
+        "내려간 하한은 실패하고 이름·옛값·새값을 남긴다(승인 없는 하향)",
+        len(lowered) == 1 and "내려간 하한" in lowered[0] and "2 → 1" in lowered[0],
+    )
+    cases.check(
+        "올린 하한은 실패가 아니다(안전한 쪽으로 틀리는 것을 실패로 만들면 기록이 잡음이 된다)",
+        record_problems((("p", "수", 2, "근거"),), recorded) == [],
+    )
+    cases.check(
+        "관측만 움직인 기록은 낡지 않는다(관측은 판정에 안 든다)",
+        record_problems(judged_row, {**recorded, "floors": [{**recorded["floors"][0], "observed": 999}]}) == [],  # type: ignore[index]
+    )
+    cases.check(
+        "기록에서 사라진 하한은 실패한다(지운 것도 결정이다)",
+        any("사라진 하한" in problem for problem in record_problems((), recorded)),
+    )
+    cases.check(
+        "기록에 없는 새 하한도 실패한다(승인된 목록이 지금을 대표하지 않는다)",
+        any(
+            "기록에 없는 하한" in problem
+            for problem in record_problems((*judged_row, ("q", "수", 1, "근거")), recorded)
+        ),
+    )
+    cases.check(
+        "값이 같아도 근거가 바뀌면 다른 판단이다",
+        any("근거가 바뀐" in problem for problem in record_problems((("p", "수", 1, "다른 근거"),), recorded)),
+    )
+    cases.check(
+        "판단 대조는 관측에 흔들리지 않는다(관측만 달라진 표는 같은 판단이다)",
+        judged_row
+        == judged_floors(Ledger((replace(probe_row, floors=(Floor("수", 99, 1, why="근거"),)),), (), (), 0.0)),
+    )
+    cases.equal("판단 목록은 (층·이름·값·근거) 네 칸이다", len(judged_row[0]), 4)
+    payload = record_payload(
+        Ledger((probe_row,), (), (), 0.0), Probe(cases=1, failures=()), method="시험", on="2026-01-01"
+    )
+    cases.equal("기록 왕복 — 지금 표를 기록하면 그 기록은 지금과 같다", record_problems(judged_row, payload), [])
+    cases.check("기록은 그날의 속도를 담지 않는다", "seconds" not in json.dumps(payload))
+    cases.equal(
+        "관측이 움직이면 보고로 낸다(판정 아님)",
+        record_moves(Ledger((replace(probe_row, floors=(Floor("수", 7, 1, why="근거"),)),), (), (), 0.0), payload),
+        ("p · 수 3 → 7 ▲",),
+    )
+    cases.equal(
+        "올라간 하한도 보고로 낸다",
+        record_raised(Ledger((replace(probe_row, floors=(Floor("수", 3, 2, why="근거"),)),), (), (), 0.0), payload),
+        ("p · 수 1 → 2",),
+    )
     return cases.probe()
 
 
@@ -851,11 +1213,27 @@ def describe(ledger: Ledger, probe: Probe) -> str:
     )
     for item in ledger.outside:
         lines.append(f"    · {item.name}({item.owner}, 재검토 {item.review_by}) — {item.reason}")
+    record = ledger.record
+    if record.get("present"):
+        lines.append(
+            f"  하한 기록  {record.get('path')} · {record.get('recorded_on') or '날짜 없음'} 승인 · "
+            f"기록된 하한 {record.get('floors')}개 · 판단 이동 내려감 {record.get('lowered')} · 사라짐 {record.get('vanished')} · "
+            f"새 하한 {record.get('added')} · 근거 변경 {record.get('reasons')}"
+        )
+        lines.append(f"    승인 문장: {record.get('method')}")
+    else:
+        lines.append(
+            f"  하한 기록  {record.get('path')} — **없다**(사람이 승인한 목록이 없으면 “내려도 되는 하한인가” 를 물을 자리가 없다)"
+        )
+    for move in _record_lines(record, "moves"):
+        lines.append(f"    · 관측 이동(보고만 — 각 층의 게이트가 판정한다): {move}")
+    for raised in _record_lines(record, "raised"):
+        lines.append(f"    · 올라간 하한(보고만): {raised}")
     lines.append(
         f"  소요      {ledger.seconds:.1f}초 · 자기시험 {probe.cases}건 재판정 · 승인 = 기록의 승인 문장 또는 "
         "그 근거 파일의 마지막 커밋(하한만 바뀐 커밋이 아닐 수 있다)"
     )
-    for problem in ledger.problems:
+    for problem in all_problems(ledger):
         lines.append(f"    - {problem}")
     lines.append(
         "* 이 표가 없으면 “이 저장소에 어떤 하한이 있고 무엇을 보고 정해졌는가” 는 열 개 파일을 손으로 열어야 알 수 있다."
@@ -874,6 +1252,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--evidence", type=Path, default=EVIDENCE_DIR, help="고아 기록을 찾을 자리(기본: 증거 디렉터리)"
     )
+    parser.add_argument("--record", action="store_true", help="지금 하한 목록을 승인으로 남긴다(--method 필수)")
+    parser.add_argument("--method", default="", help="--record 와 함께: 무엇을 보고 승인했는가")
     args = parser.parse_args(argv)
 
     probe = _probe_or_failure()
@@ -884,13 +1264,36 @@ def main(argv: list[str] | None = None) -> int:
     ledger = build(evidence_dir=args.evidence)
     problems = list(ledger.problems)
     problems.extend(probe_problems(probe, name="floor_ledger"))
+    if args.record:
+        # 기록은 **사람의 승인**이다 — 승인 문장 없이는 쓰지 않고, 이미 실패한 실행은 기록하지 않는다
+        # (기록은 “지금의 하한 목록이 옳다” 는 승인이므로, 실패한 표를 승인하면 그 승인이 거짓이 된다).
+        if not args.method.strip():
+            print(
+                "[FAIL] --record 에는 --method 가 필요하다 — 무엇을 보고 승인했는지 없는 기록은 “내려도 되는 하한인가” 에 답하지 못한다",
+                file=sys.stderr,
+            )
+            return EXIT_FAIL
+        if problems:
+            print("[FAIL] 기록하지 않았다 — 이 실행이 이미 실패했다:", file=sys.stderr)
+            for problem in problems:
+                print(f"[FAIL] {problem}", file=sys.stderr)
+            return EXIT_FAIL
+        path = args.evidence / RECORD.name
+        write_record(path, record_payload(ledger, probe, method=args.method.strip(), on=date.today().isoformat()))
+        print(
+            f"[ledger] 하한 기록을 남겼다: {_display(path)} (층 {len(ledger.rows)} · 하한 {ledger.floors}개 · "
+            f"판단 이동 0 — 기록은 지금 목록의 승인이다)"
+        )
+        return EXIT_OK
+    # 기록 문제도 여기서 합류한다 — 게이트·리뷰가 보는 판정과 JSON 의 `verdict` 가 같은 것을 말하도록.
+    problems.extend(_record_lines(ledger.record, "problems"))
     if args.emit_json:
         print(json.dumps(ledger.as_mapping(probe), ensure_ascii=False, indent=2))
         # JSON 을 내는 실행도 **판정을 종료 코드로** 말한다 — 진단은 stdout 에 그대로 남는다.
         return EXIT_FAIL if problems else EXIT_OK
     print(describe(ledger, probe))
     if not args.gate:
-        return EXIT_OK if ledger.ok else EXIT_FAIL
+        return EXIT_OK if not problems else EXIT_FAIL
     for problem in problems:
         print(f"[FAIL] {problem}", file=sys.stderr)
     return EXIT_FAIL if problems else EXIT_OK

@@ -478,6 +478,92 @@ def test_the_citation_floor_is_wired_out_of_the_check(review: Any) -> None:  # n
     assert floors[0].why.strip()  # 값만으로는 나중에 내려도 되는지 모른다
 
 
+def _ledger_report(**changes: object) -> dict[str, object]:
+    """원장 보고의 최소 형태 — `**changes` 로 한 자리씩 결함을 재현한다."""
+
+    floor: dict[str, object] = {"label": "수", "observed": 3, "minimum": 1, "margin": 2, "why": "근거"}
+    report: dict[str, object] = {
+        "layers": [
+            {
+                "name": "probe",
+                "kind": "직접 측정",
+                "source": "scripts/probe.py",
+                "floors": [floor],
+                "approval_text": "2026-01-01 tester abc1234",
+                "approval": {},
+                "commit": None,
+                "note": "",
+            }
+        ],
+        "orphans": [],
+        "counts": {"layers": 1, "floors": 1, "canvas": 1, "orphans": 0, "recorded_floors": 1},
+        "coverage": {"canvas": 1, "floors": 1, "min_floors": 1},
+        "floors": [floor],
+        "record": {
+            "path": "docs/ssak-ai-core/evidence/floor_ledger.json",
+            "present": True,
+            "recorded_on": "2026-01-01",
+            "method": "승인 문장",
+            "floors": 1,
+            "judged": 1,
+            "lowered": 0,
+            "vanished": 0,
+            "added": 0,
+            "reasons": 0,
+            "moves": [],
+            "raised": [],
+            "problems": [],
+        },
+        "exit_code": 0,
+        "verdict": "PASS",
+        "problems": [],
+    }
+    report.update(changes)
+    return report
+
+
+def test_a_healthy_ledger_report_passes_and_names_the_record(review: Any) -> None:  # noqa: ANN401
+    """성한 원장 보고는 통과하고, 그 문장이 **언제 누가 승인했는지**를 말한다."""
+
+    result = review.check_floor_ledger(_ledger_report())
+
+    assert result.passed is True, result.detail
+    assert "하한 기록 2026-01-01" in result.detail
+
+
+def test_a_ledger_without_a_recorded_approval_is_not_a_pass(review: Any) -> None:  # noqa: ANN401
+    """원장이 통과라는데 사람이 승인한 기록이 없으면 실패다 — 하한을 내려도 되는지 물을 자리가 없다."""
+
+    result = review.check_floor_ledger(_ledger_report(record={"present": False, "problems": []}))
+
+    assert result.passed is False
+    assert "하한 기록이 없다" in result.detail
+
+
+def test_a_pass_carrying_record_problems_is_a_contradiction(review: Any) -> None:  # noqa: ANN401
+    """보고는 통과라는데 기록 문제가 실려 있으면 모순이다 — 둘 중 하나는 거짓말이다."""
+
+    report = _ledger_report()
+    record = dict(report["record"])  # type: ignore[arg-type]
+    record["problems"] = ["기록보다 **내려간 하한**이 있다"]
+    result = review.check_floor_ledger(_ledger_report(record=record))
+
+    assert result.passed is False
+    assert "모순" in result.detail
+
+
+def test_repository_ledger_has_a_recorded_approval(review: Any) -> None:  # noqa: ANN401
+    """이 저장소의 원장은 **사람이 승인한 하한 목록**을 들고 있다 — 표와 기록의 하한 수가 같다."""
+
+    report = review.measure_floor_ledger()
+
+    assert report is not None
+    assert review.check_floor_ledger(report).passed is True
+    assert report["record"]["present"] is True  # type: ignore[index]
+    assert str(report["record"]["method"]).strip()  # type: ignore[index]
+    assert report["counts"]["recorded_floors"] == report["counts"]["floors"]  # type: ignore[index]
+
+
 def test_invalidated_reverification_fails_the_check(review: Any) -> None:  # noqa: ANN401
     """재확인 뒤에 파일이 또 바뀌면 그 재확인은 무효다 — 통과시키지 않는다."""
 
