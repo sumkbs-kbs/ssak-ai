@@ -13,6 +13,8 @@
     그 판단이 어디에도 안 남으므로 실패다. 관측이 움직인 것은 보고일 뿐이다(그것까지 실패로 만들면 기록이 잡음이 된다).
   * 그 이동은 **층 단위로 묶여** 말해진다 — 층 하나가 roster 에서 빠지면 하한이 한꺼번에 사라지는데, 그것을 하한 개수만큼의
     문장으로 내면 읽는 사람이 하나의 결정을 다시 세어야 한다. 그 층이 아직 roster 에 있으면 결정이 아니라 결함이다.
+  * 그리고 그 층이 **이름만 바뀐 것**으로 보이면(하한 이름 집합이 그대로면) 사라짐·새로 생김 두 문장이 아니라 한 문장으로
+    말하되 단정하지 않는다 — 원장은 층의 동일성을 모르므로 짝과 근거(그대로인 하한 이름들)만 내고 판단은 사람에게 남긴다.
   * JSON 을 내는 실행도 **판정을 종료 코드로** 말하고, 소요 시간은 판정 수치에 섞이지 않는다.
 """
 
@@ -282,12 +284,43 @@ def test_the_committed_record_has_no_layer_moves(ledger_module: Any, ledger: Any
 
     assert ledger.record["vanished_layers"] == []
     assert ledger.record["added_layers"] == []
-    assert ledger_module.record_changes(
-        ledger_module.judged_floors(ledger), ledger_module.read_record()
-    ).layer_moves == (
-        (),
-        (),
+    changes = ledger_module.record_changes(ledger_module.judged_floors(ledger), ledger_module.read_record())
+    assert changes.layer_moves == ((), ())
+    # 이름 변경 후보도 없다 — 지금 기록과 지금 표가 같은 층 이름을 쓴다.
+    assert ledger.record["renamed_layers"] == []
+    assert changes.renamed_layers == ()
+    assert ledger.as_mapping(ledger_module.Probe(cases=1, failures=()))["counts"]["record_layers_renamed"] == 0
+
+
+def test_a_layer_rename_is_one_sentence_with_evidence(ledger_module: Any) -> None:  # noqa: ANN401
+    """하한 이름 집합이 그대로인 층은 **이름만 바뀐 것으로 보인다** — 두 문장으로 나누면 하나의 결정이 둘로 보인다.
+
+    다만 그것은 단정이 아니다: 원장은 층의 동일성을 모르므로 짝과 근거를 내고, 기록을 요구하며, 판단은 사람에게 남긴다.
+    """
+
+    stored = {
+        "method": "시험 승인",
+        "recorded_on": "2026-01-01",
+        "floors": [
+            {"layer": "old", "label": "수", "minimum": 1, "observed": 3, "why": "근거"},
+            {"layer": "old", "label": "다른 수", "minimum": 2, "observed": 4, "why": "근거"},
+            {"layer": "kept", "label": "수", "minimum": 1, "observed": 5, "why": "근거"},
+        ],
+    }
+    judged = (("new", "수", 1, "근거"), ("new", "다른 수", 2, "근거"), ("kept", "수", 1, "근거"))
+
+    renamed = ledger_module.record_problems(judged, stored, roster=("new", "kept"))
+    assert len(renamed) == 1, renamed  # 하한 둘이 함께 옮겨갔는데 문장은 하나다
+    assert "old" in renamed[0] and "new" in renamed[0] and "하한 이름 2개가 그대로" in renamed[0]
+    assert "다른 수" in renamed[0] and "`--record --method`" in renamed[0]
+    assert "모른다" in renamed[0], "단정하지 않는다는 사실을 문장이 말해야 한다"
+    # 이름이 다른 새 층이라면 두 문장(사라짐·새 층)이 맞다.
+    different = ledger_module.record_problems(
+        (("new", "새 이름", 1, "근거"), ("kept", "수", 1, "근거")), stored, roster=("new", "kept")
     )
+    assert any("roster 에서도 표에서도" in item for item in different)
+    assert any("기록에 없는 새 층 new" in item for item in different)
+    assert not any("이름만 바뀐 것으로 보인다" in item for item in different)
 
 
 def test_row_rules_bite(ledger_module: Any) -> None:  # noqa: ANN401

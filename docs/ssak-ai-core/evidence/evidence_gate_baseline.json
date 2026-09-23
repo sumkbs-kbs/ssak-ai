@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "2026-09-24 층 단위 판단 회차: 원장의 판단 이동이 층 이름으로 묶여 말해진다 — 층 하나가 통째로 빠지면 하한 개수만큼의 문장이 아니라 한 문장(몇 개가 함께 갔는지)이고, 그 층이 아직 카나리아 roster 에 있으면 결정이 아니라 결함(표가 그 층을 읽지 못했다)으로 말한다. 층 이동 0(사라진 층 0 · 새 층 0)"
+    "2026-09-24 층 이름 변경 후보 회차: 하한 이름 집합이 그대로인 사라진 층과 새 층은 '이름만 바뀐 것으로 보인다' 고 짝과 근거를 한 문장으로 내되 단정하지 않고(일부만 겹치면 쓰지 않고, roster 에 살아 있으면 결함이므로 덮지 않는다), 이름을 바꾸는 것도 결정이므로 기록을 요구한다 — 층 이동 0(이름 변경 후보 0)"
   ],
   "layers": {
     "audit_enum_identity": {
@@ -52,8 +52,9 @@
       "counts.outside_scanned": 32,
       "counts.outside_silent": 0,
       "counts.record_layers_moved": 0,
+      "counts.record_layers_renamed": 0,
       "counts.record_lowered": 0,
-      "counts.record_moved": 0,
+      "counts.record_moved": 1,
       "counts.recorded": 4,
       "counts.recorded_floors": 21,
       "counts.self": 1,
@@ -124,7 +125,7 @@
       "checks": 16,
       "measured.canary_harnesses": 11,
       "measured.canary_ok": 11,
-      "measured.cognitive_tests": 736,
+      "measured.cognitive_tests": 737,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
@@ -158,6 +159,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "2026-09-24 층 단위 판단 회차: 원장의 판단 이동이 층 이름으로 묶여 말해진다 — 층 하나가 통째로 빠지면 하한 개수만큼의 문장이 아니라 한 문장(몇 개가 함께 갔는지)이고, 그 층이 아직 카나리아 roster 에 있으면 결정이 아니라 결함(표가 그 층을 읽지 못했다)으로 말한다. 층 이동 0(사라진 층 0 · 새 층 0)",
+  "method": "2026-09-24 층 이름 변경 후보 회차: 하한 이름 집합이 그대로인 사라진 층과 새 층은 '이름만 바뀐 것으로 보인다' 고 짝과 근거를 한 문장으로 내되 단정하지 않고(일부만 겹치면 쓰지 않고, roster 에 살아 있으면 결함이므로 덮지 않는다), 이름을 바꾸는 것도 결정이므로 기록을 요구한다 — 층 이동 0(이름 변경 후보 0)",
   "recorded_on": "2026-09-24"
 }

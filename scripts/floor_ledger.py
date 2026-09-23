@@ -496,6 +496,7 @@ class Ledger:
                 "record_moved": len(_record_lines(self.record, "moves")),
                 "record_layers_moved": len(_record_lines(self.record, "vanished_layers"))
                 + len(_record_lines(self.record, "added_layers")),
+                "record_layers_renamed": len(_record_lines(self.record, "renamed_layers")),
             },
             "record": dict(self.record),
             "outside": {
@@ -639,6 +640,10 @@ class RecordChanges:
     # 하한이 한꺼번에 사라지는데, 그것을 하한 개수만큼의 실패 문장으로 내면 읽는 사람이 결정을 다시 세어야 한다.
     vanished_layers: tuple[str, ...] = ()
     added_layers: tuple[str, ...] = ()
+    # 층 **이름이 바뀐 것으로 보이는** 짝 — 사라진 층과 새 층이 **같은 하한 이름**을 들고 있으면, 그것은 두 결정
+    # (하나를 빼고 하나를 더함)이 아니라 하나(이름을 바꿈)일 수 있다. 원장은 층의 동일성을 모르므로 단정하지 않고
+    # **짝과 근거(그대로인 하한 이름들)** 를 남긴다 — 읽는 사람이 그 근거를 보고 판단한다.
+    renamed_layers: tuple[tuple[str, str, tuple[str, ...]], ...] = ()
 
     @property
     def judged_moves(self) -> int:
@@ -671,6 +676,9 @@ def record_changes(judged: Sequence[tuple[str, str, int, str]], stored: dict[str
     stored_layers = {layer for layer, _label in stored_map}
     fresh_layers = {layer for layer, _label in fresh}
     return RecordChanges(
+        renamed_layers=renamed_layers(
+            stored_map, fresh, vanished_layers=stored_layers - fresh_layers, added_layers=fresh_layers - stored_layers
+        ),
         lowered=tuple(
             (layer, label, stored_map[(layer, label)][0], fresh[(layer, label)][0])
             for layer, label in shared
@@ -684,6 +692,40 @@ def record_changes(judged: Sequence[tuple[str, str, int, str]], stored: dict[str
         vanished_layers=tuple(sorted(stored_layers - fresh_layers)),
         added_layers=tuple(sorted(fresh_layers - stored_layers)),
     )
+
+
+def renamed_layers(
+    stored_map: dict[tuple[str, str], tuple[int, str]],
+    fresh: dict[tuple[str, str], tuple[int, str]],
+    *,
+    vanished_layers: set[str],
+    added_layers: set[str],
+) -> tuple[tuple[str, str, tuple[str, ...]], ...]:
+    """이름이 바뀐 것으로 **보이는** 층 짝 — 하한 이름 집합이 **그대로**인 경우만 짝지어 말한다.
+
+    일부만 겹치는 경우는 짝으로 말하지 않는다: 그것은 이름 변경일 수도, 층이 갈라진 것일 수도 있고, 원장이 층의
+    동일성을 아는 것이 아니므로 추측을 사실처럼 말하지 않는다(겹침이 전부일 때만 “그대로” 라고 말할 수 있다).
+    새 층 하나를 두 옛 층이 차지할 수는 없으므로 먼저 온 짝이 가져가고, 나머지는 사라진 층·새 층으로 남는다.
+    """
+
+    labels_by_layer: dict[str, set[str]] = {}
+    for layer, label in stored_map:
+        labels_by_layer.setdefault(layer, set()).add(label)
+    fresh_labels: dict[str, set[str]] = {}
+    for layer, label in fresh:
+        fresh_labels.setdefault(layer, set()).add(label)
+    pairs: list[tuple[str, str, tuple[str, ...]]] = []
+    claimed: set[str] = set()
+    for old in sorted(vanished_layers):
+        old_labels = labels_by_layer.get(old, set())
+        if not old_labels:
+            continue
+        for new in sorted(added_layers - claimed):
+            if fresh_labels.get(new) == old_labels:
+                pairs.append((old, new, tuple(sorted(old_labels))))
+                claimed.add(new)
+                break
+    return tuple(pairs)
 
 
 def _by_layer(keys: Sequence[tuple[str, str]]) -> str:
@@ -740,10 +782,15 @@ def record_problems(
     added = changes.partial(changes.added)
     vanished_layers, added_layers = changes.layer_moves
     known = set(roster)
+    # 이름이 바뀐 것으로 보이는 짝은 **roster 에서도 빠진 층**에만 적용한다: 아직 roster 에 있는 층은 결정이 아니라
+    # 표가 읽지 못한 결함이므로, 이름 변경이라는 말로 덮으면 그 결함이 조용해진다.
+    renames = tuple(pair for pair in changes.renamed_layers if pair[0] not in known)
+    renamed_old = {old for old, _new, _labels in renames}
+    renamed_new = {new for _old, new, _labels in renames}
     if vanished_layers:
         # 층 하나가 통째로 사라졌다 — 그 층이 아직 roster 에 있으면 그것은 결정이 아니라 결함이다(표가 읽지 못했다).
         still_alive = [layer for layer in vanished_layers if layer in known]
-        left_roster = [layer for layer in vanished_layers if layer not in known]
+        left_roster = [layer for layer in vanished_layers if layer not in known and layer not in renamed_old]
         if still_alive:
             live_floors = tuple(key for key in changes.vanished if key[0] in set(still_alive))
             problems.append(
@@ -757,11 +804,19 @@ def record_problems(
                 f"기록의 층 {', '.join(left_roster)}(하한 {_count_by_layer(gone_floors)})가 roster 에서도 표에서도 "
                 "사라졌다 — 층을 빼는 것도 결정이다: `--record --method` 로 그 결정을 남겨라"
             )
-    if added_layers:
-        new_floors = tuple(key for key in changes.added if key[0] in set(added_layers))
+    new_layers = [layer for layer in added_layers if layer not in renamed_new]
+    if new_layers:
+        new_floors = tuple(key for key in changes.added if key[0] in set(new_layers))
         problems.append(
-            f"기록에 없는 새 층 {', '.join(added_layers)}(하한 {_count_by_layer(new_floors)})이 표에 들어왔다 — 층 이름이 "
+            f"기록에 없는 새 층 {', '.join(new_layers)}(하한 {_count_by_layer(new_floors)})이 표에 들어왔다 — 층 이름이 "
             "바뀐 것이라면 그 결정을, 새 층이라면 그 층의 하한을 `--record --method` 로 기록하라(기록은 승인된 목록이다)"
+        )
+    for old, new, shared in renames:
+        # 하나의 결정일 수 있는 사건은 한 문장으로 — 다만 **단정하지 않는다**(짝과 근거만 내고 판단은 사람에게 남긴다).
+        problems.append(
+            f"기록의 층 {old} 가 표에서 {new} 로 **이름만 바뀐 것으로 보인다**(하한 이름 {len(shared)}개가 그대로다: "
+            f"{', '.join(shared)}) — 층 이름을 바꾸는 것도 결정이다: 그 결정이라면 `--record --method` 로 기록하라. "
+            "이름이 바뀐 것이 아니라면 왜 사라지고 왜 생겼는지를 남겨라(원장은 층의 동일성을 모른다)"
         )
     if lowered:
         by_layer = "; ".join(f"{layer}: {label} {was} → {now}" for layer, label, was, now in lowered)
@@ -858,6 +913,9 @@ def record_report(
         "reasons": len(changes.reasons),
         "vanished_layers": list(changes.vanished_layers),
         "added_layers": list(changes.added_layers),
+        "renamed_layers": [
+            {"from": old, "to": new, "shared": list(labels)} for old, new, labels in changes.renamed_layers
+        ],
         "moves": list(record_moves(ledger, stored)),
         "raised": list(record_raised(ledger, stored)),
         "problems": list(issues),
@@ -1251,11 +1309,62 @@ def self_probe() -> Probe:
             for problem in record_problems((*alive, ("r", "수", 1, "근거")), wide, roster=("p", "q", "r"))
         ),
     )
-    renamed = record_problems((("p", "수", 1, "근거"), ("r", "수", 2, "근거")), wide, roster=("p", "r"))
+    # 하한 이름이 하나도 안 겹치면 이름 변경으로 보지 않는다 — 그때는 두 결정(사라짐·새로 생김)이 맞다.
+    renamed = record_problems(
+        (("p", "수", 1, "근거"), ("p", "다른 수", 1, "근거"), ("r", "새 이름", 1, "근거")), wide, roster=("p", "r")
+    )
     cases.check(
-        "층 이름 변경은 두 결정(사라짐·새로 생김)으로 나눠 말한다 — 흩어진 문장으로 읽는 사람이 다시 세지 않게",
+        "층 이름이 사라지고 새 층이 생기면 두 결정으로 나눠 말한다 — 흩어진 문장으로 읽는 사람이 다시 세지 않게",
         any("roster 에서도 표에서도" in problem and "층 q" in problem for problem in renamed)
         and any("기록에 없는 새 층 r" in problem for problem in renamed),
+    )
+    # 하한 이름이 **그대로**인 층 짝은 이름만 바뀐 것으로 보인다 — 두 문장(사라짐·새로 생김)이 아니라 한 문장이다.
+    # q(하한 1개) → r(하한 1개): 이름 집합이 그대로인 짝.
+    swapped = record_problems(
+        (("p", "수", 1, "근거"), ("p", "다른 수", 1, "근거"), ("r", "수", 2, "근거")), wide, roster=("p", "r")
+    )
+    cases.check(
+        "하한 이름 집합이 그대로인 층은 “이름만 바뀐 것으로 보인다” 고 한 문장으로 말하고 짝과 근거를 남긴다",
+        len(swapped) == 1 and "층 q 가 표에서 r 로" in swapped[0] and "하한 이름 1개가 그대로" in swapped[0],
+    )
+    cases.check(
+        "이름 변경 후보는 사라짐·새 층 문장으로 **두 번 말하지 않는다**(하나의 결정이 두 문장으로 보이면 안 된다)",
+        not any("roster 에서도 표에서도" in problem for problem in swapped)
+        and not any("기록에 없는 새 층" in problem for problem in swapped),
+    )
+    cases.check(
+        "이름 변경도 단정이 아니라 후보며, 그 결정을 기록하라고 말한다(원장은 층의 동일성을 모른다)",
+        "`--record --method`" in swapped[0] and "보인다" in swapped[0] and "모른다" in swapped[0],
+    )
+    # p(하한 2개) → p2: 여러 하한이 함께 옮겨간 경우에도 이름을 모두 낸다.
+    swapped_wide = record_problems(
+        (("p2", "수", 1, "근거"), ("p2", "다른 수", 1, "근거"), ("q", "수", 2, "근거")), wide, roster=("p2", "q")
+    )
+    cases.check(
+        "옮겨간 하한 이름을 모두 낸다(어느 판단이 함께 움직였는지 읽는 사람이 알 수 있게)",
+        len(swapped_wide) == 1
+        and "하한 이름 2개가 그대로" in swapped_wide[0]
+        and "수" in swapped_wide[0]
+        and "다른 수" in swapped_wide[0],
+    )
+    partial_overlap = record_problems(
+        (("p", "수", 1, "근거"), ("p", "다른 수", 1, "근거"), ("r", "수", 2, "근거"), ("r", "새 이름", 1, "근거")),
+        wide,
+        roster=("p", "r"),
+    )
+    cases.check(
+        "하한 이름이 일부만 겹치면 이름 변경이라고 단정하지 않는다(층이 갈라졌을 수도 있다)",
+        any("roster 에서도 표에서도" in problem for problem in partial_overlap)
+        and any("기록에 없는 새 층 r" in problem for problem in partial_overlap)
+        and not any("이름만 바뀐 것으로 보인다" in problem for problem in partial_overlap),
+    )
+    still_in_roster = record_problems(
+        (("p", "수", 1, "근거"), ("p", "다른 수", 1, "근거"), ("r", "수", 2, "근거")), wide, roster=("p", "q", "r")
+    )
+    cases.check(
+        "층이 아직 roster 에 있으면 이름 변경으로 덮지 않는다 — 그것은 결정이 아니라 표가 못 읽은 결함이다",
+        any("아직 카나리아 roster 에" in problem for problem in still_in_roster)
+        and not any("이름만 바뀐 것으로 보인다" in problem for problem in still_in_roster),
     )
     cases.check(
         "값이 같아도 근거가 바뀌면 다른 판단이다",
@@ -1340,9 +1449,19 @@ def describe(ledger: Ledger, probe: Probe) -> str:
             f"  하한 기록  {record.get('path')} · {record.get('recorded_on') or '날짜 없음'} 승인 · "
             f"기록된 하한 {record.get('floors')}개 · 판단 이동 내려감 {record.get('lowered')} · 사라짐 {record.get('vanished')} · "
             f"새 하한 {record.get('added')} · 근거 변경 {record.get('reasons')} · "
-            f"층 이동 사라짐 {len(_record_lines(record, 'vanished_layers'))} · 새 층 {len(_record_lines(record, 'added_layers'))}"
+            f"층 이동 사라짐 {len(_record_lines(record, 'vanished_layers'))} · 새 층 {len(_record_lines(record, 'added_layers'))} · "
+            f"이름만 바뀐 듯한 층 {len(_record_lines(record, 'renamed_layers'))}"
         )
         lines.append(f"    승인 문장: {record.get('method')}")
+        renamed = record.get("renamed_layers")
+        for pair in renamed if isinstance(renamed, list) else []:
+            if not isinstance(pair, dict):
+                continue
+            shared = pair.get("shared") or []
+            lines.append(
+                f"    · 이름 변경 후보(단정하지 않는다 — 판단은 사람 몫): {pair.get('from')} → {pair.get('to')} "
+                f"(하한 {len(shared)}개가 그대로: {', '.join(str(item) for item in shared)})"
+            )
     else:
         lines.append(
             f"  하한 기록  {record.get('path')} — **없다**(사람이 승인한 목록이 없으면 “내려도 되는 하한인가” 를 물을 자리가 없다)"
