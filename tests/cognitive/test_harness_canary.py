@@ -204,3 +204,32 @@ def test_emit_json_reports_every_harness(canary: Any, capsys: pytest.CaptureFixt
     assert payload["counts"]["ok"] == 6
     assert payload["counts"]["blind"] == 0
     assert {item["name"] for item in payload["harnesses"]} == set(canary.HARNESSES)
+
+
+def test_emit_json_also_fails_when_a_floor_is_decorative(
+    canary: Any, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:  # noqa: ANN401, E501
+    """JSON 을 내는 실행도 판정을 종료 코드로 말한다 — 아니면 읽는 쪽은 “통과” 로 오해한다.
+
+    진단은 stdout 에 그대로 남아야 한다(리뷰가 어느 harness 가 못 물었는지 읽는다).
+    """
+
+    def decorative() -> tuple[Any, ...]:
+        return (
+            canary.CanaryResult(
+                name="probe",
+                floors=1,
+                healthy=True,
+                bites=False,
+                carries_reason=True,
+                problems=("probe 의 하한이 눈멀게 한 사본을 막지 못한다(장식이다)",),
+            ),
+        )
+
+    monkeypatch.setattr(canary, "run", decorative)
+    assert canary.main(["--emit-json"]) == 1
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["counts"]["blind"] == 1
+    assert payload["harnesses"][0]["bites"] is False
+    assert "장식이다" in payload["harnesses"][0]["problems"][0]

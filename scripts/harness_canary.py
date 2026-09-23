@@ -11,10 +11,14 @@
   2. **눈멀게 한 사본**: `observed=0` 으로 바꾼 하한은 **문제를 내야 한다** — 내지 않으면 그 하한은 장식이다.
   3. **하한의 근거**: 실패 문장에 기록된 근거(`why`)가 함께 실린다(값만 옮겨 적지 않는다).
 
+**종료 코드도 판정이다.** 눈멀게 한 하한이 하나라도 있으면 `--emit-json` 도 exit 1 이다 — JSON 을 낸다고
+성공을 알리면, 그 출력을 읽는 쪽(리뷰·CI)은 “돌았는데 통과했다” 와 “돌았지만 아무것도 못 막았다” 를
+종료 코드로 구분할 수 없다. JSON 은 stdout 에 그대로 남으므로 **진단과 판정이 함께** 나온다.
+
 ```sh
 .venv/bin/python scripts/harness_canary.py            # harness 별 표
 .venv/bin/python scripts/harness_canary.py --gate      # 하나라도 안 물면 exit 1
-.venv/bin/python scripts/harness_canary.py --emit-json # 리뷰 검사가 읽는 형태
+.venv/bin/python scripts/harness_canary.py --emit-json # 리뷰 검사가 읽는다(문제가 있으면 exit 1 + JSON)
 ```
 """
 
@@ -247,13 +251,14 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     results = run()
+    problems = [problem for result in results for problem in result.problems]
     if args.emit_json:
         print(json.dumps(as_mapping(results), ensure_ascii=False, indent=2))
-        return EXIT_OK
+        # JSON 을 낸 실행도 **판정을 종료 코드로** 말한다 — 진단은 stdout 에 그대로 남는다.
+        return EXIT_GATE if problems else EXIT_OK
     print(describe(results))
     if not args.gate:
         return EXIT_OK
-    problems = [problem for result in results for problem in result.problems]
     for problem in problems:
         print(f"[FAIL] {problem}", file=sys.stderr)
     return EXIT_GATE if problems else EXIT_OK

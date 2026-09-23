@@ -12,6 +12,7 @@ from __future__ import annotations
 import dataclasses
 import importlib.util
 import json
+import subprocess
 import sys
 from pathlib import Path
 from types import ModuleType
@@ -730,8 +731,10 @@ def _canary_report(
     blind: str | None = None,
     unjustified: str | None = None,
     unhealthy: str | None = None,
+    exit_code: int | None = 0,
+    counted_ok: int | None = None,
 ) -> dict[str, object]:
-    """카나리아 JSON 의 최소 형태 — 이름만 바꿔 세 가지 결함을 각각 재현한다."""
+    """카나리아 JSON 의 최소 형태 — 이름만 바꿔 네 가지 결함을 각각 재현한다."""
 
     names = [
         "digest_drift",
@@ -752,7 +755,13 @@ def _canary_report(
             }
         )
     ok = sum(1 for item in items if item["healthy"] and item["bites"] and item["carries_reason"])
-    return {"harnesses": items, "counts": {"harnesses": len(items), "ok": ok}}
+    report: dict[str, object] = {
+        "harnesses": items,
+        "counts": {"harnesses": len(items), "ok": ok if counted_ok is None else counted_ok},
+    }
+    if exit_code is not None:
+        report["exit_code"] = exit_code
+    return report
 
 
 def test_harness_canary_missing_fails_the_review(review: Any) -> None:  # noqa: ANN401
@@ -800,6 +809,76 @@ def test_canary_seeing_no_harness_is_rejected(review: Any) -> None:  # noqa: ANN
 
     assert result.passed is False
     assert "하나도 보지 않았다" in result.detail
+
+
+def test_canary_report_without_an_exit_code_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """종료 코드 없는 보고는 통과하지 않는다 — 스스로 실패했는지 알 수 없는 보고는 판정이 아니다."""
+
+    result = review.check_harness_canary(_canary_report(exit_code=None))
+
+    assert result.passed is False
+    assert "종료 코드 없이 온 보고" in result.detail
+
+
+def test_canary_exit_code_contradicting_its_own_report_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """보고는 전부 통과라는데 카나리아는 실패했다고 하면 모순이라 실패한다."""
+
+    result = review.check_harness_canary(_canary_report(exit_code=1))
+
+    assert result.passed is False
+    assert "모순" in result.detail
+    assert "exit 1" in result.detail
+
+
+def test_blind_floor_keeps_its_diagnosis_through_the_seam(review: Any) -> None:  # noqa: ANN401
+    """카나리아가 exit 1 로 끝나도 **어느 harness 가 못 물었는지**가 판정 문장에 남는다(진단을 뭉개지 않는다)."""
+
+    result = review.check_harness_canary(_canary_report(exit_code=1, blind="digest_drift"))
+
+    assert result.passed is False
+    assert "장식이다" in result.detail
+    assert "digest_drift" in result.detail
+    assert "카나리아 exit 1" in result.detail
+
+
+def test_canary_total_disagreeing_with_its_items_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """합계가 항목과 다르면 실패한다 — 보고의 수치를 그대로 믿을 수 없다."""
+
+    result = review.check_harness_canary(_canary_report(counted_ok=6, blind="digest_drift"))
+
+    assert result.passed is False
+    assert "합계가 항목과 다르다" in result.detail
+
+
+def test_measure_canary_keeps_the_report_when_the_run_fails(review: Any, monkeypatch: pytest.MonkeyPatch) -> None:  # noqa: ANN401
+    """카나리아가 exit 1 이어도 JSON 이 읽히면 그대로 쓴다(진단과 판정이 만나는 이음매에서 정보를 잃지 않는다)."""
+
+    payload = json.dumps(_canary_report(exit_code=1, blind="regression_ledger"))
+
+    def fake_run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(args=[], returncode=1, stdout=payload, stderr="")
+
+    monkeypatch.setattr(review.subprocess, "run", fake_run)
+    report = review.measure_canary()
+
+    assert report is not None
+    assert report["exit_code"] == 1
+    result = review.check_harness_canary(report)
+    assert result.passed is False
+    assert "regression_ledger" in result.detail
+
+
+def test_measure_canary_returns_nothing_when_the_output_is_not_json(
+    review: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:  # noqa: ANN401
+    """JSON 이 아니면(예: import 오류) None 이다 — 읽을 수 없는 출력을 통과로 쓰지 않는다."""
+
+    def fake_run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(args=[], returncode=1, stdout="Traceback...", stderr="boom")
+
+    monkeypatch.setattr(review.subprocess, "run", fake_run)
+
+    assert review.measure_canary() is None
 
 
 def test_canary_markers_come_from_the_report(review: Any) -> None:  # noqa: ANN401

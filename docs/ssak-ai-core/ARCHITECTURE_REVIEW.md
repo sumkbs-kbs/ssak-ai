@@ -87,7 +87,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=512 -->
+<!-- measured:cognitive_tests=519 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -119,7 +119,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | 회귀 | 명령 | exit | 관찰 |
 |---|---|---|---|
 | 테스트(전체 · **과거 회차 이력**) | `.venv/bin/python -m pytest tests/ -m 'not slow and not benchmark' -q` | 1 | **세 번 쟀고 회차마다 달랐다**(트리·수집 오염·실행 선택이 함께 달랐던 비교 — 현재 기준선은 이 표의 아래 원장 행이다) — ①(수정 전 · random) 7723 수집 · **94 failed / 7571 passed / 14 skipped / 20 xfailed**(26:31) ②(random) 7726 수집 · **10 failed / 7660 passed** ③(**고정 순서** `-p no:randomly`) 7726 수집 · **7 failed / 7663 passed / 14 skipped / 24 deselected / 20 xfailed**(21:21) ④(**고정 순서 · 정리 뒤**) 7726 수집 · **5 failed / 7666 passed / 14 skipped / 24 deselected / 20 xfailed**(20:13). 그 차이는 seed 효과가 아니라 트리·오염·실행 선택의 차이였고, seed 를 가른 측정은 §1.2 의 원장이다, ③·④의 실패도 전부 기존 항목이다(그중 둘은 §1.5에서 등록으로 닫았다) |
-| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 511 passed · 1 skipped (수집 512 — 원장 subdirs scope 2회에서도 결정적 실패 0) |
+| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 518 passed · 1 skipped (수집 519 — 원장 subdirs scope 2회에서도 결정적 실패 0) |
 | lint | `.venv/bin/python -m ruff check src/ tests/ scripts/` | 0 | All checks passed |
 | format | `.venv/bin/python -m ruff format --check src/ tests/ scripts/` | 0 | 1162 files already formatted |
 | type | `.venv/bin/python -m mypy <cognitive·surface·cli·5 scripts>` | 0 | Success: no issues found in 29 source files |
@@ -377,10 +377,19 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 (리뷰가 읽는 것과 같은 자리), 나머지 셋은 저장소를 직접 재서 얻는다 — 회차 산출물(junit)이 있어야 관측값이 나오는
 원장을 빈 원장으로 기준 삼으면 “정상 측정을 막는다” 는 오탐이 난다(카나리아가 첫 실행에서 실제로 그랬다).
 
-이 카나리아 자신도 시험에 물려 있다(`tests/cognitive/test_harness_canary.py` 10건): 하한 없는 harness 는 통과가 아니라
+이 카나리아 자신도 시험에 물려 있다(`tests/cognitive/test_harness_canary.py` 11건): 하한 없는 harness 는 통과가 아니라
 실패이고, `minimum=0` 하한은 장식으로, 정상 측정을 막는 하한은 고장으로, harness 가 예외로 죽으면 그것도 판정으로
 보고된다. 그 시험이 카나리아의 실제 버그를 하나 잡았다 — 근거가 빈 하한을 “문제 있음” 으로 적으면서도 `ok` 는 참으로
 남는 모순(빈 목록에 대한 `all()` 이 참이라는 함정)을 없앴다.
+
+**종료 코드도 판정이다 — JSON 을 낸다고 성공을 알리면 안 된다.** 처음에는 `--emit-json` 이 결과와 무관하게 exit 0
+이었다. 그래서 그 출력을 읽는 쪽(리뷰·CI)은 “돌았는데 통과했다” 와 “돌았지만 아무것도 못 막았다” 를 종료 코드로
+구분할 수 없었다. 이제 장식 하한이 하나라도 있으면 **`--emit-json` 도 exit 1** 이고, JSON 은 stdout 에 그대로 남는다
+— 판정(종료 코드)과 진단(JSON)이 함께 나온다. 리뷰 쪽도 같은 자리를 고쳤다: `measure_canary` 는 종료 코드가 0 이
+아니어도 **JSON 이 읽히면 그대로 쓰고**, 종료 코드를 보고에 실어 검사가 모순을 잡게 한다 — 보고는 전부 통과라는데
+카나리아가 스스로 실패했다고 말하면 실패하고, 종료 코드 없는 보고·합계가 항목과 다른 보고도 실패한다. 이음매에서
+진단을 뭉개지 않는지 — 카나리아가 exit 1 로 끝나도 **어느 harness 의 하한이 못 물었는지**가 판정 문장에
+남는지 — 는 리뷰 쪽 시험 13건이 고정한다(`tests/cognitive/test_architecture_review.py`).
 
 각 harness 는 `--self-test` 로 자기시험만 돌릴 수 있고(측정·기록 없음), 리뷰는 자기시험 **부재**도 실패로 본다:
 판독력을 확인하지 않은 수치를 증거로 옭기지 않는다.

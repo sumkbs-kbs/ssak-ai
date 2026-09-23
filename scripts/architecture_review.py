@@ -1099,7 +1099,13 @@ def digest_measured(drift: dict[str, object]) -> dict[str, int]:
 
 
 def measure_canary() -> dict[str, object] | None:
-    """카나리아를 돌려 JSON 을 받는다 — 여섯 harness 의 하한이 눈멀게 한 사본을 막는지 본다."""
+    """카나리아를 돌려 JSON 을 받는다 — 여섯 harness 의 하한이 눈멀게 한 사본을 막는지 본다.
+
+    종료 코드가 0 이 아니어도 **JSON 이 읽히면 그대로 쓴다**: 카나리아는 장식 하한을 찾으면 exit 1 과 함께
+    진단을 stdout 에 내므로, 여기서 None 으로 바꾸면 "어느 harness 의 하한이 못 물었는지" 라는 진단이
+    판정과 만나는 이음매에서 사라진다. 대신 종료 코드를 보고에 실어 검사가 모순(보고는 전부 통과인데
+    스스로 실패했다고 말함)을 잡게 한다.
+    """
 
     result = subprocess.run(
         [sys.executable, str(CANARY_SCRIPT), "--emit-json"],
@@ -1108,12 +1114,14 @@ def measure_canary() -> dict[str, object] | None:
         text=True,
         check=False,
     )
-    if result.returncode != 0:
-        return None
     try:
-        return json.loads(result.stdout)
+        report = json.loads(result.stdout)
     except json.JSONDecodeError:
         return None
+    if not isinstance(report, dict):
+        return None
+    report["exit_code"] = result.returncode
+    return report
 
 
 def check_harness_canary(report: dict[str, object] | None) -> CheckResult:
@@ -1134,7 +1142,14 @@ def check_harness_canary(report: dict[str, object] | None) -> CheckResult:
     blind = [str(item.get("name")) for item in harnesses if not item.get("bites")]
     unjustified = [str(item.get("name")) for item in harnesses if not item.get("carries_reason")]
     unhealthy = [str(item.get("name")) for item in harnesses if not item.get("healthy")]
+    seen_ok = sum(1 for item in harnesses if item.get("ok"))
     problems: list[str] = []
+    if "exit_code" not in report:
+        problems.append("카나리아 종료 코드 없이 온 보고다 — 스스로 실패했는지 알 수 없는 보고는 판정이 아니다")
+    elif _as_int(report.get("exit_code")) != 0 and not (blind or unjustified or unhealthy):
+        problems.append(
+            f"카나리아가 exit {_as_int(report.get('exit_code'))} 로 스스로 실패했다고 말했는데 보고는 전부 통과라고 한다(모순)"
+        )
     if not harnesses:
         problems.append("카나리아가 harness 를 하나도 보지 않았다")
     if blind:
@@ -1143,8 +1158,18 @@ def check_harness_canary(report: dict[str, object] | None) -> CheckResult:
         problems.append(f"실패 문장에 하한 근거를 싣지 않은 harness: {', '.join(unjustified)}")
     if unhealthy:
         problems.append(f"하한이 정상 측정을 막은 harness: {', '.join(unhealthy)}")
+    if counts and _as_int(counts.get("ok")) != seen_ok:
+        problems.append(
+            f"합계가 항목과 다르다(ok {_as_int(counts.get('ok'))} ≠ 항목 {seen_ok}) — 보고를 그대로 믿을 수 없다"
+        )
+    exit_note = f" · 카나리아 exit {_as_int(report.get('exit_code'))}" if "exit_code" in report else ""
     if problems:
-        return CheckResult(name="harness_canary", passed=False, detail=" / ".join(problems), observed=len(harnesses))
+        return CheckResult(
+            name="harness_canary",
+            passed=False,
+            detail=" / ".join(problems) + exit_note,
+            observed=len(harnesses),
+        )
     return CheckResult(
         name="harness_canary",
         passed=True,
