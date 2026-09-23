@@ -195,6 +195,73 @@ def test_a_file_stage_is_never_run_without_a_place_to_write(gate: Any) -> None: 
     assert "/tmp/here.json" in argv
 
 
+# ------------------------------------------------------------------ 요약 (CI·리뷰어가 읽는 자리)
+
+
+def test_summary_names_every_layer_and_the_unseen_ones(gate: Any) -> None:  # noqa: ANN401
+    """요약은 층·판정·수치 수를 담고, 보지 않은 층을 "통과가 아니다" 로 적는다."""
+
+    outcomes = gate.run(gate.TIER_FAST)
+    outsiders = gate.outsider_outcomes(gate.TIER_FAST)
+    summary = gate.summary_markdown(gate.TIER_FAST, outcomes, outsiders, moves=[], baseline={})
+
+    assert "verdict: PASS" in summary
+    for outcome in outcomes:
+        assert f"`{outcome.stage.name}`" in summary
+    assert "이 실행이 보지 않은 층 (통과가 아니다)" in summary
+    assert "`regression_ledger`" in summary
+
+
+def test_summary_still_exists_when_the_gate_is_red(gate: Any) -> None:  # noqa: ANN401
+    """빨간 실행도 요약을 남긴다 — 실패한 층의 이름과 이유가 그 안에 있어야 한다."""
+
+    failed = gate.Outcome(gate.STAGES[1], gate.KIND_FAIL, 1, 0.2, "[FAIL] 판독 규칙이 깨졌다")
+    problems = gate.problems((failed,), [])
+    summary = gate.summary_markdown(gate.TIER_FAST, (failed,), (), moves=[], baseline={}, problems=problems)
+
+    assert "verdict: FAIL" in summary
+    assert "## 문제" in summary
+    assert gate.STAGES[1].name in summary
+    assert "[FAIL] 판독 규칙이 깨졌다" in summary
+
+
+def test_cli_writes_the_summary_beside_the_json(gate: Any, tmp_path: Path) -> None:  # noqa: ANN401
+    """CLI 는 JSON 과 markdown 을 함께 남긴다 — 판정·기계용·사람용이 같은 한 번의 실행에서 나온다."""
+
+    report = tmp_path / "gate.json"
+    summary = tmp_path / "gate.md"
+
+    assert (
+        gate.main(["--tier", gate.TIER_FAST, "--json", str(report), "--summary", str(summary), "--quiet"])
+        == gate.EXIT_OK
+    )
+    assert report.exists() and summary.exists()
+    payload = json.loads(report.read_text(encoding="utf-8"))
+    assert payload["ok"] is True
+    assert "# 증거 게이트" in summary.read_text(encoding="utf-8")
+
+
+# ------------------------------------------------------------------ CI 배선 (실제로 도는 자리)
+
+
+def test_both_workflows_run_the_gate_and_cover_every_change(gate: Any) -> None:  # noqa: ANN401
+    """ci.yml 과 evidence.yml 이 게이트를 돌리고, 둘이 합쳐 모든 변경을 덮는다.
+
+    txt 수준으로 보는 이유: 여기서 확인할 것은 워크플로 문법이 아니라 **배선**이다 — 한쪽이 `docs/**` 를
+    무시하므로 다른 쪽이 그 여집합(`docs/**`·`**.md`)을 맡아야 문서만 바꾼 PR 이 게이트를 건너뛰지 않는다.
+    """
+
+    code_ci = (REPO_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    docs_ci = (REPO_ROOT / ".github" / "workflows" / "evidence.yml").read_text(encoding="utf-8")
+
+    assert "scripts/evidence_gate.py" in code_ci
+    assert "scripts/evidence_gate.py" in docs_ci
+    assert "docs/**" in code_ci and "**.md" in code_ci, "ci.yml 이 문서 변경을 무시하는 전제가 바뀌었다"
+    assert "docs/**" in docs_ci and "**.md" in docs_ci, "문서 변경을 맡는 워크플로의 트리거가 바뀌었다"
+    assert "--summary" in code_ci and "--summary" in docs_ci
+    assert "GITHUB_STEP_SUMMARY" in code_ci and "GITHUB_STEP_SUMMARY" in docs_ci
+
+
 def test_recording_a_baseline_needs_a_method(gate: Any, tmp_path: Path) -> None:  # noqa: ANN401
     """무엇을 보고 승인했는지 없이는 기준을 기록하지 않는다(그리고 종료 코드로 말한다)."""
 

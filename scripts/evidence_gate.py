@@ -670,6 +670,57 @@ def baseline_payload(current: dict[str, dict[str, int]], *, method: str, recorde
     }
 
 
+def summary_markdown(
+    tier: str,
+    outcomes: tuple[Outcome, ...],
+    outsiders: tuple[Outcome, ...],
+    *,
+    moves: list[Movement] | None = None,
+    baseline: dict[str, object] | None = None,
+    problems: list[str] | None = None,
+) -> str:
+    """CI·리뷰어가 읽는 요약 — 터미널 표와 같은 사실을 markdown 으로.**실패한 실행도 요약을 남긴다**
+
+    (빨간 실행에서 요약이 사라지면 리뷰어는 다시 돌려야 하고, 그 사이에 트리가 바뀌면 같은 것을 못 본다).
+    """
+
+    found = list(problems or [])
+    headline = "PASS" if not found else "FAIL"
+    passed = sum(1 for outcome in outcomes if outcome.kind == KIND_PASS)
+    failed = sum(1 for outcome in outcomes if outcome.kind == KIND_FAIL)
+    unrun = sum(1 for outcome in outcomes if outcome.kind == KIND_UNRUN)
+    lines = [
+        f"# 증거 게이트 — tier {tier}",
+        "",
+        f"**verdict: {headline}** · stage {len(outcomes)}개 "
+        f"(PASS {passed} · FAIL {failed} · 못 돌림 {unrun} · tier 밖 {len(outsiders)})",
+        "",
+        "| stage | 결과 | exit | 초 | 수치 | 무엇을 보는가 |",
+        "|---|---|---:|---:|---:|---|",
+    ]
+    for outcome in outcomes:
+        code = "-" if outcome.exit_code is None else str(outcome.exit_code)
+        numbers = f"{len(outcome.numbers)}개" if outcome.numbers else "읽지 못함" if outcome.read_detail else "-"
+        lines.append(
+            f"| `{outcome.stage.name}` | {outcome.kind} | {code} | {outcome.seconds:.1f} | {numbers} | "
+            f"{outcome.stage.describes} |"
+        )
+    for outcome in outsiders:
+        lines.append(f"| `{outcome.stage.name}` | {outcome.kind} | - | - | - | {outcome.stage.describes} |")
+    if outsiders:
+        lines += [
+            "",
+            "## 이 실행이 보지 않은 층 (통과가 아니다)",
+            "",
+            *[f"- `{outcome.stage.name}` — {outcome.detail}" for outcome in outsiders],
+        ]
+    if moves:
+        lines += ["", *trend_lines(moves, baseline or {})]
+    if found:
+        lines += ["", "## 문제", "", *[f"- {problem}" for problem in found]]
+    return "\n".join(lines) + "\n"
+
+
 def load_canary_harnesses() -> tuple[str, ...]:
     """카나리아가 아는 harness 이름 — **게이트가 그 이름을 전부 돌리는지** 자기시험이 대조한다."""
 
@@ -802,6 +853,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--tier", choices=TIERS, default=TIER_FAST, help="도는 범위(기본: fast)")
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT, help="stage 별 제한 시간(초)")
     parser.add_argument("--json", type=Path, default=None, help="결과 JSON artifact 경로")
+    parser.add_argument("--summary", type=Path, default=None, help="CI·리뷰어가 읽는 markdown 요약 경로")
     parser.add_argument("--quiet", action="store_true", help="표를 출력하지 않는다")
     parser.add_argument("--baseline", type=Path, default=None, help="비교할 기준 파일(기본: 저장소의 기준)")
     parser.add_argument("--no-baseline", action="store_true", help="기준과 비교하지 않는다(추이 없음)")
@@ -887,6 +939,21 @@ def main(argv: list[str] | None = None) -> int:
     found = problems(outcomes, floors) + probe_problems(probe, name="evidence_gate")
     if baseline_problem:
         found.append(f"기준 파일을 읽지 못했다: {baseline_problem} — 비교 불가를 '문제 없음' 으로 쓰지 않는다")
+    if args.summary is not None:
+        args.summary.parent.mkdir(parents=True, exist_ok=True)
+        args.summary.write_text(
+            summary_markdown(
+                args.tier,
+                outcomes,
+                outsiders,
+                moves=moves,
+                baseline=baseline_info,
+                problems=found,
+            ),
+            encoding="utf-8",
+        )
+        if not args.quiet:
+            print(f"wrote {args.summary}")
     if args.json is not None:
         args.json.parent.mkdir(parents=True, exist_ok=True)
         payload = as_mapping(

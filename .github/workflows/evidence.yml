@@ -1,0 +1,121 @@
+# 증거 게이트 — **문서 변경**을 맡는 자리.
+#
+# `ci.yml` 의 `evidence-gate` job 은 코드 변경에서 돈다. 그 워크플로는 `paths-ignore: docs/**, **.md` 이므로
+# **문서만 바꾼 PR 은 증거 게이트를 건너뛴다** — 그런데 게이트가 주로 보는 것이 문서·증거라 이 구멍은 실질적이었다.
+# 이 워크플로가 그 여집합(`docs/**` · `**.md`)을 맡는다: 둘을 합치면 모든 변경이 덮인다(코드+문서를 함께 바꾼
+# PR 은 둘 다 돌지만, 각자 30초 안쪽이고 판정은 같은 명령이다).
+#
+# 리뷰어가 보는 것: 실행 요약(`$GITHUB_STEP_SUMMARY`) · PR 댓글(요약 본문, 같은 댓글을 갱신) · artifact 2종.
+# **빨간 실행도 요약과 artifact 를 남긴다**(`if: always()`) — 요약이 사라지면 리뷰어는 다시 돌려야 하고, 그
+# 사이에 트리가 바뀌면 같은 것을 못 본다.
+
+name: Evidence Gate (docs)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "**.md"
+  pull_request:
+    paths:
+      - "docs/**"
+      - "**.md"
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PYTHON_VERSION: "3.12"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: evidence-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evidence-gate:
+    name: "Evidence Gate (six layers, fast)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Sync locked environment (non-editable, dev extra)
+        run: uv sync --locked --no-editable --extra dev
+
+      # 판정은 종료 코드로, 진단은 요약·artifact 로 — 한 번의 실행이 둘을 함께 낸다.
+      - name: Run evidence gate
+        run: |
+          mkdir -p .artifacts
+          uv run --no-sync python scripts/evidence_gate.py \
+            --tier fast \
+            --json .artifacts/evidence-gate.json \
+            --summary .artifacts/evidence-gate.md
+
+      - name: Publish summary (even when the gate fails)
+        if: always()
+        run: |
+          if [ -f .artifacts/evidence-gate.md ]; then
+            cat .artifacts/evidence-gate.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            printf '%s\n' "증거 게이트가 요약을 남기지 않았다 — 실행 자체가 죽었거나 자리표시자 오류다." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload evidence gate report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-gate-docs
+          path: |
+            .artifacts/evidence-gate.json
+            .artifacts/evidence-gate.md
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Comment the summary on the pull request
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = '.artifacts/evidence-gate.md';
+            const marker = '증거 게이트 (six layers)';
+            const body = fs.existsSync(path)
+              ? `## ${marker}\n\n${fs.readFileSync(path, 'utf-8')}\n\n> 이 워크플로는 **문서 변경**을 맡는다(코드 변경은 ci.yml 의 같은 게이트가 본다).`
+              : `## ${marker}\n\n게이트가 요약을 남기지 않았다 — 로그를 확인해야 한다.`;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((comment) => comment.body && comment.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }

@@ -67,7 +67,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 575 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 579 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
@@ -95,7 +95,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=575 -->
+<!-- measured:cognitive_tests=579 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -128,7 +128,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | 회귀 | 명령 | exit | 관찰 |
 |---|---|---|---|
 | 테스트(전체 · **과거 회차 이력**) | `.venv/bin/python -m pytest tests/ -m 'not slow and not benchmark' -q` | 1 | **세 번 쟀고 회차마다 달랐다**(트리·수집 오염·실행 선택이 함께 달랐던 비교 — 현재 기준선은 이 표의 아래 원장 행이다) — ①(수정 전 · random) 7723 수집 · **94 failed / 7571 passed / 14 skipped / 20 xfailed**(26:31) ②(random) 7726 수집 · **10 failed / 7660 passed** ③(**고정 순서** `-p no:randomly`) 7726 수집 · **7 failed / 7663 passed / 14 skipped / 24 deselected / 20 xfailed**(21:21) ④(**고정 순서 · 정리 뒤**) 7726 수집 · **5 failed / 7666 passed / 14 skipped / 24 deselected / 20 xfailed**(20:13). 그 차이는 seed 효과가 아니라 트리·오염·실행 선택의 차이였고, seed 를 가른 측정은 §1.2 의 원장이다, ③·④의 실패도 전부 기존 항목이다(그중 둘은 §1.5에서 등록으로 닫았다) |
-| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 574 passed · 1 skipped (수집 575 — 원장 subdirs scope 2회에서도 결정적 실패 0) |
+| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 578 passed · 1 skipped (수집 579 — 원장 subdirs scope 2회에서도 결정적 실패 0) |
 | lint | `.venv/bin/python -m ruff check src/ tests/ scripts/` | 0 | All checks passed |
 | format | `.venv/bin/python -m ruff format --check src/ tests/ scripts/` | 0 | 1162 files already formatted |
 | type | `.venv/bin/python -m mypy <cognitive·surface·cli·5 scripts>` | 0 | Success: no issues found in 29 source files |
@@ -415,6 +415,19 @@ stdout 에 그대로 남는다), 리뷰는 그 셋을 같은 규칙으로 읽는
 이빨은 `test_digest_drift`·`test_state_claims`(“같은 store 에서 `--emit-json` 과 `--gate` 가 같은 결론”)과
 리뷰 쪽 6건(종료 코드 부재·모순·정말 결함일 때는 중복해서 세지 않음·exit 1 이어도 JSON 을 살리는지·JSON 이
 아니면 None·상태 주장에도 같은 규칙)이다.
+
+**판정과 추이가 리뷰어에게 닿는 자리 — 두 워크플로가 모든 변경을 덮는다.** 게이트가 CI 에서 도는 것만으로는
+부족했다: ① `ci.yml` 은 `paths-ignore: docs/**, **.md` 이므로 **문서만 바꾼 PR 은 게이트를 건너뛴다** —
+그런데 게이트가 주로 보는 것이 문서·증거라 그 구멍은 실질적이었다. ② 실행 결과가 artifact 로만 남아서,
+리뷰어가 “어느 층이 얇아졌나” 를 보려면 내려받아 열어야 했다. 이제 `evidence.yml` 이 그 여집합
+(`docs/**`·`**.md`)을 맡고(둘을 합치면 모든 변경이 덮인다 — 코드+문서를 함께 바꾼 PR 은 둘 다 돌지만 각자
+30초 안쪽이다), 게이트가 `--summary` 로 **markdown 요약**을 내면 두 워크플로가 그걸 `$GITHUB_STEP_SUMMARY`
+에 붙이고 PR 에는 같은 댓글을 갱신하며 artifact 2종(JSON·md)을 올린다. **빨간 실행도 요약을 남긴다**
+(`if: always()`) — 요약이 사라지면 리뷰어는 다시 돌려야 하고, 그 사이에 트리가 바뀌면 같은 것을 못 본다.
+요약 자체가 판정을 담으므로(`verdict: PASS|FAIL` · 층별 표 · 보지 않은 층 · 기준 대비 움직임 · 문제 목록)
+리뷰어가 보는 것과 게이트가 종료 코드로 말하는 것이 같은 한 번의 실행에서 나온다. 배선은 시험이 본다
+(txt 수준): 두 워크플로가 같은 명령을 돌리는가 · 한쪽이 문서를 무시하는 전제가 아직 살아 있는가 ·
+`--summary` 와 `GITHUB_STEP_SUMMARY` 를 둘 다 쓰는가.
 
 **"어제보다 얇아졌는가" — 층별 수치와 기준.** `exit_code` 만 보면 “지금 빨간가” 밖에 모른다. 그래서 게이트는 층마다
 **한 번의 실행으로** 판정과 수치를 함께 받는다(`--emit-json`·`--json`·`--output`; 그 경로가 실패를 종료 코드로 말하지
