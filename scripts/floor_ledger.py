@@ -494,6 +494,8 @@ class Ledger:
                 "recorded_floors": _record_int(self.record, "floors"),
                 "record_lowered": _record_int(self.record, "lowered"),
                 "record_moved": len(_record_lines(self.record, "moves")),
+                "record_layers_moved": len(_record_lines(self.record, "vanished_layers"))
+                + len(_record_lines(self.record, "added_layers")),
             },
             "record": dict(self.record),
             "outside": {
@@ -633,12 +635,28 @@ class RecordChanges:
     vanished: tuple[tuple[str, str], ...] = ()
     added: tuple[tuple[str, str], ...] = ()
     reasons: tuple[tuple[str, str], ...] = ()
+    # 층 단위 이동 — **하나의 결정이 열두 문장으로 흩어지지 않게** 한다. 층 하나가 roster 에서 빠지면 그 층의
+    # 하한이 한꺼번에 사라지는데, 그것을 하한 개수만큼의 실패 문장으로 내면 읽는 사람이 결정을 다시 세어야 한다.
+    vanished_layers: tuple[str, ...] = ()
+    added_layers: tuple[str, ...] = ()
 
     @property
     def judged_moves(self) -> int:
         """판단이 움직인 하한 수 — 0 이어야 기록이 지금을 대표한다."""
 
         return len(self.lowered) + len(self.vanished) + len(self.added) + len(self.reasons)
+
+    @property
+    def layer_moves(self) -> tuple[tuple[str, ...], tuple[str, ...]]:
+        """(표에서 사라진 층, 표에 새로 생긴 층)."""
+
+        return self.vanished_layers, self.added_layers
+
+    def partial(self, keys: Sequence[tuple[str, str]]) -> tuple[tuple[str, str], ...]:
+        """층이 통째로 움직인 것이 **아닌** 하한만 — 층 단위 문장과 하한 단위 문장이 같은 결정을 두 번 말하지 않게."""
+
+        whole = set(self.vanished_layers) | set(self.added_layers)
+        return tuple(key for key in keys if key[0] not in whole)
 
 
 def record_changes(judged: Sequence[tuple[str, str, int, str]], stored: dict[str, object] | None) -> RecordChanges:
@@ -650,6 +668,8 @@ def record_changes(judged: Sequence[tuple[str, str, int, str]], stored: dict[str
     stored_map = recorded_floors(stored)
     fresh = {(layer, label): (minimum, why) for layer, label, minimum, why in judged}
     shared = sorted(set(stored_map) & set(fresh))
+    stored_layers = {layer for layer, _label in stored_map}
+    fresh_layers = {layer for layer, _label in fresh}
     return RecordChanges(
         lowered=tuple(
             (layer, label, stored_map[(layer, label)][0], fresh[(layer, label)][0])
@@ -661,7 +681,27 @@ def record_changes(judged: Sequence[tuple[str, str, int, str]], stored: dict[str
         reasons=tuple(
             (layer, label) for layer, label in shared if fresh[(layer, label)][1] != stored_map[(layer, label)][1]
         ),
+        vanished_layers=tuple(sorted(stored_layers - fresh_layers)),
+        added_layers=tuple(sorted(fresh_layers - stored_layers)),
     )
+
+
+def _by_layer(keys: Sequence[tuple[str, str]]) -> str:
+    """(층, 이름) 목록을 층별로 묶어 한 줄로 — 층 하나의 결정이 하한 개수만큼의 문장으로 흩어지지 않게."""
+
+    grouped: dict[str, list[str]] = {}
+    for layer, label in keys:
+        grouped.setdefault(layer, []).append(label)
+    return "; ".join(f"{layer}: {', '.join(labels)}" for layer, labels in sorted(grouped.items()))
+
+
+def _count_by_layer(keys: Sequence[tuple[str, str]]) -> str:
+    """층별 하한 개수 — 층 하나가 통째로 움직였을 때 “몇 개가 함께 갔나” 를 말한다."""
+
+    grouped: dict[str, int] = {}
+    for layer, _label in keys:
+        grouped[layer] = grouped.get(layer, 0) + 1
+    return "; ".join(f"{layer} {count}개" for layer, count in sorted(grouped.items()))
 
 
 def record_problems(
@@ -669,8 +709,15 @@ def record_problems(
     stored: dict[str, object] | None,
     *,
     record: Path = RECORD,
+    roster: Sequence[str] = (),
 ) -> list[str]:
-    """기록된 **판단**이 지금 표와 같은가 — 사라진·내려간·근거 바뀜·새 하한을 모두 실패로 만든다."""
+    """기록된 **판단**이 지금 표와 같은가 — 사라진·내려간·근거 바뀜·새 하한을 모두 실패로 만든다.
+
+    문장은 **층 단위로 묶는다**: 층 하나가 roster 에서 빠지면 그 층의 하한이 한꺼번에 사라지는데(예: 하한 6개),
+    그것을 하한 개수만큼의 문장으로 내면 읽는 사람이 하나의 결정을 다시 세어야 한다. 그래서 층이 통째로 움직인
+    것과 층 안의 일부만 움직인 것을 나눠 말하고, **그 층이 아직 카나리아 roster 에 있는가**까지 물어 “그 층이
+    빠진 결정” 과 “표가 그 층을 읽지 못한 결함” 을 구분한다 — 같은 문장이 되면 둘은 같은 초록으로 보인다.
+    """
 
     if stored is None:
         return [
@@ -688,27 +735,54 @@ def record_problems(
             "하한 기록에 `floors` 가 없다 — 기록이 무엇을 승인했는지 말하지 않는다(`--record --method` 로 다시 기록)",
         ]
     changes = record_changes(judged, stored)
-    lowered, vanished, added, reasons = changes.lowered, changes.vanished, changes.added, changes.reasons
-    if lowered:
-        detail = ", ".join(f"{layer} · {label} {was} → {now}" for layer, label, was, now in lowered)
+    lowered, reasons = changes.lowered, changes.reasons
+    vanished = changes.partial(changes.vanished)
+    added = changes.partial(changes.added)
+    vanished_layers, added_layers = changes.layer_moves
+    known = set(roster)
+    if vanished_layers:
+        # 층 하나가 통째로 사라졌다 — 그 층이 아직 roster 에 있으면 그것은 결정이 아니라 결함이다(표가 읽지 못했다).
+        still_alive = [layer for layer in vanished_layers if layer in known]
+        left_roster = [layer for layer in vanished_layers if layer not in known]
+        if still_alive:
+            live_floors = tuple(key for key in changes.vanished if key[0] in set(still_alive))
+            problems.append(
+                f"기록의 층 {', '.join(still_alive)}(하한 {_count_by_layer(live_floors)})의 하한이 통째로 표에서 사라졌다 — 그 층은 **아직 카나리아 roster 에 "
+                "있다**: 표가 그 층을 읽지 못한 것이다(읽지 못한 이유는 표의 다른 문장에 있다). 그 층이 빠진 결정이라면 "
+                "roster 에서도 빼라"
+            )
+        if left_roster:
+            gone_floors = tuple(key for key in changes.vanished if key[0] in set(left_roster))
+            problems.append(
+                f"기록의 층 {', '.join(left_roster)}(하한 {_count_by_layer(gone_floors)})가 roster 에서도 표에서도 "
+                "사라졌다 — 층을 빼는 것도 결정이다: `--record --method` 로 그 결정을 남겨라"
+            )
+    if added_layers:
+        new_floors = tuple(key for key in changes.added if key[0] in set(added_layers))
         problems.append(
-            f"기록보다 **내려간 하한**이 있다({detail}) — 하한을 내리는 것은 판단이므로 승인 문장과 함께 다시 기록해야 "
+            f"기록에 없는 새 층 {', '.join(added_layers)}(하한 {_count_by_layer(new_floors)})이 표에 들어왔다 — 층 이름이 "
+            "바뀐 것이라면 그 결정을, 새 층이라면 그 층의 하한을 `--record --method` 로 기록하라(기록은 승인된 목록이다)"
+        )
+    if lowered:
+        by_layer = "; ".join(f"{layer}: {label} {was} → {now}" for layer, label, was, now in lowered)
+        problems.append(
+            f"기록보다 **내려간 하한**이 있다({by_layer}) — 하한을 내리는 것은 판단이므로 승인 문장과 함께 다시 기록해야 "
             "한다(`--record --method`): 지금은 그 판단이 어디에도 남지 않는다"
         )
     if vanished:
-        detail = ", ".join(f"{layer} · {label}" for layer, label in vanished)
         problems.append(
-            f"기록에서 사라진 하한이 있다({detail}) — 지웠으면 `--record --method` 로 다시 기록하라: 면죄부는 지운다"
+            f"기록에서 사라진 하한이 있다(층 {_by_layer(vanished)}) — 그 층은 표에 남아 있는데 하한만 빠졌다: 지웠으면 "
+            "`--record --method` 로 다시 기록하라(면죄부는 지운다)"
         )
     if added:
-        detail = ", ".join(f"{layer} · {label}" for layer, label in added)
         problems.append(
-            f"기록에 없는 하한이 생겼다({detail}) — 승인된 목록이 지금을 대표하지 않는다(`--record --method` 로 기록하라)"
+            f"기록에 없는 하한이 생겼다(층 {_by_layer(added)}) — 그 층은 이미 기록에 있는데 하한만 새로 들였다: 승인된 "
+            "목록이 지금을 대표하지 않는다(`--record --method` 로 기록하라)"
         )
     if reasons:
-        detail = ", ".join(f"{layer} · {label}" for layer, label in reasons)
         problems.append(
-            f"기록과 근거가 바뀐 하한이 있다({detail}) — 근거가 바뀌면 그것은 다른 판단이다(`--record --method` 로 다시 기록하라)"
+            f"기록과 근거가 바뀐 하한이 있다(층 {_by_layer(reasons)}) — 근거가 바뀌면 그것은 다른 판단이다"
+            "(`--record --method` 로 다시 기록하라)"
         )
     return problems
 
@@ -782,6 +856,8 @@ def record_report(
         "vanished": len(changes.vanished),
         "added": len(changes.added),
         "reasons": len(changes.reasons),
+        "vanished_layers": list(changes.vanished_layers),
+        "added_layers": list(changes.added_layers),
         "moves": list(record_moves(ledger, stored)),
         "raised": list(record_raised(ledger, stored)),
         "problems": list(issues),
@@ -891,7 +967,13 @@ def build(*, evidence_dir: Path = EVIDENCE_DIR, record: Path | None = None) -> L
     # 기록 문제를 `problems` 에 **합치지 않는** 까닭은 기록을 만드는 실행(`--record`)이 그 문제 때문에 자기 기록을 못 쓰게
     # 되기 때문이다(자기가 없어서 자기를 못 만드는 고리). 대신 보고에 따로 실어 호출자가 판정에 합친다.
     stored = read_record(record_path)
-    record_issues = record_problems(judged_floors(ledger), stored, record=record_path)
+    # 층 생사를 묻는 자리에는 roster 를 넘긴다 — “그 층이 빠진 결정” 과 “표가 그 층을 읽지 못한 결함” 은 다른 문장이어야 한다.
+    record_issues = record_problems(
+        judged_floors(ledger),
+        stored,
+        record=record_path,
+        roster=tuple(str(name) for name in canary.HARNESSES),
+    )
     report = record_report(record_path, stored, ledger, record_issues)
     return Ledger(
         rows,
@@ -1125,16 +1207,55 @@ def self_probe() -> Probe:
         "관측만 움직인 기록은 낡지 않는다(관측은 판정에 안 든다)",
         record_problems(judged_row, {**recorded, "floors": [{**recorded["floors"][0], "observed": 999}]}) == [],  # type: ignore[index]
     )
+    # 층 단위 문장 — 하나의 결정(층이 통째로 움직임)이 하한 개수만큼의 문장으로 흩어지지 않아야 한다.
+    wide: dict[str, object] = {
+        "method": "2026-01-01 시험 승인",
+        "recorded_on": "2026-01-01",
+        "floors": [
+            {"layer": "p", "label": "수", "minimum": 1, "observed": 3, "why": "근거"},
+            {"layer": "p", "label": "다른 수", "minimum": 1, "observed": 5, "why": "근거"},
+            {"layer": "q", "label": "수", "minimum": 2, "observed": 7, "why": "근거"},
+        ],
+    }
+    alive = (("p", "수", 1, "근거"), ("q", "수", 2, "근거"))
+    partial = record_problems((("p", "수", 1, "근거"), ("q", "수", 2, "근거"), ("p", "새 수", 1, "근거")), wide)
     cases.check(
-        "기록에서 사라진 하한은 실패한다(지운 것도 결정이다)",
-        any("사라진 하한" in problem for problem in record_problems((), recorded)),
+        "층은 살아 있고 하한만 새로 생기면 그 층 이름으로 묶어 말한다",
+        any("층 p: 새 수" in problem for problem in partial),
     )
     cases.check(
-        "기록에 없는 새 하한도 실패한다(승인된 목록이 지금을 대표하지 않는다)",
+        "층은 살아 있고 하한만 사라져도 층 이름으로 묶는다(둘째 하한을 지운 경우)",
         any(
-            "기록에 없는 하한" in problem
-            for problem in record_problems((*judged_row, ("q", "수", 1, "근거")), recorded)
+            "층 p: 다른 수" in problem
+            for problem in record_problems((("p", "수", 1, "근거"), ("q", "수", 2, "근거")), wide)
         ),
+    )
+    only_q = (("q", "수", 2, "근거"),)  # 층 p 가 통째로 사라진 표
+    whole_layer = record_problems(only_q, wide, roster=("p", "q"))
+    cases.check(
+        "층이 통째로 표에서 사라지면 하한 개수와 함께 한 문장으로 말한다",
+        len(whole_layer) == 1 and "층 p" in whole_layer[0] and "2개" in whole_layer[0],
+    )
+    cases.check(
+        "그 층이 아직 카나리아 roster 에 있으면 결정이 아니라 결함이라고 말한다(둘은 같은 초록으로 보이면 안 된다)",
+        "아직 카나리아 roster 에" in whole_layer[0],
+    )
+    cases.check(
+        "roster 에서도 빠진 층은 빠진 결정이므로 그 결정을 기록하라고 말한다",
+        any("roster 에서도 표에서도" in problem for problem in record_problems(only_q, wide, roster=("q",))),
+    )
+    cases.check(
+        "기록에 없는 새 층은 층 이름과 하한 개수로 말하고 이름이 바뀐 경우를 묻는다",
+        any(
+            "기록에 없는 새 층 r" in problem and "1개" in problem and "이름이 바뀐 것" in problem
+            for problem in record_problems((*alive, ("r", "수", 1, "근거")), wide, roster=("p", "q", "r"))
+        ),
+    )
+    renamed = record_problems((("p", "수", 1, "근거"), ("r", "수", 2, "근거")), wide, roster=("p", "r"))
+    cases.check(
+        "층 이름 변경은 두 결정(사라짐·새로 생김)으로 나눠 말한다 — 흩어진 문장으로 읽는 사람이 다시 세지 않게",
+        any("roster 에서도 표에서도" in problem and "층 q" in problem for problem in renamed)
+        and any("기록에 없는 새 층 r" in problem for problem in renamed),
     )
     cases.check(
         "값이 같아도 근거가 바뀌면 다른 판단이다",
@@ -1218,7 +1339,8 @@ def describe(ledger: Ledger, probe: Probe) -> str:
         lines.append(
             f"  하한 기록  {record.get('path')} · {record.get('recorded_on') or '날짜 없음'} 승인 · "
             f"기록된 하한 {record.get('floors')}개 · 판단 이동 내려감 {record.get('lowered')} · 사라짐 {record.get('vanished')} · "
-            f"새 하한 {record.get('added')} · 근거 변경 {record.get('reasons')}"
+            f"새 하한 {record.get('added')} · 근거 변경 {record.get('reasons')} · "
+            f"층 이동 사라짐 {len(_record_lines(record, 'vanished_layers'))} · 새 층 {len(_record_lines(record, 'added_layers'))}"
         )
         lines.append(f"    승인 문장: {record.get('method')}")
     else:

@@ -1335,6 +1335,7 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
         detail=(
             f"층 {len(layers)}개 · 하한 {summed}개가 한 표에 있고, 각 층의 승인(누가 언제)이 실려 있다 — "
             f"하한 기록 {record.get('recorded_on')} 승인({record.get('floors')}개 · 판단 이동 내려감 {record.get('lowered')} · "
+            f"층 이동 {len(_as_list(record.get('vanished_layers'))) + len(_as_list(record.get('added_layers')))} · "
             f"관측 이동 {len(_as_list(record.get('moves')))}보고)"
         ),
         observed=summed,

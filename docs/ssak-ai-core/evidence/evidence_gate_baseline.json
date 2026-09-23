@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "2026-09-24 하한 기록 회차: 원장이 사람이 승인한 하한 목록(evidence/floor_ledger.json · 층 11·하한 21)과 대조해 내려간 하한값·사라진 하한·근거 바뀐 하한·기록에 없는 새 하한을 실패로 만들고, 관측 이동과 올라간 하한은 보고로만 낸다 — 기록 없는 실행은 통과가 아니고 실패한 실행은 기록하지 않는다"
+    "2026-09-24 층 단위 판단 회차: 원장의 판단 이동이 층 이름으로 묶여 말해진다 — 층 하나가 통째로 빠지면 하한 개수만큼의 문장이 아니라 한 문장(몇 개가 함께 갔는지)이고, 그 층이 아직 카나리아 roster 에 있으면 결정이 아니라 결함(표가 그 층을 읽지 못했다)으로 말한다. 층 이동 0(사라진 층 0 · 새 층 0)"
   ],
   "layers": {
     "audit_enum_identity": {
@@ -51,6 +51,7 @@
       "counts.outside_declared": 10,
       "counts.outside_scanned": 32,
       "counts.outside_silent": 0,
+      "counts.record_layers_moved": 0,
       "counts.record_lowered": 0,
       "counts.record_moved": 0,
       "counts.recorded": 4,
@@ -123,7 +124,7 @@
       "checks": 16,
       "measured.canary_harnesses": 11,
       "measured.canary_ok": 11,
-      "measured.cognitive_tests": 733,
+      "measured.cognitive_tests": 736,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
@@ -157,6 +158,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "2026-09-24 하한 기록 회차: 원장이 사람이 승인한 하한 목록(evidence/floor_ledger.json · 층 11·하한 21)과 대조해 내려간 하한값·사라진 하한·근거 바뀐 하한·기록에 없는 새 하한을 실패로 만들고, 관측 이동과 올라간 하한은 보고로만 낸다 — 기록 없는 실행은 통과가 아니고 실패한 실행은 기록하지 않는다",
+  "method": "2026-09-24 층 단위 판단 회차: 원장의 판단 이동이 층 이름으로 묶여 말해진다 — 층 하나가 통째로 빠지면 하한 개수만큼의 문장이 아니라 한 문장(몇 개가 함께 갔는지)이고, 그 층이 아직 카나리아 roster 에 있으면 결정이 아니라 결함(표가 그 층을 읽지 못했다)으로 말한다. 층 이동 0(사라진 층 0 · 새 층 0)",
   "recorded_on": "2026-09-24"
 }

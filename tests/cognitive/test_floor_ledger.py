@@ -11,6 +11,8 @@
     선언돼야 한다. 선언은 양방향이다(하한이 되거나 사라지면 낡은 선언으로 실패한다 — 면죄부가 다음 결함을 가린다).
   * **사람이 승인한 하한 기록**과 지금 표가 같다 — 기록에서 하한이 사라지거나, 하한값이 내려가거나, 근거가 바뀌면
     그 판단이 어디에도 안 남으므로 실패다. 관측이 움직인 것은 보고일 뿐이다(그것까지 실패로 만들면 기록이 잡음이 된다).
+  * 그 이동은 **층 단위로 묶여** 말해진다 — 층 하나가 roster 에서 빠지면 하한이 한꺼번에 사라지는데, 그것을 하한 개수만큼의
+    문장으로 내면 읽는 사람이 하나의 결정을 다시 세어야 한다. 그 층이 아직 roster 에 있으면 결정이 아니라 결함이다.
   * JSON 을 내는 실행도 **판정을 종료 코드로** 말하고, 소요 시간은 판정 수치에 섞이지 않는다.
 """
 
@@ -201,26 +203,91 @@ def test_a_lowered_floor_makes_the_record_stale(ledger_module: Any, ledger: Any)
 
 
 def test_a_vanished_or_added_floor_makes_the_record_stale(ledger_module: Any, ledger: Any) -> None:  # noqa: ANN401
-    """하한을 지우는 것도, 새 하한을 기록 없이 들이는 것도 결정이다 — 둘 다 다시 기록해야 한다."""
+    """하한을 지우는 것도, 새 하한을 기록 없이 들이는 것도 결정이다 — 문장이 방향과 **결함의 종류**를 구분한다."""
 
     stored = ledger_module.read_record()
     assert stored is not None
     judged = ledger_module.judged_floors(ledger)
+    roster = [row.name for row in ledger.rows]
     without = {**stored, "floors": stored["floors"][1:]}  # type: ignore[index]
-    extra = {
+    ghost_layer = {
         **stored,
         "floors": [
             *stored["floors"],  # type: ignore[index]
-            {"layer": "probe", "label": "수", "minimum": 1, "observed": 1, "why": "근거"},
+            {"layer": "ghost", "label": "수", "minimum": 1, "observed": 1, "why": "근거"},
         ],
     }
 
-    # 표에서 사라진 하한 = 기록에는 살아 있는데 지금 표가 안 싣는다.
-    assert any("사라진 하한" in problem for problem in ledger_module.record_problems(judged[1:], stored))
-    # 기록에 없는 하한 = 지금 표가 새로 들였는데 기록이 모른다(기록에서 지운 경우도 같다).
-    assert any("기록에 없는 하한" in problem for problem in ledger_module.record_problems(judged, without))
-    # 기록에만 있는 하한은 “사라진” 쪽이다 — 어느 편에 있든 그 하한은 지금 표에 없다.
-    assert any("사라진 하한" in problem for problem in ledger_module.record_problems(judged, extra))
+    # 표에서 사라진 하한(그 층은 살아 있다) = 기록에는 있는데 지금 표가 안 싣는다.
+    assert any("사라진 하한" in problem for problem in ledger_module.record_problems(judged[1:], stored, roster=roster))
+    # 기록에 없는 하한(그 층은 살아 있다) = 지금 표가 새로 들였는데 기록이 모른다(기록에서 지운 경우도 같다).
+    assert any(
+        "기록에 없는 하한" in problem for problem in ledger_module.record_problems(judged, without, roster=roster)
+    )
+    # 기록에만 있는 층은 “층이 통째로 사라진” 쪽이다 — roster 가 그 층을 여전히 알고 있으면 결함, 모르면 결정이다.
+    known = ledger_module.record_problems(judged, ghost_layer, roster=[*roster, "ghost"])
+    forgotten = ledger_module.record_problems(judged, ghost_layer, roster=roster)
+
+    assert any("ghost" in problem and "통째로 표에서 사라졌다" in problem for problem in known)
+    assert any("ghost" in problem and "roster 에서도 표에서도" in problem for problem in forgotten)
+
+
+def test_a_vanished_layer_is_one_decision_not_many_sentences(ledger_module: Any) -> None:  # noqa: ANN401
+    """층이 통째로 사라진 것은 **하나의 결정**이다 — 하한 개수만큼의 문장으로 흐트러지면 읽는 사람이 다시 세어야 한다.
+
+    그리고 그 층이 아직 카나리아 roster 에 있으면 그것은 결정이 아니라 **결함**이다(표가 그 층을 읽지 못했다) —
+    두 경우가 같은 문장이 되면 서로 다른 사건이 같은 초록으로 보인다.
+    """
+
+    stored = {
+        "method": "시험 승인",
+        "recorded_on": "2026-01-01",
+        "floors": [
+            {"layer": "gone", "label": "수", "minimum": 1, "observed": 3, "why": "근거"},
+            {"layer": "gone", "label": "다른 수", "minimum": 2, "observed": 4, "why": "근거"},
+            {"layer": "alive", "label": "수", "minimum": 1, "observed": 5, "why": "근거"},
+        ],
+    }
+    judged = (("alive", "수", 1, "근거"),)
+
+    still_listed = ledger_module.record_problems(judged, stored, roster=("gone", "alive"))
+    left_roster = ledger_module.record_problems(judged, stored, roster=("alive",))
+
+    assert len(still_listed) == 1, still_listed  # 하한 둘이 함께 갔는데 문장은 하나다
+    assert "층 gone" in still_listed[0] and "2개" in still_listed[0]
+    assert "아직 카나리아 roster 에" in still_listed[0]
+    assert len(left_roster) == 1 and "roster 에서도 표에서도" in left_roster[0]
+    assert still_listed[0] != left_roster[0], "결정과 결함이 같은 문장이면 둘은 같은 초록으로 보인다"
+
+
+def test_a_partial_move_names_the_layer_but_not_the_whole_lifecycle(ledger_module: Any) -> None:  # noqa: ANN401
+    """층이 살아 있으면 그 층 이름으로 묶되 “층이 사라졌다” 고 말하지 않는다 — 결함의 종류를 섞으면 안 된다."""
+
+    stored = {
+        "method": "시험 승인",
+        "recorded_on": "2026-01-01",
+        "floors": [
+            {"layer": "p", "label": "수", "minimum": 1, "observed": 3, "why": "근거"},
+            {"layer": "p", "label": "다른 수", "minimum": 1, "observed": 5, "why": "근거"},
+        ],
+    }
+    problems = ledger_module.record_problems((("p", "수", 1, "근거"),), stored, roster=("p",))
+
+    assert len(problems) == 1 and "층 p: 다른 수" in problems[0]
+    assert "roster 에서도" not in problems[0] and "통째로" not in problems[0]
+
+
+def test_the_committed_record_has_no_layer_moves(ledger_module: Any, ledger: Any) -> None:  # noqa: ANN401
+    """커밋된 기록과 지금 표 사이에 층 이동이 없다 — 표가 보는 층이 그대로라는 뜻이고, 그 수는 보고와 추이에 실린다."""
+
+    assert ledger.record["vanished_layers"] == []
+    assert ledger.record["added_layers"] == []
+    assert ledger_module.record_changes(
+        ledger_module.judged_floors(ledger), ledger_module.read_record()
+    ).layer_moves == (
+        (),
+        (),
+    )
 
 
 def test_row_rules_bite(ledger_module: Any) -> None:  # noqa: ANN401
