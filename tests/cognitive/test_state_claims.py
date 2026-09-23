@@ -44,6 +44,12 @@ def write_doc(tmp_path: Path, body: str) -> Path:
     return doc
 
 
+def gate(audit: Any, claims: list[Any]) -> list[str]:  # noqa: ANN401 - 스크립트 module
+    """리뷰가 보는 조건 그대로 게이트를 돌린다 — 탐지력은 실제 증거 문서 기준으로 판정한다."""
+
+    return audit.gate_failures(claims, audit.count_mentions(), audit.self_probe())
+
+
 # --------------------------------------------------------------------------- 판독
 
 
@@ -95,7 +101,7 @@ def test_claim_that_matches_the_tree_is_ok(audit: Any, tmp_path: Path) -> None: 
     assert judged[0].actual == "passes"
     assert judged[0].status == "ok"
     assert judged[0].stale is False
-    assert audit.gate_failures(judged) == []
+    assert gate(audit, judged) == []
 
 
 def test_stale_claim_without_a_correction_fails_the_gate(audit: Any, tmp_path: Path) -> None:  # noqa: ANN401
@@ -105,7 +111,7 @@ def test_stale_claim_without_a_correction_fails_the_gate(audit: Any, tmp_path: P
     judged = audit.measure([doc])
 
     assert judged[0].status == "stale"
-    problems = audit.gate_failures(judged)
+    problems = gate(audit, judged)
     assert problems and "정정 표기 없음" in problems[0]
 
 
@@ -120,7 +126,7 @@ def test_nearby_correction_note_resolves_the_claim(audit: Any, tmp_path: Path) -
 
     assert judged[0].status == "fixed"
     assert judged[0].stale is False
-    assert audit.gate_failures(judged) == []
+    assert gate(audit, judged) == []
 
 
 def test_far_away_correction_does_not_count(audit: Any, tmp_path: Path) -> None:  # noqa: ANN401
@@ -159,3 +165,88 @@ def test_emit_json_reports_counts(audit: Any, capsys: pytest.CaptureFixture[str]
         + payload["counts"]["unknown"]
     )
     assert all("status" in claim for claim in payload["claims"])
+
+
+# --------------------------------------------------------------------------- 감사자 자신의 이빨
+
+
+def test_self_probe_passes_on_the_real_detector(audit: Any) -> None:  # noqa: ANN401
+    """매 실행 자기시험은 실제 감사자에 대해 통과해야 한다 — 재판정 항목이 0건이면 검사하지 않은 것이다."""
+
+    probe = audit.self_probe()
+
+    assert probe.ok, probe.failures
+    assert probe.cases >= len(audit._REQUIRED_FAIL_WORDS) + len(audit._REQUIRED_PASS_WORDS)
+
+
+def test_self_probe_notices_an_emptied_vocabulary(audit: Any, monkeypatch: pytest.MonkeyPatch) -> None:  # noqa: ANN401
+    """어휘를 통째로 비우면 주장 0건이 될 수 있다 — 자기시험이 그 눈먼 상태를 잡아야 한다."""
+
+    monkeypatch.setattr(audit, "_FAILS", ())
+    monkeypatch.setattr(audit, "_PASSES", ())
+
+    assert audit.self_probe().ok is False
+    assert audit.main(["--self-test"]) == 1
+
+
+def test_self_probe_notices_a_deleted_word(audit: Any, monkeypatch: pytest.MonkeyPatch) -> None:  # noqa: ANN401
+    """상수를 쓸어보기만 하면 **단어를 지우는** 변경을 놓친다 — 요구 어휘를 따로 고정해 그것도 잡는다."""
+
+    monkeypatch.setattr(audit, "_PASSES", ("통과", "passed"))  # green 삭제
+    probe = audit.self_probe()
+
+    assert probe.ok is False
+    assert any("green" in failure for failure in probe.failures)
+
+
+def test_gate_fails_when_no_node_mention_is_found(audit: Any) -> None:  # noqa: ANN401
+    """추적할 node 자체가 안 보이면 “주장 0건” 으로 통과하지 않는다 — 탐지력 하한이 실패시킨다."""
+
+    problems = audit.gate_failures([], 0, audit.self_probe())
+
+    assert any("눈이 멀었을 수 있다" in problem for problem in problems)
+    assert any("하한" in problem for problem in problems)
+
+
+def test_gate_fails_when_the_probe_fails(audit: Any, monkeypatch: pytest.MonkeyPatch) -> None:  # noqa: ANN401
+    """자기시험 실패는 판정과 무관하게 게이트 실패다 — 판독 규칙이 깨진 실행은 증거가 아니다."""
+
+    monkeypatch.setattr(audit, "_FAILS", ())
+    problems = audit.gate_failures([], 6, audit.self_probe())
+
+    assert any("자기시험 실패" in problem for problem in problems)
+
+
+def test_mentions_ignore_fenced_blocks_and_state_words(audit: Any, tmp_path: Path) -> None:  # noqa: ANN401
+    """mention 은 상태 어휘가 없어도 세지만, 펜스 안은 세지 않는다(주장의 상한 집합)."""
+
+    fence = "`" * 3
+    doc = write_doc(
+        tmp_path,
+        f"`{PASSING_NODE}` 를 실행한다.\n\n{fence}\n`{PASSING_NODE}` 도 여기 있다.\n{fence}\n",
+    )
+
+    assert audit.count_mentions([doc]) == 1
+    assert audit.extract_claims([doc]) == []
+
+
+def test_emit_json_carries_coverage_and_probe(audit: Any, capsys: pytest.CaptureFixture[str]) -> None:  # noqa: ANN401
+    """리뷰가 읽는 JSON 에 탐지력(문서·mention 수)과 자기시험 결과가 들어 있다."""
+
+    assert audit.main(["--emit-json"]) == 0
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["coverage"]["docs"] >= 1
+    assert payload["coverage"]["mentions"] >= payload["counts"]["claims"]
+    assert payload["probe"]["ok"] is True
+    assert payload["probe"]["cases"] >= 1
+
+
+def test_self_test_cli_does_not_run_tests(audit: Any, capsys: pytest.CaptureFixture[str]) -> None:  # noqa: ANN401
+    """`--self-test` 는 시험을 돌리지 않고 자기시험만 보고한다(오래 걸리지 않는다)."""
+
+    assert audit.main(["--self-test"]) == 0
+    out = capsys.readouterr().out
+
+    assert "[self-probe]" in out
+    assert "산문" in out

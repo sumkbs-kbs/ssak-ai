@@ -1067,9 +1067,18 @@ def check_state_claims(report: dict[str, object] | None) -> CheckResult:
             detail=f"{_display(STATE_CLAIMS_SCRIPT)} 를 돌리지 못했다 — 상태 주장을 판정할 수 없다",
         )
     counts = _as_dict(report.get("counts"))
+    coverage = _as_dict(report.get("coverage"))
+    probe = _as_dict(report.get("probe"))
     stale = _as_int(counts.get("stale"))
     unknown = _as_int(counts.get("unknown"))
+    mentions = _as_int(coverage.get("mentions"))
     problems: list[str] = []
+    if probe and not probe.get("ok"):
+        problems.append(f"감사 자기시험이 실패했다(판독 규칙이 깨졌다): {probe.get('failures')}")
+    if not probe:
+        problems.append("자기시험 결과가 없다 — 감사가 자기 판독력을 확인하지 않았다")
+    if mentions < _as_int(coverage.get("min_mentions")):
+        problems.append(f"node 를 지목한 산문이 {mentions}줄뿐이다 — 감사가 눈이 멀었을 수 있다")
     if stale:
         offenders = [
             f"{item.get('doc')}:{item.get('line')}"
@@ -1091,7 +1100,9 @@ def check_state_claims(report: dict[str, object] | None) -> CheckResult:
         passed=True,
         detail=(
             f"상태 주장 {_as_int(counts.get('claims'))}건 — 그대로 {_as_int(counts.get('ok'))} · "
-            f"정정 붙임 {_as_int(counts.get('fixed'))} · 낡음 {stale}"
+            f"정정 붙임 {_as_int(counts.get('fixed'))} · 낡음 {stale} · "
+            f"자기시험 {_as_int(probe.get('cases'))}건 통과(증거 문서 {_as_int(coverage.get('docs'))}개 "
+            f"· node 지목 산문 {mentions}줄)"
         ),
         observed=_as_int(counts.get("fixed")),
     )
@@ -1101,10 +1112,14 @@ def state_claim_measured(report: dict[str, object]) -> dict[str, int]:
     """상태 주장 감사에서 마커로 고정할 값."""
 
     counts = _as_dict(report.get("counts"))
+    coverage = _as_dict(report.get("coverage"))
+    probe = _as_dict(report.get("probe"))
     return {
         "state_claims": _as_int(counts.get("claims")),
         "state_claims_fixed": _as_int(counts.get("fixed")),
         "state_claims_stale": _as_int(counts.get("stale")),
+        "state_claim_mentions": _as_int(coverage.get("mentions")),
+        "state_claim_probe_cases": _as_int(probe.get("cases")),
     }
 
 

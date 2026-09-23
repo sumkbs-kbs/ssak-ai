@@ -17,10 +17,19 @@
 낡은 주장을 지우지 않고 인정하는 방법은 **정정 표기**다: 그 줄 뒤 5줄 안에 `> ... 정정 YYYY-MM-DD` 형태의
 인용문이 있으면 “그 시점의 관찰 + 정정”으로 본다(역사를 지우지 않는다는 규칙과 같은 방식).
 
+감사자 자신이 조용히 눈이 머는 것을 막는 두 장치:
+
+  * **운영 자기시험(self-probe)** — 매 실행마다 어휘·펜스 처리·정정 창을 합성 입력으로 다시 재판정한다.
+    어휘를 지우거나 창을 망가뜨리면 그 실행이 바로 실패한다(“주장 0건” 으로 조용히 통과하지 않는다).
+  * **탐지력 하한(coverage floor)** — 주장 수뿐 아니라 **node 를 지목한 산문 줄 수(mention)** 를 함께 센다.
+    mention 은 상태 어휘가 없어도 세므로 주장보다 큰 상한 집합이다. mention·주장이 하한 아래로 가면 게이트가
+    실패한다 — 문서가 정말 주장을 그만둔 것이면 하한 상수를 **근거와 함께 사람이 내린다**.
+
 ```sh
-.venv/bin/python scripts/audit_state_claims.py             # 표 + 판정
+.venv/bin/python scripts/audit_state_claims.py             # 표 + 자기시험 + 판정
 .venv/bin/python scripts/audit_state_claims.py --emit-json  # 리뷰 검사가 읽는 형태
-.venv/bin/python scripts/audit_state_claims.py --gate       # 낡은 주장·정정 누락이면 exit 1
+.venv/bin/python scripts/audit_state_claims.py --gate       # 낡은 주장·정정 누락·탐지력 하한 미달이면 exit 1
+.venv/bin/python scripts/audit_state_claims.py --self-test  # 자기시험만 돌리고 종료
 ```
 """
 
@@ -47,6 +56,14 @@ _FAILS: Final[tuple[str, ...]] = ("기존 red", "red", "실패", "failed")
 _PASSES: Final[tuple[str, ...]] = ("통과", "passed", "green")
 # 정정 표기 — 이 줄 뒤 가까이에 있으면 “그 시점 관찰 + 정정”으로 본다.
 _CORRECTION_WINDOW: Final[int] = 5
+# 자기시험이 요구하는 최소 어휘 — 상수를 쓸어 보기만 하면 **단어를 지우는 변경**을 못 잡는다.
+# 그러므로 “이 말들은 반드시 분류되어야 한다” 를 여기에 고정하고, 빠지면 자기시험이 실패한다.
+_REQUIRED_FAIL_WORDS: Final[tuple[str, ...]] = ("기존 red", "red", "실패", "failed")
+_REQUIRED_PASS_WORDS: Final[tuple[str, ...]] = ("통과", "passed", "green")
+# 탐지력 하한 — 감사가 조용히 눈이 머는 것을 막는다(주장 0건으로 조용히 통과하지 않는다).
+# 증거 문서가 정말로 주장을 그만두면 상수를 **근거와 함께** 사람이 내리고 그 이유를 이 줄에 적는다.
+_MIN_MENTIONS: Final[int] = 1
+_MIN_CLAIMS: Final[int] = 1
 # 인용문(`>`) 안에 “정정” 과 날짜가 함께 있어야 정정으로 본다 — 날짜 위치는 묻지 않는다.
 _CORRECTION_PATTERN: Final[re.Pattern[str]] = re.compile(r">(?=.*정정)(?=.*\d{4}-\d{2}-\d{2}).*")
 
@@ -129,39 +146,149 @@ def _corrected(lines: list[str], index: int) -> bool:
     return any(_CORRECTION_PATTERN.search(line) for line in window)
 
 
+def _prose_lines(lines: list[str]) -> list[tuple[int, str]]:
+    """펜스 밖 줄만 `(0-based index, line)` 로 낸다 — 코드 블록은 그때 돌린 명령·출력의 기록이다."""
+
+    prose: list[tuple[int, str]] = []
+    fenced = False
+    for index, line in enumerate(lines):
+        if line.strip().startswith("```"):
+            fenced = not fenced
+            continue
+        if not fenced:
+            prose.append((index, line))
+    return prose
+
+
+def count_mentions(docs: list[Path] | None = None) -> int:
+    """node 를 지목한 **산문 줄 수** — 상태 어휘가 없어도 센다(주장의 상한 집합)."""
+
+    total = 0
+    for doc in docs if docs is not None else documents():
+        lines = doc.read_text(encoding="utf-8").splitlines()
+        total += sum(1 for _, line in _prose_lines(lines) if _NODE_PATTERN.search(line))
+    return total
+
+
+def claims_from_lines(name: str, lines: list[str]) -> list[Claim]:
+    """한 문서의 줄들에서 주장을 뽑는다 — 파일을 안 건드리는 순수 판독(자기시험이 쓴다)."""
+
+    claims: list[Claim] = []
+    for index, line in _prose_lines(lines):
+        claimed = _claimed_state(line)
+        if claimed is None:
+            continue
+        for match in _NODE_PATTERN.finditer(line):
+            claims.append(
+                Claim(
+                    doc=name,
+                    line=index + 1,
+                    node=f"{match.group(1)}::{match.group(2)}",
+                    claimed=claimed,
+                    actual="unknown",
+                    corrected=_corrected(lines, index),
+                )
+            )
+    return claims
+
+
 def extract_claims(docs: list[Path] | None = None) -> list[Claim]:
     """산문(펜스 밖)에서 test node 를 지목한 상태 주장만 뽑는다."""
 
     claims: list[Claim] = []
     for doc in docs if docs is not None else documents():
-        lines = doc.read_text(encoding="utf-8").splitlines()
-        fenced = False
-        for index, line in enumerate(lines):
-            if line.strip().startswith("```"):
-                fenced = not fenced
-                continue
-            if fenced:
-                continue
-            claimed = _claimed_state(line)
-            if claimed is None:
-                continue
-            for match in _NODE_PATTERN.finditer(line):
-                node = f"{match.group(1)}::{match.group(2)}"
-                claims.append(
-                    Claim(
-                        doc=doc.name,
-                        line=index + 1,
-                        node=node,
-                        claimed=claimed,
-                        actual="unknown",
-                        corrected=_corrected(lines, index),
-                    )
-                )
+        claims.extend(claims_from_lines(doc.name, doc.read_text(encoding="utf-8").splitlines()))
     # 같은 문서가 같은 node 를 여러 번 주장하면 한 번만 남긴다(판정은 node 단위다).
     unique: dict[tuple[str, str], Claim] = {}
     for claim in claims:
         unique.setdefault((claim.doc, claim.node), claim)
     return sorted(unique.values(), key=lambda claim: (claim.doc, claim.line))
+
+
+@dataclass(frozen=True, slots=True)
+class Probe:
+    """운영 자기시험 결과 — 어휘·펜스 처리·정정 창·상태 계산을 합성 입력으로 다시 물어본다."""
+
+    cases: int
+    failures: tuple[str, ...]
+
+    @property
+    def ok(self) -> bool:
+        return not self.failures and self.cases > 0
+
+    def as_mapping(self) -> dict[str, object]:
+        return {"cases": self.cases, "failures": list(self.failures), "ok": self.ok}
+
+
+def self_probe() -> Probe:
+    """매 실행 자기시험 — 감사자가 조용히 눈이 머는 것을 막는다.
+
+    검사 대상은 세 가지다: ① 상태 어휘가 실제로 분류되는가(어휘 상수를 쓸어 본다),
+    ② 펜스 안 문장은 주장으로 세지 않는가, ③ 정정 창이 가까운 표기만 인정하는가.
+    """
+
+    cases = 0
+    failures: list[str] = []
+    node = "tests/x_sample.py::test_y"
+
+    for label, required, vocabulary in (
+        ("실패", _REQUIRED_FAIL_WORDS, _FAILS),
+        ("통과", _REQUIRED_PASS_WORDS, _PASSES),
+    ):
+        cases += 1
+        missing = [word for word in required if word not in vocabulary]
+        if missing:
+            failures.append(f"{label} 어휘가 사라졌다: {missing} — 자기시험은 지워진 단어를 쓸어볼 수 없다")
+
+    for word in _FAILS:
+        cases += 1
+        found = claims_from_lines("probe.md", [f"`{node}` 는 {word}."])
+        if len(found) != 1 or found[0].claimed != "fails":
+            failures.append(f"실패 어휘 {word!r} 가 주장으로 판독되지 않는다")
+    for word in _PASSES:
+        cases += 1
+        found = claims_from_lines("probe.md", [f"`{node}` 는 {word}."])
+        if len(found) != 1 or found[0].claimed != "passes":
+            failures.append(f"통과 어휘 {word!r} 가 주장으로 판독되지 않는다")
+
+    cases += 1
+    if claims_from_lines("probe.md", ["```", f"`{node}` 는 실패한다.", "```"]):
+        failures.append("펜스 안 문장을 주장으로 센다")
+    cases += 1
+    if claims_from_lines("probe.md", [f"`{node}` 를 돌린다."]):
+        failures.append("상태 어휘 없는 문장을 주장으로 센다")
+
+    cases += 1
+    near = claims_from_lines("probe.md", [f"`{node}` 는 실패한다.", "", "> **정정 2026-09-23.** 지금은 green 이다."])
+    if len(near) != 1 or not near[0].corrected:
+        failures.append("가까운 정정 표기를 인정하지 않는다")
+    cases += 1
+    far_lines = (
+        [f"`{node}` 는 실패한다."] + [f"산문 {i}" for i in range(_CORRECTION_WINDOW + 2)] + ["> **정정 2026-09-23.**"]
+    )
+    far = claims_from_lines("probe.md", far_lines)
+    if len(far) != 1 or far[0].corrected:
+        failures.append("먼 정정 표기를 가까운 것으로 본다")
+
+    for actual, corrected, expected in (
+        ("fails", False, "ok"),
+        ("passes", False, "stale"),
+        ("passes", True, "fixed"),
+        ("unknown", False, "unknown"),
+    ):
+        cases += 1
+        status = Claim(
+            doc="probe.md",
+            line=1,
+            node=node,
+            claimed="fails",
+            actual=actual,
+            corrected=corrected,
+        ).status
+        if status != expected:
+            failures.append(f"상태 계산이 틀렸다: 실제 {actual} · 정정 {corrected} → {status}(기대 {expected})")
+
+    return Probe(cases=cases, failures=tuple(failures))
 
 
 def run_node(node: str, timeout: int = 180) -> str:
@@ -213,10 +340,12 @@ def measure(docs: list[Path] | None = None) -> list[Claim]:
     return judged
 
 
-def as_mapping(claims: list[Claim]) -> dict[str, object]:
+def as_mapping(claims: list[Claim], mentions: int, probe: Probe, docs: int) -> dict[str, object]:
     return {
         "command": ["python", "scripts/audit_state_claims.py"],
         "claims": [claim.as_mapping() for claim in claims],
+        "coverage": {"docs": docs, "mentions": mentions, "min_mentions": _MIN_MENTIONS},
+        "probe": probe.as_mapping(),
         "counts": {
             "claims": len(claims),
             "ok": sum(1 for claim in claims if claim.status == "ok"),
@@ -227,8 +356,11 @@ def as_mapping(claims: list[Claim]) -> dict[str, object]:
     }
 
 
-def describe(claims: list[Claim]) -> str:
-    lines = [f"[state-claims] 산문 상태 주장 {len(claims)}건"]
+def describe(claims: list[Claim], mentions: int, probe: Probe, docs: int) -> str:
+    lines = [
+        f"[state-claims] 증거 문서 {docs}개 · node 지목 산문 {mentions}줄 · 상태 주장 {len(claims)}건",
+        f"[self-probe] {probe.cases}건 재판정 — " + ("통과" if probe.ok else "실패: " + "; ".join(probe.failures)),
+    ]
     marks = {"ok": "OK     ", "fixed": "FIXED  ", "stale": "STALE  ", "unknown": "UNKNOWN"}
     for claim in claims:
         mark = marks[claim.status]
@@ -237,11 +369,21 @@ def describe(claims: list[Claim]) -> str:
             f"  {mark} {claim.doc}:{claim.line} · {claim.node} · 주장 {claim.claimed} / 실제 {claim.actual}{note}"
         )
     lines.append("* 낡은 주장은 지우지 말고 그 줄 가까이에 `> ... 정정 YYYY-MM-DD` 를 붙인다(역사를 지우지 않는다).")
+    lines.append("* 자기시험이 실패하면 판독 규칙이 깨진 것이다 — 판정 결과와 무관하게 이 실행은 실패다.")
     return "\n".join(lines)
 
 
-def gate_failures(claims: list[Claim]) -> list[str]:
+def gate_failures(claims: list[Claim], mentions: int, probe: Probe) -> list[str]:
     problems: list[str] = []
+    if not probe.ok:
+        problems.append("자기시험 실패(판독 규칙이 깨졌다): " + "; ".join(probe.failures))
+    if mentions < _MIN_MENTIONS:
+        problems.append(f"node 를 지목한 산문이 {mentions}줄뿐이다(하한 {_MIN_MENTIONS}) — 감사가 눈이 멀었을 수 있다.")
+    if len(claims) < _MIN_CLAIMS:
+        problems.append(
+            f"상태 주장이 {len(claims)}건뿐이다(하한 {_MIN_CLAIMS}) — 어휘·범위가 깨졌는지 확인하고, "
+            "정말 주장이 사라졌다면 하한을 근거와 함께 내린다."
+        )
     unknown = [claim for claim in claims if claim.actual == "unknown"]
     if unknown:
         problems.append("상태를 판정하지 못한 주장: " + ", ".join(f"{claim.doc}:{claim.node}" for claim in unknown))
@@ -256,18 +398,26 @@ def gate_failures(claims: list[Claim]) -> list[str]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="증거 문서의 현재 상태 주장을 실제 시험으로 재판정한다")
-    parser.add_argument("--gate", action="store_true", help="낡은 주장·판정 불가가 있으면 실패")
+    parser.add_argument("--gate", action="store_true", help="낡은 주장·판정 불가·탐지력 하한 미달이면 실패")
     parser.add_argument("--emit-json", action="store_true", help="측정 결과만 stdout 으로 낸다")
+    parser.add_argument("--self-test", action="store_true", help="자기시험만 돌리고 끝낸다(시험을 돌리지 않는다)")
     args = parser.parse_args(argv)
 
+    docs = documents()
+    probe = self_probe()
+    if args.self_test:
+        print(describe([], count_mentions(docs), probe, len(docs)))
+        return EXIT_OK if probe.ok else EXIT_GATE
+
     claims = measure()
+    mentions = count_mentions(docs)
     if args.emit_json:
-        print(json.dumps(as_mapping(claims), ensure_ascii=False, indent=2))
+        print(json.dumps(as_mapping(claims, mentions, probe, len(docs)), ensure_ascii=False, indent=2))
         return EXIT_OK
-    print(describe(claims))
+    print(describe(claims, mentions, probe, len(docs)))
     if not args.gate:
         return EXIT_OK
-    problems = gate_failures(claims)
+    problems = gate_failures(claims, mentions, probe)
     for problem in problems:
         print(f"[FAIL] {problem}", file=sys.stderr)
     return EXIT_GATE if problems else EXIT_OK

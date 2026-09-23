@@ -384,7 +384,16 @@ def test_repository_digest_report_is_current_and_counted(measurement: Any) -> No
     assert measurement.measured["digest_drifted"] >= 0
 
 
-def _state_claim_report(*, ok: int = 0, fixed: int = 0, stale: int = 0, unknown: int = 0) -> dict[str, object]:
+def _state_claim_report(
+    *,
+    ok: int = 0,
+    fixed: int = 0,
+    stale: int = 0,
+    unknown: int = 0,
+    mentions: int = 6,
+    probe_present: bool = True,
+    probe_ok: bool = True,
+) -> dict[str, object]:
     """상태 주장 감사 JSON 의 최소 형태."""
 
     claims: list[dict[str, object]] = []
@@ -394,10 +403,18 @@ def _state_claim_report(*, ok: int = 0, fixed: int = 0, stale: int = 0, unknown:
         claims.append({"doc": "T01b.md", "line": index + 1, "status": "fixed"})
     for index in range(stale):
         claims.append({"doc": "T03.md", "line": index + 1, "status": "stale"})
-    return {
+    report: dict[str, object] = {
         "claims": claims,
+        "coverage": {"docs": 16, "mentions": mentions, "min_mentions": 1},
         "counts": {"claims": ok + fixed + stale, "ok": ok, "fixed": fixed, "stale": stale, "unknown": unknown},
     }
+    if probe_present:
+        report["probe"] = {
+            "cases": 17,
+            "failures": [] if probe_ok else ["통과 어휘가 사라졌다: ['green']"],
+            "ok": probe_ok,
+        }
+    return report
 
 
 def test_stale_state_claim_fails_the_review(review: Any) -> None:  # noqa: ANN401
@@ -426,6 +443,30 @@ def test_unjudgeable_state_claim_fails_the_review(review: Any) -> None:  # noqa:
     assert "판정하지 못한" in result.detail
 
 
+def test_review_rejects_a_failed_self_probe(review: Any) -> None:  # noqa: ANN401
+    """감사자 자기시험이 실패하면 리뷰가 실패한다 — 판독 규칙이 깨진 실행은 증거가 아니다."""
+
+    result = review.check_state_claims(_state_claim_report(probe_ok=False))
+    assert result.passed is False
+    assert "자기시험" in result.detail
+
+
+def test_review_rejects_a_missing_self_probe(review: Any) -> None:  # noqa: ANN401
+    """자기시험 결과가 아예 없으면 통과시키지 않는다 — 확인하지 않은 판독력을 인정하지 않는다."""
+
+    result = review.check_state_claims(_state_claim_report(probe_present=False))
+    assert result.passed is False
+    assert "자기시험 결과가 없다" in result.detail
+
+
+def test_review_rejects_a_blind_audit(review: Any) -> None:  # noqa: ANN401
+    """node 를 지목한 산문이 하나도 안 보이면 리뷰가 실패한다(주장 0건으로 조용히 통과하지 않는다)."""
+
+    result = review.check_state_claims(_state_claim_report(mentions=0))
+    assert result.passed is False
+    assert "눈이 멀었을 수 있다" in result.detail
+
+
 def test_repository_state_claims_are_judged(measurement: Any) -> None:  # noqa: ANN401
     """이 저장소의 상태 주장은 전부 판정돼 있고 낡은 채로 남은 것이 없다."""
 
@@ -433,6 +474,13 @@ def test_repository_state_claims_are_judged(measurement: Any) -> None:  # noqa: 
     assert check.passed is True, check.detail
     assert measurement.measured["state_claims_stale"] == 0
     assert measurement.measured["state_claims"] >= 1
+
+
+def test_repository_audit_proves_its_own_sight(measurement: Any) -> None:  # noqa: ANN401
+    """감사가 이 저장소에서 실제로 보고 있다 — mention 이 주장을 덮고, 자기시험이 돌아 있다."""
+
+    assert measurement.measured["state_claim_mentions"] >= measurement.measured["state_claims"]
+    assert measurement.measured["state_claim_probe_cases"] >= 1
 
 
 def test_missing_regression_ledger_is_rejected(review: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:  # noqa: ANN401
