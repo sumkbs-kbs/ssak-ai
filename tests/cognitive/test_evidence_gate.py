@@ -57,6 +57,22 @@ def test_fast_tier_runs_every_layer_it_claims(gate: Any) -> None:  # noqa: ANN40
     assert gate.problems(outcomes, gate.coverage_floors()) == []
 
 
+def test_every_layer_is_rehearsed_or_declared(gate: Any) -> None:  # noqa: ANN401
+    """게이트가 도는 층과 카나리아 harness 는 전부 **리허설되거나 이유와 함께 선언**돼 있다.
+
+    “위반 0건” 이 ’다 봤는데 깨끗하다’ 인지 ’한 번도 red 를 낸 적이 없다’ 인지 아무도 묻지 않는 층이 생기는
+    순간이 이 회계가 잡으려는 것이다(새 층을 roster 에만 넣으면 여기서 걸린다).
+    """
+
+    planted, declared = gate.load_rehearsal_roster()
+    names = {stage.name for stage in gate.STAGES} | set(gate.load_canary_harnesses())
+
+    assert gate.SELF_EXEMPT  # 게이트 자신은 재귀 때문에 stage 에서 빠진다
+    assert names <= set(planted) | set(declared)
+    assert not set(planted) & set(declared)
+    assert all(reason.strip() for reason in declared)
+
+
 def test_the_local_layer_is_named_as_unseen_not_as_pass(gate: Any) -> None:  # noqa: ANN401
     """로컬 회차가 필요한 회귀 원장은 fast 실행에서 **통과가 아니라 '보지 않은 층'** 이다."""
 

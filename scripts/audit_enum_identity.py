@@ -58,6 +58,28 @@ _WHY_SCANNED: Final[str] = (
     "2026-09-23 기준 관측: cognitive core 경로에서 21개 파일을 스캔(제외 1 = same_enum 파이프). "
     "하한 10은 경로가 통째로 어긋나거나 순회가 빈손으로 끝나는 순간을 잡는 안전선이다 — ’위반 0건’ 과 ’못 봄’ 을 가른다."
 )
+_MIN_FOREIGN_FILES: Final[int] = 1
+_WHY_FOREIGN: Final[str] = (
+    "감사 대상을 `--root` 로 바꾼 실행이다(기본은 저장소 루트). 하한 1은 그 트리에서 ’위반 0건’ 과 ’아무것도 못 봄’ "
+    "을 가르는 최소선이다 — 저장소 하한(10)은 저장소를 스캔할 때만 쓴다. 밖의 트리를 저장소 기준으로 재면 오탐이고, "
+    "빈손으로 끝나면 그것이 이 감사의 red 재현(리허설)을 조용히 통과시킨다."
+)
+
+
+def resolve_root(root: Path | None = None) -> Path:
+    """감사 대상 트리 — 지정이 없으면 저장소 루트(기존 동작 그대로)다."""
+
+    return REPO_ROOT if root is None else Path(root).resolve()
+
+
+def display_path(path: Path, *, root: Path) -> str:
+    """보고에 쓰는 경로 — 지정한 트리 기준 상대 경로(밖이면 그대로)."""
+
+    try:
+        return path.relative_to(root).as_posix()
+    except ValueError:
+        return path.as_posix()
+
 
 _ENUM_MEMBER: Final[re.Pattern[str]] = re.compile(r"^[A-Z][A-Za-z0-9_]*\.[A-Z][A-Z0-9_]*$")
 
@@ -111,13 +133,16 @@ def scan_source(source: str, *, file: str) -> tuple[Violation, ...]:
     return tuple(violations)
 
 
-def scan_paths(paths: tuple[Path, ...] = SCAN_ROOTS) -> tuple[Violation, ...]:
+def scan_paths(paths: tuple[Path, ...] = SCAN_ROOTS, *, root: Path | None = None) -> tuple[Violation, ...]:
+    base = resolve_root(root)
     violations: list[Violation] = []
-    for root in paths:
-        resolved = REPO_ROOT / root
+    for entry in paths:
+        resolved = base / entry
         files = sorted(resolved.rglob("*.py")) if resolved.is_dir() else [resolved]
         for path in files:
-            relative = str(path.relative_to(REPO_ROOT))
+            if not path.is_file():
+                continue  # 없는 감사 대상은 사고가 아니라 “못 봄” 이다 — 하한이 그 사실을 판정한다
+            relative = display_path(path, root=base)
             if relative in EXEMPT:
                 continue
             violations.extend(scan_source(path.read_text(encoding="utf-8"), file=relative))
@@ -133,23 +158,29 @@ VALUE = int(status) is not 0
 """
 
 
-def scanned_files(paths: tuple[Path, ...] = SCAN_ROOTS) -> tuple[str, ...]:
+def scanned_files(paths: tuple[Path, ...] = SCAN_ROOTS, *, root: Path | None = None) -> tuple[str, ...]:
     """이번 스캔이 실제로 본 파일 — “위반 0건” 이 “못 봄” 인지 가른다."""
 
+    base = resolve_root(root)
     files: list[str] = []
-    for root in paths:
-        resolved = REPO_ROOT / root
+    for entry in paths:
+        resolved = base / entry
         candidates = sorted(resolved.rglob("*.py")) if resolved.is_dir() else [resolved]
         for path in candidates:
-            relative = str(path.relative_to(REPO_ROOT))
+            relative = display_path(path, root=base)
             if relative in EXEMPT or not path.is_file():
                 continue
             files.append(relative)
     return tuple(files)
 
 
-def coverage_floors() -> list[Floor]:
-    return [Floor("스캔한 파일", len(scanned_files()), _MIN_SCANNED_FILES, why=_WHY_SCANNED)]
+def coverage_floors(*, root: Path | None = None) -> list[Floor]:
+    """탐지력 하한 — 저장소 스캔과 바꿔 끼운 트리는 하한이 다르다(값과 근거를 함께 낸다)."""
+
+    observed = len(scanned_files(root=root))
+    if resolve_root(root) == REPO_ROOT:
+        return [Floor("스캔한 파일", observed, _MIN_SCANNED_FILES, why=_WHY_SCANNED)]
+    return [Floor("스캔한 파일", observed, _MIN_FOREIGN_FILES, why=_WHY_FOREIGN)]
 
 
 def self_probe() -> Probe:
@@ -162,6 +193,17 @@ def self_probe() -> Probe:
     cases.equal("값 비교(==)·리터럴 비교는 허용", len(scan_source(_PROBE_ALLOWED, file="probe.py")), 0)
     cases.check("helper module 은 제외 대상이다", any("models.py" in path for path in EXEMPT))
     cases.check("감사 대상에 cognitive core 가 들어 있다", any("engine/cognitive" in str(root) for root in SCAN_ROOTS))
+    cases.equal("감사 대상 트리를 바꾸면 그 트리만 본다", scan_paths(root=REPO_ROOT / "docs"), ())
+    cases.equal("저장소 스캔은 저장소 하한을 쓴다", coverage_floors()[0].minimum, _MIN_SCANNED_FILES)
+    cases.equal(
+        "바꿔 끼운 트리는 하한도 그 트리 기준이다",
+        coverage_floors(root=REPO_ROOT / "src")[0].minimum,
+        _MIN_FOREIGN_FILES,
+    )
+    cases.check(
+        "없는 트리를 가리키면 빈손으로 통과하지 않는다",
+        bool(floor_problems(coverage_floors(root=REPO_ROOT / "no_such_tree"))),
+    )
     return cases.probe()
 
 
@@ -173,6 +215,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--json", type=Path, default=None, help="결과 JSON artifact 경로")
     parser.add_argument("--quiet", action="store_true", help="표를 출력하지 않는다")
     parser.add_argument("--self-test", action="store_true", help="자기시험만 돌리고 끝낸다")
+    parser.add_argument(
+        "--root",
+        type=Path,
+        default=None,
+        help="감사 대상 트리(기본: 저장소 루트) — 저장소 밖에서 red 를 재현하는 리허설이 쓴다",
+    )
     args = parser.parse_args(argv)
 
     probe = self_probe()
@@ -180,11 +228,14 @@ def main(argv: list[str] | None = None) -> int:
         print(describe_self_test("audit_enum_identity", probe))
         return EXIT_OK if probe.ok else EXIT_VIOLATION
 
-    violations = scan_paths()
-    scanned = scanned_files()
-    files = sorted({root for root in SCAN_ROOTS})
+    root = resolve_root(args.root)
+    violations = scan_paths(root=args.root)
+    scanned = scanned_files(root=args.root)
+    floors = coverage_floors(root=args.root)
+    files = sorted({str(entry) for entry in SCAN_ROOTS})
     if not args.quiet:
-        print(f"감사 대상: {', '.join(str(f) for f in files)} (제외 {', '.join(sorted(EXEMPT))})")
+        where = "저장소" if root == REPO_ROOT else str(root)
+        print(f"감사 대상({where}): {', '.join(files)} (제외 {', '.join(sorted(EXEMPT))})")
         if violations:
             for violation in violations:
                 print(f"위반 {violation.file}:{violation.line} [{violation.kind}] {violation.expression}")
@@ -199,8 +250,9 @@ def main(argv: list[str] | None = None) -> int:
                     "count": len(violations),
                     "scanned": [str(f) for f in files],
                     "scanned_files": list(scanned),
+                    "root": str(root),
                     "probe": probe.as_mapping(),
-                    "floors": floor_records(coverage_floors()),
+                    "floors": floor_records(floors),
                     "exempt": sorted(EXEMPT),
                 },
                 ensure_ascii=False,
@@ -214,7 +266,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if violations:
         return EXIT_VIOLATION
-    problems = probe_problems(probe, name="audit_enum_identity") + floor_problems(coverage_floors())
+    problems = probe_problems(probe, name="audit_enum_identity") + floor_problems(floors)
     if problems:
         for problem in problems:
             print(f"[FAIL] {problem}", file=sys.stderr)

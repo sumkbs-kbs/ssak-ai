@@ -907,6 +907,164 @@ def test_repository_canary_bites_on_every_harness(review: Any) -> None:  # noqa:
     assert result.observed >= 6, result.detail
 
 
+def _rehearsal_layer(name: str, **defects: object) -> dict[str, object]:
+    """리허설 한 층의 최소 보고 — 이름만 바꾸지 않고 **결함별 변형**을 만든다."""
+
+    item: dict[str, object] = {
+        "layer": name,
+        "planted": f"probe/{name}.py",
+        "dirty_exit": 1,
+        "seen": 1,
+        "named": True,
+        "spoken": True,
+        "clean_exit": 0,
+        "blind_exit": 1,
+        "crashed": False,
+    }
+    item.update(defects)
+    item["ok"] = (
+        item["dirty_exit"] == 1
+        and item["seen"] >= 1
+        and bool(item["named"])
+        and bool(item["spoken"])
+        and item["clean_exit"] == 0
+        and item["blind_exit"] != 0
+        and not item["crashed"]
+    )
+    item["problems"] = [] if item["ok"] else ["probe"]
+    return item
+
+
+def _rehearsal_report(
+    *,
+    layers: list[dict[str, object]] | None = None,
+    exit_code: int | None = 0,
+    counted_ok: int | None = None,
+    declared: dict[str, str] | None = None,
+    floors: list[dict[str, object]] | None = None,
+) -> dict[str, object]:
+    """red 리허설 JSON 의 최소 형태 — 한 층을 결함 상태로 바꾸어 판정 규칙을 재현한다."""
+
+    items = layers if layers is not None else [_rehearsal_layer("audit_enum_identity")]
+    ok = sum(1 for item in items if item.get("ok"))
+    report: dict[str, object] = {
+        "layers": items,
+        "counts": {"layers": len(items), "ok": ok if counted_ok is None else counted_ok},
+        "declared": declared if declared is not None else {"review": "리허설을 읽고 판정하는 층이다"},
+        "floors": floors
+        if floors is not None
+        else [{"label": "리허설 대상", "observed": 2, "minimum": 2, "why": "근거"}],
+        "probe": {"cases": 19, "failures": [], "ok": True},
+    }
+    if exit_code is not None:
+        report["exit_code"] = exit_code
+    return report
+
+
+def test_red_rehearsal_missing_fails_the_review(review: Any) -> None:  # noqa: ANN401
+    """리허설을 돌리지 못한 실행은 통과하지 않는다 — 심어 보지 않은 ‘위반 0건’ 은 관찰이 아니다."""
+
+    result = review.check_red_rehearsal(None)
+
+    assert result.passed is False
+    assert "돌리지 못했다" in result.detail
+
+
+def test_a_layer_that_never_saw_the_planted_violation_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """심은 위반을 한 건도 못 본 층은 실패다 — green 이 ‘못 봐서’ 일 수 있다."""
+
+    result = review.check_red_rehearsal(
+        _rehearsal_report(layers=[_rehearsal_layer("audit_enum_identity", seen=0, named=False, spoken=False)])
+    )
+
+    assert result.passed is False
+    assert "한 건도 보지 못한" in result.detail
+    assert "audit_enum_identity" in result.detail
+
+
+def test_a_layer_that_does_not_go_red_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """심은 위반을 보고도 exit 0 이면 실패다(리뷰 자신의 검사도 결함 상태로 확인한다)."""
+
+    result = review.check_red_rehearsal(
+        _rehearsal_report(layers=[_rehearsal_layer("audit_enum_identity", dirty_exit=0)])
+    )
+
+    assert result.passed is False
+    assert "red 를 내지 못한" in result.detail
+
+
+def test_a_false_positive_control_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """허용 형태를 위반으로 보는 층은 실패다 — 그 리허설은 심은 위반이 아니라 트리 모양을 본 것이다."""
+
+    result = review.check_red_rehearsal(
+        _rehearsal_report(layers=[_rehearsal_layer("audit_test_namespace_purge", clean_exit=1)])
+    )
+
+    assert result.passed is False
+    assert "오탐" in result.detail
+    assert "audit_test_namespace_purge" in result.detail
+
+
+def test_a_layer_that_passes_an_empty_tree_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """빈 트리를 통과시키는 층은 ‘위반 0건’ 과 ‘못 봄’ 을 구분하지 못한다 — 실패다."""
+
+    result = review.check_red_rehearsal(
+        _rehearsal_report(layers=[_rehearsal_layer("audit_enum_identity", blind_exit=0)])
+    )
+
+    assert result.passed is False
+    assert "아무것도 없는 트리를 통과시킨" in result.detail
+
+
+def test_rehearsal_exit_code_contract_matches_the_canary(review: Any) -> None:  # noqa: ANN401
+    """종료 코드 없는 보고·모순·합계 불일치는 카나리아와 **같은 규칙**으로 실패다."""
+
+    missing = review.check_red_rehearsal(_rehearsal_report(exit_code=None))
+    assert missing.passed is False
+    assert "종료 코드 없이" in missing.detail
+
+    contradiction = review.check_red_rehearsal(_rehearsal_report(exit_code=1))
+    assert contradiction.passed is False
+    assert "모순" in contradiction.detail
+
+    mismatch = review.check_red_rehearsal(_rehearsal_report(counted_ok=0))
+    assert mismatch.passed is False
+    assert "합계가 항목과 다르다" in mismatch.detail
+
+
+def test_rehearsal_without_reasons_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """이유 없는 생략(선언 없음·하한 근거 없음·자기시험 없음)은 실패다."""
+
+    no_declared = review.check_red_rehearsal(_rehearsal_report(declared={}))
+    assert no_declared.passed is False
+    assert "이유" in no_declared.detail
+
+    no_why = review.check_red_rehearsal(
+        _rehearsal_report(floors=[{"label": "리허설 대상", "observed": 2, "minimum": 2, "why": ""}])
+    )
+    assert no_why.passed is False
+    assert "근거" in no_why.detail
+
+
+def test_rehearsal_markers_come_from_the_report(review: Any) -> None:  # noqa: ANN401
+    """마커로 고정할 두 값(리허설 층 수·red 를 낸 층 수)을 보고에서 센다."""
+
+    assert review.rehearsal_measured(_rehearsal_report()) == {"rehearsal_layers": 1, "rehearsal_ok": 1}
+    assert review.rehearsal_measured(
+        _rehearsal_report(layers=[_rehearsal_layer("audit_enum_identity", dirty_exit=0)])
+    ) == {"rehearsal_layers": 1, "rehearsal_ok": 0}
+
+
+def test_repository_rehearsal_goes_red_for_every_planted_layer(review: Any) -> None:  # noqa: ANN401
+    """저장소의 리허설이 심는 층 전부에서 실제로 red 를 내는지(리뷰가 인용하는 수치의 출처)."""
+
+    report = review.measure_red_rehearsal()
+    assert report is not None, f"{review.REHEARSAL_SCRIPT} 를 돌리지 못했다"
+    result = review.check_red_rehearsal(report)
+    assert result.passed is True, result.detail
+    assert result.observed >= 2, result.detail
+
+
 def test_repository_regression_ledger_has_two_seeded_runs(review: Any) -> None:  # noqa: ANN401
     """저장소의 원장 artifact 가 실제로 두 회차·복수 scope 를 담고 있는지(리뷰가 인용하는 수치의 출처)."""
 

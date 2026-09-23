@@ -166,6 +166,15 @@ STAGES: Final[tuple[Stage, ...]] = (
         numbers=("coverage",),
     ),
     Stage(
+        "red_rehearsal",
+        TIER_FAST,
+        "red_rehearsal.py",
+        ("--emit-json",),
+        "위반 0건인 감사가 실제로 빨간을 낼 수 있는가",
+        SOURCE_STDOUT,
+        numbers=("counts", "floors"),
+    ),
+    Stage(
         "regression_ledger",
         TIER_FULL,
         "regression_ledger.py",
@@ -185,10 +194,11 @@ REQUIRED_STAGES: Final[tuple[str, ...]] = (
     "audit_enum_identity",
     "audit_test_namespace_purge",
     "measure_cognitive_surface",
+    "red_rehearsal",
     "regression_ledger",
 )
 
-_MIN_STAGES: Final[int] = 8
+_MIN_STAGES: Final[int] = 9
 
 # 카나리아가 아는 harness 중 **stage 가 아닌 것** — 게이트 자신뿐이다. stage 로 넣으면 게이트가 자기를 불러
 # 끝나지 않으므로(재귀) 그 하한은 카나리아가 대신 본다. 이 목록이 늘어나면 자기시험이 실패한다.
@@ -205,7 +215,7 @@ def _stage_floor(stages: tuple[Stage, ...]) -> Floor:
         observed=len(stages),
         minimum=_MIN_STAGES,
         why=(
-            "2026-09-23 기준 관측: 여섯 harness 게이트 + 리뷰 + 회귀 원장 = 8 stage. "
+            "2026-09-23 기준 관측: 여섯 harness 게이트 + 리뷰 + 회귀 원장 + red 리허설 = 9 stage. "
             "하한이 잡으려는 것은 '얼마나 많이 도나' 가 아니라 '한 층도 돌지 않고 통과했나' 다. "
             "층이 정말 사라지면 근거를 적고 이 값을 내린다."
         ),
@@ -733,6 +743,25 @@ def load_canary_harnesses() -> tuple[str, ...]:
     return tuple(str(name) for name in module.HARNESSES)
 
 
+def load_rehearsal_roster() -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """red 리허설의 roster — **어느 층을 심어 보고, 어느 층을 이유와 함께 선언했는가**.
+
+    자기시험이 이 목록을 카나리아·stage roster 와 대조한다: 새 층을 어느 roster 에만 넣고 리허설하지도 선언하지도
+    않으면 여기서 걸린다("red 재현 경로가 없는 층" 이 조용히 생기지 않게 한다).
+    """
+
+    spec = importlib.util.spec_from_file_location("gate_rehearsal_roster", SCRIPTS_DIR / "red_rehearsal.py")
+    if spec is None or spec.loader is None:
+        raise RuntimeError("red_rehearsal.py 를 불러오지 못했다")
+    module: ModuleType = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return (
+        tuple(str(plant.layer) for plant in module.PLANTS),
+        tuple(str(name) for name in module.DECLARED),
+    )
+
+
 def self_probe(stages: tuple[Stage, ...] | None = None) -> Probe:
     """판정 규칙을 합성 결과로 다시 물어본다 — **측정은 하지 않는다**(리뷰가 돌릴 수 있어야 한다)."""
 
@@ -770,6 +799,7 @@ def self_probe(stages: tuple[Stage, ...] | None = None) -> Probe:
     # ④ 카나리아 ↔ 게이트 roster 정합 — 새 harness 를 카나리아에만 넣으면 여기서 걸린다.
     #    `SELF_EXEMPT`(게이트 자신)만 stage 에서 빠질 수 있고, 그 목록이 넓어져도 여기서 걸린다.
     stage_names = {stage.name for stage in stages}
+    canary_names: tuple[str, ...] = ()
     try:
         canary_names = load_canary_harnesses()
         cases.covers(
@@ -780,7 +810,22 @@ def self_probe(stages: tuple[Stage, ...] | None = None) -> Probe:
     except Exception as exc:  # noqa: BLE001 - 정합을 못 물어봤으면 그 사실이 실패다(사고를 통과로 세지 않는다)
         cases.check(f"카나리아 harness 목록을 읽지 못했다: {type(exc).__name__}", False)
 
-    # ⑤ 판정 문장 — 못 돌린 층이 통과로 읽히지 않고, 실패한 층 이름이 문장에 남는다.
+    # ⑤ red 리허설 회계 — 도는 층과 카나리아 harness 는 **심어 보거나 이유와 함께 선언**돼야 한다.
+    #    “위반 0건” 이 ’다 봤는데 깨끗하다’ 인지 ’한 번도 red 를 낸 적이 없다’ 인지 아무도 묻지 않는 층이
+    #    생기는 순간이 이 회계가 잡으려는 것이고, 새 층을 roster 에만 넣으면 여기서 걸린다.
+    try:
+        planted, declared = load_rehearsal_roster()
+        cases.check("리허설되지 않는 층은 이유와 함께 선언돼 있다", all(name.strip() for name in declared))
+        cases.check("리허설 대상이 있다", len(planted) > 0)
+        cases.covers(
+            "red 회계",
+            sorted(stage_names | set(canary_names)),
+            sorted(set(planted) | set(declared)),
+        )
+    except Exception as exc:  # noqa: BLE001 - 회계를 못 물어봤으면 그 사실이 실패다
+        cases.check(f"red 리허설 roster 를 읽지 못했다: {type(exc).__name__}", False)
+
+    # ⑥ 판정 문장 — 못 돌린 층이 통과로 읽히지 않고, 실패한 층 이름이 문장에 남는다.
     unrun = Outcome(stages[0], KIND_UNRUN, None, 0.1, "스크립트가 없다")
     failed = Outcome(stages[1], KIND_FAIL, 1, 0.2, "[FAIL] 판독 규칙이 깨졌다")
     report = describe(TIER_FAST, (unrun, failed), outsider_outcomes(TIER_FAST))
@@ -791,14 +836,14 @@ def self_probe(stages: tuple[Stage, ...] | None = None) -> Probe:
     cases.equal("못 돌림·실패가 각각 문제로 잡힌다", len(gate_problems), 2)
     cases.check("못 돌림은 판정 문장에서 실패로 말한다", any("돌리지 못했다" in p for p in gate_problems))
 
-    # ⑥ 하한 — 값·관측·근거가 함께 있어야 한다.
+    # ⑦ 하한 — 값·관측·근거가 함께 있어야 한다.
     floors = coverage_floors(stages)
     cases.check("하한이 있다", len(floors) > 0)
     cases.check("하한에 근거가 기록돼 있다", all(floor.why.strip() for floor in floors))
     cases.check("하한이 지금 stage 수를 넘지 않는다", not floor_problems(floors))
     cases.check("눈멀게 한 하한(관측 0)은 문다", bool(floor_problems([Floor("stage", 0, _MIN_STAGES, why="근거")])))
 
-    # ⑦ 수치 읽기 — dict·list·int 를 펴고, 불리언과 모르는 키는 세지 않는다.
+    # ⑧ 수치 읽기 — dict·list·int 를 펴고, 불리언과 모르는 키는 세지 않는다.
     payload = {
         "counts": {"a": 3, "flag": True},
         "coverage": {"b": [1, 2], "c": 5},
@@ -817,7 +862,7 @@ def self_probe(stages: tuple[Stage, ...] | None = None) -> Probe:
         bool(problems((Outcome(stages[0], KIND_PASS, 0, 0.1, "", (), "JSON 이 아니다"),), [])),
     )
 
-    # ⑧ 움직임 — 감소·증가·새 수·사라진 수·기준 없음을 구분한다(빈 값을 “그대로” 로 쓰지 않는다).
+    # ⑨ 움직임 — 감소·증가·새 수·사라진 수·기준 없음을 구분한다(빈 값을 “그대로” 로 쓰지 않는다).
     cases.covers("움직임 종류", MOVEMENTS, MOVEMENTS)
     sample = movements({"a": {"x": 2, "y": 1}, "b": {"z": 5}}, {"a": {"x": 3}, "gone": {"q": 1}})
     kinds = {(move.layer, move.key): move.kind for move in sample}
@@ -833,7 +878,7 @@ def self_probe(stages: tuple[Stage, ...] | None = None) -> Probe:
     cases.equal("그대로인 수는 기본 추이에서 접힌다(헤더+요약만)", len(trend_lines(steady, {})), 2)
     cases.equal("`--trend-all` 이면 그대로인 수도 줄로 나온다", len(trend_lines(steady, {}, show_all=True)), 3)
 
-    # ⑨ 기준 파일 — 깨진 기준은 "비교 불가" 로 삼기지 않는다.
+    # ⑩ 기준 파일 — 깨진 기준은 "비교 불가" 로 삼기지 않는다.
     cases.equal("없는 기준 파일은 '기준 없음' 이다", read_baseline(REPO_ROOT / ".no-such-baseline.json"), ({}, ""))
 
     return cases.probe()

@@ -54,6 +54,7 @@ HARNESSES: Final[tuple[str, ...]] = (
     "audit_test_namespace_purge",
     "measure_cognitive_surface",
     "evidence_gate",
+    "red_rehearsal",
 )
 
 
@@ -142,7 +143,8 @@ def harness_floors(name: str, module: ModuleType) -> list[Floor]:
         return list(module.coverage_floors())
     if name == "measure_cognitive_surface":
         return list(module.coverage_floors(module.measure_surface_reach()))
-    if name == "evidence_gate":
+    if name in {"evidence_gate", "red_rehearsal"}:
+        # 둘 다 저장소를 재지 않고 자기 roster 를 센다(게이트는 stage 수, 리허설은 심는 층 수).
         return list(module.coverage_floors())
     raise SystemExit(f"{name} 의 하한을 만드는 방법이 카나리아에 없다")
 

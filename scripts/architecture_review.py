@@ -65,6 +65,9 @@ STATE_CLAIMS_ARTIFACT: Final[Path] = EVIDENCE_DIR / "state_claims.json"
 # 탐지력 하한이 **실제로 무는지**를 확인하는 카나리아(`scripts/harness_canary.py`).
 CANARY_SCRIPT: Final[Path] = REPO_ROOT / "scripts" / "harness_canary.py"
 
+# 위반 0건인 감사가 **실제로 빨간을 낼 수 있는지** 저장소 밖 트리에서 재현하는 red 리허설(`scripts/red_rehearsal.py`).
+REHEARSAL_SCRIPT: Final[Path] = REPO_ROOT / "scripts" / "red_rehearsal.py"
+
 # 여섯 층을 한 번에 도는 증거 게이트(`scripts/evidence_gate.py`). 리뷰는 이 게이트를 **돌리지 않고** roster 와
 # 자기시험만 읽는다 — 게이트의 stage 중 하나가 이 리뷰라서, 돌리면 서로를 불러 끝나지 않는다(단방향 계약).
 EVIDENCE_GATE_SCRIPT: Final[Path] = REPO_ROOT / "scripts" / "evidence_gate.py"
@@ -1205,6 +1208,133 @@ def canary_measured(report: dict[str, object]) -> dict[str, int]:
     }
 
 
+def measure_red_rehearsal() -> dict[str, object] | None:
+    """red 리허설을 돌려 JSON 을 받는다 — 카나리아와 **같은 이음매 규칙**을 쓴다.
+
+    종료 코드가 0 이 아니어도 JSON 이 읽히면 그대로 쓰고(심은 위반을 못 본 층의 이름을 잃지 않는다), 종료 코드를
+    보고에 실어 검사가 모순을 잡게 한다. 돌리지 못했을 때만 None 이다.
+    """
+
+    if not REHEARSAL_SCRIPT.exists():
+        return None
+    result = subprocess.run(
+        [sys.executable, str(REHEARSAL_SCRIPT), "--emit-json"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    try:
+        report = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(report, dict):
+        return None
+    report["exit_code"] = result.returncode
+    return report
+
+
+def check_red_rehearsal(report: dict[str, object] | None) -> CheckResult:
+    """“위반 0건” 이 **’다 봤는데 깨끗하다’** 인지 **’한 번도 red 를 낸 적이 없다’** 인지 — 심어서 확인했는가.
+
+    자기시험은 판독 규칙을, 하한은 “볼 수 있는가” 를 지킨다. 리허설은 그 둘이 만나도 남는 것을 본다: 심은 위반을
+    보고 **exit 1 을 내는가**(`seen`·`dirty_exit`·`named`·`spoken`) · 같은 자리에 허용 형태를 넣으면 **초록인가**
+    (`clean_exit` — 이게 없으면 “새 파일이 생겨서 빨간” 과 구분할 수 없다) · **아무것도 없는 트리를 통과시키지 않는가**
+    (`blind_exit`). 종료 코드 없는 보고·모순·합계 불일치는 카나리아와 같은 규칙으로 실패다.
+    """
+
+    if report is None:
+        return CheckResult(
+            name="red_rehearsal",
+            passed=False,
+            detail=(
+                f"{_display(REHEARSAL_SCRIPT)} 를 돌리지 못했다 — ‘위반 0건’ 이 관찰이 아니라 미관찰인 실행은 "
+                "통과시키지 않는다"
+            ),
+        )
+    layers = [item for item in _as_list(report.get("layers")) if isinstance(item, dict)]
+    counts = _as_dict(report.get("counts"))
+    floors = [record for record in _as_list(report.get("floors")) if isinstance(record, dict)]
+    declared = _as_dict(report.get("declared"))
+    unseen = [str(item.get("layer")) for item in layers if _as_int(item.get("seen")) < 1]
+    quiet = [str(item.get("layer")) for item in layers if _as_int(item.get("dirty_exit")) != 1]
+    unnamed = [
+        str(item.get("layer"))
+        for item in layers
+        if _as_int(item.get("seen")) >= 1 and not (item.get("named") and item.get("spoken"))
+    ]
+    crashed = [str(item.get("layer")) for item in layers if item.get("crashed")]
+    control_red = [str(item.get("layer")) for item in layers if item.get("clean_exit") not in (None, 0)]
+    control_missing = [str(item.get("layer")) for item in layers if item.get("clean_exit") is None]
+    blind_pass = [str(item.get("layer")) for item in layers if _as_int(item.get("blind_exit")) == 0]
+    seen_ok = sum(1 for item in layers if item.get("ok"))
+    problems: list[str] = []
+    if "exit_code" not in report:
+        problems.append("리허설 종료 코드 없이 온 보고다 — 스스로 실패했는지 알 수 없는 보고는 판정이 아니다")
+    elif _as_int(report.get("exit_code")) != 0 and not any(
+        (unseen, quiet, unnamed, crashed, control_red, control_missing, blind_pass)
+    ):
+        problems.append(
+            f"리허설이 exit {_as_int(report.get('exit_code'))} 로 스스로 실패했다고 말했는데 보고는 전부 통과라고 한다(모순)"
+        )
+    if not layers:
+        problems.append("리허설이 층을 하나도 심지 않았다")
+    if not declared:
+        problems.append("리허설되지 않는 층의 이유(`declared`)가 비어 있다 — 이유 없는 생략은 생략이 아니다")
+    problems.extend(probe_problems(_probe_from(_as_dict(report.get("probe"))), name="red_rehearsal"))
+    if not floors:
+        problems.append("리허설이 하한을 기록하지 않았다")
+    for record in floors:
+        if not str(record.get("why", "")).strip():
+            problems.append(f"리허설 하한 {record.get('label')} 에 근거(`why`)가 없다")
+    if quiet:
+        problems.append(f"심은 위반을 보고도 red 를 내지 못한 층: {', '.join(quiet)}")
+    if unseen:
+        problems.append(f"심은 위반을 한 건도 보지 못한 층: {', '.join(unseen)}")
+    if unnamed:
+        problems.append(f"위반을 봤지만 심은 파일을 지목하지 않은 층: {', '.join(unnamed)}")
+    if control_missing:
+        problems.append(f"대조군(허용 형태)을 돌리지 않은 층: {', '.join(control_missing)}")
+    if control_red:
+        problems.append(
+            f"허용 형태를 위반으로 본 층(오탐 — 그 리허설은 심은 위반을 증명하지 못한다): {', '.join(control_red)}"
+        )
+    if blind_pass:
+        problems.append(f"아무것도 없는 트리를 통과시킨 층: {', '.join(blind_pass)}")
+    if crashed:
+        problems.append(f"사고로 죽은 층: {', '.join(crashed)}")
+    if counts and _as_int(counts.get("ok")) != seen_ok:
+        problems.append(
+            f"합계가 항목과 다르다(ok {_as_int(counts.get('ok'))} ≠ 항목 {seen_ok}) — 보고를 그대로 믿을 수 없다"
+        )
+    if problems:
+        return CheckResult(
+            name="red_rehearsal",
+            passed=False,
+            detail="; ".join(problems),
+            observed=len(layers),
+        )
+    return CheckResult(
+        name="red_rehearsal",
+        passed=True,
+        detail=(
+            f"층 {len(layers)}개에 **진짜 파일로 위반을 심어** red 를 재현했다 — 심은 트리 exit 1·지목, "
+            f"대조군(허용 형태) 초록, 빈 트리 차단(ok {_as_int(counts.get('ok'))})"
+        ),
+        observed=len(layers),
+    )
+
+
+def rehearsal_measured(report: dict[str, object]) -> dict[str, int]:
+    """리허설에서 마커로 고정할 값."""
+
+    counts = _as_dict(report.get("counts"))
+    return {
+        "rehearsal_layers": _as_int(counts.get("layers")),
+        "rehearsal_ok": _as_int(counts.get("ok")),
+    }
+
+
 def load_evidence_gate() -> ModuleType | None:
     """증거 게이트 module 을 읽는다 — 없거나 불러오지 못하면 None(호출자가 실패로 처리).
 
@@ -1789,6 +1919,10 @@ def measure() -> ReviewMeasurement:
     checks.append(check_harness_canary(canary))
     if canary is not None:
         measured.update(canary_measured(canary))
+    rehearsal = measure_red_rehearsal()
+    checks.append(check_red_rehearsal(rehearsal))
+    if rehearsal is not None:
+        measured.update(rehearsal_measured(rehearsal))
     evidence_gate = measure_evidence_gate(load_evidence_gate())
     checks.append(check_evidence_gate(evidence_gate))
     measured.update(evidence_gate_measured(evidence_gate))

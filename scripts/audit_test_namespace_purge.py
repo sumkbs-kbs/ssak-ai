@@ -33,7 +33,30 @@ from pathlib import Path
 from typing import Final
 
 REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
-SCAN_DIRS: Final[tuple[Path, ...]] = (REPO_ROOT / "tests", REPO_ROOT / "docs" / "qa")
+SCAN_DIRS: Final[tuple[Path, ...]] = (Path("tests"), Path("docs") / "qa")
+
+
+def resolve_root(root: Path | None = None) -> Path:
+    """감사 대상 트리 — 지정이 없으면 저장소 루트(기존 동작 그대로)다."""
+
+    return REPO_ROOT if root is None else Path(root).resolve()
+
+
+def scan_dirs(root: Path | None = None) -> tuple[Path, ...]:
+    """그 트리에서 수집 대상이 사는 자리."""
+
+    base = resolve_root(root)
+    return tuple(base / entry for entry in SCAN_DIRS)
+
+
+def display_path(path: Path, *, root: Path) -> str:
+    """보고에 쓰는 경로 — 지정한 트리 기준 상대 경로(밖이면 그대로)."""
+
+    try:
+        return path.relative_to(root).as_posix()
+    except ValueError:
+        return path.as_posix()
+
 
 # 공통 harness 계약(자기시험 · 탐지력 하한) — scripts/ 는 저장소 안의 도구 모음이라 직접 import 한다.
 _SCRIPTS_DIR: Final[Path] = Path(__file__).resolve().parent
@@ -192,6 +215,11 @@ _WHY_SCANNED: Final[str] = (
     "2026-09-23 기준 관측: tests/ 와 docs/qa/ 아래 수집 대상 시험 파일 537개를 스캔. "
     "하한 1은 ’위반 0건’ 과 ’수집 패턴(_is_collected)이 어긋나 한 개도 안 봤다’ 를 가르는 최소선이다."
 )
+_WHY_FOREIGN: Final[str] = (
+    "감사 대상을 `--root` 로 바꾼 실행이다(기본은 저장소 루트). 하한 1은 그 트리에서 ’위반 0건’ 과 ’아무것도 못 봄’ "
+    "을 가르는 최소선으로, 저장소 스캔과 같은 값을 쓴다 — 밖에서 red 를 재현하는 리허설이 빈손으로 끝나면 "
+    "그 리허설은 아무것도 증명하지 못한다."
+)
 
 
 def self_probe() -> Probe:
@@ -207,28 +235,36 @@ def self_probe() -> Probe:
         "위반 문장을 문장 단위로 지목한다",
         any("modules" in violation.expression for violation in scan_source(_PROBE_UNGUARDED, file="test_probe.py")),
     )
+    cases.check("감사 대상은 저장소 안의 tests/ 와 docs/qa/ 다", all(entry.is_dir() for entry in scan_dirs()))
+    cases.equal("감사 대상 트리를 바꾸면 그 트리만 본다", scan_paths(root=REPO_ROOT / "scripts"), ())
+    cases.check(
+        "없는 트리를 가리키면 빈손으로 통과하지 않는다",
+        bool(floor_problems(coverage_floors(root=REPO_ROOT / "no_such_tree"))),
+    )
     return cases.probe()
 
 
-def scanned_files(paths: Sequence[Path] | None = None) -> tuple[str, ...]:
+def scanned_files(paths: Sequence[Path] | None = None, *, root: Path | None = None) -> tuple[str, ...]:
     """이번 스캔이 실제로 본 파일 — “위반 0건” 이 “못 봄” 인지 가리는 근거다."""
 
-    roots = tuple(paths) if paths is not None else SCAN_DIRS
+    base = resolve_root(root)
+    roots = tuple(paths) if paths is not None else scan_dirs(root)
     files: list[str] = []
-    for root in roots:
-        if not root.is_dir():
+    for entry in roots:
+        if not entry.is_dir():
             continue
-        for path in sorted(root.rglob("*.py")):
+        for path in sorted(entry.rglob("*.py")):
             if "__pycache__" in path.parts or not _is_collected(path):
                 continue
-            files.append(_display(path))
+            files.append(display_path(path, root=base))
     return tuple(files)
 
 
-def coverage_floors(paths: Sequence[Path] | None = None) -> list[Floor]:
+def coverage_floors(paths: Sequence[Path] | None = None, *, root: Path | None = None) -> list[Floor]:
     """스캔 대상이 하나도 없으면 통과가 아니라 “볼 수 없음” 이다."""
 
-    return [Floor("수집 대상 시험 파일", len(scanned_files(paths)), _MIN_SCANNED_FILES, why=_WHY_SCANNED)]
+    why = _WHY_SCANNED if resolve_root(root) == REPO_ROOT else _WHY_FOREIGN
+    return [Floor("수집 대상 시험 파일", len(scanned_files(paths, root=root)), _MIN_SCANNED_FILES, why=why)]
 
 
 def _is_collected(path: Path) -> bool:
@@ -243,17 +279,19 @@ def _display(path: Path) -> str:
         return path.as_posix()
 
 
-def scan_paths(paths: Sequence[Path] | None = None) -> tuple[Violation, ...]:
+def scan_paths(paths: Sequence[Path] | None = None, *, root: Path | None = None) -> tuple[Violation, ...]:
     """수집 대상 시험 파일 전체를 검사한다."""
-    roots = tuple(paths) if paths is not None else SCAN_DIRS
+
+    base = resolve_root(root)
+    roots = tuple(paths) if paths is not None else scan_dirs(root)
     violations: list[Violation] = []
-    for root in roots:
-        if not root.is_dir():
+    for entry in roots:
+        if not entry.is_dir():
             continue
-        for path in sorted(root.rglob("*.py")):
+        for path in sorted(entry.rglob("*.py")):
             if "__pycache__" in path.parts or not _is_collected(path):
                 continue
-            violations.extend(scan_source(path.read_text(encoding="utf-8"), file=_display(path)))
+            violations.extend(scan_source(path.read_text(encoding="utf-8"), file=display_path(path, root=base)))
     return tuple(violations)
 
 
@@ -261,6 +299,12 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="import 시점 namespace purge 감사")
     _ = parser.add_argument("--json", type=Path, default=None, help="결과를 JSON 으로 남길 경로")
     _ = parser.add_argument("--self-test", action="store_true", help="자기시험만 돌리고 끝낸다")
+    _ = parser.add_argument(
+        "--root",
+        type=Path,
+        default=None,
+        help="감사 대상 트리(기본: 저장소 루트) — 저장소 밖에서 red 를 재현하는 리허설이 쓴다",
+    )
     args = parser.parse_args(argv)
 
     probe = self_probe()
@@ -268,29 +312,35 @@ def main(argv: list[str] | None = None) -> int:
         print(describe_self_test("audit_test_namespace_purge", probe))
         return 0 if probe.ok else 1
 
-    violations = scan_paths()
+    root = resolve_root(args.root)
+    violations = scan_paths(root=args.root)
+    scanned = scanned_files(root=args.root)
+    floors = coverage_floors(root=args.root)
     payload = {
         "violations": [violation.as_mapping() for violation in violations],
         "count": len(violations),
         "probe": probe.as_mapping(),
-        "floors": floor_records(coverage_floors()),
-        "coverage": {"scanned": sorted(scanned_files())},
+        "floors": floor_records(floors),
+        "root": str(root),
+        "coverage": {"scanned": sorted(scanned)},
     }
     if args.json is not None:
+        args.json.parent.mkdir(parents=True, exist_ok=True)
         args.json.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
     if violations:
-        print(f"import 시점 namespace purge 위반 {len(violations)}건")
+        where = "저장소" if root == REPO_ROOT else str(root)
+        print(f"import 시점 namespace purge 위반 {len(violations)}건 ({where})")
         for violation in violations:
             print(f"  · {violation.file}:{violation.line} {violation.expression}")
         return 1
 
-    problems = probe_problems(probe, name="audit_test_namespace_purge") + floor_problems(coverage_floors())
+    problems = probe_problems(probe, name="audit_test_namespace_purge") + floor_problems(floors)
     for problem in problems:
         print(f"[FAIL] {problem}", file=sys.stderr)
     if problems:
         return 1
-    print(f"import 시점 namespace purge 없음 — 수집 대상 시험 파일 {len(scanned_files())}개를 봤다")
+    print(f"import 시점 namespace purge 없음 — 수집 대상 시험 파일 {len(scanned)}개를 봤다")
     return 0
 
 

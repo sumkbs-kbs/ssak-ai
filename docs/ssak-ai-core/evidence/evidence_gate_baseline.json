@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "증거 게이트 CI 배선 회차 마무리 승인: 리뷰 14 checks · 카나리아 7 harness · 게이트 자기시험 40건 · digest pin 50(재확인 22) · 상태 주장 4(정정 4) · enum·purge 위반 0 · 표면 entrypoint 9 · 원장 9 scope 21 회차 · 기준 8개 층 · cognitive 579"
+    "red 리허설 회차 마무리 승인: 리뷰 15 checks · 카나리아 8 harness · 게이트 자기시험 43건(red 회계 포함) · red 리허설 2층(심은 위반 지목·대조군 초록·빈 트리 차단) · digest pin 50(재확인 22) · 상태 주장 4(정정 4) · enum·purge 위반 0 · 표면 entrypoint 9 · 원장 9 scope 21 회차 · cognitive 601"
   ],
   "layers": {
     "audit_enum_identity": {
@@ -23,12 +23,12 @@
     },
     "audit_test_namespace_purge": {
       "count": 0,
-      "coverage.scanned": 540
+      "coverage.scanned": 541
     },
     "canary": {
       "counts.blind": 0,
-      "counts.harnesses": 7,
-      "counts.ok": 7,
+      "counts.harnesses": 8,
+      "counts.ok": 8,
       "counts.unjustified": 0
     },
     "digest_drift": {
@@ -47,6 +47,13 @@
       "coverage.min_entrypoints": 1,
       "coverage.present": 9
     },
+    "red_rehearsal": {
+      "counts.false_positive": 0,
+      "counts.layers": 2,
+      "counts.ok": 2,
+      "counts.unseen": 0,
+      "floors": 1
+    },
     "regression_ledger": {
       "counts.deterministic": 11,
       "counts.drift": 0,
@@ -59,10 +66,10 @@
       "coverage.scopes": 9
     },
     "review": {
-      "checks": 14,
-      "measured.canary_harnesses": 7,
-      "measured.canary_ok": 7,
-      "measured.cognitive_tests": 579,
+      "checks": 15,
+      "measured.canary_harnesses": 8,
+      "measured.canary_ok": 8,
+      "measured.cognitive_tests": 601,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
@@ -71,7 +78,7 @@
       "measured.drift_questions": 10,
       "measured.drift_triggered": 0,
       "measured.evidence_docs": 16,
-      "measured.evidence_gate_stages": 8,
+      "measured.evidence_gate_stages": 9,
       "measured.principles": 24,
       "measured.principles_covered": 15,
       "measured.principles_gap": 0,
@@ -81,6 +88,8 @@
       "measured.regression_runs": 21,
       "measured.regression_scopes": 9,
       "measured.regression_unowned": 0,
+      "measured.rehearsal_layers": 2,
+      "measured.rehearsal_ok": 2,
       "measured.source_questions": 12,
       "measured.state_claim_mentions": 6,
       "measured.state_claim_probe_cases": 17,
@@ -89,6 +98,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "증거 게이트 CI 배선 회차 마무리 승인: 리뷰 14 checks · 카나리아 7 harness · 게이트 자기시험 40건 · digest pin 50(재확인 22) · 상태 주장 4(정정 4) · enum·purge 위반 0 · 표면 entrypoint 9 · 원장 9 scope 21 회차 · 기준 8개 층 · cognitive 579",
+  "method": "red 리허설 회차 마무리 승인: 리뷰 15 checks · 카나리아 8 harness · 게이트 자기시험 43건(red 회계 포함) · red 리허설 2층(심은 위반 지목·대조군 초록·빈 트리 차단) · digest pin 50(재확인 22) · 상태 주장 4(정정 4) · enum·purge 위반 0 · 표면 entrypoint 9 · 원장 9 scope 21 회차 · cognitive 601",
   "recorded_on": "2026-09-23"
 }

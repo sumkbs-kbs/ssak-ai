@@ -3,7 +3,7 @@
 카나리아는 “하한이 무는가” 를 묻는 도구이므로, 카나리아 자신이 눈이 멀면 마지막 구멍이 남는다.
 그래서 여기서는 세 가지를 고정한다:
 
-  * 정상 저장소에서 여섯 harness 가 모두 문다(정상 통과 · 눈멀게 한 사본 차단 · 근거 동봉).
+  * 정상 저장소에서 여덟 하한이 모두 문다(정상 통과 · 눈멀게 한 사본 차단 · 근거 동봉).
   * 하한이 **없는** harness 는 통과가 아니라 실패로 보고된다(빈 목록을 “문제 없음” 으로 읽지 않는다).
   * `minimum=0` 처럼 **영원히 안 무는** 하한은 장식으로 잡힌다 — 이 경우가 없으면 카나리아는 형식이 된다.
 """
@@ -47,7 +47,7 @@ def test_every_harness_floor_bites(canary: Any) -> None:  # noqa: ANN401
 
     results = canary.run()
 
-    assert len(results) == len(canary.HARNESSES) == 7
+    assert len(results) == len(canary.HARNESSES) == 8
     for result in results:
         assert result.ok, f"{result.name}: {result.problems}"
     assert all(result.floors >= 1 for result in results)
@@ -200,8 +200,8 @@ def test_emit_json_reports_every_harness(canary: Any, capsys: pytest.CaptureFixt
     assert canary.main(["--emit-json"]) == 0
     payload = json.loads(capsys.readouterr().out)
 
-    assert payload["counts"]["harnesses"] == 7
-    assert payload["counts"]["ok"] == 7
+    assert payload["counts"]["harnesses"] == 8
+    assert payload["counts"]["ok"] == 8
     assert payload["counts"]["blind"] == 0
     assert {item["name"] for item in payload["harnesses"]} == set(canary.HARNESSES)
 
