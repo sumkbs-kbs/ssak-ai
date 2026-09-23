@@ -1015,7 +1015,12 @@ def read_digest_drift() -> dict[str, object] | None:
 
 
 def measure_digest_drift() -> dict[str, object] | None:
-    """`digest_drift.py --emit-json` 으로 지금 값을 다시 잰다(저장본이 썩지 않게)."""
+    """`digest_drift.py --emit-json` 으로 지금 값을 다시 잰다(저장본이 썩지 않게).
+
+    종료 코드가 0 이 아니어도 **JSON 이 읽히면 그대로 쓴다**: 그 경로는 판정과 진단을 함께 내므로, 여기서
+    None 으로 바꾸면 "왜 이 층이 실패했는지" 가 이음매에서 사라진다. 대신 종료 코드를 보고에 실어 검사가
+    모순(보고는 통과인데 스스로 실패했다고 말함)을 잡게 한다.
+    """
 
     result = subprocess.run(
         [sys.executable, str(DIGEST_DRIFT_SCRIPT), "--emit-json"],
@@ -1024,12 +1029,14 @@ def measure_digest_drift() -> dict[str, object] | None:
         text=True,
         check=False,
     )
-    if result.returncode != 0:
-        return None
     try:
-        return json.loads(result.stdout)
+        report = json.loads(result.stdout)
     except json.JSONDecodeError:
         return None
+    if not isinstance(report, dict):
+        return None
+    report["exit_code"] = result.returncode
+    return report
 
 
 def _as_int(value: object) -> int:
@@ -1072,6 +1079,7 @@ def check_digest_report(stored: dict[str, object] | None, fresh: dict[str, objec
         problems.append(f"파일이 없는데 digest 를 못 박은 항목 {broken}건")
     if stale_reverification:
         problems.append(f"재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 {stale_reverification}건")
+    problems.extend(exit_code_problems(fresh, name="digest_drift", already=problems))
     if problems:
         return CheckResult(
             name="digest_report",
@@ -1309,6 +1317,25 @@ def check_evidence_gate(report: dict[str, object] | None) -> CheckResult:
     )
 
 
+def exit_code_problems(report: dict[str, object], *, name: str, already: list[str]) -> list[str]:
+    """machine-readable 실행의 종료 코드를 판정으로 읽는다 — **모순과 부재를 모두 실패로** 본다.
+
+    JSON 을 내는 경로는 이제 판정(종료 코드)과 진단(JSON)을 함께 낸다(그 전에는 `--emit-json` 이 결과와
+    무관하게 exit 0 을 냈다). 그 출력을 읽는 쪽이 지켜야 할 두 가지:
+
+      * **종료 코드가 없는 보고는 판정이 아니다** — 스스로 실패했는지 알 수 없으면 통과로 쓰지 않는다.
+      * **모순** — 보고서는 문제가 없다는데 실행이 스스로 실패했다고 말하면 둘 중 하나는 거짓이다.
+        (`already` 가 비어 있지 않으면 모순이 아니라 같은 결함의 두 얼굴이므로 중복해서 세지 않는다.)
+    """
+
+    if "exit_code" not in report:
+        return [f"{name} 보고에 종료 코드가 없다 — 스스로 실패했는지 알 수 없는 보고는 판정이 아니다"]
+    code = _as_int(report.get("exit_code"))
+    if code != 0 and not already:
+        return [f"{name} 가 exit {code} 로 스스로 실패했다고 말했는데 보고서는 문제가 없다고 한다(모순)"]
+    return []
+
+
 def _probe_from(mapping: dict[str, object]) -> Probe | None:
     """JSON 으로 온 자기시험 결과를 `Probe` 로 되살린다(없으면 None → 부재로 실패)."""
 
@@ -1339,7 +1366,11 @@ def read_state_claims_artifact() -> dict[str, object] | None:
 
 
 def measure_state_claims() -> dict[str, object] | None:
-    """상태 주장 감사를 돌려 JSON 을 받는다 — 몇 초 걸린다(시험을 실제로 돌린다)."""
+    """상태 주장 감사를 돌려 JSON 을 받는다 — 몇 초 걸린다(시험을 실제로 돌린다).
+
+    `measure_digest_drift`·`measure_canary` 와 같은 규칙: 종료 코드가 0 이 아니어도 **JSON 이 읽히면 그대로
+    쓰고** 종료 코드를 보고에 실어 모순을 검사가 잡게 한다(진단을 이음매에서 뭉개지 않는다).
+    """
 
     result = subprocess.run(
         [sys.executable, str(STATE_CLAIMS_SCRIPT), "--emit-json"],
@@ -1348,12 +1379,14 @@ def measure_state_claims() -> dict[str, object] | None:
         text=True,
         check=False,
     )
-    if result.returncode != 0:
-        return None
     try:
-        return json.loads(result.stdout)
+        report = json.loads(result.stdout)
     except json.JSONDecodeError:
         return None
+    if not isinstance(report, dict):
+        return None
+    report["exit_code"] = result.returncode
+    return report
 
 
 def check_state_claims(stored: dict[str, object] | None, report: dict[str, object] | None) -> CheckResult:
@@ -1430,6 +1463,7 @@ def check_state_claims(stored: dict[str, object] | None, report: dict[str, objec
         problems.append(f"지금 트리와 어긋나는 상태 주장 {stale}건(정정 표기 없음): {', '.join(offenders)}")
     if unknown:
         problems.append(f"상태를 판정하지 못한 주장 {unknown}건")
+    problems.extend(exit_code_problems(report, name="audit_state_claims", already=problems))
     if problems:
         return CheckResult(
             name="state_claims",

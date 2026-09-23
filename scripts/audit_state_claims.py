@@ -25,9 +25,13 @@
     mention 은 상태 어휘가 없어도 세므로 주장보다 큰 상한 집합이다. mention·주장이 하한 아래로 가면 게이트가
     실패한다 — 문서가 정말 주장을 그만둔 것이면 하한 상수를 **근거와 함께 사람이 내린다**.
 
+**종료 코드도 판정이다.** `--emit-json` 은 stdout 만 쓴다는 이유로 결과와 무관하게 exit 0 을 내던 자리였다.
+JSON 을 낸다고 성공을 알리면 읽는 쪽(리뷰·증거 게이트)은 "돌았는데 통과" 와 "돌았지만 이 감사가 스스로
+실패했다" 를 구분할 수 없다. 이제 두 경로가 같은 판정을 쓰고, JSON 은 stdout 에 그대로 남는다.
+
 ```sh
 .venv/bin/python scripts/audit_state_claims.py             # 표 + 자기시험 + 판정
-.venv/bin/python scripts/audit_state_claims.py --emit-json  # 리뷰 검사가 읽는 형태
+.venv/bin/python scripts/audit_state_claims.py --emit-json  # 리뷰 검사가 읽는 형태 + 같은 판정(종료 코드)
 .venv/bin/python scripts/audit_state_claims.py --gate       # 낡은 주장·정정 누락·탐지력 하한 미달이면 exit 1
 .venv/bin/python scripts/audit_state_claims.py --self-test  # 자기시험만 돌리고 종료
 ```
@@ -394,7 +398,9 @@ def gate_failures(claims: list[Claim], mentions: int, probe: Probe) -> list[str]
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="증거 문서의 현재 상태 주장을 실제 시험으로 재판정한다")
     parser.add_argument("--gate", action="store_true", help="낡은 주장·판정 불가·탐지력 하한 미달이면 실패")
-    parser.add_argument("--emit-json", action="store_true", help="측정 결과만 stdout 으로 낸다")
+    parser.add_argument(
+        "--emit-json", action="store_true", help="측정 결과만 stdout 으로 낸다 — 종료 코드는 --gate 와 같다"
+    )
     parser.add_argument("--self-test", action="store_true", help="자기시험만 돌리고 끝낸다(시험을 돌리지 않는다)")
     parser.add_argument("--artifact", type=Path, default=ARTIFACT, help="하한 근거·관측을 남길 artifact 경로")
     args = parser.parse_args(argv)
@@ -412,7 +418,12 @@ def main(argv: list[str] | None = None) -> int:
     args.artifact.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     if args.emit_json:
         print(json.dumps(payload, ensure_ascii=False, indent=2))
-        return EXIT_OK
+        # **종료 코드도 판정이다.** JSON 을 낸다고 성공을 알리면, 읽는 쪽(리뷰·증거 게이트)은 "돌았는데 통과" 와
+        # "돌았지만 이 감사는 스스로 실패했다" 를 구분할 수 없다(`--gate` 와 같은 판정을 쓴다).
+        problems = gate_failures(claims, mentions, probe)
+        for problem in problems:
+            print(f"[FAIL] {problem}", file=sys.stderr)
+        return EXIT_GATE if problems else EXIT_OK
     print(describe(claims, mentions, probe, len(docs)))
     for floor in coverage_floors(mentions, len(claims)):
         print(f"  하한 {floor.label}: 관측 {floor.observed} · 최소 {floor.minimum} · 여유 {floor.margin}")

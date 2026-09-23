@@ -150,6 +150,32 @@ def test_correction_needs_a_date(audit: Any, tmp_path: Path) -> None:  # noqa: A
     assert judged[0].status == "stale"
 
 
+def test_emit_json_also_reports_failure(
+    audit: Any,  # noqa: ANN401
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """JSON 을 내는 실행도 **판정을 종료 코드로** 말한다 — 낡은 주장이 있으면 exit 1.
+
+    예전에는 이 경로가 결과와 무관하게 exit 0 을 냈다. 그래서 읽는 쪽(리뷰·증거 게이트)은 "돌았는데 통과" 와
+    "돌았지만 이 감사가 스스로 실패했다" 를 구분할 수 없었고, `returncode != 0` 검사는 죽은 코드였다.
+    """
+
+    doc = write_doc(tmp_path, f"`{PASSING_NODE}` 는 실패한다.\n")
+    stale = audit.measure([doc])
+    assert stale and stale[0].status == "stale"
+    monkeypatch.setattr(audit, "measure", lambda: stale)
+    artifact = tmp_path / "state_claims.json"
+
+    exit_code = audit.main(["--emit-json", "--artifact", str(artifact)])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert exit_code == audit.EXIT_GATE
+    assert payload["counts"]["stale"] == 1
+    assert audit.main(["--gate", "--artifact", str(artifact)]) == audit.EXIT_GATE
+
+
 def test_emit_json_reports_counts(audit: Any, capsys: pytest.CaptureFixture[str]) -> None:  # noqa: ANN401
     """`--emit-json` 은 리뷰가 읽는 형태(주장별 상태 + 합계)를 낸다."""
 

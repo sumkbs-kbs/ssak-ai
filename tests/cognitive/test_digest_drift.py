@@ -321,14 +321,18 @@ def test_broken_pin_fails_the_gate_even_with_a_current_artifact(drift: Any, tmp_
 def test_emit_json_writes_nothing_to_the_artifact(
     drift: Any, tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """`--emit-json` 은 stdout 만 쓴다 — 리뷰 검사가 artifact 를 건드리지 않고 잴 수 있게."""
+    """`--emit-json` 은 stdout 만 쓴다 — 리뷰 검사가 artifact 를 건드리지 않고 잴 수 있게.
+
+    그리고 **판정도 함께 낸다**: 가리킨 artifact 가 없는 store 는 통과가 아니므로 exit 1 이다(예전에는 이 경로가
+    결과와 무관하게 exit 0 을 내서, 읽는 쪽이 "돌았는데 통과" 와 "돌았지만 스스로 실패했다" 를 구분할 수 없었다).
+    """
 
     artifact = tmp_path / "digest_drift.json"
     exit_code = drift.main(["--emit-json", "--artifact", str(artifact)])
     payload = json.loads(capsys.readouterr().out)
 
-    assert exit_code == 0
     assert artifact.exists() is False, "--emit-json 이 artifact 를 썼다"
+    assert exit_code == drift.EXIT_GATE
     assert set(payload["counts"]) == {
         "match",
         "reverified",
@@ -337,6 +341,29 @@ def test_emit_json_writes_nothing_to_the_artifact(
         "missing",
     }
     assert payload["source_head"]
+
+
+def test_emit_json_and_gate_reach_the_same_verdict(
+    drift: Any, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """같은 store 에서 `--emit-json` 과 `--gate` 가 **같은 결론**을 낸다 — 판정과 진단이 함께 나온다."""
+
+    current = tmp_path / "current.json"
+    current.write_text(json.dumps(drift.measure().compared(), ensure_ascii=False), encoding="utf-8")
+
+    assert drift.main(["--emit-json", "--artifact", str(current)]) == drift.EXIT_OK
+    assert json.loads(capsys.readouterr().out)["counts"]["match"] > 0
+
+    stale = tmp_path / "stale.json"
+    stored = drift.measure().compared()
+    stored["counts"]["match"] = 0  # 저장 뒤에 파일이 바뀐 상황
+    stale.write_text(json.dumps(stored, ensure_ascii=False), encoding="utf-8")
+
+    assert drift.main(["--gate", "--artifact", str(stale)]) == drift.EXIT_GATE
+    capsys.readouterr()
+    assert drift.main(["--emit-json", "--artifact", str(stale)]) == drift.EXIT_GATE
+    # 진단은 뭉개지지 않는다 — 판정이 빨간 동안에도 **방금 잰** 수치는 stdout 에 그대로 나온다(낡은 것은 저장본이다).
+    assert json.loads(capsys.readouterr().out)["counts"]["match"] > 0
 
 
 def test_repository_artifact_is_current(drift: Any) -> None:  # noqa: ANN401

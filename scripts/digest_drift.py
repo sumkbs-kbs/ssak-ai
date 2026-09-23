@@ -9,10 +9,15 @@
 확인했다는 주장이 되는데, 그것은 사람이 해야 할 일이다. 여기서는 어느 pin 이 아직 서 있고 어느 pin 이
 움직였는지만 남긴다.
 
+**종료 코드도 판정이다.** `--emit-json` 은 stdout 만 쓴다는 이유로 결과와 무관하게 exit 0 을 내던 자리였다 —
+같은 store 에서 `--gate` 는 exit 1 인데 `--emit-json` 은 성공을 알렸다(실제로 그랬다). 그래서 그 출력을 읽는
+쪽(리뷰·증거 게이트)은 "돌았는데 통과" 와 "돌았지만 이 층이 스스로 실패했다" 를 종료 코드로 구분할 수 없었다.
+이제 두 경로가 **같은 판정**을 쓰고, JSON 은 stdout 에 그대로 남는다 — 판정과 진단이 함께 나온다.
+
 ```sh
 .venv/bin/python scripts/digest_drift.py                       # 측정 + artifact 갱신 + 요약
 .venv/bin/python scripts/digest_drift.py --gate                # artifact 가 최신인지 + 깨진 pin 이 없는지
-.venv/bin/python scripts/digest_drift.py --emit-json           # stdout 으로만 측정 결과(리뷰 검사용)
+.venv/bin/python scripts/digest_drift.py --emit-json           # stdout 측정 결과 + 같은 판정(종료 코드)
 ```
 """
 
@@ -454,7 +459,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--emit-json",
         action="store_true",
-        help="artifact 를 건드리지 않고 측정 결과만 stdout 으로 낸다(리뷰 검사가 읽는다)",
+        help="artifact 를 건드리지 않고 측정 결과만 stdout 으로 낸다(리뷰 검사가 읽는다) — 종료 코드는 --gate 와 같다",
     )
     parser.add_argument(
         "--record",
@@ -489,7 +494,12 @@ def main(argv: list[str] | None = None) -> int:
     }
     if args.emit_json:
         print(json.dumps(payload, ensure_ascii=False, indent=2))
-        return EXIT_OK
+        # **종료 코드도 판정이다.** JSON 을 낸다고 성공을 알리면, 읽는 쪽(리뷰·증거 게이트)은 "돌았는데 통과" 와
+        # "돌았지만 이 층은 스스로 실패했다" 를 종료 코드로 구분할 수 없다(`--gate` 와 같은 판정을 쓴다).
+        problems = gate_failures(drift, args.artifact)
+        for problem in problems:
+            print(f"[FAIL] {problem}", file=sys.stderr)
+        return EXIT_GATE if problems else EXIT_OK
 
     if args.record:
         if not args.method.strip():

@@ -312,6 +312,7 @@ def _drift_report(
     pins: int = 1,
     probe_present: bool = True,
     probe_ok: bool = True,
+    exit_code: int | None = 0,
 ) -> dict[str, object]:
     """digest 측정 artifact 의 최소 형태 — 판정에 쓰는 키만 담는다."""
 
@@ -357,6 +358,8 @@ def _drift_report(
     }
     if probe_present:
         report["probe"] = {"cases": 9, "failures": [] if probe_ok else ["경로+digest 판독: 0 ≠ 1"], "ok": probe_ok}
+    if exit_code is not None:
+        report["exit_code"] = exit_code
     return report
 
 
@@ -484,6 +487,7 @@ def _state_claim_report(
     mentions: int = 6,
     probe_present: bool = True,
     probe_ok: bool = True,
+    exit_code: int | None = 0,
 ) -> dict[str, object]:
     """상태 주장 감사 JSON 의 최소 형태."""
 
@@ -509,6 +513,8 @@ def _state_claim_report(
             "failures": [] if probe_ok else ["통과 어휘가 사라졌다: ['green']"],
             "ok": probe_ok,
         }
+    if exit_code is not None:
+        report["exit_code"] = exit_code
     return report
 
 
@@ -1065,6 +1071,86 @@ def test_failure_lines_name_each_failing_check_with_its_reason(review: Any) -> N
     )
 
     assert review.failure_lines(measurement) == ["[FAIL] citation_tracking: 추적되지 않는 인용 1건"]
+
+
+def test_digest_report_without_an_exit_code_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """종료 코드 없는 보고는 판정이 아니다 — 스스로 실패했는지 알 수 없는 수치를 쓰지 않는다."""
+
+    report = _drift_report(exit_code=None)
+    result = review.check_digest_report(report, report)
+
+    assert result.passed is False
+    assert "종료 코드가 없다" in result.detail
+
+
+def test_digest_report_contradicting_its_own_exit_code_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """보고서는 문제 없다는데 실행이 스스로 실패했다면 둘 중 하나는 거짓이라 실패한다."""
+
+    report = _drift_report(exit_code=1)
+    result = review.check_digest_report(report, report)
+
+    assert result.passed is False
+    assert "모순" in result.detail
+
+
+def test_state_claims_contradicting_its_own_exit_code_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """같은 규칙을 상태 주장 감사에도 적용한다(보고는 통과인데 스스로 실패했다고 말함)."""
+
+    report = _state_claim_report(fixed=4, exit_code=1)
+    result = review.check_state_claims(report, report)
+
+    assert result.passed is False
+    assert "모순" in result.detail
+
+
+def test_state_claims_without_an_exit_code_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """종료 코드를 싣지 않은 보고도 통과시키지 않는다."""
+
+    report = _state_claim_report(fixed=4, exit_code=None)
+    result = review.check_state_claims(report, report)
+
+    assert result.passed is False
+    assert "종료 코드가 없다" in result.detail
+
+
+def test_exit_code_check_does_not_double_count_a_real_defect(review: Any) -> None:  # noqa: ANN401
+    """이미 지목된 결함은 모순으로 다시 세지 않는다 — 같은 사실을 두 번 적으면 판정이 흐려진다."""
+
+    report = _drift_report(missing=1, exit_code=1)
+    result = review.check_digest_report(report, report)
+
+    assert result.passed is False
+    assert "모순" not in result.detail
+    assert "파일이 없는데 digest 를 못 박은 항목" in result.detail
+
+
+def test_measure_digest_drift_keeps_the_report_when_the_run_fails(review: Any, monkeypatch: pytest.MonkeyPatch) -> None:  # noqa: ANN401
+    """exit 1 이어도 JSON 이 읽히면 그대로 쓴다 — 진단을 이음매에서 뭉개지 않는다."""
+
+    payload = json.dumps(_drift_report(missing=1))
+
+    def fake_run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(args=[], returncode=1, stdout=payload, stderr="[FAIL] 파일이 없다")
+
+    monkeypatch.setattr(review.subprocess, "run", fake_run)
+    report = review.measure_digest_drift()
+
+    assert report is not None
+    assert report["exit_code"] == 1
+    assert review.check_digest_report(report, report).passed is False
+
+
+def test_measure_state_claims_returns_nothing_when_the_output_is_not_json(
+    review: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:  # noqa: ANN401
+    """읽을 수 없는 출력은 통과로 쓰지 않는다(import 오류·traceback)."""
+
+    def fake_run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(args=[], returncode=1, stdout="Traceback...", stderr="boom")
+
+    monkeypatch.setattr(review.subprocess, "run", fake_run)
+
+    assert review.measure_state_claims() is None
 
 
 def test_quiet_run_still_says_which_check_failed(

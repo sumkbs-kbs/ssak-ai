@@ -65,7 +65,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 549 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 558 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
@@ -93,7 +93,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=549 -->
+<!-- measured:cognitive_tests=558 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -126,7 +126,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | 회귀 | 명령 | exit | 관찰 |
 |---|---|---|---|
 | 테스트(전체 · **과거 회차 이력**) | `.venv/bin/python -m pytest tests/ -m 'not slow and not benchmark' -q` | 1 | **세 번 쟀고 회차마다 달랐다**(트리·수집 오염·실행 선택이 함께 달랐던 비교 — 현재 기준선은 이 표의 아래 원장 행이다) — ①(수정 전 · random) 7723 수집 · **94 failed / 7571 passed / 14 skipped / 20 xfailed**(26:31) ②(random) 7726 수집 · **10 failed / 7660 passed** ③(**고정 순서** `-p no:randomly`) 7726 수집 · **7 failed / 7663 passed / 14 skipped / 24 deselected / 20 xfailed**(21:21) ④(**고정 순서 · 정리 뒤**) 7726 수집 · **5 failed / 7666 passed / 14 skipped / 24 deselected / 20 xfailed**(20:13). 그 차이는 seed 효과가 아니라 트리·오염·실행 선택의 차이였고, seed 를 가른 측정은 §1.2 의 원장이다, ③·④의 실패도 전부 기존 항목이다(그중 둘은 §1.5에서 등록으로 닫았다) |
-| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 548 passed · 1 skipped (수집 549 — 원장 subdirs scope 2회에서도 결정적 실패 0) |
+| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 557 passed · 1 skipped (수집 558 — 원장 subdirs scope 2회에서도 결정적 실패 0) |
 | lint | `.venv/bin/python -m ruff check src/ tests/ scripts/` | 0 | All checks passed |
 | format | `.venv/bin/python -m ruff format --check src/ tests/ scripts/` | 0 | 1162 files already formatted |
 | type | `.venv/bin/python -m mypy <cognitive·surface·cli·5 scripts>` | 0 | Success: no issues found in 29 source files |
@@ -401,6 +401,18 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 
 각 harness 는 `--self-test` 로 자기시험만 돌릴 수 있고(측정·기록 없음), 리뷰는 자기시험 **부재**도 실패로 본다:
 판독력을 확인하지 않은 수치를 증거로 옭기지 않는다.
+
+**"JSON 을 낸다" 가 "통과했다" 는 뜻은 아니다 — 같은 이음매가 두 층에 더 있었다.** 카나리아에서 고친 그 자리
+(`--emit-json` 이 결과와 무관하게 exit 0)를 전수 확인해 보니 **두 층이 같은 병을 앓고 있었다**: `digest_drift` 는
+가리킨 artifact 가 없는 store 에서 `--gate` 는 exit 1 인데 `--emit-json` 은 exit 0 을 냈고(실제로 그랬고, JSON 은
+17KB를 그대로 냈다), `audit_state_claims` 도 같았다. 그래서 리뷰의 `returncode != 0` 검사는 그 두 자리에서 죽은
+코드였고, 층이 스스로 빨간 것을 아무도 종료 코드로 받지 못했다 — 이제 두 경로가 **같은 판정**을 쓰고(JSON 은
+stdout 에 그대로 남는다), 리뷰는 그 셋을 같은 규칙으로 읽는다: 종료 코드가 0 이 아니어도 **JSON 이 읽히면 그대로
+쓰고** 종료 코드를 보고에 실어서, ① **종료 코드 없는 보고**는 판정이 아니고 ② 보고서는 문제가 없다는데 실행이
+스스로 실패했다고 말하면 **모순**으로 실패한다(같은 결함이 이미 지목됐을 때 모순으로 두 번 세지는 않는다).
+이빨은 `test_digest_drift`·`test_state_claims`(“같은 store 에서 `--emit-json` 과 `--gate` 가 같은 결론”)과
+리뷰 쪽 6건(종료 코드 부재·모순·정말 결함일 때는 중복해서 세지 않음·exit 1 이어도 JSON 을 살리는지·JSON 이
+아니면 None·상태 주장에도 같은 규칙)이다.
 
 **게이트를 도는 자리 — 여섯 층을 한 번에.** harness 마다 게이트가 있어도 그것을 도는 자리는 사람의 기억뿐이었다:
 CI 는 하나도 돌리지 않았고, 어디가 얇은지 보려면 여덟 개 명령을 손으로 쳐야 했다. `scripts/evidence_gate.py` 가 그
