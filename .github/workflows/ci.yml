@@ -134,6 +134,48 @@ jobs:
           uv run --no-sync mypy --ignore-missing-imports --no-strict-optional \
             --exclude "tests/|legacy_|demo/" src/antigravity_k
 
+  evidence-gate:
+    # 여섯 층(리뷰 · 카나리아 · digest · 상태 주장 · enum identity · namespace purge · 표면)을 **한 번에**
+    # 도는 단일 명령. 층마다 게이트가 있어도 그것을 도는 자리가 CI 에 없었다 — 사람이 여덟 개 명령을
+    # 손으로 쳐야 했고, 그래서 어느 층이 얇은지 자동으로 막히지 않았다.
+    #
+    # `--tier fast` 는 커밋되지 않는 회차 산출물(`.regression-ledger/`)이 필요한 전량 회귀 원장을 돌리지
+    # 않는다. 그 층은 보고서에 "이 실행이 보지 않은 층" 으로 남으며 통과로 세지 않는다(full tier 는 로컬).
+    # 알려진 한계: 이 워크플로의 `paths-ignore: docs/**` 때문에 문서만 바꾼 PR 은 이 job 을 건너뛴다.
+    name: "Evidence Gate (six layers, fast)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Sync locked environment (non-editable, dev extra)
+        run: uv sync --locked --no-editable --extra dev
+
+      - name: Run evidence gate
+        run: |
+          mkdir -p .artifacts
+          uv run --no-sync python scripts/evidence_gate.py \
+            --tier fast \
+            --json .artifacts/evidence-gate.json
+
+      - name: Upload evidence gate report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-gate-report
+          path: .artifacts/evidence-gate.json
+          retention-days: 30
+          if-no-files-found: warn
+
   test:
     name: "Tests (${{ matrix.os }}, ${{ matrix.deps }})"
     strategy:

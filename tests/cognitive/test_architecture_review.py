@@ -925,3 +925,164 @@ def test_collected_test_count_matches_document_marker(review: Any) -> None:
     assert markers.get("cognitive_tests") == str(count), (
         "tests/cognitive 수집 개수가 바뀌었다 — ARCHITECTURE_REVIEW.md의 cognitive_tests 마커를 갱신해야 한다"
     )
+
+
+def _gate_report(review: Any, **changes: object) -> dict[str, object]:  # noqa: ANN401
+    """저장소 증거 게이트의 실제 명세 — `**changes` 로 한 자리씩 결함을 재현한다."""
+
+    report = review.measure_evidence_gate(review.load_evidence_gate())
+    assert report is not None
+    merged = dict(report)
+    merged.update(changes)
+    return merged
+
+
+def test_repository_evidence_gate_binds_every_layer(review: Any) -> None:  # noqa: ANN401
+    """저장소의 게이트가 여섯 층을 실제로 묶고 있는지(리뷰가 인용하는 수치의 출처)."""
+
+    report = _gate_report(review)
+    result = review.check_evidence_gate(report)
+
+    assert result.passed is True, result.detail
+    assert report["probe"]["ok"] is True, report["probe"]
+    assert report["fast"], "fast tier 가 비어 있다 — 기본 실행이 아무 층도 돌지 않는다"
+    for floor in report["floors"]:
+        assert str(floor["why"]).strip(), f"하한 {floor['label']} 에 근거가 없다"
+
+
+def test_every_layer_is_a_stage_of_the_gate(review: Any) -> None:  # noqa: ANN401
+    """카나리아가 아는 층은 전부 게이트의 stage 다 — 게이트 자신만 재귀 때문에 빠진다."""
+
+    report = _gate_report(review)
+    names = set(report["names"])
+    canary = review.measure_canary()
+    assert canary is not None
+    known = {item["name"] for item in canary["harnesses"]}
+
+    assert known - names == {"evidence_gate"}
+    assert {"review", "canary"} <= names
+
+
+def test_missing_gate_fails_the_review(review: Any) -> None:  # noqa: ANN401
+    """게이트를 불러오지 못하면 통과하지 않는다 — 층마다 있는 게이트를 도는 명령이 없다면 기억으로만 돌아간다."""
+
+    result = review.check_evidence_gate(None)
+
+    assert result.passed is False
+    assert "불려오지 않는다" in result.detail
+
+
+def test_gate_without_stages_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """stage 가 비면 실패한다 — '볼 것이 없음' 은 '문제 없음' 이 아니다."""
+
+    result = review.check_evidence_gate(_gate_report(review, stages=[], names=[]))
+
+    assert result.passed is False
+    assert "stage 가 하나도 없다" in result.detail
+
+
+def test_gate_stage_with_missing_script_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """stage 가 없는 스크립트를 가리키면 실패한다(그 층은 영영 돌지 않는다)."""
+
+    result = review.check_evidence_gate(
+        _gate_report(review, stages=[{"name": "ghost", "tier": "fast", "script": "ghost_layer.py", "args": []}])
+    )
+
+    assert result.passed is False
+    assert "스크립트가 없다" in result.detail
+
+
+def test_gate_without_self_probe_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """자기시험이 없으면 실패한다 — 판정 규칙을 확인하지 않은 게이트는 명단일 뿐이다."""
+
+    result = review.check_evidence_gate(_gate_report(review, probe={}))
+
+    assert result.passed is False
+    assert "자기시험 결과가 없다" in result.detail
+
+
+def test_gate_with_failing_self_probe_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """자기시험이 실패하면 실패한다 — 판정 규칙이 깨졌다는 사실이 이유와 함께 남는다."""
+
+    result = review.check_evidence_gate(
+        _gate_report(review, probe={"cases": 3, "failures": ["pass 는 통과다"], "ok": False})
+    )
+
+    assert result.passed is False
+    assert "자기시험 실패" in result.detail
+    assert "pass 는 통과다" in result.detail
+
+
+def test_gate_floor_without_basis_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """하한에 근거가 없으면 실패한다 — 값만 남으면 나중에 내려도 되는지 판단할 수 없다."""
+
+    result = review.check_evidence_gate(
+        _gate_report(review, floors=[{"label": "stage", "observed": 8, "minimum": 8, "why": "  "}])
+    )
+
+    assert result.passed is False
+    assert "근거" in result.detail
+
+
+def test_gate_with_unknown_tier_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """모르는 tier 를 쓰는 stage 는 실패한다 — 그 층은 어느 실행에서도 돌지 않는다."""
+
+    result = review.check_evidence_gate(_gate_report(review, tiers=["fast"]))
+
+    assert result.passed is False
+    assert "모르는 tier" in result.detail
+
+
+def test_gate_with_empty_fast_tier_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """기본 실행이 아무 층도 돌지 않으면 실패한다."""
+
+    result = review.check_evidence_gate(_gate_report(review, fast=[]))
+
+    assert result.passed is False
+    assert "fast tier 가 비어 있다" in result.detail
+
+
+def test_gate_stage_count_is_a_marker(review: Any) -> None:  # noqa: ANN401
+    """stage 수는 measured 마커로 고정된다 — 명단이 줄면 문서 마커가 어긋난다."""
+
+    report = _gate_report(review)
+
+    assert review.evidence_gate_measured(report) == {"evidence_gate_stages": len(report["stages"])}
+    assert review.evidence_gate_measured(None) == {}
+
+
+def test_failure_lines_name_each_failing_check_with_its_reason(review: Any) -> None:  # noqa: ANN401
+    """실패 문장은 검사 이름과 이유를 담는다 — 게이트가 이 출력에서 어느 층이 얕은지 읽는다."""
+
+    measurement = review.ReviewMeasurement(
+        principles=(),
+        source_questions=(),
+        drift_questions=(),
+        checks=(
+            review.CheckResult(name="doc_links_resolve", passed=True, detail="ok"),
+            review.CheckResult(name="citation_tracking", passed=False, detail="추적되지 않는 인용 1건"),
+        ),
+    )
+
+    assert review.failure_lines(measurement) == ["[FAIL] citation_tracking: 추적되지 않는 인용 1건"]
+
+
+def test_quiet_run_still_says_which_check_failed(
+    review: Any, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:  # noqa: ANN401
+    """`--quiet` 는 표만 숨긴다 — 실패 이유를 숨기면 그 층을 다시 돌려야 어디가 얕은지 안다."""
+
+    measurement = review.ReviewMeasurement(
+        principles=(),
+        source_questions=(),
+        drift_questions=(),
+        checks=(review.CheckResult(name="measured_markers", passed=False, detail="evidence_gate_stages 마커가 없다"),),
+    )
+    monkeypatch.setattr(review, "measure", lambda: measurement)
+
+    code = review.main(["--quiet"])
+    captured = capsys.readouterr()
+
+    assert code == review.EXIT_FAILED
+    assert captured.out == ""
+    assert "[FAIL] measured_markers: evidence_gate_stages 마커가 없다" in captured.err

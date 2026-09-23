@@ -23,6 +23,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import re
 import subprocess
@@ -30,6 +31,7 @@ import sys
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
+from types import ModuleType
 from typing import Final, Literal
 
 # 공통 harness 계약(자기시험 · 탐지력 하한) — scripts/ 는 저장소 안의 도구 모음이라 직접 import 한다.
@@ -62,6 +64,10 @@ STATE_CLAIMS_ARTIFACT: Final[Path] = EVIDENCE_DIR / "state_claims.json"
 
 # 탐지력 하한이 **실제로 무는지**를 확인하는 카나리아(`scripts/harness_canary.py`).
 CANARY_SCRIPT: Final[Path] = REPO_ROOT / "scripts" / "harness_canary.py"
+
+# 여섯 층을 한 번에 도는 증거 게이트(`scripts/evidence_gate.py`). 리뷰는 이 게이트를 **돌리지 않고** roster 와
+# 자기시험만 읽는다 — 게이트의 stage 중 하나가 이 리뷰라서, 돌리면 서로를 불러 끝나지 않는다(단방향 계약).
+EVIDENCE_GATE_SCRIPT: Final[Path] = REPO_ROOT / "scripts" / "evidence_gate.py"
 
 Status = Literal["covered", "partial", "gap"]
 Answer = Literal["yes", "yes_with_limits", "no"]
@@ -1191,6 +1197,136 @@ def canary_measured(report: dict[str, object]) -> dict[str, int]:
     }
 
 
+def load_evidence_gate() -> ModuleType | None:
+    """증거 게이트 module 을 읽는다 — 없거나 불러오지 못하면 None(호출자가 실패로 처리).
+
+    **게이트를 실행하지 않는다.** 게이트의 stage 중 하나가 이 리뷰이므로, 실행하면 서로를 불러 끝나지 않는다;
+    리뷰가 볼 것은 게이트의 판정이 아니라 **게이트의 명세**(roster·자기시험·하한)다.
+    """
+
+    if not EVIDENCE_GATE_SCRIPT.exists():
+        return None
+    spec = importlib.util.spec_from_file_location("review_evidence_gate", EVIDENCE_GATE_SCRIPT)
+    if spec is None or spec.loader is None:
+        return None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    try:
+        spec.loader.exec_module(module)
+    except Exception:  # noqa: BLE001 - 불러오지 못한 게이트는 통과가 아니라 실패다(이유는 검사가 말한다)
+        return None
+    return module
+
+
+def measure_evidence_gate(module: ModuleType | None) -> dict[str, object] | None:
+    """게이트의 명세를 읽어 온다 — stage roster · tier · 자기시험 · 하한(측정은 하지 않는다)."""
+
+    if module is None:
+        return None
+    stages = tuple(module.STAGES)
+    probe = module._probe_or_failure()  # noqa: SLF001 - 자기시험이 예외로 죽어도 판정으로 바꾸는 자리
+    return {
+        "stages": [
+            {"name": stage.name, "tier": stage.tier, "script": stage.script, "args": list(stage.args)}
+            for stage in stages
+        ],
+        "names": [stage.name for stage in stages],
+        "tiers": list(module.TIERS),
+        "fast": [stage.name for stage in module.stages_for(module.TIER_FAST)],
+        "probe": probe.as_mapping(),
+        "floors": module.floor_records(module.coverage_floors(stages)),
+    }
+
+
+def check_evidence_gate(report: dict[str, object] | None) -> CheckResult:
+    """여섯 층이 **한 번에 도는 명령으로 묶여 있는가**(`scripts/evidence_gate.py`).
+
+    harness 가 각자 게이트를 갖는 것과 그것을 도는 자리는 다르다. 여기서 보는 것은 게이트의 명세다:
+
+      * 게이트가 불려오고, **stage 가 하나도 없지 않고**, 요구된 이름이 전부 들어 있는가.
+      * 각 stage 의 스크립트가 실재하고, tier 가 아는 값이며, `fast` 가 비어 있지 않은가.
+      * 게이트의 **자기시험이 있고 통과하는가**(합성 결과로 판정 규칙 — 종류 구분·tier 필터·roster 정합 — 을
+        매 실행 다시 물어본다). 자기시험이 없거나 실패하면 절반의 명단은 명단이 아니다.
+      * 하한이 기록돼 있고 **근거(`why`)가 적혀 있는가**.
+    """
+
+    if report is None:
+        return CheckResult(
+            name="evidence_gate",
+            passed=False,
+            detail=(
+                f"{EVIDENCE_GATE_SCRIPT.name} 가 없거나 불려오지 않는다 — 층마다 있는 게이트를 도는 명령이 없다면 "
+                "그 게이트는 사람의 기억으로만 돌아간다"
+            ),
+        )
+    stages = _as_list(report.get("stages"))
+    names = [str(name) for name in _as_list(report.get("names"))]
+    probe = _as_dict(report.get("probe"))
+    floors = [record for record in _as_list(report.get("floors")) if isinstance(record, dict)]
+    problems: list[str] = []
+    if not stages:
+        problems.append("stage 가 하나도 없다")
+    missing_scripts = [
+        str(entry.get("script"))
+        for entry in stages
+        if isinstance(entry, dict) and not (REPO_ROOT / "scripts" / str(entry.get("script"))).exists()
+    ]
+    if missing_scripts:
+        problems.append(f"stage 의 스크립트가 없다: {missing_scripts}")
+    unknown_tiers = [
+        str(entry.get("tier"))
+        for entry in stages
+        if isinstance(entry, dict) and entry.get("tier") not in _as_list(report.get("tiers"))
+    ]
+    if unknown_tiers:
+        problems.append(f"모르는 tier 를 쓰는 stage: {sorted(set(unknown_tiers))}")
+    fast = [str(name) for name in _as_list(report.get("fast"))]
+    if not fast:
+        problems.append("fast tier 가 비어 있다 — 기본 실행이 아무 층도 돌지 않는다")
+    if not names:
+        problems.append("stage 이름이 비어 있다")
+    problems.extend(probe_problems(_probe_from(probe), name="evidence_gate"))
+    if not floors:
+        problems.append("하한이 기록돼 있지 않다")
+    for record in floors:
+        if not str(record.get("why", "")).strip():
+            problems.append(f"하한 {record.get('label')} 에 근거(`why`)가 없다")
+    if problems:
+        return CheckResult(
+            name="evidence_gate",
+            passed=False,
+            detail="; ".join(problems),
+            observed={"stages": len(stages), "fast": len(fast)},
+        )
+    return CheckResult(
+        name="evidence_gate",
+        passed=True,
+        detail=(
+            f"stage {len(stages)}개(전부 스크립트 실재·하한 근거 기록)를 한 번에 도는 명령이 있다 — "
+            f"fast {len(fast)}개 · 자기시험 {_as_int(probe.get('cases'))}건 통과"
+        ),
+        observed={"stages": len(stages), "fast": len(fast)},
+    )
+
+
+def _probe_from(mapping: dict[str, object]) -> Probe | None:
+    """JSON 으로 온 자기시험 결과를 `Probe` 로 되살린다(없으면 None → 부재로 실패)."""
+
+    cases = mapping.get("cases")
+    failures = _as_list(mapping.get("failures"))
+    if not isinstance(cases, int):
+        return None
+    return Probe(cases=cases, failures=tuple(str(failure) for failure in failures))
+
+
+def evidence_gate_measured(report: dict[str, object] | None) -> dict[str, int]:
+    """게이트에서 마커로 고정할 값 — stage roster 수(명단이 줄면 문서 마커가 어긋난다)."""
+
+    if report is None:
+        return {}
+    return {"evidence_gate_stages": len(_as_list(report.get("stages")))}
+
+
 def read_state_claims_artifact() -> dict[str, object] | None:
     """감사가 남긴 artifact — 하한과 그 근거를 담은 기록. 없거나 깨졌으면 None(호출자가 실패로 처리)."""
 
@@ -1574,6 +1710,9 @@ def measure() -> ReviewMeasurement:
     checks.append(check_harness_canary(canary))
     if canary is not None:
         measured.update(canary_measured(canary))
+    evidence_gate = measure_evidence_gate(load_evidence_gate())
+    checks.append(check_evidence_gate(evidence_gate))
+    measured.update(evidence_gate_measured(evidence_gate))
     checks.append(check_review_document(principles))
     checks.append(check_measured_markers(measured))
     return ReviewMeasurement(
@@ -1583,6 +1722,16 @@ def measure() -> ReviewMeasurement:
         checks=tuple(checks),
         measured=measured,
     )
+
+
+def failure_lines(measurement: ReviewMeasurement) -> list[str]:
+    """실패한 검사를 **이름과 이유로** 남기는 문장 — `--quiet` 도 이 문장은 숨기지 않는다.
+
+    여섯 층을 한 번에 도는 게이트(`scripts/evidence_gate.py`)가 이 스크립트의 출력에서 실패 이유를 읽는다.
+    조용한 실행이 `exit 1` 만 남기면, 어느 층이 얖은지 알아내려고 그 층을 다시 돌려야 한다.
+    """
+
+    return [f"[FAIL] {check.name}: {check.detail}" for check in measurement.checks if not check.passed]
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1619,6 +1768,8 @@ def main(argv: list[str] | None = None) -> int:
             encoding="utf-8",
         )
         print(f"wrote {args.output}")
+    for line in failure_lines(measurement):
+        print(line, file=sys.stderr)
     return EXIT_OK if measurement.passed else EXIT_FAILED
 
 

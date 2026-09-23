@@ -2,7 +2,7 @@
 # =======================
 # Commercial-grade task runner for development, testing, and deployment
 
-.PHONY: help install dev test test-e2e smoke-cli verify-clean-machine ga-gate ga-gate-list lint format clean build dmg dmg-smoke check-desktop docker-build \
+.PHONY: help install dev test test-e2e smoke-cli verify-clean-machine evidence-gate evidence-gate-full ga-gate ga-gate-list lint format clean build dmg dmg-smoke check-desktop docker-build \
         docker-run coverage check ci-setup pre-commit install-script \
         security audit audit-egress sbom doctor search-quality search-quality-extended search-live search-live-extended search-load claim-quality quality-contract local-rag-quality local-benchmark local-benchmark-frontier frontier-evidence \
         build-provenance dashboard-build-provenance dashboard-provenance-verify publish-provenance
@@ -83,6 +83,12 @@ smoke-cli: ## Verify the documented CLI entrypoint and local Qwen profile
 	uv run agk --help
 	uv run agk model list
 	uv run agk doctor
+
+evidence-gate: ## 증거 게이트(fast): 리뷰·카나리아·digest·상태 주장·enum·purge·표면을 한 번에 돌린다
+	$(PYTHON) scripts/evidence_gate.py --tier fast
+
+evidence-gate-full: ## 증거 게이트(full): 로컬 회차가 필요한 전량 회귀 원장까지 포함한다
+	$(PYTHON) scripts/evidence_gate.py --tier full
 
 ga-gate: ## Run the complete commercial GA gate manifest
 	$(PYTHON) scripts/ga_gate.py --manifest scripts/commercial_ga_gates.json --output .artifacts/commercial-ga.json

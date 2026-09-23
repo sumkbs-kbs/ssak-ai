@@ -40,7 +40,12 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
     (“눈이 멀었을 수 있다”) 실패한다.
 12. 하한이 **지금 저장소에서 실제로 무는가**(`harness_canary`) — 각 harness 를 일부러 눈멀게 한 사본
     (`observed=0`)이 막히는지, 차단 문장이 그 harness 가 기록한 근거를 함께 내는지 본다.
-13. 이 문서의 `<!-- measured:key=value -->` 마커가 실제 측정값과 일치하는가(`measured_markers`).
+13. 여섯 층이 **한 번에 도는 명령**(`scripts/evidence_gate.py`)으로 묶여 있는가(`evidence_gate`) — stage 가
+    비어 있지 않고 요구된 이름이 전부 있으며 각 스크립트가 실재하는가, tier 가 아는 값인가, 게이트의
+    **자기시험**(종류 구분·tier 필터·roster 정합)이 있고 통과하는가, 하한의 근거가 적혀 있는가.
+    리뷰는 게이트를 **돌리지 않고 명세만 읽는다** — 게이트의 stage 중 하나가 이 리뷰라서 돌리면 서로를
+    불러 끝나지 않는다(단방향 계약).
+14. 이 문서의 `<!-- measured:key=value -->` 마커가 실제 측정값과 일치하는가(`measured_markers`).
 
 ```sh
 .venv/bin/python scripts/architecture_review.py                 # 검사 + 요약 표
@@ -60,14 +65,14 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 442 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 547 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
 | regression_drift | 0 | seed 를 바꾸면 달라지는 실패 |
 | regression_unowned | 0 | 소유자 없는 결정적 실패 |
 | digest_pinned | 50 | 증거 문서가 파일에 못 박은 sha256 수 |
-| digest_reverified | 21 | 그 뒤에 바뀌었지만 재확인 기록이 있고 그 뒤로 바뀌지 않은 pin |
+| digest_reverified | 22 | 그 뒤에 바뀌었지만 재확인 기록이 있고 그 뒤로 바뀌지 않은 pin |
 | digest_drifted | 0 | 재확인 없이 지나간 revision 을 가리키는 pin |
 | digest_stale | 0 | 재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 |
 | digest_missing | 0 | 파일이 없는데 digest 를 못 박은 항목 |
@@ -76,8 +81,9 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | state_claims_stale | 0 | 정정 없이 남은 낡은 주장 |
 | state_claim_mentions | 6 | node 를 지목한 산문 줄 수 — 상태 어휘가 없어도 세는 상한 집합(탐지력 하한 1) |
 | state_claim_probe_cases | 17 | 매 실행 자기시험이 다시 재판정한 항목 수(어휘·요구 어휘·펜스·정정 창·상태 계산) — 0이면 검사하지 않은 것이다 |
-| canary_harnesses | 6 | 하한 카나리아가 눈멀게 한 사본으로 시험한 harness 수 |
-| canary_ok | 6 | 그중 정상 통과·사본 차단·근거 동봉을 모두 만족한 harness 수 |
+| canary_harnesses | 7 | 하한 카나리아가 눈멀게 한 사본으로 시험한 harness 수(여섯 측정 harness + 증거 게이트) |
+| canary_ok | 7 | 그중 정상 통과·사본 차단·근거 동봉을 모두 만족한 harness 수 |
+| evidence_gate_stages | 8 | 한 번에 도는 증거 게이트의 stage 수(여섯 harness + 리뷰 + 로컬 전용 회귀 원장) |
 
 <!-- measured:principles=24 -->
 <!-- measured:principles_covered=15 -->
@@ -87,7 +93,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=519 -->
+<!-- measured:cognitive_tests=547 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -103,8 +109,9 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:state_claims_stale=0 -->
 <!-- measured:state_claim_mentions=6 -->
 <!-- measured:state_claim_probe_cases=17 -->
-<!-- measured:canary_harnesses=6 -->
-<!-- measured:canary_ok=6 -->
+<!-- measured:canary_harnesses=7 -->
+<!-- measured:canary_ok=7 -->
+<!-- measured:evidence_gate_stages=8 -->
 
 상태 정의:
 
@@ -119,12 +126,13 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | 회귀 | 명령 | exit | 관찰 |
 |---|---|---|---|
 | 테스트(전체 · **과거 회차 이력**) | `.venv/bin/python -m pytest tests/ -m 'not slow and not benchmark' -q` | 1 | **세 번 쟀고 회차마다 달랐다**(트리·수집 오염·실행 선택이 함께 달랐던 비교 — 현재 기준선은 이 표의 아래 원장 행이다) — ①(수정 전 · random) 7723 수집 · **94 failed / 7571 passed / 14 skipped / 20 xfailed**(26:31) ②(random) 7726 수집 · **10 failed / 7660 passed** ③(**고정 순서** `-p no:randomly`) 7726 수집 · **7 failed / 7663 passed / 14 skipped / 24 deselected / 20 xfailed**(21:21) ④(**고정 순서 · 정리 뒤**) 7726 수집 · **5 failed / 7666 passed / 14 skipped / 24 deselected / 20 xfailed**(20:13). 그 차이는 seed 효과가 아니라 트리·오염·실행 선택의 차이였고, seed 를 가른 측정은 §1.2 의 원장이다, ③·④의 실패도 전부 기존 항목이다(그중 둘은 §1.5에서 등록으로 닫았다) |
-| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 518 passed · 1 skipped (수집 519 — 원장 subdirs scope 2회에서도 결정적 실패 0) |
+| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 546 passed · 1 skipped (수집 547 — 원장 subdirs scope 2회에서도 결정적 실패 0) |
 | lint | `.venv/bin/python -m ruff check src/ tests/ scripts/` | 0 | All checks passed |
 | format | `.venv/bin/python -m ruff format --check src/ tests/ scripts/` | 0 | 1162 files already formatted |
 | type | `.venv/bin/python -m mypy <cognitive·surface·cli·5 scripts>` | 0 | Success: no issues found in 29 source files |
 | schema | `.venv/bin/python scripts/generate_record_schema.py --check` | 0 | schema up to date (record-entities/record-envelope) |
-| architecture review | `.venv/bin/python scripts/architecture_review.py` | 0 | 13 checks PASS(회귀 원장 · 인용 추적 · digest 측정 · 상태 주장 재판정 · 하한 카나리아) |
+| architecture review | `.venv/bin/python scripts/architecture_review.py` | 0 | 14 checks PASS(회귀 원장 · 인용 추적 · digest 측정 · 상태 주장 재판정 · 하한 카나리아 · 증거 게이트) |
+| 증거 게이트(여섯 층 한 번에) | `.venv/bin/python scripts/evidence_gate.py --tier full` | 0 | stage 8개 전부 PASS(리뷰 · 카나리아 · digest · 상태 주장 · enum · namespace · 표면 · 회귀 원장) — `--tier fast` 는 로컬 회차가 필요한 회귀 원장을 **'보지 않은 층'** 으로 적는다 |
 | 회귀 원장 | `.venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger --gate` | 0 | 9 scope · 21 회차(seed 101·202 + 순서 뒤집은 3회) · **결정적 11 · variant 민감 0 · 무소유 0** — 같은 scope 를 variant 를 바꿔 돌려 교집합/대칭차로 분리(§1.2) |
 | enum identity 감사 | `.venv/bin/python scripts/audit_enum_identity.py` | 0 | 위반 0건 (cognitive core 95곳을 `same_enum`으로 통일) |
 | namespace purge 감사 | `.venv/bin/python scripts/audit_test_namespace_purge.py` | 0 | 위반 0건 (수집 대상 시험 파일에 조건 없는 import 시점 purge 없음) |
@@ -370,8 +378,8 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 기록이 갖춰져도 남는 경우가 있다: `minimum=0` 이거나 비교가 뒤집혀 있으면 “기록도 있고 자기시험도 통과”
 하는데 **아무것도 막지 못한다**. 카나리아(`scripts/harness_canary.py`)가 각 harness 의 하한을 **일부러 눈멀게 한
 사본**(`observed=0`)으로 평가해 세 가지를 본다 — ① 정상 측정은 막지 않고, ② 사본은 막으며, ③ 실패 문장이
-**기록된 근거를 함께 낸다**. 현재 여섯 harness 전부 통과한다(`harness_canary` 검사 · marker `canary_harnesses` 6 ·
-`canary_ok` 6).
+**기록된 근거를 함께 낸다**. 현재 일곱까지 본다 — 여섯 측정 harness 와 증거 게이트 전부 통과한다(`harness_canary`
+검사 · marker `canary_harnesses` 7 · `canary_ok` 7).
 
 기준을 어디서 가져오는지도 적어 두었다: `digest_drift`·`regression_ledger`·`audit_state_claims` 는 **기록 artifact**
 (리뷰가 읽는 것과 같은 자리), 나머지 셋은 저장소를 직접 재서 얻는다 — 회차 산출물(junit)이 있어야 관측값이 나오는
@@ -393,6 +401,33 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 
 각 harness 는 `--self-test` 로 자기시험만 돌릴 수 있고(측정·기록 없음), 리뷰는 자기시험 **부재**도 실패로 본다:
 판독력을 확인하지 않은 수치를 증거로 옭기지 않는다.
+
+**게이트를 도는 자리 — 여섯 층을 한 번에.** harness 마다 게이트가 있어도 그것을 도는 자리는 사람의 기억뿐이었다:
+CI 는 하나도 돌리지 않았고, 어디가 얇은지 보려면 여덟 개 명령을 손으로 쳐야 했다. `scripts/evidence_gate.py` 가 그
+자리를 하나로 묶는다 — stage 마다 **독립 process** 로 돌리고 종료 코드·소요 시간·**첫 실패 문장**을 모아 어느 층이
+빨간지 이름으로 말한다(fast tier 7 stage · 17초). 이 도구도 같은 병을 앓을 수 있어(스크립트 이름이 틀려 아무것도
+실행되지 않거나, stage 목록이 줄거나, tier 밖 층이 초록으로 덮이는 것) 같은 규율을 적용했다: **없는 스크립트·없는
+산출물·제한 시간 초과는 `unrun`(실패)** 이고 `exit_code` 가 없는 결과는 판정이 아니며, `stage` 수에 하한과 근거가 있고
+(`why` 에 “여섯 harness + 리뷰 + 회귀 원장 = 8”), 자기시험 **25건**이 종류 구분·tier 필터·roster 정합을 매 실행 다시
+물어본다. 자기시험이 실제로 즉시 잡은 결함이 둘 있다: ① stage 이름과 카나리아가 아는 harness 이름이 달라 네 층이
+“사라진” 것으로 보고됐고(이름을 harness 에 맞춰 통일했다), ② 판정 문장에 `Stage` 를 넘겨 죽었다.
+
+**tier 는 숨김이 아니다.** 회귀 원장의 회차 산출물(`.regression-ledger/`)은 커밋되지 않으므로 깨끗한 체크아웃에서는
+그 층을 돌릴 수 없다. `--tier fast`(기본)는 그 층을 **“이 실행이 보지 않은 층”** 으로 적고, `--tier full`(로컬)은 전체
+roster 를 요구한다 — 산출물이 없으면 `unrun` 으로 실패하며 왜 못 돌리는지 말한다(초록으로 덮지 않는다).
+
+**게이트 자신도 카나리아가 본다.** 게이트는 stage 수에 하한을 들고 있으므로, 그 하한이 장식인지도 확인해야 한다 —
+카나리아 roster 에 `evidence_gate` 를 일곱 번째로 넣어 눈멀게 한 사본(`observed=0`)이 막히는지 본다(카나리아가 7
+harness 를 본다 · marker `canary_harnesses` 7 · `canary_ok` 7). 게이트 자신을 stage 로 넣으면 재귀라, 그 하한을 보는
+자리는 카나리아뿐이다. 리뷰는 게이트를 **돌리지 않고 명세만** 읽는다(14번째 검사 `evidence_gate`): stage 의 스크립트
+실재 · tier 유효 · fast tier 비어 있지 않음 · 자기시험 존재와 통과 · 하한의 근거 기록. 게이트의 자기시험이 카나리아
+roster 와 stage 명단을 대조하므로, 새 harness 를 카나리아에만 넣으면 게이트가 실패한다(예외는 게이트 자신 하나뿐이고,
+그 목록이 늘어나도 실패한다). 리뷰가 `--quiet` 로 돌아도 **실패한 검사의 이름과 이유는 stderr 에 남는다** — 한 명령으로
+여섯 층을 도는 게이트가 그 출력에서 실패 이유를 읽는다(조용한 실행이 `exit 1` 만 남기면 그 층을 다시 돌려야 한다).
+
+이빨은 `tests/cognitive/test_evidence_gate.py` 15건 + 리뷰 쪽 15건이다: 없는 스크립트·없는 산출물·제한 시간 초과가
+`pass` 가 아닌지, tier 밖 층이 통과로 세어지지 않는지, roster 에서 한 층을 지우면 자기시험이 **그 이름을 짚는지**,
+빨간 층이 보고서와 문제 문장에 이름으로 남는지, CLI 가 실패를 exit code 와 artifact 양쪽으로 남기는지.
 
 ### 1.5 회귀 실패 중 둘을 닫았다 — 조용한 스킵과 미등록 실행 경로를 등록으로 없‌앴다
 

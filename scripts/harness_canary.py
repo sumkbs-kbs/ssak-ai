@@ -44,6 +44,8 @@ EXIT_OK: Final[int] = 0
 EXIT_GATE: Final[int] = 1
 
 # 카나리아가 다루는 harness — 각자 하한을 어떻게 만드는지 여기에 적는다(계약의 단일 출처).
+# `evidence_gate` 는 측정 harness 가 아니라 **여섯 층을 한 번에 도는 게이트**지만, 하한(`stage` 수)을 들고 있으므로
+# 그 하한이 실제로 무는지도 여기서 본다 — 게이트 자신을 stage 로 넣으면 재귀라, 게이트를 못 보는 자리는 여기다.
 HARNESSES: Final[tuple[str, ...]] = (
     "digest_drift",
     "regression_ledger",
@@ -51,6 +53,7 @@ HARNESSES: Final[tuple[str, ...]] = (
     "audit_enum_identity",
     "audit_test_namespace_purge",
     "measure_cognitive_surface",
+    "evidence_gate",
 )
 
 
@@ -139,6 +142,8 @@ def harness_floors(name: str, module: ModuleType) -> list[Floor]:
         return list(module.coverage_floors())
     if name == "measure_cognitive_surface":
         return list(module.coverage_floors(module.measure_surface_reach()))
+    if name == "evidence_gate":
+        return list(module.coverage_floors())
     raise SystemExit(f"{name} 의 하한을 만드는 방법이 카나리아에 없다")
 
 

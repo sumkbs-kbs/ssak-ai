@@ -43,11 +43,11 @@ def canary() -> Any:  # noqa: ANN401 - 스크립트 module
 
 
 def test_every_harness_floor_bites(canary: Any) -> None:  # noqa: ANN401
-    """여섯 harness 의 하한이 지금 저장소에서 실제로 문다 — 하나라도 안 물면 카나리아가 문제를 낸다."""
+    """모든 harness 의 하한이 지금 저장소에서 실제로 문다 — 하나라도 안 물면 카나리아가 문제를 낸다."""
 
     results = canary.run()
 
-    assert len(results) == len(canary.HARNESSES) == 6
+    assert len(results) == len(canary.HARNESSES) == 7
     for result in results:
         assert result.ok, f"{result.name}: {result.problems}"
     assert all(result.floors >= 1 for result in results)
@@ -200,8 +200,8 @@ def test_emit_json_reports_every_harness(canary: Any, capsys: pytest.CaptureFixt
     assert canary.main(["--emit-json"]) == 0
     payload = json.loads(capsys.readouterr().out)
 
-    assert payload["counts"]["harnesses"] == 6
-    assert payload["counts"]["ok"] == 6
+    assert payload["counts"]["harnesses"] == 7
+    assert payload["counts"]["ok"] == 7
     assert payload["counts"]["blind"] == 0
     assert {item["name"] for item in payload["harnesses"]} == set(canary.HARNESSES)
 
