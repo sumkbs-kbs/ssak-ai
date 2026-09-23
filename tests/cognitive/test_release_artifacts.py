@@ -105,10 +105,19 @@ def _healthy(release: Any) -> Any:  # noqa: ANN401
         roundtrip_exit=0,
         compared=664,
         missing=(),
+        differing=(),
         extra=(),
         rehearsal_exit=0,
         rehearsal_missing=(release.TAMPER_TARGET,),
+        rehearsal_differing=(release.REWRITE_TARGET,),
         rehearsal_compared=664,
+        content=release.ContentCheck(
+            compared=658,
+            differ=(),
+            absent=("antigravity_k-0.1.0.dist-info/METADATA",),
+            rehearsal_control=(),
+            rehearsal_defect=(release.TRANSFORM_TARGET,),
+        ),
         tree=release.TreeCoverage(
             expected=tuple(f"antigravity_k/f{i}.py" for i in range(656)),
             missing=(),
@@ -149,6 +158,38 @@ def test_a_healthy_observation_passes(release: Any) -> None:  # noqa: ANN401
         ("roundtrip_exit", None, "sdist 왕복을 돌리지 않았다"),
         ("roundtrip_exit", 1, "sdist 로 다시 빌드되지 않는다"),
         ("missing", ("antigravity_k/dashboard_dist/index.html",), "파일 1개가 빠졌다"),
+        (
+            "differing",
+            ("antigravity_k/engine/release_sbom.py",),
+            "내용이 다르다",
+        ),
+        ("rehearsal_differing", (), "이름은 같은데 바이트가 다르다"),
+        (
+            "content",
+            lambda release: release.ContentCheck(658, ("antigravity_k/a.py",), (), (), (release.TRANSFORM_TARGET,)),
+            "내용**이 빌드가 본 트리와 다르다",
+        ),
+        (
+            "content",
+            lambda release: release.ContentCheck(658, (), (), (), ()),
+            "내용을 바꿔 싣는 실물 프로젝트에서 이 눈이 아무것도 지목하지 못했다",
+        ),
+        (
+            "content",
+            lambda release: release.ContentCheck(658, (), (), (), ("mini/other.py",)),
+            "심은 것과 다른 것을 보면",
+        ),
+        (
+            "content",
+            lambda release: release.ContentCheck(658, (), (), ("mini/kept.py",), (release.TRANSFORM_TARGET,)),
+            "대조군(변환 없는 같은 프로젝트)에서",
+        ),
+        (
+            "content",
+            lambda release: release.ContentCheck(658, (), (), (), (release.TRANSFORM_TARGET,), "uv 빌드가 실패했다"),
+            "내용 재현 재료를 만들지 못했다",
+        ),
+        ("rehearsal_note", "release_sbom.py 가 그 압축본에 없다", "왕복 재현 재료를 만들지 못했다"),
         ("rehearsal_exit", None, "왕복의 red 재현(sdist 에서 파일 빼기)을 돌리지 않았다"),
         ("rehearsal_exit", 1, "왕복 red 재현에서 재빌드가 실패했다"),
         ("rehearsal_missing", (), "빼도 왕복이 ‘차이 없음’ 이라고 말했다"),
@@ -325,6 +366,7 @@ def test_floors_carry_their_basis_and_bite_when_thin(release: Any) -> None:  # n
         "비교한 파일",
         "배포판에 실린 추적 파일",
         "재현 비교한 산출물",
+        "내용을 견준 패키지 파일",
     ]
     assert all(floor.why.strip() for floor in floors)
     assert release.floor_problems(floors) == []
@@ -336,28 +378,33 @@ def test_floors_carry_their_basis_and_bite_when_thin(release: Any) -> None:  # n
     assert release.floor_problems(release.coverage_floors(empty_tree)) != []  # 추적 0개 = 본 것이 없다
     nothing = replace(_healthy(release), reproducibility=_repro(release, identities=()))
     assert release.floor_problems(release.coverage_floors(nothing)) != []  # 비교 0건 = ‘동일’ 이 아니라 안 본 것
+    blind = replace(_healthy(release), content=release.ContentCheck(0, (), (), (), (release.TRANSFORM_TARGET,)))
+    assert release.floor_problems(release.coverage_floors(blind)) != []  # 내용 0건 = ‘차이 없음’ 이 아니라 안 본 것
 
 
 # ------------------------------------------------------------------ sdist 왕복
 
 
-def test_wheel_compare_reports_missing_and_extra(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
-    """두 wheel 을 파일 목록으로 견준다 — **빠진 것**이 실패이고 더 있는 것은 보고 대상이다."""
+def test_wheel_compare_reports_missing_content_and_extra(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
+    """두 wheel 을 견준다 — **빠진 것**·**내용이 다른 것**은 실패이고 더 있는 것은 보고 대상이다."""
 
     direct = tmp_path / "direct.whl"
     rebuilt = tmp_path / "rebuilt.whl"
     with zipfile.ZipFile(direct, "w") as archive:
         archive.writestr("antigravity_k/a.py", "a")
         archive.writestr("antigravity_k/dashboard_dist/index.html", "bundle")
+        archive.writestr("antigravity_k/trunc.py", "original body")
     with zipfile.ZipFile(rebuilt, "w") as archive:
         archive.writestr("antigravity_k/a.py", "a")
         archive.writestr("antigravity_k/extra.py", "new")
+        archive.writestr("antigravity_k/trunc.py", "orig")  # 이름은 같은데 잘렸다
 
-    missing, extra, compared = release.compare_wheels(direct, rebuilt)
+    diff = release.compare_wheels(direct, rebuilt)
 
-    assert missing == ("antigravity_k/dashboard_dist/index.html",)
-    assert extra == ("antigravity_k/extra.py",)
-    assert compared == 3
+    assert diff.missing == ("antigravity_k/dashboard_dist/index.html",)
+    assert diff.differing == ("antigravity_k/trunc.py",)  # 이름만 보면 통과할 자리
+    assert diff.extra == ("antigravity_k/extra.py",)
+    assert diff.compared == 4
 
 
 def test_wheel_names_are_sorted_and_unique(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
@@ -428,9 +475,30 @@ def test_drop_member_refuses_a_file_that_is_not_there(tmp_path: Path, release: A
 
 
 def test_rehearse_dropped_sdist_is_unrun_without_inputs(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
-    """심을 재료가 없으면 None(못 돌렸다)으로 남는다 — ‘조용한 통과’ 도 ‘사고’ 도 아니다."""
+    """심을 재료가 없으면 **못 돌렸다** 로 남고 그 까닭을 말한다 — ‘조용한 통과’ 도 ‘사고’ 도 아니다."""
 
-    assert release.rehearse_dropped_sdist(tmp_path / "none.tar.gz", tmp_path / "none.whl", tmp_path) == (None, (), 0)
+    result = release.rehearse_dropped_sdist(tmp_path / "none.tar.gz", tmp_path / "none.whl", tmp_path)
+
+    assert result.exit_code is None and result.missing == () and result.compared == 0
+    assert result.note  # 왜 못 돌렸는지
+
+
+def test_rehearsal_material_disappearing_is_a_note_not_a_crash(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
+    """재현 대상 파일이 패키징에서 사라지면 **사고가 아니라 못 돌림** 이다(그 까닭을 남긴다)."""
+
+    import tarfile
+
+    source = tmp_path / "antigravity_k-0.1.0.tar.gz"
+    body = tmp_path / "kept.py"
+    body.write_text("kept", encoding="utf-8")
+    with tarfile.open(source, "w:gz") as archive:
+        archive.add(body, arcname="antigravity_k-0.1.0/antigravity_k/kept.py")
+    wheel = _fake_wheel(tmp_path / "antigravity_k-0.1.0-py3-none-any.whl", ("antigravity_k/kept.py",))
+
+    result = release.rehearse_dropped_sdist(source, wheel, tmp_path)
+
+    assert result.exit_code is None
+    assert release.REWRITE_TARGET in result.note or release.TAMPER_TARGET in result.note
 
 
 # ------------------------------------------------------------------ 배포판 vs 추적 트리
@@ -599,6 +667,118 @@ def test_passed_kinds_reads_structure_not_prose(release: Any) -> None:  # noqa: 
     )
 
     assert release.passed_kinds(output) == ("wheel",)
+
+
+# ------------------------------------------------------------------ 내용 대조(이름이 같아도 바이트가 다를 수 있다)
+
+
+def test_content_check_matches_the_tree_bytes(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
+    """배포판 파일의 **바이트** 를 트리와 견준다 — 같으면 조용하고, 생성물·`dist-info` 는 ‘견줄 수 없다’ 로 남는다."""
+
+    package = tmp_path / "tree" / "minipkg"
+    package.mkdir(parents=True)
+    (package / "kept.py").write_text("kept = 1\n", encoding="utf-8")
+    wheel = tmp_path / "w.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        archive.writestr("minipkg/kept.py", "kept = 1\n")
+        archive.writestr("minipkg-0.1.0.dist-info/METADATA", "Name: minipkg\n")
+
+    check = release.content_check(wheel, tree_root=package, package_name="minipkg")
+
+    assert check.compared == 1
+    assert check.differ == ()
+    assert check.absent == ("minipkg-0.1.0.dist-info/METADATA",)
+
+
+def test_content_check_names_a_changed_file(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
+    """내용이 바뀌어 실린 파일은 **이름으로** 남는다 — 목록 대조로는 보이지 않는 결함이다."""
+
+    package = tmp_path / "tree" / "minipkg"
+    package.mkdir(parents=True)
+    (package / "kept.py").write_text("kept = 1\n", encoding="utf-8")
+    wheel = tmp_path / "w.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        archive.writestr("minipkg/kept.py", "kept = 9  # build transform\n")
+
+    check = release.content_check(wheel, tree_root=package, package_name="minipkg")
+
+    assert check.differ == ("minipkg/kept.py",)
+    assert check.compared == 1
+
+
+def test_content_check_gives_up_quietly_without_material(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
+    """재료가 없으면 0건을 보고한다 — 0을 ‘차이 없음’ 으로 주장하지 않는다(하한이 문다)."""
+
+    check = release.content_check(tmp_path / "none.whl", tree_root=tmp_path / "none", package_name="minipkg")
+
+    assert check.compared == 0 and check.differ == ()
+
+
+def test_wheel_payloads_fingerprints_content(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
+    """항목별 **내용** 지문을 낸다(디렉터리 항목은 세지 않는다)."""
+
+    wheel = tmp_path / "w.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        archive.writestr("pkg/a.py", "a")
+        archive.writestr("pkg/b.py", "b")
+
+    payloads = release.wheel_payloads(wheel)
+
+    assert set(payloads) == {"pkg/a.py", "pkg/b.py"}
+    assert payloads["pkg/a.py"] != payloads["pkg/b.py"]
+
+
+def test_damage_sdist_drops_one_file_and_rewrites_another(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
+    """한 번의 사본으로 빠짐과 내용 변환을 함께 심는다(왕복 빌드를 두 번 돌리지 않기 위해서다)."""
+
+    import tarfile
+
+    source = tmp_path / "antigravity_k-0.1.0.tar.gz"
+    tree = tmp_path / "tree"
+    (tree / "antigravity_k").mkdir(parents=True)
+    (tree / "antigravity_k" / "dropped.py").write_text("dropped", encoding="utf-8")
+    (tree / "antigravity_k" / "kept.py").write_text("kept", encoding="utf-8")
+    with tarfile.open(source, "w:gz") as archive:
+        archive.add(tree / "antigravity_k", arcname="antigravity_k-0.1.0/antigravity_k")
+
+    target = release.damage_sdist(
+        source,
+        tmp_path / "damaged.tar.gz",
+        remove="antigravity_k/dropped.py",
+        rewrite="antigravity_k/kept.py",
+        appendix="\n# rewritten\n",
+    )
+
+    with tarfile.open(target) as archive:
+        names = [member.name for member in archive.getmembers()]
+        kept = archive.extractfile("antigravity_k-0.1.0/antigravity_k/kept.py").read().decode("utf-8")
+
+    assert all(not name.endswith("dropped.py") for name in names)
+    assert kept == "kept\n# rewritten\n"
+
+
+def test_damage_sdist_refuses_a_file_that_is_not_there(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
+    """바꿀 파일이 그 압축본에 없으면 조용히 넘어가지 않고 거부한다(재현인 줄 알고 통과하는 순간을 막는다)."""
+
+    import tarfile
+
+    source = tmp_path / "small.tar.gz"
+    (tmp_path / "only.py").write_text("x", encoding="utf-8")
+    with tarfile.open(source, "w:gz") as archive:
+        archive.add(tmp_path / "only.py", arcname="only.py")
+
+    with pytest.raises(ValueError, match="내용을 바꿀 파일이"):
+        release.damage_sdist(source, tmp_path / "out.tar.gz", remove="only.py", rewrite="missing.py")
+
+
+def test_the_content_rehearsal_bites_and_the_control_stays_quiet(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
+    """실물 빌드 재현: 빌드가 내용을 바꿔 싣는 프로젝트를 이 눈이 지목하고, 변환만 뺀 대조군은 조용하다."""
+
+    control, defect, note = release.rehearse_content_transform(tmp_path)
+
+    assert note == ""
+    assert control == ()
+    assert defect == (release.TRANSFORM_TARGET,)
 
 
 # ------------------------------------------------------------------ 재현 빌드(같은 입력 → 같은 바이트)
@@ -877,6 +1057,11 @@ def test_emit_json_reports_the_contract(release: Any, monkeypatch: pytest.Monkey
     assert payload["counts"]["tracked_shipped"] == 656
     assert payload["counts"]["tracked_missing"] == 0
     assert payload["counts"]["tree_rehearsal_bites"] == 1
+    assert payload["counts"]["content_compared"] == 658
+    assert payload["counts"]["content_differ"] == 0
+    assert payload["counts"]["content_rehearsal_bites"] == 1
+    assert payload["counts"]["roundtrip_content_bites"] == 1
+    assert payload["counts"]["differing"] == 0
     assert payload["tree"]["expected"] == 656
     assert payload["tree"]["rehearsal_defect"] == [release.MINI_DROPPED]
     assert payload["tamper"]["detected"] is True
@@ -971,6 +1156,22 @@ def test_the_real_bytes_are_reproducible_under_the_pin(real_measure: Any, releas
     assert repro.tracked_readable is True
 
 
+@pytest.mark.slow
+def test_the_real_content_matches_the_tree_byte_for_byte(real_measure: Any, release: Any) -> None:  # noqa: ANN401
+    """실물 내용 계약: 배포판에 실린 바이트가 디스크 트리와 같고, 그 눈이 실물 변환 프로젝트에서 문다."""
+
+    content = real_measure.content
+
+    assert content.differ == ()  # 이름이 같고 내용이 다른 파일이 없다
+    assert content.compared >= 600  # 실제로 견준 것이 하한 위에 있다
+    assert content.rehearsal_defect == (release.TRANSFORM_TARGET,)
+    assert content.rehearsal_control == ()
+    assert content.rehearsal_note == ""
+    assert real_measure.differing == ()  # sdist 를 거쳐도 내용이 바뀌지 않는다
+    assert release.REWRITE_TARGET in real_measure.rehearsal_differing
+    assert release.TAMPER_TARGET in real_measure.rehearsal_missing
+
+
 def test_the_report_json_is_readable_by_the_gate(release: Any) -> None:  # noqa: ANN401
     """리포트 형태가 게이트의 수치 추출 규약(지목한 키의 dict)과 맞는지 — 키 이름이 바뀌면 추이가 조용히 빈다."""
 
@@ -989,7 +1190,24 @@ def test_the_report_json_is_readable_by_the_gate(release: Any) -> None:  # noqa:
         "tracked_readable",
         "seconds",
     }
-    assert set(payload["roundtrip"]) == {"exit", "compared", "missing", "extra", "rehearsal_exit", "rehearsal_missing"}
+    assert set(payload["roundtrip"]) == {
+        "exit",
+        "compared",
+        "missing",
+        "differing",
+        "extra",
+        "rehearsal_exit",
+        "rehearsal_missing",
+        "rehearsal_differing",
+    }
+    assert set(payload["content"]) == {
+        "compared",
+        "differ",
+        "absent",
+        "rehearsal_control",
+        "rehearsal_defect",
+        "rehearsal_note",
+    }
     assert isinstance(payload["floors"], list) and payload["floors"]
     assert io.StringIO(json.dumps(payload)).read()  # 직렬화 가능해야 게이트가 읽는다
 

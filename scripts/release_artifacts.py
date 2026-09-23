@@ -58,6 +58,7 @@ import argparse
 import base64
 import datetime as dt
 import hashlib
+import io
 import json
 import os
 import re
@@ -97,6 +98,14 @@ CRASH_MARKER: Final[str] = "Traceback (most recent call last)"
 
 ARTIFACT_KINDS: Final[tuple[str, ...]] = ("wheel", "sdist")
 TAMPER_TARGET: Final[str] = "antigravity_k/engine/release_sbom.py"
+# sdist 안에서 **내용을 바꿔** 왕복이 그 변화를 보는지 확인한다(빠진 파일만으로는 ‘이름’ 만 보는 눈을 증명하지 못한다).
+REWRITE_TARGET: Final[str] = "antigravity_k/engine/artifact_provenance.py"
+REWRITE_APPENDIX: Final[str] = "\n# 왕복 내용 재현 — sdist 안에서만 다른 바이트\n"
+
+# 내용 대조용 작은 프로젝트 — 빌드가 **내용을 바꿔 싣는** 경우를 실제 setuptools 로 재현한다.
+TRANSFORM_MINI: Final[str] = "transform-mini"
+TRANSFORM_TARGET: Final[str] = "mini/kept.py"
+TRANSFORM_BODY: Final[str] = "kept = 9  # build transform\n"
 
 # 재현 빌드 — 같은 입력이면 같은 바이트인가. 값 자체에는 의미가 없다: 의미가 있는 것은 **모든 빌드가 같은 값**을 본다는
 # 것뿐이다(시계에서 읽으면 그 순간에 따라 바이트가 달라진다 — 재현이 목적에 반한다). CI build job 도 같은 값을 건다.
@@ -111,6 +120,12 @@ SDIST_LIMITATION_WHY: Final[str] = (
     "현 backend(setuptools)의 sdist 경로는 `SOURCE_DATE_EPOCH` 를 읽지 않는다 — 실제 파일은 디스크 mtime, "
     "생성 항목(PKG-INFO·setup.cfg·디렉터리)과 gzip 헤더는 벽시계를 쓴다(항목 중 pin 시각을 가진 것 0개로 관측). "
     "wheel 은 vendored `wheel` 의 `Wheelfile` 이 이 값을 읽어 재현된다."
+)
+_MIN_CONTENT: Final[int] = 600
+_WHY_CONTENT: Final[str] = (
+    "2026-09-23 기준 관측: 배포 wheel 의 패키지 파일 658개가 **디스크 트리 바이트와 전부 일치**했다(다름 0). "
+    "하한 600은 경로 매핑이 바뀌어 **0개를 비교하고 ‘차이 없음’** 으로 통과하는 순간을 잡는다 — "
+    "비교한 것이 없으면 내용 대조는 증거가 아니다."
 )
 _MIN_IDENTITIES: Final[int] = 2
 _WHY_IDENTITIES: Final[str] = (
@@ -306,11 +321,14 @@ class Observation:
     roundtrip_exit: int | None
     compared: int
     missing: tuple[str, ...]
+    differing: tuple[str, ...]
     extra: tuple[str, ...]
     rehearsal_exit: int | None
     rehearsal_missing: tuple[str, ...]
+    rehearsal_differing: tuple[str, ...]
     rehearsal_compared: int
     tree: TreeCoverage
+    content: ContentCheck
     tree_rehearsal_control: tuple[str, ...]
     tree_rehearsal_defect: tuple[str, ...]
     reproducibility: Reproducibility
@@ -319,6 +337,8 @@ class Observation:
     inputs_line: bool
     crashed: bool
     seconds: float
+    # 재현 재료를 만들지 못했을 때의 까닭 — “못 돌렸다” 와 “못 봤다” 를 가른다.
+    rehearsal_note: str = ""
     note: str = ""
 
     @property
@@ -344,11 +364,15 @@ class Observation:
             "roundtrip_exit": self.roundtrip_exit,
             "compared": self.compared,
             "missing": list(self.missing),
+            "differing": list(self.differing),
             "extra": list(self.extra),
             "rehearsal_exit": self.rehearsal_exit,
             "rehearsal_missing": list(self.rehearsal_missing),
+            "rehearsal_differing": list(self.rehearsal_differing),
             "rehearsal_compared": self.rehearsal_compared,
+            "rehearsal_note": self.rehearsal_note,
             "tree": self.tree.as_mapping(),
+            "content": self.content.as_mapping(),
             "tree_rehearsal_control": list(self.tree_rehearsal_control),
             "tree_rehearsal_defect": list(self.tree_rehearsal_defect),
             "reproducibility": self.reproducibility.as_mapping(),
@@ -399,6 +423,13 @@ def observation_problems(record: Observation) -> tuple[str, ...]:
             f"sdist→wheel 에서 **파일 {len(record.missing)}개가 빠졌다**: {shown}{more} — "
             "`MANIFEST`/package-data 에서 빠진 파일은 sdist 설치 경로에서만 드러난다"
         )
+    if record.differing:
+        shown = ", ".join(record.differing[:3])
+        more = f" 외 {len(record.differing) - 3}개" if len(record.differing) > 3 else ""
+        problems.append(
+            f"sdist→wheel 에서 **파일 {len(record.differing)}개의 내용이 다르다**: {shown}{more} — "
+            "이름이 같아도 바이트가 다르면 소비자가 받는 코드가 다르다(잘림·변형·빈 파일이 이 자리를 지나간다)"
+        )
     if record.tree.missing:
         shown = ", ".join(record.tree.missing[:3])
         more = f" 외 {len(record.tree.missing) - 3}개" if len(record.tree.missing) > 3 else ""
@@ -421,6 +452,11 @@ def observation_problems(record: Observation) -> tuple[str, ...]:
             f"대조군(정상 프로젝트)에서 빼짐을 지목했다: {', '.join(record.tree_rehearsal_control[:3])} — "
             "넓게 잡은 눈은 탐지력이 아니다(그러면 사람이 이 검사를 끄게 된다)"
         )
+    if record.rehearsal_note:
+        problems.append(
+            f"왕복 재현 재료를 만들지 못했다: {record.rehearsal_note} — "
+            "재료가 사라진 것을 모른 채 “탐지력 없음” 만 말하는 층은 사람이 믿을 수 없다"
+        )
     if record.rehearsal_exit is None:
         problems.append(
             "왕복의 red 재현(sdist 에서 파일 빼기)을 돌리지 않았다 — 왕복이 무는지 확인하지 않은 실행은 통과가 아니다"
@@ -435,12 +471,49 @@ def observation_problems(record: Observation) -> tuple[str, ...]:
             f"sdist 에서 {TAMPER_TARGET} 를 빼도 왕복이 ‘차이 없음’ 이라고 말했다(비교 {record.rehearsal_compared}개) — "
             "이 층은 sdist 결함을 막지 못한다(이게 이 층의 red다)"
         )
+    if REWRITE_TARGET not in record.rehearsal_differing:
+        problems.append(
+            f"sdist 안에서 {REWRITE_TARGET} 의 내용을 바꿔도 왕복이 ‘이름은 같은데 바이트가 다르다’ 고 말하지 못했다 — "
+            "이름만 보는 왕복은 잘린 파일·변형된 파일을 통과시킨다"
+        )
+    problems.extend(content_problems(record.content))
     problems.extend(reproducibility_problems(record.reproducibility))
     if record.tamper_exit is None:
         problems.append("red 재현(빠진 배포판)을 돌리지 않았다 — 이 검증이 무는지 확인하지 않은 실행은 통과가 아니다")
     elif record.tamper_exit == EXIT_OK:
         problems.append(
             f"**빠진 배포판을 통과시켰다**({record.tamper_removed} 를 뺀 wheel) — 이 검증은 아무것도 막지 못한다"
+        )
+    return tuple(problems)
+
+
+def content_problems(check: ContentCheck) -> tuple[str, ...]:
+    """내용 대조를 판정으로 — 실린 파일의 **바이트** 가 빌드가 본 트리와 같아야 한다."""
+
+    problems: list[str] = []
+    if check.differ:
+        shown = ", ".join(check.differ[:3])
+        more = f" 외 {len(check.differ) - 3}개" if len(check.differ) > 3 else ""
+        problems.append(
+            f"배포판 파일 {len(check.differ)}개의 **내용**이 빌드가 본 트리와 다르다: {shown}{more} — "
+            "이름이 같으므로 목록 대조로는 보이지 않는다(소비자가 받는 코드가 저장소와 다르다)"
+        )
+    if check.rehearsal_note:
+        problems.append(f"내용 재현 재료를 만들지 못했다: {check.rehearsal_note} — 못 돌린 재현은 증거가 아니다")
+    elif not check.rehearsal_defect:
+        problems.append(
+            "빌드가 내용을 바꿔 싣는 실물 프로젝트에서 이 눈이 아무것도 지목하지 못했다 — "
+            "배포판 내용이 트리와 달라지는 것을 소비자보다 먼저 보지 못한다"
+        )
+    elif TRANSFORM_TARGET not in check.rehearsal_defect:
+        problems.append(
+            f"실물 재현이 심은 이름({TRANSFORM_TARGET})이 아니라 {', '.join(check.rehearsal_defect[:3])} 를 지목했다 — "
+            "심은 것과 다른 것을 보면 그 눈이 무엇을 보는지 알 수 없다"
+        )
+    if check.rehearsal_control:
+        problems.append(
+            f"대조군(변환 없는 같은 프로젝트)에서 내용 차이를 지목했다: {', '.join(check.rehearsal_control[:3])} — "
+            "넓게 잡은 눈은 탐지력이 아니다"
         )
     return tuple(problems)
 
@@ -548,12 +621,14 @@ def coverage_floors(record: Observation | None = None) -> list[Floor]:
     observed_compared = record.compared if record is not None else _MIN_COMPARED
     observed_tracked = len(record.tree.expected) if record is not None else _MIN_TRACKED
     observed_identities = len(record.reproducibility.identities) if record is not None else _MIN_IDENTITIES
+    observed_content = record.content.compared if record is not None else _MIN_CONTENT
     return [
         Floor("배포 산출물", observed_artifacts, _MIN_ARTIFACTS, why=_WHY_ARTIFACTS),
         Floor("저장소 밖 PASS", observed_passed, _MIN_PASSED, why=_WHY_PASSED),
         Floor("비교한 파일", observed_compared, _MIN_COMPARED, why=_WHY_COMPARED),
         Floor("배포판에 실린 추적 파일", observed_tracked, _MIN_TRACKED, why=_WHY_TRACKED),
         Floor("재현 비교한 산출물", observed_identities, _MIN_IDENTITIES, why=_WHY_IDENTITIES),
+        Floor("내용을 견준 패키지 파일", observed_content, _MIN_CONTENT, why=_WHY_CONTENT),
     ]
 
 
@@ -643,62 +718,146 @@ def wheel_names(path: Path) -> tuple[str, ...]:
         return tuple(sorted(set(archive.namelist())))
 
 
-def compare_wheels(direct: Path, rebuilt: Path) -> tuple[tuple[str, ...], tuple[str, ...], int]:
-    """트리에서 만든 wheel 과 sdist 에서 다시 만든 wheel 을 견준다 — (빠진 것, 더 있는 것, 비교한 파일 수)."""
+@dataclass(frozen=True, slots=True)
+class WheelDiff:
+    """같은 트리에서 나온 두 wheel 의 차이 — **이름과 내용 모두** 견준다.
 
-    left = set(wheel_names(direct))
-    right = set(wheel_names(rebuilt))
-    return tuple(sorted(left - right)), tuple(sorted(right - left)), len(left | right)
+    이름만 견주면 잘렸거나 내용이 바뀐 파일이 통과한다 — 왕복은 *무엇이 실렸는가* 뿐 아니라 *어떤 바이트로 실렸는가* 를 물어야 한다.
+    """
+
+    missing: tuple[str, ...]
+    differing: tuple[str, ...]
+    extra: tuple[str, ...]
+    compared: int
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "missing": list(self.missing),
+            "differing": list(self.differing),
+            "extra": list(self.extra),
+            "compared": self.compared,
+        }
 
 
-def roundtrip(sdist: Path, direct_wheel: Path, work: Path) -> tuple[int | None, tuple[str, ...], tuple[str, ...], int]:
-    """sdist 를 풀어 그 안에서 wheel 을 다시 만들고 파일 목록을 견준다 — sdist 설치 경로의 결함을 드러낸다."""
+def wheel_payloads(path: Path) -> dict[str, str]:
+    """wheel 안 항목의 **내용** 지문 — 이름이 같고 내용이 다른 파일을 가리는 데 쓴다."""
 
+    with zipfile.ZipFile(path) as archive:
+        return {
+            info.filename: hashlib.sha256(archive.read(info.filename)).hexdigest()
+            for info in archive.infolist()
+            if not info.filename.endswith("/")
+        }
+
+
+def compare_wheels(direct: Path, rebuilt: Path) -> WheelDiff:
+    """트리에서 만든 wheel 과 sdist 에서 다시 만든 wheel 을 견준다 — 이름 **과 내용** 을 함께 본다."""
+
+    left_names = set(wheel_names(direct))
+    right_names = set(wheel_names(rebuilt))
+    left = wheel_payloads(direct)
+    right = wheel_payloads(rebuilt)
+    shared = set(left) & set(right)
+    return WheelDiff(
+        missing=tuple(sorted(left_names - right_names)),
+        differing=tuple(sorted(name for name in shared if left[name] != right[name])),
+        extra=tuple(sorted(right_names - left_names)),
+        compared=len(left_names | right_names),
+    )
+
+
+def roundtrip(sdist: Path, direct_wheel: Path, work: Path) -> tuple[int | None, WheelDiff]:
+    """sdist 를 풀어 그 안에서 wheel 을 다시 만들고 견준다 — sdist 설치 경로의 결함을 드러낸다."""
+
+    empty = WheelDiff((), (), (), 0)
     if not sdist.is_file() or not direct_wheel.is_file():
-        return None, (), (), 0
+        return None, empty
     root = unpack_sdist(sdist, work)
     out = work / "roundtrip"
     out.mkdir(parents=True, exist_ok=True)
     exit_code, _ = run(["uv", "build", "--no-sources", "--wheel", "--out-dir", str(out)], cwd=root, env=build_env())
     rebuilt = sorted(out.glob("antigravity_k-*.whl"))
     if not rebuilt:
-        return exit_code, (), (), 0
-    missing, extra, compared = compare_wheels(direct_wheel, rebuilt[-1])
-    return exit_code, missing, extra, compared
+        return exit_code, empty
+    return exit_code, compare_wheels(direct_wheel, rebuilt[-1])
 
 
-def drop_member(source: Path, target: Path, *, remove: str) -> Path:
-    """sdist 사본에서 파일 하나를 뺀다 — 소비자가 받는 압축본에 파일이 빠진 상태를 그대로 만든다.
+def damage_sdist(source: Path, target: Path, *, remove: str, rewrite: str = "", appendix: str = "") -> Path:
+    """sdist 사본을 **망가뜨린다** — 파일 하나를 빼고(빠진 것), 다른 하나의 내용을 바꾼다(내용이 다른 것).
 
-    나머지 member 는 손대지 않고 그대로 옮긴다(경로 모양이 바뀌면 재현이 아니라 다른 물건이 된다).
+    나머지 member 는 손대지 않고 그대로 옮긴다(경로 모양이 바뀌면 재현이 아니라 다른 물건이 된다). 한 번의 사본으로
+    두 결함을 함께 심어 왕복 빌드를 두 번 돌리지 않는다.
     """
 
     with tarfile.open(source) as archive:
         members = archive.getmembers()
-        if not any(member.name == remove or member.name.endswith(f"/{remove}") for member in members):
+
+        def matches(name: str, needle: str) -> bool:
+            return name == needle or name.endswith(f"/{needle}")
+
+        if not any(matches(member.name, remove) for member in members):
             raise ValueError(f"{remove} 가 {source.name} 안에 없다 — 빼려는 파일이 그 압축본에 없다")
+        if rewrite and not any(matches(member.name, rewrite) for member in members):
+            raise ValueError(f"{rewrite} 가 {source.name} 안에 없다 — 내용을 바꿀 파일이 그 압축본에 없다")
         with tarfile.open(target, "w:gz") as out:
             for member in members:
-                if member.name == remove or member.name.endswith(f"/{remove}"):
+                if matches(member.name, remove):
                     continue
-                payload = archive.extractfile(member) if member.isfile() else None
-                out.addfile(member, payload)
+                stream = archive.extractfile(member) if member.isfile() else None
+                if stream is not None and rewrite and matches(member.name, rewrite):
+                    body = stream.read() + appendix.encode("utf-8")
+                    changed = tarfile.TarInfo(member.name)
+                    changed.size = len(body)
+                    changed.mtime = member.mtime
+                    changed.mode, changed.uid, changed.gid = member.mode, member.uid, member.gid
+                    changed.uname, changed.gname = member.uname, member.gname
+                    out.addfile(changed, io.BytesIO(body))
+                    continue
+                out.addfile(member, stream)
     return target
 
 
-def rehearse_dropped_sdist(sdist: Path, direct_wheel: Path, work: Path) -> tuple[int | None, tuple[str, ...], int]:
-    """sdist 에서 파일 하나를 빼고 **같은 왕복**을 돌린다 — 왕복이 그 빠짐을 지목하지 못하면 이 층은 무력하다.
+def drop_member(source: Path, target: Path, *, remove: str) -> Path:
+    """sdist 사본에서 파일 하나를 뺀다 — 내용 재현 없이 빠짐만 심는 자리(기존 호출자를 위해 남긴다)."""
 
-    관찰(왕복 exit 0 · 빠짐 0)만으로는 “왕복이 아무것도 보지 못해서 0” 인지 “보고 0” 인지 갈리지 않는다.
+    return damage_sdist(source, target, remove=remove)
+
+
+@dataclass(frozen=True, slots=True)
+class SdistRehearsal:
+    """망가뜨린 sdist 로 돌린 왕복의 결과.
+
+    재료가 없어 **못 돌렸으면** 그 까닭(`note`)을 남긴다 — 못 돌림을 “못 봤다” 로 합치면 재현 재료가 사라진 날
+    이 층이 사라진 것을 모른 채 “탐지력이 없다” 고만 말한다.
+    """
+
+    exit_code: int | None
+    missing: tuple[str, ...]
+    differing: tuple[str, ...]
+    compared: int
+    note: str = ""
+
+
+def rehearse_dropped_sdist(sdist: Path, direct_wheel: Path, work: Path) -> SdistRehearsal:
+    """sdist 를 망가뜨려(파일 하나 빠짐 + 다른 하나 내용 바뀜) **같은 왕복**을 돌린다.
+
+    관찰(왕복 exit 0 · 차이 0)만으로는 “왕복이 아무것도 보지 못해서 0” 인지 “보고 0” 인지 갈리지 않는다. 빠진 파일은
+    **목록**에서, 내용을 바꾼 파일은 **바이트**에서 드러나야 한다 — 한쪽만 보는 눈은 다른 쪽 결함을 통과시킨다.
     """
 
     if not sdist.is_file() or not direct_wheel.is_file():
-        return None, (), 0
+        return SdistRehearsal(None, (), (), 0, note="빌드 산출물이 없어 재현 재료를 만들지 못했다")
     corner = work / "roundtrip-rehearsal"
     corner.mkdir(parents=True, exist_ok=True)
-    drop_member(sdist, corner / sdist.name, remove=TAMPER_TARGET)
-    exit_code, missing, _extra, compared = roundtrip(corner / sdist.name, direct_wheel, corner)
-    return exit_code, missing, compared
+    try:
+        damage_sdist(
+            sdist, corner / sdist.name, remove=TAMPER_TARGET, rewrite=REWRITE_TARGET, appendix=REWRITE_APPENDIX
+        )
+    except ValueError as exc:
+        # 재료가 사라졌다(파일명 변경·패키징 제외) — 사고가 아니라 **못 돌림** 이므로 판정으로 남긴다.
+        return SdistRehearsal(None, (), (), 0, note=str(exc))
+    exit_code, diff = roundtrip(corner / sdist.name, direct_wheel, corner)
+    return SdistRehearsal(exit_code, diff.missing, diff.differing, diff.compared)
 
 
 def _wheel_name(path: Path, package_dir: Path, package_name: str) -> str:
@@ -1061,6 +1220,111 @@ def reproducibility(dist_dir: Path, *, work: Path) -> Reproducibility:
     )
 
 
+@dataclass(frozen=True, slots=True)
+class ContentCheck:
+    """배포판에 실린 **바이트** 가 빌드가 본 트리와 같은가 — 이름이 같아도 내용이 다를 수 있다.
+
+    이 확인이 없으면 잘렸거나 내용이 바뀐 파일이 통과한다(“실렸다” 와 “제대로 실렸다” 는 다르다).
+    """
+
+    compared: int
+    differ: tuple[str, ...]
+    absent: tuple[str, ...]
+    rehearsal_control: tuple[str, ...]
+    rehearsal_defect: tuple[str, ...]
+    rehearsal_note: str = ""
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "compared": self.compared,
+            "differ": list(self.differ),
+            "absent": list(self.absent),
+            "rehearsal_control": list(self.rehearsal_control),
+            "rehearsal_defect": list(self.rehearsal_defect),
+            "rehearsal_note": self.rehearsal_note,
+        }
+
+
+def content_check(wheel: Path, *, tree_root: Path | None = None, package_name: str = PACKAGE_NAME) -> ContentCheck:
+    """배포 wheel 의 패키지 파일 내용을 **디스크 트리** 와 견준다 — 빌드가 본 바이트가 그대로 실렸는가.
+
+    디스크와 견주는 까닭: 빌드가 본 것도 이 트리다(다른 레인의 미커밋 편집까지 포함해). 커밋된 내용과 견주면 그 편집이
+    오탐이 되고, 이 층은 늘 빨개져 무시된다. 배포판에만 있는 이름(생성물·`dist-info`)은 **견줄 수 없다** 로 보고한다.
+    """
+
+    root = (tree_root or (REPO_ROOT / PACKAGE_SRC)).resolve()
+    if not wheel.is_file() or not root.is_dir():
+        return ContentCheck(0, (), (), (), ())
+    prefix = f"{package_name}/"
+    compared = 0
+    differ: list[str] = []
+    absent: list[str] = []
+    for name, digest in sorted(wheel_payloads(wheel).items()):
+        path = root / name[len(prefix) :] if name.startswith(prefix) else None
+        if path is None or not path.is_file():
+            absent.append(name)
+            continue
+        compared += 1
+        if _sha256(path) != digest:
+            differ.append(name)
+    return ContentCheck(compared, tuple(differ), tuple(absent), (), ())
+
+
+def _write_transform_project(project: Path, *, transform: bool) -> None:
+    """빌드가 내용을 바꿔 싣는 미니 프로젝트 — `setup.py` 의 `build_py` 가 파일 하나를 다시 쓴다."""
+
+    package = project / "mini"
+    package.mkdir(parents=True, exist_ok=True)
+    (project / "pyproject.toml").write_text(
+        '[build-system]\nrequires = ["setuptools>=77.0.0", "wheel"]\nbuild-backend = "setuptools.build_meta"\n'
+        '\n[project]\nname = "transform-mini"\nversion = "0.1.0"\n',
+        encoding="utf-8",
+    )
+    (package / "__init__.py").write_text("value = 1\n", encoding="utf-8")
+    (package / "kept.py").write_text("kept = 1\n", encoding="utf-8")
+    if transform:
+        (project / "setup.py").write_text(
+            "from pathlib import Path\n\n"
+            "from setuptools import setup\n"
+            "from setuptools.command.build_py import build_py as _build_py\n\n\n"
+            "class build_py(_build_py):\n"
+            '    """빌드가 내용을 바꿔 싣는 경우 — 흔한 패턴이다(버전 주입·주석 제거·라이선스 헤더)."""\n\n'
+            "    def run(self) -> None:\n"
+            "        super().run()\n"
+            f"        (Path(self.build_lib) / '{TRANSFORM_TARGET}').write_text({TRANSFORM_BODY!r})\n\n\n"
+            'setup(cmdclass={"build_py": build_py})\n',
+            encoding="utf-8",
+        )
+
+
+def rehearse_content_transform(work: Path) -> tuple[tuple[str, ...], tuple[str, ...], str]:
+    """**실물 빌드** 로 이 눈이 무는지 본다 — 빌드가 내용을 바꿔 싣는 프로젝트와 그 대조군(변환만 뺀 것).
+
+    그런 빌드에서 “배포판 내용 ≠ 트리 내용” 은 일어나지만 **우리 계약은 그것을 허용하지 않는다**(소비자가 받는 코드가
+    저장소와 달라진다). 그래서 이 눈이 그 파일을 이름으로 지목해야 하고, 대조군은 조용해야 한다.
+    """
+
+    results: list[tuple[str, ...]] = []
+    note = ""
+    for label, transform in (("control", False), ("defect", True)):
+        project = work / f"{TRANSFORM_MINI}-{label}"
+        project.mkdir(parents=True, exist_ok=True)
+        _write_transform_project(project, transform=transform)
+        # 산출물 자리는 프로젝트 **밖** 이다 — 안에 두면 setuptools 가 그 디렉터리를 package 로 발견해 빌드가 죽는다.
+        out = work / f"{TRANSFORM_MINI}-{label}-dist"
+        out.mkdir(parents=True, exist_ok=True)
+        exit_code, output = run(
+            ["uv", "build", "--no-sources", "--wheel", "--out-dir", str(out)], cwd=project, env=build_env()
+        )
+        wheels = sorted(out.glob("*.whl"))
+        if exit_code != EXIT_OK or not wheels:
+            note = f"{label} 프로젝트의 wheel 이 만들어지지 않았다(exit {exit_code})"
+            results.append(())
+            continue
+        results.append(content_check(wheels[-1], tree_root=project / "mini", package_name="mini").differ)
+    return results[0], results[1], note
+
+
 def passed_kinds(output: str) -> tuple[str, ...]:
     """`ARTIFACT-RESULT` 줄에서 **PASS 한 산출물 종류**를 읽는다(산문이 아니라 구조를 읽는다)."""
 
@@ -1140,17 +1404,27 @@ def measure(*, dist_dir: Path | None = None, work: Path | None = None, keep: boo
         wheel = next((target / item.name for item in artifacts if item.kind == "wheel"), None)
         sdist = next((target / item.name for item in artifacts if item.kind == "sdist"), None)
         if wheel is not None and sdist is not None:
-            roundtrip_exit, missing, extra, compared = roundtrip(sdist, wheel, temporary)
-            rehearsal_exit, rehearsal_missing, rehearsal_compared = rehearse_dropped_sdist(sdist, wheel, temporary)
+            roundtrip_exit, diff = roundtrip(sdist, wheel, temporary)
+            rehearsal = rehearse_dropped_sdist(sdist, wheel, temporary)
         else:
-            roundtrip_exit, missing, extra, compared = None, (), (), 0
-            rehearsal_exit, rehearsal_missing, rehearsal_compared = None, (), 0
+            roundtrip_exit, diff = None, WheelDiff((), (), (), 0)
+            rehearsal = SdistRehearsal(None, (), (), 0, note="빌드 산출물이 없어 재현 재료를 만들지 못했다")
         tree = (
             tree_coverage(wheel, package_dir=REPO_ROOT / PACKAGE_SRC, package_name=PACKAGE_NAME, repo=REPO_ROOT)
             if wheel is not None
             else TreeCoverage((), (), (), ())
         )
         tree_control, tree_defect = rehearse_tree_loss(temporary)
+        shipped = content_check(wheel) if wheel is not None else ContentCheck(0, (), (), (), ())
+        transform_control, transform_defect, transform_note = rehearse_content_transform(temporary)
+        content = ContentCheck(
+            compared=shipped.compared,
+            differ=shipped.differ,
+            absent=shipped.absent,
+            rehearsal_control=transform_control,
+            rehearsal_defect=transform_defect,
+            rehearsal_note=transform_note,
+        )
         repro = reproducibility(target, work=temporary)
         tamper_exit, removed = rehearse_missing_module(artifacts, target, temporary)
         crashed = CRASH_MARKER in (build_out + verify_out)
@@ -1160,13 +1434,17 @@ def measure(*, dist_dir: Path | None = None, work: Path | None = None, keep: boo
             verify_exit=verify_exit,
             passed=passed_kinds(verify_out),
             roundtrip_exit=roundtrip_exit,
-            compared=compared,
-            missing=missing,
-            extra=extra,
-            rehearsal_exit=rehearsal_exit,
-            rehearsal_missing=rehearsal_missing,
-            rehearsal_compared=rehearsal_compared,
+            compared=diff.compared,
+            missing=diff.missing,
+            differing=diff.differing,
+            extra=diff.extra,
+            rehearsal_exit=rehearsal.exit_code,
+            rehearsal_missing=rehearsal.missing,
+            rehearsal_differing=rehearsal.differing,
+            rehearsal_compared=rehearsal.compared,
+            rehearsal_note=rehearsal.note,
             tree=tree,
+            content=content,
             tree_rehearsal_control=tree_control,
             tree_rehearsal_defect=tree_defect,
             reproducibility=repro,
@@ -1250,10 +1528,13 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
             "roundtrip_exit": EXIT_OK,
             "compared": 664,
             "missing": (),
+            "differing": (),
             "extra": (),
             "rehearsal_exit": EXIT_OK,
             "rehearsal_missing": (TAMPER_TARGET,),
+            "rehearsal_differing": (REWRITE_TARGET,),
             "rehearsal_compared": 664,
+            "content": ContentCheck(658, (), ("antigravity_k.dist-info/METADATA",), (), (TRANSFORM_TARGET,)),
             "tree": TreeCoverage(
                 expected=tuple(f"antigravity_k/f{i}.py" for i in range(656)),
                 missing=(),
@@ -1279,11 +1560,14 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
             roundtrip_exit=payload["roundtrip_exit"],  # type: ignore[arg-type]
             compared=int(payload["compared"]),  # type: ignore[call-overload]
             missing=payload["missing"],  # type: ignore[arg-type]
+            differing=payload["differing"],  # type: ignore[arg-type]
             extra=payload["extra"],  # type: ignore[arg-type]
             rehearsal_exit=payload["rehearsal_exit"],  # type: ignore[arg-type]
             rehearsal_missing=payload["rehearsal_missing"],  # type: ignore[arg-type]
+            rehearsal_differing=payload["rehearsal_differing"],  # type: ignore[arg-type]
             rehearsal_compared=int(payload["rehearsal_compared"]),  # type: ignore[call-overload]
             tree=payload["tree"],  # type: ignore[arg-type]
+            content=payload["content"],  # type: ignore[arg-type]
             tree_rehearsal_control=payload["tree_rehearsal_control"],  # type: ignore[arg-type]
             tree_rehearsal_defect=payload["tree_rehearsal_defect"],  # type: ignore[arg-type]
             reproducibility=payload["reproducibility"],  # type: ignore[arg-type]
@@ -1310,6 +1594,36 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
         in " ".join(record(missing=("antigravity_k/dashboard_dist/index.html",)).problems),
     )
     cases.check("더 있는 파일은 실패가 아니다(보고만 한다)", record(extra=("antigravity_k/extra.py",)).ok)
+    changed = ("antigravity_k/engine/release_sbom.py",)
+    cases.check(
+        "내용이 다른 파일이 있으면 통과가 아니다(이름이 같아도 소비자는 다른 코드를 받는다)",
+        not record(differing=changed).ok and "개의 내용이 다르다" in " ".join(record(differing=changed).problems),
+    )
+    cases.check(
+        "왕복이 내용 변화를 못 보면 통과가 아니다(이름만 보는 눈)",
+        not record(rehearsal_differing=()).ok and REWRITE_TARGET in " ".join(record(rehearsal_differing=()).problems),
+    )
+    cases.check("배포판 내용이 트리와 같으면 통과다", record().ok)
+    cases.check(
+        "배포판 내용이 트리와 다르면 통과가 아니다(이름을 남긴다)",
+        not record(content=ContentCheck(658, ("antigravity_k/a.py",), (), (), (TRANSFORM_TARGET,))).ok,
+    )
+    cases.check(
+        "내용 실물 재현이 심은 이름을 못 지목하면 통과가 아니다",
+        not record(content=ContentCheck(658, (), (), (), ())).ok,
+    )
+    cases.check(
+        "내용 실물 재현이 다른 이름을 지목하면 통과가 아니다",
+        not record(content=ContentCheck(658, (), (), (), ("mini/other.py",))).ok,
+    )
+    cases.check(
+        "내용 대조군에서 지목하면 통과가 아니다(넓게 잡은 눈)",
+        not record(content=ContentCheck(658, (), (), ("mini/kept.py",), (TRANSFORM_TARGET,))).ok,
+    )
+    cases.check(
+        "내용을 0개 비교하면 하한이 문다(경로 매핑이 바뀌어 ‘차이 없음’ 으로 통과하는 순간)",
+        bool(floor_problems(coverage_floors(record(content=ContentCheck(0, (), (), (), (TRANSFORM_TARGET,)))))),
+    )
     lost = TreeCoverage(expected=("antigravity_k/a.py",), missing=("antigravity_k/a.py",), generated=(), local_only=())
     cases.check(
         "배포판에 없는 추적 파일이 있으면 통과가 아니다(이름을 남긴다)",
@@ -1479,7 +1793,7 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
     cases.check("CI pin 검사는 못 본 경우에도 이유를 말한다", ci_pinned or bool(ci_note))
 
     floors = coverage_floors()
-    cases.check("하한이 다섯이다(산출물·PASS·비교한 파일·실린 추적 파일·재현 비교)", len(floors) == 5)
+    cases.check("하한이 여섯이다(산출물·PASS·비교한 파일·실린 추적 파일·재현 비교·내용 비교)", len(floors) == 6)
     cases.check("하한에 근거가 기록돼 있다", all(floor.why.strip() for floor in floors))
     cases.check("하한이 지금 관측을 넘지 않는다", not floor_problems(floors))
     cases.check(
@@ -1520,10 +1834,13 @@ def as_mapping(record: Observation, probe: Probe) -> dict[str, object]:
             "exit": record.roundtrip_exit,
             "compared": record.compared,
             "missing": list(record.missing),
+            "differing": list(record.differing),
             "extra": list(record.extra),
             "rehearsal_exit": record.rehearsal_exit,
             "rehearsal_missing": list(record.rehearsal_missing),
+            "rehearsal_differing": list(record.rehearsal_differing),
         },
+        "content": record.content.as_mapping(),
         "tree": {
             **record.tree.as_mapping(),
             "rehearsal_control": list(record.tree_rehearsal_control),
@@ -1543,7 +1860,13 @@ def as_mapping(record: Observation, probe: Probe) -> dict[str, object]:
             "verified": len(record.passed),
             "compared": record.compared,
             "missing": len(record.missing),
+            "differing": len(record.differing),
             "roundtrip_bites": 1 if TAMPER_TARGET in record.rehearsal_missing else 0,
+            "roundtrip_content_bites": 1 if REWRITE_TARGET in record.rehearsal_differing else 0,
+            "content_compared": record.content.compared,
+            "content_differ": len(record.content.differ),
+            "content_absent": len(record.content.absent),
+            "content_rehearsal_bites": 1 if TRANSFORM_TARGET in record.content.rehearsal_defect else 0,
             "tracked_shipped": len(record.tree.expected) - len(record.tree.missing),
             "tracked_missing": len(record.tree.missing),
             "generated": len(record.tree.generated),
@@ -1574,15 +1897,34 @@ def describe(record: Observation, probe: Probe) -> str:
     lines.append(f"  build     exit {record.build_exit}")
     lines.append(f"  verify    exit {record.verify_exit} · PASS {', '.join(record.passed) or '없음'}")
     roundtrip_note = (
-        f"파일 {record.compared}개 비교 · 빠짐 {len(record.missing)} · 더 있음 {len(record.extra)}"
+        f"파일 {record.compared}개 비교 · 빠짐 {len(record.missing)} · 내용 다름 {len(record.differing)}"
+        f" · 더 있음 {len(record.extra)}"
         if record.roundtrip_exit is not None
         else "돌리지 않았다"
     )
     lines.append(f"  roundtrip exit {record.roundtrip_exit} · {roundtrip_note}")
-    rehearsal_note = (
+    missing_note = (
         "sdist 에서 파일을 빼니 왕복이 지목했다" if TAMPER_TARGET in record.rehearsal_missing else "**빼도 못 봤다**"
     )
-    lines.append(f"  재현      sdist 왕복({TAMPER_TARGET} 제거) exit {record.rehearsal_exit} — {rehearsal_note}")
+    rewrite_note = (
+        "내용을 바꾸니 바이트 차이로 지목했다" if REWRITE_TARGET in record.rehearsal_differing else "**바꿔도 못 봤다**"
+    )
+    lines.append(
+        f"  재현      sdist 왕복({TAMPER_TARGET} 제거 · {REWRITE_TARGET} 내용 변환) exit {record.rehearsal_exit} — "
+        f"{missing_note} · {rewrite_note}"
+    )
+    content = record.content
+    content_note = (
+        f"패키지 파일 {content.compared}개 내용 비교 · 다름 {len(content.differ)} · 견줄 수 없음 {len(content.absent)}"
+        if content.compared
+        else "**내용을 견주지 못했다**"
+    )
+    lines.append(f"  내용      트리 대조 {content_note}")
+    lines.append(
+        f"  내용재현  빌드가 내용을 바꾸는 실물 프로젝트 — 심은 파일을 "
+        f"{'지목했다' if TRANSFORM_TARGET in content.rehearsal_defect else '못 봤다'} · "
+        f"대조군 오탐 {len(content.rehearsal_control)}건"
+    )
     tree_note = (
         f"추적 {len(record.tree.expected)}개 중 빠짐 {len(record.tree.missing)} · 배포판 생성물 {len(record.tree.generated)} · "
         f"트리에만(미추적) {len(record.tree.local_only)}"
