@@ -18,6 +18,7 @@ from __future__ import annotations
 import importlib.util
 import io
 import json
+import subprocess
 import sys
 import zipfile
 from dataclasses import replace
@@ -65,6 +66,14 @@ def _healthy(release: Any) -> Any:  # noqa: ANN401
         rehearsal_exit=0,
         rehearsal_missing=(release.TAMPER_TARGET,),
         rehearsal_compared=664,
+        tree=release.TreeCoverage(
+            expected=tuple(f"antigravity_k/f{i}.py" for i in range(656)),
+            missing=(),
+            generated=("antigravity_k/vendor/ssak_search/bin/ssak-mcp",),
+            local_only=("antigravity_k/data/memory.db",),
+        ),
+        tree_rehearsal_control=(),
+        tree_rehearsal_defect=(release.MINI_DROPPED,),
         tamper_exit=1,
         tamper_removed=release.TAMPER_TARGET,
         inputs_line=True,
@@ -99,6 +108,16 @@ def test_a_healthy_observation_passes(release: Any) -> None:  # noqa: ANN401
         ("rehearsal_exit", None, "왕복의 red 재현(sdist 에서 파일 빼기)을 돌리지 않았다"),
         ("rehearsal_exit", 1, "왕복 red 재현에서 재빌드가 실패했다"),
         ("rehearsal_missing", (), "빼도 왕복이 ‘차이 없음’ 이라고 말했다"),
+        (
+            "tree",
+            lambda release: release.TreeCoverage(
+                expected=("antigravity_k/a.py",), missing=("antigravity_k/a.py",), generated=(), local_only=()
+            ),
+            "배포판에 없는 **추적 파일",
+        ),
+        ("tree_rehearsal_defect", (), "실물 재현에서 이 눈이 아무것도 지목하지 못했다"),
+        ("tree_rehearsal_defect", ("minipkg/something_else.py",), "심은 것과 다른 것을 보면"),
+        ("tree_rehearsal_control", ("minipkg/kept.py",), "대조군(정상 프로젝트)에서 빼짐을 지목했다"),
         ("tamper_exit", None, "red 재현(빠진 배포판)을 돌리지 않았다"),
         ("tamper_exit", 0, "빠진 배포판을 통과시켰다"),
         ("note", "하위 process 가 죽었다", "사고가 났다"),
@@ -107,7 +126,8 @@ def test_a_healthy_observation_passes(release: Any) -> None:  # noqa: ANN401
 def test_each_defect_is_a_failure(release: Any, field: str, value: object, fragment: str) -> None:  # noqa: ANN401
     """결함 하나씩을 재현해 각각이 실패 문장으로 남는지 본다 — 통과로 새는 자리가 없어야 한다."""
 
-    record = replace(_healthy(release), **{field: value})
+    bound = value(release) if callable(value) else value
+    record = replace(_healthy(release), **{field: bound})
 
     assert record.ok is False, field
     assert any(fragment in problem for problem in record.problems), record.problems
@@ -130,13 +150,20 @@ def test_floors_carry_their_basis_and_bite_when_thin(release: Any) -> None:  # n
 
     floors = release.coverage_floors(_healthy(release))
 
-    assert [floor.label for floor in floors] == ["배포 산출물", "저장소 밖 PASS", "비교한 파일"]
+    assert [floor.label for floor in floors] == [
+        "배포 산출물",
+        "저장소 밖 PASS",
+        "비교한 파일",
+        "배포판에 실린 추적 파일",
+    ]
     assert all(floor.why.strip() for floor in floors)
     assert release.floor_problems(floors) == []
 
     thin = replace(_healthy(release), artifacts=(release.Artifact("wheel", "w.whl", 1, "a"),), passed=())
     assert release.floor_problems(release.coverage_floors(thin)) != []
     assert release.floor_problems(release.coverage_floors(replace(_healthy(release), compared=0))) != []
+    empty_tree = replace(_healthy(release), tree=release.TreeCoverage((), (), (), ()))
+    assert release.floor_problems(release.coverage_floors(empty_tree)) != []  # 추적 0개 = 본 것이 없다
 
 
 # ------------------------------------------------------------------ sdist 왕복
@@ -232,6 +259,96 @@ def test_rehearse_dropped_sdist_is_unrun_without_inputs(tmp_path: Path, release:
     """심을 재료가 없으면 None(못 돌렸다)으로 남는다 — ‘조용한 통과’ 도 ‘사고’ 도 아니다."""
 
     assert release.rehearse_dropped_sdist(tmp_path / "none.tar.gz", tmp_path / "none.whl", tmp_path) == (None, (), 0)
+
+
+# ------------------------------------------------------------------ 배포판 vs 추적 트리
+
+
+def _mini_repo(tmp_path: Path, files: dict[str, str]) -> Path:
+    """임시 git 저장소를 만든다 — 추적 대조는 **실제 git** 을 읽으므로 합성 문자열로는 시험되지 않는다."""
+
+    repo = tmp_path / "repo"
+    repo.mkdir(parents=True, exist_ok=True)
+    for name, body in files.items():
+        path = repo / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(body, encoding="utf-8")
+    identity = ["-c", "user.email=t@t", "-c", "user.name=t"]
+    for argv in (["git", "init", "-q", "."], ["git", "add", "-A"], ["git", *identity, "commit", "-qm", "x"]):
+        subprocess.run(argv, cwd=repo, capture_output=True, text=True, check=True)
+    return repo
+
+
+def _fake_wheel(path: Path, names: tuple[str, ...]) -> Path:
+    with zipfile.ZipFile(path, "w") as archive:
+        for name in names:
+            archive.writestr(name, "x")
+    return path
+
+
+def test_tree_coverage_names_tracked_files_the_wheel_lost(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
+    """추적되는데 배포판에 없으면 **이름으로** 남고, 미추적 로컬 파일은 보고만 된다."""
+
+    package = "minipkg"
+    repo = _mini_repo(tmp_path, {f"{package}/kept.py": "kept", f"{package}/dropped.py": "dropped"})
+    (repo / package / "scratch.py").write_text("scratch", encoding="utf-8")  # 추적되지 않는 로컬 파일
+    wheel = _fake_wheel(tmp_path / "w.whl", (f"{package}/kept.py", f"{package}.dist-info/RECORD"))
+
+    coverage = release.tree_coverage(wheel, package_dir=repo / package, package_name=package, repo=repo)
+
+    assert coverage.expected == (f"{package}/dropped.py", f"{package}/kept.py")
+    assert coverage.missing == (f"{package}/dropped.py",)
+    assert coverage.local_only == (f"{package}/scratch.py",)
+    assert coverage.generated == ()  # dist-info 는 패키지 뿌리가 아니므로 생성물로 세지 않는다
+
+
+def test_tree_coverage_reports_generated_members(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
+    """배포판에만 있는 패키지 파일(빌드 생성물)은 보고 대상이다 — 실패가 아니다."""
+
+    package = "minipkg"
+    repo = _mini_repo(tmp_path, {f"{package}/kept.py": "kept"})
+    wheel = _fake_wheel(tmp_path / "w.whl", (f"{package}/kept.py", f"{package}/vendor/built.bin"))
+
+    coverage = release.tree_coverage(wheel, package_dir=repo / package, package_name=package, repo=repo)
+
+    assert coverage.missing == ()
+    assert coverage.generated == (f"{package}/vendor/built.bin",)
+
+
+def test_tree_coverage_returns_nothing_without_a_wheel(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
+    """재료가 없으면 빈 보고다 — 0을 보고 ‘빠짐 없음’ 으로 판정하지 않는다(하한이 문다)."""
+
+    repo = _mini_repo(tmp_path, {"minipkg/kept.py": "kept"})
+
+    coverage = release.tree_coverage(
+        tmp_path / "none.whl", package_dir=repo / "minipkg", package_name="minipkg", repo=repo
+    )
+
+    assert coverage.expected == () and coverage.missing == ()
+
+
+def test_tree_coverage_skips_runtime_leftovers(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
+    """`__pycache__` 같은 실행 부산물은 목록을 더럽히지 않는다(진짜 결함이 그 사이에 묻힌다)."""
+
+    package = "minipkg"
+    repo = _mini_repo(tmp_path, {f"{package}/kept.py": "kept"})
+    cache = repo / package / "__pycache__"
+    cache.mkdir(parents=True, exist_ok=True)
+    (cache / "kept.cpython-313.pyc").write_bytes(b"\x00")
+    wheel = _fake_wheel(tmp_path / "w.whl", (f"{package}/kept.py",))
+
+    coverage = release.tree_coverage(wheel, package_dir=repo / package, package_name=package, repo=repo)
+
+    assert coverage.local_only == ()
+
+
+def test_the_real_rehearsal_bites_and_the_control_stays_quiet(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
+    """실물 빌드 재현: sdist 에서 뺀 추적 파일을 이 눈이 지목하고, 대조군에서는 아무것도 지목하지 않는다."""
+
+    control, defect = release.rehearse_tree_loss(tmp_path)
+
+    assert control == ()
+    assert defect == (release.MINI_DROPPED,)
 
 
 def test_unpack_sdist_refuses_a_tarball_without_a_project(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
@@ -333,6 +450,11 @@ def test_emit_json_reports_the_contract(release: Any, monkeypatch: pytest.Monkey
     assert payload["roundtrip"]["compared"] == 664
     assert payload["counts"]["roundtrip_bites"] == 1
     assert payload["roundtrip"]["rehearsal_missing"] == [release.TAMPER_TARGET]
+    assert payload["counts"]["tracked_shipped"] == 656
+    assert payload["counts"]["tracked_missing"] == 0
+    assert payload["counts"]["tree_rehearsal_bites"] == 1
+    assert payload["tree"]["expected"] == 656
+    assert payload["tree"]["rehearsal_defect"] == [release.MINI_DROPPED]
     assert payload["tamper"]["detected"] is True
     assert all(record["why"].strip() for record in payload["floors"])
     assert payload["probe"]["cases"] >= 15
@@ -379,6 +501,10 @@ def test_the_real_artifacts_are_built_consumed_and_tampered(release: Any) -> Non
     assert record.roundtrip_exit == 0
     assert record.missing == ()  # sdist 에서 다시 빌드한 wheel 이 같은 파일을 담는다
     assert record.compared >= 100
+    assert record.tree.missing == ()  # 배포판이 커밋된 코드를 모두 담는다
+    assert len(record.tree.expected) >= 600
+    assert record.tree_rehearsal_defect == (release.MINI_DROPPED,)
+    assert record.tree_rehearsal_control == ()
     assert record.rehearsal_exit == 0
     assert record.rehearsal_missing == (release.TAMPER_TARGET,)  # sdist 에서 뺀 파일을 왕복이 지목했다
     assert record.detected is True

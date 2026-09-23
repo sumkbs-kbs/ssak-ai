@@ -12,17 +12,22 @@ T14 는 `test / lint / type / build` 를 요구하는데 `build` 만 **NOT_RUN**
      CLI·모듈·API·auth 를 돌린다. 그 판정을 **종료 코드와 산출물별 PASS 문장**으로 읽는다.
   3. **sdist 왕복** — sdist 를 풀어 **그 안에서** wheel 을 다시 빌드한 뒤, 트리에서 만든 wheel 과 **파일 목록을 견준다**.
      `MANIFEST`/package-data 에서 빠진 파일은 sdist 설치 경로에서만 드러난다 — wheel 만 검증하면 그 결함은 안 보인다.
-  4. **red 재현 둘** — 이 층은 두 종류의 결함을 막아야 한다:
+  4. **배포판 vs 추적 트리** — 소비자가 받는 wheel 이 **커밋된 코드를 모두 담고 있는가**. `uv build` 는 wheel 을
+     sdist 에서 만들므로(로그: “Building wheel from source distribution…”) sdist 가 잃은 파일은 소비자에게도 없다 —
+     `git ls-files` 로 추적 파일을 세어 빠진 것이 있으면 **이름으로 실패**시키고, 미추적 로컬 파일·빌드 생성물은 **보고만** 한다.
+  5. **red 재현 셋** — 이 층은 세 종류의 결함을 막아야 한다:
      · “빠진 배포판”: 같은 wheel 사본에서 module 하나를 빼고 `RECORD` 를 다시 써서 **유효하지만 불완전한**
        wheel 을 만든 뒤 같은 검증기에 건다. 그 검증기가 통과시키면 이 층은 아무것도 막지 못한다.
      · “빠진 sdist”: sdist 사본에서 파일 하나를 빼고 **같은 왕복**을 돌린다. 왕복이 그 빠짐을 지목하지 못하면
        왕복 관찰(exit 0 · 빠짐 0)이 “보고 0” 인지 “아무것도 못 보고 0” 인지 가릴 수 없다.
+     · “잃어버린 추적 파일”: **작은 실물 프로젝트**(git·uv 로 실제 빌드)에서 추적 파일 하나를 sdist 에서 빼고 같은 눈으로 본다.
+       대조군은 같은 프로젝트에서 그 한 줄만 뺀 것 — 심은 이름을 지목하고 대조군이 조용해야 이 눈이 무는 것이다.
      빌드는 한 번만 한다(두 번 빌드하면 서로 다른 순간을 가리킨다).
-  5. **자기시험** — 판정 규칙(빌드 실패·산출물 수·PASS 문장·왕복 누락·왕복 red 미탐지·red 미탐지·사고)을 합성 관찰로 매 실행 다시 묻는다.
+  6. **자기시험** — 판정 규칙(빌드 실패·산출물 수·PASS 문장·왕복 누락·추적 파일 누락·왕복 red 미탐지·red 미탐지·사고)을 매 실행 다시 묻는다.
 
 **탐지력 하한**도 함께 낸다(`Floor` — 값과 근거): 배포 산출물 2(wheel+sdist) · 저장소 밖 PASS 2 · **비교한 파일**(왕복
-비교가 몇 파일에서 이뤄졌나 — 목록 읽기가 깨져 **0개를 비교하고 “차이 없음”** 으로 통과하는 순간을 잡는다). 하한이
-장식인지도 자기시험이 본다(관측 0 은 실패).
+비교가 몇 파일에서 이뤄졌나) · **배포판에 실린 추적 파일**(추적 대조가 **0개를 보고 “빠짐 없음”** 으로 통과하는 순간을 잡는다).
+하한이 장식인지도 자기시험이 본다(관측 0 은 실패).
 
 ```sh
 .venv/bin/python scripts/release_artifacts.py            # 빌드 + 검증 + red 재현(수십 초)
@@ -88,6 +93,44 @@ _WHY_COMPARED: Final[str] = (
     "비교한 것이 없으면 왕복 검증은 증거가 아니다."
 )
 
+# 배포판이 담아야 할 뿌리 — pyproject.toml 의 `packages = [\"src/antigravity_k\"]`.
+PACKAGE_SRC: Final[str] = "src/antigravity_k"
+PACKAGE_NAME: Final[str] = "antigravity_k"
+_MIN_TRACKED: Final[int] = 600
+_WHY_TRACKED: Final[str] = (
+    "2026-09-23 기준 관측: git 추적 파일 656개가 **모두** 배포 wheel 안에 있다(빠짐 0). 하한 600은 "
+    "`git ls-files` 가 실패하거나(`returncode≠0`) 뿌리 경로가 바뀌어 **0개를 보고 ‘빠짐 없음’** 으로 통과하는 순간을 잡는다 — "
+    "추적 대조가 0을 보면 그 초록은 판정이 아니다."
+)
+
+# 작은 재현 프로젝트 — 배포판에서 사라진 추적 파일을 이 눈이 보는지 실제 빌드로 확인한다(합성 기록이 아니다).
+MINI_PACKAGE: Final[str] = "minipkg"
+MINI_DROPPED: Final[str] = "minipkg/dropped.py"
+_SKIP_PARTS: Final[frozenset[str]] = frozenset({"__pycache__", ".git", ".venv"})
+
+
+@dataclass(frozen=True, slots=True)
+class TreeCoverage:
+    """배포판과 **git 추적 트리** 의 차이 — 소비자가 받는 물건이 커밋한 코드를 담고 있는가.
+
+    `uv build` 는 wheel 을 **sdist 에서** 만든다(uv 로그: “Building wheel from source distribution…”). 그래서 sdist 에서
+    빠진 **추적** 파일은 배포판에서도 빠지고, 소비자에게 그 module 은 없다(로컬 트리에서는 import 된다).
+    반대 방향 — 추적되지 않는 로컬 파일 — 은 배포판에 없는 것이 **정상**이므로 보고만 한다.
+    """
+
+    expected: tuple[str, ...]
+    missing: tuple[str, ...]
+    generated: tuple[str, ...]
+    local_only: tuple[str, ...]
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "expected": len(self.expected),
+            "missing": list(self.missing),
+            "generated": list(self.generated),
+            "local_only": list(self.local_only),
+        }
+
 
 @dataclass(frozen=True, slots=True)
 class Artifact:
@@ -117,6 +160,9 @@ class Observation:
     rehearsal_exit: int | None
     rehearsal_missing: tuple[str, ...]
     rehearsal_compared: int
+    tree: TreeCoverage
+    tree_rehearsal_control: tuple[str, ...]
+    tree_rehearsal_defect: tuple[str, ...]
     tamper_exit: int | None
     tamper_removed: str
     inputs_line: bool
@@ -151,6 +197,9 @@ class Observation:
             "rehearsal_exit": self.rehearsal_exit,
             "rehearsal_missing": list(self.rehearsal_missing),
             "rehearsal_compared": self.rehearsal_compared,
+            "tree": self.tree.as_mapping(),
+            "tree_rehearsal_control": list(self.tree_rehearsal_control),
+            "tree_rehearsal_defect": list(self.tree_rehearsal_defect),
             "tamper_exit": self.tamper_exit,
             "tamper_removed": self.tamper_removed,
             "tamper_detected": self.detected,
@@ -198,6 +247,28 @@ def observation_problems(record: Observation) -> tuple[str, ...]:
             f"sdist→wheel 에서 **파일 {len(record.missing)}개가 빠졌다**: {shown}{more} — "
             "`MANIFEST`/package-data 에서 빠진 파일은 sdist 설치 경로에서만 드러난다"
         )
+    if record.tree.missing:
+        shown = ", ".join(record.tree.missing[:3])
+        more = f" 외 {len(record.tree.missing) - 3}개" if len(record.tree.missing) > 3 else ""
+        problems.append(
+            f"배포판에 없는 **추적 파일 {len(record.tree.missing)}개**: {shown}{more} — "
+            "`uv build` 는 wheel 을 sdist 에서 만들므로 sdist 가 잃은 파일은 소비자에게도 없다(로컬에서는 import 된다)"
+        )
+    if not record.tree_rehearsal_defect:
+        problems.append(
+            "추적 파일을 sdist 에서 뺀 실물 재현에서 이 눈이 아무것도 지목하지 못했다 — "
+            "배포판에서 사라진 module 을 소비자보다 먼저 보지 못한다"
+        )
+    elif MINI_DROPPED not in record.tree_rehearsal_defect:
+        problems.append(
+            f"실물 재현이 심은 이름({MINI_DROPPED})이 아니라 {', '.join(record.tree_rehearsal_defect[:3])} 를 지목했다 — "
+            "심은 것과 다른 것을 보면 그 눈이 무엇을 보는지 알 수 없다"
+        )
+    if record.tree_rehearsal_control:
+        problems.append(
+            f"대조군(정상 프로젝트)에서 빼짐을 지목했다: {', '.join(record.tree_rehearsal_control[:3])} — "
+            "넓게 잡은 눈은 탐지력이 아니다(그러면 사람이 이 검사를 끄게 된다)"
+        )
     if record.rehearsal_exit is None:
         problems.append(
             "왕복의 red 재현(sdist 에서 파일 빼기)을 돌리지 않았다 — 왕복이 무는지 확인하지 않은 실행은 통과가 아니다"
@@ -227,10 +298,12 @@ def coverage_floors(record: Observation | None = None) -> list[Floor]:
     observed_artifacts = len(record.artifacts) if record is not None else _MIN_ARTIFACTS
     observed_passed = len(record.passed) if record is not None else _MIN_PASSED
     observed_compared = record.compared if record is not None else _MIN_COMPARED
+    observed_tracked = len(record.tree.expected) if record is not None else _MIN_TRACKED
     return [
         Floor("배포 산출물", observed_artifacts, _MIN_ARTIFACTS, why=_WHY_ARTIFACTS),
         Floor("저장소 밖 PASS", observed_passed, _MIN_PASSED, why=_WHY_PASSED),
         Floor("비교한 파일", observed_compared, _MIN_COMPARED, why=_WHY_COMPARED),
+        Floor("배포판에 실린 추적 파일", observed_tracked, _MIN_TRACKED, why=_WHY_TRACKED),
     ]
 
 
@@ -361,6 +434,100 @@ def rehearse_dropped_sdist(sdist: Path, direct_wheel: Path, work: Path) -> tuple
     return exit_code, missing, compared
 
 
+def _wheel_name(path: Path, package_dir: Path, package_name: str) -> str:
+    """저장소 경로를 wheel 안 이름으로 옮긴다(`src/antigravity_k/a/b.py` → `antigravity_k/a/b.py`)."""
+
+    return f"{package_name}/{path.relative_to(package_dir).as_posix()}"
+
+
+def tree_coverage(wheel: Path, *, package_dir: Path, package_name: str, repo: Path) -> TreeCoverage:
+    """배포 wheel 과 **git 추적 트리** 를 견준다 — 추적 파일이 배포판에 없으면 그게 결함이다.
+
+    `--others` 로 세지 않는 이유: 로컬의 미추적 파일은 배포판에 없는 것이 **정상**이고(그게 배포판의 정의다),
+    그것을 실패로 만들면 이 층은 늘 빨개져 무시된다. 대신 그 목록을 **보고**해 "로컬에서는 되는데 설치하면 없다" 를
+    미리 말한다.
+    """
+
+    if not wheel.is_file() or not package_dir.is_dir():
+        return TreeCoverage((), (), (), ())
+    members = set(wheel_names(wheel))
+    listing = subprocess.run(
+        ["git", "ls-files", "--", str(package_dir.relative_to(repo))],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if listing.returncode != EXIT_OK:
+        # 0개를 보고 “빠짐 없음” 으로 통과하지 않는다 — 하한이 문다.
+        return TreeCoverage((), (), (), ())
+    tracked = tuple(
+        sorted(
+            _wheel_name(repo / line, package_dir, package_name) for line in listing.stdout.splitlines() if line.strip()
+        )
+    )
+    tracked_set = set(tracked)
+    missing = tuple(name for name in tracked if name not in members)
+    generated = tuple(
+        sorted(name for name in members if name.startswith(f"{package_name}/") and name not in tracked_set)
+    )
+    local_only: list[str] = []
+    for path in sorted(package_dir.rglob("*")):
+        relative = path.relative_to(package_dir)
+        if not path.is_file() or _SKIP_PARTS & set(relative.parts) or path.suffix in {".pyc", ".pyo"}:
+            continue
+        name = _wheel_name(path, package_dir, package_name)
+        if name not in tracked_set and name not in members:
+            local_only.append(name)
+    return TreeCoverage(expected=tracked, missing=missing, generated=generated, local_only=tuple(local_only))
+
+
+def _write_mini_project(project: Path, *, drop_from_sdist: bool) -> None:
+    """재현용 작은 추적 프로젝트 — 파일 하나를 sdist 에서 빼면 그 파일이 배포판에서도 사라진다."""
+
+    package = project / MINI_PACKAGE
+    package.mkdir(parents=True, exist_ok=True)
+    exclude = f'\n[tool.hatch.build.targets.sdist]\nexclude = ["{MINI_DROPPED}"]\n' if drop_from_sdist else ""
+    (project / "pyproject.toml").write_text(
+        '[build-system]\nrequires = ["hatchling"]\nbuild-backend = "hatchling.build"\n'
+        '\n[project]\nname = "minipkg"\nversion = "0.1.0"\n'
+        f'\n[tool.hatch.build.targets.wheel]\npackages = ["{MINI_PACKAGE}"]\n{exclude}',
+        encoding="utf-8",
+    )
+    (package / "__init__.py").write_text("value = 1\n", encoding="utf-8")
+    (package / "kept.py").write_text("kept = 1\n", encoding="utf-8")
+    (package / "dropped.py").write_text("dropped = 1\n", encoding="utf-8")
+    identity = ["-c", "user.email=release-contract@localhost", "-c", "user.name=release contract"]
+    run(["git", "init", "-q", "."], cwd=project)
+    run(["git", "add", "-A"], cwd=project)
+    run(["git", *identity, "commit", "-qm", "mini"], cwd=project)
+
+
+def rehearse_tree_loss(work: Path) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """**실물 빌드** 로 이 눈이 무는지 본다 — 같은 작은 프로젝트 둘(정상 · sdist 에서 파일을 뺀 것).
+
+    돌려주는 것: `(대조군이 지목한 것, 심은 프로젝트가 지목한 것)`. 심은 이름만 지목되고 대조군이 비어야 통과다 —
+    합성 기록이 아니라 실제 `git`·`uv build` 로 돌리므로 “이 눈이 진짜 파일에서 작동하는가” 가 이 재현의 대상이다.
+    """
+
+    results: list[tuple[str, ...]] = []
+    for label, drop in (("control", False), ("defect", True)):
+        project = work / f"tree-rehearsal-{label}"
+        project.mkdir(parents=True, exist_ok=True)
+        _write_mini_project(project, drop_from_sdist=drop)
+        dist = project / "dist"
+        run(["uv", "build", "--no-sources", "--out-dir", str(dist)], cwd=project)
+        wheels = sorted(dist.glob("*.whl"))
+        if not wheels:
+            results.append(())
+            continue
+        coverage = tree_coverage(
+            wheels[-1], package_dir=project / MINI_PACKAGE, package_name=MINI_PACKAGE, repo=project
+        )
+        results.append(coverage.missing)
+    return results[0], results[1]
+
+
 def passed_kinds(output: str) -> tuple[str, ...]:
     """`ARTIFACT-RESULT` 줄에서 **PASS 한 산출물 종류**를 읽는다(산문이 아니라 구조를 읽는다)."""
 
@@ -442,6 +609,12 @@ def measure(*, dist_dir: Path | None = None, work: Path | None = None, keep: boo
         else:
             roundtrip_exit, missing, extra, compared = None, (), (), 0
             rehearsal_exit, rehearsal_missing, rehearsal_compared = None, (), 0
+        tree = (
+            tree_coverage(wheel, package_dir=REPO_ROOT / PACKAGE_SRC, package_name=PACKAGE_NAME, repo=REPO_ROOT)
+            if wheel is not None
+            else TreeCoverage((), (), (), ())
+        )
+        tree_control, tree_defect = rehearse_tree_loss(temporary)
         tamper_exit, removed = rehearse_missing_module(artifacts, target, temporary)
         crashed = CRASH_MARKER in (build_out + verify_out)
         return Observation(
@@ -456,6 +629,9 @@ def measure(*, dist_dir: Path | None = None, work: Path | None = None, keep: boo
             rehearsal_exit=rehearsal_exit,
             rehearsal_missing=rehearsal_missing,
             rehearsal_compared=rehearsal_compared,
+            tree=tree,
+            tree_rehearsal_control=tree_control,
+            tree_rehearsal_defect=tree_defect,
             tamper_exit=tamper_exit,
             tamper_removed=removed,
             inputs_line="ARTIFACT-INPUTS" in verify_out,
@@ -489,6 +665,14 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
             "rehearsal_exit": EXIT_OK,
             "rehearsal_missing": (TAMPER_TARGET,),
             "rehearsal_compared": 664,
+            "tree": TreeCoverage(
+                expected=tuple(f"antigravity_k/f{i}.py" for i in range(656)),
+                missing=(),
+                generated=("antigravity_k/vendor/ssak_search/bin/ssak-mcp",),
+                local_only=("antigravity_k/local_scratch.py",),
+            ),
+            "tree_rehearsal_control": (),
+            "tree_rehearsal_defect": (MINI_DROPPED,),
             "tamper_exit": EXIT_FAIL,
             "tamper_removed": TAMPER_TARGET,
             "inputs_line": True,
@@ -509,6 +693,9 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
             rehearsal_exit=payload["rehearsal_exit"],  # type: ignore[arg-type]
             rehearsal_missing=payload["rehearsal_missing"],  # type: ignore[arg-type]
             rehearsal_compared=int(payload["rehearsal_compared"]),  # type: ignore[call-overload]
+            tree=payload["tree"],  # type: ignore[arg-type]
+            tree_rehearsal_control=payload["tree_rehearsal_control"],  # type: ignore[arg-type]
+            tree_rehearsal_defect=payload["tree_rehearsal_defect"],  # type: ignore[arg-type]
             tamper_exit=payload["tamper_exit"],  # type: ignore[arg-type]
             tamper_removed=str(payload["tamper_removed"]),
             inputs_line=bool(payload["inputs_line"]),
@@ -532,6 +719,31 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
         in " ".join(record(missing=("antigravity_k/dashboard_dist/index.html",)).problems),
     )
     cases.check("더 있는 파일은 실패가 아니다(보고만 한다)", record(extra=("antigravity_k/extra.py",)).ok)
+    lost = TreeCoverage(expected=("antigravity_k/a.py",), missing=("antigravity_k/a.py",), generated=(), local_only=())
+    cases.check(
+        "배포판에 없는 추적 파일이 있으면 통과가 아니다(이름을 남긴다)",
+        not record(tree=lost).ok and "antigravity_k/a.py" in " ".join(record(tree=lost).problems),
+    )
+    cases.check(
+        "추적되지 않는 로컬 파일은 실패가 아니다(보고만 한다)",
+        record(tree=TreeCoverage(expected=("a",), missing=(), generated=("b",), local_only=("c",))).ok,
+    )
+    cases.check(
+        "실물 재현이 심은 이름을 못 지목하면 통과가 아니다",
+        not record(tree_rehearsal_defect=()).ok,
+    )
+    cases.check(
+        "실물 재현이 다른 이름을 지목하면 통과가 아니다(심은 것과 다른 것을 봤다)",
+        not record(tree_rehearsal_defect=("minipkg/something_else.py",)).ok,
+    )
+    cases.check(
+        "대조군에서 빼짐을 지목하면 통과가 아니다(넓게 잡은 눈)",
+        not record(tree_rehearsal_control=("minipkg/kept.py",)).ok,
+    )
+    cases.check(
+        "추적 파일이 0개면 하한이 문다(경로 뿌리가 바뀌면 조용히 통과하는 순간)",
+        bool(floor_problems(coverage_floors(record(tree=TreeCoverage((), (), (), ()))))),
+    )
     cases.check("왕복 red 재현을 안 돌리면 통과가 아니다", not record(rehearsal_exit=None).ok)
     cases.check("왕복 red 재현의 재빌드가 실패하면 통과가 아니다", not record(rehearsal_exit=EXIT_FAIL).ok)
     cases.check(
@@ -551,7 +763,7 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
     cases.check("사고로 죽은 실행은 통과가 아니다", not record(note="하위 process 가 죽었다").ok)
 
     floors = coverage_floors()
-    cases.check("하한이 셋이다(산출물·PASS·비교한 파일)", len(floors) == 3)
+    cases.check("하한이 넷이다(산출물·PASS·비교한 파일·실린 추적 파일)", len(floors) == 4)
     cases.check("하한에 근거가 기록돼 있다", all(floor.why.strip() for floor in floors))
     cases.check("하한이 지금 관측을 넘지 않는다", not floor_problems(floors))
     cases.check(
@@ -596,6 +808,11 @@ def as_mapping(record: Observation, probe: Probe) -> dict[str, object]:
             "rehearsal_exit": record.rehearsal_exit,
             "rehearsal_missing": list(record.rehearsal_missing),
         },
+        "tree": {
+            **record.tree.as_mapping(),
+            "rehearsal_control": list(record.tree_rehearsal_control),
+            "rehearsal_defect": list(record.tree_rehearsal_defect),
+        },
         "tamper": {
             "removed": record.tamper_removed,
             "exit": record.tamper_exit,
@@ -610,6 +827,11 @@ def as_mapping(record: Observation, probe: Probe) -> dict[str, object]:
             "compared": record.compared,
             "missing": len(record.missing),
             "roundtrip_bites": 1 if TAMPER_TARGET in record.rehearsal_missing else 0,
+            "tracked_shipped": len(record.tree.expected) - len(record.tree.missing),
+            "tracked_missing": len(record.tree.missing),
+            "generated": len(record.tree.generated),
+            "local_only": len(record.tree.local_only),
+            "tree_rehearsal_bites": 1 if MINI_DROPPED in record.tree_rehearsal_defect else 0,
             "tamper_detected": 1 if record.detected else 0,
             "seconds": round(record.seconds, 1),
         },
@@ -636,6 +858,17 @@ def describe(record: Observation, probe: Probe) -> str:
         "sdist 에서 파일을 빼니 왕복이 지목했다" if TAMPER_TARGET in record.rehearsal_missing else "**빼도 못 봤다**"
     )
     lines.append(f"  재현      sdist 왕복({TAMPER_TARGET} 제거) exit {record.rehearsal_exit} — {rehearsal_note}")
+    tree_note = (
+        f"추적 {len(record.tree.expected)}개 중 빠짐 {len(record.tree.missing)} · 배포판 생성물 {len(record.tree.generated)} · "
+        f"트리에만(미추적) {len(record.tree.local_only)}"
+        if record.tree.expected
+        else "**추적 파일을 보지 못했다**"
+    )
+    lines.append(f"  tree      {tree_note}")
+    lines.append(
+        f"  재현      작은 프로젝트 실물 빌드 — 심은 파일을 {'지목했다' if MINI_DROPPED in record.tree_rehearsal_defect else '못 봤다'} · "
+        f"대조군 오탐 {len(record.tree_rehearsal_control)}건"
+    )
     lines.append(
         f"  red       빠진 배포판({record.tamper_removed} 제거) exit {record.tamper_exit} — "
         f"{'막았다' if record.detected else '**못 막았다**'}"
