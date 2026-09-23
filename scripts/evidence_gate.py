@@ -317,11 +317,17 @@ def first_failure_detail(stdout: str, stderr: str) -> str:
 
 
 def stage_argv(stage: Stage, report: Path | None) -> list[str]:
-    """그 stage 의 실행 argv — `{report}` 자리에 이번 실행의 임시 경로를 채운다."""
+    """그 stage 의 실행 argv — `{report}` 자리에 이번 실행의 임시 경로를 채운다.
 
+    자리를 주지 않으면 **거부한다**: 자리표시자를 그대로 넘기면 그 층이 저장소 뿌리에 `{report}` 라는 이름의
+    파일을 쓴다(실제로 그랬고, 시험 실행이 그 파일을 남겼다).
+    """
+
+    if REPORT_TOKEN in stage.args and report is None:
+        raise ValueError(f"{stage.name}: 수치를 받을 자리(report)를 주지 않았다 — 자리표시자를 그대로 넘기지 않는다")
     argv = [sys.executable, str(SCRIPTS_DIR / stage.script)]
     for token in stage.args:
-        argv.append(str(report) if token == REPORT_TOKEN and report is not None else token)
+        argv.append(str(report) if token == REPORT_TOKEN else token)
     return argv
 
 

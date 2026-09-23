@@ -182,6 +182,19 @@ def test_repository_baseline_is_recorded_and_covers_the_layers(gate: Any) -> Non
     assert set(payload["layers"]) == {stage.name for stage in gate.STAGES}
 
 
+def test_a_file_stage_is_never_run_without_a_place_to_write(gate: Any) -> None:  # noqa: ANN401
+    """자리표시자를 그대로 넘기면 그 층이 저장소에 `{report}` 파일을 쓴다 — 실제로 시험 실행이 그걸 남겼다."""
+
+    file_stage = next(stage for stage in gate.STAGES if gate.REPORT_TOKEN in stage.args)
+
+    with pytest.raises(ValueError, match="자리"):
+        gate.stage_argv(file_stage, None)
+
+    argv = gate.stage_argv(file_stage, Path("/tmp/here.json"))
+    assert gate.REPORT_TOKEN not in " ".join(argv)
+    assert "/tmp/here.json" in argv
+
+
 def test_recording_a_baseline_needs_a_method(gate: Any, tmp_path: Path) -> None:  # noqa: ANN401
     """무엇을 보고 승인했는지 없이는 기준을 기록하지 않는다(그리고 종료 코드로 말한다)."""
 
