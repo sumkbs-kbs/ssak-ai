@@ -724,6 +724,104 @@ def test_regression_measured_reads_the_five_slots(review: Any) -> None:  # noqa:
     }
 
 
+def _canary_report(
+    *,
+    harnesses: int = 6,
+    blind: str | None = None,
+    unjustified: str | None = None,
+    unhealthy: str | None = None,
+) -> dict[str, object]:
+    """카나리아 JSON 의 최소 형태 — 이름만 바꿔 세 가지 결함을 각각 재현한다."""
+
+    names = [
+        "digest_drift",
+        "regression_ledger",
+        "audit_state_claims",
+        "audit_enum_identity",
+        "audit_test_namespace_purge",
+        "measure_cognitive_surface",
+    ]
+    items: list[dict[str, object]] = []
+    for name in names[:harnesses]:
+        items.append(
+            {
+                "name": name,
+                "healthy": not (unhealthy == name),
+                "bites": not (blind == name),
+                "carries_reason": not (unjustified == name),
+            }
+        )
+    ok = sum(1 for item in items if item["healthy"] and item["bites"] and item["carries_reason"])
+    return {"harnesses": items, "counts": {"harnesses": len(items), "ok": ok}}
+
+
+def test_harness_canary_missing_fails_the_review(review: Any) -> None:  # noqa: ANN401
+    """카나리아를 돌리지 못한 실행은 통과하지 않는다 — 하한이 무는지 확인하지 않았다."""
+
+    result = review.check_harness_canary(None)
+
+    assert result.passed is False
+    assert "돌리지 못했다" in result.detail
+
+
+def test_decorative_floor_is_rejected_by_the_review(review: Any) -> None:  # noqa: ANN401
+    """눈멀게 한 사본을 막지 못하는 하한은 장식이라 실패한다."""
+
+    result = review.check_harness_canary(_canary_report(blind="regression_ledger"))
+
+    assert result.passed is False
+    assert "장식이다" in result.detail
+    assert "regression_ledger" in result.detail
+
+
+def test_floor_without_recorded_basis_is_rejected_by_the_review(review: Any) -> None:  # noqa: ANN401
+    """차단 문장에 하한 근거를 싣지 않으면 실패한다 — 왜 막았는지 말하지 않는 차단은 판정이 아니다."""
+
+    result = review.check_harness_canary(_canary_report(unjustified="audit_enum_identity"))
+
+    assert result.passed is False
+    assert "근거를 싣지 않은" in result.detail
+    assert "audit_enum_identity" in result.detail
+
+
+def test_floor_that_blocks_healthy_measurement_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """정상 측정까지 막는 하한은 탐지력이 아니라 오탐이라 실패한다(카나리아 자신이 실제로 이 버그를 냈다)."""
+
+    result = review.check_harness_canary(_canary_report(unhealthy="regression_ledger"))
+
+    assert result.passed is False
+    assert "정상 측정을 막은" in result.detail
+
+
+def test_canary_seeing_no_harness_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """harness 를 하나도 보지 않은 카나리아는 통과하지 않는다."""
+
+    result = review.check_harness_canary({"harnesses": [], "counts": {"harnesses": 0, "ok": 0}})
+
+    assert result.passed is False
+    assert "하나도 보지 않았다" in result.detail
+
+
+def test_canary_markers_come_from_the_report(review: Any) -> None:  # noqa: ANN401
+    """마커로 고정할 두 값(harness 수·문 수)을 카나리아 보고에서 센다."""
+
+    assert review.canary_measured(_canary_report()) == {"canary_harnesses": 6, "canary_ok": 6}
+    assert review.canary_measured(_canary_report(blind="digest_drift")) == {
+        "canary_harnesses": 6,
+        "canary_ok": 5,
+    }
+
+
+def test_repository_canary_bites_on_every_harness(review: Any) -> None:  # noqa: ANN401
+    """저장소의 카나리아가 여섯 harness 전부에서 실제로 무는지(리뷰가 인용하는 수치의 출처)."""
+
+    report = review.measure_canary()
+    assert report is not None, f"{review.CANARY_SCRIPT} 를 돌리지 못했다"
+    result = review.check_harness_canary(report)
+    assert result.passed is True, result.detail
+    assert result.observed >= 6, result.detail
+
+
 def test_repository_regression_ledger_has_two_seeded_runs(review: Any) -> None:  # noqa: ANN401
     """저장소의 원장 artifact 가 실제로 두 회차·복수 scope 를 담고 있는지(리뷰가 인용하는 수치의 출처)."""
 

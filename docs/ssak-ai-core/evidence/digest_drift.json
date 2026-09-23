@@ -3,7 +3,7 @@
     "python",
     "scripts/digest_drift.py"
   ],
-  "source_head": "07e3eb41",
+  "source_head": "d0a67d37",
   "counts": {
     "match": 28,
     "reverified": 22,

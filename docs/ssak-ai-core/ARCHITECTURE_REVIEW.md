@@ -38,7 +38,9 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
     일치하는가(`state_claims`) — 낡은 주장은 정정 표기로 해결하고, 정정 없이 남으면 실패한다. 감사자의
     **자기시험이 없거나 실패하면 판정과 무관하게 실패**하고, node 를 지목한 산문이 하한보다 적으면
     (“눈이 멀었을 수 있다”) 실패한다.
-12. 이 문서의 `<!-- measured:key=value -->` 마커가 실제 측정값과 일치하는가(`measured_markers`).
+12. 하한이 **지금 저장소에서 실제로 무는가**(`harness_canary`) — 각 harness 를 일부러 눈멀게 한 사본
+    (`observed=0`)이 막히는지, 차단 문장이 그 harness 가 기록한 근거를 함께 내는지 본다.
+13. 이 문서의 `<!-- measured:key=value -->` 마커가 실제 측정값과 일치하는가(`measured_markers`).
 
 ```sh
 .venv/bin/python scripts/architecture_review.py                 # 검사 + 요약 표
@@ -74,6 +76,8 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | state_claims_stale | 0 | 정정 없이 남은 낡은 주장 |
 | state_claim_mentions | 6 | node 를 지목한 산문 줄 수 — 상태 어휘가 없어도 세는 상한 집합(탐지력 하한 1) |
 | state_claim_probe_cases | 17 | 매 실행 자기시험이 다시 재판정한 항목 수(어휘·요구 어휘·펜스·정정 창·상태 계산) — 0이면 검사하지 않은 것이다 |
+| canary_harnesses | 6 | 하한 카나리아가 눈멀게 한 사본으로 시험한 harness 수 |
+| canary_ok | 6 | 그중 정상 통과·사본 차단·근거 동봉을 모두 만족한 harness 수 |
 
 <!-- measured:principles=24 -->
 <!-- measured:principles_covered=15 -->
@@ -83,7 +87,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=495 -->
+<!-- measured:cognitive_tests=512 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -99,6 +103,8 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:state_claims_stale=0 -->
 <!-- measured:state_claim_mentions=6 -->
 <!-- measured:state_claim_probe_cases=17 -->
+<!-- measured:canary_harnesses=6 -->
+<!-- measured:canary_ok=6 -->
 
 상태 정의:
 
@@ -113,12 +119,12 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | 회귀 | 명령 | exit | 관찰 |
 |---|---|---|---|
 | 테스트(전체 · **과거 회차 이력**) | `.venv/bin/python -m pytest tests/ -m 'not slow and not benchmark' -q` | 1 | **세 번 쟀고 회차마다 달랐다**(트리·수집 오염·실행 선택이 함께 달랐던 비교 — 현재 기준선은 이 표의 아래 원장 행이다) — ①(수정 전 · random) 7723 수집 · **94 failed / 7571 passed / 14 skipped / 20 xfailed**(26:31) ②(random) 7726 수집 · **10 failed / 7660 passed** ③(**고정 순서** `-p no:randomly`) 7726 수집 · **7 failed / 7663 passed / 14 skipped / 24 deselected / 20 xfailed**(21:21) ④(**고정 순서 · 정리 뒤**) 7726 수집 · **5 failed / 7666 passed / 14 skipped / 24 deselected / 20 xfailed**(20:13). 그 차이는 seed 효과가 아니라 트리·오염·실행 선택의 차이였고, seed 를 가른 측정은 §1.2 의 원장이다, ③·④의 실패도 전부 기존 항목이다(그중 둘은 §1.5에서 등록으로 닫았다) |
-| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 442 passed (원장 subdirs scope 2회에서도 결정적 실패 0) |
+| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 511 passed · 1 skipped (수집 512 — 원장 subdirs scope 2회에서도 결정적 실패 0) |
 | lint | `.venv/bin/python -m ruff check src/ tests/ scripts/` | 0 | All checks passed |
 | format | `.venv/bin/python -m ruff format --check src/ tests/ scripts/` | 0 | 1162 files already formatted |
 | type | `.venv/bin/python -m mypy <cognitive·surface·cli·5 scripts>` | 0 | Success: no issues found in 29 source files |
 | schema | `.venv/bin/python scripts/generate_record_schema.py --check` | 0 | schema up to date (record-entities/record-envelope) |
-| architecture review | `.venv/bin/python scripts/architecture_review.py` | 0 | 12 checks PASS(회귀 원장 · 인용 추적 · digest 측정 · 상태 주장 재판정) |
+| architecture review | `.venv/bin/python scripts/architecture_review.py` | 0 | 13 checks PASS(회귀 원장 · 인용 추적 · digest 측정 · 상태 주장 재판정 · 하한 카나리아) |
 | 회귀 원장 | `.venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger --gate` | 0 | 9 scope · 21 회차(seed 101·202 + 순서 뒤집은 3회) · **결정적 11 · variant 민감 0 · 무소유 0** — 같은 scope 를 variant 를 바꿔 돌려 교집합/대칭차로 분리(§1.2) |
 | enum identity 감사 | `.venv/bin/python scripts/audit_enum_identity.py` | 0 | 위반 0건 (cognitive core 95곳을 `same_enum`으로 통일) |
 | namespace purge 감사 | `.venv/bin/python scripts/audit_test_namespace_purge.py` | 0 | 위반 0건 (수집 대상 시험 파일에 조건 없는 import 시점 purge 없음) |
@@ -358,6 +364,23 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 **기록이 아예 없는 하한**(`floors` 에 없다)과 **근거가 빈 하한**(`why` 가 공백), 그리고 저장본이 새 측정과 다른 경우
 (`digest_report` 는 `floors` 까지 비교한다). 즉 하한을 올리고 내리는 변경은 **근거 문장을 고치고 artifact 를 다시
 만들어야** 반영된다.
+
+#### 마지막 구멍 — 하한이 **장식**일 수 있다
+
+기록이 갖춰져도 남는 경우가 있다: `minimum=0` 이거나 비교가 뒤집혀 있으면 “기록도 있고 자기시험도 통과”
+하는데 **아무것도 막지 못한다**. 카나리아(`scripts/harness_canary.py`)가 각 harness 의 하한을 **일부러 눈멀게 한
+사본**(`observed=0`)으로 평가해 세 가지를 본다 — ① 정상 측정은 막지 않고, ② 사본은 막으며, ③ 실패 문장이
+**기록된 근거를 함께 낸다**. 현재 여섯 harness 전부 통과한다(`harness_canary` 검사 · marker `canary_harnesses` 6 ·
+`canary_ok` 6).
+
+기준을 어디서 가져오는지도 적어 두었다: `digest_drift`·`regression_ledger`·`audit_state_claims` 는 **기록 artifact**
+(리뷰가 읽는 것과 같은 자리), 나머지 셋은 저장소를 직접 재서 얻는다 — 회차 산출물(junit)이 있어야 관측값이 나오는
+원장을 빈 원장으로 기준 삼으면 “정상 측정을 막는다” 는 오탐이 난다(카나리아가 첫 실행에서 실제로 그랬다).
+
+이 카나리아 자신도 시험에 물려 있다(`tests/cognitive/test_harness_canary.py` 10건): 하한 없는 harness 는 통과가 아니라
+실패이고, `minimum=0` 하한은 장식으로, 정상 측정을 막는 하한은 고장으로, harness 가 예외로 죽으면 그것도 판정으로
+보고된다. 그 시험이 카나리아의 실제 버그를 하나 잡았다 — 근거가 빈 하한을 “문제 있음” 으로 적으면서도 `ok` 는 참으로
+남는 모순(빈 목록에 대한 `all()` 이 참이라는 함정)을 없앴다.
 
 각 harness 는 `--self-test` 로 자기시험만 돌릴 수 있고(측정·기록 없음), 리뷰는 자기시험 **부재**도 실패로 본다:
 판독력을 확인하지 않은 수치를 증거로 옭기지 않는다.

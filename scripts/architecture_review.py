@@ -60,6 +60,9 @@ DIGEST_DRIFT_ARTIFACT: Final[Path] = EVIDENCE_DIR / "digest_drift.json"
 STATE_CLAIMS_SCRIPT: Final[Path] = REPO_ROOT / "scripts" / "audit_state_claims.py"
 STATE_CLAIMS_ARTIFACT: Final[Path] = EVIDENCE_DIR / "state_claims.json"
 
+# 탐지력 하한이 **실제로 무는지**를 확인하는 카나리아(`scripts/harness_canary.py`).
+CANARY_SCRIPT: Final[Path] = REPO_ROOT / "scripts" / "harness_canary.py"
+
 Status = Literal["covered", "partial", "gap"]
 Answer = Literal["yes", "yes_with_limits", "no"]
 
@@ -1095,6 +1098,74 @@ def digest_measured(drift: dict[str, object]) -> dict[str, int]:
     }
 
 
+def measure_canary() -> dict[str, object] | None:
+    """카나리아를 돌려 JSON 을 받는다 — 여섯 harness 의 하한이 눈멀게 한 사본을 막는지 본다."""
+
+    result = subprocess.run(
+        [sys.executable, str(CANARY_SCRIPT), "--emit-json"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        return None
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return None
+
+
+def check_harness_canary(report: dict[str, object] | None) -> CheckResult:
+    """탐지력 하한이 **지금 저장소에서 실제로 무는가** — 하한이 장식이면 기록도 장식이다.
+
+    정상 측정을 막지 않고(`healthy`), 눈멀게 한 사본(`observed=0`)은 막으며(`bites`), 실패 문장이 기록된
+    근거를 함께 낸다(`carries_reason`). 이 셋 중 하나라도 빠진 harness 는 통과시키지 않는다.
+    """
+
+    if report is None:
+        return CheckResult(
+            name="harness_canary",
+            passed=False,
+            detail=f"{_display(CANARY_SCRIPT)} 를 돌리지 못했다 — 하한이 무는지 확인하지 않은 실행은 통과시키지 않는다",
+        )
+    harnesses = [item for item in _as_list(report.get("harnesses")) if isinstance(item, dict)]
+    counts = _as_dict(report.get("counts"))
+    blind = [str(item.get("name")) for item in harnesses if not item.get("bites")]
+    unjustified = [str(item.get("name")) for item in harnesses if not item.get("carries_reason")]
+    unhealthy = [str(item.get("name")) for item in harnesses if not item.get("healthy")]
+    problems: list[str] = []
+    if not harnesses:
+        problems.append("카나리아가 harness 를 하나도 보지 않았다")
+    if blind:
+        problems.append(f"하한이 눈멀게 한 사본을 막지 못한 harness(장식이다): {', '.join(blind)}")
+    if unjustified:
+        problems.append(f"실패 문장에 하한 근거를 싣지 않은 harness: {', '.join(unjustified)}")
+    if unhealthy:
+        problems.append(f"하한이 정상 측정을 막은 harness: {', '.join(unhealthy)}")
+    if problems:
+        return CheckResult(name="harness_canary", passed=False, detail=" / ".join(problems), observed=len(harnesses))
+    return CheckResult(
+        name="harness_canary",
+        passed=True,
+        detail=(
+            f"harness {len(harnesses)}개 하한이 실제로 문다 — 정상 통과·눈멀게 한 사본 차단·근거 동봉 "
+            f"(ok {_as_int(counts.get('ok'))})"
+        ),
+        observed=len(harnesses),
+    )
+
+
+def canary_measured(report: dict[str, object]) -> dict[str, int]:
+    """카나리아에서 마커로 고정할 값."""
+
+    counts = _as_dict(report.get("counts"))
+    return {
+        "canary_harnesses": _as_int(counts.get("harnesses")),
+        "canary_ok": _as_int(counts.get("ok")),
+    }
+
+
 def read_state_claims_artifact() -> dict[str, object] | None:
     """감사가 남긴 artifact — 하한과 그 근거를 담은 기록. 없거나 깨졌으면 None(호출자가 실패로 처리)."""
 
@@ -1474,6 +1545,10 @@ def measure() -> ReviewMeasurement:
     checks.append(check_state_claims(read_state_claims_artifact(), state_claims))
     if state_claims is not None:
         measured.update(state_claim_measured(state_claims))
+    canary = measure_canary()
+    checks.append(check_harness_canary(canary))
+    if canary is not None:
+        measured.update(canary_measured(canary))
     checks.append(check_review_document(principles))
     checks.append(check_measured_markers(measured))
     return ReviewMeasurement(
