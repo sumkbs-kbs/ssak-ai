@@ -57,7 +57,15 @@ HARNESSES: Final[tuple[str, ...]] = (
     "red_rehearsal",
     "release_artifacts",
     "floor_ledger",
+    # 리뷰도 자기 탐지력 하한을 들고 있다 — 인용 수다(`architecture_review.coverage_floors`). 그 하한은 처음에
+    # 검사 함수 안에만 있어서 어떤 하한 목록에도 안 실렸고(카나리아가 눈멀게 한 사본으로 시험하지도, 원장이 표에
+    # 올리지도 못했다 — “표 밖은 침묵”), 원장이 스캔으로 찾아낸 첫 사례다.
+    "review",
 )
+
+# roster 이름 → 스크립트 파일. 대부분 이름이 곱 파일이지만, 리뷰는 stage 이름(`review`)과 파일 이름
+# (`architecture_review.py`)이 다르다 — 여기에 적어 두면 이름을 바꾸지 않고도 같은 눈으로 볼 수 있다.
+SCRIPT_OVERRIDES: Final[dict[str, str]] = {"review": "architecture_review.py"}
 
 
 @dataclass(frozen=True, slots=True)
@@ -87,10 +95,16 @@ class CanaryResult:
         }
 
 
+def script_for(name: str) -> Path:
+    """그 harness 의 스크립트 경로 — 이름이 곱 파일 이름이 아닌 경우(`SCRIPT_OVERRIDES`)까지 한 자리에서 정한다."""
+
+    return SCRIPTS_DIR / SCRIPT_OVERRIDES.get(name, f"{name}.py")
+
+
 def load_harness(name: str) -> ModuleType:
     """harness 스크립트를 파일 경로로 불러온다(설치된 package 가 아니라 저장소 도구다)."""
 
-    spec = importlib.util.spec_from_file_location(f"canary_{name}", SCRIPTS_DIR / f"{name}.py")
+    spec = importlib.util.spec_from_file_location(f"canary_{name}", script_for(name))
     if spec is None or spec.loader is None:
         raise SystemExit(f"harness 를 불러오지 못했다: {name}")
     module = importlib.util.module_from_spec(spec)
@@ -156,6 +170,9 @@ def harness_floors(name: str, module: ModuleType) -> list[Floor]:
         # 원장의 하한이 재는 것은 **다른 층에서 본 하한 수**다 — 그 수는 원장을 한 번 돌려야 나온다.
         # 원장 자신이 roster 를 읽을 때 자기 이름을 빼므로(무한 재귀 방지), 여기서 부르는 원장은 자기를 부르지 않는다.
         return list(module.coverage_floors(module.build()))
+    if name == "review":
+        # 리뷰의 하한은 인용 수다 — 저장소의 문서를 직접 세어 관측을 얻는다.
+        return list(module.coverage_floors())
     raise SystemExit(f"{name} 의 하한을 만드는 방법이 카나리아에 없다")
 
 

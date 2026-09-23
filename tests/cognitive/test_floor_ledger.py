@@ -7,6 +7,8 @@
   * 자기 자신도 같은 규칙으로 판정된다 — 자기 행은 캔버스에 안 들어가고(자기를 세면 저절로 참이 된다), 승인을
     못 읽으면 자기 행 하나 때문에 원장 전체가 실패한다.
   * 아무도 읽지 않는 기록(`floors` 를 담았는데 어떤 harness 도 안 읽음)은 면죄부로 남지 않고 실패로 간다.
+  * **표 밖의 하한**이 침묵하지 않는다 — 이름이 하한처럼 생긴 상수는 하한 목록에 실리거나, 왜 아닌지(근거·소유자·기한)
+    선언돼야 한다. 선언은 양방향이다(하한이 되거나 사라지면 낡은 선언으로 실패한다 — 면죄부가 다음 결함을 가린다).
   * JSON 을 내는 실행도 **판정을 종료 코드로** 말하고, 소요 시간은 판정 수치에 섞이지 않는다.
 """
 
@@ -107,6 +109,54 @@ def test_unread_record_is_reported_not_swallowed(ledger_module: Any, tmp_path: P
 
     assert not built.ok
     assert any("lonely.json" in problem for problem in built.problems)
+
+
+def test_the_outside_scan_speaks_or_declares(ledger_module: Any, ledger: Any) -> None:  # noqa: ANN401
+    """표 밖으로 스캔된 상수는 전부 배선되거나 선언돼 있다 — 침묵하는 후보가 없다.
+
+    하한처럼 보이는데 아무도 안 보는 상수가 있는 층은 하한이 없는 것과같다: 카나리아가 눈멀게 한 사본으로 시험하지도,
+    표가 그 이름을 말하지도 못한다. 선언에는 근거·소유자·재검토 기한이 함께 있어야 한다(없으면 면죄부다).
+    """
+
+    covered = set(ledger.covered) | {item.name for item in ledger.outside}
+
+    assert ledger.candidates, "스캔이 아무것도 못 봤다 — 하한 후보 스캔이 스스로를 재는 값이 0 이다"
+    assert set(ledger.candidates) - covered == set()
+    assert ledger.outside
+    assert all(item.reason.strip() and item.owner.strip() and item.review_by.strip() for item in ledger.outside)
+    assert len(ledger.candidates) >= ledger_module._MIN_CANDIDATES
+
+
+def test_reason_strings_are_not_floor_candidates(ledger_module: Any) -> None:  # noqa: ANN401
+    """근거 문자열(`_WHY_*`)은 후보가 아니다 — 스캔이 자기 근거를 하한으로 세면 표가 부풀려진다."""
+
+    candidates = ledger_module.floor_candidates()
+
+    assert all("_WHY_" not in name for name in candidates)
+    assert "scripts/floor_ledger.py:_MIN_FLOORS" in candidates  # 숫자 상수는 본다
+    assert list(candidates) == sorted(candidates)  # 같은 저장소에 같은 답(순회 순서에 기대지 않는다)
+
+
+def test_a_declaration_is_not_a_perpetual_excuse(ledger_module: Any) -> None:  # noqa: ANN401
+    """선언은 **양방향**이다 — 그 상수가 하한 목록에 실리는 순간 그 선언은 낡아 실패한다(면죄부는 지운다)."""
+
+    name = ledger_module.OUTSIDE[0].name
+    _, stale = ledger_module.outside_floors((name,), (name,), (name,))
+
+    assert stale == (name,)
+    assert ledger_module.outside_problems((name,), (name,), ledger_module.OUTSIDE)  # 실제 선언도 이때는 낡은 것이다
+    assert {item.name for item in ledger_module.OUTSIDE} <= set(ledger_module.floor_candidates())
+
+
+def test_the_promoted_review_floor_is_in_the_table(ledger: Any) -> None:  # noqa: ANN401
+    """표 밖 스캔이 찾아낸 하한(리뷰의 인용)이 표에 실려 있다 — 승격의 증거는 “그 이름이 표에 있다” 이다."""
+
+    rows = {row.name: row for row in ledger.rows}
+
+    assert "review" in rows
+    assert [floor.label for floor in rows["review"].floors] == ["인용"]
+    assert rows["review"].source == "scripts/architecture_review.py"
+    assert rows["review"].approval_text != "**못 읽음**"
 
 
 def test_row_rules_bite(ledger_module: Any) -> None:  # noqa: ANN401

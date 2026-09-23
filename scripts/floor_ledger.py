@@ -20,6 +20,10 @@
     면죄부다(기록을 남긴 층이 사라져도 아무도 모른다).
   * **승인 날짜를 읽지 못함** — git 이 없거나 근거가 추적되지 않으면 “언제 누가” 를 말할 수 없다(원장의 답이 추측이 된다).
   * **원장에 실린 하한이 너무 적음** — 모든 출처가 망가져 빈 표가 되면 “빠진 하한 없음” 과 구별되지 않는다.
+  * **표 밖의 하한** — 이름이 하한처럼 생긴 상수인데 어떤 층의 하한 목록에도 안 실렸으면, 그 층은 하한이 없는 것과같다
+    (카나리아가 눈멀게 한 사본으로 시험하지도, 표가 그것을 말하지도 못한다). 하한이면 그 층의 `coverage_floors` 에 실어
+    카나리아 앞에 세우고, 아니면 **선언부**(`OUTSIDE` — 근거·소유자·재검토 기한)에 왜 아닌지 적어야 한다. 선언은
+    양방향이다: 이제 하한 목록에 실린 것·사라진 상수는 “낡은 선언” 으로 실패한다(낡은 면죄부는 다음 결함을 가린다).
 
 ```sh
 .venv/bin/python scripts/floor_ledger.py --gate        # 표 + 판정(하나라도 어긋나면 exit 1)
@@ -31,15 +35,18 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import importlib.util
 import json
+import re
 import subprocess
 import sys
 import tempfile
 import time
 import unicodedata
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, replace
+from datetime import date
 from pathlib import Path
 from types import ModuleType
 from typing import Final
@@ -74,11 +81,111 @@ CANARY_SCRIPT: Final[Path] = SCRIPTS_DIR / "harness_canary.py"
 # 빈 표는 “빠진 하한 없음” 과 구별되지 않는다.
 _MIN_FLOORS: Final[int] = 15
 _WHY_MIN_FLOORS: Final[str] = (
-    "2026-09-23 기준 관측: 다른 층을 보는 하한 18개가 실린다(기록 넷: digest 2 · 회귀 원장 2 · 상태 주장 2 · "
-    "배포 산출물 6 = 12, 직접 다섯: 열거 1 · namespace 1 · 도달 2 · 게이트 1 · 리허설 1 = 6). 하한 15는 **한 층이 "
+    "2026-09-24 기준 관측: 다른 층을 보는 하한 19개가 실린다(기록 넷: digest 2 · 회귀 원장 2 · 상태 주장 2 · "
+    "배포 산출물 6 = 12, 직접 여섯: 열거 1 · namespace 1 · 도달 2 · 게이트 1 · 리허설 1 · 리뷰 1 = 7). 하한 15는 **한 층이 "
     "roster 에서 빠져도 정상 측정을 막지 않지만**(가장 큰 층이 6개를 들고 있다) **둘 이상 빠지면(≤ 12) 표를 내주면서 "
     "‘빠진 하한 없음’ 이라고 말하지 못하게** 한다 — 하한이나 출처가 망가지면 여기서 드러난다."
 )
+# 하한처럼 **생겼는가** — 이름이 이 꼴이면서 값이 숫자인 모듈 수준 상수만 후보로 삼는다(문자열 상수 `_WHY_*` 는 빠진다).
+FLOOR_NAME_PATTERN: Final[re.Pattern[str]] = re.compile(r"(^|_)(MIN|FLOOR|MINIMUM)(_|$)", re.IGNORECASE)
+# 표 밖 스캔의 하한 — 스캔이 깨져 0 을 보고 “표 밖에 아무것도 없다” 로 통과하는 순간을 잡는다.
+# 2026-09-24 기준 관측: 후보 32개(배선 22 · 선언 10). 하한 24 는 스캔이 절반쯤 눈멀거나 파일 몇 개를 놓쳤을 때 문다.
+_MIN_CANDIDATES: Final[int] = 24
+_WHY_MIN_CANDIDATES: Final[str] = (
+    "2026-09-24 기준 관측: 이름이 하한처럼 생긴 숫자 상수가 32개고, 그중 22개는 어떤 층의 `coverage_floors` 가 읽는다."
+    "하한 24 는 ‘얼마나 많이 찾았나’ 가 아니라 ‘스캔이 살아 있나’ 를 재다 — AST 파싱이 깨지거나 파일 몇 개가 사라지면 "
+    "관측이 그 아래로 떨어지고, 그때 ‘표 밖에 아무것도 없다’ 가 ‘한 번도 안 봤다’ 와 구별된다. 후보가 줄어드는 것이 "
+    "정상인 경우(상수를 지우는 리팩터링)에는 근거를 적고 이 값을 내린다."
+)
+
+
+@dataclass(frozen=True, slots=True)
+class OutsideFloor:
+    """표 밖의 하한 하나 — 이름·왜 아닌지·누가 소유하는지·언제 다시 볼지.
+
+    면죄부가 되지 않도록 등록은 양방향이고 기한이 있다: 상수가 하한 목록에 실리거나 사라지면 낡은 선언으로,
+    기한이 지나도 실패한다(그 사이 그 도구가 게이트에 들어왔는지 다시 보라는 뜻이다).
+    """
+
+    name: str
+    reason: str
+    owner: str
+    review_by: str
+
+    def as_mapping(self) -> dict[str, str]:
+        return {"name": self.name, "reason": self.reason, "owner": self.owner, "review_by": self.review_by}
+
+
+# 선언부. 여기 없는 후보를 스캔이 찾으면 원장이 그 이름을 대며 실패한다 — 표 밖은 침묵이 아니라 목록이다.
+OUTSIDE: Final[tuple[OutsideFloor, ...]] = (
+    OutsideFloor(
+        name="scripts/benchmark_ssak_search.py:LATENCY_NOISE_FLOOR_MS",
+        reason=(
+            "탐지력 하한이 아니라 **읽는 임계**다 — “이보다 작은 차이는 잡음이다” 라는 판정 기준이라, "
+            "무엇을 봤는지가 아니라 결과를 어떻게 읽는지를 정한다(관측 대상이 없다)"
+        ),
+        owner="search",
+        review_by="2026-12-31",
+    ),
+    OutsideFloor(
+        name="scripts/benchmark_ssak_search.py:VALID_SOURCE_AUTHORITY_MIN",
+        reason="벤치마크 입력의 유효성 조건(권위 점수 하한) — 관측량이 아니라 fixture 선택 규칙이다",
+        owner="search",
+        review_by="2026-12-31",
+    ),
+    OutsideFloor(
+        name="scripts/evidence_bundle.py:DEFAULT_MIN_SOAK_SECONDS",
+        reason="정책 기본값(soak 창의 길이) — 하한이 아니라 기본 인자다. 무엇을 봤는지가 아니라 무엇을 요청했는지다",
+        owner="evidence",
+        review_by="2026-12-31",
+    ),
+    OutsideFloor(
+        name="scripts/val02_staging.py:RSS_WARMUP_MIN_S",
+        reason="창 길이의 하한(워밍업 제외 구간) — 입력 구간 선택 임계며, nx10 QA 도구의 계약 시험이 지킨다",
+        owner="nx10-qa",
+        review_by="2026-12-31",
+    ),
+    OutsideFloor(
+        name="scripts/val02_staging.py:THROUGHPUT_MIN_RUN_S",
+        reason="실행 길이의 하한 — 그보다 짧으면 중간값이 성립하지 않는다는 표본 조건이다(하한이 아니라 유효성)",
+        owner="nx10-qa",
+        review_by="2026-12-31",
+    ),
+    OutsideFloor(
+        name="scripts/val02_staging.py:THROUGHPUT_BLOCK_MIN_S",
+        reason="블록 길이의 하한 — 잡음 실측으로 정한 값이며 nx10 QA 도구의 계약 시험이 지킨다",
+        owner="nx10-qa",
+        review_by="2026-12-31",
+    ),
+    OutsideFloor(
+        name="scripts/val02_staging.py:THROUGHPUT_MIN_BLOCKS_PER_QUARTER",
+        reason="분기당 표본 수의 하한 — 관측을 세지만 이 저장소의 증거 게이트 roster 밖에 있는 도구다",
+        owner="nx10-qa",
+        review_by="2026-12-31",
+    ),
+    OutsideFloor(
+        name="scripts/val02_staging.py:ATTRIBUTION_MIN_DELTA_RATIO",
+        reason="귀속 판단의 임계(“증가가 2% 미만이면 귀속할 증거가 없다”) — 관측량이 아니라 판정 기준이다",
+        owner="nx10-qa",
+        review_by="2026-12-31",
+    ),
+    OutsideFloor(
+        name="scripts/val02_staging.py:DEEP_MIN_WINDOWS",
+        reason=(
+            "**하한처럼 쓰이지만 roster 밖이다** — “이보다 적으면 함수 순위를 말하지 않는다” 는 주장 하한인데, "
+            "그 도구가 아직 어떤 게이트의 층도 아니다(층으로 세우는 일은 nx10 QA 트랙의 결정이다)"
+        ),
+        owner="nx10-qa",
+        review_by="2026-12-31",
+    ),
+    OutsideFloor(
+        name="scripts/val02_staging.py:PATH_MIN_CALLER_SHARE",
+        reason="경로 지목의 임계(한 호출자가 절반 이상일 때만 지목한다) — 판정 기준이지 탐지량이 아니다",
+        owner="nx10-qa",
+        review_by="2026-12-31",
+    ),
+)
+
 # 자기시험용 합성 승인 — git 을 읽지 않고 행 규칙만 묻는다.
 _COMMIT_SAMPLE: Final[dict[str, str]] = {
     "on": "2026-01-01",
@@ -154,6 +261,128 @@ def _display(path: Path) -> str:
         return path.name
 
 
+def floor_candidates(directory: Path = SCRIPTS_DIR) -> tuple[str, ...]:
+    """이름이 하한처럼 생긴 **숫자 상수** — `scripts/<파일>.py:<이름>` 꼴로.
+
+    AST 로 읽는다: 주석이나 문자열 안의 이름에 속지 않고, 값이 숫자 리터럴이 아닌 것(`_WHY_*` 같은 근거 문장)은
+    후보가 아니다. 이름 패턴(`MIN|FLOOR|MINIMUM`)은 **추측**이므로 완전하지 않다 — 후보가 아닌 임계값
+    (`ATTRIBUTION_DOMINANCE` 처럼)이나 다른 이름으로 넘긴 하한은 이 스캔이 못 본다. 그 한계는 문서에 적었다.
+
+    돌려주는 순서는 **이름순**이다(파일 순회 순서·정의 순서가 아니다) — 같은 저장소에 같은 답을 내야 판정이 흔들리지 않는다.
+    """
+
+    found: list[str] = []
+    for path in sorted(directory.glob("*.py")):
+        try:
+            tree = ast.parse(path.read_text(encoding="utf-8"))
+        except (OSError, SyntaxError):
+            continue  # 못 읽는 파일은 이 검사의 대상이 아니다(그 파일을 돌리는 층이 따로 실패한다)
+        for node in tree.body:
+            name = ""
+            value: ast.expr | None = None
+            if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+                name, value = node.targets[0].id, node.value
+            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+                name, value = node.target.id, node.value
+            if not name or value is None or not FLOOR_NAME_PATTERN.search(name):
+                continue
+            if not isinstance(value, ast.Constant) or isinstance(value.value, bool):
+                continue
+            if not isinstance(value.value, (int, float)):
+                continue
+            found.append(f"{_display(path)}:{name}")
+    return tuple(sorted(found))
+
+
+def wired_constants(sources: Iterable[Path]) -> frozenset[str]:
+    """표가 **실제로 읽는** 상수 — `Floor(..., minimum=<상수>)` 의 그 상수만이다.
+
+    위치 인수 셋째 자리와 `minimum=` 키워드 둘 다 본다. 상수를 다른 이름으로 넘기거나 계산해서 넘기면 이 눈은
+    못 보므로, 그때는 선언부가 그 사실을 밝힌다(스캔의 침묵을 선언이 덮는다).
+    """
+
+    wired: set[str] = set()
+    for path in sources:
+        try:
+            tree = ast.parse(Path(path).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError):
+            continue
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call) or not _is_floor_call(node):
+                continue
+            argument: ast.expr | None = None
+            for keyword in node.keywords:
+                if keyword.arg == "minimum":
+                    argument = keyword.value
+            if argument is None and len(node.args) >= 3:
+                argument = node.args[2]
+            if isinstance(argument, ast.Name):
+                wired.add(f"{_display(Path(path))}:{argument.id}")
+    return frozenset(wired)
+
+
+def _is_floor_call(node: ast.Call) -> bool:
+    """`Floor(...)` 호출인가 — `harness_contract` 의 하한 생성자 이름을 본다(별칭은 못 본다)."""
+
+    return (isinstance(node.func, ast.Name) and node.func.id == "Floor") or (
+        isinstance(node.func, ast.Attribute) and node.func.attr == "Floor"
+    )
+
+
+def outside_floors(
+    candidates: Sequence[str],
+    wired: Iterable[str],
+    declared: Iterable[str],
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """(선언 없는 후보, 낡은 선언) — 순수 함수라 합성 입력으로 시험한다.
+
+    낡은 선언은 둘이다: 이제 하한 목록에 실린 것(등록할 이유가 사라졌다)과 아예 사라진 상수(그 선언이 가리키는
+    것이 없다). 둘 다 면죄부가 되므로 실패다.
+    """
+
+    wired_set = set(wired)
+    declared_set = set(declared)
+    undeclared = tuple(name for name in candidates if name not in wired_set and name not in declared_set)
+    stale = tuple(sorted(name for name in declared_set if name in wired_set or name not in set(candidates)))
+    return undeclared, stale
+
+
+def outside_problems(
+    candidates: Sequence[str],
+    wired: Iterable[str],
+    declared: Sequence[OutsideFloor],
+    *,
+    today: date | None = None,
+) -> list[str]:
+    """표 밖 하한의 판정 — 선언 없는 후보·낡은 선언·근거 없는 선언·기한 경과를 모두 실패로 만든다."""
+
+    as_of = today or date.today()
+    undeclared, stale = outside_floors(candidates, wired, [item.name for item in declared])
+    problems: list[str] = []
+    if undeclared:
+        problems.append(
+            f"하한처럼 생긴 상수인데 어떤 층의 하한 목록에도 없고 선언도 없다: {', '.join(undeclared)} — "
+            "하한이면 그 층의 `coverage_floors` 에 실어 카나리아 앞에 세우고, 아니면 이 원장의 `OUTSIDE` 에 왜 아닌지 적어라"
+        )
+    if stale:
+        problems.append(f"낡은 선언(이미 하한 목록에 실렸거나 사라진 상수): {', '.join(stale)} — 면죄부는 지운다")
+    for item in declared:
+        if not item.reason.strip() or not item.owner.strip():
+            problems.append(
+                f"표 밖 선언에 근거 또는 소유자가 비었다: {item.name} — 왜 하한이 아닌지 물을 수 없으면 면죄부다"
+            )
+        try:
+            due = date.fromisoformat(item.review_by)
+        except ValueError:
+            problems.append(f"표 밖 선언의 재검토 기한을 읽지 못했다: {item.name}({item.review_by!r})")
+            continue
+        if due < as_of:
+            problems.append(
+                f"표 밖 선언의 재검토 기한이 지났다: {item.name}({item.review_by}) — 그 도구가 층이 되었는지 다시 보라"
+            )
+    return problems
+
+
 @dataclass(frozen=True, slots=True)
 class LayerRow:
     """한 층의 하한 묶음 — 어디서 읽었고, 무엇으로 승인됐고, 하한이 무엇인가."""
@@ -206,12 +435,15 @@ class LayerRow:
 
 @dataclass(frozen=True, slots=True)
 class Ledger:
-    """이 실행이 읽은 원장 — 층·고아 기록·문제."""
+    """이 실행이 읽은 원장 — 층·고아 기록·표 밖 스캔·문제."""
 
     rows: tuple[LayerRow, ...]
     orphans: tuple[str, ...]
     problems: tuple[str, ...]
     seconds: float
+    candidates: tuple[str, ...] = ()
+    covered: tuple[str, ...] = ()
+    outside: tuple[OutsideFloor, ...] = ()
 
     @property
     def canvas(self) -> int:
@@ -240,12 +472,30 @@ class Ledger:
                 "measured": sum(1 for row in self.rows if row.kind == KIND_MEASURED),
                 "self": sum(1 for row in self.rows if row.kind == KIND_SELF),
                 "orphans": len(self.orphans),
+                "outside_scanned": len(self.candidates),
+                "outside_silent": len(set(self.candidates) - set(self.covered) - {item.name for item in self.outside}),
+                "outside_declared": len(self.outside),
                 "without_basis": sum(1 for row in self.rows for floor in row.floors if not floor.why.strip()),
                 "undated": sum(1 for row in self.rows if row.commit is None),
             },
+            "outside": {
+                "scanned": len(self.candidates),
+                "wired": len(self.covered),
+                "declared": [item.as_mapping() for item in self.outside],
+                "min_candidates": _MIN_CANDIDATES,
+                "note": (
+                    "이름이 하한처럼 생긴 숫자 상수만 본다(AST) — 다른 이름으로 넘긴 하한·다른 패턴의 임계값은 이 스캔이 못 본다"
+                ),
+            },
             # 소요 시간은 **판정 수치에 넣지 않는다** — 게이트의 추이에 그날의 기계 속도가 섞이면 움직임이 안 보인다.
             "runtime": {"seconds": round(self.seconds, 1)},
-            "coverage": {"canvas": self.canvas, "floors": self.floors, "min_floors": _MIN_FLOORS},
+            "coverage": {
+                "canvas": self.canvas,
+                "floors": self.floors,
+                "min_floors": _MIN_FLOORS,
+                "candidates": len(self.candidates),
+                "min_candidates": _MIN_CANDIDATES,
+            },
             "floors": floor_records(coverage_floors(self)),
             "probe": probe.as_mapping(),
             "problems": list(self.problems),
@@ -260,16 +510,22 @@ def ledger_floor(observed: int) -> Floor:
 
 
 def coverage_floors(ledger: Ledger | None = None) -> list[Floor]:
-    """이 원장의 탐지력 하한 — 관측은 **다른 층에서 본 하한 수**다(자가 참조면 아무것도 말하지 않는다)."""
+    """이 원장의 탐지력 하한 — ① 다른 층에서 본 하한 수(자가 참조면 아무것도 말하지 않는다) ② 표 밖 스캔이 본 후보 수."""
 
-    return [ledger_floor(ledger.canvas if ledger is not None else _MIN_FLOORS)]
+    canvas = ledger.canvas if ledger is not None else _MIN_FLOORS
+    scanned = len(ledger.candidates) if ledger is not None else _MIN_CANDIDATES
+    return [
+        ledger_floor(canvas),
+        Floor("하한 후보 스캔", scanned, _MIN_CANDIDATES, why=_WHY_MIN_CANDIDATES),
+    ]
 
 
 def read_floor_rows(name: str, canary: ModuleType) -> tuple[LayerRow, str]:
     """한 층의 하한과 승인을 읽는다 — (행, 문제). 읽지 못한 이유를 함께 돌려준다(추측하지 않는다)."""
 
     recorded = str(canary.ARTIFACT_FLOORS.get(name, ""))
-    source = recorded or f"scripts/{name}.py"
+    # 스크립트 이름을 원장이 따로 짐작하지 않는다 — 카나리아가 아는 대응을 그대로 쓴다(둘이 갈라지면 승인 날짜를 못 읽는다).
+    source = recorded or _display(canary.script_for(name))
     if recorded:
         approval, payload_note = _record_approval(REPO_ROOT / recorded)
         try:
@@ -343,8 +599,21 @@ def build(*, evidence_dir: Path = EVIDENCE_DIR) -> Ledger:
         problems.append(
             f"{orphan} 에 `floors` 가 있는데 어떤 harness 도 읽지 않는다 — 아무도 읽지 않는 하한 기록은 면죄부다"
         )
-    problems.extend(floor_problems([ledger_floor(canvas)]))
-    return Ledger(tuple(row for row, _ in readings), orphans, tuple(problems), time.monotonic() - started)
+    # 표 밖 스캔 — 하한처럼 생긴 상수가 어떤 하한 목록에도 안 실렸는데 선언도 없으면 이름을 대고 실패한다.
+    candidates = floor_candidates()
+    wired = wired_constants(canary.script_for(str(name)) for name in canary.HARNESSES)
+    covered = tuple(name for name in candidates if name in wired)
+    problems.extend(outside_problems(candidates, wired, OUTSIDE))
+    # 자기 행의 하한은 **자기 층의 전체 하한 목록**이다(캔버스 하한 + 표 밖 스캔 하한) — 자기 행을 먼저 만들고
+    # 그 수로 다시 만든다. 하나만 실으면 표가 자기 하한을 절반만 말한다(“하한이 몇 개인가” 가 표 밖에 남는다).
+    first_pass = tuple(row for row, _ in readings)
+    provisional = Ledger(first_pass, orphans, (), 0.0, candidates, covered, OUTSIDE)
+    rows = tuple(
+        replace(row, floors=tuple(coverage_floors(provisional))) if row.name == SELF_NAME else row for row in first_pass
+    )
+    ledger = Ledger(rows, orphans, (), 0.0, candidates, covered, OUTSIDE)
+    problems.extend(floor_problems(coverage_floors(ledger)))
+    return Ledger(rows, orphans, tuple(problems), time.monotonic() - started, candidates, covered, OUTSIDE)
 
 
 def row_problems(row: LayerRow, read_problem: str) -> list[str]:
@@ -374,7 +643,13 @@ def self_probe() -> Probe:
 
     cases = Cases()
     floors = coverage_floors()
-    cases.check("원장 자신의 하한이 있다", len(floors) == 1)
+    # 자기 하한은 **둘**이다(다른 층에서 본 하한 수 + 표 밖 스캔이 본 후보 수) — 하나만 실으면 “이 원장은 몇 개를
+    # 보나” 가 표 밖에 남고, 스캔이 깨져 0 을 봐도 아무도 묻지 않는다.
+    cases.equal(
+        "원장 자신의 하한이 둘이다(다른 층에서 본 하한 수 + 표 밖 스캔이 본 후보 수)",
+        [floor.label for floor in coverage_floors()],
+        ["원장에 실린 하한", "하한 후보 스캔"],
+    )
     cases.check("하한에 근거가 기록돼 있다", all(floor.why.strip() for floor in floors))
     cases.check("하한이 지금 관측을 넘지 않는다", not floor_problems(floors))
     cases.check(
@@ -429,6 +704,101 @@ def self_probe() -> Probe:
     cases.check(
         "추적되는 파일은 커밋(날짜·사람·해시)을 읽는다", bool(canary_commit.get("by") and canary_commit.get("hash"))
     )
+    # 표 밖 스캔 — 이름 패턴·AST 판독·배선 판독·선언 판정을 합성 입력으로 다시 물어본다.
+    cases.check(
+        "스캔 하한은 관측 0 에서 문다(스캔이 깨져 ‘표 밖에 아무것도 없다’ 로 통과하는 것을 잡는다)",
+        bool(floor_problems([Floor("하한 후보 스캔", 0, _MIN_CANDIDATES, why="근거")])),
+    )
+    with tempfile.TemporaryDirectory() as work:
+        probe_dir = Path(work)
+        # 주석·문자열 안의 이름에 속지 않는지, 값이 숫자가 아닌 것은 빠지는지 보려고 일부러 섞어 둔다.
+        (probe_dir / "sample.py").write_text(
+            '# MIN_COMMENTED = 3\nNOTE = "MIN_QUOTED = 4"\n\n\ndef f():\n    MIN_INNER = 1\n\n',
+            encoding="utf-8",
+        )
+        (probe_dir / "grid.py").write_text(
+            "from harness_contract import Floor\n"
+            "MIN_ALPHA = 10\n"
+            "MIN_BETA = 20\n"
+            'NOTE_MIN_GAMMA = "근거 문장"\n'
+            "FLOOR_DELTA = 1.5\n"
+            "\n"
+            "def floors():\n"
+            "    return [\n"
+            '        Floor("a", 100, MIN_ALPHA, why="근거"),\n'
+            '        Floor(label="b", observed=100, minimum=MIN_BETA, why="근거"),\n'
+            '        Floor("c", 100, 7, why="근거"),\n'
+            "    ]\n",
+            encoding="utf-8",
+        )
+        (probe_dir / "broken.py").write_text("def (\n", encoding="utf-8")
+        scanned = floor_candidates(probe_dir)
+        cases.equal(
+            "주석·문자열·함수 안의 이름은 후보가 아니다(숫자 상수만, 모듈 수준만)",
+            list(scanned),
+            ["grid.py:FLOOR_DELTA", "grid.py:MIN_ALPHA", "grid.py:MIN_BETA"],
+        )
+        cases.check("근거 문자열 상수(`_WHY_*`)는 후보가 아니다", all("NOTE_MIN_GAMMA" not in name for name in scanned))
+        cases.check(
+            "문을 못 여는 파일이 있어도 살아남는다(그 자리는 그 파일을 돌리는 층이 실패한다)",
+            "grid.py:MIN_ALPHA" in scanned,
+        )
+        wired = wired_constants([probe_dir / "grid.py"])
+        cases.equal(
+            "위치 인수 셋째 자리와 `minimum=` 둘 다 배선으로 읽는다",
+            sorted(wired),
+            ["grid.py:MIN_ALPHA", "grid.py:MIN_BETA"],
+        )
+        cases.check(
+            "하한에 안 넘긴 상수(`FLOOR_DELTA`)는 배선이 아니다 — 선언이나 하한 목록에 실려야 한다",
+            "grid.py:FLOOR_DELTA" not in wired,
+        )
+        cases.check("숫자 리터럴을 그대로 넘긴 하한은 상수가 아니라 배선이 아니다", "grid.py:7" not in wired)
+    undeclared, stale = outside_floors(
+        ("scripts/a.py:MIN_X", "scripts/b.py:MIN_Y"),
+        ("scripts/a.py:MIN_X",),
+        (),
+    )
+    cases.equal("배선되지 않은 후보를 선언 없이 두면 잡힌다", list(undeclared), ["scripts/b.py:MIN_Y"])
+    cases.equal(
+        "배선된 후보는 선언이 필요 없다",
+        list(outside_floors(("scripts/a.py:MIN_X",), ("scripts/a.py:MIN_X",), ())[0]),
+        [],
+    )
+    cases.equal(
+        "선언했지만 이제 하한 목록에 실린 것은 낡은 선언이다",
+        list(outside_floors(("scripts/a.py:MIN_X",), ("scripts/a.py:MIN_X",), ("scripts/a.py:MIN_X",))[1]),
+        ["scripts/a.py:MIN_X"],
+    )
+    cases.equal(
+        "선언했지만 사라진 상수도 낡은 선언이다",
+        list(outside_floors((), (), ("scripts/gone.py:MIN_Z",))[1]),
+        ["scripts/gone.py:MIN_Z"],
+    )
+    healthy_declaration = OutsideFloor("scripts/b.py:MIN_Y", "하한이 아니라 유효성 임계다", "tester", "2099-01-01")
+    cases.equal(
+        "살아 있는 선언은 조용하다",
+        outside_problems(("scripts/b.py:MIN_Y",), (), (healthy_declaration,)),
+        [],
+    )
+    named = outside_problems(("scripts/b.py:MIN_Y",), (), ())
+    cases.check("선언 없는 후보는 이름을 대며 실패한다", len(named) == 1 and "scripts/b.py:MIN_Y" in named[0])
+    cases.check(
+        "근거 없는 선언은 실패한다",
+        bool(outside_problems(("scripts/b.py:MIN_Y",), (), (replace(healthy_declaration, reason="  "),))),
+    )
+    cases.check(
+        "소유자 없는 선언은 실패한다",
+        bool(outside_problems(("scripts/b.py:MIN_Y",), (), (replace(healthy_declaration, owner=""),))),
+    )
+    cases.check(
+        "기한이 지난 선언은 실패한다(그 사이 그 도구가 층이 되었는지 다시 보라)",
+        bool(outside_problems(("scripts/b.py:MIN_Y",), (), (replace(healthy_declaration, review_by="2020-01-01"),))),
+    )
+    cases.check(
+        "기한을 읽지 못하는 선언도 실패한다",
+        bool(outside_problems(("scripts/b.py:MIN_Y",), (), (replace(healthy_declaration, review_by="언젠가"),))),
+    )
     return cases.probe()
 
 
@@ -475,6 +845,12 @@ def describe(ledger: Ledger, probe: Probe) -> str:
             lines.append(f"      각주: {row.note}")
     for orphan in ledger.orphans:
         lines.append(f"  고아기록  {orphan} — 어떤 harness 도 읽지 않는다")
+    lines.append(
+        f"  표 밖 스캔  후보 {len(ledger.candidates)}개(하한 {_MIN_CANDIDATES}) — 표가 읽는 것 {len(ledger.covered)} · "
+        f"선언 {len(ledger.outside)}개(근거·소유자·재검토 기한 있음)"
+    )
+    for item in ledger.outside:
+        lines.append(f"    · {item.name}({item.owner}, 재검토 {item.review_by}) — {item.reason}")
     lines.append(
         f"  소요      {ledger.seconds:.1f}초 · 자기시험 {probe.cases}건 재판정 · 승인 = 기록의 승인 문장 또는 "
         "그 근거 파일의 마지막 커밋(하한만 바뀐 커밋이 아닐 수 있다)"

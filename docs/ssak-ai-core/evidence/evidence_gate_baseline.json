@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "2026-09-24 하한 원장 회차: 층 10·하한 19 를 한 표로 읽는 원장이 게이트 stage(11)·카나리아 harness(10)·리뷰 검사(16)로 합류했고, 기록이 아직 도는 층을 지우지 못하게 했다"
+    "2026-09-24 표 밖 하한 회차: 원장이 scripts/*.py 를 AST 로 스캔해 하한 후보 32(배선 22 · 선언 10)를 세고, 배선도 선언도 아닌 후보를 이름을 대며 실패시킨다 — 그 스캔이 찾아낸 리뷰의 인용 하한이 카나리아 열한째 harness(review)로 승격했고, 층 11 · 하한 21 로 표가 늘었다"
   ],
   "layers": {
     "audit_enum_identity": {
@@ -27,8 +27,8 @@
     },
     "canary": {
       "counts.blind": 0,
-      "counts.harnesses": 10,
-      "counts.ok": 10,
+      "counts.harnesses": 11,
+      "counts.ok": 11,
       "counts.unjustified": 0
     },
     "digest_drift": {
@@ -43,17 +43,22 @@
       "coverage.pins": 50
     },
     "floor_ledger": {
-      "counts.canvas": 18,
-      "counts.floors": 19,
-      "counts.layers": 10,
-      "counts.measured": 5,
+      "counts.canvas": 19,
+      "counts.floors": 21,
+      "counts.layers": 11,
+      "counts.measured": 6,
       "counts.orphans": 0,
+      "counts.outside_declared": 10,
+      "counts.outside_scanned": 32,
+      "counts.outside_silent": 0,
       "counts.recorded": 4,
       "counts.self": 1,
       "counts.undated": 0,
       "counts.without_basis": 0,
-      "coverage.canvas": 18,
-      "coverage.floors": 19,
+      "coverage.candidates": 32,
+      "coverage.canvas": 19,
+      "coverage.floors": 21,
+      "coverage.min_candidates": 24,
       "coverage.min_floors": 15
     },
     "measure_cognitive_surface": {
@@ -113,9 +118,9 @@
     },
     "review": {
       "checks": 16,
-      "measured.canary_harnesses": 10,
-      "measured.canary_ok": 10,
-      "measured.cognitive_tests": 717,
+      "measured.canary_harnesses": 11,
+      "measured.canary_ok": 11,
+      "measured.cognitive_tests": 723,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
@@ -125,8 +130,8 @@
       "measured.drift_triggered": 0,
       "measured.evidence_docs": 16,
       "measured.evidence_gate_stages": 11,
-      "measured.ledger_floors": 19,
-      "measured.ledger_layers": 10,
+      "measured.ledger_floors": 21,
+      "measured.ledger_layers": 11,
       "measured.principles": 24,
       "measured.principles_covered": 15,
       "measured.principles_gap": 0,
@@ -146,6 +151,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "2026-09-24 하한 원장 회차: 층 10·하한 19 를 한 표로 읽는 원장이 게이트 stage(11)·카나리아 harness(10)·리뷰 검사(16)로 합류했고, 기록이 아직 도는 층을 지우지 못하게 했다",
+  "method": "2026-09-24 표 밖 하한 회차: 원장이 scripts/*.py 를 AST 로 스캔해 하한 후보 32(배선 22 · 선언 10)를 세고, 배선도 선언도 아닌 후보를 이름을 대며 실패시킨다 — 그 스캔이 찾아낸 리뷰의 인용 하한이 카나리아 열한째 harness(review)로 승격했고, 층 11 · 하한 21 로 표가 늘었다",
   "recorded_on": "2026-09-24"
 }

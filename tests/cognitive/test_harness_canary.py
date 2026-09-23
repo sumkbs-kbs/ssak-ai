@@ -47,7 +47,7 @@ def test_every_harness_floor_bites(canary: Any) -> None:  # noqa: ANN401
 
     results = canary.run()
 
-    assert len(results) == len(canary.HARNESSES) == 10
+    assert len(results) == len(canary.HARNESSES) == 11
     for result in results:
         assert result.ok, f"{result.name}: {result.problems}"
     assert all(result.floors >= 1 for result in results)
@@ -98,6 +98,31 @@ def test_a_build_costly_layer_is_judged_from_its_record(canary: Any) -> None:  #
     result = canary.inspect("release_artifacts", module)
     assert result.ok is True, result.problems
     assert result.floors == 6 and result.bites is True and result.carries_reason is True
+
+
+def test_a_harness_whose_name_is_not_its_file_is_still_watched(canary: Any) -> None:  # noqa: ANN401
+    """이름이 파일 이름과 다른 harness(리뷰 = `architecture_review.py`)도 같은 눈으로 본다.
+
+    이름을 파일에 맞추려고 바꾸면 게이트의 stage 이름과 갈라진다(`evidence_gate` 자기시험이 둘을 대조한다) —
+    그래서 대응을 `SCRIPT_OVERRIDES` 한 자리에 적고 여기서 고정한다. 이 하한은 **표 밖 스캔이 찾아낸 첫 사례**다:
+    검사 함수 안에만 있던 하한은 어떤 하한 목록에도 안 실려 있었다.
+    """
+
+    assert canary.SCRIPT_OVERRIDES["review"] == "architecture_review.py"
+    assert canary.script_for("review") == SCRIPTS / "architecture_review.py"
+    assert canary.script_for("digest_drift") == SCRIPTS / "digest_drift.py"
+    assert all(canary.script_for(name).exists() for name in canary.HARNESSES)
+
+    module = canary.load_harness("review")
+    live = module.coverage_floors()
+    recorded = canary.harness_floors("review", module)
+    result = canary.inspect("review", module)
+
+    assert [floor.label for floor in live] == ["인용"]
+    assert [floor.label for floor in recorded] == [floor.label for floor in live]
+    assert [floor.minimum for floor in recorded] == [floor.minimum for floor in live]
+    assert result.ok is True, result.problems
+    assert result.floors == 1 and result.bites is True and result.carries_reason is True
 
 
 # --------------------------------------------------------------------- 카나리아 자신의 이빨
@@ -225,8 +250,8 @@ def test_emit_json_reports_every_harness(canary: Any, capsys: pytest.CaptureFixt
     assert canary.main(["--emit-json"]) == 0
     payload = json.loads(capsys.readouterr().out)
 
-    assert payload["counts"]["harnesses"] == 10
-    assert payload["counts"]["ok"] == 10
+    assert payload["counts"]["harnesses"] == 11
+    assert payload["counts"]["ok"] == 11
     assert payload["counts"]["blind"] == 0
     assert {item["name"] for item in payload["harnesses"]} == set(canary.HARNESSES)
 

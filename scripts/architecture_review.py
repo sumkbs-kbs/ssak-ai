@@ -28,6 +28,7 @@ import json
 import re
 import subprocess
 import sys
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
@@ -806,6 +807,12 @@ _CITATION_PATTERN: Final[re.Pattern[str]] = re.compile(
 _CITATION_ELISION: Final[tuple[str, ...]] = ("*", "?", "<", ">", "...", "…")
 # 탐지력 하한 — 인용 0건은 "모두 추적된다" 가 아니라 "문서를 못 봤다" 일 수 있다.
 _MIN_CITATIONS: Final[int] = 1
+_WHY_CITATIONS: Final[str] = (
+    "2026-09-24 기준 관측: 문서가 지목한 경로 인용이 270건이다. 하한 1 은 작아 보이지만 재는 것이 ‘얼마나 많이 "
+    "봤나’ 가 아니라 ‘아무것도 못 보고 초록을 냈나’ 다 — 스캔이 깨지거나 문서 뿌리가 사라지면 관측이 0 이 되고, "
+    "그때 ‘모두 실재·추적된다’ 가 ‘한 번도 안 봤다’ 와 구별된다. 부분 범위 호출은 이 하한을 소유하지 않는다"
+    "(그 범위를 정한 호출자가 소유한다)."
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -894,6 +901,37 @@ def _resolve_citation(citation: str) -> Path | None:
     return None
 
 
+def iter_citations(root: Path | None = None) -> Iterator[tuple[Path, str]]:
+    """문서가 지목한 경로 인용을 하나씩 낸다 — **세는 자리와 판정하는 자리가 같은 순회를 쓴다**.
+
+    두 번 구현하면 하한이 재는 수와 검사가 보는 수가 갈라진다(그러면 하한이 다른 것을 재게 된다).
+    """
+
+    for doc in sorted((root or DOCS_ROOT).rglob("*.md")):
+        text = doc.read_text(encoding="utf-8")
+        for citation in sorted(set(_CITATION_PATTERN.findall(text))):
+            if any(elision in citation for elision in _CITATION_ELISION):
+                continue
+            yield doc, citation
+
+
+def count_citations(root: Path | None = None) -> int:
+    """인용 수 — 이 리뷰의 하한이 재는 관측값이다(스캔이 깨지면 0 이 되고, 그때 하한이 문다)."""
+
+    return sum(1 for _ in iter_citations(root))
+
+
+def coverage_floors(root: Path | None = None) -> list[Floor]:
+    """이 리뷰의 탐지력 하한 — **카나리아와 원장이 읽는 자리**다(값 + 근거).
+
+    첫 구현은 이 하한을 검사 함수 안에만 두었고, 그래서 어떤 하한 목록에도 안 실렸다: 카나리아가 눈멀게 한
+    사본으로 시험하지도, 원장이 표에 올리지도 못했다(“표 밖은 침묵”). 이제 `_MIN_CITATIONS` 는 이름 있는
+    하한으로 나가고, 리뷰는 카나리아 roster 에 `review` 로 들어간다.
+    """
+
+    return [Floor("인용", count_citations(root), _MIN_CITATIONS, why=_WHY_CITATIONS)]
+
+
 def check_citation_tracking(docs_root: Path | None = None, *, on: str | None = None) -> CheckResult:
     """문서가 인용한 저장소 경로가 **실재하고 git 에 추적되는지** 본다.
 
@@ -915,21 +953,17 @@ def check_citation_tracking(docs_root: Path | None = None, *, on: str | None = N
     unresolved: list[str] = []
     untracked: list[str] = []
     total = 0
-    for doc in sorted(root.rglob("*.md")):
-        text = doc.read_text(encoding="utf-8")
-        for citation in sorted(set(_CITATION_PATTERN.findall(text))):
-            if any(elision in citation for elision in _CITATION_ELISION):
-                continue
-            total += 1
-            resolved = _resolve_citation(citation)
-            if resolved is None:
-                if citation not in registered:
-                    unresolved.append(f"{_display(doc)}:{citation}")
-                continue
-            if resolved.relative_to(REPO_ROOT).as_posix() in tracked:
-                continue
+    for doc, citation in iter_citations(root):
+        total += 1
+        resolved = _resolve_citation(citation)
+        if resolved is None:
             if citation not in registered:
-                untracked.append(f"{_display(doc)}:{citation}")
+                unresolved.append(f"{_display(doc)}:{citation}")
+            continue
+        if resolved.relative_to(REPO_ROOT).as_posix() in tracked:
+            continue
+        if citation not in registered:
+            untracked.append(f"{_display(doc)}:{citation}")
 
     stale: list[str] = []
     overdue: list[str] = []

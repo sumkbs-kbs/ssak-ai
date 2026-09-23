@@ -459,6 +459,25 @@ def test_citation_floor_applies_to_the_repository_corpus(
     assert "하한" in result.detail
 
 
+def test_the_citation_floor_is_wired_out_of_the_check(review: Any) -> None:  # noqa: ANN401
+    """리뷰의 인용 하한이 **하한 목록으로 나가 있다** — 검사 함수 안에만 있던 하한은 눈멀게 한 사본으로 시험되지도,
+    원장의 표에 실리지도 못했다(“표 밖은 침묵”). 인용 수는 이 하한이 재는 관측값이다.
+
+    하한이 재는 수는 검사가 실제로 본 인용 수와 같아야 한다 — 세는 자리와 판정하는 자리가 갈라지면 하한이 다른 것을 잰다.
+    """
+
+    result = review.check_citation_tracking()
+    floors = review.coverage_floors()
+    blinded = [review.Floor("인용", 0, floors[0].minimum, why=floors[0].why)]
+
+    assert [floor.label for floor in floors] == ["인용"]
+    assert floors[0].observed == result.observed == review.count_citations()
+    assert floors[0].minimum >= 1  # 장식이 아니다(0 이면 영원히 안 문다)
+    assert review.floor_problems(floors) == []
+    assert review.floor_problems(blinded)  # 눈멀게 하면 문다
+    assert floors[0].why.strip()  # 값만으로는 나중에 내려도 되는지 모른다
+
+
 def test_invalidated_reverification_fails_the_check(review: Any) -> None:  # noqa: ANN401
     """재확인 뒤에 파일이 또 바뀌면 그 재확인은 무효다 — 통과시키지 않는다."""
 
