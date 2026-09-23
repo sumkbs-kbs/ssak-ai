@@ -10,13 +10,19 @@ T14 는 `test / lint / type / build` 를 요구하는데 `build` 만 **NOT_RUN**
   1. **빌드** — `uv build --no-sources` 로 wheel 과 sdist 를 만든다. 하나라도 없으면 실패다(계약은 둘이다).
   2. **저장소 밖 소비** — 기존 검증기(`scripts/verify_release_artifacts.sh`)가 신규 venv 에 설치해 저장소 트리 없이
      CLI·모듈·API·auth 를 돌린다. 그 판정을 **종료 코드와 산출물별 PASS 문장**으로 읽는다.
-  3. **red 재현(“빠진 배포판”)** — 같은 wheel 사본에서 module 하나를 빼고 `RECORD` 를 다시 써서 **유효하지만 불완전한**
-     wheel 을 만든 뒤 같은 검증기에 건다. 그 검증기가 이것을 통과시키면 **이 층은 아무것도 막지 못하는 것**이고,
-     그 사실이 이 회차의 실패다. 빌드는 한 번만 한다(두 번 빌드하면 서로 다른 순간을 가리킨다).
-  4. **자기시험** — 판정 규칙(빌드 실패·산출물 수·PASS 문장·red 미탐지·사고)을 합성 관찰로 매 실행 다시 물어본다.
+  3. **sdist 왕복** — sdist 를 풀어 **그 안에서** wheel 을 다시 빌드한 뒤, 트리에서 만든 wheel 과 **파일 목록을 견준다**.
+     `MANIFEST`/package-data 에서 빠진 파일은 sdist 설치 경로에서만 드러난다 — wheel 만 검증하면 그 결함은 안 보인다.
+  4. **red 재현 둘** — 이 층은 두 종류의 결함을 막아야 한다:
+     · “빠진 배포판”: 같은 wheel 사본에서 module 하나를 빼고 `RECORD` 를 다시 써서 **유효하지만 불완전한**
+       wheel 을 만든 뒤 같은 검증기에 건다. 그 검증기가 통과시키면 이 층은 아무것도 막지 못한다.
+     · “빠진 sdist”: sdist 사본에서 파일 하나를 빼고 **같은 왕복**을 돌린다. 왕복이 그 빠짐을 지목하지 못하면
+       왕복 관찰(exit 0 · 빠짐 0)이 “보고 0” 인지 “아무것도 못 보고 0” 인지 가릴 수 없다.
+     빌드는 한 번만 한다(두 번 빌드하면 서로 다른 순간을 가리킨다).
+  5. **자기시험** — 판정 규칙(빌드 실패·산출물 수·PASS 문장·왕복 누락·왕복 red 미탐지·red 미탐지·사고)을 합성 관찰로 매 실행 다시 묻는다.
 
-**탐지력 하한**도 함께 낸다(`Floor` — 값과 근거): 배포 산출물 2(wheel+sdist) · 저장소 밖 PASS 2. 하한이 장식인지도
-자기시험이 본다(관측 0 은 실패).
+**탐지력 하한**도 함께 낸다(`Floor` — 값과 근거): 배포 산출물 2(wheel+sdist) · 저장소 밖 PASS 2 · **비교한 파일**(왕복
+비교가 몇 파일에서 이뤄졌나 — 목록 읽기가 깨져 **0개를 비교하고 “차이 없음”** 으로 통과하는 순간을 잡는다). 하한이
+장식인지도 자기시험이 본다(관측 0 은 실패).
 
 ```sh
 .venv/bin/python scripts/release_artifacts.py            # 빌드 + 검증 + red 재현(수십 초)
@@ -34,6 +40,7 @@ import json
 import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 import time
 import zipfile
@@ -74,6 +81,12 @@ _WHY_PASSED: Final[str] = (
     "2026-09-23 기준 관측: 저장소 밖 신규 venv 설치 뒤 wheel·sdist 둘 다 CLI/모듈/API/auth 를 통과했다. "
     "하한 2는 “설치가 됐다” 가 아니라 “설치한 것을 실제로 써 봤다” 를 요구한다 — 설치 성공만 보면 빈 배포판도 통과한다."
 )
+_MIN_COMPARED: Final[int] = 100
+_WHY_COMPARED: Final[str] = (
+    "2026-09-23 기준 관측: 트리에서 만든 wheel 안 항목 664개(cognitive core·surface·dashboard bundle 포함). "
+    "하한 100은 **목록 읽기가 깨져 0~소수에서 ‘차이 없음’ 으로 통과하는 순간**을 잡는 안전선이다 — "
+    "비교한 것이 없으면 왕복 검증은 증거가 아니다."
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -97,6 +110,13 @@ class Observation:
     artifacts: tuple[Artifact, ...]
     verify_exit: int | None
     passed: tuple[str, ...]
+    roundtrip_exit: int | None
+    compared: int
+    missing: tuple[str, ...]
+    extra: tuple[str, ...]
+    rehearsal_exit: int | None
+    rehearsal_missing: tuple[str, ...]
+    rehearsal_compared: int
     tamper_exit: int | None
     tamper_removed: str
     inputs_line: bool
@@ -124,6 +144,13 @@ class Observation:
             "artifacts": [item.as_mapping() for item in self.artifacts],
             "verify_exit": self.verify_exit,
             "passed": list(self.passed),
+            "roundtrip_exit": self.roundtrip_exit,
+            "compared": self.compared,
+            "missing": list(self.missing),
+            "extra": list(self.extra),
+            "rehearsal_exit": self.rehearsal_exit,
+            "rehearsal_missing": list(self.rehearsal_missing),
+            "rehearsal_compared": self.rehearsal_compared,
             "tamper_exit": self.tamper_exit,
             "tamper_removed": self.tamper_removed,
             "tamper_detected": self.detected,
@@ -158,6 +185,33 @@ def observation_problems(record: Observation) -> tuple[str, ...]:
         )
     if not record.inputs_line:
         problems.append("검증 보고에 `ARTIFACT-INPUTS` 가 없다 — 무엇을 검증했는지 말하지 않는 보고는 판정이 아니다")
+    if record.roundtrip_exit is None:
+        problems.append("sdist 왕복을 돌리지 않았다 — sdist 설치 경로에서 파일이 빠지는 결함은 wheel 검증에 안 보인다")
+    elif record.roundtrip_exit != EXIT_OK:
+        problems.append(
+            f"sdist 로 다시 빌드되지 않는다(exit {record.roundtrip_exit}) — sdist 를 받은 소비자는 그걸로 설치할 수 없다"
+        )
+    if record.missing:
+        shown = ", ".join(record.missing[:3])
+        more = f" 외 {len(record.missing) - 3}개" if len(record.missing) > 3 else ""
+        problems.append(
+            f"sdist→wheel 에서 **파일 {len(record.missing)}개가 빠졌다**: {shown}{more} — "
+            "`MANIFEST`/package-data 에서 빠진 파일은 sdist 설치 경로에서만 드러난다"
+        )
+    if record.rehearsal_exit is None:
+        problems.append(
+            "왕복의 red 재현(sdist 에서 파일 빼기)을 돌리지 않았다 — 왕복이 무는지 확인하지 않은 실행은 통과가 아니다"
+        )
+    elif record.rehearsal_exit != EXIT_OK:
+        problems.append(
+            f"왕복 red 재현에서 재빌드가 실패했다(exit {record.rehearsal_exit}) — "
+            "파일을 뺀 것이 빌드 자체를 깨뜨렸다면 그건 왕복의 판정력이 아니다"
+        )
+    elif TAMPER_TARGET not in record.rehearsal_missing:
+        problems.append(
+            f"sdist 에서 {TAMPER_TARGET} 를 빼도 왕복이 ‘차이 없음’ 이라고 말했다(비교 {record.rehearsal_compared}개) — "
+            "이 층은 sdist 결함을 막지 못한다(이게 이 층의 red다)"
+        )
     if record.tamper_exit is None:
         problems.append("red 재현(빠진 배포판)을 돌리지 않았다 — 이 검증이 무는지 확인하지 않은 실행은 통과가 아니다")
     elif record.tamper_exit == EXIT_OK:
@@ -172,9 +226,11 @@ def coverage_floors(record: Observation | None = None) -> list[Floor]:
 
     observed_artifacts = len(record.artifacts) if record is not None else _MIN_ARTIFACTS
     observed_passed = len(record.passed) if record is not None else _MIN_PASSED
+    observed_compared = record.compared if record is not None else _MIN_COMPARED
     return [
         Floor("배포 산출물", observed_artifacts, _MIN_ARTIFACTS, why=_WHY_ARTIFACTS),
         Floor("저장소 밖 PASS", observed_passed, _MIN_PASSED, why=_WHY_PASSED),
+        Floor("비교한 파일", observed_compared, _MIN_COMPARED, why=_WHY_COMPARED),
     ]
 
 
@@ -199,12 +255,12 @@ def find_artifacts(dist_dir: Path) -> tuple[Artifact, ...]:
     return tuple(found)
 
 
-def run(cmd: list[str], *, seconds_budget: float | None = None) -> tuple[int, str]:
+def run(cmd: list[str], *, cwd: Path | None = None, seconds_budget: float | None = None) -> tuple[int, str]:
     """독립 process 로 돌리고 (종료 코드, 출력) 을 돌려준다."""
 
     result = subprocess.run(
         cmd,
-        cwd=REPO_ROOT,
+        cwd=cwd or REPO_ROOT,
         capture_output=True,
         text=True,
         check=False,
@@ -223,6 +279,86 @@ def verify(dist_dir: Path) -> tuple[int, str]:
     """저장소 밖 신규 venv 설치·소비 검증 — 기존 검증기가 판정한다."""
 
     return run(["bash", str(VERIFIER), "--dist-dir", str(dist_dir), "--skip-build"])
+
+
+def unpack_sdist(sdist: Path, work: Path) -> Path:
+    """sdist 를 풀어 **그 안의 프로젝트 뿌리**를 돌려준다 — 소비자가 받는 바로 그 바이트에서 빌드하기 위해서다."""
+
+    target = work / "sdist-tree"
+    if target.exists():
+        shutil.rmtree(target)
+    target.mkdir(parents=True)
+    with tarfile.open(sdist) as archive:
+        archive.extractall(target, filter="data")
+    roots = sorted(path.parent for path in target.rglob("pyproject.toml"))
+    if not roots:
+        raise ValueError(f"{sdist.name} 안에 pyproject.toml 이 없다 — 빌드할 트리를 찾지 못했다")
+    return roots[0]
+
+
+def wheel_names(path: Path) -> tuple[str, ...]:
+    """wheel 안 파일 목록 — 중복을 제거하고 정렬해 두 목록을 견줄 수 있게 한다."""
+
+    with zipfile.ZipFile(path) as archive:
+        return tuple(sorted(set(archive.namelist())))
+
+
+def compare_wheels(direct: Path, rebuilt: Path) -> tuple[tuple[str, ...], tuple[str, ...], int]:
+    """트리에서 만든 wheel 과 sdist 에서 다시 만든 wheel 을 견준다 — (빠진 것, 더 있는 것, 비교한 파일 수)."""
+
+    left = set(wheel_names(direct))
+    right = set(wheel_names(rebuilt))
+    return tuple(sorted(left - right)), tuple(sorted(right - left)), len(left | right)
+
+
+def roundtrip(sdist: Path, direct_wheel: Path, work: Path) -> tuple[int | None, tuple[str, ...], tuple[str, ...], int]:
+    """sdist 를 풀어 그 안에서 wheel 을 다시 만들고 파일 목록을 견준다 — sdist 설치 경로의 결함을 드러낸다."""
+
+    if not sdist.is_file() or not direct_wheel.is_file():
+        return None, (), (), 0
+    root = unpack_sdist(sdist, work)
+    out = work / "roundtrip"
+    out.mkdir(parents=True, exist_ok=True)
+    exit_code, _ = run(["uv", "build", "--no-sources", "--wheel", "--out-dir", str(out)], cwd=root)
+    rebuilt = sorted(out.glob("antigravity_k-*.whl"))
+    if not rebuilt:
+        return exit_code, (), (), 0
+    missing, extra, compared = compare_wheels(direct_wheel, rebuilt[-1])
+    return exit_code, missing, extra, compared
+
+
+def drop_member(source: Path, target: Path, *, remove: str) -> Path:
+    """sdist 사본에서 파일 하나를 뺀다 — 소비자가 받는 압축본에 파일이 빠진 상태를 그대로 만든다.
+
+    나머지 member 는 손대지 않고 그대로 옮긴다(경로 모양이 바뀌면 재현이 아니라 다른 물건이 된다).
+    """
+
+    with tarfile.open(source) as archive:
+        members = archive.getmembers()
+        if not any(member.name == remove or member.name.endswith(f"/{remove}") for member in members):
+            raise ValueError(f"{remove} 가 {source.name} 안에 없다 — 빼려는 파일이 그 압축본에 없다")
+        with tarfile.open(target, "w:gz") as out:
+            for member in members:
+                if member.name == remove or member.name.endswith(f"/{remove}"):
+                    continue
+                payload = archive.extractfile(member) if member.isfile() else None
+                out.addfile(member, payload)
+    return target
+
+
+def rehearse_dropped_sdist(sdist: Path, direct_wheel: Path, work: Path) -> tuple[int | None, tuple[str, ...], int]:
+    """sdist 에서 파일 하나를 빼고 **같은 왕복**을 돌린다 — 왕복이 그 빠짐을 지목하지 못하면 이 층은 무력하다.
+
+    관찰(왕복 exit 0 · 빠짐 0)만으로는 “왕복이 아무것도 보지 못해서 0” 인지 “보고 0” 인지 갈리지 않는다.
+    """
+
+    if not sdist.is_file() or not direct_wheel.is_file():
+        return None, (), 0
+    corner = work / "roundtrip-rehearsal"
+    corner.mkdir(parents=True, exist_ok=True)
+    drop_member(sdist, corner / sdist.name, remove=TAMPER_TARGET)
+    exit_code, missing, _extra, compared = roundtrip(corner / sdist.name, direct_wheel, corner)
+    return exit_code, missing, compared
 
 
 def passed_kinds(output: str) -> tuple[str, ...]:
@@ -298,6 +434,14 @@ def measure(*, dist_dir: Path | None = None, work: Path | None = None, keep: boo
         build_exit, build_out = build(target)
         artifacts = find_artifacts(target)
         verify_exit, verify_out = verify(target) if artifacts else (None, "")
+        wheel = next((target / item.name for item in artifacts if item.kind == "wheel"), None)
+        sdist = next((target / item.name for item in artifacts if item.kind == "sdist"), None)
+        if wheel is not None and sdist is not None:
+            roundtrip_exit, missing, extra, compared = roundtrip(sdist, wheel, temporary)
+            rehearsal_exit, rehearsal_missing, rehearsal_compared = rehearse_dropped_sdist(sdist, wheel, temporary)
+        else:
+            roundtrip_exit, missing, extra, compared = None, (), (), 0
+            rehearsal_exit, rehearsal_missing, rehearsal_compared = None, (), 0
         tamper_exit, removed = rehearse_missing_module(artifacts, target, temporary)
         crashed = CRASH_MARKER in (build_out + verify_out)
         return Observation(
@@ -305,6 +449,13 @@ def measure(*, dist_dir: Path | None = None, work: Path | None = None, keep: boo
             artifacts=artifacts,
             verify_exit=verify_exit,
             passed=passed_kinds(verify_out),
+            roundtrip_exit=roundtrip_exit,
+            compared=compared,
+            missing=missing,
+            extra=extra,
+            rehearsal_exit=rehearsal_exit,
+            rehearsal_missing=rehearsal_missing,
+            rehearsal_compared=rehearsal_compared,
             tamper_exit=tamper_exit,
             tamper_removed=removed,
             inputs_line="ARTIFACT-INPUTS" in verify_out,
@@ -331,6 +482,13 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
             ),
             "verify_exit": EXIT_OK,
             "passed": ARTIFACT_KINDS,
+            "roundtrip_exit": EXIT_OK,
+            "compared": 664,
+            "missing": (),
+            "extra": (),
+            "rehearsal_exit": EXIT_OK,
+            "rehearsal_missing": (TAMPER_TARGET,),
+            "rehearsal_compared": 664,
             "tamper_exit": EXIT_FAIL,
             "tamper_removed": TAMPER_TARGET,
             "inputs_line": True,
@@ -344,6 +502,13 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
             artifacts=payload["artifacts"],  # type: ignore[arg-type]
             verify_exit=payload["verify_exit"],  # type: ignore[arg-type]
             passed=payload["passed"],  # type: ignore[arg-type]
+            roundtrip_exit=payload["roundtrip_exit"],  # type: ignore[arg-type]
+            compared=int(payload["compared"]),  # type: ignore[call-overload]
+            missing=payload["missing"],  # type: ignore[arg-type]
+            extra=payload["extra"],  # type: ignore[arg-type]
+            rehearsal_exit=payload["rehearsal_exit"],  # type: ignore[arg-type]
+            rehearsal_missing=payload["rehearsal_missing"],  # type: ignore[arg-type]
+            rehearsal_compared=int(payload["rehearsal_compared"]),  # type: ignore[call-overload]
             tamper_exit=payload["tamper_exit"],  # type: ignore[arg-type]
             tamper_removed=str(payload["tamper_removed"]),
             inputs_line=bool(payload["inputs_line"]),
@@ -358,6 +523,25 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
     cases.check("저장소 밖 검증이 실패하면 통과가 아니다", not record(verify_exit=EXIT_FAIL).ok)
     cases.check("PASS 문장이 하나뿐이면 통과가 아니다", not record(passed=("wheel",)).ok)
     cases.check("`ARTIFACT-INPUTS` 없는 보고는 통과가 아니다", not record(inputs_line=False).ok)
+    cases.check("왕복을 안 돌리면 통과가 아니다", not record(roundtrip_exit=None).ok)
+    cases.check("sdist 로 다시 빌드되지 않으면 통과가 아니다", not record(roundtrip_exit=EXIT_FAIL).ok)
+    cases.check(
+        "왕복에서 파일이 빠지면 통과가 아니다(이름을 남긴다)",
+        not record(missing=("antigravity_k/dashboard_dist/index.html",)).ok
+        and "dashboard_dist/index.html"
+        in " ".join(record(missing=("antigravity_k/dashboard_dist/index.html",)).problems),
+    )
+    cases.check("더 있는 파일은 실패가 아니다(보고만 한다)", record(extra=("antigravity_k/extra.py",)).ok)
+    cases.check("왕복 red 재현을 안 돌리면 통과가 아니다", not record(rehearsal_exit=None).ok)
+    cases.check("왕복 red 재현의 재빌드가 실패하면 통과가 아니다", not record(rehearsal_exit=EXIT_FAIL).ok)
+    cases.check(
+        "sdist 에서 뺀 파일을 왕복이 못 보면 통과가 아니다(이 층의 red — 이름을 남긴다)",
+        not record(rehearsal_missing=()).ok and TAMPER_TARGET in " ".join(record(rehearsal_missing=()).problems),
+    )
+    cases.check(
+        "비교한 파일이 0이면 하한이 문다(목록 읽기가 깨져 통과하는 순간)",
+        bool(floor_problems(coverage_floors(record(compared=0)))),
+    )
     cases.check("red 재현을 안 돌리면 통과가 아니다", not record(tamper_exit=None).ok)
     cases.check(
         "빠진 배포판을 통과시키면 통과가 아니다(이 층의 red)",
@@ -367,7 +551,7 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
     cases.check("사고로 죽은 실행은 통과가 아니다", not record(note="하위 process 가 죽었다").ok)
 
     floors = coverage_floors()
-    cases.check("하한이 두 개다(산출물·PASS)", len(floors) == 2)
+    cases.check("하한이 셋이다(산출물·PASS·비교한 파일)", len(floors) == 3)
     cases.check("하한에 근거가 기록돼 있다", all(floor.why.strip() for floor in floors))
     cases.check("하한이 지금 관측을 넘지 않는다", not floor_problems(floors))
     cases.check(
@@ -404,6 +588,14 @@ def as_mapping(record: Observation, probe: Probe) -> dict[str, object]:
         "build": {"exit": record.build_exit},
         "artifacts": [item.as_mapping() for item in record.artifacts],
         "verify": {"exit": record.verify_exit, "passed": list(record.passed)},
+        "roundtrip": {
+            "exit": record.roundtrip_exit,
+            "compared": record.compared,
+            "missing": list(record.missing),
+            "extra": list(record.extra),
+            "rehearsal_exit": record.rehearsal_exit,
+            "rehearsal_missing": list(record.rehearsal_missing),
+        },
         "tamper": {
             "removed": record.tamper_removed,
             "exit": record.tamper_exit,
@@ -411,10 +603,13 @@ def as_mapping(record: Observation, probe: Probe) -> dict[str, object]:
         },
         "probe": probe.as_mapping(),
         "floors": floor_records(coverage_floors(record)),
-        "coverage": {"artifacts": artifacts, "verified": len(record.passed)},
+        "coverage": {"artifacts": artifacts, "verified": len(record.passed), "compared": record.compared},
         "counts": {
             "artifacts": artifacts,
             "verified": len(record.passed),
+            "compared": record.compared,
+            "missing": len(record.missing),
+            "roundtrip_bites": 1 if TAMPER_TARGET in record.rehearsal_missing else 0,
             "tamper_detected": 1 if record.detected else 0,
             "seconds": round(record.seconds, 1),
         },
@@ -431,6 +626,16 @@ def describe(record: Observation, probe: Probe) -> str:
         )
     lines.append(f"  build     exit {record.build_exit}")
     lines.append(f"  verify    exit {record.verify_exit} · PASS {', '.join(record.passed) or '없음'}")
+    roundtrip_note = (
+        f"파일 {record.compared}개 비교 · 빠짐 {len(record.missing)} · 더 있음 {len(record.extra)}"
+        if record.roundtrip_exit is not None
+        else "돌리지 않았다"
+    )
+    lines.append(f"  roundtrip exit {record.roundtrip_exit} · {roundtrip_note}")
+    rehearsal_note = (
+        "sdist 에서 파일을 빼니 왕복이 지목했다" if TAMPER_TARGET in record.rehearsal_missing else "**빼도 못 봤다**"
+    )
+    lines.append(f"  재현      sdist 왕복({TAMPER_TARGET} 제거) exit {record.rehearsal_exit} — {rehearsal_note}")
     lines.append(
         f"  red       빠진 배포판({record.tamper_removed} 제거) exit {record.tamper_exit} — "
         f"{'막았다' if record.detected else '**못 막았다**'}"

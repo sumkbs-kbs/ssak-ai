@@ -75,7 +75,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 624 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 638 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
@@ -105,7 +105,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=624 -->
+<!-- measured:cognitive_tests=638 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -151,7 +151,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | 회귀 원장 | `.venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger --gate` | 0 | 9 scope · 21 회차(seed 101·202 + 순서 뒤집은 3회) · **결정적 11 · variant 민감 0 · 무소유 0** — 같은 scope 를 variant 를 바꿔 돌려 교집합/대칭차로 분리(§1.2) |
 | enum identity 감사 | `.venv/bin/python scripts/audit_enum_identity.py` | 0 | 위반 0건 (cognitive core 95곳을 `same_enum`으로 통일) |
 | namespace purge 감사 | `.venv/bin/python scripts/audit_test_namespace_purge.py` | 0 | 위반 0건 (수집 대상 시험 파일에 조건 없는 import 시점 purge 없음) |
-| build(wheel/sdist) | `.venv/bin/python scripts/release_artifacts.py --gate` | 0 | **이 체크아웃에서 처음 실행했다** — `uv build --no-sources` → wheel 31.7MB · sdist 32.5MB, 저장소 밖 신규 venv 설치 뒤 둘 다 CLI·모듈·API·auth PASS(44초), 그리고 **‘빠진 배포판’(module 하나를 빼고 RECORD 를 다시 쓴 wheel)은 exit 1 로 막혔다** — 그 red 재현까지가 이 계약이다 |
+| build(wheel/sdist) | `.venv/bin/python scripts/release_artifacts.py --gate` | 0 | **이 체크아웃에서 실행한다** — `uv build --no-sources` → wheel 31.7MB · sdist 32.5MB, 저장소 밖 신규 venv 설치 뒤 둘 다 CLI·모듈·API·auth PASS, **sdist 왕복**(sdist 를 풀어 그 안에서 다시 빌드한 wheel 과 파일 목록 비교 — 664개 · 빠짐 0 · 더 있음 0, 50초), 그리고 **red 재현 둘**: ① module 하나를 빼고 RECORD 를 다시 쓴 wheel → exit 1 로 막힘 ② sdist 에서 파일 하나를 빼고 같은 왕복 → 그 빠짐을 이름으로 지목 |
 
 ### 1.1 회귀가 찾아낸 것 — 네 부류를 발견해 고쳤다
 
@@ -477,18 +477,25 @@ roster 한 줄에 드러나야 하고, 새 층이 엉뚱한 수를 실어도 추
 **`build` 가 NOT_RUN 으로 남지 않게 — 배포 산출물도 재는 대상이다.** T14 는 `test / lint / type / build` 를 요구하는데
 `build` 만 “릴리스 CI 소관” 이라는 이유로 이 체크아웃에서 한 번도 실행되지 않았다. 그 문장은 위험 하나를 숨긴다 —
 소비자가 받는 wheel/sdist 는 저장소 트리와 **다를 수 있고**(빠진 파일), 그 차이는 설치된 곳에서만 보인다.
-`scripts/release_artifacts.py` 가 그 자리를 네 단계로 닫는다: ① `uv build --no-sources` 로 wheel·sdist 를 만들고
+`scripts/release_artifacts.py` 가 그 자리를 다섯 단계로 닫는다: ① `uv build --no-sources` 로 wheel·sdist 를 만들고
 (계약은 둘이다 — 하나만 만들고 통과하면 “배포 가능” 이 아니다) ② 기존 검증기(`scripts/verify_release_artifacts.sh`)가
 **저장소 밖 신규 venv** 에 설치해 CLI·모듈·API·auth 를 돌리고, 그 판정을 종료 코드와 **산출물별 `ARTIFACT-RESULT`
-PASS 문장**으로 읽는다(“설치가 됐다” 와 “설치한 것을 써 봤다” 는 다르다) ③ **red 재현 — ‘빠진 배포판’:** 같은 wheel
-사본에서 module 하나(`release_sbom.py`)를 빼고 `RECORD` 를 다시 써서 **유효하지만 불완전한** wheel 을 만들어 같은
-검증기에 건다. 파일만 지우고 RECORD 를 두면 그 wheel 은 형식이 깨진 것이라 “설치가 거부된 것” 과 “설치됐지만 쓸 수
-없는 것” 이 구분되지 않는다 — 이 도구가 재현하는 것은 뒤엣것이다 ④ 자기시험 18건이 판정 규칙(빌드 실패·산출물 수·
-PASS 문장 부재·`ARTIFACT-INPUTS` 부재·red 미탐지·사고)을 매 실행 다시 묻고, 하한(산출물 2 · 저장소 밖 PASS 2)은
-값과 근거를 함께 낸다. 실측: 빌드 6초 · 검증 18초 · red 재현 20초 = **44초**, 판정은 “빨간을 낼 수 있는가” 까지 포함한다.
+PASS 문장**으로 읽는다(“설치가 됐다” 와 “설치한 것을 써 봤다” 는 다르다) ③ **sdist 왕복** — sdist 를 풀어 **그 안의
+트리에서** wheel 을 다시 빌드하고 트리에서 만든 wheel 과 **파일 목록을 견준다**(빠진 것이 실패, 더 있는 것은 보고;
+경로가 아니라 **파일 이름 집합**을 견주므로 압축 메타데이터가 달라도 판정이 흔들리지 않는다). `MANIFEST`/package-data
+에서 빠진 파일은 **sdist 설치 경로에서만** 드러나고 wheel 설치 검증은 그것을 보지 못한다 — 그래서 왕복이 필요하다.
+④ **red 재현 둘:** · ‘빠진 배포판’ — 같은 wheel 사본에서 module 하나(`release_sbom.py`)를 빼고 `RECORD` 를 다시 써서
+**유효하지만 불완전한** wheel 을 만들어 같은 검증기에 건다. 파일만 지우고 RECORD 를 두면 그 wheel 은 형식이 깨진
+것이라 “설치가 거부된 것” 과 “설치됐지만 쓸 수 없는 것” 이 구분되지 않는다 — 이 도구가 재현하는 것은 뒤엣것이다.
+· ‘빠진 sdist’ — sdist 사본에서 같은 파일을 빼고 **같은 왕복**을 다시 돌린다. 관찰(왕복 exit 0 · 빠짐 0)만으로는
+“보고 0” 인지 “아무것도 못 보고 0” 인지 갈리지 않기 때문이고, 왕복이 그 빠짐을 **이름으로 지목**해야 통과한다.
+⑤ 자기시험 26건이 판정 규칙(빌드 실패·산출물 수·PASS 문장 부재·`ARTIFACT-INPUTS` 부재·왕복 누락·왕복 red 미탐지·
+red 미탐지·사고)을 매 실행 다시 묻고, 하한 셋(산출물 2 · 저장소 밖 PASS 2 · **비교한 파일 100** — 목록 읽기가 깨져
+0개를 비교하고 “차이 없음” 으로 통과하는 순간을 잡는다)이 값과 근거를 함께 낸다. 실측: 빌드 6초 · 검증 18초 ·
+왕복 · 두 red 재현 = **50초**, 판정은 “빨간을 낼 수 있는가” 까지 포함한다.
 이 층은 게이트의 **로컬(`--tier full`) stage** 다 — CI 의 fast tier 는 그 층을 **‘보지 않은 층’** 으로 적고, 저장소의
 build job 이 그 자리를 맡는다(둘을 합치면 모든 변경이 덮인다). 카나리아가 이 층을 보지 **않는** 이유도 적어 둔다:
-하한을 재려면 44초짜리 빌드가 필요해 fast tier 의 카나리아에 넣을 수 없다 — 대신 자기시험이 하한의 장식 여부와
+하한을 재려면 50초짜리 빌드가 필요해 fast tier 의 카나리아에 넣을 수 없다 — 대신 자기시험이 하한의 장식 여부와
 얇은 실행에서 문는지를 확인하고, 그 판단 근거는 이 문단이다.
 
 **게이트를 도는 자리 — 층을 한 번에.** harness 마다 게이트가 있어도 그것을 도는 자리는 사람의 기억뿐이었다:
@@ -724,7 +731,8 @@ Secondary Brain 계열은 Core로 승격하지 않았다(SELF_IMPROVEMENT_POLICY
 
 - 이 문서의 회귀는 **이 체크아웃의 고정 `.venv`** 에서 실행한 결과다. CI의 비-editable `uv sync` 환경과 릴리스
   build job은 별도다 — 그 `build` 를 이 체크아웃에서도 실행하도록 `scripts/release_artifacts.py` 가 생겼다:
-  빌드(6초) → 저장소 밖 신규 venv 설치·소비 검증(18초) → **빠진 배포판 red 재현**(20초), 합계 44초이고 게이트
+  빌드(6초) → 저장소 밖 신규 venv 설치·소비 검증(18초) → **sdist 왕복**·**red 재현 둘**(빠진 배포판·빠진 sdist),
+  합계 50초이고 게이트
   `--tier full` 의 stage 로 묶였다(§1.4). CI 는 여전히 fast tier 라 이 층을 **‘보지 않은 층’** 으로 적고, 그 자리는
   CI 의 build job 이 맡는다(둘을 합치면 모든 변경이 덮인다 — 게이트의 full 은 로컬 회차용이다).
 - 전체 회귀 실패는 오류 signature와 선택 재실행(3개 파일)으로 분류했다. 39개 실패 파일 전량을 단독 재실행해
