@@ -75,7 +75,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 579 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 624 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
@@ -93,7 +93,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | state_claim_probe_cases | 17 | 매 실행 자기시험이 다시 재판정한 항목 수(어휘·요구 어휘·펜스·정정 창·상태 계산) — 0이면 검사하지 않은 것이다 |
 | canary_harnesses | 8 | 하한 카나리아가 눈멀게 한 사본으로 시험한 harness 수(여섯 측정 harness + 증거 게이트 + red 리허설) |
 | canary_ok | 8 | 그중 정상 통과·사본 차단·근거 동봉을 모두 만족한 harness 수 |
-| evidence_gate_stages | 9 | 한 번에 도는 증거 게이트의 stage 수(여섯 harness + 리뷰 + red 리허설 + 로컬 전용 회귀 원장) |
+| evidence_gate_stages | 10 | 한 번에 도는 증거 게이트의 stage 수(여섯 harness + 리뷰 + red 리허설 + 로컬 전용 둘: 배포 산출물·회귀 원장) |
 | rehearsal_layers | 2 | 저장소 밖 트리에 **진짜 위반을 심어** red 재현을 확인한 층 수(위반 0건이던 두 감사) |
 | rehearsal_ok | 2 | 그중 심은 트리 exit 1·지목·대조군 초록·빈 트리 차단을 모두 만족한 층 수 |
 
@@ -105,7 +105,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=605 -->
+<!-- measured:cognitive_tests=624 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -123,7 +123,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:state_claim_probe_cases=17 -->
 <!-- measured:canary_harnesses=8 -->
 <!-- measured:canary_ok=8 -->
-<!-- measured:evidence_gate_stages=9 -->
+<!-- measured:evidence_gate_stages=10 -->
 <!-- measured:rehearsal_layers=2 -->
 <!-- measured:rehearsal_ok=2 -->
 
@@ -147,11 +147,11 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | schema | `.venv/bin/python scripts/generate_record_schema.py --check` | 0 | schema up to date (record-entities/record-envelope) |
 | architecture review | `.venv/bin/python scripts/architecture_review.py` | 0 | 15 checks PASS(회귀 원장 · 인용 추적 · digest 측정 · 상태 주장 재판정 · 하한 카나리아 · red 리허설 · 증거 게이트) |
 | red 리허설 | `.venv/bin/python scripts/red_rehearsal.py --gate` | 0 | 층 2개에 진짜 파일로 위반을 심어 red 재현 — 심은 트리 exit 1·지목, **대조군(허용 형태) 초록**, 없는 트리 차단 |
-| 증거 게이트(층 전부 한 번에) | `.venv/bin/python scripts/evidence_gate.py --tier full` | 0 | stage 9개 전부 PASS(리뷰 · 카나리아 · digest · 상태 주장 · enum · namespace · 표면 · red 리허설 · 회귀 원장) + **층별 수치를 기준과 대조** — `--tier fast` 는 로컬 회차가 필요한 회귀 원장을 **'보지 않은 층'** 으로 적는다 |
+| 증거 게이트(층 전부 한 번에) | `.venv/bin/python scripts/evidence_gate.py --tier full` | 0 | stage 10개 전부 PASS(리뷰 · 카나리아 · digest · 상태 주장 · enum · namespace · 표면 · red 리허설 · **배포 산출물** · 회귀 원장) + **층별 수치를 기준과 대조** — `--tier fast` 는 로컬 회차가 필요한 회귀 원장·배포 산출물을 **'보지 않은 층'** 으로 적는다 |
 | 회귀 원장 | `.venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger --gate` | 0 | 9 scope · 21 회차(seed 101·202 + 순서 뒤집은 3회) · **결정적 11 · variant 민감 0 · 무소유 0** — 같은 scope 를 variant 를 바꿔 돌려 교집합/대칭차로 분리(§1.2) |
 | enum identity 감사 | `.venv/bin/python scripts/audit_enum_identity.py` | 0 | 위반 0건 (cognitive core 95곳을 `same_enum`으로 통일) |
 | namespace purge 감사 | `.venv/bin/python scripts/audit_test_namespace_purge.py` | 0 | 위반 0건 (수집 대상 시험 파일에 조건 없는 import 시점 purge 없음) |
-| build(wheel/sdist) | `uv build --no-sources` + 배포 검증 | NOT_RUN | 릴리스 CI job 소관이며 이 체크아웃에서 실행하지 않았다 |
+| build(wheel/sdist) | `.venv/bin/python scripts/release_artifacts.py --gate` | 0 | **이 체크아웃에서 처음 실행했다** — `uv build --no-sources` → wheel 31.7MB · sdist 32.5MB, 저장소 밖 신규 venv 설치 뒤 둘 다 CLI·모듈·API·auth PASS(44초), 그리고 **‘빠진 배포판’(module 하나를 빼고 RECORD 를 다시 쓴 wheel)은 exit 1 로 막혔다** — 그 red 재현까지가 이 계약이다 |
 
 ### 1.1 회귀가 찾아낸 것 — 네 부류를 발견해 고쳤다
 
@@ -474,6 +474,23 @@ roster 한 줄에 드러나야 하고, 새 층이 엉뚱한 수를 실어도 추
 생기지 않게 한다(이 리허설 자신도 카나리아 여덟 번째로 하한이 무는지 확인된다). 리뷰는 두 감사 각각에 `--root` 로
 그 트리만 보게 하는지, 기본값이 저장소 루트 그대로인지를 계약 시험으로 고정한다.
 
+**`build` 가 NOT_RUN 으로 남지 않게 — 배포 산출물도 재는 대상이다.** T14 는 `test / lint / type / build` 를 요구하는데
+`build` 만 “릴리스 CI 소관” 이라는 이유로 이 체크아웃에서 한 번도 실행되지 않았다. 그 문장은 위험 하나를 숨긴다 —
+소비자가 받는 wheel/sdist 는 저장소 트리와 **다를 수 있고**(빠진 파일), 그 차이는 설치된 곳에서만 보인다.
+`scripts/release_artifacts.py` 가 그 자리를 네 단계로 닫는다: ① `uv build --no-sources` 로 wheel·sdist 를 만들고
+(계약은 둘이다 — 하나만 만들고 통과하면 “배포 가능” 이 아니다) ② 기존 검증기(`scripts/verify_release_artifacts.sh`)가
+**저장소 밖 신규 venv** 에 설치해 CLI·모듈·API·auth 를 돌리고, 그 판정을 종료 코드와 **산출물별 `ARTIFACT-RESULT`
+PASS 문장**으로 읽는다(“설치가 됐다” 와 “설치한 것을 써 봤다” 는 다르다) ③ **red 재현 — ‘빠진 배포판’:** 같은 wheel
+사본에서 module 하나(`release_sbom.py`)를 빼고 `RECORD` 를 다시 써서 **유효하지만 불완전한** wheel 을 만들어 같은
+검증기에 건다. 파일만 지우고 RECORD 를 두면 그 wheel 은 형식이 깨진 것이라 “설치가 거부된 것” 과 “설치됐지만 쓸 수
+없는 것” 이 구분되지 않는다 — 이 도구가 재현하는 것은 뒤엣것이다 ④ 자기시험 18건이 판정 규칙(빌드 실패·산출물 수·
+PASS 문장 부재·`ARTIFACT-INPUTS` 부재·red 미탐지·사고)을 매 실행 다시 묻고, 하한(산출물 2 · 저장소 밖 PASS 2)은
+값과 근거를 함께 낸다. 실측: 빌드 6초 · 검증 18초 · red 재현 20초 = **44초**, 판정은 “빨간을 낼 수 있는가” 까지 포함한다.
+이 층은 게이트의 **로컬(`--tier full`) stage** 다 — CI 의 fast tier 는 그 층을 **‘보지 않은 층’** 으로 적고, 저장소의
+build job 이 그 자리를 맡는다(둘을 합치면 모든 변경이 덮인다). 카나리아가 이 층을 보지 **않는** 이유도 적어 둔다:
+하한을 재려면 44초짜리 빌드가 필요해 fast tier 의 카나리아에 넣을 수 없다 — 대신 자기시험이 하한의 장식 여부와
+얇은 실행에서 문는지를 확인하고, 그 판단 근거는 이 문단이다.
+
 **게이트를 도는 자리 — 층을 한 번에.** harness 마다 게이트가 있어도 그것을 도는 자리는 사람의 기억뿐이었다:
 CI 는 하나도 돌리지 않았고, 어디가 얇은지 보려면 여덟 개 명령을 손으로 쳐야 했다. `scripts/evidence_gate.py` 가 그
 자리를 하나로 묶는다 — stage 마다 **독립 process** 로 돌리고 종료 코드·소요 시간·**첫 실패 문장**을 모아 어느 층이
@@ -706,7 +723,10 @@ Secondary Brain 계열은 Core로 승격하지 않았다(SELF_IMPROVEMENT_POLICY
 ## 6. 한계와 재현성
 
 - 이 문서의 회귀는 **이 체크아웃의 고정 `.venv`** 에서 실행한 결과다. CI의 비-editable `uv sync` 환경과 릴리스
-  build job은 별도이며, wheel/sdist build는 실행하지 않았다(NOT_RUN).
+  build job은 별도다 — 그 `build` 를 이 체크아웃에서도 실행하도록 `scripts/release_artifacts.py` 가 생겼다:
+  빌드(6초) → 저장소 밖 신규 venv 설치·소비 검증(18초) → **빠진 배포판 red 재현**(20초), 합계 44초이고 게이트
+  `--tier full` 의 stage 로 묶였다(§1.4). CI 는 여전히 fast tier 라 이 층을 **‘보지 않은 층’** 으로 적고, 그 자리는
+  CI 의 build job 이 맡는다(둘을 합치면 모든 변경이 덮인다 — 게이트의 full 은 로컬 회차용이다).
 - 전체 회귀 실패는 오류 signature와 선택 재실행(3개 파일)으로 분류했다. 39개 실패 파일 전량을 단독 재실행해
   "기존 실패"와 "순서 artifact"를 확정하지는 않았다 — 그 비용은 다음 회차로 남긴다.
 - **회귀 수치는 원장에서만 인용한다(§1.2).** 과거 네 측정이 94 / 10 / 7 / 5 failed 로 갈렸지만, 그 비교는 트리·수집 오염·실행 선택이 함께 달랐던 상태였다 — 두 seed 를 고정한 원장에서는 **결정적 11 · variant 민감 0** 이다(그중 3 scope 는 수집 순서를 뒤집어도 같았다). 그중

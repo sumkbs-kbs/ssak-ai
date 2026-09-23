@@ -73,12 +73,12 @@ def test_every_layer_is_rehearsed_or_declared(gate: Any) -> None:  # noqa: ANN40
     assert all(reason.strip() for reason in declared)
 
 
-def test_the_local_layer_is_named_as_unseen_not_as_pass(gate: Any) -> None:  # noqa: ANN401
-    """로컬 회차가 필요한 회귀 원장은 fast 실행에서 **통과가 아니라 '보지 않은 층'** 이다."""
+def test_the_local_layers_are_named_as_unseen_not_as_pass(gate: Any) -> None:  # noqa: ANN401
+    """로컬 회차가 필요한 층(회귀 원장·배포 산출물)은 fast 실행에서 **통과가 아니라 '보지 않은 층'** 이다."""
 
     outsiders = gate.outsider_outcomes(gate.TIER_FAST)
 
-    assert [outcome.stage.name for outcome in outsiders] == ["regression_ledger"]
+    assert [outcome.stage.name for outcome in outsiders] == ["release_artifacts", "regression_ledger"]
     assert all(outcome.kind == gate.KIND_OUTSIDE and not outcome.ok for outcome in outsiders)
     report = gate.describe(gate.TIER_FAST, gate.run(gate.TIER_FAST), outsiders)
     assert "이 실행이 보지 않은 층" in report

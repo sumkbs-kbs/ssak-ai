@@ -201,6 +201,11 @@ DECLARED: Final[dict[str, str]] = {
         "이 도구 자신이다 — 심은 위반을 못 보거나 대조군이 빨간인 보고를 실패로 바꾸는지"
         " tests/cognitive/test_red_rehearsal.py 가 재현한다"
     ),
+    "release_artifacts": (
+        "배포판 계약은 심는 **트리**가 아니라 산출물이다 — 자기 실행 안에서 ‘빠진 배포판’(module 하나를 빼고 "
+        "RECORD 를 다시 쓴 wheel)을 만들어 같은 검증기에 걸고, 그것을 통과시키면 스스로 실패한다"
+        "(scripts/release_artifacts.py · tests/cognitive/test_release_artifacts.py)"
+    ),
 }
 
 
