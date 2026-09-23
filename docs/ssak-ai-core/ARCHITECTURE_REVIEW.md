@@ -105,7 +105,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=647 -->
+<!-- measured:cognitive_tests=677 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -151,7 +151,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | 회귀 원장 | `.venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger --gate` | 0 | 9 scope · 21 회차(seed 101·202 + 순서 뒤집은 3회) · **결정적 11 · variant 민감 0 · 무소유 0** — 같은 scope 를 variant 를 바꿔 돌려 교집합/대칭차로 분리(§1.2) |
 | enum identity 감사 | `.venv/bin/python scripts/audit_enum_identity.py` | 0 | 위반 0건 (cognitive core 95곳을 `same_enum`으로 통일) |
 | namespace purge 감사 | `.venv/bin/python scripts/audit_test_namespace_purge.py` | 0 | 위반 0건 (수집 대상 시험 파일에 조건 없는 import 시점 purge 없음) |
-| build(wheel/sdist) | `.venv/bin/python scripts/release_artifacts.py --gate` | 0 | **이 체크아웃에서 실행한다** — `uv build --no-sources` → wheel 31.7MB · sdist 32.5MB, 저장소 밖 신규 venv 설치 뒤 둘 다 CLI·모듈·API·auth PASS, **sdist 왕복**(sdist 안에서 다시 빌드한 wheel 과 파일 목록 비교 — 664개 · 빠짐 0), **배포판 vs 추적 트리**(추적 656개가 모두 배포판에 있다 — 빠짐 0 · 생성물 2 · 트리에만 11, 50초), 그리고 **red 재현 셋**: ① module 하나를 뺀 wheel → exit 1 로 막힘 ② sdist 에서 파일 하나를 뺀 같은 왕복 → 이름으로 지목 ③ sdist 에서 파일 하나를 뺀 **작은 실물 프로젝트**(git·uv 로 실제 빌드) → 이름으로 지목, 대조군 오탐 0 |
+| build(wheel/sdist) | `.venv/bin/python scripts/release_artifacts.py --gate` | 0 | **이 체크아웃에서 실행한다** — `uv build --no-sources` → wheel 31.7MB · sdist 32.5MB, 저장소 밖 신규 venv 설치 뒤 둘 다 CLI·모듈·API·auth PASS, **sdist 왕복**(sdist 안에서 다시 빌드한 wheel 과 파일 목록 비교 — 664개 · 빠짐 0), **배포판 vs 추적 트리**(추적 656개가 모두 배포판에 있다 — 빠짐 0 · 생성물 2 · 트리에만 11), **재현 빌드**(같은 pin 두 번 — wheel 동일 664/664 · sdist 는 생성 항목 41개만 다름(커밋된 파일 0 · 목록 차이 0) · 미니 setuptools 셋으로 민감도 확인 · CI build job pin 일치, 59초), 그리고 **red 재현 셋**: ① module 하나를 뺀 wheel → exit 1 로 막힘 ② sdist 에서 파일 하나를 뺀 같은 왕복 → 이름으로 지목 ③ sdist 에서 파일 하나를 뺀 **작은 실물 프로젝트**(git·uv 로 실제 빌드) → 이름으로 지목, 대조군 오탐 0 |
 
 ### 1.1 회귀가 찾아낸 것 — 네 부류를 발견해 고쳤다
 
@@ -477,7 +477,7 @@ roster 한 줄에 드러나야 하고, 새 층이 엉뚱한 수를 실어도 추
 **`build` 가 NOT_RUN 으로 남지 않게 — 배포 산출물도 재는 대상이다.** T14 는 `test / lint / type / build` 를 요구하는데
 `build` 만 “릴리스 CI 소관” 이라는 이유로 이 체크아웃에서 한 번도 실행되지 않았다. 그 문장은 위험 하나를 숨긴다 —
 소비자가 받는 wheel/sdist 는 저장소 트리와 **다를 수 있고**(빠진 파일), 그 차이는 설치된 곳에서만 보인다.
-`scripts/release_artifacts.py` 가 그 자리를 여섯 단계로 닫는다: ① `uv build --no-sources` 로 wheel·sdist 를 만들고
+`scripts/release_artifacts.py` 가 그 자리를 일곱 단계로 닫는다: ① `uv build --no-sources` 로 wheel·sdist 를 만들고
 (계약은 둘이다 — 하나만 만들고 통과하면 “배포 가능” 이 아니다) ② 기존 검증기(`scripts/verify_release_artifacts.sh`)가
 **저장소 밖 신규 venv** 에 설치해 CLI·모듈·API·auth 를 돌리고, 그 판정을 종료 코드와 **산출물별 `ARTIFACT-RESULT`
 PASS 문장**으로 읽는다(“설치가 됐다” 와 “설치한 것을 써 봤다” 는 다르다) ③ **sdist 왕복** — sdist 를 풀어 **그 안의
@@ -501,11 +501,30 @@ PASS 문장**으로 읽는다(“설치가 됐다” 와 “설치한 것을 써
 파일 셋을 커밋한 뒤 `[tool.hatch.build.targets.sdist] exclude` 로 하나를 sdist 에서 빼고 `uv build` 를 돌린다(대조군은
 같은 프로젝트에서 exclude 만 뺀 것). 눈이 심은 이름을 지목하고 대조군에서는 아무것도 지목하지 않아야 통과다 —
 즉 “이 눈이 진짜 git·빌드에서 작동하는가” 를 매 실행 실제로 확인한다(비용 1초 남짓).
-⑥ 자기시험 32건이 판정 규칙(빌드 실패·산출물 수·PASS 문장 부재·`ARTIFACT-INPUTS` 부재·왕복 누락·왕복 red 미탐지·
-추적 파일 누락·실물 재현 미지목·실물 재현 오탐·red 미탐지·사고)을 매 실행 다시 묻고, 하한 넷(산출물 2 · 저장소 밖
-PASS 2 · **비교한 파일 100** · **배포판에 실린 추적 파일 600** — 목록 읽기나 `git ls-files` 가 깨져 0개를 보고
-“빠짐 없음” 으로 통과하는 순간을 잡는다)이 값과 근거를 함께 낸다. 실측: 빌드 6초 · 검증 18초 · 왕복 · 세 red 재현 =
-**50초**, 판정은 “빨간을 낼 수 있는가” 까지 포함한다.
+⑥ **재현 빌드 동일성** — “어제 만든 것과 오늘 만든 것이 같은 물건인가”. 판정은 **산출물마다 다르고**, 그 차이를
+실측이 갈랐다: `SOURCE_DATE_EPOCH` 를 고정하고 같은 트리로 **한 번 더** 만들면 **wheel 은 바이트가 같다**(664개 항목이
+전부 pin 시각을 쓴다 — setuptools 가 vendored `wheel` 의 `Wheelfile` 을 통해 이 값을 읽는다) 그런데 **sdist 는 다르다**
+(1205개 항목 중 pin 을 따른 것 **0개** — 실제 파일은 디스크 mtime, 생성 항목(`PKG-INFO`·`setup.cfg`·디렉터리)과 gzip
+헤더는 벽시계를 쓴다). 그래서 이 층은 **예외를 하나 기록하되 좁게 잡고 만료시킨다**: 차이가 디렉터리·backend 생성물
+(**커밋되지 않은** 이름)에만 있으면 허용, **커밋된 파일**이 달라지면 결함, 파일 **목록**이 흔들리면 결함, 그리고 sdist 가
+**같아지면** 실패다(“이제 sdist 도 재현된다 — 이 예외를 지워라”: 낡은 예외는 다음 결함을 가리는 면죄부가 된다).
+근거 문장이 낡았는지도 본다(항목 중 pin 을 따르는 수가 0 이 아니게 되면 실패). ‘실제 파일’ 의 기준은 파일 시스템이
+**아니다** — 빌드 자신이 트리에 생성물(`src/antigravity_k.egg-info/`, `.gitignore` 대상이면서 배포판에 실린다)을 남기므로
+`git ls-files` 를 쓴다(첫 시도에서 이 오라클을 잘못 잡아 이 층이 자기 찌꺼기를 결함으로 보고했다 — 시험이 아니라 실행이
+잡았다). ⑦ **민감도 실물 재현** — “동일” 관찰은 비교가 눈이 있다는 증거 없이는 공허하다: 작은 **setuptools**
+프로젝트(우리 배포 경로와 같은 backend)를 매 실행 **세 번** 빌드한다 — 같은 pin 두 번(**대조군**: 같아야 한다) · 다른 pin
+한 번(달라야 한다 — 그래서 “같음” 이 공허하지 않다) · 그리고 그 미니 sdist 도 우리와 **같은 모양**으로 달라지는가(그러면
+이 차이는 **backend 속성**이고 우리 repo 탓이 아니다; 미니 sdist 가 같으면 오히려 우리 sdist 차이가 우리 탓이므로 실패).
+⑧ **배포 경로가 같은 pin 을 거는가** — 이 층이 “재현된다” 고 말해도 배포하는 쪽이 pin 을 안 걸면 그 보장은 이론이다.
+그래서 CI 의 `build` job 을 읽어 **같은 값**(`SOURCE_DATE_EPOCH: 1758600000`)을 걸었는지 확인하고, job 이 사라지거나 이름이
+바뀌면 조용히 통과하지 않고 **못 봤다** 고 말한다. `ci.yml` 의 그 단계에도 같은 값을 걸어 두었다 — 검증한 물건과 배포되는
+물건이 같아지는 자리다. ⑨ 자기시험 56건이 판정 규칙(빌드 실패·산출물 수·PASS 문장 부재·`ARTIFACT-INPUTS` 부재·왕복
+누락·왕복 red 미탐지·추적 파일 누락·실물 재현 미지목·실물 재현 오탐·재현 불일치·예외 만료·근거 낡음·민감도 실종·
+배포 경로 pin 누락·red 미탐지·사고)을 매 실행 다시 묻고, 하한 다섯(산출물 2 · 저장소 밖
+PASS 2 · **비교한 파일 100** · **배포판에 실린 추적 파일 600** · **재현 비교한 산출물 2** — 목록 읽기나 `git ls-files` 가
+깨져 0개를 보고 “빠짐 없음” 으로 통과하는 순간, 재현 비교가 0건에서 “동일” 로 통과하는 순간을 잡는다)이 값과 근거를
+함께 낸다. 실측: 빌드 6초 · 검증 18초 · 왕복 · 세 red 재현 · 재현 빌드 한 번 더 + 미니 셋(9.3초) =
+**59초**, 판정은 “빨간을 낼 수 있는가” 까지 포함한다.
 이 층은 게이트의 **로컬(`--tier full`) stage** 다 — CI 의 fast tier 는 그 층을 **‘보지 않은 층’** 으로 적고, 저장소의
 build job 이 그 자리를 맡는다(둘을 합치면 모든 변경이 덮인다). 카나리아가 이 층을 보지 **않는** 이유도 적어 둔다:
 하한을 재려면 50초짜리 빌드가 필요해 fast tier 의 카나리아에 넣을 수 없다 — 대신 자기시험이 하한의 장식 여부와
@@ -744,10 +763,20 @@ Secondary Brain 계열은 Core로 승격하지 않았다(SELF_IMPROVEMENT_POLICY
 
 - 이 문서의 회귀는 **이 체크아웃의 고정 `.venv`** 에서 실행한 결과다. CI의 비-editable `uv sync` 환경과 릴리스
   build job은 별도다 — 그 `build` 를 이 체크아웃에서도 실행하도록 `scripts/release_artifacts.py` 가 생겼다:
-  빌드(6초) → 저장소 밖 신규 venv 설치·소비 검증(18초) → **sdist 왕복**·**red 재현 둘**(빠진 배포판·빠진 sdist),
-  합계 50초이고 게이트
+  빌드(6초) → 저장소 밖 신규 venv 설치·소비 검증(18초) → **sdist 왕복**·**red 재현 셋** →
+  **재현 빌드**(같은 pin 으로 한 번 더 + 미니 setuptools 셋, 9.3초), 합계 59초이고 게이트
   `--tier full` 의 stage 로 묶였다(§1.4). CI 는 여전히 fast tier 라 이 층을 **‘보지 않은 층’** 으로 적고, 그 자리는
-  CI 의 build job 이 맡는다(둘을 합치면 모든 변경이 덮인다 — 게이트의 full 은 로컬 회차용이다).
+  CI 의 build job 이 맡는다(둘을 합치면 모든 변경이 덮인다 — 게이트의 full 은 로컬 회차용이다). 그 build job 은 이제
+  같은 `SOURCE_DATE_EPOCH` 를 걸고 `uv build` 를 돌리며, 이 층이 그 값을 읽어 대조한다(다르면 실패) — 배포되는 물건과
+  검증한 물건이 같은 조건에서 나온다는 뜻이다.
+- **재현성은 산출물마다 다르고, sdist 는 아직 아니다(측정된 한계).** 같은 pin 으로 두 번 빌드하면 **wheel 은 바이트가
+  같고**(항목 전부가 pin 시각) **sdist 는 다르다**(항목 중 pin 을 따르는 것 0개). 원인은 backend 다: setuptools 의 sdist
+  경로는 `SOURCE_DATE_EPOCH` 를 읽지 않아 실제 파일은 디스크 mtime, 생성 항목과 gzip 헤더는 벽시계를 쓴다. 같은 backend 의
+  **미니 프로젝트에서도 같은 모양으로 달라지는 것**을 매 실행 확인하므로 이 차이는 우리 repo 탓이 아니고, 이 층은 그 차이를
+  **이름 붙여 기록하되 디렉터리·생성물에만** 허용한다(커밋된 파일·목록이 흔들리면 실패 · sdist 가 같아지면 “예외를 지워라”
+  로 실패). 소비자에게 미치는 영향은 제한적이다(소비자는 압축을 풀어 쓰므로 gzip 헤더 시각은 무관하다) — 다만 **같은 sdist 를
+  두 번 받아 비교하는 사람에게는 다르게 보인다**는 사실이 그대로 남아 있다. **sdist 재현은 backend 가 고쳐지기 전까지 불가능**
+  하며, 고쳐지는 날 이 층이 그것을 **실패로 알려** 문장을 지우게 한다.
 - 전체 회귀 실패는 오류 signature와 선택 재실행(3개 파일)으로 분류했다. 39개 실패 파일 전량을 단독 재실행해
   "기존 실패"와 "순서 artifact"를 확정하지는 않았다 — 그 비용은 다음 회차로 남긴다.
 - **회귀 수치는 원장에서만 인용한다(§1.2).** 과거 네 측정이 94 / 10 / 7 / 5 failed 로 갈렸지만, 그 비교는 트리·수집 오염·실행 선택이 함께 달랐던 상태였다 — 두 seed 를 고정한 원장에서는 **결정적 11 · variant 민감 0** 이다(그중 3 scope 는 수집 순서를 뒤집어도 같았다). 그중

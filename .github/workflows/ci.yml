@@ -314,7 +314,12 @@ jobs:
             --project-root . \
             --release-root src/antigravity_k/release
 
+      # SOURCE_DATE_EPOCH: 재현 빌드. 값 자체에는 의미가 없다 — 의미가 있는 것은 **모든 빌드가 같은 값**을 본다는
+      # 것뿐이다(시계에서 읽으면 그 순간에 따라 바이트가 달라진다). 로컬 계약(`scripts/release_artifacts.py` 의
+      # REPRO_PIN)이 같은 값을 걸어야 “검증한 물건 = 배포되는 물건” 이 성립하므로, 값을 바꾸려면 둘을 함께 바꾼다.
       - name: Build wheel + sdist
+        env:
+          SOURCE_DATE_EPOCH: "1758600000"
         run: uv build --no-sources
 
       - name: Verify fresh dashboard bundle inside the wheel

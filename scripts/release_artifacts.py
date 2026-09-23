@@ -22,12 +22,28 @@ T14 는 `test / lint / type / build` 를 요구하는데 `build` 만 **NOT_RUN**
        왕복 관찰(exit 0 · 빠짐 0)이 “보고 0” 인지 “아무것도 못 보고 0” 인지 가릴 수 없다.
      · “잃어버린 추적 파일”: **작은 실물 프로젝트**(git·uv 로 실제 빌드)에서 추적 파일 하나를 sdist 에서 빼고 같은 눈으로 본다.
        대조군은 같은 프로젝트에서 그 한 줄만 뺀 것 — 심은 이름을 지목하고 대조군이 조용해야 이 눈이 무는 것이다.
-     빌드는 한 번만 한다(두 번 빌드하면 서로 다른 순간을 가리킨다).
-  6. **자기시험** — 판정 규칙(빌드 실패·산출물 수·PASS 문장·왕복 누락·추적 파일 누락·왕복 red 미탐지·red 미탐지·사고)을 매 실행 다시 묻는다.
+     판정(검증·왕복·추적 대조)은 **한 빌드**를 가리킨다. 재현 계약만 같은 pin 으로 **한 번 더** 만든다(아래 6).
+  6. **재현 빌드 동일성** — `SOURCE_DATE_EPOCH` 를 고정하고 **같은 트리로 한 번 더** 만들어 바이트를 견준다. “어제 만든 것과
+     오늘 만든 것이 같은 물건인가” 는 공급망 신뢰의 전제이고, 이 층이 검증한 물건이 재현 불가능하면 그 검증은 그날의 사본에만
+     해당한다. 판정은 산출물마다 다르다:
+     · **wheel — 계약.** 항목마다 pin 시각을 쓰는 backend(vendored `wheel` 의 `Wheelfile`)라 같은 pin 이면 같은 바이트여야 한다.
+     · **sdist — 예외, 그러나 만료되는 예외.** 현 backend(setuptools)의 sdist 경로는 `SOURCE_DATE_EPOCH` 를 **읽지 않는다**:
+       실제 파일은 디스크 mtime, 생성 항목(`PKG-INFO`·`setup.cfg`·디렉터리)과 gzip 헤더는 벽시계를 쓴다. 그래서 관측은
+       “항상 다름” 이다 — 이 층은 그것을 **이름 붙여 기록**하되 좁게 잡는다: 차이가 디렉터리·backend 생성물에만 있으면 허용,
+       **트리에 있는 실제 파일**이 달라지면 결함, 파일 **목록**이 흔들리면 결함, 그리고 sdist 가 **같아지면** 예외가 만료된
+       것이므로 실패시킨다(낡은 예외는 결함을 가리는 면죄부가 된다). 근거 문장이 낡았는지도 본다(항목 중 pin 을 따르는 수).
+  7. **민감도 실물 재현** — “동일” 관찰은 비교가 눈이 있다는 증거 없이는 공허하다. 작은 **setuptools** 프로젝트(우리 배포 경로와
+     같은 backend)를 실제로 세 번 빌드한다: 같은 pin 두 번(**대조군** — 같아야 한다) · 다른 pin 한 번(달라야 한다 — 그래서
+     “같음” 이 공허하지 않다) · 그리고 그 미니 sdist 도 우리 sdist 와 같은 모양으로 달라지는가(그러면 이 차이는 **backend
+     속성**이고 우리 repo 탓이 아니다).
+  8. **배포 경로가 정말 pin 을 거는가** — 이 층이 “재현된다” 고 말해도 배포하는 쪽이 pin 을 안 걸면 그 보장은 이론이다.
+     그래서 CI 의 build job 이 **같은 값**을 거는지 읽어서 확인한다(없거나 다르면 실패).
+  9. **자기시험** — 판정 규칙(빌드 실패·산출물 수·PASS 문장·왕복 누락·추적 파일 누락·재현 불일치·예외 만료·민감도 실종·CI pin 누락·
+     왕복 red 미탐지·red 미탐지·사고)을 매 실행 다시 묻는다.
 
 **탐지력 하한**도 함께 낸다(`Floor` — 값과 근거): 배포 산출물 2(wheel+sdist) · 저장소 밖 PASS 2 · **비교한 파일**(왕복
-비교가 몇 파일에서 이뤄졌나) · **배포판에 실린 추적 파일**(추적 대조가 **0개를 보고 “빠짐 없음”** 으로 통과하는 순간을 잡는다).
-하한이 장식인지도 자기시험이 본다(관측 0 은 실패).
+비교가 몇 파일에서 이뤄졌나) · **배포판에 실린 추적 파일**(추적 대조가 **0개를 보고 “빠짐 없음”** 으로 통과하는 순간을 잡는다) ·
+**재현 비교한 산출물**(재현 비교가 0건이면 “동일” 이 아니라 **아무것도 안 본 것**이다). 하한이 장식인지도 자기시험이 본다(관측 0 은 실패).
 
 ```sh
 .venv/bin/python scripts/release_artifacts.py            # 빌드 + 검증 + red 재현(수십 초)
@@ -40,8 +56,11 @@ from __future__ import annotations
 
 import argparse
 import base64
+import datetime as dt
 import hashlib
 import json
+import os
+import re
 import shutil
 import subprocess
 import sys
@@ -49,12 +68,15 @@ import tarfile
 import tempfile
 import time
 import zipfile
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
 REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR: Final[Path] = REPO_ROOT / "scripts"
+# sdist 안 최상위 디렉터리 이름(`antigravity_k-0.1.0/…`) — 트리 경로로 되돌릴 때 한 칸 벗긴다.
+_ARCHIVE_ROOT: Final[re.Pattern[str]] = re.compile(r"^[^/]+/")
 VERIFIER: Final[Path] = SCRIPTS_DIR / "verify_release_artifacts.sh"
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
@@ -75,6 +97,26 @@ CRASH_MARKER: Final[str] = "Traceback (most recent call last)"
 
 ARTIFACT_KINDS: Final[tuple[str, ...]] = ("wheel", "sdist")
 TAMPER_TARGET: Final[str] = "antigravity_k/engine/release_sbom.py"
+
+# 재현 빌드 — 같은 입력이면 같은 바이트인가. 값 자체에는 의미가 없다: 의미가 있는 것은 **모든 빌드가 같은 값**을 본다는
+# 것뿐이다(시계에서 읽으면 그 순간에 따라 바이트가 달라진다 — 재현이 목적에 반한다). CI build job 도 같은 값을 건다.
+REPRO_PIN: Final[int] = 1_758_600_000  # 2025-09-23T04:00:00Z
+REPRO_ALT_PIN: Final[int] = REPRO_PIN + 86_400  # 다른 pin — 비교가 이 바이트를 보는지 확인용
+CI_WORKFLOW: Final[Path] = REPO_ROOT / ".github" / "workflows" / "ci.yml"
+CI_BUILD_JOB: Final[str] = "build"
+CI_BUILD_TOKEN: Final[str] = "uv build"
+
+# sdist 예외의 근거 — backend 는 이 값을 읽지 않는다. 이 문장이 관측과 어긋나면(항목이 pin 을 따르기 시작하면) 낡은 근거다.
+SDIST_LIMITATION_WHY: Final[str] = (
+    "현 backend(setuptools)의 sdist 경로는 `SOURCE_DATE_EPOCH` 를 읽지 않는다 — 실제 파일은 디스크 mtime, "
+    "생성 항목(PKG-INFO·setup.cfg·디렉터리)과 gzip 헤더는 벽시계를 쓴다(항목 중 pin 시각을 가진 것 0개로 관측). "
+    "wheel 은 vendored `wheel` 의 `Wheelfile` 이 이 값을 읽어 재현된다."
+)
+_MIN_IDENTITIES: Final[int] = 2
+_WHY_IDENTITIES: Final[str] = (
+    "2026-09-23 기준 관측: 같은 pin 두 번 빌드에서 wheel 664/664 항목이 pin 시각 · sdist 0/1205 · 비교한 산출물 2종. "
+    "하한 2는 **재현 비교가 0~1건에서 ‘차이 없음’ 으로 통과하는 순간**을 잡는다 — 비교한 산출물이 없으면 ‘동일하다’ 는 관측이 아니다."
+)
 
 _MIN_ARTIFACTS: Final[int] = 2
 _WHY_ARTIFACTS: Final[str] = (
@@ -106,6 +148,11 @@ _WHY_TRACKED: Final[str] = (
 # 작은 재현 프로젝트 — 배포판에서 사라진 추적 파일을 이 눈이 보는지 실제 빌드로 확인한다(합성 기록이 아니다).
 MINI_PACKAGE: Final[str] = "minipkg"
 MINI_DROPPED: Final[str] = "minipkg/dropped.py"
+
+# 재현 민감도용 작은 프로젝트 — **우리 배포 경로와 같은 backend(setuptools)** 여야 sdist 관찰이 backend 속성인지 우리 탓인지 갈린다.
+REPRO_MINI: Final[str] = "repro-mini"
+REPRO_MINI_PACKAGE: Final[str] = "mini"
+REPRO_MINI_ALT: Final[int] = REPRO_ALT_PIN
 _SKIP_PARTS: Final[frozenset[str]] = frozenset({"__pycache__", ".git", ".venv"})
 
 
@@ -129,6 +176,109 @@ class TreeCoverage:
             "missing": list(self.missing),
             "generated": list(self.generated),
             "local_only": list(self.local_only),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class Identity:
+    """산출물 하나의 재현 관찰 — 같은 pin 으로 두 번 만든 두 파일이 **같은 바이트**인가.
+
+    `identical` 은 파일 전체의 sha256 으로 판정한다. 다를 때 `differs`·`appeared` 가 **무엇이** 달라졌는지 이름으로
+    말한다 — 이름 없는 불일치는 사람이 고칠 수 없다.
+    """
+
+    kind: str
+    first: str
+    second: str
+    members: int
+    pinned_members: int
+    appeared: tuple[str, ...]
+    differs: tuple[str, ...]
+    allowed_differs: tuple[str, ...]
+    real_differs: tuple[str, ...]
+
+    @property
+    def identical(self) -> bool:
+        return self.first == self.second
+
+    @property
+    def bytes_only(self) -> bool:
+        """항목은 모두 같은데 바이트가 다르다 — 압축·헤더가 흔들렸다(실린 파일이 바뀐 것은 아니다).
+
+        이 구분이 없으면 “다르다” 가 “무엇이 다른지 모른다” 로 읽힌다 — 예: gzip 헤더의 시각(소비에는 무관).
+        """
+
+        return not self.identical and not self.differs and not self.appeared
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "kind": self.kind,
+            "bytes_only": self.bytes_only,
+            "first": self.first,
+            "second": self.second,
+            "identical": self.identical,
+            "members": self.members,
+            "pinned_members": self.pinned_members,
+            "appeared": list(self.appeared),
+            "differs": list(self.differs),
+            "allowed_differs": list(self.allowed_differs),
+            "real_differs": list(self.real_differs),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class Sensitivity:
+    """이 비교가 **이 바이트를 본다** 는 증거 — 작은 실물 프로젝트를 세 번 빌드해 확인한다(합성 기록이 아니다).
+
+    `sdist_backend_only` 가 참이라는 것이 우리 sdist 예외의 **두 번째 사례**다: 같은 backend 의 미니 프로젝트도 sdist 가
+    달라지고 그 차이가 생성 항목뿐이라면, 우리 sdist 의 차이는 **우리 repo 탓이 아니라 backend 속성**이다.
+    """
+
+    control_equal: bool
+    pin_moves_bytes: bool
+    sdist_differs: tuple[str, ...]
+    sdist_backend_only: bool
+    exits: tuple[int, ...]
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "control_equal": self.control_equal,
+            "pin_moves_bytes": self.pin_moves_bytes,
+            "sdist_differs": list(self.sdist_differs),
+            "sdist_backend_only": self.sdist_backend_only,
+            "exits": list(self.exits),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class Reproducibility:
+    """재현 계약 — pin 을 걸고 두 번 만든 결과·그 비교의 민감도·배포 경로가 같은 pin 을 거는가."""
+
+    identities: tuple[Identity, ...]
+    second_build_exit: int | None
+    sensitivity: Sensitivity
+    ci_pinned: bool
+    ci_pin_value: str
+    seconds: float
+    ci_note: str = ""
+    # ‘실제 파일’ 을 가리는 자(git 추적 목록)가 작동했는가 — 못 읽었으면 예외 분류가 성립하지 않는다.
+    tracked_readable: bool = True
+
+    @property
+    def sdist_identity(self) -> Identity | None:
+        return next((item for item in self.identities if item.kind == "sdist"), None)
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "pin": REPRO_PIN,
+            "identities": [item.as_mapping() for item in self.identities],
+            "second_build_exit": self.second_build_exit,
+            "sensitivity": self.sensitivity.as_mapping(),
+            "ci_pinned": self.ci_pinned,
+            "ci_pin_value": self.ci_pin_value,
+            "ci_note": self.ci_note,
+            "tracked_readable": self.tracked_readable,
+            "seconds": round(self.seconds, 1),
         }
 
 
@@ -163,6 +313,7 @@ class Observation:
     tree: TreeCoverage
     tree_rehearsal_control: tuple[str, ...]
     tree_rehearsal_defect: tuple[str, ...]
+    reproducibility: Reproducibility
     tamper_exit: int | None
     tamper_removed: str
     inputs_line: bool
@@ -200,6 +351,7 @@ class Observation:
             "tree": self.tree.as_mapping(),
             "tree_rehearsal_control": list(self.tree_rehearsal_control),
             "tree_rehearsal_defect": list(self.tree_rehearsal_defect),
+            "reproducibility": self.reproducibility.as_mapping(),
             "tamper_exit": self.tamper_exit,
             "tamper_removed": self.tamper_removed,
             "tamper_detected": self.detected,
@@ -283,11 +435,107 @@ def observation_problems(record: Observation) -> tuple[str, ...]:
             f"sdist 에서 {TAMPER_TARGET} 를 빼도 왕복이 ‘차이 없음’ 이라고 말했다(비교 {record.rehearsal_compared}개) — "
             "이 층은 sdist 결함을 막지 못한다(이게 이 층의 red다)"
         )
+    problems.extend(reproducibility_problems(record.reproducibility))
     if record.tamper_exit is None:
         problems.append("red 재현(빠진 배포판)을 돌리지 않았다 — 이 검증이 무는지 확인하지 않은 실행은 통과가 아니다")
     elif record.tamper_exit == EXIT_OK:
         problems.append(
             f"**빠진 배포판을 통과시켰다**({record.tamper_removed} 를 뺀 wheel) — 이 검증은 아무것도 막지 못한다"
+        )
+    return tuple(problems)
+
+
+def repro_sensitivity_bites(repro: Reproducibility) -> bool:
+    """민감도 재현이 무는가(대조군 동일 + pin 이 바이트를 움직임) — 수치용."""
+
+    return repro.sensitivity.control_equal and repro.sensitivity.pin_moves_bytes
+
+
+def reproducibility_problems(repro: Reproducibility) -> tuple[str, ...]:
+    """재현 계약을 판정으로 — 산출물마다 다르고, 예외는 좁고 **만료된다**."""
+
+    problems: list[str] = []
+    if repro.second_build_exit is None:
+        problems.append(
+            "재현 비교를 위한 두 번째 빌드를 돌리지 않았다 — “회차마다 같은 물건인가” 를 보지 않은 실행은 통과가 아니다"
+        )
+    elif repro.second_build_exit != EXIT_OK:
+        problems.append(
+            f"두 번째 빌드가 exit {repro.second_build_exit} 다 — 같은 트리가 두 번 만들어지지 않으면 재현을 논할 수 없다"
+        )
+    kinds = {item.kind for item in repro.identities}
+    if kinds != set(ARTIFACT_KINDS):
+        problems.append(
+            f"재현 비교가 산출물 {sorted(kinds) or '없음'} 에서만 이뤄졌다 — 계약은 {sorted(ARTIFACT_KINDS)} 둘이다"
+        )
+    for item in repro.identities:
+        if item.appeared:
+            shown = ", ".join(item.appeared[:3])
+            more = f" 외 {len(item.appeared) - 3}개" if len(item.appeared) > 3 else ""
+            problems.append(
+                f"{item.kind} 의 파일 목록이 두 빌드에서 다르다({len(item.appeared)}개: {shown}{more}) — "
+                "흔들리는 목록은 재현이 아니다(무엇이 실릴지가 빌드 순간에 달렸다)"
+            )
+        if item.real_differs:
+            shown = ", ".join(item.real_differs[:3])
+            more = f" 외 {len(item.real_differs) - 3}개" if len(item.real_differs) > 3 else ""
+            problems.append(
+                f"{item.kind} 에서 **트리에 있는 파일 {len(item.real_differs)}개가 두 빌드에서 달라졌다**: {shown}{more} — "
+                "빌드가 배포판에 회차마다 다른 상태를 싣는다(디렉터리·생성물이 아니라 실제 파일이다)"
+            )
+        if item.kind == "wheel" and not item.identical:
+            why = (
+                "항목 차이 없음 — 압축·헤더가 흔들렸다"
+                if item.bytes_only
+                else f"차이 {len(item.differs)}항목(실제 파일 {len(item.real_differs)})·목록 차이 {len(item.appeared)}"
+            )
+            problems.append(
+                f"wheel 이 같은 pin 으로도 다른 바이트다({item.first[:12]} ≠ {item.second[:12]} · {why}) — "
+                "소비자가 받는 물건이 빌드 순간에 따라 달라진다(재현 계약의 대상이다)"
+            )
+    if not repro.tracked_readable:
+        problems.append(
+            "git 추적 목록을 읽지 못했다 — 무엇이 실제 파일이고 무엇이 빌드 생성물인지 가릴 수 없으므로 이 예외 분류는 성립하지 않는다"
+        )
+    sdist = repro.sdist_identity
+    if sdist is None:
+        problems.append("sdist 재현 관찰이 없다 — 이 계약에서 가장 먼저 의심해야 할 산출물을 보지 않았다")
+    elif sdist.identical:
+        problems.append(
+            "이제 sdist 도 재현된다 — 기록된 예외와 문서·근거 문장을 **지워라**: 낡은 예외는 다음 결함을 가리는 면죄부가 된다"
+        )
+    elif sdist.pinned_members:
+        problems.append(
+            f"sdist 항목 중 pin 시각을 가진 것이 {sdist.pinned_members}개다(관측은 0개) — 근거 문장이 낡았다: {SDIST_LIMITATION_WHY}"
+        )
+    sens = repro.sensitivity
+    if any(code != EXIT_OK for code in sens.exits) or len(sens.exits) != 3:
+        problems.append(
+            f"민감도 재현의 빌드가 셋이 아니거나 실패했다(exit {list(sens.exits)}) — 못 돌린 재현은 증거가 아니다"
+        )
+    elif not sens.control_equal:
+        problems.append(
+            "같은 pin 으로 만든 미니 wheel 이 서로 다르다 — 이 환경의 wheel 경로가 비결정이므로 우리 wheel 의 ‘동일’ 도 믿을 수 없다"
+        )
+    elif not sens.pin_moves_bytes:
+        problems.append(
+            "다른 pin 으로 만든 미니 wheel 이 같은 바이트다 — 이 비교가 바이트를 보지 못하거나, 시각이 산출물에 전혀 실리지 않는다"
+            "(둘 중 무엇인지 이 실행은 말하지 못한다) → 눈이 있다는 증거가 없다"
+        )
+    if not sens.sdist_differs:
+        problems.append(
+            "미니 setuptools 프로젝트의 sdist 는 두 빌드가 같았다 — 그러면 우리 sdist 의 차이는 backend 속성이 아니라 **우리 repo 탓**이다"
+        )
+    elif not sens.sdist_backend_only:
+        problems.append(
+            "미니 sdist 의 차이가 생성 항목 밖(실제 파일·목록)에 있다 — 그 차이를 backend 예외로 덮을 수 없다"
+        )
+    if not repro.ci_pinned:
+        detail = (
+            f"({repro.ci_note})" if repro.ci_note else f"(CI 에 적힌 값: {repro.ci_pin_value or '없음'} ≠ {REPRO_PIN})"
+        )
+        problems.append(
+            f"배포 경로가 같은 pin 을 걸지 않는다 {detail} — 이 층이 검증한 물건과 배포되는 물건이 다르면 “재현된다” 는 이론이다"
         )
     return tuple(problems)
 
@@ -299,11 +547,13 @@ def coverage_floors(record: Observation | None = None) -> list[Floor]:
     observed_passed = len(record.passed) if record is not None else _MIN_PASSED
     observed_compared = record.compared if record is not None else _MIN_COMPARED
     observed_tracked = len(record.tree.expected) if record is not None else _MIN_TRACKED
+    observed_identities = len(record.reproducibility.identities) if record is not None else _MIN_IDENTITIES
     return [
         Floor("배포 산출물", observed_artifacts, _MIN_ARTIFACTS, why=_WHY_ARTIFACTS),
         Floor("저장소 밖 PASS", observed_passed, _MIN_PASSED, why=_WHY_PASSED),
         Floor("비교한 파일", observed_compared, _MIN_COMPARED, why=_WHY_COMPARED),
         Floor("배포판에 실린 추적 파일", observed_tracked, _MIN_TRACKED, why=_WHY_TRACKED),
+        Floor("재현 비교한 산출물", observed_identities, _MIN_IDENTITIES, why=_WHY_IDENTITIES),
     ]
 
 
@@ -328,7 +578,23 @@ def find_artifacts(dist_dir: Path) -> tuple[Artifact, ...]:
     return tuple(found)
 
 
-def run(cmd: list[str], *, cwd: Path | None = None, seconds_budget: float | None = None) -> tuple[int, str]:
+def build_env(pin: int = REPRO_PIN) -> dict[str, str]:
+    """빌드 환경 — `SOURCE_DATE_EPOCH` 를 고정한다(이 층이 돌리는 **모든** 빌드에 같은 값).
+
+    판정한 물건과 재현 계약이 같은 물건이어야 하기 때문이다. pin 을 안 건 빌드를 검증해 놓고 “재현된다” 고 말하면
+    그 문장은 이론이다.
+    """
+
+    return {**os.environ, "SOURCE_DATE_EPOCH": str(pin)}
+
+
+def run(
+    cmd: list[str],
+    *,
+    cwd: Path | None = None,
+    seconds_budget: float | None = None,
+    env: dict[str, str] | None = None,
+) -> tuple[int, str]:
     """독립 process 로 돌리고 (종료 코드, 출력) 을 돌려준다."""
 
     result = subprocess.run(
@@ -338,14 +604,15 @@ def run(cmd: list[str], *, cwd: Path | None = None, seconds_budget: float | None
         text=True,
         check=False,
         timeout=seconds_budget,
+        env=env,
     )
     return result.returncode, result.stdout + result.stderr
 
 
-def build(dist_dir: Path) -> tuple[int, str]:
-    """wheel + sdist 를 만든다(저장소 밖 자리에)."""
+def build(dist_dir: Path, *, pin: int = REPRO_PIN) -> tuple[int, str]:
+    """wheel + sdist 를 만든다(저장소 밖 자리에). `SOURCE_DATE_EPOCH` 를 고정해 넘긴다."""
 
-    return run(["uv", "build", "--no-sources", "--out-dir", str(dist_dir)])
+    return run(["uv", "build", "--no-sources", "--out-dir", str(dist_dir)], env=build_env(pin))
 
 
 def verify(dist_dir: Path) -> tuple[int, str]:
@@ -392,7 +659,7 @@ def roundtrip(sdist: Path, direct_wheel: Path, work: Path) -> tuple[int | None, 
     root = unpack_sdist(sdist, work)
     out = work / "roundtrip"
     out.mkdir(parents=True, exist_ok=True)
-    exit_code, _ = run(["uv", "build", "--no-sources", "--wheel", "--out-dir", str(out)], cwd=root)
+    exit_code, _ = run(["uv", "build", "--no-sources", "--wheel", "--out-dir", str(out)], cwd=root, env=build_env())
     rebuilt = sorted(out.glob("antigravity_k-*.whl"))
     if not rebuilt:
         return exit_code, (), (), 0
@@ -516,7 +783,7 @@ def rehearse_tree_loss(work: Path) -> tuple[tuple[str, ...], tuple[str, ...]]:
         project.mkdir(parents=True, exist_ok=True)
         _write_mini_project(project, drop_from_sdist=drop)
         dist = project / "dist"
-        run(["uv", "build", "--no-sources", "--out-dir", str(dist)], cwd=project)
+        run(["uv", "build", "--no-sources", "--out-dir", str(dist)], cwd=project, env=build_env())
         wheels = sorted(dist.glob("*.whl"))
         if not wheels:
             results.append(())
@@ -526,6 +793,272 @@ def rehearse_tree_loss(work: Path) -> tuple[tuple[str, ...], tuple[str, ...]]:
         )
         results.append(coverage.missing)
     return results[0], results[1]
+
+
+def _zip_stamp(date_time: tuple[int, int, int, int, int, int]) -> int:
+    """zip 항목의 시각을 초로 — pin 시각을 쓰는 항목을 세기 위해서다."""
+
+    return int(dt.datetime(*date_time, tzinfo=dt.timezone.utc).timestamp())
+
+
+def _member_rows(kind: str, path: Path) -> dict[str, tuple[object, ...]]:
+    """산출물 항목별 행 — 이름 → (메타·내용 지문, 디렉터리 여부). 두 빌드의 차이를 **이름으로** 말하기 위해서다."""
+
+    if kind == "wheel":
+        with zipfile.ZipFile(path) as archive:
+            return {
+                info.filename: (
+                    info.date_time,
+                    info.CRC,
+                    info.file_size,
+                    hashlib.sha256(archive.read(info.filename)).hexdigest(),
+                    False,
+                )
+                for info in archive.infolist()
+            }
+    with tarfile.open(path) as archive:
+        rows: dict[str, tuple[object, ...]] = {}
+        for member in archive.getmembers():
+            stream = archive.extractfile(member) if member.isfile() else None
+            digest = hashlib.sha256(stream.read()).hexdigest() if stream is not None else ""
+            rows[member.name] = (
+                member.mtime,
+                member.mode,
+                member.uid,
+                member.gid,
+                member.size,
+                digest,
+                member.isdir(),
+            )
+        return rows
+
+
+def _member_name(member: str, *, kind: str) -> str:
+    """아카이브 항목 이름을 **트리 경로** 로 옮긴다 — 실제 파일인지 가리는 데 쓴다(`src/…` 는 호출자가 붙인다)."""
+
+    if kind == "wheel":
+        return member.split("/", 1)[1] if "/" in member else ""
+    return _ARCHIVE_ROOT.sub("", member)
+
+
+def _pinned_members(kind: str, path: Path) -> int:
+    """항목 중 재현 pin 시각을 가진 것 수 — 이 산출물이 pin 을 보는가(0 이면 안 본다).
+
+    근거 문장과 관측을 견주는 수다. 근거(`SDIST_LIMITATION_WHY`)는 “sdist 는 pin 을 읽지 않는다” 고 말하는데,
+    그 수가 0 이 아니게 되면 그 문장은 낡은 것이다.
+    """
+
+    if kind == "wheel":
+        with zipfile.ZipFile(path) as archive:
+            return sum(1 for info in archive.infolist() if _zip_stamp(info.date_time) == REPRO_PIN)
+    with tarfile.open(path) as archive:
+        return sum(1 for member in archive.getmembers() if int(member.mtime) == REPRO_PIN)
+
+
+def compare_artifacts(kind: str, first: Path, second: Path, *, is_tree_file: Callable[[str], bool]) -> Identity:
+    """같은 pin 으로 만든 두 산출물을 견준다 — 같으면 그 사실, 다르면 **무엇이** 다른지(이름으로).
+
+    허용되는 차이는 좁다: 디렉터리와 backend 생성물(**커밋되지 않은** 이름)의 **메타·내용** 차이뿐이다.
+    커밋된 파일의 차이와 **목록의 차이**(한쪽에만 있는 항목)는 결함이다 — 흔들리는 목록은 재현이 아니다.
+    """
+
+    rows_first = _member_rows(kind, first)
+    rows_second = _member_rows(kind, second)
+    appeared = tuple(sorted(set(rows_first) ^ set(rows_second)))
+    differs = tuple(
+        sorted(name for name in set(rows_first) & set(rows_second) if rows_first[name] != rows_second[name])
+    )
+    allowed: list[str] = []
+    real: list[str] = []
+    for name in differs:
+        directory = bool(rows_first[name][-1])
+        if directory or not is_tree_file(_member_name(name, kind=kind)):
+            allowed.append(name)
+        else:
+            real.append(name)
+    return Identity(
+        kind=kind,
+        first=_sha256(first),
+        second=_sha256(second),
+        members=len(rows_first),
+        pinned_members=_pinned_members(kind, first),
+        appeared=appeared,
+        differs=differs,
+        allowed_differs=tuple(allowed),
+        real_differs=tuple(real),
+    )
+
+
+def tracked_paths(repo: Path) -> frozenset[str] | None:
+    """git 이 아는 파일들 — ‘실제 파일’ 의 기준.
+
+    파일 시스템으로 판정하면 안 된다: 빌드 자신이 트리에 생성물을 **남기기** 때문이다(`src/antigravity_k.egg-info/` 는
+    `.gitignore` 대상이고 배포판에도 실린다). 그걸 실제 파일로 오인하면 이 층은 자기 빌드가 남긴 찌꺼기마다 빨개진다.
+    """
+
+    listing = subprocess.run(["git", "ls-files"], cwd=repo, capture_output=True, text=True, check=False)
+    if listing.returncode != EXIT_OK:
+        return None
+    return frozenset(line for line in listing.stdout.splitlines() if line.strip())
+
+
+def _tree_oracle(kind: str, *, tracked: frozenset[str] | None, package_src: str = PACKAGE_SRC) -> Callable[[str], bool]:
+    """아카이브 항목 이름 → 그 이름이 **커밋된 실제 파일** 인가(디렉터리·생성물과 가르는 자).
+
+    추적 목록을 못 읽으면 **엄격한 쪽**(전부 실제 파일)으로 판정하고, 그 사실은 따로 문제로 남긴다 —
+    못 읽은 목록을 “생성물이 많네” 로 삼키면 실제 결함이 조용히 예외에 섮인다.
+    """
+
+    if tracked is None:
+        return lambda name: bool(name)
+    prefix = "" if kind == "sdist" else f"{package_src}/"
+    return lambda name: bool(name) and f"{prefix}{name}" in tracked
+
+
+def _one_artifact(dist_dir: Path, kind: str) -> Path | None:
+    """산출물 하나를 고른다(`find_artifacts` 와 같은 규칙 — 마지막 것이 이번 빌드다)."""
+
+    pattern = "antigravity_k-*.whl" if kind == "wheel" else "antigravity_k-*.tar.gz"
+    candidates = sorted(dist_dir.glob(pattern))
+    return candidates[-1] if candidates else None
+
+
+def _same_bytes(left: Path, right: Path) -> bool:
+    """두 파일이 같은 바이트인가 — 둘 중 하나라도 없으면 같다고 말하지 않는다."""
+
+    return left.is_file() and right.is_file() and _sha256(left) == _sha256(right)
+
+
+def _write_repro_project(project: Path) -> None:
+    """재현 민감도용 작은 프로젝트 — **우리 배포 경로와 같은 backend(setuptools)** 여야 sdist 차이가 누구 탓인지 갈린다."""
+
+    package = project / REPRO_MINI_PACKAGE
+    package.mkdir(parents=True, exist_ok=True)
+    (project / "pyproject.toml").write_text(
+        '[build-system]\nrequires = ["setuptools>=77.0.0", "wheel"]\nbuild-backend = "setuptools.build_meta"\n'
+        '\n[project]\nname = "repro-mini"\nversion = "0.1.0"\n',
+        encoding="utf-8",
+    )
+    (package / "__init__.py").write_text("value = 1\n", encoding="utf-8")
+    (package / "kept.py").write_text("kept = 1\n", encoding="utf-8")
+    # git 저장소로 만든다 — ‘실제 파일’ 의 기준이 우리 배포 경로와 **같아야** 미니 관찰을 우리 sdist 에 쓸 수 있다.
+    identity = ["-c", "user.email=release-contract@localhost", "-c", "user.name=release contract"]
+    run(["git", "init", "-q", "."], cwd=project)
+    run(["git", "add", "-A"], cwd=project)
+    run(["git", *identity, "commit", "-qm", "repro mini"], cwd=project)
+
+
+def repro_sensitivity(work: Path) -> Sensitivity:
+    """작은 실물 프로젝트를 **세 번** 빌드해 이 비교가 눈이 있는지 본다(합성 기록이 아니다).
+
+    · 같은 pin 두 번 → wheel 이 같아야 한다. 다르면 이 환경의 wheel 경로가 비결정이고, 우리 wheel 의 “동일” 도 못 믿는다.
+    · 다른 pin 한 번 → wheel 이 달라야 한다. 그래서 “같음” 이 공허하지 않다(비교가 이 바이트를 본다는 증거).
+    · 미니 sdist 도 달라지고 그 차이가 생성 항목뿐인가 → 우리 sdist 예외의 **두 번째 사례**(backend 속성).
+    """
+
+    project = work / REPRO_MINI
+    project.mkdir(parents=True, exist_ok=True)
+    _write_repro_project(project)
+    # 산출물 자리는 프로젝트 **밖** 이다 — 안에 두면 setuptools 가 그 디렉터리를 package 로 발견해 빌드가 죽는다.
+    out = work / "repro-mini-dist"
+    wheels: list[Path] = []
+    sdists: list[Path] = []
+    exits: list[int] = []
+    for label, pin in (("control", REPRO_PIN), ("same", REPRO_PIN), ("other", REPRO_MINI_ALT)):
+        target = out / label
+        target.mkdir(parents=True, exist_ok=True)
+        exit_code, _ = run(["uv", "build", "--no-sources", "--out-dir", str(target)], cwd=project, env=build_env(pin))
+        exits.append(exit_code)
+        wheels.append(_last(target, "*.whl"))
+        sdists.append(_last(target, "*.tar.gz"))
+    control_equal = _same_bytes(wheels[0], wheels[1])
+    pin_moves_bytes = wheels[0].is_file() and wheels[2].is_file() and not _same_bytes(wheels[0], wheels[2])
+    differs: tuple[str, ...] = ()
+    backend_only = False
+    if sdists[0].is_file() and sdists[1].is_file():
+        identity = compare_artifacts(
+            "sdist",
+            sdists[0],
+            sdists[1],
+            is_tree_file=_tree_oracle("sdist", tracked=tracked_paths(project)),
+        )
+        differs = identity.differs + identity.appeared
+        backend_only = not identity.real_differs and not identity.appeared and bool(identity.differs)
+    return Sensitivity(
+        control_equal=control_equal,
+        pin_moves_bytes=pin_moves_bytes,
+        sdist_differs=differs,
+        sdist_backend_only=backend_only,
+        exits=tuple(exits),
+    )
+
+
+def _last(directory: Path, pattern: str) -> Path:
+    """디렉터리에서 마지막 산출물 — 없으면 존재하지 않는 자리(호출자가 `is_file()` 로 가린다)."""
+
+    candidates = sorted(directory.glob(pattern))
+    return candidates[-1] if candidates else directory / f"__missing__{pattern}"
+
+
+def ci_pin_check() -> tuple[bool, str, str]:
+    """배포 경로(CI build job)가 **같은 pin** 을 거는가 — (걸었나, 값, 못 본 이유).
+
+    이 층이 “재현된다” 고 말해도 배포하는 쪽이 pin 을 안 걸면 그 보장은 이론이다. job 이 사라지거나 이름이 바뀌면
+    조용히 통과하지 않고 **못 봤다** 고 말한다.
+    """
+
+    try:
+        text = CI_WORKFLOW.read_text(encoding="utf-8")
+    except OSError as exc:
+        return False, "", f"`{CI_WORKFLOW.name}` 을 읽지 못했다: {exc}"
+    lines = text.splitlines()
+    start = next((i for i, line in enumerate(lines) if line.rstrip() == f"  {CI_BUILD_JOB}:"), None)
+    if start is None:
+        return False, "", f"`{CI_WORKFLOW.name}` 에 `{CI_BUILD_JOB}` job 이 없다"
+    body: list[str] = []
+    for line in lines[start + 1 :]:
+        if line.strip() and not line.startswith("   "):
+            break
+        body.append(line)
+    block = "\n".join(body)
+    if CI_BUILD_TOKEN not in block:
+        return False, "", f"`{CI_BUILD_JOB}` job 안에 `{CI_BUILD_TOKEN}` 단계가 없다(배포 경로가 바뀌었나)"
+    found = re.search(r"SOURCE_DATE_EPOCH:\s*['\"]?(\d+)", block)
+    if found is None:
+        return False, "", f"`{CI_BUILD_JOB}` job 이 `SOURCE_DATE_EPOCH` 를 걸지 않는다"
+    value = found.group(1)
+    return value == str(REPRO_PIN), value, ""
+
+
+def reproducibility(dist_dir: Path, *, work: Path) -> Reproducibility:
+    """같은 pin 으로 **한 번 더** 만들어 견준다 — 소비자가 받는 물건이 회차마다 같은가.
+
+    판정(검증·왕복·추적 대조)은 첫 빌드 하나를 가리키고, 이 함수만 두 번째 빌드를 만든다.
+    """
+
+    started = time.monotonic()
+    second = work / "second-build"
+    second.mkdir(parents=True, exist_ok=True)
+    exit_code, _ = build(second, pin=REPRO_PIN)
+    tracked = tracked_paths(REPO_ROOT)
+    identities: list[Identity] = []
+    for kind in ARTIFACT_KINDS:
+        left = _one_artifact(dist_dir, kind)
+        right = _one_artifact(second, kind)
+        if left is None or right is None:
+            continue
+        identities.append(compare_artifacts(kind, left, right, is_tree_file=_tree_oracle(kind, tracked=tracked)))
+    pinned, value, note = ci_pin_check()
+    return Reproducibility(
+        identities=tuple(identities),
+        second_build_exit=exit_code,
+        sensitivity=repro_sensitivity(work),
+        ci_pinned=pinned,
+        ci_pin_value=value,
+        seconds=time.monotonic() - started,
+        ci_note=note,
+        tracked_readable=tracked is not None,
+    )
 
 
 def passed_kinds(output: str) -> tuple[str, ...]:
@@ -591,7 +1124,10 @@ def rehearse_missing_module(artifacts: tuple[Artifact, ...], dist_dir: Path, wor
 
 
 def measure(*, dist_dir: Path | None = None, work: Path | None = None, keep: bool = False) -> Observation:
-    """빌드 → 저장소 밖 검증 → red 재현을 한 번의 실행으로 한다."""
+    """빌드 → 저장소 밖 검증 → red 재현 → 재현 빌드 비교를 한 번의 실행으로 한다.
+
+    판정(검증·왕복·추적 대조·빨간 재현)은 첫 빌드 하나를 가리키고, 재현 계약만 두 번째 빌드를 만든다.
+    """
 
     started = time.monotonic()
     temporary = Path(tempfile.mkdtemp(prefix="agk-release-")) if work is None else Path(work)
@@ -615,6 +1151,7 @@ def measure(*, dist_dir: Path | None = None, work: Path | None = None, keep: boo
             else TreeCoverage((), (), (), ())
         )
         tree_control, tree_defect = rehearse_tree_loss(temporary)
+        repro = reproducibility(target, work=temporary)
         tamper_exit, removed = rehearse_missing_module(artifacts, target, temporary)
         crashed = CRASH_MARKER in (build_out + verify_out)
         return Observation(
@@ -632,6 +1169,7 @@ def measure(*, dist_dir: Path | None = None, work: Path | None = None, keep: boo
             tree=tree,
             tree_rehearsal_control=tree_control,
             tree_rehearsal_defect=tree_defect,
+            reproducibility=repro,
             tamper_exit=tamper_exit,
             tamper_removed=removed,
             inputs_line="ARTIFACT-INPUTS" in verify_out,
@@ -648,6 +1186,57 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
     """판정 규칙을 합성 관찰로 다시 물어본다 — 빌드는 하지 않는다."""
 
     cases = Cases()
+
+    good_wheel = Identity(
+        kind="wheel",
+        first="a" * 16,
+        second="a" * 16,
+        members=664,
+        pinned_members=664,
+        appeared=(),
+        differs=(),
+        allowed_differs=(),
+        real_differs=(),
+    )
+    generated = "antigravity_k-0.1.0/PKG-INFO"
+    real_file = "antigravity_k-0.1.0/src/antigravity_k/__init__.py"
+
+    def sdist_of(**overrides: object) -> Identity:
+        payload: dict[str, object] = {
+            "kind": "sdist",
+            "first": "b" * 16,
+            "second": "c" * 16,
+            "members": 1205,
+            "pinned_members": 0,
+            "appeared": (),
+            "differs": (generated,),
+            "allowed_differs": (generated,),
+            "real_differs": (),
+        }
+        payload.update(overrides)
+        return Identity(**payload)  # type: ignore[arg-type]
+
+    good_sensitivity = Sensitivity(
+        control_equal=True,
+        pin_moves_bytes=True,
+        sdist_differs=("repro-mini-0.1.0/PKG-INFO",),
+        sdist_backend_only=True,
+        exits=(EXIT_OK, EXIT_OK, EXIT_OK),
+    )
+
+    def repro_of(**overrides: object) -> Reproducibility:
+        payload: dict[str, object] = {
+            "identities": (good_wheel, sdist_of()),
+            "second_build_exit": EXIT_OK,
+            "sensitivity": good_sensitivity,
+            "ci_pinned": True,
+            "ci_pin_value": str(REPRO_PIN),
+            "seconds": 12.0,
+            "ci_note": "",
+            "tracked_readable": True,
+        }
+        payload.update(overrides)
+        return Reproducibility(**payload)  # type: ignore[arg-type]
 
     def record(**overrides: object) -> Observation:
         base: dict[str, object] = {
@@ -673,6 +1262,7 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
             ),
             "tree_rehearsal_control": (),
             "tree_rehearsal_defect": (MINI_DROPPED,),
+            "reproducibility": repro_of(),
             "tamper_exit": EXIT_FAIL,
             "tamper_removed": TAMPER_TARGET,
             "inputs_line": True,
@@ -696,6 +1286,7 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
             tree=payload["tree"],  # type: ignore[arg-type]
             tree_rehearsal_control=payload["tree_rehearsal_control"],  # type: ignore[arg-type]
             tree_rehearsal_defect=payload["tree_rehearsal_defect"],  # type: ignore[arg-type]
+            reproducibility=payload["reproducibility"],  # type: ignore[arg-type]
             tamper_exit=payload["tamper_exit"],  # type: ignore[arg-type]
             tamper_removed=str(payload["tamper_removed"]),
             inputs_line=bool(payload["inputs_line"]),
@@ -754,6 +1345,10 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
         "비교한 파일이 0이면 하한이 문다(목록 읽기가 깨져 통과하는 순간)",
         bool(floor_problems(coverage_floors(record(compared=0)))),
     )
+    cases.check(
+        "재현 비교가 0건이면 하한이 문다(‘동일’ 이 아니라 아무것도 안 본 것)",
+        bool(floor_problems(coverage_floors(record(reproducibility=repro_of(identities=()))))),
+    )
     cases.check("red 재현을 안 돌리면 통과가 아니다", not record(tamper_exit=None).ok)
     cases.check(
         "빠진 배포판을 통과시키면 통과가 아니다(이 층의 red)",
@@ -762,8 +1357,129 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
     )
     cases.check("사고로 죽은 실행은 통과가 아니다", not record(note="하위 process 가 죽었다").ok)
 
+    cases.check("재현 계약을 본 관찰은 통과다(wheel 동일·sdist 예외 좁게)", record(reproducibility=repro_of()).ok)
+    header_only = sdist_of(differs=(), allowed_differs=())
+    cases.check(
+        "항목이 같은데 바이트만 다르면 그 까닭을 이름으로 말한다(압축·헤더)",
+        header_only.bytes_only and not sdist_of().bytes_only,
+    )
+    cases.check(
+        "sdist 의 압축·헤더 차이는 기록된 한계 안이다(항목이 흔들린 것은 아니다)",
+        record(reproducibility=repro_of(identities=(good_wheel, header_only))).ok,
+    )
+    header_only_wheel = Identity("wheel", "a", "d", 664, 664, (), (), (), ())
+    cases.check(
+        "wheel 이 압축·헤더만 달라도 실패이며 그 까닭을 말한다",
+        not record(reproducibility=repro_of(identities=(header_only_wheel, sdist_of()))).ok
+        and "압축·헤더가 흔들렸다"
+        in " ".join(reproducibility_problems(repro_of(identities=(header_only_wheel, sdist_of())))),
+    )
+    cases.check(
+        "두 번째 빌드를 안 돌리면 통과가 아니다",
+        not record(reproducibility=repro_of(second_build_exit=None)).ok,
+    )
+    cases.check(
+        "두 번째 빌드가 실패하면 통과가 아니다",
+        not record(reproducibility=repro_of(second_build_exit=EXIT_FAIL)).ok,
+    )
+    torn = Identity(
+        kind="wheel",
+        first="a" * 16,
+        second="d" * 16,
+        members=664,
+        pinned_members=664,
+        appeared=(),
+        differs=("antigravity_k/engine/x.py",),
+        allowed_differs=(),
+        real_differs=("antigravity_k/engine/x.py",),
+    )
+    cases.check(
+        "wheel 이 같은 pin 으로도 다르면 통과가 아니다(이름을 남긴다)",
+        not record(reproducibility=repro_of(identities=(torn, sdist_of()))).ok
+        and "wheel 이 같은 pin 으로도 다른 바이트다"
+        in " ".join(record(reproducibility=repro_of(identities=(torn, sdist_of()))).problems),
+    )
+    cases.check(
+        "재현 비교가 산출물 하나뿐이면 통과가 아니다",
+        not record(reproducibility=repro_of(identities=(good_wheel,))).ok,
+    )
+    cases.check(
+        "sdist 가 같아지면 예외가 만료된 것이다(통과가 아니다)",
+        not record(reproducibility=repro_of(identities=(good_wheel, sdist_of(second="b" * 16)))).ok
+        and "이제 sdist 도 재현된다"
+        in " ".join(record(reproducibility=repro_of(identities=(good_wheel, sdist_of(second="b" * 16)))).problems),
+    )
+    real_loss = sdist_of(differs=(real_file,), allowed_differs=(), real_differs=(real_file,))
+    cases.check(
+        "sdist 의 실제 파일이 달라지면 통과가 아니다(이름을 남긴다)",
+        not record(reproducibility=repro_of(identities=(good_wheel, real_loss))).ok
+        and "__init__.py" in " ".join(record(reproducibility=repro_of(identities=(good_wheel, real_loss))).problems),
+    )
+    cases.check(
+        "sdist 의 파일 목록이 흔들리면 통과가 아니다",
+        not record(
+            reproducibility=repro_of(identities=(good_wheel, sdist_of(appeared=("antigravity_k-0.1.0/extra.py",))))
+        ).ok,
+    )
+    cases.check(
+        "sdist 가 pin 을 따르기 시작하면 근거가 낡은 것이다(통과가 아니다)",
+        not record(reproducibility=repro_of(identities=(good_wheel, sdist_of(pinned_members=3)))).ok,
+    )
+    cases.check(
+        "대조군 미니 wheel 이 다르면 통과가 아니다",
+        not record(
+            reproducibility=repro_of(sensitivity=Sensitivity(False, True, ("x",), True, (EXIT_OK, EXIT_OK, EXIT_OK)))
+        ).ok,
+    )
+    cases.check(
+        "pin 이 바이트를 못 움직이면 비교가 눈이 없다(통과가 아니다)",
+        not record(
+            reproducibility=repro_of(sensitivity=Sensitivity(True, False, ("x",), True, (EXIT_OK, EXIT_OK, EXIT_OK)))
+        ).ok,
+    )
+    cases.check(
+        "미니 sdist 가 같으면 우리 sdist 차이는 우리 탓이다(통과가 아니다)",
+        not record(
+            reproducibility=repro_of(sensitivity=Sensitivity(True, True, (), False, (EXIT_OK, EXIT_OK, EXIT_OK)))
+        ).ok,
+    )
+    cases.check(
+        "미니 sdist 차이가 생성 항목 밖이면 통과가 아니다",
+        not record(
+            reproducibility=repro_of(
+                sensitivity=Sensitivity(True, True, ("mini/kept.py",), False, (EXIT_OK, EXIT_OK, EXIT_OK))
+            )
+        ).ok,
+    )
+    cases.check(
+        "민감도 빌드가 실패하면 통과가 아니다",
+        not record(
+            reproducibility=repro_of(sensitivity=Sensitivity(True, True, ("x",), True, (EXIT_OK, EXIT_FAIL, EXIT_OK)))
+        ).ok,
+    )
+    cases.check(
+        "배포 경로가 pin 을 안 걸면 통과가 아니다(이유를 남긴다)",
+        not record(reproducibility=repro_of(ci_pinned=False, ci_pin_value="", ci_note="걸지 않는다")).ok
+        and "배포 경로가 같은 pin 을 걸지 않는다"
+        in " ".join(record(reproducibility=repro_of(ci_pinned=False, ci_note="걸지 않는다")).problems),
+    )
+    cases.check(
+        "배포 경로의 pin 값이 다르면 통과가 아니다",
+        not record(reproducibility=repro_of(ci_pinned=False, ci_pin_value="0")).ok,
+    )
+    cases.check(
+        "추적 목록을 못 읽으면 예외 분류를 하지 않는다(통과가 아니다)",
+        not record(reproducibility=repro_of(tracked_readable=False)).ok,
+    )
+    cases.check("빌드 환경이 pin 을 넣는다", build_env()["SOURCE_DATE_EPOCH"] == str(REPRO_PIN))
+    cases.check(
+        "다른 pin 도 만들 수 있다(민감도 재현)", build_env(REPRO_MINI_ALT)["SOURCE_DATE_EPOCH"] == str(REPRO_MINI_ALT)
+    )
+    ci_pinned, _ci_value, ci_note = ci_pin_check()
+    cases.check("CI pin 검사는 못 본 경우에도 이유를 말한다", ci_pinned or bool(ci_note))
+
     floors = coverage_floors()
-    cases.check("하한이 넷이다(산출물·PASS·비교한 파일·실린 추적 파일)", len(floors) == 4)
+    cases.check("하한이 다섯이다(산출물·PASS·비교한 파일·실린 추적 파일·재현 비교)", len(floors) == 5)
     cases.check("하한에 근거가 기록돼 있다", all(floor.why.strip() for floor in floors))
     cases.check("하한이 지금 관측을 넘지 않는다", not floor_problems(floors))
     cases.check(
@@ -818,6 +1534,7 @@ def as_mapping(record: Observation, probe: Probe) -> dict[str, object]:
             "exit": record.tamper_exit,
             "detected": record.detected,
         },
+        "reproducibility": record.reproducibility.as_mapping(),
         "probe": probe.as_mapping(),
         "floors": floor_records(coverage_floors(record)),
         "coverage": {"artifacts": artifacts, "verified": len(record.passed), "compared": record.compared},
@@ -833,6 +1550,14 @@ def as_mapping(record: Observation, probe: Probe) -> dict[str, object]:
             "local_only": len(record.tree.local_only),
             "tree_rehearsal_bites": 1 if MINI_DROPPED in record.tree_rehearsal_defect else 0,
             "tamper_detected": 1 if record.detected else 0,
+            "identity_compared": len(record.reproducibility.identities),
+            "identity_identical": sum(1 for item in record.reproducibility.identities if item.identical),
+            "identity_allowed_differs": sum(len(item.allowed_differs) for item in record.reproducibility.identities),
+            "identity_real_differs": sum(len(item.real_differs) for item in record.reproducibility.identities),
+            "identity_appeared": sum(len(item.appeared) for item in record.reproducibility.identities),
+            "pinned_members": sum(item.pinned_members for item in record.reproducibility.identities),
+            "sensitivity_bites": 1 if repro_sensitivity_bites(record.reproducibility) else 0,
+            "ci_pinned": 1 if record.reproducibility.ci_pinned else 0,
             "seconds": round(record.seconds, 1),
         },
         "verdict": "PASS" if record.ok else "FAIL",
@@ -873,7 +1598,29 @@ def describe(record: Observation, probe: Probe) -> str:
         f"  red       빠진 배포판({record.tamper_removed} 제거) exit {record.tamper_exit} — "
         f"{'막았다' if record.detected else '**못 막았다**'}"
     )
-    lines.append(f"  소요      {record.seconds:.1f}초 · 자기시험 {probe.cases}건 재판정")
+    repro = record.reproducibility
+    for identity in repro.identities:
+        state = "동일" if identity.identical else "다름"
+        detail = (
+            f"항목 {identity.members}개 중 pin {identity.pinned_members}개 · 차이 {len(identity.differs)}"
+            f"(허용 {len(identity.allowed_differs)}·실제 파일 {len(identity.real_differs)})"
+            f" · 목록 차이 {len(identity.appeared)}" + (" · 압축·헤더만" if identity.bytes_only else "")
+        )
+        lines.append(f"  재현      {identity.kind:5s} {state} {detail}")
+    sens = repro.sensitivity
+    lines.append(
+        f"  민감도    pin {REPRO_PIN} · 두 번째 빌드 exit {repro.second_build_exit} — "
+        f"미니 setuptools: 같은 pin {'동일' if sens.control_equal else '**다름**'} · "
+        f"다른 pin {'다름' if sens.pin_moves_bytes else '**같음**'} · "
+        f"미니 sdist 차이 {len(sens.sdist_differs)}개({'생성 항목뿐' if sens.sdist_backend_only else '**생성 항목 밖**'})"
+    )
+    lines.append(
+        f"  배포경로  CI `{CI_BUILD_JOB}` job pin {repro.ci_pin_value or '없음'}"
+        + (" — 같은 값" if repro.ci_pinned else f" — **불일치** {repro.ci_note}")
+    )
+    lines.append(
+        f"  소요      {record.seconds:.1f}초(재현 {repro.seconds:.1f}초 포함) · 자기시험 {probe.cases}건 재판정"
+    )
     for problem in record.problems:
         lines.append(f"    - {problem}")
     lines.append(

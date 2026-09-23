@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "2026-09-23 배포판 vs 추적 트리 회차 승인: stage 10개 전부 PASS(10/10) · release_artifacts --gate 0(51초 — 추적 656개 중 빠짐 0 · 생성물 2 · 트리에만 11 · 실물 재현 셋 모두 지목/오탐 0) · architecture_review 15 checks PASS · tests/cognitive 647 collected · ruff·mypy clean. 이 회차는 uv 가 wheel 을 sdist 에서 만든다는 사실을 실측으로 확인하고(681 vs 664) 추적 대조를 붙였다."
+    "2026-09-23 재현 빌드 회차 승인: stage 10개 전부 PASS(10/10) · release_artifacts --gate 0(60초 — 같은 pin 두 번에서 wheel 동일 664/664 항목 pin · sdist 는 생성 항목 41개만 다름(커밋된 파일 0 · 목록 차이 0 · pin 0/1205) · 미니 setuptools 셋으로 민감도 확인(같은 pin 동일·다른 pin 다름·미니 sdist 도 생성 항목만) · CI build job pin 1758600000 일치) · architecture_review 15 checks PASS · tests/cognitive 677 collected · ruff·mypy clean. 이 회차는 앞 회차가 관측만 하고 계약으로 올리지 않은 SOURCE_DATE_EPOCH 재료를 계약으로 올리면서 시작했고, 측정이 판정을 갈랐다: wheel 은 재현되고 sdist 는 backend(setuptools)가 이 값을 읽지 않아 재현되지 않는다 — 그 차이는 같은 backend 의 미니 프로젝트에서도 같은 모양으로 나타나 우리 repo 탓이 아님을 매 실행 확인한다. 예외는 좁고 만료된다(디렉터리·커밋되지 않은 생성물만 허용 · 커밋된 파일·목록이 흔들리면 실패 · sdist 가 같아지면 예외를 지우라는 실패 · 항목이 pin 을 따르기 시작해도 실패). 배포 경로(ci.yml build job)에 같은 pin 을 걸었고 이 층이 그 값을 읽어 대조한다. 남은 것: 다른 클론에서는 파일 mtime 이 달라 sdist 가 또 달라진다(backend 한계) · 민감도 재현은 심은 종류만 증명 · 카나리아 미포함(59초 하한) · 하한을 내리는 판단은 사람 몫 · 실모델·실 vault 재확인 · 사람 승인."
   ],
   "layers": {
     "audit_enum_identity": {
@@ -69,11 +69,19 @@
     },
     "release_artifacts": {
       "counts.artifacts": 2,
+      "counts.ci_pinned": 1,
       "counts.compared": 664,
       "counts.generated": 2,
+      "counts.identity_allowed_differs": 41,
+      "counts.identity_appeared": 0,
+      "counts.identity_compared": 2,
+      "counts.identity_identical": 1,
+      "counts.identity_real_differs": 0,
       "counts.local_only": 11,
       "counts.missing": 0,
+      "counts.pinned_members": 664,
       "counts.roundtrip_bites": 1,
+      "counts.sensitivity_bites": 1,
       "counts.tamper_detected": 1,
       "counts.tracked_missing": 0,
       "counts.tracked_shipped": 656,
@@ -87,7 +95,7 @@
       "checks": 15,
       "measured.canary_harnesses": 8,
       "measured.canary_ok": 8,
-      "measured.cognitive_tests": 647,
+      "measured.cognitive_tests": 677,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
@@ -116,6 +124,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "2026-09-23 배포판 vs 추적 트리 회차 승인: stage 10개 전부 PASS(10/10) · release_artifacts --gate 0(51초 — 추적 656개 중 빠짐 0 · 생성물 2 · 트리에만 11 · 실물 재현 셋 모두 지목/오탐 0) · architecture_review 15 checks PASS · tests/cognitive 647 collected · ruff·mypy clean. 이 회차는 uv 가 wheel 을 sdist 에서 만든다는 사실을 실측으로 확인하고(681 vs 664) 추적 대조를 붙였다.",
+  "method": "2026-09-23 재현 빌드 회차 승인: stage 10개 전부 PASS(10/10) · release_artifacts --gate 0(60초 — 같은 pin 두 번에서 wheel 동일 664/664 항목 pin · sdist 는 생성 항목 41개만 다름(커밋된 파일 0 · 목록 차이 0 · pin 0/1205) · 미니 setuptools 셋으로 민감도 확인(같은 pin 동일·다른 pin 다름·미니 sdist 도 생성 항목만) · CI build job pin 1758600000 일치) · architecture_review 15 checks PASS · tests/cognitive 677 collected · ruff·mypy clean. 이 회차는 앞 회차가 관측만 하고 계약으로 올리지 않은 SOURCE_DATE_EPOCH 재료를 계약으로 올리면서 시작했고, 측정이 판정을 갈랐다: wheel 은 재현되고 sdist 는 backend(setuptools)가 이 값을 읽지 않아 재현되지 않는다 — 그 차이는 같은 backend 의 미니 프로젝트에서도 같은 모양으로 나타나 우리 repo 탓이 아님을 매 실행 확인한다. 예외는 좁고 만료된다(디렉터리·커밋되지 않은 생성물만 허용 · 커밋된 파일·목록이 흔들리면 실패 · sdist 가 같아지면 예외를 지우라는 실패 · 항목이 pin 을 따르기 시작해도 실패). 배포 경로(ci.yml build job)에 같은 pin 을 걸었고 이 층이 그 값을 읽어 대조한다. 남은 것: 다른 클론에서는 파일 mtime 이 달라 sdist 가 또 달라진다(backend 한계) · 민감도 재현은 심은 종류만 증명 · 카나리아 미포함(59초 하한) · 하한을 내리는 판단은 사람 몫 · 실모델·실 vault 재확인 · 사람 승인.",
   "recorded_on": "2026-09-23"
 }
