@@ -104,6 +104,154 @@ def test_unknown_tier_is_refused(gate: Any) -> None:  # noqa: ANN401
         gate.stages_for("fullfast")
 
 
+# ------------------------------------------------------------------ 수치 (한 번의 실행으로 판정 + 수치)
+
+
+def test_every_layer_hands_back_numbers(gate: Any) -> None:  # noqa: ANN401
+    """돌아간 층은 **수치도 함께** 낸다 — 수를 못 읽는 층은 추이에 쓸 수 없다."""
+
+    outcomes = gate.run(gate.TIER_FAST)
+
+    for outcome in outcomes:
+        assert outcome.numbers, f"{outcome.stage.name} 이 수치를 내지 않았다"
+        assert not outcome.read_detail, f"{outcome.stage.name}: {outcome.read_detail}"
+
+
+def test_layer_without_readable_numbers_is_a_failure(gate: Any) -> None:  # noqa: ANN401
+    """지목한 키에서 수를 못 찾으면 실패한다 — “수가 안 보임” 을 “그대로” 로 쓰지 않는다."""
+
+    stage = replace(gate.STAGES[0], numbers=("no_such_key",))
+    outcome = gate.run_stage(stage)
+
+    assert outcome.kind == gate.KIND_PASS
+    assert not outcome.numbers
+    assert "no_such_key" in outcome.read_detail
+    assert any("수치를 읽지 못했다" in problem for problem in gate.problems((outcome,), []))
+
+
+def test_snapshot_only_holds_layers_that_ran(gate: Any) -> None:  # noqa: ANN401
+    """못 돌린 층은 스냅숏에 들어가지 않는다(빈 값을 “그대로” 로 만들지 않는다)."""
+
+    outcomes = gate.run(gate.TIER_FAST)
+    kept = gate.snapshot(outcomes)
+
+    assert set(kept) == {outcome.stage.name for outcome in outcomes}
+    assert "regression_ledger" not in kept
+    assert "regression_ledger" not in gate.snapshot(gate.outsider_outcomes(gate.TIER_FAST))
+
+
+def test_movements_name_what_moved(gate: Any) -> None:  # noqa: ANN401
+    """줄었다·늘었다·새 수·사라진 수·기준 없음을 구분하고, 층과 수치 이름을 함께 낸다."""
+
+    moves = gate.movements(
+        {"a": {"x": 1, "y": 5}, "fresh": {"z": 1}},
+        {"a": {"x": 3}, "gone": {"q": 1}},
+    )
+    kinds = {(move.layer, move.key): move.kind for move in moves}
+
+    assert kinds[("a", "x")] == gate.MOVED_DOWN
+    assert kinds[("a", "y")] == gate.MOVED_NEW
+    assert kinds[("fresh", "")] == gate.MOVED_NONE
+    assert kinds[("gone", "")] == gate.MOVED_GONE
+    down = next(move for move in moves if (move.layer, move.key) == ("a", "x"))
+    assert "a · x 3 → 1" in down.describe()
+
+
+def test_trend_puts_shrinking_numbers_first(gate: Any) -> None:  # noqa: ANN401
+    """추이는 줄어든 수를 먼저 보여 준다 — 늘어난 수부터 보면 얇아진 층이 묻힌다."""
+
+    moves = gate.movements({"a": {"x": 1, "y": 9}}, {"a": {"x": 2, "y": 1}})
+    lines = gate.trend_lines(moves, {"path": "b.json", "recorded_on": "2026-01-01"})
+
+    assert "▼" in lines[1]
+    assert "▲" in lines[2]
+
+
+# ------------------------------------------------------------------ 기준 (지난 승인 시점)
+
+
+def test_repository_baseline_is_recorded_and_covers_the_layers(gate: Any) -> None:  # noqa: ANN401
+    """저장소의 기준 파일이 실재하고, 무엇을 보고 승인했는지·언제인지·층 수를 들고 있다."""
+
+    assert gate.BASELINE.exists(), f"{gate.BASELINE} 가 없다 — `--record-baseline --method` 로 만들어야 한다"
+    payload = json.loads(gate.BASELINE.read_text(encoding="utf-8"))
+
+    assert str(payload["method"]).strip()
+    assert str(payload["recorded_on"]).strip()
+    assert len(payload["layers"]) >= 7, payload["layers"].keys()
+    assert set(payload["layers"]) == {stage.name for stage in gate.STAGES}
+
+
+def test_recording_a_baseline_needs_a_method(gate: Any, tmp_path: Path) -> None:  # noqa: ANN401
+    """무엇을 보고 승인했는지 없이는 기준을 기록하지 않는다(그리고 종료 코드로 말한다)."""
+
+    target = tmp_path / "baseline.json"
+
+    assert gate.main(["--record-baseline", "--baseline", str(target), "--quiet"]) == gate.EXIT_GATE
+    assert target.exists() is False, "method 없이 기준을 썼다"
+
+
+def test_recording_a_baseline_round_trips(gate: Any, tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:  # noqa: ANN401
+    """기록한 기준으로 바로 다음 실행이 비교한다 — 첫 실행은 전부 '그대로' 다."""
+
+    target = tmp_path / "baseline.json"
+    assert (
+        gate.main(
+            [
+                "--tier",
+                gate.TIER_FAST,
+                "--record-baseline",
+                "--baseline",
+                str(target),
+                "--method",
+                "시험용 승인",
+                "--quiet",
+            ]
+        )
+        == gate.EXIT_OK
+    )
+    payload = json.loads(target.read_text(encoding="utf-8"))
+    assert payload["method"] == "시험용 승인"
+    assert payload["recorded_on"]
+    assert set(payload["layers"])
+
+    assert gate.main(["--tier", gate.TIER_FAST, "--baseline", str(target)]) == gate.EXIT_OK
+    printed = capsys.readouterr().out
+    assert "[추이]" in printed
+    assert "기준 없음" not in printed
+    assert "그대로" in printed
+
+
+def test_a_normal_run_does_not_touch_the_baseline(gate: Any, tmp_path: Path) -> None:  # noqa: ANN401
+    """게이트는 기준을 **읽기만** 한다 — 돌리는 것만으로 승인 기록이 바뀌면 추이가 거짓말한다."""
+
+    target = tmp_path / "baseline.json"
+
+    assert gate.main(["--tier", gate.TIER_FAST, "--baseline", str(target), "--quiet"]) == gate.EXIT_OK
+    assert target.exists() is False
+
+
+def test_broken_baseline_is_a_failure_not_a_shrug(gate: Any, tmp_path: Path) -> None:  # noqa: ANN401
+    """깨진 기준을 “비교 불가” 로 삼키지 않는다 — 그 상태로는 얇아짐을 볼 수 없다."""
+
+    target = tmp_path / "baseline.json"
+    target.write_text("{ not json", encoding="utf-8")
+
+    assert gate.main(["--tier", gate.TIER_FAST, "--baseline", str(target), "--quiet"]) == gate.EXIT_GATE
+
+
+def test_baseline_file_without_layers_is_unusable(gate: Any, tmp_path: Path) -> None:  # noqa: ANN401
+    """층 수치가 없는 기준 파일은 기준이 아니다(빈 dict 를 “읽었다” 로 세지 않는다)."""
+
+    target = tmp_path / "baseline.json"
+    target.write_text(json.dumps({"method": "m", "recorded_on": "2026-01-01"}), encoding="utf-8")
+
+    snapshot, problem = gate.read_baseline(target)
+
+    assert snapshot == {}
+    assert "layers" in problem
+
+
 # ------------------------------------------------------------------ 판정 규칙 (합성 결과)
 
 

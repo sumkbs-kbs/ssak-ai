@@ -1048,6 +1048,71 @@ def test_gate_with_empty_fast_tier_is_rejected(review: Any) -> None:  # noqa: AN
     assert "fast tier 가 비어 있다" in result.detail
 
 
+def test_repository_gate_baseline_is_recorded(review: Any) -> None:  # noqa: ANN401
+    """저장소의 기준 파일이 기록돼 있다 — 기준 없는 게이트는 추이를 말할 수 없다."""
+
+    baseline = _gate_report(review)["baseline"]
+
+    assert baseline["exists"] is True, baseline
+    assert baseline["readable"] is True, baseline
+    assert str(baseline["method"]).strip()
+    assert str(baseline["recorded_on"]).strip()
+    assert baseline["layers"] >= 7
+
+
+def test_gate_without_a_baseline_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """기준 파일이 없으면 실패한다 — 그 상태의 추이는 매번 '기준 없음' 이다."""
+
+    report = _gate_report(review, baseline={"path": "b.json", "exists": False, "readable": False, "layers": 0})
+    result = review.check_evidence_gate(report)
+
+    assert result.passed is False
+    assert "기준 파일이 없다" in result.detail
+
+
+def test_gate_with_an_unreadable_baseline_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """깨진 기준을 “기준 없음” 으로 삼키지 않는다."""
+
+    report = _gate_report(review, baseline={"path": "b.json", "exists": True, "readable": False, "layers": 0})
+    result = review.check_evidence_gate(report)
+
+    assert result.passed is False
+    assert "읽지 못한다" in result.detail
+
+
+def test_gate_baseline_without_a_method_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """무엇을 보고 승인했는지 없는 기준은 근거가 아니다."""
+
+    report = _gate_report(
+        review,
+        baseline={
+            "path": "b.json",
+            "exists": True,
+            "readable": True,
+            "layers": 8,
+            "method": "  ",
+            "recorded_on": "2026-01-01",
+        },
+    )
+    result = review.check_evidence_gate(report)
+
+    assert result.passed is False
+    assert "method" in result.detail
+
+
+def test_gate_baseline_without_a_date_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """언제 승인한 상태인지 모르는 기준도 실패한다."""
+
+    report = _gate_report(
+        review,
+        baseline={"path": "b.json", "exists": True, "readable": True, "layers": 8, "method": "m", "recorded_on": ""},
+    )
+    result = review.check_evidence_gate(report)
+
+    assert result.passed is False
+    assert "recorded_on" in result.detail
+
+
 def test_gate_stage_count_is_a_marker(review: Any) -> None:  # noqa: ANN401
     """stage 수는 measured 마커로 고정된다 — 명단이 줄면 문서 마커가 어긋난다."""
 

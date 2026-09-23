@@ -42,7 +42,9 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
     (`observed=0`)이 막히는지, 차단 문장이 그 harness 가 기록한 근거를 함께 내는지 본다.
 13. 여섯 층이 **한 번에 도는 명령**(`scripts/evidence_gate.py`)으로 묶여 있는가(`evidence_gate`) — stage 가
     비어 있지 않고 요구된 이름이 전부 있으며 각 스크립트가 실재하는가, tier 가 아는 값인가, 게이트의
-    **자기시험**(종류 구분·tier 필터·roster 정합)이 있고 통과하는가, 하한의 근거가 적혀 있는가.
+    **자기시험**(종류 구분·tier 필터·roster 정합·수치 추출)이 있고 통과하는가, 하한의 근거가 적혀 있는가,
+    그리고 **비교할 기준 파일이 기록돼 있는가**(무엇을 보고 승인했는지·언제인지가 없으면 기준이 아니다 —
+    깨진 기준을 “기준 없음” 으로 삼키지 않는다).
     리뷰는 게이트를 **돌리지 않고 명세만 읽는다** — 게이트의 stage 중 하나가 이 리뷰라서 돌리면 서로를
     불러 끝나지 않는다(단방향 계약).
 14. 이 문서의 `<!-- measured:key=value -->` 마커가 실제 측정값과 일치하는가(`measured_markers`).
@@ -65,7 +67,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 558 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 574 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
@@ -93,7 +95,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=558 -->
+<!-- measured:cognitive_tests=574 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -126,13 +128,13 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | 회귀 | 명령 | exit | 관찰 |
 |---|---|---|---|
 | 테스트(전체 · **과거 회차 이력**) | `.venv/bin/python -m pytest tests/ -m 'not slow and not benchmark' -q` | 1 | **세 번 쟀고 회차마다 달랐다**(트리·수집 오염·실행 선택이 함께 달랐던 비교 — 현재 기준선은 이 표의 아래 원장 행이다) — ①(수정 전 · random) 7723 수집 · **94 failed / 7571 passed / 14 skipped / 20 xfailed**(26:31) ②(random) 7726 수집 · **10 failed / 7660 passed** ③(**고정 순서** `-p no:randomly`) 7726 수집 · **7 failed / 7663 passed / 14 skipped / 24 deselected / 20 xfailed**(21:21) ④(**고정 순서 · 정리 뒤**) 7726 수집 · **5 failed / 7666 passed / 14 skipped / 24 deselected / 20 xfailed**(20:13). 그 차이는 seed 효과가 아니라 트리·오염·실행 선택의 차이였고, seed 를 가른 측정은 §1.2 의 원장이다, ③·④의 실패도 전부 기존 항목이다(그중 둘은 §1.5에서 등록으로 닫았다) |
-| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 557 passed · 1 skipped (수집 558 — 원장 subdirs scope 2회에서도 결정적 실패 0) |
+| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 573 passed · 1 skipped (수집 574 — 원장 subdirs scope 2회에서도 결정적 실패 0) |
 | lint | `.venv/bin/python -m ruff check src/ tests/ scripts/` | 0 | All checks passed |
 | format | `.venv/bin/python -m ruff format --check src/ tests/ scripts/` | 0 | 1162 files already formatted |
 | type | `.venv/bin/python -m mypy <cognitive·surface·cli·5 scripts>` | 0 | Success: no issues found in 29 source files |
 | schema | `.venv/bin/python scripts/generate_record_schema.py --check` | 0 | schema up to date (record-entities/record-envelope) |
 | architecture review | `.venv/bin/python scripts/architecture_review.py` | 0 | 14 checks PASS(회귀 원장 · 인용 추적 · digest 측정 · 상태 주장 재판정 · 하한 카나리아 · 증거 게이트) |
-| 증거 게이트(여섯 층 한 번에) | `.venv/bin/python scripts/evidence_gate.py --tier full` | 0 | stage 8개 전부 PASS(리뷰 · 카나리아 · digest · 상태 주장 · enum · namespace · 표면 · 회귀 원장) — `--tier fast` 는 로컬 회차가 필요한 회귀 원장을 **'보지 않은 층'** 으로 적는다 |
+| 증거 게이트(여섯 층 한 번에) | `.venv/bin/python scripts/evidence_gate.py --tier full` | 0 | stage 8개 전부 PASS(리뷰 · 카나리아 · digest · 상태 주장 · enum · namespace · 표면 · 회귀 원장) + **층별 수치 65개를 기준과 대조** — `--tier fast` 는 로컬 회차가 필요한 회귀 원장을 **'보지 않은 층'** 으로 적는다 |
 | 회귀 원장 | `.venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger --gate` | 0 | 9 scope · 21 회차(seed 101·202 + 순서 뒤집은 3회) · **결정적 11 · variant 민감 0 · 무소유 0** — 같은 scope 를 variant 를 바꿔 돌려 교집합/대칭차로 분리(§1.2) |
 | enum identity 감사 | `.venv/bin/python scripts/audit_enum_identity.py` | 0 | 위반 0건 (cognitive core 95곳을 `same_enum`으로 통일) |
 | namespace purge 감사 | `.venv/bin/python scripts/audit_test_namespace_purge.py` | 0 | 위반 0건 (수집 대상 시험 파일에 조건 없는 import 시점 purge 없음) |
@@ -413,6 +415,21 @@ stdout 에 그대로 남는다), 리뷰는 그 셋을 같은 규칙으로 읽는
 이빨은 `test_digest_drift`·`test_state_claims`(“같은 store 에서 `--emit-json` 과 `--gate` 가 같은 결론”)과
 리뷰 쪽 6건(종료 코드 부재·모순·정말 결함일 때는 중복해서 세지 않음·exit 1 이어도 JSON 을 살리는지·JSON 이
 아니면 None·상태 주장에도 같은 규칙)이다.
+
+**"어제보다 얇아졌는가" — 층별 수치와 기준.** `exit_code` 만 보면 “지금 빨간가” 밖에 모른다. 그래서 게이트는 층마다
+**한 번의 실행으로** 판정과 수치를 함께 받는다(`--emit-json`·`--json`·`--output`; 그 경로가 실패를 종료 코드로 말하지
+않으면 여기서 판정이 사라지므로 이음매가 먼저였다). 두 번 돌리면 시간이 두 배가 되고 서로 다른 순간을 가리킨다.
+수치는 stage 가 **지목한 키**만 펀다(`counts`·`coverage`·`measured`·`count`·목록은 길이) — 무엇을 비교하는지가
+roster 한 줄에 드러나야 하고, 새 층이 엉뚱한 수를 실어도 추이에 섞이지 않아야 한다. 이번 실행이 본 65개 수치를
+저장소의 **기준**(`evidence/evidence_gate_baseline.json`, 사람이 마지막으로 승인한 상태)과 비교해 **줄어든 수를 먼저**
+보여 주고, 그대로인 수는 접는다(안 움직인 60줄 사이에 답이 묻힌다).
+
+**이동은 판정이 아니다.** 수가 줄었다고 실패시키지 않는다 — 하한을 깨는 감소는 그 층의 자체 게이트가 이미
+실패시킨다. 게이트가 실패로 보는 것은 셋이다: **수치를 읽지 못한 층**(수가 안 보이는 층의 추이는 증거가 아니다) ·
+**못 돌린 층** · **깨진 기준 파일**(읽지 못한 기준을 “기준 없음” 으로 삼키면 그 뒤의 모든 추이가 거짓말이 된다).
+기준은 `--record-baseline --method` 로만 갱신된다(무엇을 보고 승인했는지 없이는 거부하고, `recorded_on`·수치를
+함께 남긴다). 게이트는 기준을 **읽기만** 하므로 돌리는 것만으로 승인 기록이 바뀌지 않고, **첫 실행은 “기준 없음”**
+이라고 말한다 — 이번 회차에 실제로 잡은 움직임 하나: `review · measured.cognitive_tests 558 → 574 ▲`.
 
 **게이트를 도는 자리 — 여섯 층을 한 번에.** harness 마다 게이트가 있어도 그것을 도는 자리는 사람의 기억뿐이었다:
 CI 는 하나도 돌리지 않았고, 어디가 얇은지 보려면 여덟 개 명령을 손으로 쳐야 했다. `scripts/evidence_gate.py` 가 그

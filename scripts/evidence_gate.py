@@ -18,10 +18,18 @@ CI 는 이 게이트를 하나도 돌리지 않았고, “어디가 얇은가”
   * **자기시험**(`--self-test`) — 판정 규칙(통과/실패/못 돌림 구분 · tier 필터 · 요약 문장 · stage roster)을
     매 실행 합성 결과로 다시 물어본다. 판정 규칙이 깨진 실행은 증거가 아니다.
 
+**수치도 함께 본다 — 어제보다 얇아졌는가.** 층마다 `exit_code` 만 보면 "지금 빨간가" 밖에 모른다. 그래서 게이트는
+각 층을 **한 번의 실행으로** 판정과 수치를 함께 받고(`--emit-json`·`--json`·`--output` — 그 경로가 실패를 종료
+코드로 말하지 않으면 여기서 판정이 사라진다), 그 수치를 저장소의 **기준**(사람이 마지막으로 승인한 상태)과 비교해
+줄어든 수를 먼저 보여 준다. 수의 이동 자체는 **판정이 아니다** — 하한을 깨는 감소는 그 층의 자체 게이트가 이미
+실패시킨다. 판정 대상은 세 가지: 수치를 **읽지 못한 층** · **못 돌린 층** · **깨진 기준 파일**.
+
 ```sh
 .venv/bin/python scripts/evidence_gate.py                  # fast tier — 8초 안에 끝난다
 .venv/bin/python scripts/evidence_gate.py --tier full      # 회귀 원장까지(로컬 산출물 필요)
 .venv/bin/python scripts/evidence_gate.py --json .artifacts/evidence-gate.json
+.venv/bin/python scripts/evidence_gate.py --no-baseline    # 기준과 비교하지 않는다
+.venv/bin/python scripts/evidence_gate.py --record-baseline --method "..."   # 지금을 새 기준으로(사람의 커밋)
 .venv/bin/python scripts/evidence_gate.py --self-test      # 판정 규칙만 재판정(아무것도 돌리지 않는다)
 ```
 """
@@ -33,8 +41,10 @@ import importlib.util
 import json
 import subprocess
 import sys
+import tempfile
 import time
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 from types import ModuleType
 from typing import Final
@@ -62,34 +72,106 @@ KINDS: Final[tuple[str, ...]] = (KIND_PASS, KIND_FAIL, KIND_UNRUN, KIND_OUTSIDE)
 
 DEFAULT_TIMEOUT: Final[float] = 300.0
 
+# 수치를 내는 자리 — `stdout` 은 JSON 을 stdout 으로, `file` 은 `{report}` 자리에 파일로 쓴다.
+SOURCE_STDOUT: Final[str] = "stdout"
+SOURCE_FILE: Final[str] = "file"
+SOURCES: Final[tuple[str, ...]] = (SOURCE_STDOUT, SOURCE_FILE)
+REPORT_TOKEN: Final[str] = "{report}"
+
+# 지난 승인 시점의 수치 — 게이트는 이 파일을 **읽기만** 한다(갱신은 `--record-baseline` + 사람의 커밋).
+BASELINE: Final[Path] = REPO_ROOT / "docs" / "ssak-ai-core" / "evidence" / "evidence_gate_baseline.json"
+
+# 수치의 움직임 — 감소는 **판정이 아니라 관찰**이다(하한을 깨는 감소는 그 층의 자체 게이트가 이미 실패시킨다).
+MOVED_SAME: Final[str] = "same"
+MOVED_UP: Final[str] = "up"
+MOVED_DOWN: Final[str] = "down"
+MOVED_NEW: Final[str] = "new"
+MOVED_GONE: Final[str] = "gone"
+MOVED_NONE: Final[str] = "none"
+MOVEMENTS: Final[tuple[str, ...]] = (MOVED_SAME, MOVED_UP, MOVED_DOWN, MOVED_NEW, MOVED_GONE, MOVED_NONE)
+
 
 @dataclass(frozen=True, slots=True)
 class Stage:
-    """한 층을 도는 방법 — 무엇을(script) 어떻게(args) 돌려 무엇을 보는지(describes)."""
+    """한 층을 도는 방법 — 무엇을(script) 어떻게(args) 돌려 무엇을 보는지(describes).
+
+    `args` 는 **판정과 수치를 한 번에 내는 실행**이다(그래서 이음매가 중요하다 — JSON 을 내는 경로가 실패를
+    종료 코드로 말하지 않으면 여기서 판정이 사라진다). 파일로 수치를 내는 층은 `{report}` 자리에 이 실행이
+    만든 임시 경로가 들어간다.
+    """
 
     name: str
     tier: str
     script: str
     args: tuple[str, ...]
     describes: str
+    read_source: str
+    numbers: tuple[str, ...] = ("counts", "coverage")
     requires: tuple[str, ...] = ()
 
 
 # stage roster — 단일 출처. `REQUIRED_STAGES` 와 어긋나면 자기시험이 실패한다(이름을 지워도 잡힌다).
 STAGES: Final[tuple[Stage, ...]] = (
-    Stage("review", TIER_FAST, "architecture_review.py", ("--quiet",), "24원칙·§63·§52 매핑과 증거의 정합"),
-    Stage("canary", TIER_FAST, "harness_canary.py", ("--gate",), "탐지력 하한이 실제로 무는가"),
-    Stage("digest_drift", TIER_FAST, "digest_drift.py", ("--gate",), "증거가 못 박은 digest 의 현재 일치"),
-    Stage("audit_state_claims", TIER_FAST, "audit_state_claims.py", ("--gate",), "산문의 현재-상태 주장 재판정"),
-    Stage("audit_enum_identity", TIER_FAST, "audit_enum_identity.py", (), "enum identity 비교 감사"),
-    Stage("audit_test_namespace_purge", TIER_FAST, "audit_test_namespace_purge.py", (), "import 시점 purge 감사"),
-    Stage("measure_cognitive_surface", TIER_FAST, "measure_cognitive_surface.py", (), "legacy→core 도달 표 측정"),
+    Stage(
+        "review",
+        TIER_FAST,
+        "architecture_review.py",
+        ("--quiet", "--output", REPORT_TOKEN),
+        "24원칙·§63·§52 매핑과 증거의 정합",
+        SOURCE_FILE,
+        numbers=("measured", "checks"),
+    ),
+    Stage("canary", TIER_FAST, "harness_canary.py", ("--emit-json",), "탐지력 하한이 실제로 무는가", SOURCE_STDOUT),
+    Stage(
+        "digest_drift",
+        TIER_FAST,
+        "digest_drift.py",
+        ("--emit-json",),
+        "증거가 못 박은 digest 의 현재 일치",
+        SOURCE_STDOUT,
+    ),
+    Stage(
+        "audit_state_claims",
+        TIER_FAST,
+        "audit_state_claims.py",
+        ("--emit-json",),
+        "산문의 현재-상태 주장 재판정",
+        SOURCE_STDOUT,
+    ),
+    Stage(
+        "audit_enum_identity",
+        TIER_FAST,
+        "audit_enum_identity.py",
+        ("--json", REPORT_TOKEN),
+        "enum identity 비교 감사",
+        SOURCE_FILE,
+        numbers=("count", "scanned_files"),
+    ),
+    Stage(
+        "audit_test_namespace_purge",
+        TIER_FAST,
+        "audit_test_namespace_purge.py",
+        ("--json", REPORT_TOKEN),
+        "import 시점 purge 감사",
+        SOURCE_FILE,
+        numbers=("count", "coverage"),
+    ),
+    Stage(
+        "measure_cognitive_surface",
+        TIER_FAST,
+        "measure_cognitive_surface.py",
+        ("--output", REPORT_TOKEN),
+        "legacy→core 도달 표 측정",
+        SOURCE_FILE,
+        numbers=("coverage",),
+    ),
     Stage(
         "regression_ledger",
         TIER_FULL,
         "regression_ledger.py",
-        ("--gate",),
+        ("--gate", "--json", REPORT_TOKEN),
         "전량 회귀 원장(scope 별 seed 두 회차)",
+        SOURCE_FILE,
         requires=(".regression-ledger",),
     ),
 )
@@ -140,21 +222,54 @@ def coverage_floors(stages: tuple[Stage, ...] | None = None) -> list[Floor]:
     return [_stage_floor(STAGES if stages is None else stages)]
 
 
+def numeric_snapshot(payload: object, keys: tuple[str, ...]) -> dict[str, int]:
+    """JSON payload 에서 **수를 고른다** — 지시한 키만 보고, 수가 아니면 조용히 버린다.
+
+    키가 dict 면 `키.이름`, list 면 길이, int 면 값으로 편다. 매직 키를 훑지 않고 stage 가 키를 지목하는 이유:
+    무엇을 비교하는지가 roster 한 줄에 드러나야 하고, 새 층이 엉뚱한 수를 실어도 추이에 섞이지 않아야 한다.
+    """
+
+    found: dict[str, int] = {}
+    for key in keys:
+        value = payload.get(key) if isinstance(payload, dict) else None
+        if isinstance(value, bool):
+            continue
+        if isinstance(value, int):
+            found[key] = value
+        elif isinstance(value, list):
+            found[key] = len(value)
+        elif isinstance(value, dict):
+            for name, item in value.items():
+                if isinstance(item, bool):
+                    continue
+                if isinstance(item, int):
+                    found[f"{key}.{name}"] = item
+                elif isinstance(item, list):
+                    found[f"{key}.{name}"] = len(item)
+    return dict(sorted(found.items()))
+
+
 @dataclass(frozen=True, slots=True)
 class Outcome:
-    """한 stage 의 관찰 — 종류·종료 코드·소요 시간·사람이 읽을 이유."""
+    """한 stage 의 관찰 — 종류·종료 코드·소요 시간·사람이 읽을 이유·**그 층이 낸 수치**."""
 
     stage: Stage
     kind: str
     exit_code: int | None
     seconds: float
     detail: str = ""
+    numbers: tuple[tuple[str, int], ...] = ()
+    read_detail: str = ""
 
     @property
     def ok(self) -> bool:
         """통과는 `pass` 뿐이다 — 못 돌린 것도, 이 tier 가 보지 않은 것도 통과가 아니다."""
 
         return self.kind == KIND_PASS
+
+    @property
+    def numbers_mapping(self) -> dict[str, int]:
+        return dict(self.numbers)
 
     def as_mapping(self) -> dict[str, object]:
         return {
@@ -165,6 +280,8 @@ class Outcome:
             "seconds": round(self.seconds, 2),
             "detail": self.detail,
             "describes": self.stage.describes,
+            "numbers": self.numbers_mapping,
+            "read_detail": self.read_detail,
         }
 
 
@@ -199,8 +316,51 @@ def first_failure_detail(stdout: str, stderr: str) -> str:
     return "(출력 없음)"
 
 
-def run_stage(stage: Stage, *, timeout: float = DEFAULT_TIMEOUT) -> Outcome:
-    """stage 하나를 독립 process 로 돌린다 — 예외도 삼키지 않고 **판정으로** 바꾼다."""
+def stage_argv(stage: Stage, report: Path | None) -> list[str]:
+    """그 stage 의 실행 argv — `{report}` 자리에 이번 실행의 임시 경로를 채운다."""
+
+    argv = [sys.executable, str(SCRIPTS_DIR / stage.script)]
+    for token in stage.args:
+        argv.append(str(report) if token == REPORT_TOKEN and report is not None else token)
+    return argv
+
+
+def read_numbers(
+    stage: Stage, result: subprocess.CompletedProcess[str], report: Path | None
+) -> tuple[dict[str, int], str]:
+    """그 층이 낸 수치 — 읽지 못했으면 그 이유를 돌려준다(빈 dict 를 “그대로” 로 쓰지 않는다)."""
+
+    raw = ""
+    if stage.read_source == SOURCE_STDOUT:
+        raw = result.stdout
+    elif stage.read_source == SOURCE_FILE:
+        if report is None or not report.exists():
+            return {}, f"수치 파일을 만들지 않았다({stage.read_source} 경로)"
+        raw = report.read_text(encoding="utf-8")
+    else:
+        return {}, f"수치를 읽는 방법을 모른다: {stage.read_source!r}"
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        return {}, f"수치가 JSON 이 아니다: {exc.msg}"
+    numbers = numeric_snapshot(payload, stage.numbers)
+    if not numbers:
+        return {}, f"{', '.join(stage.numbers)} 에서 수를 찾지 못했다 — 그 층이 내는 수가 바뀌었는지 확인해야 한다"
+    return numbers, ""
+
+
+def run_stage(stage: Stage, *, timeout: float = DEFAULT_TIMEOUT, report_dir: Path | None = None) -> Outcome:
+    """stage 하나를 독립 process 로 돌린다 — 예외도 삼키지 않고 **판정으로** 바꾼다.
+
+    한 번의 실행으로 **판정(종료 코드)과 수치(JSON)** 를 함께 받는다. 두 번 돌리면 시간이 두 배가 되고, 두 결과가
+    서로 다른 순간을 가리킬 수 있다.
+    """
+
+    if REPORT_TOKEN in stage.args and report_dir is None:
+        # 부르는 쪽이 자리를 주지 않으면 여기서 만든다 — 수치는 게이트의 계약이라 "안 받은 것" 과 "못 읽은 것" 을
+        # 섞으면 멀정한 층이 "수치를 읽지 못했다" 로 실패한다.
+        with tempfile.TemporaryDirectory(prefix="evidence-gate-") as workspace:
+            return run_stage(stage, timeout=timeout, report_dir=Path(workspace))
 
     script = SCRIPTS_DIR / stage.script
     if not script.exists():
@@ -215,10 +375,14 @@ def run_stage(stage: Stage, *, timeout: float = DEFAULT_TIMEOUT) -> Outcome:
                 f"필요한 산출물이 없다: {required} — 이 체크아웃에서는 이 층을 돌릴 수 없다(로컬 회차를 만들어야 한다)",
             )
 
+    report = (report_dir / f"{stage.name}.json") if report_dir is not None and REPORT_TOKEN in stage.args else None
+    if report is not None:
+        report.parent.mkdir(parents=True, exist_ok=True)
+
     started = time.monotonic()
     try:
         result = subprocess.run(
-            [sys.executable, str(script), *stage.args],
+            stage_argv(stage, report),
             cwd=REPO_ROOT,
             capture_output=True,
             text=True,
@@ -236,15 +400,19 @@ def run_stage(stage: Stage, *, timeout: float = DEFAULT_TIMEOUT) -> Outcome:
     except OSError as exc:
         return Outcome(stage, KIND_UNRUN, None, time.monotonic() - started, f"실행하지 못했다: {exc}")
 
+    numbers, read_detail = read_numbers(stage, result, report)
+    frozen = tuple(sorted(numbers.items()))
     seconds = time.monotonic() - started
     if result.returncode == 0:
-        return Outcome(stage, KIND_PASS, 0, seconds, "")
+        return Outcome(stage, KIND_PASS, 0, seconds, "", frozen, read_detail)
     return Outcome(
         stage,
         KIND_FAIL,
         result.returncode,
         seconds,
         first_failure_detail(result.stdout, result.stderr),
+        frozen,
+        read_detail,
     )
 
 
@@ -274,6 +442,11 @@ def problems(outcomes: tuple[Outcome, ...], floors: list[Floor]) -> list[str]:
             )
         elif outcome.kind == KIND_UNRUN:
             found.append(f"{outcome.stage.name} 을(를) 돌리지 못했다: {outcome.detail}")
+        if outcome.read_detail:
+            found.append(
+                f"{outcome.stage.name} 의 수치를 읽지 못했다: {outcome.read_detail} — "
+                "수가 안 보이는 층의 추이는 증거가 아니다"
+            )
     return found + floor_problems(floors)
 
 
@@ -284,6 +457,8 @@ def as_mapping(
     outsiders: tuple[Outcome, ...] = (),
     probe: Probe,
     floors: list[Floor] | None = None,
+    moves: list[Movement] | None = None,
+    baseline: dict[str, object] | None = None,
 ) -> dict[str, object]:
     records = floors if floors is not None else coverage_floors()
     return {
@@ -298,13 +473,24 @@ def as_mapping(
             "unrun": sum(1 for outcome in outcomes if outcome.kind == KIND_UNRUN),
             "outside_tier": len(outsiders),
         },
+        "layers": snapshot(outcomes),
+        "movements": [move.as_mapping() for move in (moves or [])],
+        "baseline": baseline or {"path": "", "read": False},
         "probe": probe.as_mapping(),
         "floors": floor_records(records),
     }
 
 
-def describe(tier: str, outcomes: tuple[Outcome, ...], outsiders: tuple[Outcome, ...]) -> str:
-    """사람이 30초에 읽는 건강 보고서 — 층마다 한 줄, 못 본 층은 따로 적는다."""
+def describe(
+    tier: str,
+    outcomes: tuple[Outcome, ...],
+    outsiders: tuple[Outcome, ...],
+    *,
+    moves: list[Movement] | None = None,
+    baseline: dict[str, object] | None = None,
+    trend_all: bool = False,
+) -> str:
+    """사람이 30초에 읽는 건강 보고서 — 층마다 한 줄, 못 본 층은 따로, 그리고 **기준 대비 움직임**."""
 
     width = max(20, max(len(stage.name) for stage in STAGES))
     header = f"{'stage':{width}s} {'result':12s} {'exit':>4s} {'sec':>6s}  무엇을 보는가"
@@ -317,6 +503,8 @@ def describe(tier: str, outcomes: tuple[Outcome, ...], outsiders: tuple[Outcome,
         )
         if outcome.detail:
             lines.append(f"    · {outcome.detail}")
+        if outcome.read_detail:
+            lines.append(f"    · 수치를 읽지 못했다: {outcome.read_detail}")
     for outcome in outsiders:
         lines.append(f"{outcome.stage.name:{width}s} {outcome.kind:12s} {'-':>4s} {'-':>6s}  {outcome.stage.describes}")
     lines.append(
@@ -329,7 +517,151 @@ def describe(tier: str, outcomes: tuple[Outcome, ...], outsiders: tuple[Outcome,
         lines.append(
             "이 실행이 보지 않은 층: " + ", ".join(outcome.stage.name for outcome in outsiders) + " — 통과가 아니다"
         )
+    if moves:
+        lines.append("")
+        lines.extend(trend_lines(moves, baseline or {}, show_all=trend_all))
     return "\n".join(lines)
+
+
+def trend_lines(moves: list[Movement], baseline: dict[str, object], *, show_all: bool = False) -> list[str]:
+    """기준 대비 움직임 — **줄어든 수치를 먼저** 보여 준다(늘어난 수부터 보면 얇아진 층이 묻힌다).
+
+    그대로인 수는 기본으로 접는다: 움직이지 않은 60줄 사이에 “얼마나 바뀌었나” 라는 답이 묻힌다.
+    """
+
+    order = {MOVED_DOWN: 0, MOVED_GONE: 1, MOVED_NEW: 2, MOVED_NONE: 3, MOVED_UP: 4, MOVED_SAME: 5}
+    source = str(baseline.get("path", "")) or "(기준 없음)"
+    declared = baseline.get("recorded_on") or "(날짜 없음)"
+    lines = [f"[추이] 기준 {source} · 승인 {declared}"]
+    shown = [move for move in moves if show_all or move.kind != MOVED_SAME]
+    for move in sorted(shown, key=lambda item: (order.get(item.kind, 9), item.layer, item.key)):
+        lines.append(f"  · {move.describe()}")
+    counts = {
+        kind: sum(1 for move in moves if move.kind == kind)
+        for kind in (MOVED_DOWN, MOVED_UP, MOVED_SAME, MOVED_NEW, MOVED_GONE, MOVED_NONE)
+    }
+    lines.append(
+        f"  − ↓{counts[MOVED_DOWN]} · ↑{counts[MOVED_UP]} · 그대로 {counts[MOVED_SAME]}"
+        f" · 기준에 없던 수 {counts[MOVED_NEW]} · 사라진 수 {counts[MOVED_GONE]}"
+        f" · 기준 없는 층 {counts[MOVED_NONE]}"
+        "  *(이동 자체는 판정이 아니다 — 하한을 깨는 감소는 그 층의 자체 게이트가 실패시킨다)*"
+    )
+    return lines
+
+
+@dataclass(frozen=True, slots=True)
+class Movement:
+    """한 층의 한 수치가 기준 대비 어떻게 움직였는가 — 값의 이동은 **관찰**이고, 판정은 하한이 한다."""
+
+    layer: str
+    key: str
+    kind: str
+    before: int | None
+    after: int | None
+
+    @property
+    def marker(self) -> str:
+        return {
+            MOVED_SAME: "=",
+            MOVED_UP: "▲",
+            MOVED_DOWN: "▼",
+            MOVED_NEW: "+",
+            MOVED_GONE: "−",
+            MOVED_NONE: "?",
+        }[self.kind]
+
+    def describe(self) -> str:
+        if self.kind == MOVED_NONE:
+            return f"{self.layer} · 기준 없음(이 층을 처음 본다)"
+        if not self.key:
+            return f"{self.layer} · 이번 실행이 수치를 내지 않았다(기준에는 있었다)"
+        if self.kind == MOVED_NEW:
+            return f"{self.layer} · {self.key} {self.after} (기준에 없던 수)"
+        if self.kind == MOVED_GONE:
+            return f"{self.layer} · {self.key} {self.before} → 사라졌다"
+        return f"{self.layer} · {self.key} {self.before} → {self.after} {self.marker}"
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "layer": self.layer,
+            "key": self.key,
+            "kind": self.kind,
+            "before": self.before,
+            "after": self.after,
+        }
+
+
+def snapshot(outcomes: tuple[Outcome, ...]) -> dict[str, dict[str, int]]:
+    """이번 실행이 본 수치 — **돌아간 층만** 담는다(못 돌린 층의 빈 값을 “그대로” 로 쓰지 않는다)."""
+
+    return {
+        outcome.stage.name: outcome.numbers_mapping
+        for outcome in outcomes
+        if outcome.kind in (KIND_PASS, KIND_FAIL) and outcome.numbers
+    }
+
+
+def movements(current: dict[str, dict[str, int]], baseline: dict[str, dict[str, int]] | None) -> list[Movement]:
+    """기준 대비 움직임 — 층·수치 이름의 합집합을 보고, 한쪽에만 있는 수도 숨기지 않는다."""
+
+    if baseline is None:
+        return [Movement(layer, "", MOVED_NONE, None, None) for layer in sorted(current)]
+    found: list[Movement] = []
+    for layer in sorted(set(current) | set(baseline)):
+        if layer not in baseline:
+            found.append(Movement(layer, "", MOVED_NONE, None, None))
+            continue
+        if layer not in current:
+            found.append(Movement(layer, "", MOVED_GONE, None, None))
+            continue
+        before, after = baseline[layer], current[layer]
+        for key in sorted(set(before) | set(after)):
+            if key not in before:
+                found.append(Movement(layer, key, MOVED_NEW, None, after[key]))
+            elif key not in after:
+                found.append(Movement(layer, key, MOVED_GONE, before[key], None))
+            elif after[key] > before[key]:
+                found.append(Movement(layer, key, MOVED_UP, before[key], after[key]))
+            elif after[key] < before[key]:
+                found.append(Movement(layer, key, MOVED_DOWN, before[key], after[key]))
+            else:
+                found.append(Movement(layer, key, MOVED_SAME, before[key], after[key]))
+    return found
+
+
+def read_baseline(path: Path) -> tuple[dict[str, dict[str, int]], str]:
+    """저장된 지난 승인 수치 — 없으면 빈 dict 와 “기준 없음”, 못 읽으면 빈 dict 와 이유."""
+
+    if not path.exists():
+        return {}, ""
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return {}, f"{path} 를 읽지 못했다: {exc.msg}"
+    if not isinstance(payload, dict):
+        return {}, f"{path} 의 형태가 다르다(JSON object 가 아니다)"
+    layers = payload.get("layers")
+    if not isinstance(layers, dict) or not layers:
+        return {}, f"{path} 에 층별 수치(`layers`)가 없다 — 기준으로 쓸 수 없다"
+    snapshot: dict[str, dict[str, int]] = {}
+    for layer, numbers in layers.items():
+        if not isinstance(numbers, dict):
+            return {}, f"{path} 의 {layer} 수치가 object 가 아니다"
+        snapshot[str(layer)] = {
+            str(k): int(v) for k, v in numbers.items() if isinstance(v, int) and not isinstance(v, bool)
+        }
+    return snapshot, ""
+
+
+def baseline_payload(current: dict[str, dict[str, int]], *, method: str, recorded_on: str) -> dict[str, object]:
+    """기준 파일의 내용 — **무엇을 보고 승인했는지**(method·날짜)를 수치와 함께 남긴다."""
+
+    return {
+        "command": ["python", "scripts/evidence_gate.py", "--record-baseline", "--method", method],
+        "recorded_on": recorded_on,
+        "method": method,
+        "layers": {layer: dict(sorted(numbers.items())) for layer, numbers in sorted(current.items())},
+    }
 
 
 def load_canary_harnesses() -> tuple[str, ...]:
@@ -409,6 +741,44 @@ def self_probe(stages: tuple[Stage, ...] | None = None) -> Probe:
     cases.check("하한이 지금 stage 수를 넘지 않는다", not floor_problems(floors))
     cases.check("눈멀게 한 하한(관측 0)은 문다", bool(floor_problems([Floor("stage", 0, _MIN_STAGES, why="근거")])))
 
+    # ⑦ 수치 읽기 — dict·list·int 를 펴고, 불리언과 모르는 키는 세지 않는다.
+    payload = {
+        "counts": {"a": 3, "flag": True},
+        "coverage": {"b": [1, 2], "c": 5},
+        "measured": {"d": 7},
+        "ignored": {"e": 9},
+    }
+    cases.equal(
+        "수치 추출이 지정한 키만 편다",
+        numeric_snapshot(payload, ("counts", "coverage", "measured")),
+        {"counts.a": 3, "coverage.b": 2, "coverage.c": 5, "measured.d": 7},
+    )
+    cases.equal("지목하지 않은 키는 세지 않는다", numeric_snapshot(payload, ("ignored",)), {"ignored.e": 9})
+    cases.equal("수가 없으면 빈 dict 이다", numeric_snapshot("nope", ("counts",)), {})
+    cases.check(
+        "수치를 읽지 못하면 그 층은 문제로 적힌다",
+        bool(problems((Outcome(stages[0], KIND_PASS, 0, 0.1, "", (), "JSON 이 아니다"),), [])),
+    )
+
+    # ⑧ 움직임 — 감소·증가·새 수·사라진 수·기준 없음을 구분한다(빈 값을 “그대로” 로 쓰지 않는다).
+    cases.covers("움직임 종류", MOVEMENTS, MOVEMENTS)
+    sample = movements({"a": {"x": 2, "y": 1}, "b": {"z": 5}}, {"a": {"x": 3}, "gone": {"q": 1}})
+    kinds = {(move.layer, move.key): move.kind for move in sample}
+    cases.equal("줄어든 수를 알아본다", kinds[("a", "x")], MOVED_DOWN)
+    cases.equal("기준에 없던 수를 알아본다", kinds[("a", "y")], MOVED_NEW)
+    cases.equal("기준에 있던 층이 수치를 안 내면 알아본다", kinds[("gone", "")], MOVED_GONE)
+    cases.equal("처음 보는 층에 '그대로' 라고 말하지 않는다", kinds[("b", "")], MOVED_NONE)
+    cases.equal("기준이 없으면 층마다 '기준 없음' 을 낸다", [m.kind for m in movements({"a": {}}, None)], [MOVED_NONE])
+    sample_trend = trend_lines(sample, {"path": "b.json", "recorded_on": "2026-01-01"})
+    cases.check("추이 줄에 줄어든 수가 먼저 나온다", sample_trend[1].find("▼") >= 0)
+    steady = movements({"a": {"x": 3}}, {"a": {"x": 3}})
+    cases.equal("움직이지 않은 수를 '그대로' 로 센다", [move.kind for move in steady], [MOVED_SAME])
+    cases.equal("그대로인 수는 기본 추이에서 접힌다(헤더+요약만)", len(trend_lines(steady, {})), 2)
+    cases.equal("`--trend-all` 이면 그대로인 수도 줄로 나온다", len(trend_lines(steady, {}, show_all=True)), 3)
+
+    # ⑨ 기준 파일 — 깨진 기준은 "비교 불가" 로 삼기지 않는다.
+    cases.equal("없는 기준 파일은 '기준 없음' 이다", read_baseline(REPO_ROOT / ".no-such-baseline.json"), ({}, ""))
+
     return cases.probe()
 
 
@@ -427,6 +797,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT, help="stage 별 제한 시간(초)")
     parser.add_argument("--json", type=Path, default=None, help="결과 JSON artifact 경로")
     parser.add_argument("--quiet", action="store_true", help="표를 출력하지 않는다")
+    parser.add_argument("--baseline", type=Path, default=None, help="비교할 기준 파일(기본: 저장소의 기준)")
+    parser.add_argument("--no-baseline", action="store_true", help="기준과 비교하지 않는다(추이 없음)")
+    parser.add_argument("--trend-all", action="store_true", help="그대로인 수까지 전부 보여준다(기본은 움직인 수만)")
+    parser.add_argument(
+        "--record-baseline",
+        action="store_true",
+        help="이번 실행의 수치를 새 기준으로 기록한다(--method 필수, 사람이 내용을 본 뒤에만)",
+    )
+    parser.add_argument("--method", default="", help="--record-baseline 과 함께: 무엇을 보고 승인했는가")
     parser.add_argument("--list", action="store_true", help="stage 목록만 보고 끝낸다(아무것도 돌리지 않는다)")
     parser.add_argument("--self-test", action="store_true", help="자기시험만 돌리고 끝낸다(아무것도 돌리지 않는다)")
     args = parser.parse_args(argv)
@@ -447,13 +826,72 @@ def main(argv: list[str] | None = None) -> int:
     floors = coverage_floors()
     outcomes = run(args.tier, timeout=args.timeout)
     outsiders = outsider_outcomes(args.tier)
+    current = snapshot(outcomes)
+
+    baseline_path = None if args.no_baseline else (args.baseline or BASELINE)
+    baseline, baseline_problem = read_baseline(baseline_path) if baseline_path is not None else ({}, "")
+    baseline_info: dict[str, object] = {
+        "path": ""
+        if baseline_path is None
+        else str(baseline_path.relative_to(REPO_ROOT))
+        if baseline_path.is_relative_to(REPO_ROOT)
+        else str(baseline_path),
+        "read": bool(baseline),
+        "recorded_on": "",
+        "method": "",
+    }
+    if baseline_path is not None and baseline_path.exists():
+        try:
+            stored = json.loads(baseline_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            stored = {}
+        if isinstance(stored, dict):
+            baseline_info["recorded_on"] = str(stored.get("recorded_on", ""))
+            baseline_info["method"] = str(stored.get("method", ""))
+    moves = movements(current, baseline if baseline else None) if baseline_path is not None else []
+
     if not args.quiet:
-        print(describe(args.tier, outcomes, outsiders))
+        print(describe(args.tier, outcomes, outsiders, moves=moves, baseline=baseline_info, trend_all=args.trend_all))
+
+    if args.record_baseline:
+        if not args.method.strip():
+            print(
+                "[FAIL] --record-baseline 에는 --method 가 필요하다 — 무엇을 보고 승인했는지 없이는 기준이 아니다",
+                file=sys.stderr,
+            )
+            return EXIT_GATE
+        if not current:
+            print("[FAIL] 기록할 수치가 없다 — 돌아가지 않은 실행을 기준으로 삼지 않는다", file=sys.stderr)
+            return EXIT_GATE
+        target = args.baseline or BASELINE
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(
+            json.dumps(
+                baseline_payload(current, method=args.method.strip(), recorded_on=date.today().isoformat()),
+                ensure_ascii=False,
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        print(f"기준을 기록했다: {target} ({len(current)}개 층, method: {args.method.strip()})")
+        return EXIT_OK
 
     found = problems(outcomes, floors) + probe_problems(probe, name="evidence_gate")
+    if baseline_problem:
+        found.append(f"기준 파일을 읽지 못했다: {baseline_problem} — 비교 불가를 '문제 없음' 으로 쓰지 않는다")
     if args.json is not None:
         args.json.parent.mkdir(parents=True, exist_ok=True)
-        payload = as_mapping(args.tier, outcomes, outsiders=outsiders, probe=probe, floors=floors)
+        payload = as_mapping(
+            args.tier,
+            outcomes,
+            outsiders=outsiders,
+            probe=probe,
+            floors=floors,
+            moves=moves,
+            baseline=baseline_info,
+        )
         payload["problems"] = found
         payload["ok"] = not found
         args.json.write_text(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")

@@ -1243,7 +1243,35 @@ def measure_evidence_gate(module: ModuleType | None) -> dict[str, object] | None
         "fast": [stage.name for stage in module.stages_for(module.TIER_FAST)],
         "probe": probe.as_mapping(),
         "floors": module.floor_records(module.coverage_floors(stages)),
+        "baseline": _baseline_state(module.BASELINE),
     }
+
+
+def _baseline_state(path: Path) -> dict[str, object]:
+    """기준 파일의 상태 — **있는데 못 읽는 것**과 “아직 없는 것” 을 구분해 돌려준다."""
+
+    state: dict[str, object] = {
+        "path": str(path.relative_to(REPO_ROOT)) if path.is_relative_to(REPO_ROOT) else str(path),
+        "exists": path.exists(),
+        "layers": 0,
+        "recorded_on": "",
+        "method": "",
+        "readable": False,
+    }
+    if not path.exists():
+        return state
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return state
+    if not isinstance(payload, dict):
+        return state
+    layers = payload.get("layers")
+    state["readable"] = isinstance(layers, dict) and bool(layers)
+    state["layers"] = len(layers) if isinstance(layers, dict) else 0
+    state["recorded_on"] = str(payload.get("recorded_on", ""))
+    state["method"] = str(payload.get("method", ""))
+    return state
 
 
 def check_evidence_gate(report: dict[str, object] | None) -> CheckResult:
@@ -1253,9 +1281,12 @@ def check_evidence_gate(report: dict[str, object] | None) -> CheckResult:
 
       * 게이트가 불려오고, **stage 가 하나도 없지 않고**, 요구된 이름이 전부 들어 있는가.
       * 각 stage 의 스크립트가 실재하고, tier 가 아는 값이며, `fast` 가 비어 있지 않은가.
-      * 게이트의 **자기시험이 있고 통과하는가**(합성 결과로 판정 규칙 — 종류 구분·tier 필터·roster 정합 — 을
+      * 게이트의 **자기시험이 있고 통과하는가**(합성 결과로 판정 규칙 — 종류 구분·tier 필터·roster 정합·수치 추출 — 을
         매 실행 다시 물어본다). 자기시험이 없거나 실패하면 절반의 명단은 명단이 아니다.
       * 하한이 기록돼 있고 **근거(`why`)가 적혀 있는가**.
+      * **기준 파일이 있는가** — 게이트의 추이는 “어제보다 얇아졌는가” 를 말하는데, 기준이 없으면 그 질문은
+        매번 “기준 없음” 으로 끝난다. 기준은 `--record-baseline --method` 로만 갱슰되고(무엇을 보고 승인했는지
+        없이는 기준이 아니다) 사람이 커밋하는 자리다.
     """
 
     if report is None:
@@ -1299,6 +1330,19 @@ def check_evidence_gate(report: dict[str, object] | None) -> CheckResult:
     for record in floors:
         if not str(record.get("why", "")).strip():
             problems.append(f"하한 {record.get('label')} 에 근거(`why`)가 없다")
+    baseline = _as_dict(report.get("baseline"))
+    if not baseline.get("exists"):
+        problems.append(
+            "비교할 기준 파일이 없다 — 기준 없는 게이트는 '어제보다 얇아졌는가' 를 매번 모른다고만 말한다"
+            " (`--record-baseline --method` 로 기록하고 커밋한다)"
+        )
+    elif not baseline.get("readable"):
+        problems.append(f"기준 파일을 읽지 못한다: {baseline.get('path')} — 깨진 기준을 '기준 없음' 으로 삼키지 않는다")
+    else:
+        if not str(baseline.get("method", "")).strip():
+            problems.append("기준 파일에 `method` 가 없다 — 무엇을 보고 승인했는지 남기지 않은 기준은 근거가 아니다")
+        if not str(baseline.get("recorded_on", "")).strip():
+            problems.append("기준 파일에 `recorded_on` 이 없다 — 언제 승인한 상태인지 알 수 없다")
     if problems:
         return CheckResult(
             name="evidence_gate",
@@ -1311,7 +1355,8 @@ def check_evidence_gate(report: dict[str, object] | None) -> CheckResult:
         passed=True,
         detail=(
             f"stage {len(stages)}개(전부 스크립트 실재·하한 근거 기록)를 한 번에 도는 명령이 있다 — "
-            f"fast {len(fast)}개 · 자기시험 {_as_int(probe.get('cases'))}건 통과"
+            f"fast {len(fast)}개 · 자기시험 {_as_int(probe.get('cases'))}건 통과 · "
+            f"기준 {baseline.get('layers')}개 층({baseline.get('recorded_on')} 승인)"
         ),
         observed={"stages": len(stages), "fast": len(fast)},
     )
