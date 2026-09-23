@@ -3,7 +3,7 @@
     "python",
     "scripts/digest_drift.py"
   ],
-  "source_head": "cba61df7",
+  "source_head": "b0f3e405",
   "counts": {
     "match": 28,
     "reverified": 22,
@@ -365,7 +365,7 @@
       "doc": "T11_surface.md",
       "path": "scripts/measure_cognitive_surface.py",
       "recorded": "76d3a88b1b517171",
-      "actual": "bf3f81b02671f70e22412d02f04c5e2d5abd2aec5680739447c5b8c01abdaf5b",
+      "actual": "0e86963366201340aa39a33d3800a6424e8adf61662e038ba1da8cb367ebe280",
       "status": "reverified",
       "reverified_on": "2026-09-23"
     },
@@ -505,5 +505,32 @@
       "status": "match",
       "reverified_on": ""
     }
-  ]
+  ],
+  "probe": {
+    "cases": 9,
+    "failures": [],
+    "ok": true
+  },
+  "floors": [
+    {
+      "label": "pin",
+      "observed": 50,
+      "minimum": 1,
+      "margin": 49,
+      "why": "2026-09-23 기준 관측: 증거 문서 13개가 파일에 digest 를 박아 pin 50개(그대로 28 · 재확인 22). 하한을 1로 둔 것은 ‘얼마나 많이 보나’ 가 아니라 ‘패턴이 죽어 0이 됐나’ 를 잡기 위해서다."
+    },
+    {
+      "label": "pin 을 박은 문서",
+      "observed": 13,
+      "minimum": 1,
+      "margin": 12,
+      "why": "2026-09-23 기준 관측: pin 을 박은 문서 13개. 문서 집합이 통째로 안 읽히면 ‘움직임 0’ 으로 보이므로 그 순간을 잡는다."
+    }
+  ],
+  "coverage": {
+    "pins": 50,
+    "docs": 13,
+    "min_pins": 1,
+    "min_docs": 1
+  }
 }

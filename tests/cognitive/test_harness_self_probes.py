@@ -104,6 +104,51 @@ def test_self_test_line_reports_failures(contract: Any) -> None:  # noqa: ANN401
 # --------------------------------------------------------------------- 각 harness 의 자기시험
 
 
+def harness_floors(name: str, module: Any) -> list[Any]:  # noqa: ANN401 - 스크립트 module
+    """그 harness 의 하한 목록 — 관측값은 **실제 대상에서** 얻는다(시험용 상수를 따로 두지 않는다)."""
+
+    if name == "digest_drift":
+        return list(module.coverage_floors(module.measure()))
+    if name == "regression_ledger":
+        return list(module.coverage_floors(module.Ledger()))
+    if name == "audit_state_claims":
+        return list(module.coverage_floors(module.count_mentions(), len(module.extract_claims())))
+    if name in {"audit_enum_identity", "audit_test_namespace_purge"}:
+        return list(module.coverage_floors())
+    if name == "measure_cognitive_surface":
+        return list(module.coverage_floors(module.measure_surface_reach()))
+    raise AssertionError(f"{name} 의 하한을 만드는 방법이 시험에 없다")
+
+
+@pytest.mark.parametrize(
+    "name", sorted(HARNESSES) if "harness_contract" not in HARNESSES else sorted(set(HARNESSES) - {"harness_contract"})
+)
+def test_every_harness_floor_records_its_basis(name: str) -> None:
+    """모든 harness 의 하한이 **왜 그 값인지**를 들고 있다 — 값만 남기면 나중에 내려도 되는지 판단할 수 없다."""
+
+    floors = harness_floors(name, load(name))
+
+    assert floors, f"{name} 에 하한이 없다 — 하한 없는 harness 는 빈손으로 끝나도 통과한다"
+    for floor in floors:
+        assert floor.why.strip(), f"{name} 하한 {floor.label!r} 에 근거가 비었다"
+        assert "2026-09-23" in floor.why, f"{name} 하한 {floor.label!r} 의 근거에 관측 시점이 없다"
+        assert floor.margin == floor.observed - floor.minimum
+
+
+def test_floor_records_travel_with_the_measurement() -> None:
+    """하한 기록은 값·관측·여유·근거를 함께 갖는다 — 리뷰가 그대로 읽어 판정할 수 있어야 한다."""
+
+    contract = load("harness_contract")
+    floor = contract.Floor("pin", 50, 1, why="2026-09-23 기준 관측: pin 50")
+    record = contract.floor_records([floor])[0]
+
+    assert record["observed"] == 50
+    assert record["margin"] == 49
+    assert record["why"] == floor.why
+    assert contract.floor_problems([floor]) == []
+    assert "하한 근거" in contract.floor_problems([contract.Floor("pin", 0, 1, why=floor.why)])[0]
+
+
 @pytest.mark.parametrize("name", HARNESSES)
 def test_every_harness_self_probe_passes(name: str) -> None:
     """모든 harness 가 실제 저장소에서 자기 판독력을 통과한다 — 항목이 0건이면 검사하지 않은 것이다."""

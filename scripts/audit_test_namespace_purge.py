@@ -40,7 +40,15 @@ _SCRIPTS_DIR: Final[Path] = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from harness_contract import Cases, Floor, Probe, describe_self_test, floor_problems, probe_problems  # noqa: E402
+from harness_contract import (  # noqa: E402
+    Cases,
+    Floor,
+    Probe,
+    describe_self_test,
+    floor_problems,
+    floor_records,
+    probe_problems,
+)
 
 ENV_TOKENS: Final[tuple[str, ...]] = ("environ", "getenv")
 MODULE_SCOPE_NODES: Final[tuple[type[ast.stmt], ...]] = (
@@ -180,6 +188,10 @@ _PROBE_DELETE: Final[str] = "import sys\n\ndel sys.modules['antigravity_k.x']\n"
 _PROBE_IN_FUNCTION: Final[str] = "import sys\n\n\ndef purge():\n    sys.modules.pop('antigravity_k.x', None)\n"
 _PROBE_UNRELATED: Final[str] = "import sys\n\nregistry = {}\nregistry.pop('x', None)\n"
 _MIN_SCANNED_FILES: Final[int] = 1
+_WHY_SCANNED: Final[str] = (
+    "2026-09-23 기준 관측: tests/ 와 docs/qa/ 아래 수집 대상 시험 파일 537개를 스캔. "
+    "하한 1은 ’위반 0건’ 과 ’수집 패턴(_is_collected)이 어긋나 한 개도 안 봤다’ 를 가르는 최소선이다."
+)
 
 
 def self_probe() -> Probe:
@@ -216,7 +228,7 @@ def scanned_files(paths: Sequence[Path] | None = None) -> tuple[str, ...]:
 def coverage_floors(paths: Sequence[Path] | None = None) -> list[Floor]:
     """스캔 대상이 하나도 없으면 통과가 아니라 “볼 수 없음” 이다."""
 
-    return [Floor("수집 대상 시험 파일", len(scanned_files(paths)), _MIN_SCANNED_FILES)]
+    return [Floor("수집 대상 시험 파일", len(scanned_files(paths)), _MIN_SCANNED_FILES, why=_WHY_SCANNED)]
 
 
 def _is_collected(path: Path) -> bool:
@@ -261,6 +273,7 @@ def main(argv: list[str] | None = None) -> int:
         "violations": [violation.as_mapping() for violation in violations],
         "count": len(violations),
         "probe": probe.as_mapping(),
+        "floors": floor_records(coverage_floors()),
         "coverage": {"scanned": sorted(scanned_files())},
     }
     if args.json is not None:

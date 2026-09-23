@@ -73,7 +73,15 @@ _SCRIPTS_DIR: Final[Path] = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from harness_contract import Cases, Floor, Probe, describe_self_test, floor_problems, probe_problems  # noqa: E402
+from harness_contract import (  # noqa: E402
+    Cases,
+    Floor,
+    Probe,
+    describe_self_test,
+    floor_problems,
+    floor_records,
+    probe_problems,
+)
 
 DEFAULT_JUNIT_DIR: Final[Path] = REPO_ROOT / ".regression-ledger"
 DEFAULT_JSON: Final[Path] = REPO_ROOT / "docs" / "ssak-ai-core" / "evidence" / "regression_ledger.json"
@@ -293,6 +301,13 @@ _PROBE_JUNIT: Final[str] = """<?xml version="1.0" encoding="utf-8"?>
 # 탐지력 하한 — junit 을 하나도 못 읽으면 “결정적 0 · drift 0” 으로 조용히 통과한다.
 _MIN_RUNS: Final[int] = 1
 _MIN_SCOPES: Final[int] = 1
+_WHY_RUNS: Final[str] = (
+    "2026-09-23 기준 관측: 9 scope · 21 회차(502 파일을 8구간 + subdir 로 나눠 두 variant 썩). "
+    "하한을 1로 둔 것은 ‘얼마나 많이 돌렸나’ 가 아니라 ‘junit 판독이 죽어 0이 됐나’ 를 잡기 위해서다."
+)
+_WHY_SCOPES: Final[str] = (
+    "2026-09-23 기준 관측: scope 9개. scope 를 하나도 못 읽으면 교집합/대칭차 계산이 빈 상태로 통과하므로 그 순간을 잡는다."
+)
 
 
 def self_probe() -> Probe:
@@ -349,7 +364,10 @@ def _raises(call: Callable[[], object]) -> bool:
 def coverage_floors(ledger: Ledger) -> list[Floor]:
     """이번 원장이 실제로 무엇을 봤는지 — 회차 0개는 “실패 0건” 이 아니라 “못 봄” 일 수 있다."""
 
-    return [Floor("회차", len(ledger.runs), _MIN_RUNS), Floor("scope", len(ledger.scopes), _MIN_SCOPES)]
+    return [
+        Floor("회차", len(ledger.runs), _MIN_RUNS, why=_WHY_RUNS),
+        Floor("scope", len(ledger.scopes), _MIN_SCOPES, why=_WHY_SCOPES),
+    ]
 
 
 def parse_junit(text: str, *, source: str) -> Report:
@@ -705,6 +723,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     payload = {
         **ledger.as_mapping(),
         "probe": probe.as_mapping(),
+        "floors": floor_records(coverage_floors(ledger)),
         "coverage": {"runs": len(ledger.runs), "scopes": len(ledger.scopes), "min_runs": _MIN_RUNS},
     }
     parsed.json.parent.mkdir(parents=True, exist_ok=True)

@@ -115,16 +115,16 @@
     {
       "doc": "T11_surface.md",
       "path": "scripts/measure_cognitive_surface.py",
-      "verified_digest": "bf3f81b02671f70e22412d02f04c5e2d5abd2aec5680739447c5b8c01abdaf5b",
+      "verified_digest": "0e86963366201340aa39a33d3800a6424e8adf61662e038ba1da8cb367ebe280",
       "verified_on": "2026-09-23",
-      "method": "두 pin 을 각각 확인했다: (1) scripts/measure_cognitive_surface.py 를 다시 돌려 표면 표 legacy 7/9 · core 2/9 를 재현했고 빈 표가 exit 1 이 되는 것을 봤다 (2) src/antigravity_k/engine/cognitive_surface.py 는 이를 인용한 시험을 돌려 tests/test_cognitive_surface_api.py + tests/cognitive/test_surface.py 31 passed, CLI cognitive status 도 정상 출력임을 확인했다"
+      "method": "measure_cognitive_surface.py 를 다시 돌려 표면 표(legacy 7/9 · core 2/9)를 재현하고, 하한(entrypoint 9≥1 · 실재 9≥1)에 근거 기록이 실리는 것을 확인했다"
     },
     {
       "doc": "T11_surface.md",
       "path": "src/antigravity_k/engine/cognitive_surface.py",
       "verified_digest": "2380d6d0b7ea6bf1f9171740445f314a9b26a986a1acdf0ed61775417bfa849d",
       "verified_on": "2026-09-23",
-      "method": "두 pin 을 각각 확인했다: (1) scripts/measure_cognitive_surface.py 를 다시 돌려 표면 표 legacy 7/9 · core 2/9 를 재현했고 빈 표가 exit 1 이 되는 것을 봤다 (2) src/antigravity_k/engine/cognitive_surface.py 는 이를 인용한 시험을 돌려 tests/test_cognitive_surface_api.py + tests/cognitive/test_surface.py 31 passed, CLI cognitive status 도 정상 출력임을 확인했다"
+      "method": "measure_cognitive_surface.py 를 다시 돌려 표면 표(legacy 7/9 · core 2/9)를 재현하고, 하한(entrypoint 9≥1 · 실재 9≥1)에 근거 기록이 실리는 것을 확인했다"
     },
     {
       "doc": "T13_growth.md",

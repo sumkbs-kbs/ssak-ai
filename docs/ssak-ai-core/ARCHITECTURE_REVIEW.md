@@ -83,7 +83,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=486 -->
+<!-- measured:cognitive_tests=495 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -321,7 +321,7 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 | **운영 자기시험**(self-probe) | 매 실행마다 어휘·펜스 처리·정정 창·상태 계산을 합성 입력으로 다시 재판정한다. 어휘를 비우거나 단어 하나를 지워도(`green` 삭제) 그 실행이 바로 실패한다 | **17건 재판정 — 통과** |
 | **요구 어휘 고정** | 상수를 쓸어보기만 하면 **지워진 단어**는 안 보인다. `_REQUIRED_FAIL_WORDS`/`_REQUIRED_PASS_WORDS` 를 따로 두어 빠지면 실패 | 실패 4 · 통과 3 단어 |
 | **탐지력 하한**(coverage floor) | 주장 수뿐 아니라 **node 를 지목한 산문 줄 수(mention)** 를 센다(상태 어휘가 없어도 세므로 주장의 상한 집합). 하한 아래로 가면 게이트 실패 — 정말 주장이 사라졌다면 상수를 근거와 함께 사람이 내린다 | mention **6≥1**(여유 5) · 주장 **4≥1**(여유 3) |
-| **하한의 근거 기록** | 하한은 판단이므로 **값만 남기면 나중에 내려도 되는지 아무도 판단할 수 없다**. `Floor` 가 `why`(언제 무엇을 몇 개 봤나)와 `margin`(관측−하한)을 함께 갖고, 감사가 그 기록을 artifact(`state_claims.json`)로 남긴다. 리뷰는 저장본과 새 측정을 대조하고 **근거가 빈 하한도 실패**로 본다 | `2026-09-23 기준 관측` 문장 2개 · artifact 1개 |
+| **하한의 근거 기록** | 하한은 판단이므로 **값만 남기면 나중에 내려도 되는지 아무도 판단할 수 없다**. `Floor` 가 `why`(언제 무엇을 몇 개 봤나)와 `margin`(관측−하한)을 함께 갖고, 각 harness 가 그 기록을 artifact 로 남긴다. 리뷰는 저장본과 새 측정을 대조하고 **근거가 빈 하한도 실패**로 본다 | **여섯 harness 전부** · `2026-09-23 기준 관측` 문장 12개 |
 
 자기시험이 실패하면 **판정 결과와 무관하게 그 실행은 실패**다: 판독 규칙이 깨진 실행은 증거가 아니다.
 리뷰도 같은 것을 본다 — `state_claims` 검사가 **자기시험 부재·실패 · 하한 미달 · 하한이 기록되지 않음 · 근거 없는
@@ -351,6 +351,13 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 숫자 싸움이 되고, 낮게 잡아도 판독 규칙이 죽는 순간은 잡는다. 하한을 **내리는 것은 근거와 함께 사람이 하는 결정**이며,
 그 문장을 각 스크립트의 상수 옆에 적어 두었다. 인용 추적의 하한만 **저장소 기본 범위**에 걸린다 — 부분 범위를 넘기는
 호출(시험의 합성 문서)은 그 범위를 정한 호출자가 하한을 소유한다.
+
+하한의 **근거는 여섯 harness 가 모두** 값과 함께 기록한다(`why` = 하한을 정한 시점의 관측, `margin` = 관측−하한).
+기록된 문장은 “2026-09-23 기준 관측: …” 로 시작하고, 각 harness 의 artifact(`digest_drift.json` ·
+`regression_ledger.json` · `state_claims.json` · 표면 실측 JSON 등)에 `floors` 로 실린다. 리뷰가 보는 것은 두 종류다 —
+**기록이 아예 없는 하한**(`floors` 에 없다)과 **근거가 빈 하한**(`why` 가 공백), 그리고 저장본이 새 측정과 다른 경우
+(`digest_report` 는 `floors` 까지 비교한다). 즉 하한을 올리고 내리는 변경은 **근거 문장을 고치고 artifact 를 다시
+만들어야** 반영된다.
 
 각 harness 는 `--self-test` 로 자기시험만 돌릴 수 있고(측정·기록 없음), 리뷰는 자기시험 **부재**도 실패로 본다:
 판독력을 확인하지 않은 수치를 증거로 옭기지 않는다.

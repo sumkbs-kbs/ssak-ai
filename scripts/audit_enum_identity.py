@@ -40,12 +40,24 @@ _SCRIPTS_DIR: Final[Path] = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from harness_contract import Cases, Floor, Probe, describe_self_test, floor_problems, probe_problems  # noqa: E402
+from harness_contract import (  # noqa: E402
+    Cases,
+    Floor,
+    Probe,
+    describe_self_test,
+    floor_problems,
+    floor_records,
+    probe_problems,
+)
 
 # 감사 대상이 아닌 파일: helper와 그 문서(패턴을 설명으로 담는다).
 EXEMPT: Final[frozenset[str]] = frozenset({"src/antigravity_k/engine/cognitive/models.py"})
 # 탐지력 하한 — 스캔 대상이 0개면 “위반 0건” 이 아니라 “못 봄” 이다.
 _MIN_SCANNED_FILES: Final[int] = 10
+_WHY_SCANNED: Final[str] = (
+    "2026-09-23 기준 관측: cognitive core 경로에서 21개 파일을 스캔(제외 1 = same_enum 파이프). "
+    "하한 10은 경로가 통째로 어긋나거나 순회가 빈손으로 끝나는 순간을 잡는 안전선이다 — ’위반 0건’ 과 ’못 봄’ 을 가른다."
+)
 
 _ENUM_MEMBER: Final[re.Pattern[str]] = re.compile(r"^[A-Z][A-Za-z0-9_]*\.[A-Z][A-Z0-9_]*$")
 
@@ -137,7 +149,7 @@ def scanned_files(paths: tuple[Path, ...] = SCAN_ROOTS) -> tuple[str, ...]:
 
 
 def coverage_floors() -> list[Floor]:
-    return [Floor("스캔한 파일", len(scanned_files()), _MIN_SCANNED_FILES)]
+    return [Floor("스캔한 파일", len(scanned_files()), _MIN_SCANNED_FILES, why=_WHY_SCANNED)]
 
 
 def self_probe() -> Probe:
@@ -188,6 +200,7 @@ def main(argv: list[str] | None = None) -> int:
                     "scanned": [str(f) for f in files],
                     "scanned_files": list(scanned),
                     "probe": probe.as_mapping(),
+                    "floors": floor_records(coverage_floors()),
                     "exempt": sorted(EXEMPT),
                 },
                 ensure_ascii=False,

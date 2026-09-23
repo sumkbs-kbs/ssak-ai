@@ -28,13 +28,29 @@ _SCRIPTS_DIR: Final[Path] = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from harness_contract import Cases, Floor, Probe, describe_self_test, floor_problems, probe_problems  # noqa: E402
+from harness_contract import (  # noqa: E402
+    Cases,
+    Floor,
+    Probe,
+    describe_self_test,
+    floor_problems,
+    floor_records,
+    probe_problems,
+)
 
 EXIT_OK: Final[int] = 0
 EXIT_FAIL: Final[int] = 1
 # 탐지력 하한 — 표면 표가 비면 “legacy 도달 0/0” 이 아니라 “볼 수 없음” 이다.
 _MIN_ENTRYPOINTS: Final[int] = 1
 _MIN_PRESENT: Final[int] = 1
+_WHY_ENTRYPOINTS: Final[str] = (
+    "2026-09-23 기준 관측: 표본 entrypoint 9개(CLI·API router·대화·스트림·background·runtime 등). "
+    "하한 1은 ‘표면이 얼마나 많나’ 가 아니라 ‘표가 통째로 빈손으로 끝났나’ 를 잡기 위해서다."
+)
+_WHY_PRESENT: Final[str] = (
+    '2026-09-23 기준 관측: 9개 전부 실재(legacy 도달 7 · core 도달 2). 경로 해석이 어긋나면 "모듈 없음" 만 잔뜩 '
+    "적힌 표가 나오므로, 그 상태를 ‘도달 0’ 증거로 내보내지 않는다."
+)
 # 자기시험이 요구하는 성질 — 표면 하나는 실제로 core 에 도달해야 한다(그래야 판독기가 살아 있다).
 _PROBE_CORE_MODULE: Final[str] = "antigravity_k.api.routes.cognitive_surface_api"
 _PROBE_MISSING_MODULE: Final[str] = "antigravity_k.definitely_not_here_7c1f"
@@ -80,8 +96,8 @@ def coverage_floors(measurement: object) -> list[Floor]:
     entrypoints = tuple(getattr(measurement, "entrypoints", ()))
     present = sum(1 for item in entrypoints if getattr(item, "exists", False))
     return [
-        Floor("entrypoint", len(entrypoints), _MIN_ENTRYPOINTS),
-        Floor("실재하는 entrypoint", present, _MIN_PRESENT),
+        Floor("entrypoint", len(entrypoints), _MIN_ENTRYPOINTS, why=_WHY_ENTRYPOINTS),
+        Floor("실재하는 entrypoint", present, _MIN_PRESENT, why=_WHY_PRESENT),
     ]
 
 
@@ -108,6 +124,7 @@ def main(argv: list[str] | None = None) -> int:
         **measurement.as_mapping(),
         "source_head": source_head(),
         "probe": probe.as_mapping(),
+        "floors": floor_records(coverage_floors(measurement)),
         "coverage": {
             "entrypoints": len(measurement.entrypoints),
             "present": sum(1 for item in measurement.entrypoints if item.exists),

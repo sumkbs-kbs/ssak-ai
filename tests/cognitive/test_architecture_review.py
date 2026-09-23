@@ -337,6 +337,22 @@ def _drift_report(
         "docs": {"T01a.md": dict(counts)} if entries else {},
         "pins": entries,
         "coverage": {"pins": len(entries), "docs": 1 if entries else 0, "min_pins": 1},
+        "floors": [
+            {
+                "label": "pin",
+                "observed": len(entries),
+                "minimum": 1,
+                "margin": len(entries) - 1,
+                "why": "2026-09-23 기준 관측: pin " + str(len(entries)),
+            },
+            {
+                "label": "pin 을 박은 문서",
+                "observed": 1 if entries else 0,
+                "minimum": 1,
+                "margin": (1 if entries else 0) - 1,
+                "why": "2026-09-23 기준 관측: 문서 1개",
+            },
+        ],
     }
     if probe_present:
         report["probe"] = {"cases": 9, "failures": [] if probe_ok else ["경로+digest 판독: 0 ≠ 1"], "ok": probe_ok}
@@ -396,6 +412,18 @@ def test_digest_report_with_a_failed_self_probe_is_rejected(review: Any) -> None
 
     assert result.passed is False
     assert "자기시험 실패" in result.detail
+
+
+def test_digest_report_without_a_floor_basis_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """하한 근거가 기록되지 않은 측정은 실패한다 — 나중에 그 값을 내려도 되는지 판단할 수 없다."""
+
+    report = _drift_report(reverified=3)
+    report["floors"] = [dict(item) for item in report["floors"]]
+    report["floors"][0]["why"] = ""  # type: ignore[index]
+    result = review.check_digest_report(report, report)
+
+    assert result.passed is False
+    assert "근거(`why`)가 비었다" in result.detail
 
 
 def test_blind_digest_measurement_is_rejected(review: Any) -> None:  # noqa: ANN401

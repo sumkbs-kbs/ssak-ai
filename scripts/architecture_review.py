@@ -957,7 +957,6 @@ def harness_problems(report: dict[str, object], *, name: str, floors: tuple[tupl
     하한 label 은 그 harness 의 JSON 이 `coverage` 안에 싣는 키다(예: `pins` · `runs` · `scanned`).
     """
 
-    coverage = _as_dict(report.get("coverage"))
     raw_probe = report.get("probe")
     probe = (
         Probe(
@@ -968,8 +967,30 @@ def harness_problems(report: dict[str, object], *, name: str, floors: tuple[tupl
         else None
     )
     problems = list(probe_problems(probe, name=name))
+    # 하한은 **기록된 근거와 함께** 있어야 한다 — 값만 있으면 나중에 그것을 내려도 되는지 아무도 판단할 수 없다.
+    # 기록이 있으면 그 근거를 그대로 인용해 판정하고, 없으면 coverage 의 관측값으로 최소 하한을 적용한다.
+    recorded: dict[str, dict[str, object]] = {
+        str(item.get("label")): item for item in _as_list(report.get("floors")) if isinstance(item, dict)
+    }
     for label, minimum in floors:
-        problems.extend(floor_problems([Floor(label, _as_int(coverage.get(label)), minimum)]))
+        item = recorded.get(label)
+        if item is None:
+            problems.append(f"{name} 하한 '{label}' 의 근거 기록이 없다 — `floors` 에 관측·최소·근거를 남겨야 한다")
+            continue
+        if not str(item.get("why", "")).strip():
+            problems.append(f"{name} 하한 '{label}' 에 근거(`why`)가 비었다 — 값만 남기면 재판단할 수 없다")
+        problems.extend(
+            floor_problems(
+                [
+                    Floor(
+                        str(item.get("label")),
+                        _as_int(item.get("observed")),
+                        _as_int(item.get("minimum")),
+                        why=str(item.get("why", "")),
+                    )
+                ]
+            )
+        )
     return problems
 
 
@@ -1030,12 +1051,12 @@ def check_digest_report(stored: dict[str, object] | None, fresh: dict[str, objec
             passed=False,
             detail="digest 를 다시 재지 못했다(scripts/digest_drift.py 가 실패했다) — 확인 불가를 통과로 쓰지 않는다",
         )
-    keys = ("counts", "docs", "pins")
+    keys = ("counts", "docs", "pins", "floors")
     stale = [key for key in keys if stored.get(key) != fresh.get(key)]
     counts = _as_dict(fresh.get("counts"))
     broken = _as_int(counts.get("missing"))
     stale_reverification = _as_int(counts.get("stale_reverification"))
-    problems: list[str] = harness_problems(fresh, name="digest_drift", floors=(("pins", 1), ("docs", 1)))
+    problems: list[str] = harness_problems(fresh, name="digest_drift", floors=(("pin", 1), ("pin 을 박은 문서", 1)))
     if stale:
         problems.append(f"artifact 가 최신이 아니다({', '.join(stale)} 불일치) — digest_drift.py 를 다시 돌려야 한다")
     if broken:
@@ -1330,7 +1351,7 @@ def check_regression_ledger(ledger: dict[str, object] | None) -> CheckResult:
     unowned = _as_list(ledger.get("unowned"))
     drift = _as_list(ledger.get("drift"))
 
-    problems: list[str] = harness_problems(ledger, name="regression_ledger", floors=(("runs", 1), ("scopes", 1)))
+    problems: list[str] = harness_problems(ledger, name="regression_ledger", floors=(("회차", 1), ("scope", 1)))
     if not scopes:
         problems.append("scope 가 없다 — 무엇을 재는지 이름이 없는 원장은 인용할 수 없다")
     if incomplete:

@@ -272,9 +272,34 @@ def test_gate_passes_with_a_current_artifact_and_no_broken_pins(drift: Any, tmp_
     """최신 본이 있고 파일 없는 pin 이 없으면 통과한다(움직임 자체는 실패가 아니다)."""
 
     artifact = tmp_path / "digest_drift.json"
-    artifact.write_text(json.dumps(drift.measure().as_mapping(), ensure_ascii=False), encoding="utf-8")
+    # artifact 는 `compared()` 로 비교되는 부분을 그대로 담아야 한다(여기에는 하한 기록도 포함된다).
+    artifact.write_text(json.dumps(drift.measure().compared(), ensure_ascii=False), encoding="utf-8")
 
     assert drift.gate_failures(drift.measure(), artifact) == []
+
+
+def test_removing_the_floor_basis_makes_the_artifact_stale(drift: Any, tmp_path: Path) -> None:  # noqa: ANN401
+    """하한의 근거를 바꾸고 artifact 를 다시 만들지 않으면 게이트가 실패한다."""
+
+    original = drift.coverage_floors
+
+    def without_reason(_drift: object) -> list[Any]:
+        return [
+            floor.__class__(floor.label, floor.observed, floor.minimum, why="") for floor in original(drift.measure())
+        ]
+
+    artifact = tmp_path / "digest_drift.json"
+    stored = {**drift.measure().compared(), "floors": drift.floor_records(original(drift.measure()))}
+    artifact.write_text(json.dumps(stored, ensure_ascii=False), encoding="utf-8")
+
+    if hasattr(drift, "coverage_floors"):
+        drift.coverage_floors = without_reason  # type: ignore[attr-defined]
+    try:
+        problems = drift.gate_failures(drift.measure(), artifact)
+    finally:
+        drift.coverage_floors = original  # type: ignore[attr-defined]
+
+    assert any("최신이 아니다" in problem for problem in problems)
 
 
 def test_broken_pin_fails_the_gate_even_with_a_current_artifact(drift: Any, tmp_path: Path) -> None:  # noqa: ANN401

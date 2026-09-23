@@ -40,7 +40,15 @@ _SCRIPTS_DIR: Final[Path] = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from harness_contract import Cases, Floor, Probe, describe_self_test, floor_problems, probe_problems  # noqa: E402
+from harness_contract import (  # noqa: E402
+    Cases,
+    Floor,
+    Probe,
+    describe_self_test,
+    floor_problems,
+    floor_records,
+    probe_problems,
+)
 
 ARTIFACT: Final[Path] = DOCS_ROOT / "evidence" / "digest_drift.json"
 REVERIFIED: Final[Path] = DOCS_ROOT / "evidence" / "digest_reverification.json"
@@ -77,6 +85,13 @@ _REQUIRED_STATUSES: Final[tuple[str, ...]] = (
 # 탐지력 하한 — 문서가 pin 을 하나도 안 만들면 “pin 0 · 움직임 0” 으로 조용히 통과한다.
 _MIN_PINS: Final[int] = 1
 _MIN_PINNED_DOCS: Final[int] = 1
+_WHY_PINS: Final[str] = (
+    "2026-09-23 기준 관측: 증거 문서 13개가 파일에 digest 를 박아 pin 50개(그대로 28 · 재확인 22). "
+    "하한을 1로 둔 것은 ‘얼마나 많이 보나’ 가 아니라 ‘패턴이 죽어 0이 됐나’ 를 잡기 위해서다."
+)
+_WHY_DOCS: Final[str] = (
+    "2026-09-23 기준 관측: pin 을 박은 문서 13개. 문서 집합이 통째로 안 읽히면 ‘움직임 0’ 으로 보이므로 그 순간을 잡는다."
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -157,9 +172,18 @@ class Drift:
         }
 
     def compared(self) -> dict[str, object]:
-        """artifact 최신성 비교에 쓰는 부분 — 시점(source_head)은 비교하지 않는다."""
+        """artifact 최신성 비교에 쓰는 부분 — 시점(source_head)은 비교하지 않는다.
 
-        return {"counts": self.counts, "docs": self.docs, "pins": [pin.as_mapping() for pin in self.pins]}
+        하한(`floors`)도 비교 대상이다: 하한 값이나 그 근거를 바꾸고 artifact 를 다시 만들지 않으면,
+        저장본은 예전 기준을 계속 주장하게 된다.
+        """
+
+        return {
+            "counts": self.counts,
+            "docs": self.docs,
+            "pins": [pin.as_mapping() for pin in self.pins],
+            "floors": floor_records(coverage_floors(self)),
+        }
 
 
 def display(path: Path) -> str:
@@ -331,8 +355,8 @@ def coverage_floors(drift: Drift) -> list[Floor]:
     """이번 측정이 실제로 무엇을 봤는지 — pin 0개는 “움직임 0” 이 아니라 “못 봄” 일 수 있다."""
 
     return [
-        Floor("pin", len(drift.pins), _MIN_PINS),
-        Floor("pin 을 박은 문서", len(drift.docs), _MIN_PINNED_DOCS),
+        Floor("pin", len(drift.pins), _MIN_PINS, why=_WHY_PINS),
+        Floor("pin 을 박은 문서", len(drift.docs), _MIN_PINNED_DOCS, why=_WHY_DOCS),
     ]
 
 
@@ -354,7 +378,7 @@ def gate_failures(drift: Drift, artifact: Path, probe: Probe | None = None) -> l
     if stored is None:
         problems.append(f"{display(artifact)} 가 없거나 읽히지 않는다 — 먼저 scripts/digest_drift.py 를 돌려야 한다")
     else:
-        compare_keys = ("counts", "docs", "pins")
+        compare_keys = ("counts", "docs", "pins", "floors")
         outdated = [key for key in compare_keys if stored.get(key) != drift.compared()[key]]
         if outdated:
             problems.append(
@@ -451,18 +475,19 @@ def main(argv: list[str] | None = None) -> int:
         return EXIT_OK if probe.ok else EXIT_GATE
 
     drift = measure(reverifications=args.reverification)
+    probe = self_probe()
+    payload = {
+        **drift.as_mapping(),
+        "probe": probe.as_mapping(),
+        "floors": floor_records(coverage_floors(drift)),
+        "coverage": {
+            "pins": len(drift.pins),
+            "docs": len(drift.docs),
+            "min_pins": _MIN_PINS,
+            "min_docs": _MIN_PINNED_DOCS,
+        },
+    }
     if args.emit_json:
-        probe = self_probe()
-        payload = {
-            **drift.as_mapping(),
-            "probe": probe.as_mapping(),
-            "coverage": {
-                "pins": len(drift.pins),
-                "docs": len(drift.docs),
-                "min_pins": _MIN_PINS,
-                "min_docs": _MIN_PINNED_DOCS,
-            },
-        }
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         return EXIT_OK
 
@@ -492,7 +517,7 @@ def main(argv: list[str] | None = None) -> int:
         return EXIT_GATE if problems else EXIT_OK
 
     args.artifact.parent.mkdir(parents=True, exist_ok=True)
-    args.artifact.write_text(json.dumps(drift.as_mapping(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    args.artifact.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(describe(drift))
     print(f"\n측정 artifact: {display(args.artifact)}")
     return EXIT_OK
