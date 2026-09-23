@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "2026-09-23 내용 대조 회차 승인: stage 10개 전부 PASS(10/10) · release_artifacts --gate 0(63초 — 왕복이 이름+내용 비교 664개(빠짐 0·내용 다름 0) · 배포판 패키지 658개 바이트 = 디스크 트리(다름 0·견줄 수 없음 6) · 빌드가 내용을 바꿔 싣는 미니 setuptools 프로젝트를 매 실행 둘 빌드해 심은 파일 지목·대조군 오탐 0 · sdist 사본에 빠짐+내용 변환을 함께 심어 왕복이 둘 다 지목 · wheel 동일 664/664 pin · sdist 생성 항목 41개만 다름 · CI pin 일치) · architecture_review 15 checks PASS · tests/cognitive 694 collected · ruff·mypy clean. 이 회차는 앞 회차가 남긴 '이름만 본다' 한계를 닫았다: 이름이 같은 채 잘렸거나 변형된 파일은 목록 대조를 통과하므로 sha256 으로 견주고, 내용이 다른 파일을 이름으로 실패시킨다. 배포판 vs 트리 대조는 커밋본이 아니라 디스크를 기준으로 삼는다(빌드가 본 것도 그 트리이고, 커밋본과 견주면 다른 레인의 미커밋 편집이 오탐이 된다). 재현은 실물 setuptools 프로젝트 둘(변환·대조군)로 매 실행 증명하고, 재현 재료가 사라지면 traceback 대신 '못 돌림' 판정과 그 까닭을 남긴다. 남은 것: 내용 대조는 디스크 기준(커밋본 대조가 아니다) · 생성 항목은 견주지 않음 · 재현은 심은 종류만 증명 · 카나리아 미포함(63초 하한) · 하한을 내리는 판단은 사람 몫 · 실모델·실 vault 재확인 · 사람 승인."
+    "2026-09-23 하한 기록 회차: 카나리아 harness 8→9(release_artifacts 가 기록으로 합류) · review marker canary 8→9 · cognitive_tests 694→702 를 확인하고 이 상태를 기준으로 승인했다"
   ],
   "layers": {
     "audit_enum_identity": {
@@ -27,8 +27,8 @@
     },
     "canary": {
       "counts.blind": 0,
-      "counts.harnesses": 8,
-      "counts.ok": 8,
+      "counts.harnesses": 9,
+      "counts.ok": 9,
       "counts.unjustified": 0
     },
     "digest_drift": {
@@ -99,9 +99,9 @@
     },
     "review": {
       "checks": 15,
-      "measured.canary_harnesses": 8,
-      "measured.canary_ok": 8,
-      "measured.cognitive_tests": 694,
+      "measured.canary_harnesses": 9,
+      "measured.canary_ok": 9,
+      "measured.cognitive_tests": 702,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
@@ -130,6 +130,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "2026-09-23 내용 대조 회차 승인: stage 10개 전부 PASS(10/10) · release_artifacts --gate 0(63초 — 왕복이 이름+내용 비교 664개(빠짐 0·내용 다름 0) · 배포판 패키지 658개 바이트 = 디스크 트리(다름 0·견줄 수 없음 6) · 빌드가 내용을 바꿔 싣는 미니 setuptools 프로젝트를 매 실행 둘 빌드해 심은 파일 지목·대조군 오탐 0 · sdist 사본에 빠짐+내용 변환을 함께 심어 왕복이 둘 다 지목 · wheel 동일 664/664 pin · sdist 생성 항목 41개만 다름 · CI pin 일치) · architecture_review 15 checks PASS · tests/cognitive 694 collected · ruff·mypy clean. 이 회차는 앞 회차가 남긴 '이름만 본다' 한계를 닫았다: 이름이 같은 채 잘렸거나 변형된 파일은 목록 대조를 통과하므로 sha256 으로 견주고, 내용이 다른 파일을 이름으로 실패시킨다. 배포판 vs 트리 대조는 커밋본이 아니라 디스크를 기준으로 삼는다(빌드가 본 것도 그 트리이고, 커밋본과 견주면 다른 레인의 미커밋 편집이 오탐이 된다). 재현은 실물 setuptools 프로젝트 둘(변환·대조군)로 매 실행 증명하고, 재현 재료가 사라지면 traceback 대신 '못 돌림' 판정과 그 까닭을 남긴다. 남은 것: 내용 대조는 디스크 기준(커밋본 대조가 아니다) · 생성 항목은 견주지 않음 · 재현은 심은 종류만 증명 · 카나리아 미포함(63초 하한) · 하한을 내리는 판단은 사람 몫 · 실모델·실 vault 재확인 · 사람 승인.",
+  "method": "2026-09-23 하한 기록 회차: 카나리아 harness 8→9(release_artifacts 가 기록으로 합류) · review marker canary 8→9 · cognitive_tests 694→702 를 확인하고 이 상태를 기준으로 승인했다",
   "recorded_on": "2026-09-23"
 }
