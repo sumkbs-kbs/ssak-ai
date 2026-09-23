@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "2026-09-23 하한 기록 회차: 카나리아 harness 8→9(release_artifacts 가 기록으로 합류) · review marker canary 8→9 · cognitive_tests 694→702 를 확인하고 이 상태를 기준으로 승인했다"
+    "2026-09-23 만료 규칙 회차: 관측이 허용 이상 줄면 하한 기록이 만료로 실패하고(증가는 보고만), cognitive_tests 702 → 705 를 확인하고 이 상태를 기준으로 승인했다"
   ],
   "layers": {
     "audit_enum_identity": {
@@ -101,7 +101,7 @@
       "checks": 15,
       "measured.canary_harnesses": 9,
       "measured.canary_ok": 9,
-      "measured.cognitive_tests": 702,
+      "measured.cognitive_tests": 705,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
@@ -130,6 +130,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "2026-09-23 하한 기록 회차: 카나리아 harness 8→9(release_artifacts 가 기록으로 합류) · review marker canary 8→9 · cognitive_tests 694→702 를 확인하고 이 상태를 기준으로 승인했다",
+  "method": "2026-09-23 만료 규칙 회차: 관측이 허용 이상 줄면 하한 기록이 만료로 실패하고(증가는 보고만), cognitive_tests 702 → 705 를 확인하고 이 상태를 기준으로 승인했다",
   "recorded_on": "2026-09-23"
 }
