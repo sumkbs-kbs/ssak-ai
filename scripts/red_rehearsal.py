@@ -64,10 +64,27 @@ _WHY_REHEARSALS: Final[str] = (
 
 
 @dataclass(frozen=True, slots=True)
+class Boundary:
+    """허용 형태의 **경계 사례** — 심은 위반과 **같이** 넣는다.
+
+    위반을 보는 것만으로는 탐지력이 아니다. 경계를 넓게 잡은 감사는 정상 코드를 위반으로 본다(오탐) — 그래서
+    경계 사례를 같은 트리에 함께 심어, 한 번의 실행에서 **심은 위반은 지목되고 경계 사례는 지목되지 않는지**를 본다.
+    """
+
+    label: str
+    planted: str
+    content: str
+
+    def as_mapping(self) -> dict[str, object]:
+        return {"label": self.label, "planted": self.planted}
+
+
+@dataclass(frozen=True, slots=True)
 class Plant:
     """한 층의 red 를 재현하는 방법 — 어느 트리에 무엇을 심고, 어떤 파일이 지목돼야 하는가.
 
     `allowed` 는 **같은 자리**에 넣는 허용 형태다: 대조군이 초록이어야 “위반을 봐서 빨간” 이 성립한다.
+    `boundaries` 는 다른 모양의 허용 사례들로, 같은 트리에 함께 심어 **오탐이 없는지**까지 본다.
     """
 
     layer: str
@@ -75,10 +92,17 @@ class Plant:
     planted: str
     violation: str
     allowed: str
+    boundaries: tuple[Boundary, ...]
     shows: str
 
     def as_mapping(self) -> dict[str, object]:
-        return {"layer": self.layer, "script": self.script, "planted": self.planted, "shows": self.shows}
+        return {
+            "layer": self.layer,
+            "script": self.script,
+            "planted": self.planted,
+            "shows": self.shows,
+            "boundaries": [item.as_mapping() for item in self.boundaries],
+        }
 
 
 # 리허설 대상 — 각 항목은 그 층이 **실제로 빨간을 낼 수 있는지**를 저장소 밖 트리에서 확인한다.
@@ -89,6 +113,28 @@ PLANTS: Final[tuple[Plant, ...]] = (
         planted="src/antigravity_k/engine/cognitive/planted_enum_probe.py",
         violation="RED = status is RiskLevel.HIGH\n",
         allowed="OK = status == RiskLevel.HIGH\n",
+        boundaries=(
+            Boundary(
+                label="소문자 attribute",
+                planted="src/antigravity_k/engine/cognitive/boundary_lowercase.py",
+                content="LOWER = status is risklevel\n",
+            ),
+            Boundary(
+                label="리터럴과의 identity",
+                planted="src/antigravity_k/engine/cognitive/boundary_literal.py",
+                content="NUMERIC = int(status) is not 0\n",
+            ),
+            Boundary(
+                label="same_enum 호출",
+                planted="src/antigravity_k/engine/cognitive/boundary_same_enum.py",
+                content="SAME = same_enum(status, RiskLevel.HIGH)\n",
+            ),
+            Boundary(
+                label="산문 속 패턴",
+                planted="src/antigravity_k/engine/cognitive/boundary_prose.py",
+                content='"""이 module 은 `status is RiskLevel.HIGH` 를 쓰지 않는다(설명)."""\n',
+            ),
+        ),
         shows="identity 비교(`is`)를 심으면 감사가 그 파일을 지목하고 exit 1",
     ),
     Plant(
@@ -97,6 +143,28 @@ PLANTS: Final[tuple[Plant, ...]] = (
         planted="tests/test_planted_purge_probe.py",
         violation="import sys\n\nsys.modules.pop('antigravity_k.x', None)\n",
         allowed="import os\nimport sys\n\nif os.environ.get('REHEARSAL_TREE'):\n    sys.modules.pop('antigravity_k.x', None)\n",
+        boundaries=(
+            Boundary(
+                label="함수 본문(실행 시점)",
+                planted="tests/test_boundary_in_function.py",
+                content="import sys\n\n\ndef purge() -> None:\n    sys.modules.pop('antigravity_k.x', None)\n",
+            ),
+            Boundary(
+                label="pop 이 아닌 조회",
+                planted="tests/test_boundary_get_only.py",
+                content="import sys\n\nsys.modules.get('antigravity_k.x')\n",
+            ),
+            Boundary(
+                label="다른 mapping",
+                planted="tests/test_boundary_other_mapping.py",
+                content="import sys\n\nREGISTRY: dict[str, str] = {}\nREGISTRY.pop('x', None)\n",
+            ),
+            Boundary(
+                label="산문 속 패턴",
+                planted="tests/test_boundary_prose.py",
+                content='"""이 파일은 `sys.modules.pop(...)` 를 쓰지 않는다(설명)."""\n',
+            ),
+        ),
         shows="수집 단계 purge 를 심으면 감사가 그 파일을 지목하고 exit 1",
     ),
 )
@@ -149,6 +217,8 @@ class Rehearsal:
     clean_exit: int | None
     blind_exit: int | None
     crashed: bool
+    boundaries: int = 0
+    flagged: tuple[str, ...] = ()
     note: str = ""
 
     @property
@@ -170,6 +240,8 @@ class Rehearsal:
             "clean_exit": self.clean_exit,
             "blind_exit": self.blind_exit,
             "crashed": self.crashed,
+            "boundaries": self.boundaries,
+            "flagged": list(self.flagged),
             "note": self.note,
             "ok": self.ok,
             "problems": list(self.problems),
@@ -193,6 +265,11 @@ def rehearsal_problems(record: Rehearsal) -> tuple[str, ...]:
     elif not record.spoken:
         problems.append(
             f"{record.layer} 의 보고서에는 심은 파일이 있지만 실행 출력에는 없다 — 사람이 돌려도 어느 파일인지 모른다"
+        )
+    if record.flagged:
+        problems.append(
+            f"{record.layer} 가 **경계 사례를 위반으로 봤다**(오탐): {', '.join(record.flagged)} — "
+            "넓게 잡은 탐지는 탐지력이 아니다(정상 코드를 세면 사람이 그 감사를 끄게 된다)"
         )
     if record.clean_exit != EXIT_OK:
         problems.append(
@@ -244,17 +321,26 @@ def seen_files(payload: dict[str, object] | None) -> list[str]:
 
 
 def rehearse(plant: Plant, *, workspace: Path | None = None) -> Rehearsal:
-    """한 층의 red 를 실제 파일로 재현한다 — 심은 트리 · 대조군 · 없는 트리."""
+    """한 층의 red 를 실제 파일로 재현한다 — 심은 트리(+경계 사례) · 대조군 · 없는 트리."""
 
     base = Path(workspace) if workspace is not None else Path(tempfile.mkdtemp(prefix=f"red-{plant.layer}-"))
     try:
         target = base / plant.planted
         target.parent.mkdir(parents=True, exist_ok=True)
 
+        # 경계 사례는 **심은 위반과 같은 실행**에 넣는다 — 오탐은 위반을 보는 순간에만 보인다(두 번 돌리면 다른 트리다).
+        for boundary in plant.boundaries:
+            item = base / boundary.planted
+            item.parent.mkdir(parents=True, exist_ok=True)
+            item.write_text(boundary.content, encoding="utf-8")
+
         target.write_text(plant.violation, encoding="utf-8")
         dirty_exit, dirty_out, dirty = run_audit(plant.script, base, base / "dirty.json")
         paths = seen_files(dirty)
+        flagged = tuple(boundary.label for boundary in plant.boundaries if boundary.planted in paths)
 
+        # 대조군은 **같은 자리**에 허용 형태를 넣고 경계 사례는 그대로 둔다 — `allowed` 가 “새 파일이 아니라 내용이
+        # 위반인가” 를, 경계 사례가 “넓게 잡지 않는가” 를 가른다.
         target.write_text(plant.allowed, encoding="utf-8")
         clean_exit, clean_out, _ = run_audit(plant.script, base, base / "clean.json")
 
@@ -271,6 +357,8 @@ def rehearse(plant: Plant, *, workspace: Path | None = None) -> Rehearsal:
             clean_exit=clean_exit,
             blind_exit=blind_exit,
             crashed=bool(crashed),
+            boundaries=len(plant.boundaries),
+            flagged=flagged,
             note=f"{plant.script} 가 traceback 으로 죽었다" if crashed else "",
         )
     finally:
@@ -297,6 +385,7 @@ def run(plants: tuple[Plant, ...] = PLANTS) -> tuple[Rehearsal, ...]:
                     clean_exit=None,
                     blind_exit=None,
                     crashed=True,
+                    boundaries=len(plant.boundaries),
                     note=f"{type(exc).__name__}: {exc}",
                 )
             )
@@ -318,6 +407,8 @@ def self_probe(plants: tuple[Plant, ...] | None = None) -> Probe:
         clean_exit: int | None = EXIT_OK,
         blind_exit: int | None = EXIT_GATE,
         crashed: bool = False,
+        boundaries: int = 4,
+        flagged: tuple[str, ...] = (),
         note: str = "",
     ) -> Rehearsal:
         return Rehearsal(
@@ -330,6 +421,8 @@ def self_probe(plants: tuple[Plant, ...] | None = None) -> Probe:
             clean_exit=clean_exit,
             blind_exit=blind_exit,
             crashed=crashed,
+            boundaries=boundaries,
+            flagged=flagged,
             note=note,
         )
 
@@ -342,9 +435,34 @@ def self_probe(plants: tuple[Plant, ...] | None = None) -> Probe:
     cases.check("빈 트리를 통과시키면 통과가 아니다", not record(blind_exit=EXIT_OK).ok)
     cases.check("사고로 죽은 리허설은 통과가 아니다", not record(crashed=True, note="traceback").ok)
     cases.check("대조군을 안 돌린 리허설(None)은 통과가 아니다", not record(clean_exit=None).ok)
+    cases.check(
+        "경계 사례를 위반으로 보면 통과가 아니다(오탐)",
+        not record(flagged=("리터럴과의 identity",)).ok
+        and "경계 사례를 위반으로 봤다" in " ".join(record(flagged=("리터럴과의 identity",)).problems),
+    )
 
     cases.check("리허설 대상이 있다", len(items) > 0)
     cases.check("심는 파일이 트리 밖으로 나가지 않는다", all(_inside_tree(plant.planted) for plant in items))
+    cases.check(
+        "경계 사례도 트리 안에 심고 경로가 서로 다르다",
+        all(
+            _inside_tree(boundary.planted) and boundary.planted != plant.planted
+            for plant in items
+            for boundary in plant.boundaries
+        ),
+    )
+    cases.check(
+        "경계를 볼 수 없는 층은 없다(사례가 하나도 없으면 오탐을 못 본다)",
+        all(plant.boundaries for plant in items),
+    )
+    cases.check(
+        "경계 사례의 내용이 심은 위반과 다르다",
+        all(
+            boundary.content != plant.violation and boundary.content != plant.allowed
+            for plant in items
+            for boundary in plant.boundaries
+        ),
+    )
     cases.check("서로 다른 위반을 심는다", len({plant.violation for plant in items}) == len(items))
     cases.check("층마다 다른 감사를 돌린다", len({plant.script for plant in items}) == len(items))
     cases.check("심는 감사 스크립트가 실재한다", all((SCRIPTS_DIR / plant.script).exists() for plant in items))
@@ -382,6 +500,8 @@ def as_mapping(records: tuple[Rehearsal, ...], probe: Probe) -> dict[str, object
             "ok": sum(1 for record in records if record.ok),
             "unseen": sum(1 for record in records if record.dirty_exit == EXIT_OK),
             "false_positive": sum(1 for record in records if record.clean_exit not in (None, EXIT_OK)),
+            "boundaries": sum(record.boundaries for record in records),
+            "overbroad": sum(1 for record in records if record.flagged),
         },
     }
 
@@ -392,7 +512,8 @@ def describe(records: tuple[Rehearsal, ...], probe: Probe) -> str:
         state = "RED OK  " if record.ok else "NO RED  "
         lines.append(
             f"  {state}{record.layer} · 심은 트리 exit {record.dirty_exit}(본 위반 {record.seen} · 지목 {record.named}) · "
-            f"대조군 exit {record.clean_exit} · 빈 트리 exit {record.blind_exit}"
+            f"경계 {record.boundaries}개(오탐 {len(record.flagged)}) · 대조군 exit {record.clean_exit} · "
+            f"빈 트리 exit {record.blind_exit}"
         )
         for problem in record.problems:
             lines.append(f"    - {problem}")

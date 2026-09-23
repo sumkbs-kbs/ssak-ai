@@ -50,8 +50,11 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 14. “위반 0건” 이 **관찰**인지 **미관찰**인지 — 저장소 밖 트리에 **진짜 파일로 위반을 심어** 그 감사가
     실제로 빨간을 내는지 확인했는가(`red_rehearsal`). 심은 트리는 exit 1 이고 **심은 파일을 지목**해야 하며
     (JSON 과 사람이 보는 출력 양쪽), 같은 자리에 허용 형태를 넣은 **대조군은 초록**이어야 하고, 없는 트리는
-    차단(exit 1)돼야 한다. 리허설되지 않는 층은 **이유와 함께 선언**돼야 하며(게이트 자기시험이 stage·카나리아
-    roster 와 대조한다), 이유 없는 생략 · 대조군 오탐 · 사고(traceback)로 죽는 것은 모두 실패다.
+    차단(exit 1)돼야 한다. 또한 **경계 사례**(허용 형태의 다른 모양)를 같은 실행에 함께 심어 그것들이 지목되지
+    않는지 본다 — 넓게 잡은 탐지는 탐지력이 아니라 오탐이고, 그러면 사람이 그 감사를 끄게 된다(경계 사례를
+    위반으로 보거나 경계 사례가 하나도 없으면 실패다). 리허설되지 않는 층은 **이유와 함께 선언**돼야 하며(게이트
+    자기시험이 stage·카나리아 roster 와 대조한다), 이유 없는 생략 · 대조군 오탐 · 사고(traceback)로 죽는 것은
+    모두 실패다.
 15. 이 문서의 `<!-- measured:key=value -->` 마커가 실제 측정값과 일치하는가(`measured_markers`).
 
 ```sh
@@ -102,7 +105,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=601 -->
+<!-- measured:cognitive_tests=605 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -137,7 +140,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | 회귀 | 명령 | exit | 관찰 |
 |---|---|---|---|
 | 테스트(전체 · **과거 회차 이력**) | `.venv/bin/python -m pytest tests/ -m 'not slow and not benchmark' -q` | 1 | **세 번 쟀고 회차마다 달랐다**(트리·수집 오염·실행 선택이 함께 달랐던 비교 — 현재 기준선은 이 표의 아래 원장 행이다) — ①(수정 전 · random) 7723 수집 · **94 failed / 7571 passed / 14 skipped / 20 xfailed**(26:31) ②(random) 7726 수집 · **10 failed / 7660 passed** ③(**고정 순서** `-p no:randomly`) 7726 수집 · **7 failed / 7663 passed / 14 skipped / 24 deselected / 20 xfailed**(21:21) ④(**고정 순서 · 정리 뒤**) 7726 수집 · **5 failed / 7666 passed / 14 skipped / 24 deselected / 20 xfailed**(20:13). 그 차이는 seed 효과가 아니라 트리·오염·실행 선택의 차이였고, seed 를 가른 측정은 §1.2 의 원장이다, ③·④의 실패도 전부 기존 항목이다(그중 둘은 §1.5에서 등록으로 닫았다) |
-| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 600 passed · 1 skipped (수집 601 — 원장 subdirs scope 2회에서도 결정적 실패 0) |
+| 테스트(cognitive core) | `.venv/bin/python -m pytest tests/cognitive -q` | 0 | 604 passed · 1 skipped (수집 605 — 원장 subdirs scope 2회에서도 결정적 실패 0) |
 | lint | `.venv/bin/python -m ruff check src/ tests/ scripts/` | 0 | All checks passed |
 | format | `.venv/bin/python -m ruff format --check src/ tests/ scripts/` | 0 | 1162 files already formatted |
 | type | `.venv/bin/python -m mypy <cognitive·surface·cli·5 scripts>` | 0 | Success: no issues found in 29 source files |
@@ -461,9 +464,12 @@ roster 한 줄에 드러나야 하고, 새 층이 엉뚱한 수를 실어도 추
 (코드 경로를 읽어 확인했을 뿐이다). `scripts/red_rehearsal.py` 가 그 물음을 닫는다 — 심는 자리를 **저장소 밖 임시
 트리**로 두고, 두 감사에 `--root`(감사 대상 트리, 기본은 지금까지처럼 저장소 루트)를 열어 실제 파일로 위반을 심는다:
 ① 심은 트리는 exit 1 이고 **심은 파일을 지목**한다(JSON 과 사람이 보는 출력 양쪽) ② **대조군** — 같은 자리에 허용
-형태를 넣으면 초록이다(이것이 없으면 “새 파일이 생겨서 빨간” 과 구분할 수 없다) ③ 없는 트리를 가리키면 exit 1 이다
+형태를 넣으면 초록이다(이것이 없으면 “새 파일이 생겨서 빨간” 과 구분할 수 없다) ③ **경계 사례**(소문자 attribute ·
+리터럴과의 identity · `same_enum` 호출 · 함수 본문 purge · 조회만 하는 `sys.modules.get` · 다른 mapping 의 `pop` ·
+산문 속 패턴)를 **같은 실행에 함께 심어** 지목되지 않는지 본다 — 넓게 잡은 탐지는 탐지력이 아니라 오탐이고,
+그러면 사람이 그 감사를 끄게 된다(경계 사례를 위반으로 보면 그 리허설이 실패한다) ④ 없는 트리를 가리키면 exit 1 이다
 (빈손 스캔은 판정이 아니다 — 이 하한은 `--root` 를 쓸 때도 문다). 리허설 자신도 ① 못 본 층 ② exit 0 ③ 지목 없음
-④ 대조군 오탐 ⑤ 빈 트리 통과 ⑥ 사고(traceback)를 각각 실패로 바꾸며(자기시험 19건), 리허설되지 않는 층은 **이유와
+④ 대조군 오탐 ⑤ 빈 트리 통과 ⑥ 사고(traceback) ⑦ 경계 사례를 위반으로 봄을 각각 실패로 바꾸며(자기시험 23건), 리허설되지 않는 층은 **이유와
 함께 선언**한다 — 게이트 자기시험이 그 목록을 stage·카나리아 roster 와 대조해 **red 재현 경로가 없는 층**이 조용히
 생기지 않게 한다(이 리허설 자신도 카나리아 여덟 번째로 하한이 무는지 확인된다). 리뷰는 두 감사 각각에 `--root` 로
 그 트리만 보게 하는지, 기본값이 저장소 루트 그대로인지를 계약 시험으로 고정한다.

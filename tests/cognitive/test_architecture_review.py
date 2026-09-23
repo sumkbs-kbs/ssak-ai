@@ -920,6 +920,8 @@ def _rehearsal_layer(name: str, **defects: object) -> dict[str, object]:
         "clean_exit": 0,
         "blind_exit": 1,
         "crashed": False,
+        "boundaries": 4,
+        "flagged": [],
     }
     item.update(defects)
     item["ok"] = (
@@ -930,6 +932,8 @@ def _rehearsal_layer(name: str, **defects: object) -> dict[str, object]:
         and item["clean_exit"] == 0
         and item["blind_exit"] != 0
         and not item["crashed"]
+        and item["boundaries"] >= 1
+        and not item["flagged"]
     )
     item["problems"] = [] if item["ok"] else ["probe"]
     return item
@@ -1014,6 +1018,31 @@ def test_a_layer_that_passes_an_empty_tree_is_rejected(review: Any) -> None:  # 
 
     assert result.passed is False
     assert "아무것도 없는 트리를 통과시킨" in result.detail
+
+
+def test_a_layer_that_flags_boundary_cases_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """경계 사례(허용 형태)를 위반으로 보는 층은 실패다 — 넓게 잡은 탐지는 탐지력이 아니라 오탐이다."""
+
+    result = review.check_red_rehearsal(
+        _rehearsal_report(
+            layers=[_rehearsal_layer("audit_enum_identity", flagged=["리터럴과의 identity", "산문 속 패턴"])]
+        )
+    )
+
+    assert result.passed is False
+    assert "오탐" in result.detail
+    assert "리터럴과의 identity" in result.detail
+
+
+def test_a_layer_without_boundary_cases_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """경계 사례가 하나도 없는 보고는 실패다 — 그 리허설은 오탐을 볼 수 없다."""
+
+    result = review.check_red_rehearsal(
+        _rehearsal_report(layers=[_rehearsal_layer("audit_test_namespace_purge", boundaries=0)])
+    )
+
+    assert result.passed is False
+    assert "경계 사례가 하나도 없는" in result.detail
 
 
 def test_rehearsal_exit_code_contract_matches_the_canary(review: Any) -> None:  # noqa: ANN401

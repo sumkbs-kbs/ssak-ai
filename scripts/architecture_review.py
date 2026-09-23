@@ -1238,9 +1238,10 @@ def check_red_rehearsal(report: dict[str, object] | None) -> CheckResult:
     """“위반 0건” 이 **’다 봤는데 깨끗하다’** 인지 **’한 번도 red 를 낸 적이 없다’** 인지 — 심어서 확인했는가.
 
     자기시험은 판독 규칙을, 하한은 “볼 수 있는가” 를 지킨다. 리허설은 그 둘이 만나도 남는 것을 본다: 심은 위반을
-    보고 **exit 1 을 내는가**(`seen`·`dirty_exit`·`named`·`spoken`) · 같은 자리에 허용 형태를 넣으면 **초록인가**
-    (`clean_exit` — 이게 없으면 “새 파일이 생겨서 빨간” 과 구분할 수 없다) · **아무것도 없는 트리를 통과시키지 않는가**
-    (`blind_exit`). 종료 코드 없는 보고·모순·합계 불일치는 카나리아와 같은 규칙으로 실패다.
+    보고 **exit 1 을 내는가**(`seen`·`dirty_exit`·`named`·`spoken`) · **경계 사례를 위반으로 보지 않는가**(`flagged` —
+    넓게 잡은 탐지는 탐지력이 아니라 오탐이고, 그러면 사람이 그 감사를 끄게 된다) · 같은 자리에 허용 형태를 넣으면
+    **초록인가**(`clean_exit` — 이게 없으면 “새 파일이 생겨서 빨간” 과 구분할 수 없다) · **아무것도 없는 트리를
+    통과시키지 않는가**(`blind_exit`). 종료 코드 없는 보고·모순·합계 불일치는 카나리아와 같은 규칙으로 실패다.
     """
 
     if report is None:
@@ -1267,12 +1268,18 @@ def check_red_rehearsal(report: dict[str, object] | None) -> CheckResult:
     control_red = [str(item.get("layer")) for item in layers if item.get("clean_exit") not in (None, 0)]
     control_missing = [str(item.get("layer")) for item in layers if item.get("clean_exit") is None]
     blind_pass = [str(item.get("layer")) for item in layers if _as_int(item.get("blind_exit")) == 0]
+    overbroad = [
+        f"{item.get('layer')}({', '.join(str(name) for name in _as_list(item.get('flagged')))})"
+        for item in layers
+        if _as_list(item.get("flagged"))
+    ]
+    unguarded = [str(item.get("layer")) for item in layers if _as_int(item.get("boundaries")) < 1]
     seen_ok = sum(1 for item in layers if item.get("ok"))
     problems: list[str] = []
     if "exit_code" not in report:
         problems.append("리허설 종료 코드 없이 온 보고다 — 스스로 실패했는지 알 수 없는 보고는 판정이 아니다")
     elif _as_int(report.get("exit_code")) != 0 and not any(
-        (unseen, quiet, unnamed, crashed, control_red, control_missing, blind_pass)
+        (unseen, quiet, unnamed, crashed, control_red, control_missing, blind_pass, overbroad, unguarded)
     ):
         problems.append(
             f"리허설이 exit {_as_int(report.get('exit_code'))} 로 스스로 실패했다고 말했는데 보고는 전부 통과라고 한다(모순)"
@@ -1301,6 +1308,12 @@ def check_red_rehearsal(report: dict[str, object] | None) -> CheckResult:
         )
     if blind_pass:
         problems.append(f"아무것도 없는 트리를 통과시킨 층: {', '.join(blind_pass)}")
+    if unguarded:
+        problems.append(
+            f"경계 사례가 하나도 없는 층(오탐을 볼 수 없다 — 경계를 넓게 잡아도 그 사실이 안 보인다): {', '.join(unguarded)}"
+        )
+    if overbroad:
+        problems.append(f"경계 사례를 위반으로 본 층(오탐 — 넓게 잡은 탐지는 탐지력이 아니다): {', '.join(overbroad)}")
     if crashed:
         problems.append(f"사고로 죽은 층: {', '.join(crashed)}")
     if counts and _as_int(counts.get("ok")) != seen_ok:
@@ -1319,7 +1332,8 @@ def check_red_rehearsal(report: dict[str, object] | None) -> CheckResult:
         passed=True,
         detail=(
             f"층 {len(layers)}개에 **진짜 파일로 위반을 심어** red 를 재현했다 — 심은 트리 exit 1·지목, "
-            f"대조군(허용 형태) 초록, 빈 트리 차단(ok {_as_int(counts.get('ok'))})"
+            f"경계 사례 {_as_int(counts.get('boundaries'))}개 오탐 0, 대조군(허용 형태) 초록, "
+            f"빈 트리 차단(ok {_as_int(counts.get('ok'))})"
         ),
         observed=len(layers),
     )

@@ -16,6 +16,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import sys
+from dataclasses import replace
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -51,7 +52,7 @@ def gate() -> Any:  # noqa: ANN401 - 스크립트 module
 
 
 def test_every_planted_layer_actually_goes_red(rehearsal: Any) -> None:  # noqa: ANN401
-    """심는 층 2개가 지금 저장소에서 실제로 red 를 낸다 — 심은 위반 지목 · 대조군 초록 · 빈 트리 차단."""
+    """심는 층 2개가 지금 저장소에서 실제로 red 를 낸다 — 심은 위반 지목 · 경계 사례 오탐 0 · 대조군 초록 · 빈 트리 차단."""
 
     records = rehearsal.run()
 
@@ -62,6 +63,39 @@ def test_every_planted_layer_actually_goes_red(rehearsal: Any) -> None:  # noqa:
         assert record.seen >= 1
         assert record.clean_exit == 0
         assert record.blind_exit != 0
+        assert record.boundaries >= 1
+        assert record.flagged == ()
+
+
+def test_boundary_cases_bite_when_the_audit_is_overbroad(tmp_path: Path, rehearsal: Any) -> None:  # noqa: ANN401
+    """오탐을 보는 눈이 실제로 작동하는지 — 경계 자리에 **진짜 위반**을 넣으면 그 리허설은 실패해야 한다."""
+
+    plant = rehearsal.PLANTS[0]
+    overbroad = replace(
+        plant,
+        boundaries=(
+            rehearsal.Boundary(
+                label="일부러 넓게 잡은 사례",
+                planted="src/antigravity_k/engine/cognitive/boundary_too_broad.py",
+                content="HIT = status is RiskLevel.HIGH\n",
+            ),
+        ),
+    )
+    record = rehearsal.rehearse(overbroad, workspace=tmp_path / "tree")
+
+    assert record.ok is False
+    assert record.flagged == ("일부러 넓게 잡은 사례",)
+    assert any("경계 사례를 위반으로 봤다" in problem for problem in record.problems)
+
+
+def test_the_control_keeps_the_boundary_cases(tmp_path: Path, rehearsal: Any) -> None:  # noqa: ANN401
+    """대조군은 **경계 사례를 지우지 않는다** — 대조군이 초록인 이유가 트리가 비어서이면 안 된다."""
+
+    plant = rehearsal.PLANTS[0]
+    rehearsal.rehearse(plant, workspace=tmp_path / "tree")
+
+    for boundary in plant.boundaries:
+        assert (tmp_path / "tree" / boundary.planted).read_text(encoding="utf-8") == boundary.content
 
 
 def test_a_planted_violation_is_seen_and_the_report_names_it(tmp_path: Path, rehearsal: Any) -> None:  # noqa: ANN401
@@ -153,6 +187,7 @@ def test_a_layer_that_does_not_go_red_is_not_a_pass(rehearsal: Any) -> None:  # 
         "clean_exit": 1,
         "blind_exit": 0,
         "crashed": True,
+        "flagged": ("경계 사례",),
         "note": "RuntimeError: 리허설이 죽었다",
     }
     for field, value in defects.items():
@@ -229,7 +264,9 @@ def test_emit_json_reports_every_layer(rehearsal: Any, capsys: pytest.CaptureFix
 
     assert payload["counts"]["layers"] == 2
     assert payload["counts"]["ok"] == 2
+    assert payload["counts"]["boundaries"] >= 4
+    assert payload["counts"]["overbroad"] == 0
     assert {item["layer"] for item in payload["layers"]} == {plant.layer for plant in rehearsal.PLANTS}
     assert payload["declared"]
     assert payload["floors"][0]["why"].strip()
-    assert payload["probe"]["cases"] >= 15
+    assert payload["probe"]["cases"] >= 20

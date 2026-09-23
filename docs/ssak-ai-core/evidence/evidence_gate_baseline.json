@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "red 리허설 회차 마무리 승인: 리뷰 15 checks · 카나리아 8 harness · 게이트 자기시험 43건(red 회계 포함) · red 리허설 2층(심은 위반 지목·대조군 초록·빈 트리 차단) · digest pin 50(재확인 22) · 상태 주장 4(정정 4) · enum·purge 위반 0 · 표면 entrypoint 9 · 원장 9 scope 21 회차 · cognitive 601"
+    "red 리허설 경계 사례 회차 마무리 승인: 리뷰 15 checks · 카나리아 8 harness · red 리허설 2층(경계 사례 8개 오탐 0) · 게이트 9 stage·자기시험 43건 · digest pin 50(재확인 22) · 상태 주장 4(정정 4) · enum·purge 위반 0 · 표면 entrypoint 9 · 원장 9 scope 21 회차 · cognitive 605"
   ],
   "layers": {
     "audit_enum_identity": {
@@ -48,9 +48,11 @@
       "coverage.present": 9
     },
     "red_rehearsal": {
+      "counts.boundaries": 8,
       "counts.false_positive": 0,
       "counts.layers": 2,
       "counts.ok": 2,
+      "counts.overbroad": 0,
       "counts.unseen": 0,
       "floors": 1
     },
@@ -69,7 +71,7 @@
       "checks": 15,
       "measured.canary_harnesses": 8,
       "measured.canary_ok": 8,
-      "measured.cognitive_tests": 601,
+      "measured.cognitive_tests": 605,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
@@ -98,6 +100,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "red 리허설 회차 마무리 승인: 리뷰 15 checks · 카나리아 8 harness · 게이트 자기시험 43건(red 회계 포함) · red 리허설 2층(심은 위반 지목·대조군 초록·빈 트리 차단) · digest pin 50(재확인 22) · 상태 주장 4(정정 4) · enum·purge 위반 0 · 표면 entrypoint 9 · 원장 9 scope 21 회차 · cognitive 601",
+  "method": "red 리허설 경계 사례 회차 마무리 승인: 리뷰 15 checks · 카나리아 8 harness · red 리허설 2층(경계 사례 8개 오탐 0) · 게이트 9 stage·자기시험 43건 · digest pin 50(재확인 22) · 상태 주장 4(정정 4) · enum·purge 위반 0 · 표면 entrypoint 9 · 원장 9 scope 21 회차 · cognitive 605",
   "recorded_on": "2026-09-23"
 }
