@@ -34,6 +34,14 @@ EXIT_GATE: Final[int] = 1
 
 REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 DOCS_ROOT: Final[Path] = Path("docs/ssak-ai-core")
+
+# 공통 harness 계약(자기시험 · 탐지력 하한) — scripts/ 는 저장소 안의 도구 모음이라 직접 import 한다.
+_SCRIPTS_DIR: Final[Path] = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from harness_contract import Cases, Floor, Probe, describe_self_test, floor_problems, probe_problems  # noqa: E402
+
 ARTIFACT: Final[Path] = DOCS_ROOT / "evidence" / "digest_drift.json"
 REVERIFIED: Final[Path] = DOCS_ROOT / "evidence" / "digest_reverification.json"
 
@@ -57,6 +65,18 @@ STATUSES: Final[tuple[str, ...]] = (
     STATUS_STALE,
     STATUS_MISSING,
 )
+
+# 자기시험이 요구하는 상태 — 순회만으로는 **지워진 상태 이름**이 안 보이므로 따로 고정한다.
+_REQUIRED_STATUSES: Final[tuple[str, ...]] = (
+    STATUS_MATCH,
+    STATUS_REVERIFIED,
+    STATUS_DRIFT,
+    STATUS_STALE,
+    STATUS_MISSING,
+)
+# 탐지력 하한 — 문서가 pin 을 하나도 안 만들면 “pin 0 · 움직임 0” 으로 조용히 통과한다.
+_MIN_PINS: Final[int] = 1
+_MIN_PINNED_DOCS: Final[int] = 1
 
 
 @dataclass(frozen=True, slots=True)
@@ -247,11 +267,12 @@ def measure(docs_root: Path | None = None, reverifications: Path | None = None) 
     return Drift(pins=tuple(pins), source_head=source_head())
 
 
-def describe(drift: Drift) -> str:
+def describe(drift: Drift, probe: Probe | None = None) -> str:
     """사람이 읽는 요약 — 어떤 pin 이 움직였고, 어느 것이 재확인됐는지."""
 
     counts = drift.counts
     lines = [
+        describe_self_test("digest_drift", probe if probe is not None else self_probe()),
         f"[digest-drift] pin {len(drift.pins)}개 · 그대로 {counts[STATUS_MATCH]} · "
         f"재확인 {counts[STATUS_REVERIFIED]} · 움직임(미확인) {counts[STATUS_DRIFT]} · "
         f"재확인 무효 {counts[STATUS_STALE]} · 깨짐 {counts[STATUS_MISSING]} "
@@ -278,6 +299,43 @@ def describe(drift: Drift) -> str:
     return "\n".join(lines)
 
 
+_PROBE_PINNED: Final[str] = "근거: scripts/digest_drift.py (sha256 abcdef0123456789) 를 쓴다."
+_PROBE_UNPINNED: Final[str] = "이 문장은 sha256 abcdef0123456789 만 적고 경로가 없다."
+
+
+def self_probe() -> Probe:
+    """매 실행 자기시험 — 경로+digest 판독·상태 판정·경로 해석을 합성 입력으로 다시 물어본다."""
+
+    cases = Cases()
+    cases.covers("상태 이름", _REQUIRED_STATUSES, STATUSES)
+    cases.equal("경로+digest 판독", len(_PIN_PATTERN.findall(_PROBE_PINNED)), 1)
+    cases.equal("경로 없는 sha256 은 pin 이 아니다", len(_PIN_PATTERN.findall(_PROBE_UNPINNED)), 0)
+    cases.check("실제 경로를 해석한다", resolve_citation("scripts/digest_drift.py") is not None)
+    cases.check("없는 경로는 None", resolve_citation("scripts/definitely_not_here_9f3a.py") is None)
+
+    record = Reverification(
+        doc="T00_probe.md",
+        path="scripts/digest_drift.py",
+        verified_digest="f" * 64,
+        verified_on="2026-09-23",
+        method="probe",
+    )
+    cases.equal("그대로(기록이 앞자리)", classify("abc", "abcdef", None), STATUS_MATCH)
+    cases.equal("재확인 없이 바뀜", classify("abc", "xyz", None), STATUS_DRIFT)
+    cases.equal("재확인이 지금 내용과 같다", classify("abc", "f" * 64, record), STATUS_REVERIFIED)
+    cases.equal("재확인 뒤 또 바뀜", classify("abc", "e" * 64, record), STATUS_STALE)
+    return cases.probe()
+
+
+def coverage_floors(drift: Drift) -> list[Floor]:
+    """이번 측정이 실제로 무엇을 봤는지 — pin 0개는 “움직임 0” 이 아니라 “못 봄” 일 수 있다."""
+
+    return [
+        Floor("pin", len(drift.pins), _MIN_PINS),
+        Floor("pin 을 박은 문서", len(drift.docs), _MIN_PINNED_DOCS),
+    ]
+
+
 def load_stored(artifact: Path) -> dict[str, object] | None:
     if not artifact.exists():
         return None
@@ -287,10 +345,11 @@ def load_stored(artifact: Path) -> dict[str, object] | None:
         return None
 
 
-def gate_failures(drift: Drift, artifact: Path) -> list[str]:
-    """게이트: artifact 가 최신인가 + 깨진 pin(파일이 없는 주장)이 없는가."""
+def gate_failures(drift: Drift, artifact: Path, probe: Probe | None = None) -> list[str]:
+    """게이트: 자기시험·탐지력 + artifact 최신성 + 깨진 pin(파일이 없는 주장)이 없는가."""
 
-    problems: list[str] = []
+    problems: list[str] = probe_problems(probe if probe is not None else self_probe(), name="digest_drift")
+    problems.extend(floor_problems(coverage_floors(drift)))
     stored = load_stored(artifact)
     if stored is None:
         problems.append(f"{display(artifact)} 가 없거나 읽히지 않는다 — 먼저 scripts/digest_drift.py 를 돌려야 한다")
@@ -383,11 +442,28 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--on", default=None, help="--record 와 함께: 확인 날짜(기본 오늘)")
     parser.add_argument("--artifact", type=Path, default=ARTIFACT, help="측정 artifact 경로")
     parser.add_argument("--reverification", type=Path, default=REVERIFIED, help="재확인 기록 경로")
+    parser.add_argument("--self-test", action="store_true", help="자기시험만 돌리고 끝낸다(측정·기록 없음)")
     args = parser.parse_args(argv)
+
+    if args.self_test:
+        probe = self_probe()
+        print(describe_self_test("digest_drift", probe))
+        return EXIT_OK if probe.ok else EXIT_GATE
 
     drift = measure(reverifications=args.reverification)
     if args.emit_json:
-        print(json.dumps(drift.as_mapping(), ensure_ascii=False, indent=2))
+        probe = self_probe()
+        payload = {
+            **drift.as_mapping(),
+            "probe": probe.as_mapping(),
+            "coverage": {
+                "pins": len(drift.pins),
+                "docs": len(drift.docs),
+                "min_pins": _MIN_PINS,
+                "min_docs": _MIN_PINNED_DOCS,
+            },
+        }
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
         return EXIT_OK
 
     if args.record:

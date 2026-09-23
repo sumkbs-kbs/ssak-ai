@@ -34,6 +34,14 @@ from typing import Final
 
 REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 SCAN_DIRS: Final[tuple[Path, ...]] = (REPO_ROOT / "tests", REPO_ROOT / "docs" / "qa")
+
+# 공통 harness 계약(자기시험 · 탐지력 하한) — scripts/ 는 저장소 안의 도구 모음이라 직접 import 한다.
+_SCRIPTS_DIR: Final[Path] = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from harness_contract import Cases, Floor, Probe, describe_self_test, floor_problems, probe_problems  # noqa: E402
+
 ENV_TOKENS: Final[tuple[str, ...]] = ("environ", "getenv")
 MODULE_SCOPE_NODES: Final[tuple[type[ast.stmt], ...]] = (
     ast.FunctionDef,
@@ -163,6 +171,54 @@ def scan_source(source: str, *, file: str) -> tuple[Violation, ...]:
     return tuple(violations)
 
 
+# 자기시험 입력 — 수집 단계 purge(위반)와 허용 형태(트리 override·실행 시점)의 최소본.
+_PROBE_UNGUARDED: Final[str] = "import sys\n\nsys.modules.pop('antigravity_k.x', None)\n"
+_PROBE_GUARDED: Final[str] = (
+    "import os\nimport sys\n\nif os.environ.get('NX10_FLUSH_TREE'):\n    sys.modules.pop('antigravity_k.x', None)\n"
+)
+_PROBE_DELETE: Final[str] = "import sys\n\ndel sys.modules['antigravity_k.x']\n"
+_PROBE_IN_FUNCTION: Final[str] = "import sys\n\n\ndef purge():\n    sys.modules.pop('antigravity_k.x', None)\n"
+_PROBE_UNRELATED: Final[str] = "import sys\n\nregistry = {}\nregistry.pop('x', None)\n"
+_MIN_SCANNED_FILES: Final[int] = 1
+
+
+def self_probe() -> Probe:
+    """매 실행 자기시험 — 판독 규칙(수집 단계·가드·실행 시점 제외)을 합성 입력으로 다시 물어본다."""
+
+    cases = Cases()
+    cases.equal("감싸이지 않은 module 수준 purge", len(scan_source(_PROBE_UNGUARDED, file="test_probe.py")), 1)
+    cases.equal("del 형태도 위반", len(scan_source(_PROBE_DELETE, file="test_probe.py")), 1)
+    cases.equal("트리 override 로 감싼 형태는 허용", len(scan_source(_PROBE_GUARDED, file="test_probe.py")), 0)
+    cases.equal("함수 본문(실행 시점)은 범위 밖", len(scan_source(_PROBE_IN_FUNCTION, file="test_probe.py")), 0)
+    cases.equal("무관한 mapping 의 pop 은 위반이 아니다", len(scan_source(_PROBE_UNRELATED, file="test_probe.py")), 0)
+    cases.check(
+        "위반 문장을 문장 단위로 지목한다",
+        any("modules" in violation.expression for violation in scan_source(_PROBE_UNGUARDED, file="test_probe.py")),
+    )
+    return cases.probe()
+
+
+def scanned_files(paths: Sequence[Path] | None = None) -> tuple[str, ...]:
+    """이번 스캔이 실제로 본 파일 — “위반 0건” 이 “못 봄” 인지 가리는 근거다."""
+
+    roots = tuple(paths) if paths is not None else SCAN_DIRS
+    files: list[str] = []
+    for root in roots:
+        if not root.is_dir():
+            continue
+        for path in sorted(root.rglob("*.py")):
+            if "__pycache__" in path.parts or not _is_collected(path):
+                continue
+            files.append(_display(path))
+    return tuple(files)
+
+
+def coverage_floors(paths: Sequence[Path] | None = None) -> list[Floor]:
+    """스캔 대상이 하나도 없으면 통과가 아니라 “볼 수 없음” 이다."""
+
+    return [Floor("수집 대상 시험 파일", len(scanned_files(paths)), _MIN_SCANNED_FILES)]
+
+
 def _is_collected(path: Path) -> bool:
     """pytest 가 수집하는 이름인가(`conftest.py` 또는 `test_*.py`)."""
     return path.name == "conftest.py" or (path.suffix == ".py" and path.name.startswith("test_"))
@@ -192,12 +248,20 @@ def scan_paths(paths: Sequence[Path] | None = None) -> tuple[Violation, ...]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="import 시점 namespace purge 감사")
     _ = parser.add_argument("--json", type=Path, default=None, help="결과를 JSON 으로 남길 경로")
+    _ = parser.add_argument("--self-test", action="store_true", help="자기시험만 돌리고 끝낸다")
     args = parser.parse_args(argv)
+
+    probe = self_probe()
+    if args.self_test:
+        print(describe_self_test("audit_test_namespace_purge", probe))
+        return 0 if probe.ok else 1
 
     violations = scan_paths()
     payload = {
         "violations": [violation.as_mapping() for violation in violations],
         "count": len(violations),
+        "probe": probe.as_mapping(),
+        "coverage": {"scanned": sorted(scanned_files())},
     }
     if args.json is not None:
         args.json.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -207,7 +271,13 @@ def main(argv: list[str] | None = None) -> int:
         for violation in violations:
             print(f"  · {violation.file}:{violation.line} {violation.expression}")
         return 1
-    print("import 시점 namespace purge 없음 (수집 대상 시험 파일 전체)")
+
+    problems = probe_problems(probe, name="audit_test_namespace_purge") + floor_problems(coverage_floors())
+    for problem in problems:
+        print(f"[FAIL] {problem}", file=sys.stderr)
+    if problems:
+        return 1
+    print(f"import 시점 namespace purge 없음 — 수집 대상 시험 파일 {len(scanned_files())}개를 봤다")
     return 0
 
 

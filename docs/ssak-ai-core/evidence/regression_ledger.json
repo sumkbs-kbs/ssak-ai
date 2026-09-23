@@ -385,5 +385,15 @@
     "drift": 0,
     "unowned": 0,
     "retried_scopes": 0
+  },
+  "probe": {
+    "cases": 11,
+    "failures": [],
+    "ok": true
+  },
+  "coverage": {
+    "runs": 21,
+    "scopes": 9,
+    "min_runs": 1
   }
 }

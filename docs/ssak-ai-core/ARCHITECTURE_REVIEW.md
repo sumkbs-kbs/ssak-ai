@@ -83,7 +83,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=454 -->
+<!-- measured:cognitive_tests=476 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -327,6 +327,29 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 
 즉 이제 증거는 다섯 층으로 검사된다: **실재 → 추적 → 시점(digest) → 계약(재확인) → 문장(상태 주장)** —
 그리고 그 문장을 읽는 감사자 자신이 **여섯 번째 층**에서 매번 자기 눈을 확인한다.
+
+#### 여섯 번째 층을 공통 계약으로 올렸다 — `scripts/harness_contract.py`
+
+상태 주장 감사에 붙인 자기시험·하한은 그 감사만의 것이 아니었다. **측정 harness 는 모두 같은 방식으로 눈이 멀 수 있다**:
+문서 형식이 바뀌어 pin 을 하나도 못 찾으면 digest 측정은 “pin 0 · 움직임 0” 으로, junit 을 못 읽으면 원장은
+“결정적 0 · drift 0” 으로, 패턴을 바꿔 인용을 못 찾으면 리뷰는 “인용 0건 모두 추적됨” 으로 통과한다.
+그래서 두 장치를 공통 module 로 올렸다(`Probe`/`Cases` · `Floor`).
+
+| harness | 자기시험 (매 실행 재판정) | 탐지력 하한 |
+|---|---|---|
+| `digest_drift` | **9건** — 경로+digest 판독, 경로 없는 `sha256` 배제, 경로 해석, 상태 4종(그대로·움직임·재확인·무효) | pin **50** · pin 을 박은 문서 **13** (하한 1·1) |
+| `regression_ledger` | **11건** — junit 판독(수집·skip·실패/오류 둘 다 빨강·중단 표시), `testsuite` 없으면 예외, 회차 0개면 예외, 결정적 판정 | 회차 **21** · scope **9** (하한 1·1) |
+| `audit_state_claims` | **17건** — 어휘·요구 어휘·펜스·정정 창·상태 계산 (앞선 회차) | mention **6** · 주장 **4** |
+| `audit_enum_identity` | **5건** — identity 비교 2건(종류 구분), 값 비교·리터럴 제외, 제외 목록·스캔 범위 | 스캔한 파일 **≥10** |
+| `audit_test_namespace_purge` | **6건** — 미가드 purge 1건, `del` 형태, 트리 override 허용, 함수 본문 제외, 무관한 mapping | 수집 대상 파일 ≥1 (실제 **537**) |
+
+하한은 **“찾은 것이 없다” 와 “볼 수 없다” 를 가르는 값**이라 낮게 잡았다(하한 1). 올려 잡으면 새 문서가 생길 때마다
+숫자 싸움이 되고, 낮게 잡아도 판독 규칙이 죽는 순간은 잡는다. 하한을 **내리는 것은 근거와 함께 사람이 하는 결정**이며,
+그 문장을 각 스크립트의 상수 옆에 적어 두었다. 인용 추적의 하한만 **저장소 기본 범위**에 걸린다 — 부분 범위를 넘기는
+호출(시험의 합성 문서)은 그 범위를 정한 호출자가 하한을 소유한다.
+
+각 harness 는 `--self-test` 로 자기시험만 돌릴 수 있고(측정·기록 없음), 리뷰는 자기시험 **부재**도 실패로 본다:
+판독력을 확인하지 않은 수치를 증거로 옭기지 않는다.
 
 ### 1.5 회귀 실패 중 둘을 닫았다 — 조용한 스킵과 미등록 실행 경로를 등록으로 없‌앴다
 

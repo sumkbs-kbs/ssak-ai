@@ -58,7 +58,7 @@ import shlex
 import subprocess  # noqa: S404 - 이 저장소의 회귀 명령을 그대로 부르는 것이 목적이다
 import sys
 import xml.etree.ElementTree as ET
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Final
@@ -67,6 +67,14 @@ EXIT_OK: Final[int] = 0
 EXIT_GATE: Final[int] = 1
 
 REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
+
+# 공통 harness 계약(자기시험 · 탐지력 하한) — scripts/ 는 저장소 안의 도구 모음이라 직접 import 한다.
+_SCRIPTS_DIR: Final[Path] = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from harness_contract import Cases, Floor, Probe, describe_self_test, floor_problems, probe_problems  # noqa: E402
+
 DEFAULT_JUNIT_DIR: Final[Path] = REPO_ROOT / ".regression-ledger"
 DEFAULT_JSON: Final[Path] = REPO_ROOT / "docs" / "ssak-ai-core" / "evidence" / "regression_ledger.json"
 DEFAULT_PATTERN: Final[str] = "not slow and not benchmark"
@@ -269,6 +277,79 @@ def node_id(classname: str, name: str) -> str:
     if tail:
         return f"{path}::{'.'.join(tail)}::{name}"
     return f"{path}::{name}"
+
+
+# 자기시험 입력 — 실제 junit 형태의 최소본(통과·실패·오류·skip·중단).
+_PROBE_JUNIT: Final[str] = """<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+  <testsuite name="pytest" tests="4" skipped="1" failures="1" errors="1">
+    <testcase classname="tests.test_a" name="test_green" time="0.1" />
+    <testcase classname="tests.test_a" name="test_red" time="0.1"><failure message="boom" /></testcase>
+    <testcase classname="tests.test_b" name="test_error" time="0.1"><error message="kaboom" /></testcase>
+    <testcase classname="tests.test_b" name="test_skip" time="0.0"><skipped /></testcase>
+  </testsuite>
+</testsuites>
+"""
+# 탐지력 하한 — junit 을 하나도 못 읽으면 “결정적 0 · drift 0” 으로 조용히 통과한다.
+_MIN_RUNS: Final[int] = 1
+_MIN_SCOPES: Final[int] = 1
+
+
+def self_probe() -> Probe:
+    """매 실행 자기시험 — junit 판독(빨강·skip·수집·중단)과 원장 분리를 합성 입력으로 다시 물어본다."""
+
+    cases = Cases()
+    probe = parse_junit(_PROBE_JUNIT, source="<probe>")
+    cases.equal("수집 수", probe.tests, 4)
+    cases.equal("skip 수", probe.skipped, 1)
+    cases.equal("실패와 오류를 둘 다 빨강으로", len(probe.red), 2)
+    cases.check("실패 id 에 시험 이름이 들어간다", any("test_red" in node for node in probe.red))
+    cases.check(
+        "통과한 시험은 빨강이 아니다", all("test_green" not in node and "test_skip" not in node for node in probe.red)
+    )
+    cases.check("중단 표시 없음", probe.aborted is False)
+
+    aborted_xml = _PROBE_JUNIT.replace(
+        '<testcase classname="tests.test_a" name="test_green" time="0.1" />',
+        '<testcase classname="pytest" name="internal" time="0.1"><error message="internal" /></testcase>',
+    )
+    cases.check("pytest internal 을 중단으로 읽는다", parse_junit(aborted_xml, source="<probe>").aborted is True)
+    cases.check(
+        "testsuite 없는 XML 은 조용히 빈 값이 아니라 예외",
+        _raises(lambda: parse_junit("<notjunit />", source="<probe>")),
+    )
+    cases.check(
+        "회차 0개는 조용히 빈 원장이 아니라 예외",
+        _raises(lambda: build_ledger([])),
+    )
+
+    runs = (
+        RunResult(scope="probe", variant="seed-1", seed=1, junit="a.xml", tests=2, red=frozenset({"f"}), skipped=0),
+        RunResult(scope="probe", variant="seed-2", seed=2, junit="b.xml", tests=2, red=frozenset({"f"}), skipped=0),
+    )
+    cases.equal("두 회차 모두 빨간 것은 결정적", build_ledger(runs).deterministic, frozenset({"f"}))
+    mixed = (
+        runs[0],
+        RunResult(scope="probe", variant="seed-2", seed=2, junit="b.xml", tests=2, red=frozenset(), skipped=0),
+    )
+    cases.equal("한 회차만 빨간 것은 결정적이 아니다", build_ledger(mixed).deterministic, frozenset())
+    return cases.probe()
+
+
+def _raises(call: Callable[[], object]) -> bool:
+    """예외를 내야 하는 판독 — 조용한 빈 값과 구분한다."""
+
+    try:
+        _ = call()
+    except (ValueError, KeyError, ET.ParseError):
+        return True
+    return False
+
+
+def coverage_floors(ledger: Ledger) -> list[Floor]:
+    """이번 원장이 실제로 무엇을 봤는지 — 회차 0개는 “실패 0건” 이 아니라 “못 봄” 일 수 있다."""
+
+    return [Floor("회차", len(ledger.runs), _MIN_RUNS), Floor("scope", len(ledger.scopes), _MIN_SCOPES)]
 
 
 def parse_junit(text: str, *, source: str) -> Report:
@@ -492,7 +573,7 @@ def run_once(
 def describe(ledger: Ledger) -> str:
     """사람이 읽는 요약 — scope 별 회차·결정적·seed 민감·소유자."""
 
-    lines = ["# 전량 회귀 원장", ""]
+    lines = ["# 전량 회귀 원장", describe_self_test("regression_ledger", self_probe()), ""]
     for scope, count in ledger.scopes.items():
         entries = [run for run in ledger.runs if run.scope == scope]
         seeds = ", ".join(run.variant for run in entries)
@@ -523,10 +604,11 @@ def describe(ledger: Ledger) -> str:
     return "\n".join(lines)
 
 
-def gate_failures(ledger: Ledger, *, drift_allowance: int) -> list[str]:
-    """`--gate` 판정 — 무소유·미완 scope·허용치 초과 drift 를 문장으로 돌려준다."""
+def gate_failures(ledger: Ledger, *, drift_allowance: int, probe: Probe | None = None) -> list[str]:
+    """`--gate` 판정 — 자기시험·탐지력 + 무소유·미완 scope·허용치 초과 drift 를 문장으로 돌려준다."""
 
-    problems: list[str] = []
+    problems: list[str] = probe_problems(probe if probe is not None else self_probe(), name="regression_ledger")
+    problems.extend(floor_problems(coverage_floors(ledger)))
     if ledger.unowned:
         problems.append(f"무소유 결정적 실패 {len(ledger.unowned)}건: " + ", ".join(ledger.unowned))
     if ledger.aborted:
@@ -590,7 +672,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         default=DEFAULT_ABORTED_RETRIES,
         help="중단된 회차를 다시 돌릴 횟수(중단 횟수와 로그는 원장에 남는다)",
     )
+    parser.add_argument("--self-test", action="store_true", help="자기시험만 돌리고 끝낸다(회차를 돌리지 않는다)")
     parsed = parser.parse_args(argv)
+
+    if parsed.self_test:
+        probe = self_probe()
+        print(describe_self_test("regression_ledger", probe))
+        return EXIT_OK if probe.ok else EXIT_GATE
 
     extra = [token for chunk in parsed.extra for token in shlex.split(chunk)]
     seeds = (
@@ -613,15 +701,21 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     ledger = build_ledger(runs)
     ledger.command = tuple(pytest_command(pattern=parsed.pattern, extra=extra))
+    probe = self_probe()
+    payload = {
+        **ledger.as_mapping(),
+        "probe": probe.as_mapping(),
+        "coverage": {"runs": len(ledger.runs), "scopes": len(ledger.scopes), "min_runs": _MIN_RUNS},
+    }
     parsed.json.parent.mkdir(parents=True, exist_ok=True)
-    parsed.json.write_text(json.dumps(ledger.as_mapping(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    parsed.json.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     print(describe(ledger))
     print(f"\n원장 JSON: {display_path(parsed.json)}")
 
     if not parsed.gate:
         return EXIT_OK
-    problems = gate_failures(ledger, drift_allowance=parsed.drift_allowance)
+    problems = gate_failures(ledger, drift_allowance=parsed.drift_allowance, probe=probe)
     for problem in problems:
         print(f"[FAIL] {problem}", file=sys.stderr)
     return EXIT_GATE if problems else EXIT_OK

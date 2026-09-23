@@ -303,10 +303,18 @@ def test_glob_and_elided_citations_are_not_judged(review: Any, tmp_path: Path, m
     assert result.observed == 0, "패턴을 인용으로 셌다"
 
 
-def _drift_report(*, reverified: int = 0, missing: int = 0, stale: int = 0) -> dict[str, object]:
+def _drift_report(
+    *,
+    reverified: int = 0,
+    missing: int = 0,
+    stale: int = 0,
+    pins: int = 1,
+    probe_present: bool = True,
+    probe_ok: bool = True,
+) -> dict[str, object]:
     """digest 측정 artifact 의 최소 형태 — 판정에 쓰는 키만 담는다."""
 
-    pins = [
+    entries: list[dict[str, str]] = [
         {
             "doc": "T01a.md",
             "path": "src/antigravity_k/engine/cognitive/models.py",
@@ -315,19 +323,24 @@ def _drift_report(*, reverified: int = 0, missing: int = 0, stale: int = 0) -> d
             "status": "match",
             "reverified_on": "",
         }
+        for _ in range(max(pins, 0))
     ]
     counts = {
-        "match": len(pins),
+        "match": len(entries),
         "reverified": reverified,
         "drift": 0,
         "stale_reverification": stale,
         "missing": missing,
     }
-    return {
+    report: dict[str, object] = {
         "counts": counts,
-        "docs": {"T01a.md": dict(counts)},
-        "pins": pins,
+        "docs": {"T01a.md": dict(counts)} if entries else {},
+        "pins": entries,
+        "coverage": {"pins": len(entries), "docs": 1 if entries else 0, "min_pins": 1},
     }
+    if probe_present:
+        report["probe"] = {"cases": 9, "failures": [] if probe_ok else ["경로+digest 판독: 0 ≠ 1"], "ok": probe_ok}
+    return report
 
 
 def test_stale_digest_report_is_rejected(review: Any) -> None:  # noqa: ANN401
@@ -363,6 +376,55 @@ def test_reverified_digests_pass_and_are_counted(review: Any) -> None:  # noqa: 
     assert result.passed is True
     assert result.observed == 21
     assert "재확인 21" in result.detail
+
+
+def test_digest_report_without_a_self_probe_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """자기시험 결과가 없는 측정 artifact 는 통과하지 않는다 — 판독력을 확인하지 않은 수치다."""
+
+    report = _drift_report(probe_present=False)
+    result = review.check_digest_report(report, report)
+
+    assert result.passed is False
+    assert "자기시험" in result.detail
+
+
+def test_digest_report_with_a_failed_self_probe_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """자기시험이 실패한 측정은 실패다 — pin 50개를 셌어도 판독 규칙이 깨졌으면 증거가 아니다."""
+
+    report = _drift_report(probe_ok=False)
+    result = review.check_digest_report(report, report)
+
+    assert result.passed is False
+    assert "자기시험 실패" in result.detail
+
+
+def test_blind_digest_measurement_is_rejected(review: Any) -> None:  # noqa: ANN401
+    """pin 을 하나도 못 본 측정은 “움직임 0” 이 아니라 실패다(탐지력 하한)."""
+
+    report = _drift_report(pins=0)
+    result = review.check_digest_report(report, report)
+
+    assert result.passed is False
+    assert "볼 수 없는" in result.detail
+
+
+def test_citation_floor_applies_to_the_repository_corpus(
+    review: Any,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:  # noqa: ANN401
+    """저장소 전체에서 인용이 하나도 안 보이면 읽지 못한 것일 수 있다 — 하한이 그것을 잡는다.
+
+    하한은 **기본 범위**(저장소)에만 걸린다: 부분 범위를 넘기면 그 범위를 정한 호출자가 하한을 소유한다.
+    """
+
+    empty_root = tmp_path / "ssak-ai-core"
+    empty_root.mkdir(exist_ok=True)
+    monkeypatch.setattr(review, "DOCS_ROOT", empty_root)
+    result = review.check_citation_tracking()
+
+    assert result.passed is False
+    assert "하한" in result.detail
 
 
 def test_invalidated_reverification_fails_the_check(review: Any) -> None:  # noqa: ANN401

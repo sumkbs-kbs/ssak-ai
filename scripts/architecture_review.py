@@ -32,6 +32,13 @@ from datetime import date
 from pathlib import Path
 from typing import Final, Literal
 
+# 공통 harness 계약(자기시험 · 탐지력 하한) — scripts/ 는 저장소 안의 도구 모음이라 직접 import 한다.
+_SCRIPTS_DIR: Final[Path] = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from harness_contract import Floor, Probe, floor_problems, probe_problems  # noqa: E402, Literal
+
 EXIT_OK: Final[int] = 0
 EXIT_FAILED: Final[int] = 1
 
@@ -777,6 +784,8 @@ _CITATION_PATTERN: Final[re.Pattern[str]] = re.compile(
     r"\.(?:py|md|json|jsonl|yaml|yml|ts|tsx|sh|txt|toml))"
 )
 _CITATION_ELISION: Final[tuple[str, ...]] = ("*", "?", "<", ">", "...", "…")
+# 탐지력 하한 — 인용 0건은 "모두 추적된다" 가 아니라 "문서를 못 봤다" 일 수 있다.
+_MIN_CITATIONS: Final[int] = 1
 
 
 @dataclass(frozen=True, slots=True)
@@ -912,6 +921,12 @@ def check_citation_tracking(docs_root: Path | None = None, *, on: str | None = N
             overdue.append(f"{item.path}(재검토 기한 {item.review_by} 경과)")
 
     problems: list[str] = []
+    # 탐지력 하한: 인용이 0건이면 "모두 실재·추적" 이 아니라 **아무것도 못 본 것**일 수 있다.
+    # 하한은 **저장소 기본 범위**에만 적용한다 — 부분 범위를 넘기면 그 범위를 정한 호출자가 하한을 소유한다.
+    if docs_root is None and total < _MIN_CITATIONS:
+        problems.append(
+            f"인용이 {total}건뿐이다(저장소 전체 하한 {_MIN_CITATIONS}) — 문서를 읽지 못했거나 패턴이 깨졌을 수 있다"
+        )
     if unresolved:
         problems.append(f"해석되지 않는 인용 {len(unresolved)}건 — 등록이 필요하다: {', '.join(unresolved)}")
     if untracked:
@@ -933,6 +948,28 @@ def check_citation_tracking(docs_root: Path | None = None, *, on: str | None = N
         detail=(f"인용 {total}건이 모두 실재·추적되고, 등록 {len(_CITATION_EXCEPTIONS)}건은 이유와 기한이 있다"),
         observed=total,
     )
+
+
+def harness_problems(report: dict[str, object], *, name: str, floors: tuple[tuple[str, int], ...]) -> list[str]:
+    """harness JSON 의 자기시험·탐지력 하한을 공통 문장으로 — 부재·실패·미달을 모두 실패로 만든다.
+
+    하한 label 은 그 harness 의 JSON 이 `coverage` 안에 싣는 키다(예: `pins` · `runs` · `scanned`).
+    """
+
+    coverage = _as_dict(report.get("coverage"))
+    raw_probe = report.get("probe")
+    probe = (
+        Probe(
+            cases=_as_int(raw_probe.get("cases")),
+            failures=tuple(str(item) for item in _as_list(raw_probe.get("failures"))),
+        )
+        if isinstance(raw_probe, dict)
+        else None
+    )
+    problems = list(probe_problems(probe, name=name))
+    for label, minimum in floors:
+        problems.extend(floor_problems([Floor(label, _as_int(coverage.get(label)), minimum)]))
+    return problems
 
 
 def read_digest_drift() -> dict[str, object] | None:
@@ -997,7 +1034,7 @@ def check_digest_report(stored: dict[str, object] | None, fresh: dict[str, objec
     counts = _as_dict(fresh.get("counts"))
     broken = _as_int(counts.get("missing"))
     stale_reverification = _as_int(counts.get("stale_reverification"))
-    problems: list[str] = []
+    problems: list[str] = harness_problems(fresh, name="digest_drift", floors=(("pins", 1), ("docs", 1)))
     if stale:
         problems.append(f"artifact 가 최신이 아니다({', '.join(stale)} 불일치) — digest_drift.py 를 다시 돌려야 한다")
     if broken:
@@ -1016,7 +1053,8 @@ def check_digest_report(stored: dict[str, object] | None, fresh: dict[str, objec
         passed=True,
         detail=(
             f"digest pin {len(_as_list(fresh.get('pins')))}개 — 그대로 {_as_int(counts.get('match'))} · "
-            f"재확인 {_as_int(counts.get('reverified'))} · 미확인 움직임 {_as_int(counts.get('drift'))}"
+            f"재확인 {_as_int(counts.get('reverified'))} · 미확인 움직임 {_as_int(counts.get('drift'))} · "
+            f"자기시험 {_as_int(_as_dict(fresh.get('probe')).get('cases'))}건 통과"
         ),
         observed=_as_int(counts.get("reverified")),
     )
@@ -1237,7 +1275,7 @@ def check_regression_ledger(ledger: dict[str, object] | None) -> CheckResult:
     unowned = _as_list(ledger.get("unowned"))
     drift = _as_list(ledger.get("drift"))
 
-    problems: list[str] = []
+    problems: list[str] = harness_problems(ledger, name="regression_ledger", floors=(("runs", 1), ("scopes", 1)))
     if not scopes:
         problems.append("scope 가 없다 — 무엇을 재는지 이름이 없는 원장은 인용할 수 없다")
     if incomplete:
