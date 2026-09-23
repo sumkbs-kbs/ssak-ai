@@ -5,25 +5,29 @@ T14 는 `test / lint / type / build` 를 요구하는데 `build` 만 **NOT_RUN**
 체크아웃에서 실행하지 않았다”). 그 문장은 위험 하나를 숨긴다 — 이 체크아웃에서 배포판을 한 번도 만들어 본 적이 없다는
 것. 소비자가 받는 물건과 저장소 트리는 다를 수 있고(빠진 파일), 그 차이는 설치된 곳에서만 보인다.
 
-이 도구가 그 물음을 네 단계로 닫는다:
+이 도구가 그 물음을 열한 단계로 닫는다:
 
   1. **빌드** — `uv build --no-sources` 로 wheel 과 sdist 를 만든다. 하나라도 없으면 실패다(계약은 둘이다).
   2. **저장소 밖 소비** — 기존 검증기(`scripts/verify_release_artifacts.sh`)가 신규 venv 에 설치해 저장소 트리 없이
      CLI·모듈·API·auth 를 돌린다. 그 판정을 **종료 코드와 산출물별 PASS 문장**으로 읽는다.
-  3. **sdist 왕복** — sdist 를 풀어 **그 안에서** wheel 을 다시 빌드한 뒤, 트리에서 만든 wheel 과 **파일 목록을 견준다**.
-     `MANIFEST`/package-data 에서 빠진 파일은 sdist 설치 경로에서만 드러난다 — wheel 만 검증하면 그 결함은 안 보인다.
+  3. **sdist 왕복** — sdist 를 풀어 **그 안에서** wheel 을 다시 빌드한 뒤, 트리에서 만든 wheel 과 **파일 목록과 내용
+     (항목별 sha256)**을 견준다. `MANIFEST`/package-data 에서 빠진 파일은 sdist 설치 경로에서만 드러난다 — wheel 만
+     검증하면 그 결함은 안 보인다. 이름이 같아도 잘렸거나 변형된 파일은 목록으로는 안 보이므로 내용도 함께 본다.
   4. **배포판 vs 추적 트리** — 소비자가 받는 wheel 이 **커밋된 코드를 모두 담고 있는가**. `uv build` 는 wheel 을
      sdist 에서 만들므로(로그: “Building wheel from source distribution…”) sdist 가 잃은 파일은 소비자에게도 없다 —
      `git ls-files` 로 추적 파일을 세어 빠진 것이 있으면 **이름으로 실패**시키고, 미추적 로컬 파일·빌드 생성물은 **보고만** 한다.
-  5. **red 재현 셋** — 이 층은 세 종류의 결함을 막아야 한다:
+  5. **내용 대조** — 배포판에 실린 패키지 파일의 **바이트**가 빌드가 본 트리와 같은가. 이름이 같아도 잘렸거나 빌드가 내용을
+     바꿔 실은 파일은 목록 대조를 그대로 통과한다. 커밋본(`git show`)이 아니라 **디스크** 와 견준다 — 빌드가 본 것도 이 트리이고,
+     다른 레인의 미커밋 편집을 오탐으로 만들면 이 층은 늘 빨개져 무시된다.
+  6. **red 재현 셋** — 이 층은 세 종류의 결함을 막아야 한다:
      · “빠진 배포판”: 같은 wheel 사본에서 module 하나를 빼고 `RECORD` 를 다시 써서 **유효하지만 불완전한**
        wheel 을 만든 뒤 같은 검증기에 건다. 그 검증기가 통과시키면 이 층은 아무것도 막지 못한다.
      · “빠진 sdist”: sdist 사본에서 파일 하나를 빼고 **같은 왕복**을 돌린다. 왕복이 그 빠짐을 지목하지 못하면
        왕복 관찰(exit 0 · 빠짐 0)이 “보고 0” 인지 “아무것도 못 보고 0” 인지 가릴 수 없다.
      · “잃어버린 추적 파일”: **작은 실물 프로젝트**(git·uv 로 실제 빌드)에서 추적 파일 하나를 sdist 에서 빼고 같은 눈으로 본다.
        대조군은 같은 프로젝트에서 그 한 줄만 뺀 것 — 심은 이름을 지목하고 대조군이 조용해야 이 눈이 무는 것이다.
-     판정(검증·왕복·추적 대조)은 **한 빌드**를 가리킨다. 재현 계약만 같은 pin 으로 **한 번 더** 만든다(아래 6).
-  6. **재현 빌드 동일성** — `SOURCE_DATE_EPOCH` 를 고정하고 **같은 트리로 한 번 더** 만들어 바이트를 견준다. “어제 만든 것과
+     판정(검증·왕복·추적 대조)은 **한 빌드**를 가리킨다. 재현 계약만 같은 pin 으로 **한 번 더** 만든다(아래 7).
+  7. **재현 빌드 동일성** — `SOURCE_DATE_EPOCH` 를 고정하고 **같은 트리로 한 번 더** 만들어 바이트를 견준다. “어제 만든 것과
      오늘 만든 것이 같은 물건인가” 는 공급망 신뢰의 전제이고, 이 층이 검증한 물건이 재현 불가능하면 그 검증은 그날의 사본에만
      해당한다. 판정은 산출물마다 다르다:
      · **wheel — 계약.** 항목마다 pin 시각을 쓰는 backend(vendored `wheel` 의 `Wheelfile`)라 같은 pin 이면 같은 바이트여야 한다.
@@ -32,23 +36,36 @@ T14 는 `test / lint / type / build` 를 요구하는데 `build` 만 **NOT_RUN**
        “항상 다름” 이다 — 이 층은 그것을 **이름 붙여 기록**하되 좁게 잡는다: 차이가 디렉터리·backend 생성물에만 있으면 허용,
        **트리에 있는 실제 파일**이 달라지면 결함, 파일 **목록**이 흔들리면 결함, 그리고 sdist 가 **같아지면** 예외가 만료된
        것이므로 실패시킨다(낡은 예외는 결함을 가리는 면죄부가 된다). 근거 문장이 낡았는지도 본다(항목 중 pin 을 따르는 수).
-  7. **민감도 실물 재현** — “동일” 관찰은 비교가 눈이 있다는 증거 없이는 공허하다. 작은 **setuptools** 프로젝트(우리 배포 경로와
+  8. **민감도 실물 재현** — “동일” 관찰은 비교가 눈이 있다는 증거 없이는 공허하다. 작은 **setuptools** 프로젝트(우리 배포 경로와
      같은 backend)를 실제로 세 번 빌드한다: 같은 pin 두 번(**대조군** — 같아야 한다) · 다른 pin 한 번(달라야 한다 — 그래서
      “같음” 이 공허하지 않다) · 그리고 그 미니 sdist 도 우리 sdist 와 같은 모양으로 달라지는가(그러면 이 차이는 **backend
      속성**이고 우리 repo 탓이 아니다).
-  8. **배포 경로가 정말 pin 을 거는가** — 이 층이 “재현된다” 고 말해도 배포하는 쪽이 pin 을 안 걸면 그 보장은 이론이다.
+  9. **배포 경로가 정말 pin 을 거는가** — 이 층이 “재현된다” 고 말해도 배포하는 쪽이 pin 을 안 걸면 그 보장은 이론이다.
      그래서 CI 의 build job 이 **같은 값**을 거는지 읽어서 확인한다(없거나 다르면 실패).
-  9. **자기시험** — 판정 규칙(빌드 실패·산출물 수·PASS 문장·왕복 누락·추적 파일 누락·재현 불일치·예외 만료·민감도 실종·CI pin 누락·
-     왕복 red 미탐지·red 미탐지·사고)을 매 실행 다시 묻는다.
+  10. **자기시험** — 판정 규칙(빌드 실패·산출물 수·PASS 문장·왕복 누락·내용 불일치·추적 파일 누락·재현 불일치·예외 만료·민감도
+     실종·CI pin 누락·왕복 red 미탐지·내용 재현 미탐지·기록 규칙·사고)을 매 실행 다시 묻는다.
 
 **탐지력 하한**도 함께 낸다(`Floor` — 값과 근거): 배포 산출물 2(wheel+sdist) · 저장소 밖 PASS 2 · **비교한 파일**(왕복
 비교가 몇 파일에서 이뤄졌나) · **배포판에 실린 추적 파일**(추적 대조가 **0개를 보고 “빠짐 없음”** 으로 통과하는 순간을 잡는다) ·
-**재현 비교한 산출물**(재현 비교가 0건이면 “동일” 이 아니라 **아무것도 안 본 것**이다). 하한이 장식인지도 자기시험이 본다(관측 0 은 실패).
+**재현 비교한 산출물**(재현 비교가 0건이면 “동일” 이 아니라 **아무것도 안 본 것**이다) · **내용을 견준 패키지 파일**(바이트 대조가
+경로 매핑 때문에 0건이 되어도 “내용 다름 0” 으로 통과한다). 하한이 장식인지도 자기시험이 본다(관측 0 은 실패).
+
+  11. **하한 기록** — 이 층의 하한은 여섯 개인데, 그 하한이 **실제로 무는지**는 자기시험만으로는 증명되지 않는다(자기시험은 하한이
+     장식이 아닌지 합성 입력으로 묻지만, 카나리아가 다른 층에 하는 것처럼 **이 층의 실제 하한 하나하나**를 눈멀게 한 사본으로
+     평가하지는 않았다 — 카나리아에 넣지 못한 이유는 하한을 재려면 61초 빌드가 필요하다는 것이었다). 그래서 이 층은
+     **기록**(`docs/ssak-ai-core/evidence/release_artifacts.json`)을 남긴다: 하한 값·관측·근거, 그리고 **무엇을 보고 승인했는가**
+     (`method`·`recorded_on`). 카나리아는 빌드 없이 이 기록을 읽어 여섯 하한이 정상 측정을 막지 않고(`healthy`) 눈멀게 한
+     사본을 막으며(`bites`) 근거를 함께 내는지(`carries_reason`) 본다. 기록은 `--record --method` 로만 만들어진다.
+
+     **기록도 낡을 수 있으므로 이 층이 스스로 대조한다** — 판단(하한 값·근거·개수)이 지금 코드와 다르면 실패한다(판단이 바뀌었으면
+     다시 기록해야 한다). 반대로 **관측이 움직인 것은 실패가 아니라 보고**다: 파일이 늘면 “비교한 파일” 관측은 정당하게 움직이므로
+     그것을 실패로 만들면 이 층은 늘 빨개져 무시된다. 기록이 없거나 승인 문장이 없어도 실패다(카나리아가 볼 것이 없어진다).
 
 ```sh
 .venv/bin/python scripts/release_artifacts.py            # 빌드 + 검증 + red 재현(수십 초)
 .venv/bin/python scripts/release_artifacts.py --emit-json # 게이트 stage 가 읽는다(판정은 종료 코드)
 .venv/bin/python scripts/release_artifacts.py --self-test # 자기시험만(빌드하지 않는다)
+.venv/bin/python scripts/release_artifacts.py --record --method "무엇을 보고 승인했는가"   # 하한 기록(카나리아가 읽는다)
 ```
 """
 
@@ -79,6 +96,9 @@ SCRIPTS_DIR: Final[Path] = REPO_ROOT / "scripts"
 # sdist 안 최상위 디렉터리 이름(`antigravity_k-0.1.0/…`) — 트리 경로로 되돌릴 때 한 칸 벗긴다.
 _ARCHIVE_ROOT: Final[re.Pattern[str]] = re.compile(r"^[^/]+/")
 VERIFIER: Final[Path] = SCRIPTS_DIR / "verify_release_artifacts.sh"
+# 하한 기록 — **카나리아가 읽는 자리**(`ARTIFACT_FLOORS`). 카나리아는 fast tier 에서 돌므로(61초 빌드를 감당할 수 없다)
+# 이 층의 하한은 저장소를 직접 재는 대신 **마지막으로 승인된 실행의 관측**으로 평가된다.
+RECORD: Final[Path] = REPO_ROOT / "docs" / "ssak-ai-core" / "evidence" / "release_artifacts.json"
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
@@ -630,6 +650,155 @@ def coverage_floors(record: Observation | None = None) -> list[Floor]:
         Floor("재현 비교한 산출물", observed_identities, _MIN_IDENTITIES, why=_WHY_IDENTITIES),
         Floor("내용을 견준 패키지 파일", observed_content, _MIN_CONTENT, why=_WHY_CONTENT),
     ]
+
+
+def display(path: Path) -> str:
+    """사람이 읽는 경로 — 저장소 안이면 상대 경로(문제 문장에 절대 경로를 실으면 읽기 어렵고, 다른 기계에서는 틀린다)."""
+
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
+def judged_floors(floors: list[Floor]) -> tuple[tuple[str, int, str], ...]:
+    """하한의 **판단** 부분만 — 값·개수·근거. 관측은 트리에 따라 움직이므로 대조 대상이 아니다.
+
+    구분이 이 층의 계약이다: 관측이 움직이는 것은 정상이고(파일이 늘면 “비교한 파일” 도 는다), **판단이 움직이면**
+    하한을 낮추거나 근거를 바꾼 것이라 다시 기록해야 한다. 관측까지 대조하면 이 층은 코드가 한 줄 늘 때마다
+    빨개져 무시되고, 판단까지 무시하면 낡은 근거가 조용히 남는다.
+    """
+
+    return tuple((floor.label, floor.minimum, floor.why) for floor in floors)
+
+
+def read_record(path: Path = RECORD) -> dict[str, object] | None:
+    """하한 기록을 읽는다 — 없거나 깨졌으면 None(호출자가 실패로 처리한다)."""
+
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def record_moves(floors: list[Floor], stored: dict[str, object] | None) -> tuple[str, ...]:
+    """기록된 관측 대비 움직임 — 실패가 아니라 **보고**다(사람이 기록을 갱신할지 판단한다)."""
+
+    recorded = _recorded_floors(stored)
+    moves: list[str] = []
+    for floor in floors:
+        before = recorded.get(floor.label)
+        if before is None or before == floor.observed:
+            continue
+        arrow = "▲" if floor.observed > before else "▼"
+        moves.append(f"{floor.label} {before} → {floor.observed} {arrow}")
+    return tuple(moves)
+
+
+def record_problems(fresh: list[Floor], stored: dict[str, object] | None) -> list[str]:
+    """기록이 지금 판단과 같은가 — 없거나 낡았으면 실패(카나리아가 장식이나 낡은 근거를 보게 두지 않는다)."""
+
+    if stored is None:
+        return [
+            f"하한 기록이 없거나 읽히지 않는다({display(RECORD)}) — 카나리아가 이 층의 하한을 눈멀게 한 사본으로 평가할 수 "
+            "없다: `--record --method` 로 기록해야 한다"
+        ]
+    problems: list[str] = []
+    if not str(stored.get("method", "")).strip():
+        problems.append("하한 기록에 승인 문장(`method`)이 없다 — 무엇을 보고 승인했는지 없는 기록은 기록이 아니다")
+    if not str(stored.get("recorded_on", "")).strip():
+        problems.append("하한 기록에 날짜(`recorded_on`)가 없다 — 언제의 판단인지 모르는 하한은 낡았는지도 알 수 없다")
+    if problems:
+        return problems
+    recorded = stored.get("floors")
+    if not isinstance(recorded, list) or not recorded:
+        return ["하한 기록에 `floors` 가 없다 — 카나리아가 이 층의 하한을 볼 수 없다(`--record --method` 로 다시 기록)"]
+    stored_judgment = tuple(
+        (str(item.get("label")), int(item.get("minimum", 0)), str(item.get("why", "")))
+        for item in recorded
+        if isinstance(item, dict)
+    )
+    fresh_judgment = judged_floors(fresh)
+    if stored_judgment != fresh_judgment:
+        stored_labels = {label for label, _minimum, _why in stored_judgment}
+        fresh_labels = {label for label, _minimum, _why in fresh_judgment}
+        moved = sorted(
+            label for label, minimum, why in fresh_judgment if (label, minimum, why) not in set(stored_judgment)
+        )
+        detail = (
+            f"기록에 없는 하한이 생겼다: {sorted(fresh_labels - stored_labels)}"
+            if fresh_labels - stored_labels
+            else f"기록에서 사라진 하한: {sorted(stored_labels - fresh_labels)}"
+            if stored_labels - fresh_labels
+            else f"판단이 바뀐 하한: {moved}"
+        )
+        return [
+            f"기록된 하한이 지금 코드와 다르다({detail}) — 하한을 내렸거나 근거를 고쳤으면 `--record --method` 로 다시 기록하라"
+            ": 낡은 기록 위에서는 카나리아가 이 층의 현재 판단을 보지 않는다"
+        ]
+    return []
+
+
+def _recorded_floors(stored: dict[str, object] | None) -> dict[str, int]:
+    """기록에 담긴 (하한 이름 → 그때의 관측)."""
+
+    if stored is None:
+        return {}
+    recorded = stored.get("floors")
+    if not isinstance(recorded, list):
+        return {}
+    return {str(item.get("label")): int(item.get("observed", 0)) for item in recorded if isinstance(item, dict)}
+
+
+def record_report(
+    path: Path,
+    stored: dict[str, object] | None,
+    floors: list[Floor],
+    issues: list[str],
+) -> dict[str, object]:
+    """기록의 상태를 JSON 보고에 실는다 — 게이트가 읽는 출력에서 “왜 실패했나” 를 읽을 수 있어야 한다."""
+
+    recorded = stored.get("floors") if stored else None
+    return {
+        "path": display(path),
+        "present": stored is not None,
+        "recorded_on": str(stored.get("recorded_on", "")) if stored else "",
+        "method": str(stored.get("method", "")) if stored else "",
+        "floors": len(recorded) if isinstance(recorded, list) else 0,
+        "moves": list(record_moves(floors, stored)),
+        "problems": list(issues),
+    }
+
+
+def record_payload(
+    *,
+    floors: list[Floor],
+    counts: dict[str, int | float],
+    coverage: dict[str, int],
+    probe: Probe,
+    method: str,
+    on: str,
+) -> dict[str, object]:
+    """기록의 **내용** — 소요 시간은 담지 않는다: 기록은 판단과 관측이지 그날의 속도가 아니다."""
+
+    return {
+        "command": ["python", "scripts/release_artifacts.py", "--record"],
+        "recorded_on": on,
+        "method": method,
+        "counts": {key: value for key, value in counts.items() if key != "seconds"},
+        "coverage": coverage,
+        "floors": floor_records(floors),
+        "probe": probe.as_mapping(),
+        "verdict": "PASS",
+    }
+
+
+def write_record(path: Path, payload: dict[str, object]) -> None:
+    """기록을 저장소에 남긴다(부모 디렉터리는 만든다)."""
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def _sha256(path: Path) -> str:
@@ -1800,6 +1969,66 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
         "눈멀게 한 하한(관측 0)은 문다",
         bool(floor_problems([Floor("배포 산출물", 0, _MIN_ARTIFACTS, why="근거")])),
     )
+    # 기록 — 카나리아가 이 층의 하한을 보는 자리다(카나리아는 61초 빌드를 감당할 수 없다). 기록 자체의 규칙을 다시 묻는다.
+    good = record_payload(
+        floors=floors,
+        counts={"compared": _MIN_COMPARED, "seconds": 1.5},
+        coverage={"artifacts": _MIN_ARTIFACTS},
+        probe=Probe(cases=1, failures=()),
+        method="2026-09-23 자기시험: 하한 판단과 근거를 다시 읽었다",
+        on="2026-09-23",
+    )
+    missing = record_problems(floors, None)
+    cases.check("기록이 없으면 통과가 아니다", bool(missing))
+    cases.check("기록이 없을 때 다시 기록하는 방법을 말한다", any("--record" in problem for problem in missing))
+    cases.check("방금 만든 기록은 지금 판단과 같다", record_problems(floors, good) == [])
+    good_counts = good["counts"]
+    cases.check(
+        "기록은 소요 시간을 담지 않는다(그날의 속도는 판단이 아니다)",
+        isinstance(good_counts, dict) and "seconds" not in good_counts,
+    )
+    moved = [Floor(floor.label, floor.observed + 1, floor.minimum, why=floor.why) for floor in floors]
+    cases.check(
+        "관측만 움직인 기록은 실패가 아니다(파일이 늘면 ‘비교한 파일’ 관측도 는다)", record_problems(moved, good) == []
+    )
+    cases.check("관측이 움직이면 보고가 그 사실을 말한다", bool(record_moves(moved, good)))
+    lowered = [Floor(floor.label, floor.observed, floor.minimum - 1, why=floor.why) for floor in floors]
+    lowered_problems = record_problems(floors, {**good, "floors": floor_records(lowered)})
+    cases.check(
+        "하한을 내린 기록은 실패다(이름을 남긴다)",
+        bool(lowered_problems) and lowered[0].label in " ".join(lowered_problems),
+    )
+    cases.check(
+        "근거를 고친 기록도 실패다(낡은 근거를 조용히 남기지 않는다)",
+        bool(
+            record_problems(
+                floors,
+                {
+                    **good,
+                    "floors": floor_records(
+                        [Floor(f.label, f.observed, f.minimum, why=f.why + " 낡음") for f in floors]
+                    ),
+                },
+            )
+        ),
+    )
+    cases.check(
+        "기록에서 하한이 사라지거나 생기는 것도 실패다",
+        bool(record_problems(floors, {**good, "floors": floor_records(floors[1:])}))
+        and bool(record_problems(floors[1:], good)),
+    )
+    cases.check(
+        "승인 문장 없는 기록은 실패다",
+        any("method" in problem for problem in record_problems(floors, {**good, "method": ""})),
+    )
+    cases.check(
+        "날짜 없는 기록은 실패다(언제의 판단인지 모르는 하한은 낡았는지도 알 수 없다)",
+        any("recorded_on" in problem for problem in record_problems(floors, {**good, "recorded_on": ""})),
+    )
+    cases.check(
+        "`floors` 가 없는 기록은 실패다(카나리아가 볼 것이 없다)",
+        any("floors" in problem for problem in record_problems(floors, {**good, "floors": []})),
+    )
     cases.check("검증기 스크립트가 실재한다", VERIFIER.is_file())
     cases.check("재현 대상이 wheel 안 경로다(절대 경로가 아니다)", not Path(TAMPER_TARGET).is_absolute())
     cases.check(
@@ -1823,8 +2052,49 @@ def _probe_or_failure() -> Probe:
         return Probe(cases=0, failures=(f"자기시험이 예외로 죽었다: {type(exc).__name__}: {exc}",))
 
 
+def observed_coverage(record: Observation) -> dict[str, int]:
+    """층이 본 것의 요약 — 게이트 추이와 기록이 같은 자리를 쓴다(두 벌로 갈라지면 기록이 낡는다)."""
+
+    return {"artifacts": len(record.artifacts), "verified": len(record.passed), "compared": record.compared}
+
+
+def observed_counts(record: Observation) -> dict[str, int | float]:
+    """이 실행이 본 수치 — 게이트 추이와 **하한 기록**이 같은 자리를 쓴다(두 벌로 갈라지면 기록이 낡는다).
+
+    소요 시간(`seconds`)만 float 이라 게이트의 수치 추출(정수만 센다)에서 빠진다 — 기록에도 담지 않는다.
+    """
+
+    return {
+        "artifacts": len(record.artifacts),
+        "verified": len(record.passed),
+        "compared": record.compared,
+        "missing": len(record.missing),
+        "differing": len(record.differing),
+        "roundtrip_bites": 1 if TAMPER_TARGET in record.rehearsal_missing else 0,
+        "roundtrip_content_bites": 1 if REWRITE_TARGET in record.rehearsal_differing else 0,
+        "content_compared": record.content.compared,
+        "content_differ": len(record.content.differ),
+        "content_absent": len(record.content.absent),
+        "content_rehearsal_bites": 1 if TRANSFORM_TARGET in record.content.rehearsal_defect else 0,
+        "tracked_shipped": len(record.tree.expected) - len(record.tree.missing),
+        "tracked_missing": len(record.tree.missing),
+        "generated": len(record.tree.generated),
+        "local_only": len(record.tree.local_only),
+        "tree_rehearsal_bites": 1 if MINI_DROPPED in record.tree_rehearsal_defect else 0,
+        "tamper_detected": 1 if record.detected else 0,
+        "identity_compared": len(record.reproducibility.identities),
+        "identity_identical": sum(1 for item in record.reproducibility.identities if item.identical),
+        "identity_allowed_differs": sum(len(item.allowed_differs) for item in record.reproducibility.identities),
+        "identity_real_differs": sum(len(item.real_differs) for item in record.reproducibility.identities),
+        "identity_appeared": sum(len(item.appeared) for item in record.reproducibility.identities),
+        "pinned_members": sum(item.pinned_members for item in record.reproducibility.identities),
+        "sensitivity_bites": 1 if repro_sensitivity_bites(record.reproducibility) else 0,
+        "ci_pinned": 1 if record.reproducibility.ci_pinned else 0,
+        "seconds": round(record.seconds, 1),
+    }
+
+
 def as_mapping(record: Observation, probe: Probe) -> dict[str, object]:
-    artifacts = len(record.artifacts)
     return {
         "command": ["python", "scripts/release_artifacts.py"],
         "build": {"exit": record.build_exit},
@@ -1854,41 +2124,14 @@ def as_mapping(record: Observation, probe: Probe) -> dict[str, object]:
         "reproducibility": record.reproducibility.as_mapping(),
         "probe": probe.as_mapping(),
         "floors": floor_records(coverage_floors(record)),
-        "coverage": {"artifacts": artifacts, "verified": len(record.passed), "compared": record.compared},
-        "counts": {
-            "artifacts": artifacts,
-            "verified": len(record.passed),
-            "compared": record.compared,
-            "missing": len(record.missing),
-            "differing": len(record.differing),
-            "roundtrip_bites": 1 if TAMPER_TARGET in record.rehearsal_missing else 0,
-            "roundtrip_content_bites": 1 if REWRITE_TARGET in record.rehearsal_differing else 0,
-            "content_compared": record.content.compared,
-            "content_differ": len(record.content.differ),
-            "content_absent": len(record.content.absent),
-            "content_rehearsal_bites": 1 if TRANSFORM_TARGET in record.content.rehearsal_defect else 0,
-            "tracked_shipped": len(record.tree.expected) - len(record.tree.missing),
-            "tracked_missing": len(record.tree.missing),
-            "generated": len(record.tree.generated),
-            "local_only": len(record.tree.local_only),
-            "tree_rehearsal_bites": 1 if MINI_DROPPED in record.tree_rehearsal_defect else 0,
-            "tamper_detected": 1 if record.detected else 0,
-            "identity_compared": len(record.reproducibility.identities),
-            "identity_identical": sum(1 for item in record.reproducibility.identities if item.identical),
-            "identity_allowed_differs": sum(len(item.allowed_differs) for item in record.reproducibility.identities),
-            "identity_real_differs": sum(len(item.real_differs) for item in record.reproducibility.identities),
-            "identity_appeared": sum(len(item.appeared) for item in record.reproducibility.identities),
-            "pinned_members": sum(item.pinned_members for item in record.reproducibility.identities),
-            "sensitivity_bites": 1 if repro_sensitivity_bites(record.reproducibility) else 0,
-            "ci_pinned": 1 if record.reproducibility.ci_pinned else 0,
-            "seconds": round(record.seconds, 1),
-        },
+        "coverage": observed_coverage(record),
+        "counts": observed_counts(record),
         "verdict": "PASS" if record.ok else "FAIL",
         "problems": list(record.problems),
     }
 
 
-def describe(record: Observation, probe: Probe) -> str:
+def describe(record: Observation, probe: Probe, stored: dict[str, object] | None = None) -> str:
     lines = ["[release] 배포 산출물 계약 — wheel/sdist 를 만들어 저장소 밖에서 써 보고, 빠진 배포판도 만들어 본다"]
     for item in record.artifacts:
         lines.append(
@@ -1963,6 +2206,20 @@ def describe(record: Observation, probe: Probe) -> str:
     lines.append(
         f"  소요      {record.seconds:.1f}초(재현 {repro.seconds:.1f}초 포함) · 자기시험 {probe.cases}건 재판정"
     )
+    if stored is None:
+        lines.append(
+            f"  기록      **없다**({display(RECORD)}) — 카나리아가 이 층의 하한을 볼 수 없다(`--record --method`)"
+        )
+    else:
+        lines.append(
+            f"  기록      {display(RECORD)} · {stored.get('recorded_on', '날짜 없음')} · "
+            f"{stored.get('method', '승인 문장 없음')}"
+        )
+        moves = record_moves(coverage_floors(record), stored)
+        if moves:
+            lines.append(
+                "  기록대조  관측이 움직였다(실패가 아니다 — 판단을 바꿨으면 다시 기록해야 한다): " + " · ".join(moves)
+            )
     for problem in record.problems:
         lines.append(f"    - {problem}")
     lines.append(
@@ -1979,6 +2236,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--gate", action="store_true", help="하나라도 어긋나면 exit 1")
     parser.add_argument("--emit-json", action="store_true", help="결과를 stdout JSON 으로 낸다(게이트 stage 가 읽는다)")
     parser.add_argument("--self-test", action="store_true", help="자기시험만 돌리고 끝낸다(빌드하지 않는다)")
+    parser.add_argument(
+        "--record",
+        action="store_true",
+        help="하한 기록을 남긴다(사람이 승인한 뒤에만) — 카나리아가 이 기록으로 이 층의 하한을 본다",
+    )
+    parser.add_argument("--method", default="", help="--record 와 함께: 무엇을 보고 승인했는가")
+    parser.add_argument("--on", default=None, help="--record 와 함께: 승인 날짜(기본 오늘)")
+    parser.add_argument("--artifact", type=Path, default=RECORD, help="하한 기록 경로")
     parser.add_argument("--dist-dir", type=Path, default=None, help="산출물 자리(기본: 임시 디렉터리)")
     parser.add_argument("--keep", action="store_true", help="임시 산출물을 지우지 않는다(사람이 열어 볼 때)")
     args = parser.parse_args(argv)
@@ -1987,16 +2252,48 @@ def main(argv: list[str] | None = None) -> int:
     if args.self_test:
         print(describe_self_test("release_artifacts", probe))
         return EXIT_OK if probe.ok else EXIT_FAIL
+    if args.record and not args.method.strip():
+        print(
+            "[FAIL] --record 에는 --method 가 필요하다 — 무엇을 보고 승인했는지 없는 기록은 카나리아가 근거로 쓸 수 없다",
+            file=sys.stderr,
+        )
+        return EXIT_FAIL
 
     record = measure(dist_dir=args.dist_dir, keep=args.keep)
+    floors = coverage_floors(record)
     problems = list(record.problems)
     problems.extend(probe_problems(probe, name="release_artifacts"))
-    problems.extend(floor_problems(coverage_floors(record)))
+    problems.extend(floor_problems(floors))
+    if args.record:
+        # 기록은 “지금 이 층이 통과한다” 는 승인이다 — 실패한 실행을 기록하면 그 기록이 거짓말한다.
+        for problem in problems:
+            print(f"[FAIL] {problem}", file=sys.stderr)
+        if problems:
+            print("[FAIL] 실패한 실행은 기록하지 않는다 — 기록은 통과의 승인이다", file=sys.stderr)
+            return EXIT_FAIL
+        payload = record_payload(
+            floors=floors,
+            counts=observed_counts(record),
+            coverage=observed_coverage(record),
+            probe=probe,
+            method=args.method.strip(),
+            on=args.on or dt.date.today().isoformat(),
+        )
+        write_record(args.artifact, payload)
+        print(f"[record] 하한 {len(floors)}개의 판단과 관측을 기록했다 — {display(args.artifact)}")
+        print("         카나리아가 이 기록으로 이 층의 하한이 실제로 무는지 본다(빌드 없이).")
+        return EXIT_OK
+
+    stored = read_record(args.artifact)
+    record_issues = record_problems(floors, stored)
+    problems.extend(record_issues)
     if args.emit_json:
-        print(json.dumps(as_mapping(record, probe), ensure_ascii=False, indent=2))
+        payload = as_mapping(record, probe)
+        payload["record"] = record_report(args.artifact, stored, floors, record_issues)
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
         # JSON 을 내는 실행도 **판정을 종료 코드로** 말한다 — 진단은 stdout 에 그대로 남는다.
         return EXIT_FAIL if problems else EXIT_OK
-    print(describe(record, probe))
+    print(describe(record, probe, stored))
     if not args.gate:
         return EXIT_OK if record.ok else EXIT_FAIL
     for problem in problems:

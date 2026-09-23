@@ -47,7 +47,7 @@ def test_every_harness_floor_bites(canary: Any) -> None:  # noqa: ANN401
 
     results = canary.run()
 
-    assert len(results) == len(canary.HARNESSES) == 8
+    assert len(results) == len(canary.HARNESSES) == 9
     for result in results:
         assert result.ok, f"{result.name}: {result.problems}"
     assert all(result.floors >= 1 for result in results)
@@ -56,7 +56,12 @@ def test_every_harness_floor_bites(canary: Any) -> None:  # noqa: ANN401
 def test_canary_reads_recorded_floors_where_they_exist(canary: Any) -> None:  # noqa: ANN401
     """기록 artifact 가 있는 harness 는 **저장본**의 하한으로 판정한다(빈 원장으로 만든 기준은 오탐이 된다)."""
 
-    assert set(canary.ARTIFACT_FLOORS) == {"digest_drift", "regression_ledger", "audit_state_claims"}
+    assert set(canary.ARTIFACT_FLOORS) == {
+        "digest_drift",
+        "regression_ledger",
+        "audit_state_claims",
+        "release_artifacts",
+    }
     for name, relative in canary.ARTIFACT_FLOORS.items():
         floors = canary.artifact_floors(name)
         assert floors, f"{name} 저장본에 floors 가 없다"
@@ -73,6 +78,26 @@ def test_recorded_and_measured_floors_agree(canary: Any) -> None:  # noqa: ANN40
 
     assert [floor.observed for floor in digest] == [floor.observed for floor in live]
     assert [floor.minimum for floor in digest] == [floor.minimum for floor in live]
+
+
+def test_a_build_costly_layer_is_judged_from_its_record(canary: Any) -> None:  # noqa: ANN401
+    """빌드가 필요한 층(61초)은 **기록된 판단**으로 본다 — 하한을 재려고 카나리아가 빌드하지는 않는다.
+
+    이 시험이 고정하는 것은 둘이다: 카나리아가 보는 하한이 **그 층의 현재 판단과 같은 이름·값**이라는 것(기록이
+    그 층의 코드가 아니라 옛 사본을 보고 있으면 여기서 갈린다), 그리고 그 하한 여섯이 정상 관측을 막지 않으면서
+    눈멀게 한 사본은 막는다는 것(카나리아 자신의 규칙으로 확인). 기록이 낡았는지의 판정은 그 층이 게이트에서 한다.
+    """
+
+    module = canary.load_harness("release_artifacts")
+    recorded = canary.harness_floors("release_artifacts", module)
+    live = module.coverage_floors()
+
+    assert [floor.label for floor in recorded] == [floor.label for floor in live]
+    assert [floor.minimum for floor in recorded] == [floor.minimum for floor in live]
+    assert len(recorded) == 6
+    result = canary.inspect("release_artifacts", module)
+    assert result.ok is True, result.problems
+    assert result.floors == 6 and result.bites is True and result.carries_reason is True
 
 
 # --------------------------------------------------------------------- 카나리아 자신의 이빨
@@ -200,8 +225,8 @@ def test_emit_json_reports_every_harness(canary: Any, capsys: pytest.CaptureFixt
     assert canary.main(["--emit-json"]) == 0
     payload = json.loads(capsys.readouterr().out)
 
-    assert payload["counts"]["harnesses"] == 8
-    assert payload["counts"]["ok"] == 8
+    assert payload["counts"]["harnesses"] == 9
+    assert payload["counts"]["ok"] == 9
     assert payload["counts"]["blind"] == 0
     assert {item["name"] for item in payload["harnesses"]} == set(canary.HARNESSES)
 

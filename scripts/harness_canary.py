@@ -55,6 +55,7 @@ HARNESSES: Final[tuple[str, ...]] = (
     "measure_cognitive_surface",
     "evidence_gate",
     "red_rehearsal",
+    "release_artifacts",
 )
 
 
@@ -102,6 +103,10 @@ ARTIFACT_FLOORS: Final[dict[str, str]] = {
     "digest_drift": "docs/ssak-ai-core/evidence/digest_drift.json",
     "regression_ledger": "docs/ssak-ai-core/evidence/regression_ledger.json",
     "audit_state_claims": "docs/ssak-ai-core/evidence/state_claims.json",
+    # 배포 산출물 계약의 하한을 재려면 61초짜리 빌드가 필요하다 — fast tier 의 카나리아는 그 빌드를 감당할 수 없으므로
+    # **마지막으로 승인된 기록**(`release_artifacts.py --record --method`)의 관측으로 본다. 그 기록이 없거나 낡았으면
+    # 카나리아는 통과가 아니라 “하한이 없다” 고 말하며, 기록이 지금 판단과 같은지도 그 층이 게이트에서 스스로 대조한다.
+    "release_artifacts": "docs/ssak-ai-core/evidence/release_artifacts.json",
 }
 
 

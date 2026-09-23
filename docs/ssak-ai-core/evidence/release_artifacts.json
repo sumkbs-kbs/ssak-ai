@@ -1,0 +1,91 @@
+{
+  "command": [
+    "python",
+    "scripts/release_artifacts.py",
+    "--record"
+  ],
+  "recorded_on": "2026-09-23",
+  "method": "2026-09-23 하한 여섯의 판단(값·근거)과 그날의 관측을 읽고 기록했다 — 카나리아가 이 기록으로 이 층의 하한이 무는지 본다",
+  "counts": {
+    "artifacts": 2,
+    "verified": 2,
+    "compared": 664,
+    "missing": 0,
+    "differing": 0,
+    "roundtrip_bites": 1,
+    "roundtrip_content_bites": 1,
+    "content_compared": 658,
+    "content_differ": 0,
+    "content_absent": 6,
+    "content_rehearsal_bites": 1,
+    "tracked_shipped": 656,
+    "tracked_missing": 0,
+    "generated": 2,
+    "local_only": 11,
+    "tree_rehearsal_bites": 1,
+    "tamper_detected": 1,
+    "identity_compared": 2,
+    "identity_identical": 1,
+    "identity_allowed_differs": 41,
+    "identity_real_differs": 0,
+    "identity_appeared": 0,
+    "pinned_members": 664,
+    "sensitivity_bites": 1,
+    "ci_pinned": 1
+  },
+  "coverage": {
+    "artifacts": 2,
+    "verified": 2,
+    "compared": 664
+  },
+  "floors": [
+    {
+      "label": "배포 산출물",
+      "observed": 2,
+      "minimum": 2,
+      "margin": 0,
+      "why": "2026-09-23 기준 관측: `uv build --no-sources` 가 wheel(33.2MB)·sdist(34.1MB) 를 만든다. 하한 2는 계약 그 자체다 — 하나만 만들고 통과하면 “배포 가능” 이 아니다(sdist 소비자와 wheel 소비자가 다르다)."
+    },
+    {
+      "label": "저장소 밖 PASS",
+      "observed": 2,
+      "minimum": 2,
+      "margin": 0,
+      "why": "2026-09-23 기준 관측: 저장소 밖 신규 venv 설치 뒤 wheel·sdist 둘 다 CLI/모듈/API/auth 를 통과했다. 하한 2는 “설치가 됐다” 가 아니라 “설치한 것을 실제로 써 봤다” 를 요구한다 — 설치 성공만 보면 빈 배포판도 통과한다."
+    },
+    {
+      "label": "비교한 파일",
+      "observed": 664,
+      "minimum": 100,
+      "margin": 564,
+      "why": "2026-09-23 기준 관측: 트리에서 만든 wheel 안 항목 664개(cognitive core·surface·dashboard bundle 포함). 하한 100은 **목록 읽기가 깨져 0~소수에서 ‘차이 없음’ 으로 통과하는 순간**을 잡는 안전선이다 — 비교한 것이 없으면 왕복 검증은 증거가 아니다."
+    },
+    {
+      "label": "배포판에 실린 추적 파일",
+      "observed": 656,
+      "minimum": 600,
+      "margin": 56,
+      "why": "2026-09-23 기준 관측: git 추적 파일 656개가 **모두** 배포 wheel 안에 있다(빠짐 0). 하한 600은 `git ls-files` 가 실패하거나(`returncode≠0`) 뿌리 경로가 바뀌어 **0개를 보고 ‘빠짐 없음’** 으로 통과하는 순간을 잡는다 — 추적 대조가 0을 보면 그 초록은 판정이 아니다."
+    },
+    {
+      "label": "재현 비교한 산출물",
+      "observed": 2,
+      "minimum": 2,
+      "margin": 0,
+      "why": "2026-09-23 기준 관측: 같은 pin 두 번 빌드에서 wheel 664/664 항목이 pin 시각 · sdist 0/1205 · 비교한 산출물 2종. 하한 2는 **재현 비교가 0~1건에서 ‘차이 없음’ 으로 통과하는 순간**을 잡는다 — 비교한 산출물이 없으면 ‘동일하다’ 는 관측이 아니다."
+    },
+    {
+      "label": "내용을 견준 패키지 파일",
+      "observed": 658,
+      "minimum": 600,
+      "margin": 58,
+      "why": "2026-09-23 기준 관측: 배포 wheel 의 패키지 파일 658개가 **디스크 트리 바이트와 전부 일치**했다(다름 0). 하한 600은 경로 매핑이 바뀌어 **0개를 비교하고 ‘차이 없음’** 으로 통과하는 순간을 잡는다 — 비교한 것이 없으면 내용 대조는 증거가 아니다."
+    }
+  ],
+  "probe": {
+    "cases": 76,
+    "failures": [],
+    "ok": true
+  },
+  "verdict": "PASS"
+}

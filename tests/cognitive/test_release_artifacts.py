@@ -1102,6 +1102,133 @@ def test_self_probe_rejudges_the_rules(release: Any) -> None:  # noqa: ANN401
     assert release.main(["--self-test"]) == 0
 
 
+# ------------------------------------------------------------------ 하한 기록(카나리아가 읽는 자리)
+#
+# 이 층은 카나리아에 **직접** 들어갈 수 없다(하한을 재려면 61초 빌드가 필요하다). 대신 `--record --method` 로 남긴
+# 기록을 카나리아가 읽어 이 층의 하한이 실제로 무는지 본다 — 기록과 판단이 갈라지면 그 시험의 초록은 거짓이 된다.
+
+
+def test_the_committed_record_is_in_sync_with_the_judgment(release: Any) -> None:  # noqa: ANN401
+    """커밋된 하한 기록이 지금 코드의 **판단**과 같다 — 하한을 내리고 다시 기록하지 않으면 여기서 멈춘다."""
+
+    stored = release.read_record()
+
+    assert stored is not None, "하한 기록이 없다 — 카나리아가 이 층의 하한을 볼 수 없다"
+    assert release.record_problems(release.coverage_floors(), stored) == []
+    assert len(stored["floors"]) == 6
+    assert str(stored["method"]).strip() and str(stored["recorded_on"]).strip()
+    assert stored["verdict"] == "PASS"
+    assert stored["probe"]["ok"] is True
+    assert {"compared", "content_compared", "tracked_shipped", "identity_compared"} <= set(stored["counts"])
+    assert "seconds" not in stored["counts"]  # 기록은 판단과 관측이지 그날의 속도가 아니다
+
+
+def test_a_drifting_judgment_is_named_and_a_drifting_observation_is_not(release: Any) -> None:  # noqa: ANN401
+    """두 물음을 가른다: 판단(하한 값·근거)이 움직이면 실패, 관측이 움직이는 것은 보고만(트리가 커지면 관측도 는다)."""
+
+    fresh = release.coverage_floors()
+    stored = release.read_record()
+    assert stored is not None
+
+    lowered = [release.Floor(f.label, f.observed, f.minimum - 1, why=f.why) for f in fresh]
+    problems = release.record_problems(fresh, {**stored, "floors": release.floor_records(lowered)})
+    assert problems and fresh[0].label in " ".join(problems)
+
+    observed_moved = [release.Floor(f.label, f.observed + 7, f.minimum, why=f.why) for f in fresh]
+    assert release.record_problems(observed_moved, stored) == []
+    assert release.record_moves(observed_moved, stored)  # 움직였으면 보고한다
+
+
+def test_the_record_round_trips_through_the_writer(tmp_path: Path, release: Any) -> None:  # noqa: ANN401
+    """`--record` 가 쓰는 형태를 그대로 다시 읽는다(승인 문장·날짜·판단·관측이 함께 있어야 한다)."""
+
+    path = tmp_path / "release-record.json"
+    release.write_record(
+        path,
+        release.record_payload(
+            floors=release.coverage_floors(),
+            counts={"compared": 664, "seconds": 3.5},
+            coverage={"artifacts": 2, "verified": 2, "compared": 664},
+            probe=release.Probe(cases=3, failures=()),
+            method="시험이 확인한 승인 문장",
+            on="2026-09-23",
+        ),
+    )
+    stored = release.read_record(path)
+
+    assert stored is not None
+    assert stored["recorded_on"] == "2026-09-23" and str(stored["method"]).startswith("시험")
+    assert release.record_problems(release.coverage_floors(), stored) == []
+    assert "seconds" not in stored["counts"]
+    assert release.read_record(tmp_path / "없다.json") is None  # 못 읽으면 None(호출자가 실패로 처리)
+
+
+def test_recording_needs_an_approval_sentence(release: Any, capsys: Any) -> None:  # noqa: ANN401
+    """`--record` 는 승인 문장 없이는 거부하며, 그 거부는 **빌드 전에** 난다(기록은 사람의 승인이다)."""
+
+    assert release.main(["--record"]) == 1
+    assert "--method" in capsys.readouterr().err
+
+
+def test_a_failing_run_is_not_recorded(tmp_path: Path, release: Any, monkeypatch: pytest.MonkeyPatch) -> None:  # noqa: ANN401
+    """실패한 실행을 기록하면 기록이 거짓말한다 — 기록 경로를 가리켜도 파일이 생기지 않는다."""
+
+    path = tmp_path / "record.json"
+    monkeypatch.setattr(release, "measure", lambda **kwargs: replace(_healthy(release), tamper_exit=0))
+
+    assert release.main(["--record", "--method", "실패한 실행", "--artifact", str(path)]) == 1
+    assert not path.exists()
+
+
+def test_the_gate_fails_when_the_record_is_missing_or_stale(
+    tmp_path: Path, release: Any, monkeypatch: pytest.MonkeyPatch, capsys: Any
+) -> None:  # noqa: ANN401
+    """기록이 없거나 판단이 낡으면 게이트가 실패한다 — 카나리아가 옛 판단을 보게 두지 않는다(JSON 도 같은 판정)."""
+
+    monkeypatch.setattr(release, "measure", lambda **kwargs: _healthy(release))
+    missing = tmp_path / "없는기록.json"
+    assert release.main(["--gate", "--artifact", str(missing)]) == 1
+    assert "하한 기록" in capsys.readouterr().err
+
+    assert release.main(["--emit-json", "--artifact", str(missing)]) == 1
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["record"]["present"] is False
+    assert payload["record"]["problems"]  # 게이트가 읽는 출력에서도 이유가 보인다(JSON 만 내는 실행이다)
+
+    stored = release.read_record()
+    assert stored is not None
+    stale = tmp_path / "낡은기록.json"
+    lowered = [
+        release.Floor(f.label, f.observed, f.minimum - 1, why=f.why) for f in release.coverage_floors(_healthy(release))
+    ]
+    release.write_record(stale, {**stored, "floors": release.floor_records(lowered)})
+    assert release.main(["--gate", "--artifact", str(stale)]) == 1
+    assert "판단이 바뀐" in capsys.readouterr().err
+
+
+def test_the_record_line_is_reported_to_a_human(
+    release: Any, monkeypatch: pytest.MonkeyPatch, capsys: Any, tmp_path: Path
+) -> None:  # noqa: ANN401
+    """사람이 읽는 실행도 기록의 상태를 말한다 — 없으면 없다고(다시 기록하는 방법과 함께), 관측이 움직였으면 그 움직임을."""
+
+    monkeypatch.setattr(release, "measure", lambda **kwargs: _healthy(release))
+    assert release.main(["--artifact", str(tmp_path / "없는기록.json")]) == 0  # --gate 없이는 판정하지 않는다
+    out = capsys.readouterr().out
+    assert "기록" in out and "--record" in out
+
+    stored = release.read_record()
+    assert stored is not None
+    older = [
+        release.Floor(f.label, f.observed - 2 if f.label == "비교한 파일" else f.observed, f.minimum, why=f.why)
+        for f in release.coverage_floors(_healthy(release))
+    ]
+    moved = tmp_path / "움직인기록.json"
+    release.write_record(moved, {**stored, "floors": release.floor_records(older)})
+    assert release.main(["--artifact", str(moved)]) == 0
+    out = capsys.readouterr().out
+    assert "기록대조" in out and "비교한 파일 662 → 664 ▲" in out
+
+
 # ------------------------------------------------------------------ 실물 계약(로컬 회차)
 
 

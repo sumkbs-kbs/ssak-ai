@@ -75,7 +75,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 647 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 702 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
@@ -91,8 +91,8 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | state_claims_stale | 0 | 정정 없이 남은 낡은 주장 |
 | state_claim_mentions | 6 | node 를 지목한 산문 줄 수 — 상태 어휘가 없어도 세는 상한 집합(탐지력 하한 1) |
 | state_claim_probe_cases | 17 | 매 실행 자기시험이 다시 재판정한 항목 수(어휘·요구 어휘·펜스·정정 창·상태 계산) — 0이면 검사하지 않은 것이다 |
-| canary_harnesses | 8 | 하한 카나리아가 눈멀게 한 사본으로 시험한 harness 수(여섯 측정 harness + 증거 게이트 + red 리허설) |
-| canary_ok | 8 | 그중 정상 통과·사본 차단·근거 동봉을 모두 만족한 harness 수 |
+| canary_harnesses | 9 | 하한 카나리아가 눈멀게 한 사본으로 시험한 harness 수(여섯 측정 harness + 증거 게이트 + red 리허설 + 배포 산출물) |
+| canary_ok | 9 | 그중 정상 통과·사본 차단·근거 동봉을 모두 만족한 harness 수 |
 | evidence_gate_stages | 10 | 한 번에 도는 증거 게이트의 stage 수(여섯 harness + 리뷰 + red 리허설 + 로컬 전용 둘: 배포 산출물·회귀 원장) |
 | rehearsal_layers | 2 | 저장소 밖 트리에 **진짜 위반을 심어** red 재현을 확인한 층 수(위반 0건이던 두 감사) |
 | rehearsal_ok | 2 | 그중 심은 트리 exit 1·지목·대조군 초록·빈 트리 차단을 모두 만족한 층 수 |
@@ -105,7 +105,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=694 -->
+<!-- measured:cognitive_tests=702 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
@@ -121,8 +121,8 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:state_claims_stale=0 -->
 <!-- measured:state_claim_mentions=6 -->
 <!-- measured:state_claim_probe_cases=17 -->
-<!-- measured:canary_harnesses=8 -->
-<!-- measured:canary_ok=8 -->
+<!-- measured:canary_harnesses=9 -->
+<!-- measured:canary_ok=9 -->
 <!-- measured:evidence_gate_stages=10 -->
 <!-- measured:rehearsal_layers=2 -->
 <!-- measured:rehearsal_ok=2 -->
@@ -151,7 +151,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | 회귀 원장 | `.venv/bin/python scripts/regression_ledger.py --from-junit .regression-ledger --gate` | 0 | 9 scope · 21 회차(seed 101·202 + 순서 뒤집은 3회) · **결정적 11 · variant 민감 0 · 무소유 0** — 같은 scope 를 variant 를 바꿔 돌려 교집합/대칭차로 분리(§1.2) |
 | enum identity 감사 | `.venv/bin/python scripts/audit_enum_identity.py` | 0 | 위반 0건 (cognitive core 95곳을 `same_enum`으로 통일) |
 | namespace purge 감사 | `.venv/bin/python scripts/audit_test_namespace_purge.py` | 0 | 위반 0건 (수집 대상 시험 파일에 조건 없는 import 시점 purge 없음) |
-| build(wheel/sdist) | `.venv/bin/python scripts/release_artifacts.py --gate` | 0 | **이 체크아웃에서 실행한다** — `uv build --no-sources` → wheel 31.7MB · sdist 32.5MB, 저장소 밖 신규 venv 설치 뒤 둘 다 CLI·모듈·API·auth PASS, **sdist 왕복**(sdist 안에서 다시 빌드한 wheel 과 **이름 + 내용** 비교 — 664개 · 빠짐 0 · 내용 다름 0), **내용 대조**(배포판 패키지 658개 바이트 = 디스크 트리 · 다름 0 · 견줄 수 없음 6, 실물 변환 프로젝트로 재현 지목), **배포판 vs 추적 트리**(추적 656개가 모두 배포판에 있다 — 빠짐 0 · 생성물 2 · 트리에만 11), **재현 빌드**(같은 pin 두 번 — wheel 동일 664/664 · sdist 는 생성 항목 41개만 다름(커밋된 파일 0 · 목록 차이 0) · 미니 setuptools 셋으로 민감도 확인 · CI build job pin 일치, 59초), 그리고 **red 재현 셋**: ① module 하나를 뺀 wheel → exit 1 로 막힘 ② sdist 에서 파일 하나를 뺀 같은 왕복 → 이름으로 지목 ③ sdist 에서 파일 하나를 뺀 **작은 실물 프로젝트**(git·uv 로 실제 빌드) → 이름으로 지목, 대조군 오탐 0 |
+| build(wheel/sdist) | `.venv/bin/python scripts/release_artifacts.py --gate` | 0 | **이 체크아웃에서 실행한다** — `uv build --no-sources` → wheel 31.7MB · sdist 32.5MB, 저장소 밖 신규 venv 설치 뒤 둘 다 CLI·모듈·API·auth PASS, **sdist 왕복**(sdist 안에서 다시 빌드한 wheel 과 **이름 + 내용** 비교 — 664개 · 빠짐 0 · 내용 다름 0), **내용 대조**(배포판 패키지 658개 바이트 = 디스크 트리 · 다름 0 · 견줄 수 없음 6, 실물 변환 프로젝트로 재현 지목), **배포판 vs 추적 트리**(추적 656개가 모두 배포판에 있다 — 빠짐 0 · 생성물 2 · 트리에만 11), **재현 빌드**(같은 pin 두 번 — wheel 동일 664/664 · sdist 는 생성 항목 41개만 다름(커밋된 파일 0 · 목록 차이 0) · 미니 setuptools 셋으로 민감도 확인 · CI build job pin 일치, 59초), 그리고 **red 재현 셋**: ① module 하나를 뺀 wheel → exit 1 로 막힘 ② sdist 에서 파일 하나를 뺀 같은 왕복 → 이름으로 지목 ③ sdist 에서 파일 하나를 뺀 **작은 실물 프로젝트**(git·uv 로 실제 빌드) → 이름으로 지목, 대조군 오탐 0. **하한 기록**(`--record --method` → `evidence/release_artifacts.json`)을 남기므로 카나리아가 **빌드 없이** 여섯 하한이 실제로 무는지 본다(판단이 바뀌면 층이 스스로 실패) — 자기시험 76건 · 62초 |
 
 ### 1.1 회귀가 찾아낸 것 — 네 부류를 발견해 고쳤다
 
@@ -393,17 +393,23 @@ T11 `cognitive_surface.py` · T13 `growth.py`·`scripts/benchmark_cognitive_grow
 기록이 갖춰져도 남는 경우가 있다: `minimum=0` 이거나 비교가 뒤집혀 있으면 “기록도 있고 자기시험도 통과”
 하는데 **아무것도 막지 못한다**. 카나리아(`scripts/harness_canary.py`)가 각 harness 의 하한을 **일부러 눈멀게 한
 사본**(`observed=0`)으로 평가해 세 가지를 본다 — ① 정상 측정은 막지 않고, ② 사본은 막으며, ③ 실패 문장이
-**기록된 근거를 함께 낸다**. 현재 여덟까지 본다 — 여섯 측정 harness + 증거 게이트 + red 리허설이 전부 통과한다
-(`harness_canary` 검사 · marker `canary_harnesses` 8 · `canary_ok` 8).
+**기록된 근거를 함께 낸다**. 현재 아홉까지 본다 — 여섯 측정 harness + 증거 게이트 + red 리허설 + 배포 산출물(기록으로)이 전부 통과한다
+(`harness_canary` 검사 · marker `canary_harnesses` 9 · `canary_ok` 9).
 
 기준을 어디서 가져오는지도 적어 두었다: `digest_drift`·`regression_ledger`·`audit_state_claims` 는 **기록 artifact**
 (리뷰가 읽는 것과 같은 자리), 나머지 다섯은 저장소를 직접 재서 얻는다 — 회차 산출물(junit)이 있어야 관측값이 나오는
 원장을 빈 원장으로 기준 삼으면 “정상 측정을 막는다” 는 오탐이 난다(카나리아가 첫 실행에서 실제로 그랬다).
+**네 번째 기록 기준은 배포 산출물 계약이다**: 그 층의 하한을 재려면 61초짜리 빌드가 필요해 fast tier 의 카나리아가
+감당할 수 없으므로, 그 층이 `--record --method` 로 남긴 **하한 기록**(`docs/ssak-ai-core/evidence/release_artifacts.json`)의
+관측으로 판정한다. 기록이 없으면 카나리아는 “막을 것이 없다” 가 아니라 그 층의 하한이 **없다**고 말하며, 그 기록이
+지금 코드의 판단과 같은지는 층 자신이 게이트에서 대조한다(낡은 기록 위의 초록은 거짓이므로).
 
 이 카나리아 자신도 시험에 물려 있다(`tests/cognitive/test_harness_canary.py` 11건): 하한 없는 harness 는 통과가 아니라
 실패이고, `minimum=0` 하한은 장식으로, 정상 측정을 막는 하한은 고장으로, harness 가 예외로 죽으면 그것도 판정으로
 보고된다. 그 시험이 카나리아의 실제 버그를 하나 잡았다 — 근거가 빈 하한을 “문제 있음” 으로 적으면서도 `ok` 는 참으로
-남는 모순(빈 목록에 대한 `all()` 이 참이라는 함정)을 없앴다.
+남는 모순(빈 목록에 대한 `all()` 이 참이라는 함정)을 없앴다. 배포 산출물 계약이 합류하면서 하나가 더 늘었다(12건):
+**빌드가 필요한 층은 기록으로 판정한다** — 카나리아가 보는 하한이 그 층의 현재 판단과 같은 이름·값이고(기록이 그 층의
+코드가 아니라 옛 사본을 보고 있으면 여기서 갈린다), 그 여섯이 정상 관측을 막지 않으면서 사본은 막는지를 고정한다.
 
 **종료 코드도 판정이다 — JSON 을 낸다고 성공을 알리면 안 된다.** 처음에는 `--emit-json` 이 결과와 무관하게 exit 0
 이었다. 그래서 그 출력을 읽는 쪽(리뷰·CI)은 “돌았는데 통과했다” 와 “돌았지만 아무것도 못 막았다” 를 종료 코드로
@@ -477,7 +483,7 @@ roster 한 줄에 드러나야 하고, 새 층이 엉뚱한 수를 실어도 추
 **`build` 가 NOT_RUN 으로 남지 않게 — 배포 산출물도 재는 대상이다.** T14 는 `test / lint / type / build` 를 요구하는데
 `build` 만 “릴리스 CI 소관” 이라는 이유로 이 체크아웃에서 한 번도 실행되지 않았다. 그 문장은 위험 하나를 숨긴다 —
 소비자가 받는 wheel/sdist 는 저장소 트리와 **다를 수 있고**(빠진 파일), 그 차이는 설치된 곳에서만 보인다.
-`scripts/release_artifacts.py` 가 그 자리를 여덟 단계로 닫는다: ① `uv build --no-sources` 로 wheel·sdist 를 만들고
+`scripts/release_artifacts.py` 가 그 자리를 열한 단계로 닫는다: ① `uv build --no-sources` 로 wheel·sdist 를 만들고
 (계약은 둘이다 — 하나만 만들고 통과하면 “배포 가능” 이 아니다) ② 기존 검증기(`scripts/verify_release_artifacts.sh`)가
 **저장소 밖 신규 venv** 에 설치해 CLI·모듈·API·auth 를 돌리고, 그 판정을 종료 코드와 **산출물별 `ARTIFACT-RESULT`
 PASS 문장**으로 읽는다(“설치가 됐다” 와 “설치한 것을 써 봤다” 는 다르다) ③ **sdist 왕복** — sdist 를 풀어 **그 안의
@@ -531,16 +537,31 @@ PASS 문장**으로 읽는다(“설치가 됐다” 와 “설치한 것을 써
 바뀌면 조용히 통과하지 않고 **못 봤다** 고 말한다. `ci.yml` 의 그 단계에도 같은 값을 걸어 두었다 — 검증한 물건과 배포되는
 물건이 같아지는 자리다. ⑩ 자기시험 64건이 판정 규칙(빌드 실패·산출물 수·PASS 문장 부재·`ARTIFACT-INPUTS` 부재·왕복
 누락·왕복 내용 불일치·왕복 red 미탐지(빠짐·내용 둘)·추적 파일 누락·재현 재료 소실·실물 재현 미지목·실물 재현 오탐·내용
-불일치·내용 재현 실종·재현 불일치·예외 만료·근거 낡음·민감도 실종·배포 경로 pin 누락·red 미탐지·사고)을 매 실행 다시
-묻고, 하한 여섯(산출물 2 · 저장소 밖 PASS 2 · **비교한 파일 100** · **배포판에 실린 추적 파일 600** ·
+불일치·내용 재현 실종·재현 불일치·예외 만료·근거 낡음·민감도 실종·배포 경로 pin 누락·기록 규칙·red 미탐지·사고)을 매 실행
+다시 묻고(자기시험 **76건**), 하한 여섯(산출물 2 · 저장소 밖 PASS 2 · **비교한 파일 100** · **배포판에 실린 추적 파일 600** ·
 **재현 비교한 산출물 2** · **내용을 견준 패키지 파일 600** — 목록 읽기나 `git ls-files` 가 깨져 0개를 보고 “빠짐 없음”
 으로 통과하는 순간, 재현 비교가 0건에서 “동일” 로, 내용 대조가 0건에서 “차이 없음” 으로 통과하는 순간을 잡는다)이 값과
 근거를 함께 낸다. 실측: 빌드 6초 · 검증 18초 · 왕복 · 세 red 재현 · 내용 재현 둘(1.8초) · 재현 빌드 한 번 더 +
 미니 셋(9.4초) = **61초**, 판정은 “빨간을 낼 수 있는가” 까지 포함한다.
+⑪ **하한 기록** — 이 층의 하한이 **실제로 무는가**는 자기시험만으로는 증명되지 않는다(다른 층은 카나리아가 하한 하나하나를
+눈멀게 한 사본으로 평가하는데, 이 층은 하한을 재려면 61초 빌드가 필요해 그 자리에 빌드로는 들어갈 수 없다). 그래서 이 층은
+**기록**(`docs/ssak-ai-core/evidence/release_artifacts.json`)을 남긴다 — 하한 값·관측·근거와 **무엇을 보고 승인했는가**
+(`method`·`recorded_on`), 그리고 카나리아는 **빌드 없이** 그 기록으로 여섯 하한이 정상 관측을 막지 않고(`healthy`) 눈멀게 한
+사본을 막으며(`bites`) 근거를 함께 내는지(`carries_reason`) 본다. 기록은 `--record --method` 로만 만들어지고(승인 문장 없이는
+거부하며 **그 거부는 빌드 전에 난다**), 실패한 실행은 기록하지 않는다(기록은 “지금 통과한다” 는 승인이다). 기록도 낡을 수
+있으므로 **이 층이 스스로 대조한다**: 판단(하한 값·근거·개수)이 지금 코드와 다르면 게이트가 실패하고(다시 기록해야 한다),
+반대로 **관측이 움직인 것은 실패가 아니라 보고**다 — 파일이 늘면 “비교한 파일” 관측은 정당하게 움직이므로 그것을 실패로
+만들면 이 층은 늘 빨개져 무시된다. 기록이 없거나 승인 문장·날짜가 없으면 같은 이유로 실패하고, JSON 보고에도 기록의
+상태·움직임·문제가 실려 게이트가 읽는 출력에서 이유를 읽을 수 있다.
 이 층은 게이트의 **로컬(`--tier full`) stage** 다 — CI 의 fast tier 는 그 층을 **‘보지 않은 층’** 으로 적고, 저장소의
 build job 이 그 자리를 맡는다(둘을 합치면 모든 변경이 덮인다). 카나리아가 이 층을 보지 **않는** 이유도 적어 둔다:
-하한을 재려면 50초짜리 빌드가 필요해 fast tier 의 카나리아에 넣을 수 없다 — 대신 자기시험이 하한의 장식 여부와
-얇은 실행에서 문는지를 확인하고, 그 판단 근거는 이 문단이다.
+하한을 재려면 61초짜리 빌드가 필요하므로 카나리아에 **빌드로는** 들어갈 수 없다. 대신 카나리아는 이 층이 남긴 **하한
+기록**을 읽어(빌드 없이) 여섯 하한이 정상 관측을 막지 않고·눈멀게 한 사본은 막으며·근거를 함께 내는지 본다 — 기록은
+`--record --method` 로만 만들어지고(무엇을 보고 승인했는지 없이는 거부한다), 그 층의 게이트는 그 기록이 지금 코드의
+판단(하한 값·근거·개수)과 같은지 매 실행 대조한다: 판단이 다르면 층이 실패하므로 낡은 기록 위의 초록은 생기지 않는다.
+**관측이 움직인 것은 실패가 아니라 보고**다(파일이 늘면 “비교한 파일” 관측도 는다 — 그것을 실패로 만들면 이 층은 늘
+빨개져 무시된다). 기록이 없으면 카나리아도 이 층을 “하한이 없다” 로 보고하고(통과가 아니라), 층의 JSON 보고에도 기록의
+상태·움직임·문제가 실려 게이트가 읽는 출력에서 이유를 읽을 수 있다.
 
 **게이트를 도는 자리 — 층을 한 번에.** harness 마다 게이트가 있어도 그것을 도는 자리는 사람의 기억뿐이었다:
 CI 는 하나도 돌리지 않았고, 어디가 얇은지 보려면 여덟 개 명령을 손으로 쳐야 했다. `scripts/evidence_gate.py` 가 그
@@ -558,8 +579,8 @@ red 회계를 매 실행 다시
 roster 를 요구한다 — 산출물이 없으면 `unrun` 으로 실패하며 왜 못 돌리는지 말한다(초록으로 덮지 않는다).
 
 **게이트 자신도 카나리아가 본다.** 게이트는 stage 수에 하한을 들고 있으므로, 그 하한이 장식인지도 확인해야 한다 —
-카나리아 roster 에 `evidence_gate` 를 넣어 눈멀게 한 사본(`observed=0`)이 막히는지 본다(카나리아가 8
-harness 를 본다 · marker `canary_harnesses` 8 · `canary_ok` 8). 게이트 자신을 stage 로 넣으면 재귀라, 그 하한을 보는
+카나리아 roster 에 `evidence_gate` 를 넣어 눈멀게 한 사본(`observed=0`)이 막히는지 본다(카나리아가 9
+harness 를 본다 · marker `canary_harnesses` 9 · `canary_ok` 9). 게이트 자신을 stage 로 넣으면 재귀라, 그 하한을 보는
 자리는 카나리아뿐이다. 리뷰는 게이트를 **돌리지 않고 명세만** 읽는다(15번째 검사 `evidence_gate`): stage 의 스크립트
 실재 · tier 유효 · fast tier 비어 있지 않음 · 자기시험 존재와 통과 · 하한의 근거 기록. 게이트의 자기시험이 카나리아
 roster 와 stage 명단을 대조하므로, 새 harness 를 카나리아에만 넣으면 게이트가 실패한다(예외는 게이트 자신 하나뿐이고,
