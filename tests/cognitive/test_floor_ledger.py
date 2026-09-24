@@ -15,6 +15,9 @@
     문장으로 내면 읽는 사람이 하나의 결정을 다시 세어야 한다. 그 층이 아직 roster 에 있으면 결정이 아니라 결함이다.
   * 그리고 그 층이 **이름만 바뀐 것**으로 보이면(하한 이름 집합이 그대로면) 사라짐·새로 생김 두 문장이 아니라 한 문장으로
     말하되 단정하지 않는다 — 원장은 층의 동일성을 모르므로 짝과 근거(그대로인 하한 이름들)만 내고 판단은 사람에게 남긴다.
+  * 그 이름 변경은 **기록에 사실로 남고** 다음 기록으로 이어진다 — `floors` 는 지금 이름만 담으므로 그것만으로는 그 하한들이
+    처음부터 새 이름의 층에 있었던 것으로 읽힌다(옛 이름은 다음 회차에 사라진다). 이력은 기록 안에서 자기 자리를 갖어야 하고
+    (새 이름은 기록의 하한에, 옛 이름은 거기에 없어야 한다), 기록이 승인한 옛 이름이 표에 돌아오면 다시 승인받아야 한다.
   * JSON 을 내는 실행도 **판정을 종료 코드로** 말하고, 소요 시간은 판정 수치에 섞이지 않는다.
 """
 
@@ -456,6 +459,62 @@ def test_cli_record_round_trips_into_a_pass(tmp_path: Path) -> None:
     assert payload["record"]["problems"] == []
     assert payload["counts"]["recorded_floors"] == payload["counts"]["floors"]
     assert payload["verdict"] == "PASS"
+
+
+@pytest.mark.slow
+def test_a_rename_is_carried_into_the_record_as_a_fact(tmp_path: Path) -> None:
+    """이름 변경은 `--record` 를 지나며 **기록의 사실**이 된다 — 하한 목록만 적으면 그 하한들이 처음부터 새 이름의 층에
+    있었던 것으로 읽히고, 옛 이름은 다음 회차에 사라진다.
+
+    저장소의 실제 층 하나를 **기록 안에서만** 바꾸고(하한·근거는 그대로 — 실제 이름 변경의 모양이다) 다시 기록하게 한다:
+    대조가 그 짝을 찾아내고, 옛 이름·새 이름·그대로인 하한 이름들이 기록에 남으며, 그 기록으로 게이트가 통과한다
+    (이력 자체는 결함이 아니고, 기록 안에서 자기 자리를 갖으면 통과다).
+    """
+
+    evidence = tmp_path / "evidence"
+    evidence.mkdir()
+    record = evidence / "floor_ledger.json"
+    first = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--record", "--method", "첫 승인", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert first.returncode == 0, first.stderr
+    payload = json.loads(record.read_text(encoding="utf-8"))
+    floors = payload["floors"]
+    assert floors, "기록이 하한을 담지 않으면 이 시험은 무엇을 보는지 모른다"
+    original = floors[0]["layer"]
+    payload["floors"] = [
+        {**item, "layer": f"{item['layer']}_old"} if item["layer"] == original else item for item in floors
+    ]
+    record.write_text(json.dumps(payload, ensure_ascii=False, indent=2), "utf-8")
+
+    second = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--record", "--method", "이름 변경 승인", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert second.returncode == 0, second.stderr
+    carried = json.loads(record.read_text(encoding="utf-8"))["renames"]
+    assert any(item["from"] == f"{original}_old" and item["to"] == original for item in carried), carried
+    assert all(item["on"] for item in carried), "이력에는 언제 승인됐는지가 함께 남아야 한다"
+
+    gate = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--gate", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert gate.returncode == 0, gate.stdout + gate.stderr
+    assert "이름 변경 이력" in gate.stdout
 
 
 @pytest.mark.slow

@@ -497,6 +497,7 @@ class Ledger:
                 "record_layers_moved": len(_record_lines(self.record, "vanished_layers"))
                 + len(_record_lines(self.record, "added_layers")),
                 "record_layers_renamed": len(_record_lines(self.record, "renamed_layers")),
+                "record_renames": len(_record_lines(self.record, "renames")),
             },
             "record": dict(self.record),
             "outside": {
@@ -746,6 +747,54 @@ def _count_by_layer(keys: Sequence[tuple[str, str]]) -> str:
     return "; ".join(f"{layer} {count}개" for layer, count in sorted(grouped.items()))
 
 
+def rename_claim_problems(stored: dict[str, object] | None) -> list[str]:
+    """기록이 **스스로** 모순되지 않는가 — 이름 변경 이력은 기록 안에서 자기 자리를 갖아야 한다.
+
+    하한 기록의 `floors` 는 **지금** 이름을 담으므로 그것만으로는 “이 하한들이 처음부터 이 층에 있었다” 로 읽힌다.
+    `renames` 가 그 사실을 따로 담는 이상, 기록은 자기 안에서 그 사실과 맞아야 한다: 새 이름은 기록의 하한에 있고
+    옛 이름은 거기에 없어야 한다. 그렇지 않으면 기록은 이력과 하한을 한꺼번에 들고 있으면서 서로 다른 말을 하는 것이다.
+    “같은 새 이름으로 두 번 바뀌었다” 도 모순이다(두 층이 한 이름으로 합쳐졌다는 말이 되는데, 그러면 그 사실을 적어야 한다).
+    """
+
+    facts = recorded_renames(stored)
+    if not facts:
+        return []
+    layers = {layer for layer, _label in recorded_floors(stored)}
+    froms = {old for old, _new, _labels, _on in facts}
+    problems: list[str] = []
+    for old, new, _labels, on in facts:
+        stamp = f"({old} → {new}, {on or '날짜 없음'})"
+        if new not in layers and new not in froms:
+            problems.append(
+                f"기록이 층 이름 변경을 주장하는데 {stamp} 의 새 이름 `{new}` 은 기록의 하한에도 없고 또 바뀐 것도 아니다 "
+                "— 그 하한은 기록에서 어느 층의 것인가"
+            )
+        if old in layers:
+            problems.append(
+                f"기록이 {stamp} 이름을 바꿨다고 하면서 옛 이름 `{old}` 의 하한도 그대로 들고 있다 — 둘 중 하나는 틀렸다"
+            )
+    seen: set[str] = set()
+    for _old, new, _labels, _on in facts:
+        if new in seen:
+            problems.append(
+                f"기록이 같은 새 이름 `{new}` 으로 두 번 바뀌었다고 말한다 — 두 층이 한 이름으로 모우면 그 사실을 적어야 한다"
+            )
+        seen.add(new)
+    for start in sorted(froms):
+        walk, seen_chain, cursor = start, set(), start
+        while cursor in froms:
+            nxt = next(new for old, new, _labels, _on in facts if old == cursor)
+            if nxt in seen_chain or nxt == start:
+                problems.append(
+                    f"기록의 이름 변경 이력이 고리를 이룬다({walk} 에서 시작해 `{nxt}` 로 돌아온다) — 층 이름이 제자리로 도는 것은 "
+                    "이름 변경이 아니라 다른 사실이다"
+                )
+                break
+            seen_chain.add(cursor)
+            cursor = nxt
+    return problems
+
+
 def record_problems(
     judged: Sequence[tuple[str, str, int, str]],
     stored: dict[str, object] | None,
@@ -776,6 +825,7 @@ def record_problems(
             *problems,
             "하한 기록에 `floors` 가 없다 — 기록이 무엇을 승인했는지 말하지 않는다(`--record --method` 로 다시 기록)",
         ]
+    problems.extend(rename_claim_problems(stored))
     changes = record_changes(judged, stored)
     lowered, reasons = changes.lowered, changes.reasons
     vanished = changes.partial(changes.vanished)
@@ -818,6 +868,14 @@ def record_problems(
             f"{', '.join(shared)}) — 층 이름을 바꾸는 것도 결정이다: 그 결정이라면 `--record --method` 로 기록하라. "
             "이름이 바뀐 것이 아니라면 왜 사라지고 왜 생겼는지를 남겨라(원장은 층의 동일성을 모른다)"
         )
+    judged_layers = {layer for layer, _label, _minimum, _why in judged}
+    for old, _new, _labels, on in recorded_renames(stored):
+        # 기록이 **이미 승인한** 이름 변경 — 옛 이름이 표에 돌아오면 그것도 결정이므로 다시 승인받아야 한다.
+        if old in judged_layers:
+            problems.append(
+                f"기록이 층 {old} 를 다른 이름으로 바꿨다고 승인했는데({on or '날짜 없음'}) 표에 옛 이름 `{old}` 가 돌아왔다 — "
+                "되돌리는 것도 결정이다: `--record --method` 로 그 결정을 남겨라"
+            )
     if lowered:
         by_layer = "; ".join(f"{layer}: {label} {was} → {now}" for layer, label, was, now in lowered)
         problems.append(
@@ -856,17 +914,73 @@ def record_raised(ledger: Ledger, stored: dict[str, object] | None) -> tuple[str
     return tuple(raised)
 
 
-def record_payload(ledger: Ledger, probe: Probe, *, method: str, on: str) -> dict[str, object]:
+def recorded_renames(stored: dict[str, object] | None) -> tuple[tuple[str, str, tuple[str, ...], str], ...]:
+    """기록이 **사실로** 남긴 층 이름 변경 이력 — (옛 이름, 새 이름, 그대로인 하한 이름들, 승인 날짜).
+
+    하한 기록의 `floors` 는 **지금** 이름을 담으므로, 그것만으로는 그 하한들이 처음부터 이 층에 있었던 것처럼 보인다
+    — 이름 변경이 있었다는 사실 자체가 사라진다(층 q 의 하한이 그대로 r 로 옮겨갔는데도 다음 회차는 q 를 모른다).
+    그래서 기록은 그 사실을 따로 담고, 다음 기록으로 **이어진다**.
+    """
+
+    value = stored.get("renames") if stored else None
+    if not isinstance(value, list):
+        return ()
+    facts: list[tuple[str, str, tuple[str, ...], str]] = []
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        old, new = str(item.get("from", "")), str(item.get("to", ""))
+        if not old.strip() or not new.strip():
+            continue
+        shared = item.get("shared")
+        labels = tuple(str(label) for label in shared) if isinstance(shared, list) else ()
+        facts.append((old, new, labels, str(item.get("on", ""))))
+    return tuple(facts)
+
+
+def record_payload(
+    ledger: Ledger,
+    probe: Probe,
+    *,
+    method: str,
+    on: str,
+    previous: dict[str, object] | None = None,
+) -> dict[str, object]:
     """기록의 내용 — **판단과 관측을 함께 남긴다**(관측은 판정이 아니라 다음 회차의 보고 기준이다).
 
     소요 시간은 담지 않는다: 기록은 판단이지 그날의 속도가 아니다.
+    **이름 변경 이력**은 두 곳에서 모은다: 앞 기록이 이미 승인한 사실(새 이름이 표에 살아 있는 것만)과, 이번 대조가
+    찾아낸 짝(옛 기록의 하한과 지금 표가 하한 이름 집합을 그대로 공유하는 층)이다 — 기록을 쓰는 순간이 곧 그
+    이름으로 바꾸겠다는 승인이므로, 사실을 적지 않을 이유가 없다.
     """
 
+    before = recorded_floors(previous)
+    fresh = {(layer, label): (minimum, why) for layer, label, minimum, why in judged_floors(ledger)}
+    names = {layer for layer, _label in fresh}
+    stored_names = {layer for layer, _label in before}
+    # 앞 기록이 승인한 사실은 **그대로 이어진다** — 중간에 또 이름이 바뀌면 그 사실의 새 이름은 지금 층이 아니지만
+    # (p → r → s), 그 사실이 사라지면 `floors` 는 그 하한들이 처음부터 s 에 있었던 것처럼 남는다. 판정(모순 검사)이
+    # “이어진 고리인가” 를 보므로, 이어지는 사실을 여기서 지우지 않는다.
+    history: list[tuple[str, str, tuple[str, ...], str]] = list(recorded_renames(previous))
+    known = {fact[1] for fact in history}
+    for old, new, labels in renamed_layers(
+        before,
+        fresh,
+        vanished_layers=stored_names - names,
+        added_layers=names - stored_names,
+    ):
+        if new not in known:
+            history.append((old, new, labels, on))
+            known.add(new)
     return {
         "command": ["python", "scripts/floor_ledger.py", "--record"],
         "recorded_on": on,
         "method": method,
         "layers": len(ledger.rows),
+        "renames": [
+            {"from": old, "to": new, "shared": list(labels), "on": declared_on}
+            for old, new, labels, declared_on in history
+        ],
         "counts": {
             "layers": len(ledger.rows),
             "floors": ledger.floors,
@@ -915,6 +1029,10 @@ def record_report(
         "added_layers": list(changes.added_layers),
         "renamed_layers": [
             {"from": old, "to": new, "shared": list(labels)} for old, new, labels in changes.renamed_layers
+        ],
+        "renames": [
+            {"from": old, "to": new, "shared": list(labels), "on": on}
+            for old, new, labels, on in recorded_renames(stored)
         ],
         "moves": list(record_moves(ledger, stored)),
         "raised": list(record_raised(ledger, stored)),
@@ -1380,6 +1498,103 @@ def self_probe() -> Probe:
         Ledger((probe_row,), (), (), 0.0), Probe(cases=1, failures=()), method="시험", on="2026-01-01"
     )
     cases.equal("기록 왕복 — 지금 표를 기록하면 그 기록은 지금과 같다", record_problems(judged_row, payload), [])
+    # 층 이름 변경은 **기록에 사실로 남는다** — floors 만 적으면 그 하한들이 처음부터 새 이름의 층에 있었던 것으로 읽힌다.
+    old_ledger = Ledger(
+        (LayerRow("p", KIND_MEASURED, "scripts/p.py", (Floor("수", 3, 1, why="근거"),), {}, _COMMIT_SAMPLE),),
+        (),
+        (),
+        0.0,
+    )
+    old_payload = record_payload(old_ledger, Probe(cases=1, failures=()), method="옛 승인", on="2026-01-01")
+    new_ledger = Ledger(
+        (LayerRow("r", KIND_MEASURED, "scripts/r.py", (Floor("수", 3, 1, why="근거"),), {}, _COMMIT_SAMPLE),),
+        (),
+        (),
+        0.0,
+    )
+    renamed_payload = record_payload(
+        new_ledger, Probe(cases=1, failures=()), method="이름 변경 승인", on="2026-02-01", previous=old_payload
+    )
+    cases.equal(
+        "기록은 이름 변경을 사실로 남긴다(짝·그대로인 하한 이름·승인 날짜)",
+        list(recorded_renames(renamed_payload)),
+        [("p", "r", ("수",), "2026-02-01")],
+    )
+    cases.equal(
+        "이름 변경 이력은 다음 기록으로 이어진다(그 사이에 또 이름이 바뀌어도 옛 사실이 안 사라진다)",
+        [
+            fact[:3]
+            for fact in recorded_renames(
+                record_payload(
+                    Ledger(
+                        (
+                            LayerRow(
+                                "s", KIND_MEASURED, "scripts/s.py", (Floor("수", 3, 1, why="근거"),), {}, _COMMIT_SAMPLE
+                            ),
+                        ),
+                        (),
+                        (),
+                        0.0,
+                    ),
+                    Probe(cases=1, failures=()),
+                    method="또 이름 변경",
+                    on="2026-03-01",
+                    previous=renamed_payload,
+                )
+            )
+        ],
+        [("p", "r", ("수",)), ("r", "s", ("수",))],
+    )
+    cases.equal(
+        "이름 변경 이력이 기록된 채로 게이트를 통과한다(이력 자체는 결함이 아니다)",
+        record_problems(judged_floors(new_ledger), renamed_payload),
+        [],
+    )
+    cases.check(
+        "기록이 이름 변경을 주장하는데 새 이름의 하한이 기록에 없으면 자기 모순이다",
+        any(
+            "새 이름" in problem
+            for problem in record_problems(
+                (("p", "수", 1, "근거"),),
+                {**payload, "renames": [{"from": "p", "to": "q", "shared": ["수"], "on": "2026-01-01"}]},
+            )
+        ),
+    )
+    cases.check(
+        "기록이 이름을 바꿨다고 하면서 옛 이름의 하한도 들고 있으면 모순이다",
+        any(
+            "옛 이름" in problem
+            for problem in record_problems(
+                (("p", "수", 1, "근거"),),
+                {**payload, "renames": [{"from": "p", "to": "r", "shared": ["수"], "on": "2026-01-01"}]},
+            )
+        ),
+    )
+    cases.check(
+        "같은 새 이름으로 두 번 바뀌었다는 기록은 모순이다",
+        any(
+            "두 번" in problem
+            for problem in rename_claim_problems(
+                {
+                    "floors": [{"layer": "s", "label": "수", "minimum": 1, "why": "근거"}],
+                    "renames": [
+                        {"from": "p", "to": "s", "shared": ["수"], "on": "2026-01-01"},
+                        {"from": "q", "to": "s", "shared": ["수"], "on": "2026-01-02"},
+                    ],
+                }
+            )
+        ),
+    )
+    cases.check(
+        "기록이 바꿨다고 승인한 층의 **옛 이름이 표에 돌아오면** 다시 승인받아야 한다",
+        any(
+            "옛 이름" in problem and "돌아왔다" in problem
+            for problem in record_problems(
+                (("p", "수", 1, "근거"), ("r", "수", 1, "근거")),
+                {**payload, "renames": [{"from": "p", "to": "r", "shared": ["수"], "on": "2026-01-01"}]},
+            )
+        ),
+    )
     cases.check("기록은 그날의 속도를 담지 않는다", "seconds" not in json.dumps(payload))
     cases.equal(
         "관측이 움직이면 보고로 낸다(판정 아님)",
@@ -1450,9 +1665,19 @@ def describe(ledger: Ledger, probe: Probe) -> str:
             f"기록된 하한 {record.get('floors')}개 · 판단 이동 내려감 {record.get('lowered')} · 사라짐 {record.get('vanished')} · "
             f"새 하한 {record.get('added')} · 근거 변경 {record.get('reasons')} · "
             f"층 이동 사라짐 {len(_record_lines(record, 'vanished_layers'))} · 새 층 {len(_record_lines(record, 'added_layers'))} · "
-            f"이름만 바뀐 듯한 층 {len(_record_lines(record, 'renamed_layers'))}"
+            f"이름만 바뀐 듯한 층 {len(_record_lines(record, 'renamed_layers'))} · "
+            f"기록된 이름 변경 이력 {len(_record_lines(record, 'renames'))}"
         )
         lines.append(f"    승인 문장: {record.get('method')}")
+        facts = record.get("renames")
+        for fact in facts if isinstance(facts, list) else []:
+            if not isinstance(fact, dict):
+                continue
+            shared = fact.get("shared") or []
+            lines.append(
+                f"    · 이름 변경 이력(기록이 사실로 남긴 것): {fact.get('from')} → {fact.get('to')} "
+                f"({fact.get('on') or '날짜 없음'} 승인 · 하한 {len(shared)}개가 그대로)"
+            )
         renamed = record.get("renamed_layers")
         for pair in renamed if isinstance(renamed, list) else []:
             if not isinstance(pair, dict):
@@ -1520,7 +1745,16 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"[FAIL] {problem}", file=sys.stderr)
             return EXIT_FAIL
         path = args.evidence / RECORD.name
-        write_record(path, record_payload(ledger, probe, method=args.method.strip(), on=date.today().isoformat()))
+        write_record(
+            path,
+            record_payload(
+                ledger,
+                probe,
+                method=args.method.strip(),
+                on=date.today().isoformat(),
+                previous=read_record(path),
+            ),
+        )
         print(
             f"[ledger] 하한 기록을 남겼다: {_display(path)} (층 {len(ledger.rows)} · 하한 {ledger.floors}개 · "
             f"판단 이동 0 — 기록은 지금 목록의 승인이다)"
