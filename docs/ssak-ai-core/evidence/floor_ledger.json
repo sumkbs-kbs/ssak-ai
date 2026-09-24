@@ -5,7 +5,7 @@
     "--record"
   ],
   "recorded_on": "2026-09-24",
-  "method": "2026-09-24 면제 승인 회차: 표 밖 면제 10개를 이름만이 아니라 약속(왜 하한이 아닌지·소유자·재검토 기한)까지 승인한다 — 면제를 만들거나·거두거나·기한을 미루면 그 결정이 기록을 지나야 하고(면죄부가 스스로 갱신되지 않는다), 기한을 앞당긴 것은 보고만 하며, 이름만 바뀐 것으로 보이는 면제는 한 문장으로 묶되 승인 전에는 초록이 아니다(기한 미룸 0 · 이름만 바뀐 듯한 면제 0)",
+  "method": "2026-09-24 확인일과 창 회차: 면제 10개를 이름·근거·소유자·기한에 더해 **확인일**(2026-09-24)까지 승인하고, 한 번의 확인으로 줄 수 있는 기한의 창(366일)도 함께 승인한다 — 확인일이 그대로인 연장은 검토가 아니므로 기한만 미룬 것과 검토하고 미룬 것을 다른 문장으로 말하고(창을 넘는 기한은 표가 먼저 막는다), 기한을 앞당기거나 확인일만 새로 잡은 것은 보고만 한다(검토 없이 미룸 0 · 창 98일 ≤ 366일)",
   "layers": 11,
   "renames": [],
   "counts": {
@@ -228,71 +228,85 @@
   ],
   "outside": {
     "scanned": 32,
+    "review_window": {
+      "days": 366,
+      "why": "2026-09-24 기준 관측: 선언 10개의 기한이 모두 2026-12-31 이고 그 판단을 마지막으로 확인한 날이 2026-09-24 다(창 98일). 366 은 ‘한 번의 확인이 일 년을 넘지 않는다’ 는 뜻이다 — 기한을 미루는 것 자체는 결정이지만(기록을 지나야 한다) 그 결정의 크기에도 상한이 있어야 한 번의 확인으로 면죄부를 두 해·세 해로 늘리지 못한다. 창을 넓히는 것은 이 상수를 고치고 **다시 기록하는** 일이다(기록도 창을 담고 있으므로 둘이 갈라지면 기록이 먼저 실패한다)."
+    },
     "declared": [
       {
         "name": "scripts/benchmark_ssak_search.py:LATENCY_NOISE_FLOOR_MS",
         "reason": "탐지력 하한이 아니라 **읽는 임계**다 — “이보다 작은 차이는 잡음이다” 라는 판정 기준이라, 무엇을 봤는지가 아니라 결과를 어떻게 읽는지를 정한다(관측 대상이 없다)",
         "owner": "search",
+        "reviewed_on": "2026-09-24",
         "review_by": "2026-12-31"
       },
       {
         "name": "scripts/benchmark_ssak_search.py:VALID_SOURCE_AUTHORITY_MIN",
         "reason": "벤치마크 입력의 유효성 조건(권위 점수 하한) — 관측량이 아니라 fixture 선택 규칙이다",
         "owner": "search",
+        "reviewed_on": "2026-09-24",
         "review_by": "2026-12-31"
       },
       {
         "name": "scripts/evidence_bundle.py:DEFAULT_MIN_SOAK_SECONDS",
         "reason": "정책 기본값(soak 창의 길이) — 하한이 아니라 기본 인자다. 무엇을 봤는지가 아니라 무엇을 요청했는지다",
         "owner": "evidence",
+        "reviewed_on": "2026-09-24",
         "review_by": "2026-12-31"
       },
       {
         "name": "scripts/val02_staging.py:RSS_WARMUP_MIN_S",
         "reason": "창 길이의 하한(워밍업 제외 구간) — 입력 구간 선택 임계며, nx10 QA 도구의 계약 시험이 지킨다",
         "owner": "nx10-qa",
+        "reviewed_on": "2026-09-24",
         "review_by": "2026-12-31"
       },
       {
         "name": "scripts/val02_staging.py:THROUGHPUT_MIN_RUN_S",
         "reason": "실행 길이의 하한 — 그보다 짧으면 중간값이 성립하지 않는다는 표본 조건이다(하한이 아니라 유효성)",
         "owner": "nx10-qa",
+        "reviewed_on": "2026-09-24",
         "review_by": "2026-12-31"
       },
       {
         "name": "scripts/val02_staging.py:THROUGHPUT_BLOCK_MIN_S",
         "reason": "블록 길이의 하한 — 잡음 실측으로 정한 값이며 nx10 QA 도구의 계약 시험이 지킨다",
         "owner": "nx10-qa",
+        "reviewed_on": "2026-09-24",
         "review_by": "2026-12-31"
       },
       {
         "name": "scripts/val02_staging.py:THROUGHPUT_MIN_BLOCKS_PER_QUARTER",
         "reason": "분기당 표본 수의 하한 — 관측을 세지만 이 저장소의 증거 게이트 roster 밖에 있는 도구다",
         "owner": "nx10-qa",
+        "reviewed_on": "2026-09-24",
         "review_by": "2026-12-31"
       },
       {
         "name": "scripts/val02_staging.py:ATTRIBUTION_MIN_DELTA_RATIO",
         "reason": "귀속 판단의 임계(“증가가 2% 미만이면 귀속할 증거가 없다”) — 관측량이 아니라 판정 기준이다",
         "owner": "nx10-qa",
+        "reviewed_on": "2026-09-24",
         "review_by": "2026-12-31"
       },
       {
         "name": "scripts/val02_staging.py:DEEP_MIN_WINDOWS",
         "reason": "**하한처럼 쓰이지만 roster 밖이다** — “이보다 적으면 함수 순위를 말하지 않는다” 는 주장 하한인데, 그 도구가 아직 어떤 게이트의 층도 아니다(층으로 세우는 일은 nx10 QA 트랙의 결정이다)",
         "owner": "nx10-qa",
+        "reviewed_on": "2026-09-24",
         "review_by": "2026-12-31"
       },
       {
         "name": "scripts/val02_staging.py:PATH_MIN_CALLER_SHARE",
         "reason": "경로 지목의 임계(한 호출자가 절반 이상일 때만 지목한다) — 판정 기준이지 탐지량이 아니다",
         "owner": "nx10-qa",
+        "reviewed_on": "2026-09-24",
         "review_by": "2026-12-31"
       }
     ]
   },
   "probe": {
-    "cases": 83,
+    "cases": 96,
     "failures": [],
     "ok": true
   },

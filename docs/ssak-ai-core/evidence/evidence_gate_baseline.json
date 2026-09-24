@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "2026-09-24 면제 승인 회차: 표 밖 면제를 기록이 이름·근거·소유자·기한까지 승인하고(선언 10 = 기록 10), 면제를 만들거나·거두거나·기한을 미루면 승인이 필요하다(기한 미룸 0 · 기한 당김 0보고 · 이름만 바뀐 듯한 면제 0) — counts.record_exemptions·record_exemptions_pulled 가 새로 실리고 cognitive_tests 738 → 743"
+    "2026-09-24 확인일과 창 회차: 면제가 확인일(2026-09-24)을 들고, 기한은 확인일로부터의 창(366일) 안에서만 준다 — 기한만 미룬 것과 확인일까지 잡고 미룬 것을 다른 문장으로 말하고(검토 없이 미룸 0 · 기한 미룸 0 · 확인일 갱신 0보고), 창은 기록도 함께 승인한다 — counts.record_exemptions_window·record_exemptions_reviewed 가 새로 실리고 cognitive_tests 743 → 745"
   ],
   "layers": {
     "audit_enum_identity": {
@@ -53,6 +53,8 @@
       "counts.outside_silent": 0,
       "counts.record_exemptions": 10,
       "counts.record_exemptions_pulled": 0,
+      "counts.record_exemptions_reviewed": 0,
+      "counts.record_exemptions_window": 366,
       "counts.record_layers_moved": 0,
       "counts.record_layers_renamed": 0,
       "counts.record_lowered": 0,
@@ -128,7 +130,7 @@
       "checks": 16,
       "measured.canary_harnesses": 11,
       "measured.canary_ok": 11,
-      "measured.cognitive_tests": 743,
+      "measured.cognitive_tests": 745,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
@@ -162,6 +164,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "2026-09-24 면제 승인 회차: 표 밖 면제를 기록이 이름·근거·소유자·기한까지 승인하고(선언 10 = 기록 10), 면제를 만들거나·거두거나·기한을 미루면 승인이 필요하다(기한 미룸 0 · 기한 당김 0보고 · 이름만 바뀐 듯한 면제 0) — counts.record_exemptions·record_exemptions_pulled 가 새로 실리고 cognitive_tests 738 → 743",
+  "method": "2026-09-24 확인일과 창 회차: 면제가 확인일(2026-09-24)을 들고, 기한은 확인일로부터의 창(366일) 안에서만 준다 — 기한만 미룬 것과 확인일까지 잡고 미룬 것을 다른 문장으로 말하고(검토 없이 미룸 0 · 기한 미룸 0 · 확인일 갱신 0보고), 창은 기록도 함께 승인한다 — counts.record_exemptions_window·record_exemptions_reviewed 가 새로 실리고 cognitive_tests 743 → 745",
   "recorded_on": "2026-09-24"
 }

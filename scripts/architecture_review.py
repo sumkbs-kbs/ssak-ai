@@ -1276,7 +1276,8 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
 
     원장은 하한을 한 자리에 모으는 층이므로, 여기서 물을 수 있는 것은 “하한이 있는가” 가 아니라 **보고의 정합성**이다:
     층별 하한 합계 = 헤더 합계 · 승인을 못 읽은 층이 없음 · 고아 기록 수 = 헤더 수 · 하한에 근거가 있음 ·
-    표 밖 **면제**(선언)가 기록이 승인한 수와 같음 · 원장이 자기 판정(`verdict`)과 종료 코드에서 모순되지 않음.
+    표 밖 **면제**(선언)가 기록이 승인한 수와 같고 **재검토 창**도 기록과 같음(창을 넓히는 것도 결정이므로 승인된 창과
+    재는 자가 갈라지면 안 된다) · 원장이 자기 판정(`verdict`)과 종료 코드에서 모순되지 않음.
     """
 
     if report is None:
@@ -1329,6 +1330,11 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
             f"원장이 통과라고 하는데 면제가 기록과 다르다(선언 {_as_int(exempted.get('declared'))} ≠ "
             f"기록 {_as_int(exempted.get('recorded'))}) — 승인되지 않은 면제가 있다는 뜻이다"
         )
+    if verdict == "PASS" and _as_int(exempted.get("window_days")) != _as_int(exempted.get("recorded_window_days")):
+        problems.append(
+            f"원장이 통과라고 하는데 재검토 창이 기록과 다르다(지금 {_as_int(exempted.get('window_days'))}일 ≠ "
+            f"기록 {_as_int(exempted.get('recorded_window_days'))}일) — 면제의 기한을 재는 자와 승인된 창이 다르다"
+        )
     if _as_int(coverage.get("min_floors")) > _as_int(counts.get("canvas")):
         problems.append(
             f"원장이 본 하한({_as_int(counts.get('canvas'))}개)이 자기 하한({_as_int(coverage.get('min_floors'))}개) 아래다"
@@ -1345,8 +1351,10 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
             f"(이름 변경 후보 {len(_as_list(record.get('renamed_layers')))}) · "
             f"관측 이동 {len(_as_list(record.get('moves')))}보고) · "
             f"면제 기록 {_as_int(exempted.get('recorded'))}개(선언 {_as_int(exempted.get('declared'))}개 · "
-            f"기한 미룸 {len(_as_list(exempted.get('deferred')))} · 이름만 바뀐 듯한 면제 "
-            f"{len(_as_list(exempted.get('renamed')))} · 기한 당김 {len(_as_list(exempted.get('pulled')))}보고)"
+            f"창 {_as_int(exempted.get('recorded_window_days'))}일) · 면제의 판단 이동 0(검토 없이 미룸 "
+            f"{len(_as_list(exempted.get('bare_deferred')))} · 기한 미룸 {len(_as_list(exempted.get('deferred')))} · "
+            f"이름만 바뀐 듯한 면제 {len(_as_list(exempted.get('renamed')))} · 기한 당김 "
+            f"{len(_as_list(exempted.get('pulled')))}보고 · 확인일 갱신 {len(_as_list(exempted.get('reviewed')))}보고)"
         ),
         observed=summed,
     )

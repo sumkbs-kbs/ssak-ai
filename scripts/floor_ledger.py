@@ -31,12 +31,16 @@
     관측은 매 회차 움직이고, 각 층의 하한값이 실제로 무는지는 그 층의 게이트가 판정한다(원장은 목록의 승인을 맡는다).
     관측 이동은 **보고**일 뿐이고(안전한 쪽으로 틀리는 것을 실패로 만들면 기록이 잡음이 된다), 하한을 늘린 것도 보고다.
   * **승인 없는 면제** — 면제(`OUTSIDE` 선언)도 **판단**이다(“이 상수는 하한이 아니다”). 그러므로 기록은 면제를
-    **이름만이 아니라 약속까지**(왜 하한이 아닌지·누가 소유하는지·언제 다시 볼지) 담고, 표는 그 기록과 대조한다:
-    기록에 없는 **새 면제** · 기록이 승인했는데 표에 없는 **거둔 면제** · **바뀐 근거·소유자** · **미룬 재검토 기한**은 실패다.
-    기한을 미루는 것이 이 자리의 핵심이다 — 날짜를 뒤로 미는 것은 “그 도구가 층이 되었는지 다시 본다” 는 약속을 한 회차
-    더 미루는 결정인데, 표는 날짜가 있으면 통과시키므로 승인 없이는 그 결정이 어디에도 안 남는다(면죄부가 스스로 갱신된다).
-    기한을 **앞당긴** 것은 안전한 쪽이므로 보고만 하고, 옛 이름이 사라지고 새 이름이 생겼는데 약속이 그대로면 한 문장으로
-    “이름만 바뀐 것으로 보인다” 고 말한다(**보인다** 까지만 — 원장은 상수의 동일성을 모른다).
+    **이름만이 아니라 약속까지**(왜 하한이 아닌지·누가 소유하는지·**언제 확인했고** 언제 다시 볼지) 담고, 표는 그 기록과
+    대조한다: 기록에 없는 **새 면제** · 기록이 승인했는데 표에 없는 **거둔 면제** · **바뀐 근거·소유자** · **미룬 재검토 기한**은
+    실패다. 기한을 미루는 것이 이 자리의 핵심이다 — 날짜를 뒤로 미는 것은 “그 도구가 층이 되었는지 다시 본다” 는 약속을
+    한 회차 더 미루는 결정인데, 표는 날짜가 있으면 통과시키므로 승인 없이는 그 결정이 어디에도 안 남는다(면죄부가 스스로
+    갱신된다). 그래서 기한은 **확인일**(`reviewed_on`)을 들고 있다: 확인일보다 앞설 수 없고, 확인일로부터 **창**
+    (`_MAX_REVIEW_WINDOW_DAYS`)을 넘을 수 없으며(한 번의 확인으로 두 해를 미루지 못하게), 기한을 미루면서 확인일을
+    그대로 두면 그것은 연장이 아니라 날짜 미루기이므로 **검토 없이 미룬 것**과 **검토하고 미룬 것**을 다른 문장으로 말한다.
+    창 자체도 기록이 승인하는 값이라, 창을 넓히려면 상수를 고치고 `--record` 로 다시 기록해야 한다(둘이 갈라지면 기록이 먼저 실패한다).
+    기한을 **앞당기거나** 확인일만 새로 잡은 것은 안전한 쪽이므로 보고만 하고, 옛 이름이 사라지고 새 이름이 생겼는데 약속이
+    그대로면 한 문장으로 “이름만 바뀐 것으로 보인다” 고 말한다(**보인다** 까지만 — 원장은 상수의 동일성을 모른다).
 
 ```sh
 .venv/bin/python scripts/floor_ledger.py --gate        # 표 + 판정(하나라도 어긋나면 exit 1)
@@ -116,9 +120,20 @@ _WHY_MIN_CANDIDATES: Final[str] = (
 )
 
 
-# 기록이 담은 면제의 모양 — 이름만 담은 옛 기록과 약속(근거·소유자·기한)까지 담은 기록을 구별한다.
-# 이름만 아는 기록으로는 “기한을 미뤘다” 를 물을 수 없다: 그 기록은 왜·누가·언제까지를 승인한 적이 없다.
+# 면제의 재검토 창 — **한 번의 확인**으로 이 기간까지만 기한을 줄 수 있다(그보다 긴 창은 한 번의 확인으로 두 해를 미루는 것이다).
+# 2026-09-24 기준 관측: 선언 10개의 기한이 모두 2026-12-31 이고 이 회차의 확인일이 2026-09-24 이므로 지금 창은 98일이다.
+_MAX_REVIEW_WINDOW_DAYS: Final[int] = 366
+_WHY_MAX_REVIEW_WINDOW: Final[str] = (
+    "2026-09-24 기준 관측: 선언 10개의 기한이 모두 2026-12-31 이고 그 판단을 마지막으로 확인한 날이 2026-09-24 다(창 98일). "
+    "366 은 ‘한 번의 확인이 일 년을 넘지 않는다’ 는 뜻이다 — 기한을 미루는 것 자체는 결정이지만(기록을 지나야 한다) 그 결정의 "
+    "크기에도 상한이 있어야 한 번의 확인으로 면죄부를 두 해·세 해로 늘리지 못한다. 창을 넓히는 것은 이 상수를 고치고 **다시 "
+    "기록하는** 일이다(기록도 창을 담고 있으므로 둘이 갈라지면 기록이 먼저 실패한다)."
+)
+
+# 기록이 담은 면제의 모양 — 이름만 담은 옛 기록과 약속(근거·소유자·확인일·기한)까지 담은 기록을 구별한다.
+# 이름만 아는 기록으로는 “기한을 미뤘다” 를 물을 수 없고, 확인일 없는 기록으로는 “검토 없이 미뤘다” 를 물을 수 없다.
 OUTSIDE_SHAPE_FULL: Final[str] = "full"
+OUTSIDE_SHAPE_UNDATED: Final[str] = "undated"
 OUTSIDE_SHAPE_NAMES: Final[str] = "names"
 OUTSIDE_SHAPE_ABSENT: Final[str] = "absent"
 OUTSIDE_SHAPE_NONE: Final[str] = "no-record"
@@ -126,45 +141,62 @@ OUTSIDE_SHAPE_NONE: Final[str] = "no-record"
 
 @dataclass(frozen=True, slots=True)
 class OutsideFloor:
-    """표 밖의 하한 하나 — 이름·왜 아닌지·누가 소유하는지·언제 다시 볼지.
+    """표 밖의 하한 하나 — 이름·왜 아닌지·누가 소유하는지·**언제 확인했고** 언제 다시 볼지.
 
     면죄부가 되지 않도록 등록은 양방향이고 기한이 있다: 상수가 하한 목록에 실리거나 사라지면 낡은 선언으로,
     기한이 지나도 실패한다(그 사이 그 도구가 게이트에 들어왔는지 다시 보라는 뜻이다).
-    기한은 **미루는 것도 결정**이다 — 그것을 승인으로 묶으려고 기록도 면제를 약속까지 담는다.
+    기한은 **미루는 것도 결정**이고, 미루려면 그 결정을 받치는 **확인일**이 있어야 한다 — 날짜만 뒤로 미는 일은
+    검토가 아니므로 원장은 “기한이 확인일로부터 창을 넘는가” 와 “확인일이 갱신됐는가” 를 함께 묻는다.
     """
 
     name: str
     reason: str
     owner: str
+    reviewed_on: str
     review_by: str
 
     @property
-    def promise(self) -> tuple[str, str, str]:
-        """이 면제가 하는 약속 — 왜 하한이 아닌지·누가 소유하는지·언제 다시 볼지."""
+    def promise(self) -> tuple[str, str, str, str]:
+        """이 면제가 하는 약속 — 왜 하한이 아닌지·누가 소유하는지·언제 확인했고 언제 다시 볼지."""
 
-        return (self.reason, self.owner, self.review_by)
+        return (self.reason, self.owner, self.reviewed_on, self.review_by)
+
+    @property
+    def window(self) -> int | None:
+        """확인일에서 기한까지의 창(일) — 둘 중 하나라도 못 읽으면 `None`(그 사실은 문장으로 난다)."""
+
+        start, end = _as_day(self.reviewed_on), _as_day(self.review_by)
+        return (end - start).days if start is not None and end is not None else None
 
     def as_mapping(self) -> dict[str, str]:
-        return {"name": self.name, "reason": self.reason, "owner": self.owner, "review_by": self.review_by}
+        return {
+            "name": self.name,
+            "reason": self.reason,
+            "owner": self.owner,
+            "reviewed_on": self.reviewed_on,
+            "review_by": self.review_by,
+        }
 
 
 @dataclass(frozen=True, slots=True)
 class RecordedOutside:
-    """기록이 승인한 면제들 — 모양(`shape`)과 이름별 약속.
+    """기록이 승인한 면제들 — 모양(`shape`)과 이름별 약속, 그리고 그 기록이 승인한 재검토 창.
 
     `entries` 의 값이 `None` 이면 그 이름은 **이름만** 승인된 것이다(약속을 비교할 근거가 없다). 기록이 없으면
     `shape` 는 `OUTSIDE_SHAPE_NONE` 이고, 그 사실은 `record_problems` 가 말한다(같은 사실을 두 번 말하지 않는다).
     """
 
     shape: str
-    entries: dict[str, tuple[str, str, str] | None]
+    entries: dict[str, tuple[str, str, str, str] | None]
+    window_days: int = 0
+    window_why: str = ""
 
     @property
     def names(self) -> frozenset[str]:
         return frozenset(self.entries)
 
     @property
-    def promises(self) -> dict[str, tuple[str, str, str]]:
+    def promises(self) -> dict[str, tuple[str, str, str, str]]:
         """약속까지 아는 면제만 — 이름만 아는 기록에서는 빈 사전이다."""
 
         return {name: promise for name, promise in self.entries.items() if promise is not None}
@@ -179,48 +211,56 @@ OUTSIDE: Final[tuple[OutsideFloor, ...]] = (
             "무엇을 봤는지가 아니라 결과를 어떻게 읽는지를 정한다(관측 대상이 없다)"
         ),
         owner="search",
+        reviewed_on="2026-09-24",
         review_by="2026-12-31",
     ),
     OutsideFloor(
         name="scripts/benchmark_ssak_search.py:VALID_SOURCE_AUTHORITY_MIN",
         reason="벤치마크 입력의 유효성 조건(권위 점수 하한) — 관측량이 아니라 fixture 선택 규칙이다",
         owner="search",
+        reviewed_on="2026-09-24",
         review_by="2026-12-31",
     ),
     OutsideFloor(
         name="scripts/evidence_bundle.py:DEFAULT_MIN_SOAK_SECONDS",
         reason="정책 기본값(soak 창의 길이) — 하한이 아니라 기본 인자다. 무엇을 봤는지가 아니라 무엇을 요청했는지다",
         owner="evidence",
+        reviewed_on="2026-09-24",
         review_by="2026-12-31",
     ),
     OutsideFloor(
         name="scripts/val02_staging.py:RSS_WARMUP_MIN_S",
         reason="창 길이의 하한(워밍업 제외 구간) — 입력 구간 선택 임계며, nx10 QA 도구의 계약 시험이 지킨다",
         owner="nx10-qa",
+        reviewed_on="2026-09-24",
         review_by="2026-12-31",
     ),
     OutsideFloor(
         name="scripts/val02_staging.py:THROUGHPUT_MIN_RUN_S",
         reason="실행 길이의 하한 — 그보다 짧으면 중간값이 성립하지 않는다는 표본 조건이다(하한이 아니라 유효성)",
         owner="nx10-qa",
+        reviewed_on="2026-09-24",
         review_by="2026-12-31",
     ),
     OutsideFloor(
         name="scripts/val02_staging.py:THROUGHPUT_BLOCK_MIN_S",
         reason="블록 길이의 하한 — 잡음 실측으로 정한 값이며 nx10 QA 도구의 계약 시험이 지킨다",
         owner="nx10-qa",
+        reviewed_on="2026-09-24",
         review_by="2026-12-31",
     ),
     OutsideFloor(
         name="scripts/val02_staging.py:THROUGHPUT_MIN_BLOCKS_PER_QUARTER",
         reason="분기당 표본 수의 하한 — 관측을 세지만 이 저장소의 증거 게이트 roster 밖에 있는 도구다",
         owner="nx10-qa",
+        reviewed_on="2026-09-24",
         review_by="2026-12-31",
     ),
     OutsideFloor(
         name="scripts/val02_staging.py:ATTRIBUTION_MIN_DELTA_RATIO",
         reason="귀속 판단의 임계(“증가가 2% 미만이면 귀속할 증거가 없다”) — 관측량이 아니라 판정 기준이다",
         owner="nx10-qa",
+        reviewed_on="2026-09-24",
         review_by="2026-12-31",
     ),
     OutsideFloor(
@@ -230,12 +270,14 @@ OUTSIDE: Final[tuple[OutsideFloor, ...]] = (
             "그 도구가 아직 어떤 게이트의 층도 아니다(층으로 세우는 일은 nx10 QA 트랙의 결정이다)"
         ),
         owner="nx10-qa",
+        reviewed_on="2026-09-24",
         review_by="2026-12-31",
     ),
     OutsideFloor(
         name="scripts/val02_staging.py:PATH_MIN_CALLER_SHARE",
         reason="경로 지목의 임계(한 호출자가 절반 이상일 때만 지목한다) — 판정 기준이지 탐지량이 아니다",
         owner="nx10-qa",
+        reviewed_on="2026-09-24",
         review_by="2026-12-31",
     ),
 )
@@ -432,14 +474,37 @@ def outside_problems(
             problems.append(
                 f"표 밖 선언에 근거 또는 소유자가 비었다: {item.name} — 왜 하한이 아닌지 물을 수 없으면 면죄부다"
             )
-        try:
-            due = date.fromisoformat(item.review_by)
-        except ValueError:
-            problems.append(f"표 밖 선언의 재검토 기한을 읽지 못했다: {item.name}({item.review_by!r})")
-            continue
-        if due < as_of:
+        reviewed = _as_day(item.reviewed_on)
+        if reviewed is None:
             problems.append(
-                f"표 밖 선언의 재검토 기한이 지났다: {item.name}({item.review_by}) — 그 도구가 층이 되었는지 다시 보라"
+                f"표 밖 선언의 확인일을 읽지 못했다: {item.name}({item.reviewed_on!r}) — 언제 확인한 판단인지 말할 수 없는 "
+                "면제는 “검토 없이 미룬 것” 과 구별되지 않는다"
+            )
+        elif reviewed > as_of:
+            problems.append(
+                f"표 밖 선언의 확인일이 아직 오지 않았다: {item.name}({item.reviewed_on}) — 확인은 미래의 일이 아니다"
+            )
+        due = _as_day(item.review_by)
+        if due is None:
+            problems.append(f"표 밖 선언의 재검토 기한을 읽지 못했다: {item.name}({item.review_by!r})")
+        elif due < as_of:
+            problems.append(
+                f"표 밖 선언의 재검토 기한이 지났다: {item.name}({item.review_by}, 확인일 {item.reviewed_on}) — "
+                "그 도구가 층이 되었는지 다시 보라"
+            )
+        window = item.window
+        if window is None:
+            continue  # 못 읽는 날짜는 위에서 이미 문장으로 냈다(같은 사실을 두 번 말하지 않는다)
+        if window < 0:
+            problems.append(
+                f"표 밖 선언의 기한이 확인일보다 앞서 있다: {item.name}({item.reviewed_on} → {item.review_by}) — "
+                "기한은 확인보다 뒤의 일이다(둘 중 하나가 잘못 적렸다)"
+            )
+        elif window > _MAX_REVIEW_WINDOW_DAYS:
+            problems.append(
+                f"표 밖 선언의 기한이 확인일로부터 **창을 넘는다**: {item.name}(확인 {item.reviewed_on} → 기한 "
+                f"{item.review_by}, {window}일 > 창 {_MAX_REVIEW_WINDOW_DAYS}일) — 한 번의 확인으로 그만큼 길게 줄 수 "
+                "없다: 기한을 당기거나 창을 넓히는 결정을 `--record` 로 남겨라"
             )
     return problems
 
@@ -454,11 +519,11 @@ def _as_day(text: str) -> date | None:
 
 
 def recorded_outside(stored: dict[str, object] | None) -> RecordedOutside:
-    """기록이 승인한 면제를 읽는다 — 모양(없음·이름만·약속까지)과 이름별 약속.
+    """기록이 승인한 면제를 읽는다 — 모양(없음·이름만·날짜만·약속까지)·이름별 약속·승인된 재검토 창.
 
-    옛 기록은 면제를 **이름으로만** 담았다(`declared: ["scripts/x.py:MIN_Y", …]`). 그 기록은 면제를 승인한 적이
-    있지만 왜·누가·언제까지를 승인한 적은 없으므로, “기한을 미뤘다” 를 물을 자리가 없다 — 그 사실을 통과로 삼키지 않고
-    문장으로 내기 위해 모양을 함께 돌려준다.
+    기록은 두 번 자라났고 그 둘 다 “물을 수 없는 것” 을 문장으로 만들기 위해 남겼다:
+    옛 기록은 면제를 **이름으로만** 담았으므로 “기한을 미뤘다” 를 물을 자리가 없고, 이 회차 이전의 기록은 약속을 담았지만
+    **확인일이 없어** “검토 없이 미뤘다” 를 물을 자리가 없다. 모르는 것을 통과로 삼키지 않으려고 모양을 함께 돌려준다.
     """
 
     if stored is None:
@@ -469,21 +534,27 @@ def recorded_outside(stored: dict[str, object] | None) -> RecordedOutside:
     declared = block.get("declared")
     if not isinstance(declared, list):
         return RecordedOutside(OUTSIDE_SHAPE_ABSENT, {})
-    entries: dict[str, tuple[str, str, str] | None] = {}
-    promises_known = True
+    window = block.get("review_window")
+    days = int(window.get("days", 0)) if isinstance(window, dict) else 0
+    why = str(window.get("why", "")) if isinstance(window, dict) else ""
+    entries: dict[str, tuple[str, str, str, str] | None] = {}
+    named_only = dated = False
     for item in declared:
         if isinstance(item, dict) and str(item.get("name", "")).strip():
+            dated = dated or not str(item.get("reviewed_on", "")).strip()
             entries[str(item["name"])] = (
                 str(item.get("reason", "")),
                 str(item.get("owner", "")),
+                str(item.get("reviewed_on", "")),
                 str(item.get("review_by", "")),
             )
         elif isinstance(item, str) and item.strip():
             entries[item] = None
-            promises_known = False
+            named_only = True
     if not entries:
         return RecordedOutside(OUTSIDE_SHAPE_ABSENT, {})
-    return RecordedOutside(OUTSIDE_SHAPE_FULL if promises_known else OUTSIDE_SHAPE_NAMES, entries)
+    shape = OUTSIDE_SHAPE_NAMES if named_only else OUTSIDE_SHAPE_UNDATED if dated else OUTSIDE_SHAPE_FULL
+    return RecordedOutside(shape, entries, days, why)
 
 
 def renamed_declarations(
@@ -533,6 +604,8 @@ def outside_record_problems(
     하한이 아니라 면제를 묻는 까닭은 면제가 “이 상수는 하한이 아니다” 라는 **판단**이기 때문이다. 그중에서도
     **기한을 미루는 것**이 이 자리의 핵심이다: 날짜를 뒤로 미는 것은 “그 도구가 층이 되었는지 다시 본다” 는 약속을
     한 회차 더 미루는 결정인데, 표는 날짜가 있으면 통과시키므로 승인 없이는 그 결정이 어디에도 안 남는다.
+    그리고 **검토 없이 미룬 것**과 **검토하고 미룬 것**은 다른 사건이므로 다른 문장으로 말한다: 기한만 뒤로 가고
+    확인일이 그대로면 그것은 연장이 아니라 날짜 미루기고, 둘이 함께 움직였으면 그 결정을 `--record` 로 남기게 한다.
     """
 
     if recorded.shape == OUTSIDE_SHAPE_NONE:
@@ -550,6 +623,16 @@ def outside_record_problems(
             "언제까지인지를 승인한 적이 없으므로 “기한을 미뤘다” 를 물을 자리가 없다: `--record --method` 로 약속까지 담아 "
             "다시 기록하라"
         )
+    if recorded.shape == OUTSIDE_SHAPE_UNDATED:
+        problems.append(
+            "기록이 면제의 **확인일**을 담고 있지 않다 — 언제의 확인으로 이 기한을 준 것인지 말하지 못하므로 “검토 없이 "
+            "미뤘다” 와 “검토하고 미뤘다” 를 가를 자리가 없다: `--record --method` 로 확인일까지 담아 다시 기록하라"
+        )
+    if recorded.shape == OUTSIDE_SHAPE_FULL and recorded.window_days != _MAX_REVIEW_WINDOW_DAYS:
+        problems.append(
+            f"기록된 재검토 창이 지금 규칙과 다르다(기록 {recorded.window_days}일 ≠ 지금 {_MAX_REVIEW_WINDOW_DAYS}일) — "
+            "기록은 그 창으로 승인된 것이므로 창을 넓히는 결정은 근거와 함께 `--record --method` 로 다시 기록해야 한다"
+        )
     names_now = {item.name for item in declared}
     appeared = sorted(name for name in names_now - recorded.names if name not in paired)
     if appeared:
@@ -564,11 +647,20 @@ def outside_record_problems(
             "지운 것)도 결정이다: `--record --method` 로 남겨라"
         )
     if recorded.shape == OUTSIDE_SHAPE_FULL:
-        changes, deferred = _outside_moves(declared, recorded, paired)
+        changes, deferred, bare = _outside_moves(declared, recorded, paired)
         if changes:
             problems.append(
                 f"기록과 근거·소유자가 달라진 면제가 있다: {', '.join(changes)} — 면제의 근거가 바뀌면 그것은 다른 "
                 "판단이다(`--record --method` 로 다시 기록하라)"
+            )
+        if bare:
+            seen = {item.name: item.reviewed_on for item in declared}
+            moved = "; ".join(
+                f"{name} {was} → {now}(확인일 {seen.get(name, '못 읽음')} 그대로)" for name, was, now in bare
+            )
+            problems.append(
+                f"면제의 기한만 미뤘다({moved}) — 확인일이 그대로인 연장은 검토가 아니다: 언제 다시 본 것인지"
+                "(`reviewed_on`)를 함께 적어라"
             )
         if deferred:
             moved = "; ".join(f"{name} {was} → {now}" for name, was, now in deferred)
@@ -590,15 +682,18 @@ def outside_record_problems(
 
 def _outside_moves(
     declared: Sequence[OutsideFloor], recorded: RecordedOutside, paired: set[str]
-) -> tuple[tuple[str, ...], tuple[tuple[str, str, str], ...]]:
-    """기록과 달라진 면제 — (근거·소유자가 바뀐 이름들, 기한을 **미룬** 것들).
+) -> tuple[tuple[str, ...], tuple[tuple[str, str, str], ...], tuple[tuple[str, str, str], ...]]:
+    """기록과 달라진 면제 — (근거·소유자가 바뀐 이름들, 검토하고 미룬 것들, **검토 없이** 미룬 것들).
 
     기한을 당긴 것은 안전한 쪽이므로 여기 안 든다(`outside_pulled` 가 보고만 한다). 근거·소유자가 바뀐 면제는
-    그 자체가 다른 판단이므로 기한 이동으로 한 번 더 말하지 않는다.
+    그 자체가 다른 판단이므로 기한 이동으로 한 번 더 말하지 않는다. 기한을 미룬 것 중에서도 확인일이 함께
+    움직였는지로 나뉜다 — 그 둘은 다른 사건이고(검토한 연장·검토 없는 연장을 같은 문장으로 말하면 둘 다 같은
+    초록으로 보인다), 원장이 말할 수 있는 것은 “날짜가 함께 움직였나” 까지다(확인이 정말 있었는지는 사람의 몫이다).
     """
 
     changes: list[str] = []
     deferred: list[tuple[str, str, str]] = []
+    bare: list[tuple[str, str, str]] = []
     for item in declared:
         was = recorded.promises.get(item.name)
         if was is None or item.name in paired:
@@ -606,10 +701,39 @@ def _outside_moves(
         if (was[0], was[1]) != (item.reason, item.owner):
             changes.append(item.name)
             continue
-        before, after = _as_day(was[2]), _as_day(item.review_by)
-        if before is not None and after is not None and after > before:
-            deferred.append((item.name, was[2], item.review_by))
-    return tuple(sorted(changes)), tuple(sorted(deferred))
+        before, after = _as_day(was[3]), _as_day(item.review_by)
+        if before is None or after is None or after <= before:
+            continue
+        was_review, now_review = _as_day(was[2]), _as_day(item.reviewed_on)
+        refreshed = was_review is not None and now_review is not None and now_review > was_review
+        entry = (item.name, was[3], item.review_by)
+        (deferred if refreshed else bare).append(entry)
+    return tuple(sorted(changes)), tuple(sorted(deferred)), tuple(sorted(bare))
+
+
+def outside_reviewed(
+    declared: Sequence[OutsideFloor], recorded: RecordedOutside, *, paired: Iterable[str] = ()
+) -> tuple[str, ...]:
+    """기록보다 **확인일이 뒤로 간** 면제 — 실패가 아니라 보고다(더 자주 본 것을 실패로 만들면 아무도 다시 보지 않는다).
+
+    기한을 미룬 면제는 여기 안 실린다(그것은 결정이므로 위의 문장과 `--record` 가 맡는다) — 이 목록은 기한을 그대로
+    둔 채 확인만 새로 한 경우다.
+    """
+
+    skipped = set(paired)
+    reviewed: list[str] = []
+    for item in declared:
+        was = recorded.promises.get(item.name)
+        if was is None or item.name in skipped:
+            continue
+        before, after = _as_day(was[2]), _as_day(item.reviewed_on)
+        if before is None or after is None or after <= before:
+            continue
+        was_due, now_due = _as_day(was[3]), _as_day(item.review_by)
+        deferred = was_due is not None and now_due is not None and now_due > was_due
+        if not deferred:  # 기한을 미룬 확인은 연장의 문장이 맡는다(같은 결정을 두 번 세지 않는다)
+            reviewed.append(f"{item.name} {was[2]} → {item.reviewed_on}")
+    return tuple(sorted(reviewed))
 
 
 def outside_pulled(
@@ -623,9 +747,9 @@ def outside_pulled(
         was = recorded.promises.get(item.name)
         if was is None or item.name in skipped:
             continue
-        before, after = _as_day(was[2]), _as_day(item.review_by)
+        before, after = _as_day(was[3]), _as_day(item.review_by)
         if before is not None and after is not None and after < before:
-            pulled.append(f"{item.name} {was[2]} → {item.review_by}")
+            pulled.append(f"{item.name} {was[3]} → {item.review_by}")
     return tuple(sorted(pulled))
 
 
@@ -735,7 +859,9 @@ class Ledger:
                 "record_layers_renamed": len(_record_lines(self.record, "renamed_layers")),
                 "record_renames": len(_record_lines(self.record, "renames")),
                 "record_exemptions": _record_int(_record_dict(self.record, "outside"), "recorded"),
+                "record_exemptions_window": _record_int(_record_dict(self.record, "outside"), "recorded_window_days"),
                 "record_exemptions_pulled": len(_record_lines(_record_dict(self.record, "outside"), "pulled")),
+                "record_exemptions_reviewed": len(_record_lines(_record_dict(self.record, "outside"), "reviewed")),
             },
             "record": dict(self.record),
             "outside": {
@@ -1239,9 +1365,11 @@ def record_payload(
             for row in ledger.rows
             for floor in row.floors
         ],
-        # 면제는 **이름만이 아니라 약속까지** 담는다: 이름만 담으면 다음 기록이 “기한을 미뤘다” 를 물을 자리가 없다.
+        # 면제는 **이름만이 아니라 약속까지** 담는다: 이름만 담으면 다음 기록이 “기한을 미뤘다” 를 물을 자리가 없고,
+        # 확인일이 없으면 “검토 없이 미뤘다” 를 물을 자리가 없다. 창도 함께 담는다(창을 넓히는 것도 결정이다).
         "outside": {
             "scanned": len(ledger.candidates),
+            "review_window": {"days": _MAX_REVIEW_WINDOW_DAYS, "why": _WHY_MAX_REVIEW_WINDOW},
             "declared": [item.as_mapping() for item in ledger.outside],
         },
         "probe": probe.as_mapping(),
@@ -1269,9 +1397,9 @@ def record_report(
     changes = record_changes(judged_floors(ledger), stored)
     recorded = recorded_outside(stored)
     paired_names = {name for pair in renamed for name in pair}
-    moved, deferred = _outside_moves(ledger.outside, recorded, paired_names)
+    moved, deferred, bare = _outside_moves(ledger.outside, recorded, paired_names)
     if recorded.shape != OUTSIDE_SHAPE_FULL:  # 약속을 모르는 기록에서는 이동을 물을 수 없다
-        moved, deferred = (), ()
+        moved, deferred, bare = (), (), ()
     return {
         "path": _display(record),
         "present": stored is not None,
@@ -1299,8 +1427,12 @@ def record_report(
             "declared": len(ledger.outside),
             "recorded": len(recorded.entries),
             "shape": recorded.shape,
+            "window_days": _MAX_REVIEW_WINDOW_DAYS,
+            "recorded_window_days": recorded.window_days,
             "changed": list(moved),
             "deferred": [f"{name} {was} → {now}" for name, was, now in deferred],
+            "bare_deferred": [f"{name} {was} → {now}" for name, was, now in bare],
+            "reviewed": list(outside_reviewed(ledger.outside, recorded, paired=paired_names)),
             "pulled": list(outside_pulled(ledger.outside, recorded, paired=paired_names)),
             "renamed": [{"from": old, "to": new} for old, new in renamed],
         },
@@ -1602,11 +1734,54 @@ def self_probe() -> Probe:
         list(outside_floors((), (), ("scripts/gone.py:MIN_Z",))[1]),
         ["scripts/gone.py:MIN_Z"],
     )
-    healthy_declaration = OutsideFloor("scripts/b.py:MIN_Y", "하한이 아니라 유효성 임계다", "tester", "2099-01-01")
+    healthy_declaration = OutsideFloor(
+        "scripts/b.py:MIN_Y", "하한이 아니라 유효성 임계다", "tester", "2026-01-01", "2026-12-31"
+    )
+    window = (_MAX_REVIEW_WINDOW_DAYS, _WHY_MAX_REVIEW_WINDOW)  # 기록을 만들 때 함께 넘기는 승인된 창
+    wind = {"days": _MAX_REVIEW_WINDOW_DAYS, "why": _WHY_MAX_REVIEW_WINDOW}
     cases.equal(
         "살아 있는 선언은 조용하다",
         outside_problems(("scripts/b.py:MIN_Y",), (), (healthy_declaration,)),
         [],
+    )
+    cases.check(
+        "확인일에서 기한까지의 창을 읽는다(그 창이 “한 번의 확인으로 얼마나 미룰 수 있나” 다)",
+        healthy_declaration.window is not None and healthy_declaration.window == 364,
+    )
+    cases.check(
+        "한 번의 확인으로 창을 넘는 기한을 줄 수는 없다",
+        any(
+            "창을 넘는다" in problem
+            for problem in outside_problems(
+                ("scripts/b.py:MIN_Y",), (), (replace(healthy_declaration, review_by="2028-01-01"),)
+            )
+        ),
+    )
+    cases.check(
+        "기한이 확인일보다 앞서면 그것은 기한이 아니다(둘 중 하나가 잘못 적렸다)",
+        any(
+            "기한이 확인일보다 앞서" in problem
+            for problem in outside_problems(
+                ("scripts/b.py:MIN_Y",),
+                (),
+                (replace(healthy_declaration, reviewed_on="2026-06-01", review_by="2026-01-01"),),
+            )
+        ),
+    )
+    cases.check(
+        "확인이 미래일 수는 없다(확인은 이미 한 일이다)",
+        any(
+            "확인일이 아직 오지 않았다" in problem
+            for problem in outside_problems(
+                ("scripts/b.py:MIN_Y",),
+                (),
+                (replace(healthy_declaration, reviewed_on="2099-01-01", review_by="2099-06-01"),),
+            )
+        ),
+    )
+    cases.check(
+        "확인일을 읽지 못하는 선언도 실패한다(그 면제는 검토와 구분되지 않는다)",
+        bool(outside_problems(("scripts/b.py:MIN_Y",), (), (replace(healthy_declaration, reviewed_on="언젠가"),))),
     )
     named = outside_problems(("scripts/b.py:MIN_Y",), (), ())
     cases.check("선언 없는 후보는 이름을 대며 실패한다", len(named) == 1 and "scripts/b.py:MIN_Y" in named[0])
@@ -1627,13 +1802,14 @@ def self_probe() -> Probe:
         bool(outside_problems(("scripts/b.py:MIN_Y",), (), (replace(healthy_declaration, review_by="언젠가"),))),
     )
     # 면제는 **판단**이다 — 기록이 “이 상수는 하한이 아니다” 를 약속까지 승인했는가.
-    approved = RecordedOutside(OUTSIDE_SHAPE_FULL, {healthy_declaration.name: healthy_declaration.promise})
+    approved = RecordedOutside(OUTSIDE_SHAPE_FULL, {healthy_declaration.name: healthy_declaration.promise}, *window)
+    approved_none = RecordedOutside(OUTSIDE_SHAPE_FULL, {}, *window)
     cases.equal(
         "기록이 승인한 면제와 지금 표가 같으면 조용하다", outside_record_problems((healthy_declaration,), approved), []
     )
     cases.check(
         "기록에 없는 면제는 승인 없이 못 들어온다(면제를 만드는 것도 결정이다)",
-        bool(outside_record_problems((healthy_declaration,), RecordedOutside(OUTSIDE_SHAPE_FULL, {}))),
+        bool(outside_record_problems((healthy_declaration,), approved_none)),
     )
     cases.check(
         "면제를 거두는 것도 결정이다(기록이 승인한 면제가 표에 없다)",
@@ -1643,21 +1819,75 @@ def self_probe() -> Probe:
         "면제의 근거·소유자가 바뀌면 그것은 다른 판단이다",
         bool(outside_record_problems((replace(healthy_declaration, reason="다른 이유"),), approved)),
     )
-    deferred = replace(healthy_declaration, review_by="2100-01-01")
-    pushed = outside_record_problems((deferred,), approved)
+    # 기한을 미루는 것과 **검토 없이** 미루는 것은 다른 사건이다 — 확인일이 함께 움직였는가로 갈린다.
+    tight = replace(healthy_declaration, review_by="2026-06-01")
+    tight_approved = RecordedOutside(OUTSIDE_SHAPE_FULL, {tight.name: tight.promise}, *window)
+    relocated = replace(tight, reviewed_on="2026-06-01", review_by="2027-06-01")
+    pushed = outside_record_problems((relocated,), tight_approved)
     cases.check(
-        "기한을 미룬 면제는 승인이 필요하다(면죄부가 스스로 갱신되지 않는다)",
-        len(pushed) == 1 and "기한을 미뤘다" in pushed[0] and "2099-01-01 → 2100-01-01" in pushed[0],
+        "검토하고 미룬 기한은 승인이 필요하다(면죄부가 스스로 갱신되지 않는다)",
+        len(pushed) == 1 and "기한을 미뤘다" in pushed[0] and "2026-06-01 → 2027-06-01" in pushed[0],
     )
+    bare = replace(tight, review_by="2026-12-31")  # 확인일은 그대로, 기한만 뒤로(창 안이다)
+    cases.equal(
+        "기한만 미룬 것은 창 안이라도 연장이 아니다",
+        [],
+        outside_problems(("scripts/b.py:MIN_Y",), (), (bare,)),  # 표 쪽 규칙은 통과한다
+    )
+    skipped_review = outside_record_problems((bare,), tight_approved)
+    cases.check(
+        "검토 없이 미룬 것과 검토하고 미룬 것은 다른 문장으로 말해진다",
+        len(skipped_review) == 1
+        and "기한만 미뤘다" in skipped_review[0]
+        and "확인일 2026-01-01 그대로" in skipped_review[0]
+        and "기한을 미뤘다" not in skipped_review[0],
+    )
+    earlier = replace(healthy_declaration, reviewed_on="2025-06-01", review_by="2026-06-01")
     cases.check(
         "기한을 앞당긴 면제는 실패가 아니라 보고다(더 자주 보는 쪽이 안전한 쪽이다)",
-        not outside_record_problems((replace(healthy_declaration, review_by="2098-01-01"),), approved)
-        and outside_pulled((replace(healthy_declaration, review_by="2098-01-01"),), approved)
-        == ("scripts/b.py:MIN_Y 2099-01-01 → 2098-01-01",),
+        not outside_record_problems((earlier,), approved)
+        and outside_pulled((earlier,), approved) == ("scripts/b.py:MIN_Y 2026-12-31 → 2026-06-01",),
+    )
+    renewed = replace(healthy_declaration, reviewed_on="2026-06-01")
+    cases.check(
+        "기한을 그대로 둔 확인도 실패가 아니라 보고다(보기만 한 것을 벌하면 아무도 다시 보지 않는다)",
+        not outside_record_problems((renewed,), approved)
+        and outside_reviewed((renewed,), approved) == ("scripts/b.py:MIN_Y 2026-01-01 → 2026-06-01",),
+    )
+    cases.check(
+        "기록된 창이 지금 규칙과 다르면 기록이 먼저 실패한다",
+        bool(
+            outside_record_problems(
+                (healthy_declaration,), RecordedOutside(OUTSIDE_SHAPE_FULL, {tight.name: tight.promise}, 999, "넓혔다")
+            )
+        ),
     )
     cases.check(
         "기록이 면제를 이름으로만 담으면 그것은 승인이 아니다(기한을 물을 자리가 없다)",
-        bool(outside_record_problems((healthy_declaration,), RecordedOutside(OUTSIDE_SHAPE_NAMES, {"x": None}))),
+        bool(
+            outside_record_problems((healthy_declaration,), RecordedOutside(OUTSIDE_SHAPE_NAMES, {"x": None}, *window))
+        ),
+    )
+    undated = RecordedOutside(
+        OUTSIDE_SHAPE_UNDATED,
+        {
+            healthy_declaration.name: (
+                healthy_declaration.reason,
+                healthy_declaration.owner,
+                "",
+                healthy_declaration.review_by,
+            )
+        },
+        *window,
+    )
+    undated_said = outside_record_problems((relocated,), undated)  # 확인일이 없는 기록 + 검토한 연장
+    cases.check(
+        "기록이 확인일을 빼고 담았으면 그 자리 하나로 다시 기록하게 한다",
+        len(undated_said) == 1 and "확인일" in undated_said[0],
+    )
+    cases.check(
+        "확인일을 모르는 기록에서는 연장 문장이 나오지 않는다(같은 사실을 두 번 말하지 않는다)",
+        "재검토 기한을 미뤘다(" not in undated_said[0] and "기한만 미뤘다(" not in undated_said[0],
     )
     cases.check(
         "기록에 면제 목록이 없으면 그것도 실패다(무엇이 면제됐는지 말하지 않는 기록)",
@@ -1668,10 +1898,32 @@ def self_probe() -> Probe:
         outside_record_problems((healthy_declaration,), RecordedOutside(OUTSIDE_SHAPE_NONE, {})),
         [],
     )
+    cases.equal(
+        "기록을 읽을 때 약속까지 담겼는지·확인일이 있는지를 모양으로 가른다",
+        [
+            recorded_outside(
+                {"outside": {"declared": [healthy_declaration.as_mapping()], "review_window": wind}}
+            ).shape,
+            recorded_outside(
+                {"outside": {"declared": [{"name": "x", "reason": "r", "owner": "o", "review_by": "2026-12-31"}]}}
+            ).shape,
+            recorded_outside({"outside": {"declared": ["scripts/b.py:MIN_Y"]}}).shape,
+        ],
+        [OUTSIDE_SHAPE_FULL, OUTSIDE_SHAPE_UNDATED, OUTSIDE_SHAPE_NAMES],
+    )
+    cases.equal(
+        "기록이 승인한 창도 함께 읽는다(그 창이 지금 규칙과 갈라지면 문장이 난다)",
+        recorded_outside(
+            {"outside": {"declared": [healthy_declaration.as_mapping()], "review_window": wind}}
+        ).window_days,
+        _MAX_REVIEW_WINDOW_DAYS,
+    )
     # 이름만 바뀐 것으로 **보이는** 면제 — 두 이름이 같은 약속을 들고 있을 때만(추측을 사실처럼 말하지 않는다).
-    old_exemption = OutsideFloor("scripts/a.py:MIN_OLD", "판정 기준이다(관측 대상이 없다)", "qa", "2026-12-31")
+    old_exemption = OutsideFloor(
+        "scripts/a.py:MIN_OLD", "판정 기준이다(관측 대상이 없다)", "qa", "2026-01-01", "2026-12-31"
+    )
     new_exemption = replace(old_exemption, name="scripts/a.py:MIN_NEW")
-    recorded_old = RecordedOutside(OUTSIDE_SHAPE_FULL, {old_exemption.name: old_exemption.promise})
+    recorded_old = RecordedOutside(OUTSIDE_SHAPE_FULL, {old_exemption.name: old_exemption.promise}, *window)
     live = ("scripts/a.py:MIN_NEW",)
     pairs = renamed_declarations((new_exemption,), recorded_old, candidates=live, wired=())
     cases.equal("약속이 그대로면 이름만 바뀐 것으로 보인다", list(pairs), [(old_exemption.name, new_exemption.name)])
@@ -2018,14 +2270,24 @@ def describe(ledger: Ledger, probe: Probe) -> str:
         f"선언 {len(ledger.outside)}개(근거·소유자·재검토 기한 있음)"
     )
     for item in ledger.outside:
-        lines.append(f"    · {item.name}({item.owner}, 재검토 {item.review_by}) — {item.reason}")
+        window = item.window
+        span = f"창 {window}일" if window is not None else "창 못 읽음"
+        lines.append(
+            f"    · {item.name}({item.owner}, 확인 {item.reviewed_on} · 재검토 {item.review_by} · {span}) — {item.reason}"
+        )
+    lines.append(
+        f"  면제 창    한 번의 확인으로 줄 수 있는 기한은 {_MAX_REVIEW_WINDOW_DAYS}일까지다 — 창을 넓히는 것도 결정이다"
+    )
     record = ledger.record
     exempted = _record_dict(record, "outside")
     if record.get("present"):
         lines.append(
             f"  면제 기록  선언 {len(ledger.outside)}개 · 기록이 승인한 면제 {exempted.get('recorded', 0)}개 "
-            f"({exempted.get('shape', '')}) — 면제를 만들거나·거두거나·기한을 미루면 승인이 필요하다"
+            f"({exempted.get('shape', '')}, 창 {exempted.get('recorded_window_days', 0)}일) — 면제를 만들거나·거두거나·"
+            "기한을 미루면 승인이 필요하다"
         )
+        for line in _record_lines(exempted, "reviewed"):
+            lines.append(f"    · 면제 확인일을 새로 잡았다(보고만 — 더 자주 보는 쪽이다): {line}")
         for line in _record_lines(exempted, "pulled"):
             lines.append(f"    · 면제 기한을 앞당김(보고만 — 더 자주 보는 쪽이다): {line}")
         pairs = exempted.get("renamed")

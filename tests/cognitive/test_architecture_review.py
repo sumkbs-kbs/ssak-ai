@@ -562,19 +562,24 @@ def test_a_pass_with_unapproved_exemptions_is_a_contradiction(review: Any) -> No
 
     report = _ledger_report()
     record = dict(report["record"])  # type: ignore[arg-type]
-    record["outside"] = {"declared": 2, "recorded": 1, "deferred": [], "pulled": [], "renamed": []}
+    matched = {"declared": 2, "recorded": 2, "window_days": 366, "recorded_window_days": 366}
+    record["outside"] = {**matched, "recorded": 1}
     result = review.check_floor_ledger(_ledger_report(record=record))
 
     assert result.passed is False
     assert "면제가 기록과 다르다" in result.detail
-    ok = review.check_floor_ledger(
-        _ledger_report(
-            record={**record, "outside": {"declared": 2, "recorded": 2, "deferred": [], "pulled": [], "renamed": []}}
-        )
+    stretched = review.check_floor_ledger(
+        _ledger_report(record={**record, "outside": {**matched, "recorded_window_days": 900}})
     )
 
+    assert stretched.passed is False
+    assert "재검토 창이 기록과 다르다" in stretched.detail, (
+        "창을 넓힌 기록과 지금 규칙이 같은 것을 잰다고 말하면 안 된다"
+    )
+    ok = review.check_floor_ledger(_ledger_report(record={**record, "outside": matched}))
+
     assert ok.passed is True, ok.detail
-    assert "면제 기록 2개" in ok.detail
+    assert "면제 기록 2개" in ok.detail and "창 366일" in ok.detail
 
 
 def test_repository_ledger_has_a_recorded_approval(review: Any) -> None:  # noqa: ANN401
@@ -590,6 +595,8 @@ def test_repository_ledger_has_a_recorded_approval(review: Any) -> None:  # noqa
     # 면제도 같은 자리에서 승인된다 — 표의 선언과 기록이 승인한 면제가 같은 수다.
     assert report["record"]["outside"]["recorded"] == report["counts"]["outside_declared"]  # type: ignore[index]
     assert report["record"]["outside"]["shape"] == "full"  # type: ignore[index]
+    # 재검토 창도 같은 자리에서 승인된다 — 면제의 기한을 재는 자와 승인된 창이 같아야 한다.
+    assert report["record"]["outside"]["recorded_window_days"] == report["record"]["outside"]["window_days"]  # type: ignore[index]
 
 
 def test_invalidated_reverification_fails_the_check(review: Any) -> None:  # noqa: ANN401

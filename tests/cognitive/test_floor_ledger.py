@@ -173,13 +173,45 @@ def test_the_committed_record_approves_the_exemptions_with_their_promise(ledger_
     assert stored is not None
     recorded = ledger_module.recorded_outside(stored)
 
-    assert recorded.shape == ledger_module.OUTSIDE_SHAPE_FULL, "기록이 면제를 이름으로만 담고 있다"
+    assert recorded.shape == ledger_module.OUTSIDE_SHAPE_FULL, "기록이 면제를 이름으로만·확인일 없이 담고 있다"
     assert recorded.names == {item.name for item in ledger_module.OUTSIDE}
-    assert all(item.reason.strip() and item.owner.strip() and item.review_by.strip() for item in ledger_module.OUTSIDE)
+    assert recorded.window_days == ledger_module._MAX_REVIEW_WINDOW_DAYS, "기록이 창을 승인하지 않았다"
+    assert recorded.window_why.strip(), "창에는 근거가 붙어야 한다(숫자만 있으면 나중에 넓혀도 되는지 모른다)"
+    assert all(
+        item.reason.strip() and item.owner.strip() and item.reviewed_on.strip() and item.review_by.strip()
+        for item in ledger_module.OUTSIDE
+    )
     assert ledger_module.outside_record_problems(ledger_module.OUTSIDE, recorded) == []
     assert ledger.record["outside"]["recorded"] == len(ledger_module.OUTSIDE)
     assert ledger.record["outside"]["deferred"] == []
     assert ledger.record["outside"]["renamed"] == []
+
+
+def test_an_exemption_deadline_is_bounded_by_a_confirmation(ledger_module: Any, ledger: Any) -> None:  # noqa: ANN401
+    """기한은 **확인일로부터의 창** 안에서만 준다 — 한 번의 확인으로 두 해를 미루지 못하게 한다(면죄부의 크기에도 상한).
+
+    기한만 뒤로 미는 것은 검토가 아니므로, 원장은 “언제 확인했나” 를 함께 묻고 그 확인일이 갱신됐는지도 본다.
+    """
+
+    declared = ledger_module.OUTSIDE[0]
+    window = (ledger_module._MAX_REVIEW_WINDOW_DAYS, ledger_module._WHY_MAX_REVIEW_WINDOW)
+    tight = ledger_module.replace(
+        declared, review_by="2026-10-31"
+    )  # 기록이 승인한 기한은 더 이르다(표가 그만큼 미룬 상태)
+    approved = ledger_module.RecordedOutside(ledger_module.OUTSIDE_SHAPE_FULL, {tight.name: tight.promise}, *window)
+    skipped = ledger_module.outside_record_problems((declared,), approved)
+
+    assert declared.window is not None and declared.window <= ledger_module._MAX_REVIEW_WINDOW_DAYS
+    assert len(skipped) == 1 and "기한만 미뤘다" in skipped[0] and declared.reviewed_on in skipped[0]
+    stretched = ledger_module.replace(declared, review_by="2029-12-31")
+    assert any(
+        "창을 넘는다" in problem for problem in ledger_module.outside_problems((declared.name,), (), (stretched,))
+    ), "창을 넘는 기한은 표가 먼저 막는다(기록을 보기 전에)"
+    refreshed = ledger_module.replace(declared, reviewed_on="2026-11-30", review_by="2027-11-30")
+    reviewed = ledger_module.outside_record_problems((refreshed,), approved)
+    assert len(reviewed) == 1 and "기한을 미뤘다" in reviewed[0] and "기한만 미뤘다" not in reviewed[0]
+    assert ledger.record["outside"]["window_days"] == ledger_module._MAX_REVIEW_WINDOW_DAYS
+    assert ledger.record["outside"]["bare_deferred"] == []
 
 
 def test_an_exemption_is_not_a_free_extension(ledger_module: Any) -> None:  # noqa: ANN401
@@ -189,12 +221,17 @@ def test_an_exemption_is_not_a_free_extension(ledger_module: Any) -> None:  # no
     그 실패가 잡음이 되고, 잡음 속에서 진짜 결정(미룸)이 안 보인다.
     """
 
-    exemption = ledger_module.OutsideFloor("scripts/b.py:MIN_Y", "하한이 아니라 유효성 임계다", "tester", "2099-01-01")
-    approved = ledger_module.RecordedOutside(ledger_module.OUTSIDE_SHAPE_FULL, {exemption.name: exemption.promise})
-    moved_up = ledger_module.replace(exemption, review_by="2098-01-01")
+    exemption = ledger_module.OutsideFloor(
+        "scripts/b.py:MIN_Y", "하한이 아니라 유효성 임계다", "tester", "2026-01-01", "2026-12-31"
+    )
+    window = (ledger_module._MAX_REVIEW_WINDOW_DAYS, ledger_module._WHY_MAX_REVIEW_WINDOW)
+    approved = ledger_module.RecordedOutside(
+        ledger_module.OUTSIDE_SHAPE_FULL, {exemption.name: exemption.promise}, *window
+    )
+    moved_up = ledger_module.replace(exemption, reviewed_on="2025-06-01", review_by="2026-06-01")
 
     assert ledger_module.outside_record_problems((exemption,), approved) == []
-    empty = ledger_module.RecordedOutside(ledger_module.OUTSIDE_SHAPE_FULL, {})
+    empty = ledger_module.RecordedOutside(ledger_module.OUTSIDE_SHAPE_FULL, {}, *window)
     made = ledger_module.outside_record_problems((exemption,), empty)
     assert len(made) == 1 and "기록에 없는 면제" in made[0] and "`--record --method`" in made[0]
     assert any("면제를 거두는 것" in item for item in ledger_module.outside_record_problems((), approved))
@@ -203,11 +240,11 @@ def test_an_exemption_is_not_a_free_extension(ledger_module: Any) -> None:  # no
         for item in ledger_module.outside_record_problems((ledger_module.replace(exemption, owner="other"),), approved)
     )
     renewed = ledger_module.outside_record_problems(
-        (ledger_module.replace(exemption, review_by="2100-01-01"),), approved
+        (ledger_module.replace(exemption, reviewed_on="2026-06-01", review_by="2027-06-01"),), approved
     )
-    assert len(renewed) == 1 and "기한을 미뤘다" in renewed[0] and "2099-01-01 → 2100-01-01" in renewed[0]
+    assert len(renewed) == 1 and "기한을 미뤘다" in renewed[0] and "2026-12-31 → 2027-06-01" in renewed[0]
     assert ledger_module.outside_record_problems((moved_up,), approved) == [], "앞당긴 기한은 실패가 아니다"
-    assert ledger_module.outside_pulled((moved_up,), approved) == ("scripts/b.py:MIN_Y 2099-01-01 → 2098-01-01",)
+    assert ledger_module.outside_pulled((moved_up,), approved) == ("scripts/b.py:MIN_Y 2026-12-31 → 2026-06-01",)
 
 
 def test_a_renamed_exemption_is_one_sentence_that_still_needs_approval(ledger_module: Any) -> None:  # noqa: ANN401
@@ -217,9 +254,16 @@ def test_a_renamed_exemption_is_one_sentence_that_still_needs_approval(ledger_mo
     일부라도 다르면 짝짓지 않는다 — 이름 변경이 아니라 다른 판단일 수 있고, 원장은 상수의 동일성을 아는 것이 아니다.
     """
 
-    old = ledger_module.OutsideFloor("scripts/a.py:MIN_OLD", "판정 기준이다(관측 대상이 없다)", "qa", "2026-12-31")
+    old = ledger_module.OutsideFloor(
+        "scripts/a.py:MIN_OLD", "판정 기준이다(관측 대상이 없다)", "qa", "2026-01-01", "2026-12-31"
+    )
     new = ledger_module.replace(old, name="scripts/a.py:MIN_NEW")
-    recorded = ledger_module.RecordedOutside(ledger_module.OUTSIDE_SHAPE_FULL, {old.name: old.promise})
+    recorded = ledger_module.RecordedOutside(
+        ledger_module.OUTSIDE_SHAPE_FULL,
+        {old.name: old.promise},
+        ledger_module._MAX_REVIEW_WINDOW_DAYS,
+        ledger_module._WHY_MAX_REVIEW_WINDOW,
+    )
     live = (new.name,)
     pairs = ledger_module.renamed_declarations((new,), recorded, candidates=live, wired=())
 
@@ -620,7 +664,8 @@ def test_cli_a_renewed_exemption_must_pass_through_the_record(tmp_path: Path) ->
     payload = json.loads(record.read_text(encoding="utf-8"))
     declared = payload["outside"]["declared"]
     assert declared and all(item["review_by"] and item["owner"] for item in declared), declared
-    declared[0]["review_by"] = "2020-01-01"
+    declared[0]["review_by"] = "2020-06-01"
+    declared[0]["reviewed_on"] = "2020-01-01"  # 기록은 옛 확인·옛 기한 → 표의 확인·기한이 둘 다 뒤로 갔다
     record.write_text(json.dumps(payload, ensure_ascii=False, indent=2), "utf-8")
 
     gate = subprocess.run(
@@ -632,7 +677,7 @@ def test_cli_a_renewed_exemption_must_pass_through_the_record(tmp_path: Path) ->
     )
 
     assert gate.returncode == 1, gate.stdout
-    assert "기한을 미뤘다" in gate.stderr and declared[0]["name"] in gate.stderr, gate.stderr
+    assert "재검토 기한을 미뤘다" in gate.stderr and declared[0]["name"] in gate.stderr, gate.stderr
     assert "`--record --method`" in gate.stderr
 
     second = subprocess.run(
@@ -652,6 +697,69 @@ def test_cli_a_renewed_exemption_must_pass_through_the_record(tmp_path: Path) ->
 
     assert second.returncode == 0, second.stderr
     assert again.returncode == 0, again.stderr
+
+
+@pytest.mark.slow
+def test_cli_a_deferred_deadline_without_a_fresh_confirmation_is_not_a_renewal(tmp_path: Path) -> None:
+    """기한을 미루면서 확인일을 그대로 두면 그것은 연장이 아니다 — 게이트가 그 둘을 다른 문장으로 말하고,
+    확인일까지 움직여 다시 기록하면 통과한다(막다른 길이 아니라 검토를 요구하는 자리다).
+
+    기록 안에서만 면제 하나의 기한을 **앞으로** 옮기면(표가 그만큼 미룬 상태다) 확인일이 그대로이므로 “기한만 미뤘다” 가 나오고,
+    확인일까지 뒤로 옮겨 다시 물으면 이번에는 “기한을 미뤘다” 라는 결정 문장이 나온다 — 같은 사실(기한이 뒤로 갔다)이
+    검토가 있었는지에 따라 다른 문장이 되는 자리가 이 회차의 핵심이다. 마지막으로 `--record` 를 지나면 다시 통과한다.
+    """
+
+    evidence = tmp_path / "evidence"
+    evidence.mkdir()
+    record = evidence / "floor_ledger.json"
+    first = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--record", "--method", "첫 승인", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert first.returncode == 0, first.stderr
+    payload = json.loads(record.read_text(encoding="utf-8"))
+    declared = payload["outside"]["declared"]
+    assert declared and all(item["reviewed_on"] and item["review_by"] for item in declared), declared
+    assert payload["outside"]["review_window"]["days"] == 366
+    name, was = declared[0]["name"], declared[0]["review_by"]
+    declared[0]["review_by"] = was[:4] + "-01-31"  # 기한을 옛날로(표가 그만큼 미룬 상태) — 확인일은 그대로
+    record.write_text(json.dumps(payload, ensure_ascii=False, indent=2), "utf-8")
+
+    def gate() -> Any:  # noqa: ANN401
+        return subprocess.run(
+            [sys.executable, str(LEDGER_SCRIPT), "--gate", "--evidence", str(evidence)],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    bare = gate()
+
+    assert bare.returncode == 1, bare.stdout
+    assert "기한만 미뤘다" in bare.stderr and name in bare.stderr and "확인일" in bare.stderr, bare.stderr
+
+    declared[0]["reviewed_on"] = "2026-01-01"  # 기록도 옛 확인일로(표가 확인까지 새로 한 상태가 된다)
+    record.write_text(json.dumps(payload, ensure_ascii=False, indent=2), "utf-8")
+    reviewed = gate()
+
+    assert reviewed.returncode == 1, reviewed.stdout
+    assert "재검토 기한을 미뤘다" in reviewed.stderr and "기한만 미뤘다" not in reviewed.stderr, reviewed.stderr
+
+    second = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--record", "--method", "기한 미룸 승인", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert second.returncode == 0, second.stderr
+    assert gate().returncode == 0
 
 
 @pytest.mark.slow
