@@ -34,7 +34,7 @@ v1.1의 전체 인수 체크는 모두 미체크로 시작한다. 이는 기존 
 | T10 | [Learning lifecycle](evidence/T10_learning.md): module + CanonicalStore 표면 PASS (29 시험) | 실제 미래 행동 변화 성능 비교(P10), 사용자 표면·runtime 연결(P11) 이월 |
 | T13 | [성장·ablation](evidence/T13_growth.md): deterministic fixture PASS (17 시험 + CLI artifact) | live pilot NOT_RUN(exit 2), 작은 표본·실측 latency 없음, 사용자 표면 연결(P11) 이월 |
 | T13 (live) | [live pilot harness](evidence/T13_live_pilot.md): harness·분리 계약 PASS (12 시험) | 실제 provider 실행 NOT_RUN, 확증 표본 미등록 — 사람 결정 필요 |
-| T11 | [사용자 표면 opt-in](evidence/T11_surface.md): 실측 + adapter + read-only CLI/API(SSE 포함) + feature-off 회귀 PASS (36 시험) | 대화 스트림/background 배선·실모델 QA·ACTIVE 실검증 이월 (체크박스 미완) |
+| T11 | [사용자 표면 opt-in](evidence/T11_surface.md): 실측 + adapter + read-only 표면 + feature-off 회귀 + shadow 배선 + 실모델 비교 + resume/cancel QA(크래시 재개 포함) | ACTIVE 실검증(사람 승인)만 이월 |
 | T12 | [migration dry-run](evidence/T12_migration.md): source read-only·별도 root·mapping·index·rollback rehearsal PASS (14 시험) | destructive 변환 NOT_RUN(사람 결정), 실사용 DB 대상 dry-run 이월 |
 
 기존 문서가 보고한 `test_all_process_execution_paths_are_accounted_for` 실패는 별도 기존 이슈 기록으로 유지한다. 현재도 같은 원인인지 재확인 없이 단정하거나 이번 신규 실패를 그 항목에 섞지 않는다.

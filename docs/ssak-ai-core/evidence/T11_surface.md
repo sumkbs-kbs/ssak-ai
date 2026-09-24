@@ -268,3 +268,36 @@ verified_at: 2026-09-24T21:54:58Z
 종료가 무조건 BLOCKED_READINESS). 관찰 요약이 물질 판단을 주장하면 안 되므로 `delta=None`으로 고치고
 계약을 시험으로 고정했다(`test_surface_brain_port_does_not_claim_material_judgment` — 성공 시
 delta 없음·모델 실패 시 failed think).
+
+## 7. 2026-09-24 resume/cancel QA — 실제 실행·실모델·격리 상태로 닫음
+
+§6이 남긴 이월(resume/cancel QA)을 닫았다. **실제 runtime + 실제 모델 + 격리 상태**
+(임시 root의 `BackgroundTaskRunner(db_path=…)`, 실 `OrchestratorAgent`, 실 모델 해상)로 돌렸다.
+HTTP 라우트 계약(404/409 구분·소유 규칙)은 기존 계약 시험이 지킨다 — 여기는 **실행 그 자체**의 관찰이다.
+
+### 7a. 취소 스위트 (실모델 실행 과제)
+
+| 관찰 | 결과 |
+|---|---|
+| 실제 과제 제출(제곱 나열 프롬프트) | `task_776c8b16…` · 상태 `running` 관찰 |
+| **실행 중 취소** | `cancel_verdict = "cancelled"` |
+| 최종 상태 | `cancelled` · error "Task was manually cancelled by the user."(진실한 이력) |
+| 종료 후 재취소 | `not_active`(터미널 행을 거짓으로 다시 쓰지 않는다) |
+| 모르는 과제 취소 | `not_active` |
+| **다른 소유자**의 취소 | `not_active`(소유 규칙 — 살아 있는 실행의 취소는 소유자만) |
+| 취소된 과제 resume | `False`(터미널 상태는 재개하지 않는다) |
+| 모르는 과제 resume | `False` |
+
+### 7b. 크래시 → 재시작 → 체크포인트 재개 (실모델)
+
+하위 프로세스가 실제 과제를 `running`으로 실행 중일 때 **SIGKILL** 하고, 같은 DB를 연 **새 프로세스**가
+`resume_task`를 불렀다:
+
+- 소유자 PID가 죽은 `running` 행 → `can_prepare_resume` 통과 → **`resume_task = True`**
+- 상태 관찰: `running` → **`done`**(재개 실행이 실제 모델로 완주)
+- DB 확인: 단일 행 `task_8110cdf3` = `done` · 체크포인트 실재(`get_last_checkpoint` True)
+- 상태 dict의 `output` 필드는 `None`이었고 출력은 전용 조회 경로(`get_task_output`)가 소유한다(관찰 그대로)
+
+### 남는 것
+
+- **ACTIVE 실검증**(사람 승인·dispatch port·실도구) — 사람 결정 필요. 이것만 남아 T11 행은 미체크 유지.
