@@ -23,7 +23,7 @@ v1.1의 전체 인수 체크는 모두 미체크로 시작한다. 이는 기존 
 | 항목 | 기존 보고 범위 | 제한 / 추가 조건 |
 |---|---|---|
 | T00 | [기준선](evidence/T00_baseline.md): 일부 경계·회귀 PASS | 2026-09-24 회차가 T00a 재확인·T00b-A/B를 닫음(§3 행) — 사용자 표면 실호출·별도 data root는 P11 |
-| T01a | [모델](evidence/T01a_typed_model.md): 30종 entity, module PASS | 현재 schema·선별 기록 계약 대조 |
+| T01a | [모델](evidence/T01a_typed_model.md): 30종 entity, module PASS | v1.1 선별 기록·계보 정합화는 2026-09-24 회차가 닫음(§3 행) |
 | T01b | [보호](evidence/T01b_protection.md): module/tool gate/store PASS | migration/evolution hook·승인 발급 미완료로 보고됨 |
 | T02 | [저장](evidence/T02_canonical_store.md): module PASS | 실제 Vault writer 동시성·사용자 표면 통합 필요 |
 | T03/T04 | [Context·Brain](evidence/T03_T04_context_brain.md): module PASS | 실제 provider/router·Context window(P11) — 신규 철학 시나리오(T03-A~C·T04-A~C)는 2026-09-24 회차가 닫음(§3 행 참조) |
@@ -45,7 +45,8 @@ v1.1의 전체 인수 체크는 모두 미체크로 시작한다. 이는 기존 
   증거: [T00_baseline.md](evidence/T00_baseline.md) §5(2026-09-24) — 매니페스트 14파일 재대조(drift 1 = `tool_executor.py`, 커밋 `b1d85c19` P05 adapter로 귀속·`set_governance_gate` 옵트인 위임점 확인 · missing 0), 경계 표 10행 symbol 전수 재검증(행번호 이동 셋 갱신 + 표면 실측 legacy 7/9 · core 2/9 재관찰), 핵심 회귀 5파일 127 passed(2026-09-22과 동일), 전체 회귀·기존 실패 소유 분리는 [회귀 원장](evidence/T14_regression_ledger.md)이 소유(결정적 11 · 무소유 0). 사용자 표면 실호출·별도 data root 기준선은 P11 이월(NOT_RUN).
 - [x] **T00b 초기 benchmark** — P00/P01. 사전 metric/split/manifest 및 실행 가능한 skeleton. T00b-A/B 충족.
   증거: [benchmark_spec.md](evidence/benchmark_spec.md)(2026-09-24, P00 소유 산출물) — **A**: 사전 등록 소유자·split 계약·RunManifest 칸별 소재 정리(prompt=corpus 파생·hardware=live pilot ProviderAttestation 소유로 명시). **B**: CLI 직접 관찰(help·print-spec·demo/fresh/mature/ablation exit 0 · live-pilot NOT_RUN exit 2 · 잘못된 mode 거부 exit 2 · manifest 18필드). 관찰이 상대 경로 `--store-root` 이중 경로 결함을 잡아 CLI 절대 경로 정규화로 수정(상대·절대 모두 exit 0 재실측). 실측 latency·확증 표본은 live pilot·사람 결정 이월.
-- [ ] **T01a 모델·계보** — P01. roundtrip, enum/time/ref/type/project 오류 거부, 관찰·해석 분리, 선별 기록·당시 Context 계보.
+- [x] **T01a 모델·계보** — P01. roundtrip, enum/time/ref/type/project 오류 거부, 관찰·해석 분리, 선별 기록·당시 Context 계보.
+  증거: [T01a_typed_model.md](evidence/T01a_typed_model.md) — module PASS(58 시험, 2026-09-22) + §2026-09-24 v1.1 정합화(**61 시험**): 선별 기록이 canonical Event(`EventPayload.selection` — disposition·reasons·evidence·policy_version)로 왕복하고 producer는 envelope이 보존하며, 모르는 disposition/reason·빈 사유는 거부되고(타입 경계), `ExperienceCore`의 당시 Context 계보가 `REL_CONTEXT` 타입 reference로 남는다. 별도 entity 추가 없음(계약 최소 확장)·schema 재생성·기존 30종 roundtrip 무영향.
 - [ ] **T01b 헌법·보호 권한** — P03/P05/P07/P11. 신뢰 가능한 승인 발급·검증, 실제 우회 경로 차단, 취소·scope·digest·만료 검증. hook 미연결 상태는 전체 PASS 불가.
 - [ ] **T02 불변 저장·복구** — P02/P11/P12. 동시 write·중복 ID·write/commit/publish crash, 미완료 노출 0, 실제 Vault writer 통합, 원본 보존.
 - [ ] **T03 Context** — P04/P08/P11. L0·필수 항목·권한·handle·최소충분·선택적 확장·현재 applicability. T03-A~D 충족.

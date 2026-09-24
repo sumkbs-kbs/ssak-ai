@@ -1236,6 +1236,17 @@
           "title": "Episode Id",
           "type": "string"
         },
+        "selection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SelectionInfo"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "sequence": {
           "minimum": 0,
           "title": "Sequence",
@@ -2609,6 +2620,84 @@
       },
       "title": "RiskProfile",
       "type": "object"
+    },
+    "SelectionDisposition": {
+      "description": "Experience 선별 disposition. 공통 의미 계약의 최소 표현이다(별도 entity를 만들지 않는다).",
+      "enum": [
+        "OPERATIONAL_ONLY",
+        "EXPERIENCE",
+        "DEFERRED"
+      ],
+      "title": "SelectionDisposition",
+      "type": "string"
+    },
+    "SelectionInfo": {
+      "additionalProperties": false,
+      "description": "선별 기록의 canonical 표현 — 계약 최소 필드를 Event에 실어 roundtrip 가능하게 한다.\n\ndisposition·reason·evidence references·policy version은 선별 판단의 본체다. producer와\nrecorded_at은 envelope(producer·created_at)이 소유하므로 여기 담지 않는다.",
+      "properties": {
+        "disposition": {
+          "$ref": "#/$defs/SelectionDisposition"
+        },
+        "evidence_refs": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        },
+        "policy_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Policy Version"
+        },
+        "reasons": {
+          "items": {
+            "$ref": "#/$defs/SelectionReason"
+          },
+          "minItems": 1,
+          "title": "Reasons",
+          "type": "array"
+        }
+      },
+      "required": [
+        "disposition",
+        "reasons"
+      ],
+      "title": "SelectionInfo",
+      "type": "object"
+    },
+    "SelectionReason": {
+      "description": "선별 사유. 원문 §21~23과 Roadmap 공통 의미 계약의 항목이다.",
+      "enum": [
+        "MATERIAL_DELTA",
+        "ASSUMPTION_TESTED",
+        "UNKNOWN_CHANGED",
+        "FAILURE",
+        "RECOVERY",
+        "RISK_SHAPING",
+        "ROLLBACK",
+        "ENVIRONMENT_DIFFERENCE",
+        "HUMAN_FEEDBACK",
+        "AUTHORITY_CHANGE",
+        "INDEPENDENT_REVALIDATION",
+        "ROUTINE",
+        "UNRESOLVED"
+      ],
+      "title": "SelectionReason",
+      "type": "string"
     },
     "StrategyPayload": {
       "additionalProperties": false,

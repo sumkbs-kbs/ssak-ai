@@ -327,6 +327,32 @@ class LoopState(StrEnum):
     CANCELLED = "CANCELLED"
 
 
+class SelectionDisposition(StrEnum):
+    """Experience 선별 disposition. 공통 의미 계약의 최소 표현이다(별도 entity를 만들지 않는다)."""
+
+    OPERATIONAL_ONLY = "OPERATIONAL_ONLY"
+    EXPERIENCE = "EXPERIENCE"
+    DEFERRED = "DEFERRED"
+
+
+class SelectionReason(StrEnum):
+    """선별 사유. 원문 §21~23과 Roadmap 공통 의미 계약의 항목이다."""
+
+    MATERIAL_DELTA = "MATERIAL_DELTA"
+    ASSUMPTION_TESTED = "ASSUMPTION_TESTED"
+    UNKNOWN_CHANGED = "UNKNOWN_CHANGED"
+    FAILURE = "FAILURE"
+    RECOVERY = "RECOVERY"
+    RISK_SHAPING = "RISK_SHAPING"
+    ROLLBACK = "ROLLBACK"
+    ENVIRONMENT_DIFFERENCE = "ENVIRONMENT_DIFFERENCE"
+    HUMAN_FEEDBACK = "HUMAN_FEEDBACK"
+    AUTHORITY_CHANGE = "AUTHORITY_CHANGE"
+    INDEPENDENT_REVALIDATION = "INDEPENDENT_REVALIDATION"
+    ROUTINE = "ROUTINE"
+    UNRESOLVED = "UNRESOLVED"
+
+
 class ReceiptStatus(StrEnum):
     DISPATCHED = "DISPATCHED"
     COMPLETED = "COMPLETED"
@@ -866,6 +892,22 @@ class BehaviorChangeTracePayload(EntityPayloadModel):
     outcome_ref: str | None = Field(default=None, pattern=ID_PATTERN)
 
 
+class SelectionInfo(BaseModel):
+    """선별 기록의 canonical 표현 — 계약 최소 필드를 Event에 실어 roundtrip 가능하게 한다.
+
+    disposition·reason·evidence references·policy version은 선별 판단의 본체다. producer와
+    recorded_at은 envelope(producer·created_at)이 소유하므로 여기 담지 않는다.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    disposition: SelectionDisposition
+    reasons: tuple[SelectionReason, ...] = Field(min_length=1)
+    evidence_refs: tuple[str, ...] = ()
+    policy_version: str | None = None
+    note: str = ""
+
+
 class EventPayload(EntityPayloadModel):
     entity_type: Literal["Event"] = "Event"
     sequence: int = Field(ge=0)
@@ -873,6 +915,8 @@ class EventPayload(EntityPayloadModel):
     state: LoopState
     caused_by: str | None = None
     state_revision: int = Field(ge=1)
+    #: 선별 기록(공통 의미 계약). 선별이 아닌 Event는 None이다.
+    selection: SelectionInfo | None = None
 
 
 class ExecutionReceiptPayload(EntityPayloadModel):

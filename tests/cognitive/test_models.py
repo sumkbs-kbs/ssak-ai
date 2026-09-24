@@ -7,6 +7,7 @@ Observation/Interpretation 분리, provider/UI 비의존.
 from __future__ import annotations
 
 import ast
+import dataclasses
 import json
 import sys
 from collections.abc import Sequence
@@ -817,3 +818,86 @@ def test_cognitive_namespace_never_imports_provider_or_ui_layers() -> None:
 
 def test_canonical_invariant_error_is_value_error() -> None:
     assert issubclass(CanonicalInvariantError, ValueError)
+
+
+# ── T01a v1.1: 선별 기록의 canonical 표현과 당시 Context 계보 ──────────────
+
+
+def test_selection_event_roundtrips_contract_fields() -> None:
+    # 공통 의미 계약의 최소 필드(disposition·reason·evidence·policy version)가
+    # canonical Event를 거쳐 왕복해도 사라지지 않는다(producer·시각은 envelope이 소유).
+    from antigravity_k.engine.cognitive.experience import ExperienceSelection
+    from antigravity_k.engine.cognitive.models import SelectionInfo
+
+    selection = ExperienceSelection(
+        episode_reference="episode-1",
+        disposition=cognitive_models.SelectionDisposition.EXPERIENCE,
+        reasons=(cognitive_models.SelectionReason.FAILURE, cognitive_models.SelectionReason.RECOVERY),
+        evidence_refs=(IDS[EntityType.EVIDENCE],),
+        producer=PRODUCER,
+        recorded_at=NOW,
+        policy_version="policy:v3",
+        note="회복 절차가 재사용 가치가 있다",
+    )
+
+    record = selection.to_record(project_id=PROJECT_ID, created_at=NOW)
+    wire = to_wire(record)
+    restored = from_wire(wire)
+
+    assert isinstance(restored.payload, EventPayload)
+    assert restored.payload.selection == SelectionInfo(
+        disposition=cognitive_models.SelectionDisposition.EXPERIENCE,
+        reasons=(cognitive_models.SelectionReason.FAILURE, cognitive_models.SelectionReason.RECOVERY),
+        evidence_refs=(IDS[EntityType.EVIDENCE],),
+        policy_version="policy:v3",
+        note="회복 절차가 재사용 가치가 있다",
+    )
+    assert restored.producer == PRODUCER, "선별 실행 주체(provenance)는 envelope이 보존한다"
+    assert to_wire(restored) == wire
+
+
+def test_selection_payload_rejects_unknown_disposition_and_empty_reasons() -> None:
+    # 타입 경계: 모르는 disposition·reason, 사유 없는 선별은 canonical로 들어오지 못한다.
+    with pytest.raises(ValidationError):
+        cognitive_models.SelectionInfo(disposition="MAYBE", reasons=("FAILURE",))
+    with pytest.raises(ValidationError):
+        cognitive_models.SelectionInfo(
+            disposition=cognitive_models.SelectionDisposition.DEFERRED, reasons=("UNKNOWN_REASON",)
+        )
+    with pytest.raises(ValidationError):
+        cognitive_models.SelectionInfo(disposition=cognitive_models.SelectionDisposition.DEFERRED, reasons=())
+    with pytest.raises(ValidationError):
+        EventPayload(
+            sequence=1,
+            episode_id="episode-1",
+            state=LoopState.OBSERVE,
+            state_revision=1,
+            selection={"disposition": "EXPERIENCE", "reasons": []},
+        )
+
+
+def test_experience_core_carries_typed_context_lineage() -> None:
+    # 당시 Context 계보는 타입으로 가리킨다 — historical_refs 문자열만으로는 계보가 아니라 메모다.
+    from antigravity_k.engine.cognitive.experience import ExperienceCore
+    from antigravity_k.engine.cognitive.references import REL_CONTEXT
+
+    context_id = IDS[EntityType.CONTEXT_PACKAGE]
+    core = ExperienceCore(
+        experience_id=IDS[EntityType.EXPERIENCE],
+        episode_reference="episode-1",
+        trigger="중요 재검증",
+        context_ref=context_id,
+    )
+
+    record = core.to_record(project_id=PROJECT_ID, producer=PRODUCER, created_at=NOW)
+
+    lineage = [ref for ref in record.references if ref.relation == REL_CONTEXT]
+    assert len(lineage) == 1
+    assert lineage[0].target_id == context_id
+    assert lineage[0].expected_type is EntityType.CONTEXT_PACKAGE
+    assert context_id in record.payload.historical_refs
+    without_context = dataclasses.replace(core, context_ref=None)
+    assert all(
+        ref.relation != REL_CONTEXT
+        for ref in without_context.to_record(project_id=PROJECT_ID, producer=PRODUCER, created_at=NOW).references
+    ), "context_ref가 없으면 계보 reference도 없다"

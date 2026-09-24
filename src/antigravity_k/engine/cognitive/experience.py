@@ -24,7 +24,6 @@ import json
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import StrEnum
 from typing import Final
 
 from antigravity_k.engine.cognitive.models import (
@@ -41,10 +40,14 @@ from antigravity_k.engine.cognitive.models import (
     Producer,
     ProducerKind,
     Record,
+    SelectionDisposition,
+    SelectionInfo,
+    SelectionReason,
     same_enum,
 )
 from antigravity_k.engine.cognitive.references import (
     REL_ACTION,
+    REL_CONTEXT,
     REL_DECISION,
     REL_EXPERIENCE,
     REL_GOVERNANCE,
@@ -60,30 +63,6 @@ from antigravity_k.engine.cognitive.references import (
 
 class ExperienceContractError(ValueError):
     """Experience 계약 위반(선별 없는 형성, Body의 의미 해석 등)."""
-
-
-class SelectionDisposition(StrEnum):
-    OPERATIONAL_ONLY = "OPERATIONAL_ONLY"
-    EXPERIENCE = "EXPERIENCE"
-    DEFERRED = "DEFERRED"
-
-
-class SelectionReason(StrEnum):
-    """선별 사유. 원문 §21~23과 Roadmap 공통 의미 계약의 항목이다."""
-
-    MATERIAL_DELTA = "MATERIAL_DELTA"
-    ASSUMPTION_TESTED = "ASSUMPTION_TESTED"
-    UNKNOWN_CHANGED = "UNKNOWN_CHANGED"
-    FAILURE = "FAILURE"
-    RECOVERY = "RECOVERY"
-    RISK_SHAPING = "RISK_SHAPING"
-    ROLLBACK = "ROLLBACK"
-    ENVIRONMENT_DIFFERENCE = "ENVIRONMENT_DIFFERENCE"
-    HUMAN_FEEDBACK = "HUMAN_FEEDBACK"
-    AUTHORITY_CHANGE = "AUTHORITY_CHANGE"
-    INDEPENDENT_REVALIDATION = "INDEPENDENT_REVALIDATION"
-    ROUTINE = "ROUTINE"
-    UNRESOLVED = "UNRESOLVED"
 
 
 #: 재사용 가치가 있다고 판단하는 사유.
@@ -234,6 +213,9 @@ class ExperienceSelection:
         return same_enum(self.disposition, SelectionDisposition.EXPERIENCE)
 
     def to_record(self, *, project_id: str, created_at: datetime, sequence: int = 0) -> Record:
+        """선별 계약 필드(disposition·reason·evidence·policy version)를 Event에 그대로 실어
+        canonical roundtrip이 가능하게 한다. producer·시각은 envelope이 소유한다."""
+
         return Record.create(
             entity_type=EntityType.EVENT,
             project_id=project_id,
@@ -244,6 +226,13 @@ class ExperienceSelection:
                 state=SELECTION_STATE[self.disposition],
                 caused_by=self.episode_reference,
                 state_revision=1,
+                selection=SelectionInfo(
+                    disposition=self.disposition,
+                    reasons=self.reasons,
+                    evidence_refs=self.evidence_refs,
+                    policy_version=self.policy_version,
+                    note=self.note,
+                ),
             ),
             created_at=created_at,
         )
@@ -293,6 +282,8 @@ class ExperienceCore:
 
     def to_record(self, *, project_id: str, producer: Producer, created_at: datetime) -> Record:
         references = [
+            # 당시 Context 계보는 타입으로 가리킨다(문자열 historical_refs에만 두면 계보가 아니라 메모다).
+            (REL_CONTEXT, self.context_ref, EntityType.CONTEXT_PACKAGE),
             (REL_JUDGMENT, self.judgment_ref, EntityType.BRAIN_JUDGMENT),
             (REL_GOVERNANCE, self.governance_ref, EntityType.GOVERNANCE_DECISION),
             (REL_DECISION, self.decision_ref, EntityType.DECISION),

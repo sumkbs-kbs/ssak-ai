@@ -51,3 +51,52 @@ verified_at: 2026-09-22T03:16:57Z
 
 - `docs/ssak-ai-core/contracts/record-envelope.schema.json`(envelope 전용)과 새 payload schema의 역할 구분을 P12 문서 갱신에서 명시한다.
 - alias ID(legacy) 매핑은 P02 adapter가 담당하며 P01은 canonical ID만 발급한다.
+
+## 2026-09-24 v1.1 정합화 회차 — 선별 기록 canonical 표현·당시 Context 계보
+
+v1.1 추가 인수("선별 기록 roundtrip·provenance·타입 경계")를 닫은 회차다. P08이 만든 선별 기록
+(`ExperienceSelection`)은 계약 필드를 전부 갖고 있었지만 **canonical 변환에서 사라졌다** —
+`to_record`가 `EventPayload`에 disposition·reasons·evidence·policy_version을 싣지 않아 wire
+roundtrip이 선별 판단의 본체를 복원할 수 없었고, "기존 Event로 충분한가?"라는 v1.1 물음의 답은
+**불충분**이었다. 또한 `ExperienceCore.context_ref`(당시 Context 계보)가 타입 reference가 아니라
+`historical_refs` 문자열로만 남았다.
+
+```yaml
+check_id: T01a-v1.1
+status: PASS (module-level)
+owner: principal
+source_head: b019dc80 (dirty — 본 회차: models.py · experience.py · references.py · test_models.py · record-entities.schema.json)
+command: .venv/bin/python -m pytest tests/cognitive/test_models.py -q  /  scripts/generate_record_schema.py --check  /  ruff  /  mypy
+exit_code: 0
+observed_behavior: test_models 61 passed(신규 3) — 아래 매핑
+artifact:
+  - src/antigravity_k/engine/cognitive/models.py — SelectionDisposition·SelectionReason enum + SelectionInfo + EventPayload.selection
+  - src/antigravity_k/engine/cognitive/references.py — REL_CONTEXT("context")
+  - src/antigravity_k/engine/cognitive/experience.py — 선별→Event 계약 필드 실림·core의 타입 context 계보(정합화)
+  - tests/cognitive/test_models.py (61 시험)
+  - docs/ssak-ai-core/contracts/record-entities.schema.json (재생성, +89행)
+limitations: 선별 해석 주체 제한(Interpretation author ∈ {BRAIN, HUMAN})은 P08 게이트가 소유(test_episode). 별도 entity는 만들지 않았다 — 공통 의미 계약이 허용한 최소 확장이다.
+verified_at: 2026-09-24T14:01:19Z
+```
+
+### 시나리오 매핑
+
+- **선별 기록 roundtrip** — `test_selection_event_roundtrips_contract_fields`: `ExperienceSelection.to_record`
+  → `to_wire` → `from_wire` 왕복에서 disposition·reasons·evidence_refs·policy_version·note가 그대로이고
+  producer(선별 실행 주체)는 envelope이 보존한다. **기존 Event는 `selection=None`**이라 영향 0(전 entity
+  roundtrip 시험 그대로 통과).
+- **타입 경계** — `test_selection_payload_rejects_unknown_disposition_and_empty_reasons`: 모르는
+  disposition/reason·빈 사유의 선별은 canonical로 들어오지 못한다(pydantic 거부).
+- **당시 Context 계보** — `test_experience_core_carries_typed_context_lineage`: `context_ref`가
+  `Reference(relation="context", expected_type=ContextPackage)`로 타입을 가진다(historical_refs에는
+  그대로 남는다 — 문자열 메모가 아니라 계보). `context_ref=None`이면 reference도 없다.
+
+### 설계 결정
+
+- **enum 소유를 experience.py(models를 import하는 쪽)에서 models.py로 옮겼다** — payload 필드가
+  enum을 요구하는데 experience에 두면 순환 import다. experience.py는 같은 이름을 re-export하므로
+  기존 import 지점(test_episode 등)은 그대로 동작한다.
+- **별도 entity를 만들지 않았다**: 공통 의미 계약이 "기존 Event로 충분하면 별도 entity를 추가하지
+  않는다"고 했고, Event에 선택 필드 `selection`을 얹는 것으로 계약 최소 필드가 왕복한다 — 불충분했던
+  것은 Event의 표현력이 아니라 변환이 필드를 버리던 것이었다.
+- schema는 재생성했다(`generate_record_schema.py`), `--check` 초록.

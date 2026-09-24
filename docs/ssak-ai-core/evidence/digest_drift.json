@@ -3,18 +3,18 @@
     "python",
     "scripts/digest_drift.py"
   ],
-  "source_head": "4603ff89",
+  "source_head": "b019dc80",
   "counts": {
-    "match": 25,
-    "reverified": 25,
+    "match": 22,
+    "reverified": 28,
     "drift": 0,
     "stale_reverification": 0,
     "missing": 0
   },
   "docs": {
     "T01a_typed_model.md": {
-      "match": 3,
-      "reverified": 1,
+      "match": 0,
+      "reverified": 4,
       "drift": 0,
       "stale_reverification": 0,
       "missing": 0
@@ -109,33 +109,33 @@
       "doc": "T01a_typed_model.md",
       "path": "docs/ssak-ai-core/contracts/record-entities.schema.json",
       "recorded": "051d63e1",
-      "actual": "051d63e1cff3a27940b67209bc5a16ad37e14be37b6e54a4ba5760f5f72336f7",
-      "status": "match",
-      "reverified_on": ""
+      "actual": "90f526b5d71d2f3aee598cfebe5325b14c03878ebc11728920970fe8369b7343",
+      "status": "reverified",
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T01a_typed_model.md",
       "path": "src/antigravity_k/engine/cognitive/models.py",
       "recorded": "65abe58b",
-      "actual": "1a289a388a9f9e67b119a0a92008a5d7653873b930587460bf4b3e6e3f4ca4f1",
+      "actual": "58ffa90f90f3c97adfc65bf8926789208f4795a2a5f90d632a8bfe737aaf4ede",
       "status": "reverified",
-      "reverified_on": "2026-09-23"
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T01a_typed_model.md",
       "path": "src/antigravity_k/engine/cognitive/references.py",
       "recorded": "f678df28",
-      "actual": "f678df285387507aa6c95d49e8ad65b315e1cdd34cb50ebc9b3af44b1b4de944",
-      "status": "match",
-      "reverified_on": ""
+      "actual": "8887785ef432dba2ce98681a5b220dadb2577a3aa80fb12b3901e0aedb0e49d4",
+      "status": "reverified",
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T01a_typed_model.md",
       "path": "tests/cognitive/test_models.py",
       "recorded": "abe6237b",
-      "actual": "abe6237b3bcd2ccbf4280f9a4a138f4072cb6a542cb4a7955b1950ff896a0fa4",
-      "status": "match",
-      "reverified_on": ""
+      "actual": "b0db21cd95dfd3c333727fd57a0a516fb2b9727b1ce6e74428b34805c638666c",
+      "status": "reverified",
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T01b_protection.md",
@@ -317,9 +317,9 @@
       "doc": "T08_T09_episode.md",
       "path": "src/antigravity_k/engine/cognitive/experience.py",
       "recorded": "a9279ef1bcd51fc5",
-      "actual": "9c5d513720e35e2d55259dc895cce508eaebdb737336cd580ff7a1e4dab3be25",
+      "actual": "eec2a68fbb1f94d6817e56f90e0d01d0045c302802f768525b1a57f2e7d0b839",
       "status": "reverified",
-      "reverified_on": "2026-09-23"
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T08_T09_episode.md",
@@ -327,7 +327,7 @@
       "recorded": "f77646f20a310a89",
       "actual": "07f69cbfaf3f5957537fa235d49418c6f1a5437e0c04900aac120dc886b11deb",
       "status": "reverified",
-      "reverified_on": "2026-09-23"
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T08_T09_episode.md",

@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "P00 마무리 회차: benchmark_spec.md 신규(evidence 문서 16→17)·CLI 절대 경로 정규화로 T13 두 문서 pin 재확인(재확인 24→25)·등록부 1건 제거. 게이트 full 11/11 PASS 상태에서 승인."
+    "P01 v1.1 정합화 회차: test_models 신규 3건(cognitive 764→767), T01a·T08/T09 문서 pin 6개 재확인(재확인 25→28). 게이트 full 11/11 PASS 상태에서 승인."
   ],
   "layers": {
     "audit_enum_identity": {
@@ -33,9 +33,9 @@
     },
     "digest_drift": {
       "counts.drift": 0,
-      "counts.match": 25,
+      "counts.match": 22,
       "counts.missing": 0,
-      "counts.reverified": 25,
+      "counts.reverified": 28,
       "counts.stale_reverification": 0,
       "coverage.docs": 13,
       "coverage.min_docs": 1,
@@ -134,11 +134,11 @@
       "checks": 16,
       "measured.canary_harnesses": 11,
       "measured.canary_ok": 11,
-      "measured.cognitive_tests": 764,
+      "measured.cognitive_tests": 767,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
-      "measured.digest_reverified": 25,
+      "measured.digest_reverified": 28,
       "measured.digest_stale": 0,
       "measured.drift_questions": 10,
       "measured.drift_triggered": 0,
@@ -170,6 +170,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "P00 마무리 회차: benchmark_spec.md 신규(evidence 문서 16→17)·CLI 절대 경로 정규화로 T13 두 문서 pin 재확인(재확인 24→25)·등록부 1건 제거. 게이트 full 11/11 PASS 상태에서 승인.",
+  "method": "P01 v1.1 정합화 회차: test_models 신규 3건(cognitive 764→767), T01a·T08/T09 문서 pin 6개 재확인(재확인 25→28). 게이트 full 11/11 PASS 상태에서 승인.",
   "recorded_on": "2026-09-24"
 }

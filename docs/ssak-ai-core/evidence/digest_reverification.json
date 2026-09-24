@@ -2,10 +2,31 @@
   "entries": [
     {
       "doc": "T01a_typed_model.md",
+      "path": "docs/ssak-ai-core/contracts/record-entities.schema.json",
+      "verified_digest": "90f526b5d71d2f3aee598cfebe5325b14c03878ebc11728920970fe8369b7343",
+      "verified_on": "2026-09-24",
+      "method": "P01 v1.1 정합화 회차: 인용 4파일(models.py·references.py·test_models.py·record-entities.schema.json)의 시험을 현재 트리에서 재실행해 test_models 61 passed(신규 3)·generate_record_schema --check 초록·ruff·mypy clean을 확인했다. 기존 30종 roundtrip 무영향(episode·learning·growth 67 passed)."
+    },
+    {
+      "doc": "T01a_typed_model.md",
       "path": "src/antigravity_k/engine/cognitive/models.py",
-      "verified_digest": "1a289a388a9f9e67b119a0a92008a5d7653873b930587460bf4b3e6e3f4ca4f1",
-      "verified_on": "2026-09-23",
-      "method": "계약 시험 재실행 tests/cognitive/test_models.py 58 passed + generate_record_schema.py --check up to date + models.py의 같은-이름 enum helper(same_enum, line 55) 확인. 크기 1069 lines(스냅샷은 그 시점)."
+      "verified_digest": "58ffa90f90f3c97adfc65bf8926789208f4795a2a5f90d632a8bfe737aaf4ede",
+      "verified_on": "2026-09-24",
+      "method": "P01 v1.1 정합화 회차: 인용 4파일(models.py·references.py·test_models.py·record-entities.schema.json)의 시험을 현재 트리에서 재실행해 test_models 61 passed(신규 3)·generate_record_schema --check 초록·ruff·mypy clean을 확인했다. 기존 30종 roundtrip 무영향(episode·learning·growth 67 passed)."
+    },
+    {
+      "doc": "T01a_typed_model.md",
+      "path": "src/antigravity_k/engine/cognitive/references.py",
+      "verified_digest": "8887785ef432dba2ce98681a5b220dadb2577a3aa80fb12b3901e0aedb0e49d4",
+      "verified_on": "2026-09-24",
+      "method": "P01 v1.1 정합화 회차: 인용 4파일(models.py·references.py·test_models.py·record-entities.schema.json)의 시험을 현재 트리에서 재실행해 test_models 61 passed(신규 3)·generate_record_schema --check 초록·ruff·mypy clean을 확인했다. 기존 30종 roundtrip 무영향(episode·learning·growth 67 passed)."
+    },
+    {
+      "doc": "T01a_typed_model.md",
+      "path": "tests/cognitive/test_models.py",
+      "verified_digest": "b0db21cd95dfd3c333727fd57a0a516fb2b9727b1ce6e74428b34805c638666c",
+      "verified_on": "2026-09-24",
+      "method": "P01 v1.1 정합화 회차: 인용 4파일(models.py·references.py·test_models.py·record-entities.schema.json)의 시험을 현재 트리에서 재실행해 test_models 61 passed(신규 3)·generate_record_schema --check 초록·ruff·mypy clean을 확인했다. 기존 30종 roundtrip 무영향(episode·learning·growth 67 passed)."
     },
     {
       "doc": "T01b_protection.md",
@@ -108,16 +129,16 @@
     {
       "doc": "T08_T09_episode.md",
       "path": "src/antigravity_k/engine/cognitive/experience.py",
-      "verified_digest": "9c5d513720e35e2d55259dc895cce508eaebdb737336cd580ff7a1e4dab3be25",
-      "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_episode.py 21 passed(문서 주장 21과 일치) — episode lifecycle·experience append-only 계약."
+      "verified_digest": "eec2a68fbb1f94d6817e56f90e0d01d0045c302802f768525b1a57f2e7d0b839",
+      "verified_on": "2026-09-24",
+      "method": "P01 v1.1 정합화 회차가 experience.py를 고쳤다(선별→Event 계약 필드 실림·타입 context 계보·enum re-export). P08 시험을 현재 트리에서 재실행해 test_episode 21 passed(선별·세 평가·versioning·supplement 계약 그대로)를 확인했다."
     },
     {
       "doc": "T08_T09_episode.md",
       "path": "src/antigravity_k/engine/cognitive/runtime.py",
       "verified_digest": "07f69cbfaf3f5957537fa235d49418c6f1a5437e0c04900aac120dc886b11deb",
-      "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_episode.py 21 passed(문서 주장 21과 일치) — episode lifecycle·experience append-only 계약."
+      "verified_on": "2026-09-24",
+      "method": "P01 v1.1 정합화 회차가 experience.py를 고쳤다(선별→Event 계약 필드 실림·타입 context 계보·enum re-export). P08 시험을 현재 트리에서 재실행해 test_episode 21 passed(선별·세 평가·versioning·supplement 계약 그대로)를 확인했다."
     },
     {
       "doc": "T10_learning.md",
@@ -180,6 +201,6 @@
     "python",
     "scripts/digest_drift.py",
     "--record",
-    "T13_live_pilot.md"
+    "T08_T09_episode.md"
   ]
 }

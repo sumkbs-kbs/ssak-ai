@@ -157,6 +157,8 @@ REL_SUPERSEDES: Final[str] = "supersedes"
 REL_SHARED_SCOPE: Final[str] = "shared_scope"
 REL_ORIGIN: Final[str] = "origin"
 REL_PROJECT: Final[str] = "project"
+#: 당시 Context 계보 — Experience core가 선별 시점의 ContextPackage를 타입으로 가리킨다(P01 v1.1).
+REL_CONTEXT: Final[str] = "context"
 
 #: 다른 project의 record를 참조할 수 있는 명시적 shared scope relation만 허용한다.
 SHARED_SCOPE_RELATIONS: Final[frozenset[str]] = frozenset({REL_SHARED_SCOPE})
