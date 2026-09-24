@@ -3,7 +3,7 @@
     "python",
     "scripts/digest_drift.py"
   ],
-  "source_head": "29a72e75",
+  "source_head": "4603ff89",
   "counts": {
     "match": 25,
     "reverified": 25,
@@ -453,9 +453,9 @@
       "doc": "T13_growth.md",
       "path": "scripts/benchmark_cognitive_growth.py",
       "recorded": "2a1e2ecf7d5008c0",
-      "actual": "9dd830e113c342b21c5a58f88b1a14173a430903626b2fdee39411f009c21bcc",
+      "actual": "c3d0a151d9133abd69e618b890416dac01e674f0966d62e74d9b23e199c9bd7b",
       "status": "reverified",
-      "reverified_on": "2026-09-23"
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T13_growth.md",
@@ -463,7 +463,7 @@
       "recorded": "f2a5dd011c622d9b",
       "actual": "745f1c105fa4ab6b3d92bf087db0e0dc632610389f85eb76db7c199da0d54111",
       "status": "reverified",
-      "reverified_on": "2026-09-23"
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T13_growth.md",
@@ -485,9 +485,9 @@
       "doc": "T13_live_pilot.md",
       "path": "scripts/benchmark_cognitive_growth.py",
       "recorded": "9fda14440f9938a7",
-      "actual": "9dd830e113c342b21c5a58f88b1a14173a430903626b2fdee39411f009c21bcc",
+      "actual": "c3d0a151d9133abd69e618b890416dac01e674f0966d62e74d9b23e199c9bd7b",
       "status": "reverified",
-      "reverified_on": "2026-09-23"
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T13_live_pilot.md",
@@ -495,7 +495,7 @@
       "recorded": "f15d923940d22fd7",
       "actual": "16697ffda06f006fd5d7fee3575bcd19c10a98a03db23da240cddca36bf7b374",
       "status": "reverified",
-      "reverified_on": "2026-09-23"
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T13_live_pilot.md",

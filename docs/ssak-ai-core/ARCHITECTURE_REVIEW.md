@@ -85,7 +85,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | source_questions | 12 | 원문 §63 최종 리뷰 질문 |
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
-| evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
+| evidence_docs | 17 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
 | cognitive_tests | 764 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
@@ -122,7 +122,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:source_questions=12 -->
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
-<!-- measured:evidence_docs=16 -->
+<!-- measured:evidence_docs=17 -->
 <!-- measured:cognitive_tests=764 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->

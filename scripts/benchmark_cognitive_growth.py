@@ -147,6 +147,10 @@ def main(argv: list[str] | None = None) -> int:
     store_root = args.store_root
     if store_root is None:
         store_root = Path(tempfile.mkdtemp(prefix="growth-benchmark-"))
+    else:
+        # 상대 경로를 주면 target file_path가 상대로 내려가 executor sandbox가
+        # project_root에 다시 붙여 이중 경로를 만든다(T00b-B 실측이 잡은 결함) — 여기서 절대로 정규화한다.
+        store_root = store_root.resolve()
     store_root.mkdir(parents=True, exist_ok=True)
     runner = GrowthRunner(
         store_root,

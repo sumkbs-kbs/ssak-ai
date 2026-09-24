@@ -150,36 +150,36 @@
     {
       "doc": "T13_growth.md",
       "path": "scripts/benchmark_cognitive_growth.py",
-      "verified_digest": "9dd830e113c342b21c5a58f88b1a14173a430903626b2fdee39411f009c21bcc",
-      "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_growth.py 17 passed(17과 일치) + benchmark_cognitive_growth.py --print-spec이 spec digest 출력(사전 등록 경로 동작). growth.py 2001→2004, benchmark 168→181 lines."
+      "verified_digest": "c3d0a151d9133abd69e618b890416dac01e674f0966d62e74d9b23e199c9bd7b",
+      "verified_on": "2026-09-24",
+      "method": "P00/T00b-B 회차: T00b-B 직접 관찰 배터리가 상대 경로 --store-root 이중 경로 결함을 잡아 CLI(benchmark_cognitive_growth.py)에 절대 경로 정규화를 넣었다. growth 시험 17 passed·demo/fresh/mature/ablation 전 mode exit 0(상대·절대)·live-pilot NOT_RUN exit 2을 재실측해 T13의 성장 관찰이 여전히 재현됨을 확인."
     },
     {
       "doc": "T13_growth.md",
       "path": "src/antigravity_k/engine/cognitive/growth.py",
       "verified_digest": "745f1c105fa4ab6b3d92bf087db0e0dc632610389f85eb76db7c199da0d54111",
-      "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_growth.py 17 passed(17과 일치) + benchmark_cognitive_growth.py --print-spec이 spec digest 출력(사전 등록 경로 동작). growth.py 2001→2004, benchmark 168→181 lines."
+      "verified_on": "2026-09-24",
+      "method": "P00/T00b-B 회차: T00b-B 직접 관찰 배터리가 상대 경로 --store-root 이중 경로 결함을 잡아 CLI(benchmark_cognitive_growth.py)에 절대 경로 정규화를 넣었다. growth 시험 17 passed·demo/fresh/mature/ablation 전 mode exit 0(상대·절대)·live-pilot NOT_RUN exit 2을 재실측해 T13의 성장 관찰이 여전히 재현됨을 확인."
     },
     {
       "doc": "T13_live_pilot.md",
       "path": "scripts/benchmark_cognitive_growth.py",
-      "verified_digest": "9dd830e113c342b21c5a58f88b1a14173a430903626b2fdee39411f009c21bcc",
-      "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_live_pilot.py 12 passed(12와 일치) — LIVE_PILOT spec 등록·NOT_RUN 기록 계약."
+      "verified_digest": "c3d0a151d9133abd69e618b890416dac01e674f0966d62e74d9b23e199c9bd7b",
+      "verified_on": "2026-09-24",
+      "method": "P00/T00b-B 회차: CLI 절대 경로 정규화 수정 뒤 --mode live-pilot가 여전히 NOT_RUN exit 2('이 CLI는 deterministic fixture harness다')로 거부됨을 직접 재관찰했다(NOT_RUN artifact가 fixture 수치로 대체되지 않는 계약 그대로)."
     },
     {
       "doc": "T13_live_pilot.md",
       "path": "src/antigravity_k/engine/cognitive/live_pilot.py",
       "verified_digest": "16697ffda06f006fd5d7fee3575bcd19c10a98a03db23da240cddca36bf7b374",
-      "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_live_pilot.py 12 passed(12와 일치) — LIVE_PILOT spec 등록·NOT_RUN 기록 계약."
+      "verified_on": "2026-09-24",
+      "method": "P00/T00b-B 회차: CLI 절대 경로 정규화 수정 뒤 --mode live-pilot가 여전히 NOT_RUN exit 2('이 CLI는 deterministic fixture harness다')로 거부됨을 직접 재관찰했다(NOT_RUN artifact가 fixture 수치로 대체되지 않는 계약 그대로)."
     }
   ],
   "command": [
     "python",
     "scripts/digest_drift.py",
     "--record",
-    "T03_T04_context_brain.md"
+    "T13_live_pilot.md"
   ]
 }

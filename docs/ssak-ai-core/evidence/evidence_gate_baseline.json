@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "P04 v1.1 철학 시나리오 회차: 시험 10건 추가(context 16·brain 24, cognitive 764 수집)로 cognitive_tests ▲10, T03/T04 문서 pin 4개 재확인으로 reverified ▲3·match ▼3. 게이트 full 11/11 PASS 상태에서 승인."
+    "P00 마무리 회차: benchmark_spec.md 신규(evidence 문서 16→17)·CLI 절대 경로 정규화로 T13 두 문서 pin 재확인(재확인 24→25)·등록부 1건 제거. 게이트 full 11/11 PASS 상태에서 승인."
   ],
   "layers": {
     "audit_enum_identity": {
@@ -17,7 +17,7 @@
       "counts.ok": 0,
       "counts.stale": 0,
       "counts.unknown": 0,
-      "coverage.docs": 16,
+      "coverage.docs": 17,
       "coverage.mentions": 6,
       "coverage.min_mentions": 1
     },
@@ -61,7 +61,7 @@
       "counts.record_layers_moved": 0,
       "counts.record_layers_renamed": 0,
       "counts.record_lowered": 0,
-      "counts.record_moved": 0,
+      "counts.record_moved": 1,
       "counts.record_renames": 0,
       "counts.recorded": 4,
       "counts.recorded_floors": 21,
@@ -142,7 +142,7 @@
       "measured.digest_stale": 0,
       "measured.drift_questions": 10,
       "measured.drift_triggered": 0,
-      "measured.evidence_docs": 16,
+      "measured.evidence_docs": 17,
       "measured.evidence_gate_stages": 11,
       "measured.ledger_candidates": 32,
       "measured.ledger_declared": 10,
@@ -170,6 +170,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "P04 v1.1 철학 시나리오 회차: 시험 10건 추가(context 16·brain 24, cognitive 764 수집)로 cognitive_tests ▲10, T03/T04 문서 pin 4개 재확인으로 reverified ▲3·match ▼3. 게이트 full 11/11 PASS 상태에서 승인.",
+  "method": "P00 마무리 회차: benchmark_spec.md 신규(evidence 문서 16→17)·CLI 절대 경로 정규화로 T13 두 문서 pin 재확인(재확인 24→25)·등록부 1건 제거. 게이트 full 11/11 PASS 상태에서 승인.",
   "recorded_on": "2026-09-24"
 }

@@ -830,13 +830,8 @@ class CitationException:
 
 
 # 등록부. 여기 없는 경로를 문서가 인용하는데 실재하지 않거나 추적되지 않으면 검사가 실패한다.
+# benchmark_spec.md 는 2026-09-24 P00 회차가 실재 산출물로 만들어 등록부에서 뺐다.
 _CITATION_EXCEPTIONS: Final[tuple[CitationException, ...]] = (
-    CitationException(
-        path="docs/ssak-ai-core/evidence/benchmark_spec.md",
-        owner="integration",
-        reason="아직 만들지 않은 목표 산출물 — IMPLEMENTATION_ROADMAP 이 '신규 산출물의 목표'라고 명시한다",
-        review_by="2026-12-31",
-    ),
     CitationException(
         path="src/innocent.md",
         owner="protection",

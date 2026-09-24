@@ -65,7 +65,7 @@ v1은 Canonical Markdown + explicit references, Git persistence, rebuild 가능�
 
 | 영역 | 기존 보고 | 남은 인수 |
 |---|---|---|
-| P00 | [기준선](evidence/T00_baseline.md): 일부 경계·회귀 기록 | 전체 entrypoint 기준선, T00b 초기 계측 |
+| P00 | [기준선](evidence/T00_baseline.md) §5 + [benchmark_spec](evidence/benchmark_spec.md): 경계·매니페스트 재대조·T00b-A/B 관찰 PASS | 사용자 표면 실호출·별도 data root 기준선은 P11 이월 |
 | P01 | [Typed model](evidence/T01a_typed_model.md): 모듈 시험 PASS | 현재 소스 재대조, v1.1 선별·계보 계약과 schema 정합화 |
 | P02 | [Canonical store](evidence/T02_canonical_store.md): 모듈 시험 PASS | 실제 Vault 동시성·사용자 경로 통합 |
 | P03 | [보호 경계](evidence/T01b_protection.md): 모듈/tool gate/store PASS | migration/evolution 실제 hook, 승인 발급·검증 |
