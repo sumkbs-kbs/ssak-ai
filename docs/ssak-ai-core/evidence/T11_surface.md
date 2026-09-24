@@ -193,3 +193,45 @@ legacy 도달 7/9 · core 도달 2/9
 3. **resume/cancel·임시 파일 action·Brain/process 교체 복원 QA:** 실제 실행 환경과 사람 확인이 필요하다.
 4. **ACTIVE 실사용 검증:** 실제 도구 실행·governance gate·guard receipt 경로에서 확인해야 한다(현재는 stub port로 경계만).
 5. **설정 노출:** `config.yaml`에 `cognitive_core` 섹션을 심지 않았다(없으면 OFF). 실제 전환은 사람 결정으로 남긴다.
+
+## 5. 2026-09-24 회차 — 대화 스트림·background에 shadow 관찰 배선 (이월 1항을 닫음)
+
+§4의 이월 1("agent_stream_api·durable task의 실행 스트림에 core 상태를 얹는 작업")을 닫은 회차다.
+**shadow(관찰) 배선** — legacy 실행을 core로 바꾸지 않고, 끝난 뒤 core episode로 관찰한다.
+
+```yaml
+check_id: T11-shadow-wiring
+status: IMPLEMENTED (shadow 배선) / UNVERIFIED (실모델 표면 QA — 이월)
+owner: integration
+source_head: 79354d8d (dirty — agent_runtime.py · cognitive_surface.py(SurfaceBrainPort) · agent_stream_api.py · dependencies.py · test_surface.py)
+command: pytest tests/cognitive/test_surface.py(24) + SSE/API/runtime 회귀 148 passed + scripts/measure_feature_off_regression.py
+exit_code: 0
+observed_behavior: 아래 배선 관찰
+verified_at: 2026-09-24T21:04:20Z
+```
+
+### 배선 관찰
+
+- **runtime 훅** — `AgentRuntime.observe_interaction(...)`: surface가 없거나 OFF면 no-op, SHADOW에서만
+  `run_shadow`(dispatch 0)를 돈다. **shadow 실패는 legacy를 절대 깨지 않는다**(예외는 조용히 녹인다 —
+  시험 `test_runtime_observation_never_breaks_legacy_on_failure`). ACTIVE는 사람 승인 경로
+  (run_active) 전용이라 여기서 조용히 돌지 않는다.
+- **대화 스트림** — `agent_stream_api`가 스트림 완료 후 `observe_interaction`(episode=stream:<task_id>,
+  expected=사용자 질의 앞부분)를 부른다. legacy 응답은 이미 완료된 뒤다.
+- **background** — 기존 `task_outcome_recorder` 결과 기록 **뒤에** shadow 관찰을 붙였다(기록 자체는
+  먼저, 관찰은 뒤 — 시험 `test_background_outcome_recorder_fires_shadow_after_recording`).
+- **think port** — `SurfaceBrainPort`(실제 모델 호출 → ThinkOutcome; 모델 실패는 failed think로
+  episode가 BRAIN_FAILED 종료). `dependencies`가 `cognitive_core` 설정이 SHADOW일 때만 surface를
+  붙인다(없거나 OFF면 부착 자체를 안 한다).
+- **표면 실측 변화** — `measure_cognitive_surface`가 **core 도달 2/9 → 5/9**를 잡는다(CLI·server·
+  chat·SSE·agent runtime; dependencies 부착 + 스트림 라우트 호출이 import 그래프에 실재로 나타난다).
+  legacy loop 소유 경로(engine_context·loop·tool_loop)와 background 집행은 여전히 미도달 — 관찰은
+  observe_interaction 호출 지점에서만 일어난다(기준선 시험이 새 현실로 고정).
+- **회귀** — SSE/API/runtime 계열 148 passed · feature-off 회귀 스크립트 **PASS**(세 설정에서 legacy
+  transcript digest 동일 `6a9a4142…` · shadow dispatched=0 · workspace 불변 — T11 원 관찰과 같은 값).
+
+### 여전히 이월
+
+- 실모델 대화 1건의 응답·도구 호출 수 비교(shadow가 실제 모델 think port로 돌았을 때의 관찰) — 이
+  환경에는 모델이 없다(NOT_RUN).
+- resume/cancel QA · ACTIVE 실검증(사람 승인·dispatch port·실도구) — 사람 결정 필요.

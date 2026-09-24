@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Iterator, Mapping, Sequence
-from typing import Protocol, final
+from typing import TYPE_CHECKING, Protocol, final
 
 from pydantic import TypeAdapter, ValidationError
 
@@ -20,9 +20,35 @@ from antigravity_k.engine.task_events import ExecutionEventRecord
 from antigravity_k.engine.task_state_types import CancellationVerdict
 from antigravity_k.engine.task_steering import TaskSteeringResult
 
+if TYPE_CHECKING:
+    from antigravity_k.engine.benchmark_harness import TaskOutcome
+    from antigravity_k.engine.cognitive_surface import ShadowRun, SurfaceEpisodeRequest
+
 logger = logging.getLogger(__name__)
 
 _TASK_IDS_ADAPTER = TypeAdapter(list[str])
+
+
+class CognitiveSurfaceLike(Protocol):
+    """P11 opt-in surface(adapter)가 runtime에 노출하는 최소 계약."""
+
+    @property
+    def settings(self) -> object: ...
+
+    def run_shadow(self, request: "SurfaceEpisodeRequest") -> "ShadowRun": ...
+
+
+class ShadowObservation:
+    """legacy 경로 옆에서 돈 shadow episode 요약. legacy 응답은 절대 담지 않는다."""
+
+    def __init__(self, episode_id: str, termination: str, dispatched_actions: int, refused_actions: int) -> None:
+        self.episode_id = episode_id
+        self.termination = termination
+        self.dispatched_actions = dispatched_actions
+        self.refused_actions = refused_actions
+
+    def __repr__(self) -> str:  # pragma: no cover - 진단용
+        return f"ShadowObservation({self.episode_id!r}, {self.termination!r}, dispatch={self.dispatched_actions})"
 
 
 class OrchestratorPort(Protocol):
@@ -98,18 +124,86 @@ class AgentRuntime:
         task_runner: TaskRunnerPort | None = None,
         goal_runner: GoalRunnerPort | None = None,
         task_outcome_recorder: TaskOutcomeRecorder | None = None,
+        cognitive_surface: CognitiveSurfaceLike | None = None,
     ) -> None:
         self.is_canonical_runtime = True
         self.orchestrator = orchestrator
         self.task_runner = task_runner
         self.goal_runner = goal_runner or GoalRunner()
+        self.cognitive_surface: CognitiveSurfaceLike | None = cognitive_surface
+        self._base_outcome_recorder = task_outcome_recorder
         self._direct_tasks = DirectTaskExecution(
             orchestrator,
             task_runner if isinstance(task_runner, TaskStoreRunnerPort) else None,
-            task_outcome_recorder,
+            self._shadow_observing_recorder(),
         )
         if getattr(orchestrator, "agent_runtime", None) is None:
             setattr(orchestrator, "agent_runtime", self)
+
+    # ── P11: legacy 옆의 opt-in shadow 관찰 ────────────
+    def attach_cognitive_surface(self, surface: CognitiveSurfaceLike) -> None:
+        """대화/과제 완료 관찰용 surface를 붙인다(설정 OFF면 아무 일도 하지 않는다)."""
+
+        self.cognitive_surface = surface
+
+    def observe_interaction(
+        self,
+        *,
+        episode_id: str,
+        context_ref: str,
+        goal_ref: str,
+        expected_outcome: str = "",
+    ) -> ShadowObservation | None:
+        """legacy 대화/과제가 **끝난 뒤** shadow episode를 돈다(선택·관찰만).
+
+        surface가 없거나 설정이 OFF면 아무 일도 없고, shadow 실패는 legacy 경로를 절대
+        깨지 않는다 — 관찰이 본체를 해치면 관찰이 아니다. ACTIVE는 사람 승인 경로
+        (run_active)로만 실행하므로 여기서 조용히 돌지 않는다.
+        """
+
+        from antigravity_k.engine.cognitive_surface import SurfaceEpisodeRequest, SurfaceMode
+
+        surface = self.cognitive_surface
+        if surface is None:
+            return None
+        settings = getattr(surface.settings, "effective_mode", SurfaceMode.OFF)
+        if str(settings) != str(SurfaceMode.SHADOW):
+            return None
+        request = SurfaceEpisodeRequest(
+            episode_id=episode_id,
+            context_ref=context_ref,
+            goal_ref=goal_ref,
+            expected_outcome=expected_outcome,
+        )
+        try:
+            run = surface.run_shadow(request)
+        except Exception:  # noqa: BLE001 — shadow는 legacy를 깨지 않는다(실패는 조용히 녹임)
+            logger.warning("cognitive shadow observation failed for %s", episode_id, exc_info=True)
+            return None
+        return ShadowObservation(
+            episode_id=run.episode_id,
+            termination=run.termination,
+            dispatched_actions=run.dispatched_actions,
+            refused_actions=run.refused_actions,
+        )
+
+    def _shadow_observing_recorder(self) -> TaskOutcomeRecorder | None:
+        """background 과제의 outcome 기록 뒤에 shadow 관찰을 붙인다(기록 자체는 그대로)."""
+
+        base = self._base_outcome_recorder
+
+        def wrapped(outcome: "TaskOutcome") -> "TaskOutcome | None":
+            result = base(outcome) if base is not None else None
+            case_id = str(getattr(outcome, "case_id", ""))
+            self.observe_interaction(
+                episode_id=f"task:{case_id}",
+                context_ref=f"legacy:task:{case_id}",
+                goal_ref=f"legacy:task:{case_id}",
+                expected_outcome=str(getattr(outcome, "completion_reason", "")),
+            )
+            return result
+
+        return wrapped
 
     def resolve_model(self, target_model: str = "") -> str:
         model = target_model.strip() if target_model else ""

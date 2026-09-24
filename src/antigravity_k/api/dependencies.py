@@ -308,6 +308,7 @@ def _build_project_runtime(project_id: str, project_root: str) -> ProjectRuntime
         task_runner,
         task_outcome_recorder=benchmark_harness.record_task_outcome,
     )
+    _attach_cognitive_surface(agent_runtime, get_model_manager())
     _ = benchmark_harness.bind_task_runner(task_runner)
     slash_registry = _build_project_slash_registry(
         session_manager=session_manager,
@@ -887,3 +888,30 @@ def require_request_execution_context():
     if ctx is None:
         raise MissingExecutionContextError(detail="RequestExecutionContext is not bound for this request")
     return ctx
+
+
+def _attach_cognitive_surface(agent_runtime: AgentRuntime, model_manager: object) -> None:
+    """P11 opt-in 배선: 설정(cognitive_core)이 SHADOW면 대화·과제 완료를 shadow로 관찰한다.
+
+    설정이 없거나 OFF면 surface를 붙이지 않는다(legacy 그대로). think port는 실제 모델
+    (SurfaceBrainPort)이고 모델 실패는 failed think로 episode가 BRAIN_FAILED 종료될 뿐
+    legacy 경로에 영향이 없다. ACTIVE는 사람 승인·dispatch port가 필요해 여기서 붙지 않는다.
+    """
+
+    from antigravity_k.config import config
+    from antigravity_k.engine.cognitive_surface import (
+        CognitiveCoreSettings,
+        CognitiveSurfaceAdapter,
+        SurfaceBrainPort,
+        SurfaceMode,
+    )
+
+    settings = CognitiveCoreSettings.from_config(config)
+    if str(settings.effective_mode) != str(SurfaceMode.SHADOW):
+        return
+
+    def generate(prompt: str) -> str:
+        target = model_manager.get_target_for_role("default", default_role="default")  # type: ignore[attr-defined]
+        return str(model_manager.generate(prompt=prompt, target=target, temperature=0.2, max_tokens=512))  # type: ignore[attr-defined]
+
+    agent_runtime.attach_cognitive_surface(CognitiveSurfaceAdapter(settings, think=SurfaceBrainPort(generate)))

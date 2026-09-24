@@ -96,6 +96,14 @@ async def stream_agent(
                     yield f"data: {payload}\n\n"
 
             active_session.done = True
+            # P11 opt-in: 대화 스트림이 끝난 뒤 shadow episode로 core 상태를 관찰한다.
+            # surface가 없거나 OFF면 no-op이고, 실패해도 legacy 응답은 이미 완료됐다.
+            _ = runtime.observe_interaction(
+                episode_id=f"stream:{tracked_stream.task_id or 'ephemeral'}",
+                context_ref="legacy:agent-stream",
+                goal_ref="legacy:agent-stream",
+                expected_outcome=q[:200],
+            )
             yield f"data: {json.dumps({'done': True})}\n\n"
         except asyncio.CancelledError:
             # Client disconnected, but the thread might still run.

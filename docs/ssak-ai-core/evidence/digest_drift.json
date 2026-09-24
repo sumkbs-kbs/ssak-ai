@@ -3,7 +3,7 @@
     "python",
     "scripts/digest_drift.py"
   ],
-  "source_head": "456731b0",
+  "source_head": "79354d8d",
   "counts": {
     "match": 19,
     "reverified": 31,
@@ -367,7 +367,7 @@
       "recorded": "76d3a88b1b517171",
       "actual": "dd9137f71b928aec7871042b116aaea9787675ea404a0283e2c80cfca2e6c5c9",
       "status": "reverified",
-      "reverified_on": "2026-09-23"
+      "reverified_on": "2026-09-25"
     },
     {
       "doc": "T11_surface.md",
@@ -405,9 +405,9 @@
       "doc": "T11_surface.md",
       "path": "src/antigravity_k/engine/cognitive_surface.py",
       "recorded": "2d77ecce28d8748e",
-      "actual": "2380d6d0b7ea6bf1f9171740445f314a9b26a986a1acdf0ed61775417bfa849d",
+      "actual": "7f7ad78463563d845fc37fbd6a6da51ad6375da4dd12594f019b349f5e3dfe67",
       "status": "reverified",
-      "reverified_on": "2026-09-23"
+      "reverified_on": "2026-09-25"
     },
     {
       "doc": "T11_surface.md",

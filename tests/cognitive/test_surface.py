@@ -329,19 +329,23 @@ def test_measurement_separates_legacy_and_core_reach() -> None:
     assert legacy_entry.reaches_legacy is True
     assert legacy_entry.reaches_core is False
     assert legacy_entry.legacy_via[-1] == LEGACY_MODULE
-    # 실행 경로(대화·legacy loop 소유)는 아직 신규 core에 도달하지 않는다(P11 통합 전 기준선).
-    for execution_path in (
+    # 2026-09-24 P11 배선: dependencies의 opt-in surface 부착과 스트림 라우트의 관찰 호출로
+    # API 진입(CLI·server·chat·SSE)과 agent runtime의 import 그래프가 core에 닿는다.
+    # legacy loop를 소유한 실행 경로(engine_context·loop·tool_loop)와 background 집행은
+    # 여전히 core에 닿지 않는다 — 관찰은 observe_interaction 호출 지점에서만 일어난다.
+    for wired in (
+        "antigravity_k.cli",
+        "antigravity_k.api.server",
         "antigravity_k.api.routes.chat",
         "antigravity_k.api.routes.agent_stream_api",
+        "antigravity_k.engine.agent_runtime",
+    ):
+        assert by_module[wired].reaches_core is True, wired
+    for legacy_only in (
         "antigravity_k.engine.orchestrator.agent",
         "antigravity_k.engine.engine_context",
     ):
-        assert by_module[execution_path].reaches_core is False, execution_path
-    # core 도달은 read-only 조회 표면(CLI 명령 + API 라우터)뿐이다.
-    assert {item.module for item in measurement.entrypoints if item.reaches_core} == {
-        "antigravity_k.cli",
-        "antigravity_k.api.server",
-    }
+        assert by_module[legacy_only].reaches_core is False, legacy_only
     assert measurement.legacy_count >= 5
     payload = measurement.as_mapping()
     assert payload["legacy_module"] == LEGACY_MODULE
@@ -421,3 +425,83 @@ def test_cli_cognitive_surface_prints_measurement(tmp_path: Path) -> None:
     assert "legacy 도달" in result.output
     assert output.is_file()
     assert '"core_module"' in output.read_text(encoding="utf-8")
+
+
+# ── P11 배선(2026-09-24): AgentRuntime의 shadow 관찰 계약 ───────────────
+
+
+class _StubOrchestrator:
+    """AgentRuntime 구성에 필요한 최소 orchestrator. 실행은 일어나지 않는다."""
+
+    max_engine = None
+
+    def get_model_for_role(self, role: str) -> str:  # pragma: no cover - 사용되지 않는다
+        return ""
+
+    def run_stream(self, messages, target_model, max_steps=15, ephemeral_message=None):  # pragma: no cover
+        yield from ()
+
+
+def test_runtime_observation_is_noop_without_surface_or_when_off() -> None:
+    from antigravity_k.engine.agent_runtime import AgentRuntime
+
+    runtime = AgentRuntime(_StubOrchestrator())
+    assert runtime.observe_interaction(episode_id="e:1", context_ref="c", goal_ref="g") is None
+
+    off = CognitiveSurfaceAdapter(CognitiveCoreSettings(), think=StubThink())
+    runtime.attach_cognitive_surface(off)
+    assert runtime.observe_interaction(episode_id="e:1", context_ref="c", goal_ref="g") is None
+
+
+def test_runtime_observation_runs_shadow_episode_with_dispatch_zero() -> None:
+    from antigravity_k.engine.agent_runtime import AgentRuntime
+
+    adapter = CognitiveSurfaceAdapter(CognitiveCoreSettings(enabled=True, mode=SurfaceMode.SHADOW), think=StubThink())
+    runtime = AgentRuntime(_StubOrchestrator(), cognitive_surface=adapter)
+
+    observation = runtime.observe_interaction(
+        episode_id="stream:t-1",
+        context_ref="legacy:agent-stream",
+        goal_ref="legacy:agent-stream",
+        expected_outcome="hi",
+    )
+
+    assert observation is not None
+    assert observation.dispatched_actions == 0
+    assert adapter.status().last_episode_id == "stream:t-1"
+    assert adapter.status().dispatched_actions == 0
+
+
+def test_runtime_observation_never_breaks_legacy_on_failure() -> None:
+    from antigravity_k.engine.agent_runtime import AgentRuntime
+
+    class ExplodingSurface:
+        settings = CognitiveCoreSettings(enabled=True, mode=SurfaceMode.SHADOW)
+
+        def run_shadow(self, request):  # type: ignore[no-untyped-def]
+            raise RuntimeError("shadow 고장")
+
+    runtime = AgentRuntime(_StubOrchestrator(), cognitive_surface=ExplodingSurface())
+
+    assert runtime.observe_interaction(episode_id="e:boom", context_ref="c", goal_ref="g") is None
+
+
+def test_background_outcome_recorder_fires_shadow_after_recording() -> None:
+    from antigravity_k.engine.agent_runtime import AgentRuntime
+    from antigravity_k.engine.benchmark_harness import TaskOutcome
+
+    adapter = CognitiveSurfaceAdapter(CognitiveCoreSettings(enabled=True, mode=SurfaceMode.SHADOW), think=StubThink())
+    recorded: list[str] = []
+
+    def recorder(outcome: TaskOutcome) -> TaskOutcome:
+        recorded.append(outcome.case_id)
+        return outcome
+
+    runtime = AgentRuntime(_StubOrchestrator(), task_outcome_recorder=recorder, cognitive_surface=adapter)
+    wrapped = runtime._direct_tasks._task_outcome_recorder
+    outcome = TaskOutcome(case_id="case-1", target="t", success=True, completion_reason="done")
+    assert wrapped is not None and wrapped(outcome) is outcome
+
+    assert recorded == ["case-1"], "기존 outcome 기록은 그대로 먼저 일어난다"
+    assert adapter.status().last_episode_id == "task:case-1"
+    assert adapter.status().dispatched_actions == 0
