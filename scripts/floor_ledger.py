@@ -45,11 +45,15 @@
     남아 “그 도구가 층이 되었다” 와 “그 상수를 지웠다” 가 구분되지 않는다). 승격은 셋이 다 되어야 끝난다: 그 상수를 어떤 층의
     하한 목록에 싣고·면제 선언을 지우고·기록한다 — `--promote <이름>` 이 그 셋을 한 자리에서 읽어 남은 일을 말하고,
     끝났는지를 종료 코드로 말한다(코드를 대신 고치지는 않는다 — 어느 층의 하한인가는 그 층의 파일에 사람이 쓴다).
-    기한이 움직인 순간은 기록이 **스스로 적어 이어 가고**(`deadline_moves` — 미룬 횟수는 주장이 아니라 계산된 사실이다),
-    그 이력은 기록이 자기 기한과 맞는지 검사받는다(마지막 이동의 새 기한이 지금 승인된 기한과 다르거나 이력이 이어지지
-    않으면 실패다). 그리고 검토 없이 미룬 면제가 있는 실행은 **기록을 거부한다** — 그대로 기록하면 옛 기한이 덮여 그 사실이
-    사라지기 때문이다(지우는 기록을 막는 자리). 재검토는 `--review` 가 기한 순서로 낸다: 면제마다 남은 날·창 사용량·
-    미룬 횟수와 두 가지 답(층으로 세우거나, 확인일·기한을 다시 적어 기록으로 남기거나)을 붙여서.
+    기한이 움직인 순간은 기록이 **스스로 적어 이어 가고**(`deadline_moves` — 미룬 횟수는 주장이 아니라 계산된 사실이며,
+    이동마다 그 이동을 받친 **확인일**까지 담는다), 그 이력은 기록이 자기 기한과 맞는지 검사받는다(마지막 이동의 새
+    기한이 지금 승인된 기한과 다르거나 이력이 이어지지 않거나 이동에 확인일이 없으면 실패다). 다만 **방향은 모순이 아니다**:
+    기한을 앞당긴 이동도 기록이 지나야 할 사실이고(안전한 쪽이다), 모순인 것은 제자리 이동뿐이다 — 그 둘을 같은 문장으로
+    부르면 표는 초록인데 기록이 스스로를 막는다. 그리고 그 확인일이 옛 기한보다 뒤면 그 연장은 **늦은 검토**다: 약속을
+    넘겨서 다시 본 것이므로 실패가 아니라 사실로 세고(`--review` 가 면제마다 그 수를 센다) 층으로 세울 자리가 지난 신호로
+    읽는다. 검토 없이 미룬 면제가 있는 실행은 **기록을 거부한다** — 그대로 기록하면 옛 기한이 덮여 그 사실이 사라지기
+    때문이다(지우는 기록을 막는 자리). 재검토는 `--review` 가 기한 순서로 낸다: 면제마다 남은 날·창 사용량·미룬 횟수·
+    늦은 검토 횟수와 두 가지 답(층으로 세우거나, 확인일·기한을 다시 적어 기록으로 남기거나)을 붙여서.
 
 ```sh
 .venv/bin/python scripts/floor_ledger.py --gate        # 표 + 판정(하나라도 어긋나면 exit 1)
@@ -685,13 +689,13 @@ def outside_record_problems(
         )
     if recorded.shape == OUTSIDE_SHAPE_FULL:
         changes, deferred, bare = _outside_moves(declared, recorded, paired)
+        seen = {item.name: item.reviewed_on for item in declared}
         if changes:
             problems.append(
                 f"기록과 근거·소유자가 달라진 면제가 있다: {', '.join(changes)} — 면제의 근거가 바뀌면 그것은 다른 "
                 "판단이다(`--record --method` 로 다시 기록하라)"
             )
         if bare:
-            seen = {item.name: item.reviewed_on for item in declared}
             moved = "; ".join(
                 f"{name} {was} → {now}(확인일 {seen.get(name, '못 읽음')} 그대로)" for name, was, now in bare
             )
@@ -705,6 +709,16 @@ def outside_record_problems(
                 f"면제의 재검토 기한을 미뤘다({moved}) — “그 도구가 층이 되었는지 다시 본다” 는 약속을 뒤로 미루는 "
                 "것도 결정이다: 무엇을 보고 미뤘는지 `--record --method` 로 남겨라"
             )
+            late: list[str] = []
+            for name, was_due, _now in deferred:
+                due, held = _as_day(was_due), _as_day(seen.get(name, ""))
+                if due is not None and held is not None and held > due:
+                    late.append(f"{name}(옛 기한 {was_due} 를 지나 {held} 에 검토)")
+            if late:
+                problems.append(
+                    f"그 연장은 **늦은 검토**다: {'; '.join(late)} — 기한이 지난 뒤에 다시 본 것이므로 “약속을 지켰다” "
+                    "고만 적을 수 없다: 그 사실도 이동 이력에 확인일과 함께 남고 `--review` 가 면제마다 센다"
+                )
     for old, new in renamed:
         was = recorded.promises.get(old)
         owner, review_by = (was[1], was[2]) if was else ("", "")
@@ -902,6 +916,7 @@ class Ledger:
                 "record_exemptions_pulled": len(_record_lines(_record_dict(self.record, "outside"), "pulled")),
                 "record_exemptions_reviewed": len(_record_lines(_record_dict(self.record, "outside"), "reviewed")),
                 "record_exemptions_moves": len(_record_lines(_record_dict(self.record, "outside"), "deadline_moves")),
+                "record_exemptions_late": len(_record_lines(_record_dict(self.record, "outside"), "late")),
                 "record_exemptions_promoted": len(_record_lines(_record_dict(self.record, "outside"), "promoted")),
                 "wired_layers": len(self.wiring),
             },
@@ -1358,26 +1373,28 @@ def recorded_renames(stored: dict[str, object] | None) -> tuple[tuple[str, str, 
     return tuple(facts)
 
 
-def recorded_deadline_moves(stored: dict[str, object] | None) -> tuple[tuple[str, str, str, str], ...]:
-    """기록이 **사실로** 남긴 면제 기한 이동 이력 — (이름, 옛 기한, 새 기한, 승인 날짜).
+def recorded_deadline_moves(stored: dict[str, object] | None) -> tuple[tuple[str, str, str, str, str], ...]:
+    """기록이 **사실로** 남긴 면제 기한 이동 이력 — (이름, 옛 기한, 새 기한, 승인 날짜, 확인일).
 
     `outside.declared` 는 **지금** 기한만 담으므로, 그것만으로는 그 면제가 몇 번 미뤄졌는지 알 수 없다 — 한 번
     미룬 면제도, 세 번 미룬 면제도 같은 줄로 읽히고 검토는 매번 “첫 번째” 처럼 보인다(이름 변경이 `renames` 로
     사실이 된 것과 같은 자리다). 그래서 기한이 움직인 순간을 **기록이 스스로 적어 이어 간다** — 사람이 적는 것이
     아니라 대조가 찾아낸 이동이므로, 미룬 횟수는 주장이 아니라 계산된 사실이다.
+    이동마다 **그 이동을 받친 확인일**(`reviewed`)을 함께 담는다: 승인 날짜(`on`)는 기록을 쓴 날이라 검토일이
+    아니고, 그 둘이 갈라지면 “이 연장이 옛 기한을 **지나서** 이루어졌는가”(늦은 검토)를 나중에 물을 자리가 없다.
     """
 
     value = _record_dict(stored or {}, "outside").get("deadline_moves")
     if not isinstance(value, list):
         return ()
-    facts: list[tuple[str, str, str, str]] = []
+    facts: list[tuple[str, str, str, str, str]] = []
     for item in value:
         if not isinstance(item, dict):
             continue
         name, was, now = str(item.get("name", "")), str(item.get("from", "")), str(item.get("to", ""))
         if not name.strip() or not was.strip() or not now.strip():
             continue
-        facts.append((name, was, now, str(item.get("on", ""))))
+        facts.append((name, was, now, str(item.get("on", "")), str(item.get("reviewed", ""))))
     return tuple(facts)
 
 
@@ -1389,6 +1406,11 @@ def deadline_move_problems(stored: dict[str, object] | None) -> list[str]:
     (손으로 고친 이력은 여기서 멈춘다 — 이력은 “몇 번 미뤘나” 를 세는 근거이므로 틀린 이력은 틀린 수를 낳는다).
     그리고 약속을 담은 기록은 **이력 칸도 담아야 한다**: 칸이 없는 기록에서는 “한 번도 미룬 적 없다” 와 “이력을 적지
     않았다” 가 같은 줄로 읽힌다(이름만 담긴 기록에게 “기한을 물을 자리가 없다” 고 말하는 것과 같은 자리다).
+    **방향은 모순이 아니다**: 기한을 앞당긴 이동도 이동이다 — 표는 그것을 보고로 내고(`outside_pulled`) 기록은 그
+    이동을 이력에 적으므로, 그 둘을 모순으로 부르면 기록이 스스로를 막는다(제자리 이동만 이동이 아니다).
+    그리고 이동마다 **확인일**이 있어야 한다: 확인일이 없으면 그 연장이 옛 기한을 지나서 이루어졌는지(늦은 검토)를
+    물을 자리가 없고, 있으면 그 검토가 그 이동이 준 기한보다 뒤일 수는 없으며(창의 규칙을 이력에도 묻는다)
+    이력의 마지막 검토가 지금 승인된 확인일보다 뒤일 수도 없다(뒤면 이력이 현재보다 앞선 것을 말한다).
     """
 
     problems: list[str] = []
@@ -1404,24 +1426,35 @@ def deadline_move_problems(stored: dict[str, object] | None) -> list[str]:
     if not facts:
         return problems
     promised = recorded_outside(stored).promises
-    chains: dict[str, list[tuple[str, str, str]]] = {}
-    for name, was, now, on in facts:
-        chains.setdefault(name, []).append((was, now, on))
+    chains: dict[str, list[tuple[str, str, str, str]]] = {}
+    for name, was, now, on, reviewed in facts:
+        chains.setdefault(name, []).append((was, now, on, reviewed))
     for name, steps in sorted(chains.items()):
-        for index, (was, now, on) in enumerate(steps):
+        for index, (was, now, on, reviewed) in enumerate(steps):
             start, end = _as_day(was), _as_day(now)
             stamp = f"({name}, {was} → {now}, {on or '날짜 없음'})"
             if start is None or end is None:
                 problems.append(f"기록의 기한 이동 이력에 날짜로 읽히지 않는 것이 있다: {stamp}")
                 continue
-            if end <= start:
+            if end == start:
                 problems.append(
-                    f"기록의 기한 이동 이력에 제자리거나 되돌아간 이동이 있다: {stamp} — 이동이 아니라 다른 사실이다"
+                    f"기록의 기한 이동 이력에 제자리 이동이 있다: {stamp} — 같은 날짜로 옮긴 것은 이동이 아니다"
                 )
             if index and steps[index - 1][1] != was:
                 problems.append(
                     f"기록의 기한 이동 이력이 이어지지 않는다: {stamp} 앞의 기한이 {steps[index - 1][1]} 이다 — "
                     "이력은 옛 기한에서 새 기한으로 이어져야 한다"
+                )
+            seen = _as_day(reviewed)
+            if seen is None:
+                problems.append(
+                    f"기록의 기한 이동 이력에 **확인일**이 없다: {stamp} — 그 이동이 언제의 검토로 이루어졌는지 말하지 "
+                    "못하면 옛 기한을 지나서였는지(늦은 검토)를 물을 자리가 없다: `--record --method` 로 다시 기록하라"
+                )
+            elif seen > end:
+                problems.append(
+                    f"기록의 기한 이동 이력의 검토일이 그 이동이 준 기한보다 뒤다: {stamp} 검토 {reviewed} — "
+                    "기한은 그 검토보다 뒤의 일이다(둘 중 하나가 잘못 적렸다)"
                 )
         current = promised.get(name)
         if current is not None and steps[-1][1] != current[3]:
@@ -1429,7 +1462,34 @@ def deadline_move_problems(stored: dict[str, object] | None) -> list[str]:
                 f"기록이 {name} 의 기한을 마지막으로 {steps[-1][1]} 로 옮겼다고 하면서 지금은 {current[3]} 을 승인한다 — "
                 "둘 중 하나는 틀렸다(기한 이동은 기록을 지나야 한다)"
             )
+        approved_review, last_review = (
+            _as_day(current[2]) if current is not None else None,
+            _as_day(steps[-1][3]),
+        )
+        if approved_review is not None and last_review is not None and last_review > approved_review:
+            problems.append(
+                f"기록이 {name} 의 마지막 검토를 {steps[-1][3]} 로 적으면서 지금은 {current[2] if current else ''} 의 확인을 "
+                "승인한다 — 이력이 지금보다 뒤의 검토를 말할 수는 없다(둘 중 하나는 틀렸다)"
+            )
     return problems
+
+
+def late_reviews(stored: dict[str, object] | None) -> tuple[str, ...]:
+    """기록이 사실로 남긴 **늦은 검토** — 옛 기한이 지난 뒤에 이루어진 연장(실패가 아니라 보고다).
+
+    면제의 기한은 “그 도구가 층이 되었는지 다시 본다” 는 약속인데, 그 약속을 넘겨서 검토하는 일은 실제로 일어난다
+    (기한이 지나면 표가 실패하므로 그 면제는 반드시 이력을 지나 다시 잡힌다). 그때 기록에 새 기한만 남고 검토일이 없으면
+    **약속이 지켜지지 않았다는 사실 자체가 사라진다** — 그래서 늦은 검토는 사실로 세고, 재검토 시트가 그 수를 센다
+    (세 번째·네 번째 미룸이 “층이 될 때가 되었다” 는 신호인 것과 같은 자리에서, 넘긴 검토는 그보다 강한 신호다).
+    """
+
+    late: list[str] = []
+    for name, was, now, _on, reviewed in recorded_deadline_moves(stored):
+        start, seen = _as_day(was), _as_day(reviewed)
+        if start is None or seen is None or seen <= start:
+            continue
+        late.append(f"{name} {was} → {now}(검토 {reviewed} — 옛 기한을 {(seen - start).days}일 넘김)")
+    return tuple(sorted(late))
 
 
 def recorded_promotions(stored: dict[str, object] | None) -> tuple[tuple[str, str, str, str], ...]:
@@ -1804,10 +1864,11 @@ def record_payload(
         if new not in known:
             history.append((old, new, labels, on))
             known.add(new)
-    # 면제의 **기한 이동도 사실로 이어진다** — 앞 기록이 승인한 이력은 그대로 두고, 이번에 움직인 기한을 덧붙인다.
+    # 면제의 **기한 이동도 사실로 이어진다** — 앞 기록이 승인한 이력은 그대로 두고, 이번에 움직인 기한을 덧붙인다
+    # (앞당긴 이동도 이동이다: 방향은 모순이 아니고, 늦은 검토인지는 확인일이 옛 기한을 지났는지로 계산된다).
     # (확인일 없이 기한만 미룬 것은 `record_refusals` 가 기록을 거부하므로 여기까지 오지 않는다 — 지우는 기록을 막는다.)
     was_outside = recorded_outside(previous)
-    moves: list[tuple[str, str, str, str]] = list(recorded_deadline_moves(previous))
+    moves: list[tuple[str, str, str, str, str]] = list(recorded_deadline_moves(previous))
     for item in ledger.outside:
         was = was_outside.promises.get(item.name)
         if was is None or was[3] == item.review_by:
@@ -1819,7 +1880,7 @@ def record_payload(
         refreshed = was_review is not None and now_review is not None and now_review > was_review
         if now_due > was_due and not refreshed:
             continue  # 검토 없이 미룬 것은 사실로 적지 않는다(그리고 `record_refusals` 가 기록을 거부한다)
-        moves.append((item.name, was[3], item.review_by, on))
+        moves.append((item.name, was[3], item.review_by, on, item.reviewed_on))
     # 면제의 **승격도 사실로 이어진다** — 앞 기록이 승인한 사실은 그대로 두고, 이번에 하한이 된 면제를 덧붙인다.
     # 승격은 셋이 다 된 순간에만 적힌다: 앞 기록이 면제로 승인했고(그래야 “면제가 층이 되었다” 는 사실이 된다) 지금 표가
     # 그 상수를 면제로 선언하지 않으며 그 이름이 어떤 층의 하한으로 읽히며 — 앞 기록이 모르는 이름은 승격이 아니라 새 하한이다.
@@ -1850,9 +1911,10 @@ def record_payload(
             "scanned": len(ledger.candidates),
             "review_window": {"days": _MAX_REVIEW_WINDOW_DAYS, "why": _WHY_MAX_REVIEW_WINDOW},
             "declared": [item.as_mapping() for item in ledger.outside],
-            # 기한이 움직인 순간 — 기록이 스스로 적어 이어 간다(대조가 찾아낸 이동이다).
+            # 기한이 움직인 순간 — 기록이 스스로 적어 이어 간다(대조가 찾아낸 이동이고, 확인일이 늦은 검토를 가른다).
             "deadline_moves": [
-                {"name": name, "from": was, "to": now, "on": declared_on} for name, was, now, declared_on in moves
+                {"name": name, "from": was, "to": now, "on": declared_on, "reviewed": reviewed}
+                for name, was, now, declared_on, reviewed in moves
             ],
             # 면제가 층이 된 순간 — 기록이 스스로 적어 이어 간다(그 사실이 없으면 새 하한 하나와 구별되지 않는다).
             "promoted": [
@@ -1928,9 +1990,11 @@ def record_report(
             "pulled": list(outside_pulled(ledger.outside, recorded, paired=paired_names)),
             "renamed": [{"from": old, "to": new} for old, new in renamed],
             "deadline_moves": [
-                {"name": name, "from": was, "to": now, "on": declared_on}
-                for name, was, now, declared_on in recorded_deadline_moves(stored)
+                {"name": name, "from": was, "to": now, "on": declared_on, "reviewed": reviewed}
+                for name, was, now, declared_on, reviewed in recorded_deadline_moves(stored)
             ],
+            # 늦은 검토 — 기한이 지난 뒤에 이루어진 연장(기록된 이동에서 계산한 사실이지 주장이 아니다).
+            "late": list(late_reviews(stored)),
             "promoted": [
                 {"name": name, "layer": layer, "label": label, "on": declared_on}
                 for name, layer, label, declared_on in recorded_promotions(stored)
@@ -2354,6 +2418,16 @@ def self_probe() -> Probe:
         "검토하고 미룬 기한은 승인이 필요하다(면죄부가 스스로 갱신되지 않는다)",
         len(pushed) == 1 and "기한을 미뤘다" in pushed[0] and "2026-06-01 → 2027-06-01" in pushed[0],
     )
+    cases.check(
+        "옛 기한과 같은 날 본 검토는 늦지 않다(넘긴 것만 늦다 — 경계가 그 날이다)",
+        len(pushed) == 1,
+    )
+    late_renewal = replace(healthy_declaration, reviewed_on="2027-01-10", review_by="2027-12-31")
+    late_pushed = outside_record_problems((late_renewal,), approved)
+    cases.check(
+        "기한이 지난 뒤에 다시 본 연장은 늦은 검토로 말해진다(그 사실도 기록에 남아야 한다)",
+        len(late_pushed) == 2 and "늦은 검토" in late_pushed[1] and "2027-01-10" in late_pushed[1],
+    )
     bare = replace(tight, review_by="2026-12-31")  # 확인일은 그대로, 기한만 뒤로(창 안이다)
     cases.equal(
         "기한만 미룬 것은 창 안이라도 연장이 아니다",
@@ -2430,11 +2504,22 @@ def self_probe() -> Probe:
             "declared": [replace(healthy_declaration, review_by="2027-12-31").as_mapping()],
             "review_window": wind,
             "deadline_moves": [
-                {"name": healthy_declaration.name, "from": "2026-12-31", "to": "2027-12-31", "on": "2026-12-20"}
+                {
+                    "name": healthy_declaration.name,
+                    "from": "2026-12-31",
+                    "to": "2027-12-31",
+                    "on": "2026-01-01",
+                    "reviewed": "2026-01-01",
+                }
             ],
         }
     }
     cases.equal("이어진 기한 이력은 조용하다", deadline_move_problems(moved_once), [])
+    cases.equal(
+        "제때 본 연장은 늦은 검토가 아니다(옛 기한을 넘기지 않았다)",
+        late_reviews(moved_once),
+        (),
+    )
     cases.equal(
         "약속을 담은 기록이 이력 칸을 비워 두면 이력 없는 기록이다(한 번도 안 미룬 것과 같지 않다)",
         len(
@@ -2462,7 +2547,8 @@ def self_probe() -> Probe:
                                 "name": healthy_declaration.name,
                                 "from": "2026-12-31",
                                 "to": "2027-12-31",
-                                "on": "2026-12-20",
+                                "on": "2026-01-01",
+                                "reviewed": "2026-01-01",
                             }
                         ],
                     }
@@ -2472,7 +2558,7 @@ def self_probe() -> Probe:
         1,
     )
     cases.equal(
-        "이어지지 않거나 제자리인 이동은 이력이 아니다(이동은 옛 기한에서 이어지고 앞으로 간다)",
+        "이어지지 않는 고리는 이력이 아니다(이동은 옛 기한에서 이어진다)",
         len(
             deadline_move_problems(
                 {
@@ -2484,14 +2570,70 @@ def self_probe() -> Probe:
                         ],
                         "review_window": wind,
                         "deadline_moves": [
-                            {"name": "x", "from": "2026-12-31", "to": "2027-06-30", "on": "2026-12-20"},
-                            {"name": "x", "from": "2027-07-01", "to": "2027-06-30", "on": "2027-06-20"},
+                            {
+                                "name": "x",
+                                "from": "2026-12-31",
+                                "to": "2027-06-30",
+                                "on": "2026-05-20",
+                                "reviewed": "2026-05-20",
+                            },
+                            {
+                                "name": "x",
+                                "from": "2027-07-01",
+                                "to": "2027-06-30",
+                                "on": "2026-06-01",
+                                "reviewed": "2026-06-01",
+                            },
                         ],
                     }
                 }
             )
         ),
-        2,
+        1,
+    )
+    cases.equal(
+        "기한을 앞당긴 이동도 이동이다(방향은 모순이 아니다 — 기록이 스스로를 막으면 안 된다)",
+        deadline_move_problems(
+            {
+                "outside": {
+                    "declared": [healthy_declaration.as_mapping()],
+                    "review_window": wind,
+                    "deadline_moves": [
+                        {
+                            "name": healthy_declaration.name,
+                            "from": "2027-12-31",
+                            "to": "2026-12-31",
+                            "on": "2026-01-01",
+                            "reviewed": "2026-01-01",
+                        }
+                    ],
+                }
+            }
+        ),
+        [],
+    )
+    cases.equal(
+        "제자리 이동은 이동이 아니다(같은 날짜로 옮긴 것은 사실이 아니라 고친 자리다)",
+        len(
+            deadline_move_problems(
+                {
+                    "outside": {
+                        "declared": [healthy_declaration.as_mapping()],
+                        "review_window": wind,
+                        "deadline_moves": [
+                            {
+                                "name": healthy_declaration.name,
+                                "from": "2026-12-31",
+                                "to": "2026-12-31",
+                                "on": "2026-01-01",
+                                "reviewed": "2026-01-01",
+                            }
+                        ],
+                    }
+                }
+            )
+        ),
+        1,
     )
     cases.equal(
         "이미 사라진 면제의 이동 이력은 이력으로 남는다(철회도 기록을 지나야 한다)",
@@ -2500,11 +2642,126 @@ def self_probe() -> Probe:
                 "outside": {
                     "declared": [],
                     "review_window": wind,
-                    "deadline_moves": [{"name": "x", "from": "2026-12-31", "to": "2027-12-31", "on": "2026-12-20"}],
+                    "deadline_moves": [
+                        {
+                            "name": "x",
+                            "from": "2026-12-31",
+                            "to": "2027-12-31",
+                            "on": "2026-12-20",
+                            "reviewed": "2026-12-20",
+                        }
+                    ],
                 }
             }
         ),
         [],
+    )
+    undated_move = deadline_move_problems(
+        {
+            "outside": {
+                "declared": [replace(healthy_declaration, review_by="2027-12-31").as_mapping()],
+                "review_window": wind,
+                "deadline_moves": [
+                    {
+                        "name": healthy_declaration.name,
+                        "from": "2026-12-31",
+                        "to": "2027-12-31",
+                        "on": "2026-09-24",
+                    }
+                ],
+            }
+        }
+    )
+    cases.check(
+        "이력의 이동에 확인일이 없으면 늦었는지 물을 자리가 없다(그 자리 하나로 다시 기록하게 한다)",
+        len(undated_move) == 1 and "확인일" in undated_move[0],
+    )
+    cases.equal(
+        "이력의 검토일이 그 이동이 준 기한보다 뒤면 창의 규칙이 이력에도 문다",
+        len(
+            deadline_move_problems(
+                {
+                    "outside": {
+                        "declared": [
+                            replace(
+                                healthy_declaration, name="x", reviewed_on="2026-07-15", review_by="2026-06-30"
+                            ).as_mapping()
+                        ],
+                        "review_window": wind,
+                        "deadline_moves": [
+                            {
+                                "name": "x",
+                                "from": "2026-01-01",
+                                "to": "2026-06-30",
+                                "on": "2026-07-15",
+                                "reviewed": "2026-07-15",
+                            }
+                        ],
+                    }
+                }
+            )
+        ),
+        1,
+    )
+    cases.equal(
+        "이력의 마지막 검토가 지금 승인된 확인일보다 뒤면 기록이 자기 이력과 다른 말을 한다",
+        len(
+            deadline_move_problems(
+                {
+                    "outside": {
+                        "declared": [replace(healthy_declaration, review_by="2027-12-31").as_mapping()],
+                        "review_window": wind,
+                        "deadline_moves": [
+                            {
+                                "name": healthy_declaration.name,
+                                "from": "2026-12-31",
+                                "to": "2027-12-31",
+                                "on": "2026-12-01",
+                                "reviewed": "2026-12-01",
+                            }
+                        ],
+                    }
+                }
+            )
+        ),
+        1,
+    )
+    late_fact: dict[str, str] = {
+        "name": healthy_declaration.name,
+        "from": "2026-12-31",
+        "to": "2027-12-31",
+        "on": "2027-01-10",
+        "reviewed": "2027-01-10",
+    }
+    late_once: dict[str, object] = {
+        "outside": {
+            "declared": [replace(healthy_declaration, reviewed_on="2027-01-10", review_by="2027-12-31").as_mapping()],
+            "review_window": wind,
+            "deadline_moves": [late_fact],
+        }
+    }
+    cases.equal(
+        "늦은 검토는 모순이 아니다(약속을 넘긴 사실은 실패가 아니라 사실이다)",
+        deadline_move_problems(late_once),
+        [],
+    )
+    cases.check(
+        "그 사실은 기록된 두 날짜의 비교로 계산된다(주장이 아니라 사실이다)",
+        late_reviews(late_once)
+        == (f"{healthy_declaration.name} 2026-12-31 → 2027-12-31(검토 2027-01-10 — 옛 기한을 10일 넘김)",),
+    )
+    sheet_ledger = Ledger(
+        (),
+        (),
+        (),
+        0.0,
+        outside=(healthy_declaration,),
+        record={"outside": {"deadline_moves": [late_fact], "late": list(late_reviews(late_once))}},
+    )
+    cases.check(
+        "재검토 시트가 늦은 검토를 센다(기한을 넘긴 도구는 층으로 세울 자리가 지났다는 신호다)",
+        "늦음 1회" in review_sheet(sheet_ledger)
+        and "지금까지 미룬 횟수 1회 · 늦은 검토 1회" in review_sheet(sheet_ledger),
     )
     cases.equal(
         "검토 없이 미룬 면제가 있으면 기록을 거부한다(그대로 쓰면 그 사실이 지워진다)",
@@ -3242,11 +3499,12 @@ def _span(days: int | None) -> str:
     return f"{days}일 남음" if days > 0 else f"{-days}일 지남"
 
 
-def _deadline_history(ledger: Ledger, name: str) -> tuple[str, int, int]:
-    """한 면제의 기한 이동 이력 — (문장, 미룸 횟수, 당긴 횟수). 기록이 사실로 남긴 이동만 센다.
+def _deadline_history(ledger: Ledger, name: str) -> tuple[str, int, int, int]:
+    """한 면제의 기한 이동 이력 — (문장, 미룸 횟수, 당긴 횟수, 늦은 검토 횟수). 기록이 사실로 남긴 이동만 센다.
 
     미룸 횟수는 주장이 아니라 **계산된 사실**이다(기록이 대조로 찾아낸 이동을 이어 간다) — 검토 세션에서 “이 면제가
-    몇 번째인가” 를 묻는 자리가 여기고, 세 번째·네 번째면 그 면제는 층이 될 때가 되었다는 신호다.
+    몇 번째인가” 를 묻는 자리가 여기고, 세 번째·네 번째면 그 면제는 층이 될 때가 되었다는 신호다. **늦은 검토**(옛
+    기한을 지나서 이루어진 연장)는 그보다 강한 신호라 따로 센다: 그 면제의 약속은 이미 한 번 지켜지지 않았다.
     """
 
     moves = _record_dict(ledger.record, "outside").get("deadline_moves")
@@ -3254,10 +3512,15 @@ def _deadline_history(ledger: Ledger, name: str) -> tuple[str, int, int]:
     mine = [item for item in steps if str(item.get("name")) == name]
     deferred = sum(1 for item in mine if str(item.get("to")) > str(item.get("from")))
     pulled = sum(1 for item in mine if str(item.get("to")) < str(item.get("from")))
+    late = 0
+    for item in mine:
+        due, seen = _as_day(str(item.get("from"))), _as_day(str(item.get("reviewed", "")))
+        if due is not None and seen is not None and seen > due:
+            late += 1
     if not mine:
-        return ("", deferred, pulled)
+        return ("", deferred, pulled, late)
     history = "; ".join(f"{item.get('from')} → {item.get('to')}({item.get('on') or '날짜 없음'} 승인)" for item in mine)
-    return (history, deferred, pulled)
+    return (history, deferred, pulled, late)
 
 
 def review_sheet(ledger: Ledger, *, today: date | None = None) -> str:
@@ -3288,8 +3551,10 @@ def review_sheet(ledger: Ledger, *, today: date | None = None) -> str:
     for index, item in enumerate(order, start=1):
         days = _days_left(item, as_of)
         used = item.window
-        history, deferred, pulled = _deadline_history(ledger, item.name)
-        counts = f"미룸 {deferred}회" + (f" · 당김 {pulled}회" if pulled else "")
+        history, deferred, pulled, late = _deadline_history(ledger, item.name)
+        counts = (
+            f"미룸 {deferred}회" + (f" · 당김 {pulled}회" if pulled else "") + (f" · 늦음 {late}회" if late else "")
+        )
         lines.append(
             f"[{index}] {item.name} — {item.owner} · 확인 {item.reviewed_on} → 기한 {item.review_by}("
             f"{_span(days)}) · 창 {used if used is not None else '못 읽음'}/{window}일 · {counts}"
@@ -3300,15 +3565,16 @@ def review_sheet(ledger: Ledger, *, today: date | None = None) -> str:
     lines.append("  물음은 모든 면제에 같다: **그 도구가 층이 되었는가?**")
     lines.append(
         f"    ① 아직 아니다 → `reviewed_on` 을 오늘({as_of.isoformat()})로, `review_by` 를 오늘 + {window}일 안으로 "
-        '적고 `--record --method "무엇을 보고 미뤘는가"`'
+        '적고 `--record --method "무엇을 보고 미뤘는가"`(기한을 넘겨 검토했다면 늦은 검토로 기록에 남는다)'
     )
     lines.append(
         "    ② 되었다 → `--promote <이름>` 이 남은 일을 낸다(그 층의 하한 목록에 싣고·선언을 지우고·기록한다 — 셋이 다 되어야 승격이다)"
     )
     deferred_total = sum(_deadline_history(ledger, item.name)[1] for item in ledger.outside)
+    late_total = sum(_deadline_history(ledger, item.name)[3] for item in ledger.outside)
     lines.append(
-        f"  지금까지 미룬 횟수 {deferred_total}회 — 세 번째·네 번째 미룸은 그 도구를 층으로 세울 자리가 되었다는 신호다"
-        "(기한을 미룬 사실은 기록이 계산해 이어 간다)"
+        f"  지금까지 미룬 횟수 {deferred_total}회 · 늦은 검토 {late_total}회 — 세 번째·네 번째 미룸은 그 도구를 층으로 "
+        "세울 자리가 되었다는 신호이고, 기한을 넘겨 다시 본 연장은 그보다 강한 신호다(둘 다 기록된 이동에서 센다)"
     )
     return "\n".join(lines)
 
@@ -3361,7 +3627,7 @@ def describe(ledger: Ledger, probe: Probe) -> str:
         lines.append(
             f"  면제 기록  선언 {len(ledger.outside)}개 · 기록이 승인한 면제 {exempted.get('recorded', 0)}개 "
             f"({exempted.get('shape', '')}, 창 {exempted.get('recorded_window_days', 0)}일) · 기록된 기한 이동 "
-            f"{len(_record_lines(exempted, 'deadline_moves'))}회 · 기록된 승격 "
+            f"{len(_record_lines(exempted, 'deadline_moves'))}회(그중 늦은 검토 {len(_record_lines(exempted, 'late'))}회) · 기록된 승격 "
             f"{len(_record_lines(exempted, 'promoted'))}개 — 면제를 만들거나·거두거나·기한을 미루거나 층으로 올리면 승인이 필요하다"
         )
         promoted = exempted.get("promoted")
@@ -3376,8 +3642,11 @@ def describe(ledger: Ledger, probe: Probe) -> str:
             if isinstance(fact, dict):
                 lines.append(
                     f"    · 기한 이동 이력(기록이 사실로 남긴 것 — 몇 번째 재검토인지는 여기서 센다): "
-                    f"{fact.get('name')} {fact.get('from')} → {fact.get('to')}({fact.get('on') or '날짜 없음'} 승인)"
+                    f"{fact.get('name')} {fact.get('from')} → {fact.get('to')}({fact.get('on') or '날짜 없음'} 승인 · "
+                    f"검토 {fact.get('reviewed') or '날짜 없음'})"
                 )
+        for line in _record_lines(exempted, "late"):
+            lines.append(f"    · 늦은 검토(기록이 사실로 남긴 것 — 기한이 지난 뒤에 다시 본 연장): {line}")
         for line in _record_lines(exempted, "reviewed"):
             lines.append(f"    · 면제 확인일을 새로 잡았다(보고만 — 더 자주 보는 쪽이다): {line}")
         for line in _record_lines(exempted, "pulled"):

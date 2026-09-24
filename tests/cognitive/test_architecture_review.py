@@ -640,6 +640,41 @@ def test_repository_ledger_has_a_recorded_approval(review: Any) -> None:  # noqa
     assert report["counts"]["wired_layers"] == len(outside["wiring"])  # type: ignore[index]
     names = {str(layer["name"]) for layer in report["layers"]}  # type: ignore[index]
     assert set(outside["wiring"].values()) <= names
+    # 늦은 검토도 같은 자리에서 읽힌다 — 이 저장소에는 아직 없다(선언 10개가 모두 제 기한 안에 있다).
+    assert report["counts"]["record_exemptions_late"] == 0  # type: ignore[index]
+    assert report["record"]["outside"]["late"] == []  # type: ignore[index]
+
+
+def test_a_pass_whose_late_reviews_do_not_match_the_list_is_a_contradiction(review: Any) -> None:  # noqa: ANN401
+    """보고는 통과라는데 **늦은 검토** 수가 헤더와 목록에서 갈라지면 모순이다.
+
+    늦은 검토는 “이 면제의 약속이 한 번 깨졌다” 는 사실이다 — 기한이 지난 뒤에 다시 본 연장은 실패가 아니지만(그 도구가
+    층이 될 때가 되었다는 신호다), **몇 번인지**(헤더 수)와 **어느 면제인지**(목록)가 다른 수를 말하면 읽는 사람이 둘 중
+    하나를 믿게 된다. 실제 실행에서는 이 자국이 나오지 않으므로 합성 보고로 고정한다.
+    """
+
+    report = _ledger_report()
+    record = dict(report["record"])  # type: ignore[arg-type]
+    counts = dict(report["counts"])  # type: ignore[arg-type]
+    fact = "scripts/a.py:MIN_X 2026-12-31 → 2027-12-31(검토 2027-01-10 — 옛 기한을 10일 넘김)"
+    agreed = review.check_floor_ledger(
+        _ledger_report(
+            counts={**counts, "record_exemptions_late": 1},
+            record={**record, "outside": {"late": [fact]}},
+        )
+    )
+
+    assert agreed.passed is True, agreed.detail
+    assert "늦은 검토 1" in agreed.detail, agreed.detail
+    drifted = review.check_floor_ledger(
+        _ledger_report(
+            counts={**counts, "record_exemptions_late": 0},
+            record={**record, "outside": {"late": [fact]}},
+        )
+    )
+
+    assert drifted.passed is False
+    assert "늦은 검토 수가 헤더와 목록에서 다르다" in drifted.detail
 
 
 def test_invalidated_reverification_fails_the_check(review: Any) -> None:  # noqa: ANN401

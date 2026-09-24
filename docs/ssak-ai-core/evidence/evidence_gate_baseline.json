@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "배선 회차: 하한 원장이 승격을 잇는 자리를 하한 라벨이 아니라 코드의 배선(wired_layers — 상수 이름 → 그 하한을 드는 층)으로 옮긴 것을 새 기준으로 승인한다. 리뷰의 통과 문장이 표 밖 배선 수를 싣고(모순 검사: 표가 하한으로 아는 이름 수 = 이어진 이름 수 · 배선이 표에 없는 층을 가리키지 않음), 그 값은 ledger_wired 22 로 고정된다. 이번 실행의 움직임: review 인용 271 → 272 ▲ · measured.cognitive_tests 748 → 751 ▲ · 기준에 없던 수 둘(counts.wired_layers 22 · measured.ledger_wired 22)."
+    "기한 이동 이력 회차: 앞당긴 이동은 모순이 아니라 사실이고, 이동마다 확인일을 담아 늦은 검토(옛 기한을 지나서 다시 본 연장)를 센다 — 그 새 수 둘(floor_ledger counts.record_exemptions_late 0 · review measured.ledger_late_reviews 0)이 기준에 없던 수이고, cognitive_tests 는 새 계약 시험 3건으로 751 → 754 다(11/11 PASS)."
   ],
   "layers": {
     "audit_enum_identity": {
@@ -52,6 +52,7 @@
       "counts.outside_scanned": 32,
       "counts.outside_silent": 0,
       "counts.record_exemptions": 10,
+      "counts.record_exemptions_late": 0,
       "counts.record_exemptions_moves": 0,
       "counts.record_exemptions_promoted": 0,
       "counts.record_exemptions_pulled": 0,
@@ -133,7 +134,7 @@
       "checks": 16,
       "measured.canary_harnesses": 11,
       "measured.canary_ok": 11,
-      "measured.cognitive_tests": 751,
+      "measured.cognitive_tests": 754,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
@@ -146,6 +147,7 @@
       "measured.ledger_candidates": 32,
       "measured.ledger_declared": 10,
       "measured.ledger_floors": 21,
+      "measured.ledger_late_reviews": 0,
       "measured.ledger_layers": 11,
       "measured.ledger_recorded_floors": 21,
       "measured.ledger_wired": 22,
@@ -168,6 +170,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "배선 회차: 하한 원장이 승격을 잇는 자리를 하한 라벨이 아니라 코드의 배선(wired_layers — 상수 이름 → 그 하한을 드는 층)으로 옮긴 것을 새 기준으로 승인한다. 리뷰의 통과 문장이 표 밖 배선 수를 싣고(모순 검사: 표가 하한으로 아는 이름 수 = 이어진 이름 수 · 배선이 표에 없는 층을 가리키지 않음), 그 값은 ledger_wired 22 로 고정된다. 이번 실행의 움직임: review 인용 271 → 272 ▲ · measured.cognitive_tests 748 → 751 ▲ · 기준에 없던 수 둘(counts.wired_layers 22 · measured.ledger_wired 22).",
+  "method": "기한 이동 이력 회차: 앞당긴 이동은 모순이 아니라 사실이고, 이동마다 확인일을 담아 늦은 검토(옛 기한을 지나서 다시 본 연장)를 센다 — 그 새 수 둘(floor_ledger counts.record_exemptions_late 0 · review measured.ledger_late_reviews 0)이 기준에 없던 수이고, cognitive_tests 는 새 계약 시험 3건으로 751 → 754 다(11/11 PASS).",
   "recorded_on": "2026-09-24"
 }

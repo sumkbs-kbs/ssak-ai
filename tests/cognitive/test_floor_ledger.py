@@ -188,10 +188,17 @@ def test_the_committed_record_approves_the_exemptions_with_their_promise(ledger_
     # 기한 이동 이력 — “몇 번째 재검토인가” 를 세는 근거는 기록이 **사실로** 남긴 이동뿐이다(주장이 아니라 계산이다).
     assert isinstance(stored["outside"]["deadline_moves"], list), "기록이 기한 이동 이력 칸을 갖고 있지 않다"
     assert ledger_module.deadline_move_problems(stored) == [], "기록의 이력이 이어지지 않거나 지금 기한과 어긋난다"
-    approved = {item["name"]: item["review_by"] for item in stored["outside"]["declared"]}
-    for name, _was, now, on in ledger_module.recorded_deadline_moves(stored):
+    approved = {item["name"]: (item["review_by"], item["reviewed_on"]) for item in stored["outside"]["declared"]}
+    for name, _was, now, on, reviewed in ledger_module.recorded_deadline_moves(stored):
         assert on.strip(), f"이력에 승인 날짜가 없다: {name}"
-        assert now == approved[name], f"이력의 마지막 기한이 지금 승인된 기한과 다르다: {name}"
+        assert now == approved[name][0], f"이력의 마지막 기한이 지금 승인된 기한과 다르다: {name}"
+        # 그 이동을 받친 **확인일** — 없으면 “이 연장이 옛 기한을 지나서였는가”(늦은 검토)를 물을 자리가 없다.
+        assert reviewed.strip(), f"이력에 확인일이 없다: {name}"
+        assert reviewed <= approved[name][1], f"이력의 검토가 지금 승인된 확인일보다 뒤다: {name}"
+    # 늦은 검토는 주장이 아니라 **기록된 두 날짜의 비교**다(확인일이 옛 기한을 넘긴 이동만 그 목록에 있다).
+    late = ledger_module.late_reviews(stored)
+    for name, was, _now, _on, reviewed in ledger_module.recorded_deadline_moves(stored):
+        assert (reviewed > was) == any(line.startswith(f"{name} ") for line in late), f"늦은 검토 계산이 다르다: {name}"
     # 승격 이력 — 면제가 층이 되는 순간도 사실이라야 “그 도구가 층이 되었다” 와 “그 상수를 지웠다” 가 갈린다.
     assert isinstance(stored["outside"]["promoted"], list), "기록이 승격 이력 칸을 갖고 있지 않다"
     assert stored["outside"]["promoted"] == [], "이 기록에는 층이 된 면제가 없다 — 그 사실이 빈 것도 사실이다"
@@ -224,7 +231,15 @@ def test_an_exemption_deadline_is_bounded_by_a_confirmation(ledger_module: Any, 
     ), "창을 넘는 기한은 표가 먼저 막는다(기록을 보기 전에)"
     refreshed = ledger_module.replace(declared, reviewed_on="2026-11-30", review_by="2027-11-30")
     reviewed = ledger_module.outside_record_problems((refreshed,), approved)
-    assert len(reviewed) == 1 and "기한을 미뤘다" in reviewed[0] and "기한만 미뤘다" not in reviewed[0]
+
+    # 이 연장은 **늦었다**(검토 2026-11-30 이 옛 기한 2026-10-31 을 지났다) — 두 문장이 나오는 것이 맞다:
+    # 하나는 “그 결정을 남겨라”, 다른 하나는 “그 결정은 기한을 넘기고 나서였다”.
+    assert len(reviewed) == 2 and "기한을 미뤘다" in reviewed[0] and "기한만 미뤘다" not in reviewed[0]
+    assert "늦은 검토" in reviewed[1] and "2026-10-31" in reviewed[1]
+    on_time = ledger_module.replace(declared, reviewed_on="2026-10-31", review_by="2027-10-31")
+    punctual = ledger_module.outside_record_problems((on_time,), approved)
+
+    assert len(punctual) == 1 and "늦은 검토" not in punctual[0], "기한을 넘기지 않은 연장에 늦었다고 말하면 안 된다"
     assert ledger.record["outside"]["window_days"] == ledger_module._MAX_REVIEW_WINDOW_DAYS
     assert ledger.record["outside"]["bare_deferred"] == []
 
@@ -846,6 +861,119 @@ def test_cli_a_bare_extension_is_refused_rather_than_written_away(tmp_path: Path
     assert sheet.returncode == 0, sheet.stderr
     assert f"{name} — " in sheet.stdout and "미룸 1회" in sheet.stdout, sheet.stdout
     assert was in sheet.stdout and "승인" in sheet.stdout, sheet.stdout
+
+
+@pytest.mark.slow
+def test_cli_a_pulled_deadline_is_a_fact_the_gate_can_read(tmp_path: Path) -> None:
+    """기한을 **앞당긴** 이동도 기록을 지나야 하는 사실이다 — 기록이 스스로를 막으면 안 된다.
+
+    이 자리의 첫 구현은 이력에 **방향**을 요구했다(기한은 앞으로만 간다). 그래서 앞당긴 이동을 적으면 다음 게이트가 그
+    이동을 “되돌아간 이동” 이라 부르며 실패했고(표는 초록인데 기록 때문에 빨간 상태다), 실패한 실행은 기록되지 않으므로 그
+    상태는 손으로 기록을 고쳐 **사실을 지우는** 수밖에 풀리지 않았다. 표도 그 방향을 보고로 내고(`outside_pulled`) 시트가
+    “당김” 으로 세므로, 이력이 담아야 하는 것은 방향이 아니라 **옛 기한·새 기한·확인일**이다.
+    """
+
+    evidence = tmp_path / "evidence"
+    evidence.mkdir()
+    record = evidence / "floor_ledger.json"
+    first = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--record", "--method", "첫 승인", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert first.returncode == 0, first.stderr
+    payload = json.loads(record.read_text(encoding="utf-8"))
+    declared = payload["outside"]["declared"]
+    name, was = declared[0]["name"], declared[0]["review_by"]
+    declared[0]["review_by"] = "2027-06-30"  # 기록만 더 나중 기한을 승인한다(표는 그만큼 기한을 앞당긴 셈이다)
+    record.write_text(json.dumps(payload, ensure_ascii=False, indent=2), "utf-8")
+
+    def ledger(*extra: str) -> Any:  # noqa: ANN401
+        return subprocess.run(
+            [sys.executable, str(LEDGER_SCRIPT), *extra, "--evidence", str(evidence)],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    assert ledger("--gate").returncode == 0, "앞당긴 기한은 실패가 아니라 보고다"
+    assert ledger("--record", "--method", "앞당김 승인").returncode == 0
+    written = json.loads(record.read_text(encoding="utf-8"))
+    moves = [item for item in written["outside"]["deadline_moves"] if item["name"] == name]
+
+    assert len(moves) == 1, written["outside"]["deadline_moves"]
+    assert moves[0]["from"] == "2027-06-30" and moves[0]["to"] == was, moves
+    assert moves[0]["reviewed"] == declared[0]["reviewed_on"], moves  # 그 이동을 받친 확인일이 함께 남는다
+    assert ledger("--gate").returncode == 0, "기록한 이동이 다음 게이트를 막았다"
+    sheet = ledger("--review")
+
+    assert sheet.returncode == 0, sheet.stderr
+    assert "당김 1회" in sheet.stdout, sheet.stdout
+
+
+@pytest.mark.slow
+def test_cli_a_late_review_is_recorded_as_a_fact(tmp_path: Path) -> None:
+    """기한을 넘겨 다시 본 연장은 **늦은 검토**로 남는다 — 약속이 깨진 사실이 조용히 사라지지 않게.
+
+    기한이 지나면 표가 실패하므로 그 면제는 반드시 이력을 지나 다시 잡히는데, 그때 기록에 새 기한만 남고 **언제 검토했는지**가
+    없으면 “제때 봤다” 와 “넘겨서 봤다” 가 같은 줄로 읽혔다(승인 날짜 `on` 은 기록을 쓴 날이라 검토일이 아니다). 이제 이동마다
+    확인일이 함께 남고, 확인일이 옛 기한을 지났으면 그 사실이 원장과 재검토 시트에 계산되어 나온다(실패가 아니라 사실이다 —
+    넘긴 도구는 층으로 세울 자리가 지났다는 신호다).
+    """
+
+    evidence = tmp_path / "evidence"
+    evidence.mkdir()
+    record = evidence / "floor_ledger.json"
+    first = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--record", "--method", "첫 승인", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert first.returncode == 0, first.stderr
+    payload = json.loads(record.read_text(encoding="utf-8"))
+    declared = payload["outside"]["declared"]
+    name = declared[0]["name"]
+    declared[0]["reviewed_on"], declared[0]["review_by"] = "2026-09-10", "2026-09-20"  # 그 약속은 2026-09-20 에 지났다
+    record.write_text(json.dumps(payload, ensure_ascii=False, indent=2), "utf-8")
+
+    def ledger(*extra: str) -> Any:  # noqa: ANN401
+        return subprocess.run(
+            [sys.executable, str(LEDGER_SCRIPT), *extra, "--evidence", str(evidence)],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    pending = ledger("--gate")
+
+    assert pending.returncode == 1, pending.stdout
+    assert "재검토 기한을 미뤘다" in pending.stderr and "늦은 검토" in pending.stderr, pending.stderr
+    assert "2026-09-20" in pending.stderr, pending.stderr
+    assert ledger("--record", "--method", "기한을 넘겨 다시 본 연장").returncode == 0
+    written = json.loads(record.read_text(encoding="utf-8"))
+    moves = [item for item in written["outside"]["deadline_moves"] if item["name"] == name]
+
+    assert len(moves) == 1, written["outside"]["deadline_moves"]
+    assert moves[0]["from"] == "2026-09-20" and moves[0]["reviewed"] == "2026-09-24", moves
+    assert ledger("--gate").returncode == 0
+    sheet = ledger("--review")
+
+    assert sheet.returncode == 0, sheet.stderr
+    assert "늦음 1회" in sheet.stdout and "늦은 검토 1회" in sheet.stdout, sheet.stdout
+    assert "옛 기한을 4일 넘김" not in sheet.stdout  # 시트는 수를 세고, 문장은 원장이 낸다
+    shown = ledger()
+
+    assert shown.returncode == 0, shown.stderr
+    assert "옛 기한을 4일 넘김" in shown.stdout, shown.stdout
+    assert "그중 늦은 검토 1회" in shown.stdout, shown.stdout
 
 
 @pytest.mark.slow

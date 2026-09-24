@@ -1283,6 +1283,8 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
     하한 **라벨**로 이으려 한 첫 구현이 자기시험만 통과하고 실제 저장소에서는 한 번도 물지 않았다).
     기한 이동 이력은 **보고만** 한다(그 이력이 자기 기한과 맞는지는 원장이 묻고, 어긋나면 기록 문제로 실려 위의
     “통과라는데 기록 문제가 있다” 가 문다) — 리뷰가 수를 옮겨 적는 자리와 판정하는 자리를 가르는 규칙은 원장과 같다.
+    **늦은 검토**도 같은 자리에서 본다: “몇 번 넘겼나”(헤더 수)와 “어느 면제인가”(목록)가 갈라지면 읽는 사람이 둘 중
+    하나를 믿게 되고, 그 수는 “이 면제의 약속이 깨졌다” 는 사실이라 조용히 달라져서는 안 된다.
     """
 
     if report is None:
@@ -1344,6 +1346,12 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
             f"표가 하한으로 아는 이름({wired}개) 중 **어느 층의 하한인지 이어진** 이름이 {len(wiring)}개다 — "
             "이어지지 않은 이름은 승격을 잇지 못한다(그래서 라벨이 아니라 배선으로 잇는다)"
         )
+    late = _as_list(exempted.get("late"))
+    if _as_int(counts.get("record_exemptions_late")) != len(late):
+        problems.append(
+            f"늦은 검토 수가 헤더와 목록에서 다르다({_as_int(counts.get('record_exemptions_late'))} ≠ {len(late)}) — "
+            "“몇 번 넘겼나” 와 “어느 면제인가” 가 다른 수를 말한다(약속이 깨진 면제를 조용히 지나칠 수 있다)"
+        )
     stray = sorted({str(layer) for layer in wiring.values()} - {str(layer.get("name")) for layer in layers})
     if stray:
         problems.append(f"배선이 표에 없는 층을 가리킨다: {', '.join(stray)} — 그 이름은 어느 층의 하한도 아니다")
@@ -1378,7 +1386,8 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
             f"{len(_as_list(exempted.get('bare_deferred')))} · 기한 미룸 {len(_as_list(exempted.get('deferred')))} · "
             f"이름만 바뀐 듯한 면제 {len(_as_list(exempted.get('renamed')))} · 기한 당김 "
             f"{len(_as_list(exempted.get('pulled')))}보고 · 확인일 갱신 {len(_as_list(exempted.get('reviewed')))}보고 · "
-            f"기록된 기한 이동 {len(_as_list(exempted.get('deadline_moves')))} · 기록된 승격 "
+            f"기록된 기한 이동 {len(_as_list(exempted.get('deadline_moves')))} · 늦은 검토 {len(late)} "
+            f"(기한을 넘겨 다시 본 연장) · 기록된 승격 "
             f"{len(_as_list(exempted.get('promoted')))}) — 재검토는 `--review` 가 기한 순서로, 승격은 `--promote` 가 남은 일을 낸다"
         ),
         observed=summed,
@@ -1403,6 +1412,8 @@ def ledger_measured(report: dict[str, object] | None) -> dict[str, int]:
         "ledger_declared": _as_int(counts.get("outside_declared")),
         "ledger_wired": _as_int(counts.get("wired_layers")),
         "ledger_recorded_floors": _as_int(counts.get("recorded_floors")),
+        # 늦은 검토가 생기면 문서의 수가 먼저 낡는다 — 약속이 깨진 사실은 조용히 늘어나면 안 된다(0에서 늘면 사람이 쓴다).
+        "ledger_late_reviews": _as_int(counts.get("record_exemptions_late")),
     }
 
 
