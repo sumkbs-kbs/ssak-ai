@@ -1278,6 +1278,9 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
     층별 하한 합계 = 헤더 합계 · 승인을 못 읽은 층이 없음 · 고아 기록 수 = 헤더 수 · 하한에 근거가 있음 ·
     표 밖 **면제**(선언)가 기록이 승인한 수와 같고 **재검토 창**도 기록과 같음(창을 넓히는 것도 결정이므로 승인된 창과
     재는 자가 갈라지면 안 된다) · 원장이 자기 판정(`verdict`)과 종료 코드에서 모순되지 않음.
+    표 밖 **배선**도 같은 자리에서 본다: “배선됐다” 는 수와 “어느 층의 하한인지 이어졌다” 는 지도가 갈라지면(이어지지
+    않은 이름이 생기면) 면제가 층이 되는 순간을 잇지 못하고 — 그 사실을 통과 문장이 감춘다(이번 회차의 결함이 그 모양이다:
+    하한 **라벨**로 이으려 한 첫 구현이 자기시험만 통과하고 실제 저장소에서는 한 번도 물지 않았다).
     기한 이동 이력은 **보고만** 한다(그 이력이 자기 기한과 맞는지는 원장이 묻고, 어긋나면 기록 문제로 실려 위의
     “통과라는데 기록 문제가 있다” 가 문다) — 리뷰가 수를 옮겨 적는 자리와 판정하는 자리를 가르는 규칙은 원장과 같다.
     """
@@ -1298,6 +1301,10 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
     baseless = [str(floor.get("label")) for floor in floors if not str(floor.get("why", "")).strip()]
     record = _as_dict(report.get("record"))
     exempted = _as_dict(record.get("outside"))
+    # 표 밖 배선 — 이름 → 그 하한을 드는 층(라벨은 사람이 쓴 이름이라 이름으로는 잇지 못한다): 승격을 잇는 유일한 자리다.
+    outside_report = _as_dict(report.get("outside"))
+    wiring = _as_dict(outside_report.get("wiring"))
+    wired = _as_int(outside_report.get("wired"))
     record_problems = [str(item) for item in _as_list(record.get("problems"))]
     problems: list[str] = []
     exit_code = _as_int(report.get("exit_code"))
@@ -1327,6 +1334,19 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
         problems.append(f"고아 기록 수가 목록과 다르다({_as_int(counts.get('orphans'))} ≠ {len(orphans)})")
     if baseless:
         problems.append(f"근거 없는 하한을 표에 싣고도 통과했다: {', '.join(baseless)}")
+    if _as_int(counts.get("wired_layers")) != len(wiring):
+        problems.append(
+            f"배선 지도가 헤더 수와 다르다({_as_int(counts.get('wired_layers'))} ≠ {len(wiring)}) — "
+            "“몇 개가 배선됐나” 와 “어느 층의 하한인가” 가 다른 수를 말한다"
+        )
+    if wired != len(wiring):
+        problems.append(
+            f"표가 하한으로 아는 이름({wired}개) 중 **어느 층의 하한인지 이어진** 이름이 {len(wiring)}개다 — "
+            "이어지지 않은 이름은 승격을 잇지 못한다(그래서 라벨이 아니라 배선으로 잇는다)"
+        )
+    stray = sorted({str(layer) for layer in wiring.values()} - {str(layer.get("name")) for layer in layers})
+    if stray:
+        problems.append(f"배선이 표에 없는 층을 가리킨다: {', '.join(stray)} — 그 이름은 어느 층의 하한도 아니다")
     if verdict == "PASS" and _as_int(exempted.get("declared")) != _as_int(exempted.get("recorded")):
         problems.append(
             f"원장이 통과라고 하는데 면제가 기록과 다르다(선언 {_as_int(exempted.get('declared'))} ≠ "
@@ -1352,6 +1372,7 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
             f"층 이동 {len(_as_list(record.get('vanished_layers'))) + len(_as_list(record.get('added_layers')))}"
             f"(이름 변경 후보 {len(_as_list(record.get('renamed_layers')))}) · "
             f"관측 이동 {len(_as_list(record.get('moves')))}보고) · "
+            f"표 밖 배선 {len(wiring)}개(어느 층의 하한인지 이어진 이름 — 승격을 잇는 자리다) · "
             f"면제 기록 {_as_int(exempted.get('recorded'))}개(선언 {_as_int(exempted.get('declared'))}개 · "
             f"창 {_as_int(exempted.get('recorded_window_days'))}일) · 면제의 판단 이동 0(검토 없이 미룸 "
             f"{len(_as_list(exempted.get('bare_deferred')))} · 기한 미룸 {len(_as_list(exempted.get('deferred')))} · "
@@ -1367,8 +1388,9 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
 def ledger_measured(report: dict[str, object] | None) -> dict[str, int]:
     """원장에서 마커로 고정할 값 — 표가 사라지거나 하한이 줄면 문서가 먼저 멈춘다.
 
-    스캔 규모(후보·선언)도 여기서 고정한다: 후보가 줄면(임계값이 사라지거나 스캔이 눈머는 순간) 문서가 먼저 멈춰
-    사람이 “사라진 하한이 정상적인 리팩터링인가” 를 묻게 된다 — 그 전에는 조용히 지나가는 자리였다.
+    스캔 규모(후보·선언·배선)도 여기서 고정한다: 후보가 줄면(임계값이 사라지거나 스캔이 눈머는 순간) 문서가 먼저 멈춰
+    사람이 “사라진 하한이 정상적인 리팩터링인가” 를 묻게 된다 — 그 전에는 조용히 지나가는 자리였다(배선 수가 줄면
+    표가 하한으로 아는 이름이 어느 층의 하한인지 잇지 못하게 된 것이고, 그러면 승격 감지가 다시 눈먼다).
     """
 
     if report is None:
@@ -1379,6 +1401,7 @@ def ledger_measured(report: dict[str, object] | None) -> dict[str, int]:
         "ledger_floors": _as_int(counts.get("floors")),
         "ledger_candidates": _as_int(counts.get("outside_scanned")),
         "ledger_declared": _as_int(counts.get("outside_declared")),
+        "ledger_wired": _as_int(counts.get("wired_layers")),
         "ledger_recorded_floors": _as_int(counts.get("recorded_floors")),
     }
 

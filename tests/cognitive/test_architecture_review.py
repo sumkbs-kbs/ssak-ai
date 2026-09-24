@@ -582,6 +582,43 @@ def test_a_pass_with_unapproved_exemptions_is_a_contradiction(review: Any) -> No
     assert "면제 기록 2개" in ok.detail and "창 366일" in ok.detail
 
 
+def test_a_pass_whose_wiring_does_not_reach_the_floor_is_a_contradiction(review: Any) -> None:  # noqa: ANN401
+    """보고는 통과라는데 **배선 지도**가 표가 하한으로 아는 이름을 잇지 못하면 모순이다.
+
+    배선은 승격을 잇는 유일한 자리다 — 하한의 라벨은 사람이 쓴 이름(`pin`·`회차`)이라 상수 이름으로 잇지 못하고, 라벨로
+    이으려 한 첫 구현은 자기시험만 통과하고 실제 저장소에서는 **한 번도 물지 않았다**(이음매가 죽은 코드였다). 그래서
+    “몇 개가 배선됐나”(헤더 수)와 “어느 층의 하한인가”(지도)가 갈라지는 순간과 배선이 표에 없는 층을 가리키는 순간을
+    합성 보고로 고정한다 — 실제 실행에서는 이 자국이 나오지 않는다.
+    """
+
+    report = _ledger_report()
+    counts = dict(report["counts"])  # type: ignore[arg-type]
+    counts["wired_layers"] = 1
+    healthy = _ledger_report(counts=counts, outside={"wired": 1, "wiring": {"scripts/a.py:MIN_X": "probe"}})
+    ok = review.check_floor_ledger(healthy)
+
+    assert ok.passed is True, ok.detail
+    assert "표 밖 배선 1개" in ok.detail
+    drifted = review.check_floor_ledger(_ledger_report(counts=counts, outside={"wired": 1, "wiring": {}}))
+
+    assert drifted.passed is False
+    assert "배선 지도가 헤더 수와 다르다" in drifted.detail
+    unlinked = review.check_floor_ledger(
+        _ledger_report(
+            counts={**counts, "wired_layers": 0}, outside={"wired": 2, "wiring": {"scripts/a.py:MIN_X": "probe"}}
+        )
+    )
+
+    assert unlinked.passed is False
+    assert "이어지지 않은 이름은 승격을 잇지 못한다" in unlinked.detail
+    stray = review.check_floor_ledger(
+        _ledger_report(counts=counts, outside={"wired": 1, "wiring": {"scripts/a.py:MIN_X": "없는 층"}})
+    )
+
+    assert stray.passed is False
+    assert "배선이 표에 없는 층을 가리킨다" in stray.detail
+
+
 def test_repository_ledger_has_a_recorded_approval(review: Any) -> None:  # noqa: ANN401
     """이 저장소의 원장은 **사람이 승인한 하한 목록**을 들고 있다 — 표와 기록의 하한 수가 같다."""
 
@@ -597,6 +634,12 @@ def test_repository_ledger_has_a_recorded_approval(review: Any) -> None:  # noqa
     assert report["record"]["outside"]["shape"] == "full"  # type: ignore[index]
     # 재검토 창도 같은 자리에서 승인된다 — 면제의 기한을 재는 자와 승인된 창이 같아야 한다.
     assert report["record"]["outside"]["recorded_window_days"] == report["record"]["outside"]["window_days"]  # type: ignore[index]
+    # 배선은 **어느 층의 하한인가**까지 이어져 있다 — 이어지지 않은 이름은 승격을 잇지 못한다(라벨은 사람이 쓴 이름이다).
+    outside = report["outside"]  # type: ignore[index]
+    assert outside["wired"] == len(outside["wiring"]) > 0
+    assert report["counts"]["wired_layers"] == len(outside["wiring"])  # type: ignore[index]
+    names = {str(layer["name"]) for layer in report["layers"]}  # type: ignore[index]
+    assert set(outside["wiring"].values()) <= names
 
 
 def test_invalidated_reverification_fails_the_check(review: Any) -> None:  # noqa: ANN401

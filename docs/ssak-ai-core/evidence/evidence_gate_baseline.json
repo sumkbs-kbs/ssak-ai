@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "2026-09-24 승격 절차 회차: 면제가 층이 되는 순간(승격)이 기록의 사실이 되고(counts.record_exemptions_promoted 새 수), 승격은 셋이 다 되어야 끝나므로 --promote 가 남은 일을 내며 끝났는지를 종료 코드로 말한다 — 층 11 과 이번 실행의 수치를 기준으로 승인한다."
+    "배선 회차: 하한 원장이 승격을 잇는 자리를 하한 라벨이 아니라 코드의 배선(wired_layers — 상수 이름 → 그 하한을 드는 층)으로 옮긴 것을 새 기준으로 승인한다. 리뷰의 통과 문장이 표 밖 배선 수를 싣고(모순 검사: 표가 하한으로 아는 이름 수 = 이어진 이름 수 · 배선이 표에 없는 층을 가리키지 않음), 그 값은 ledger_wired 22 로 고정된다. 이번 실행의 움직임: review 인용 271 → 272 ▲ · measured.cognitive_tests 748 → 751 ▲ · 기준에 없던 수 둘(counts.wired_layers 22 · measured.ledger_wired 22)."
   ],
   "layers": {
     "audit_enum_identity": {
@@ -60,12 +60,13 @@
       "counts.record_layers_moved": 0,
       "counts.record_layers_renamed": 0,
       "counts.record_lowered": 0,
-      "counts.record_moved": 1,
+      "counts.record_moved": 0,
       "counts.record_renames": 0,
       "counts.recorded": 4,
       "counts.recorded_floors": 21,
       "counts.self": 1,
       "counts.undated": 0,
+      "counts.wired_layers": 22,
       "counts.without_basis": 0,
       "coverage.candidates": 32,
       "coverage.canvas": 19,
@@ -132,7 +133,7 @@
       "checks": 16,
       "measured.canary_harnesses": 11,
       "measured.canary_ok": 11,
-      "measured.cognitive_tests": 748,
+      "measured.cognitive_tests": 751,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
@@ -147,6 +148,7 @@
       "measured.ledger_floors": 21,
       "measured.ledger_layers": 11,
       "measured.ledger_recorded_floors": 21,
+      "measured.ledger_wired": 22,
       "measured.principles": 24,
       "measured.principles_covered": 15,
       "measured.principles_gap": 0,
@@ -166,6 +168,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "2026-09-24 승격 절차 회차: 면제가 층이 되는 순간(승격)이 기록의 사실이 되고(counts.record_exemptions_promoted 새 수), 승격은 셋이 다 되어야 끝나므로 --promote 가 남은 일을 내며 끝났는지를 종료 코드로 말한다 — 층 11 과 이번 실행의 수치를 기준으로 승인한다.",
+  "method": "배선 회차: 하한 원장이 승격을 잇는 자리를 하한 라벨이 아니라 코드의 배선(wired_layers — 상수 이름 → 그 하한을 드는 층)으로 옮긴 것을 새 기준으로 승인한다. 리뷰의 통과 문장이 표 밖 배선 수를 싣고(모순 검사: 표가 하한으로 아는 이름 수 = 이어진 이름 수 · 배선이 표에 없는 층을 가리키지 않음), 그 값은 ledger_wired 22 로 고정된다. 이번 실행의 움직임: review 인용 271 → 272 ▲ · measured.cognitive_tests 748 → 751 ▲ · 기준에 없던 수 둘(counts.wired_layers 22 · measured.ledger_wired 22).",
   "recorded_on": "2026-09-24"
 }

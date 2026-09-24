@@ -907,7 +907,9 @@ def test_cli_a_promotion_fact_the_record_cannot_support_is_refused(tmp_path: Pat
     assert first.returncode == 0, first.stderr
     payload = json.loads(record.read_text(encoding="utf-8"))
     assert payload["outside"]["promoted"] == []
-    payload["outside"]["promoted"] = [{"name": "scripts/zzz.py:MIN_GHOST", "layer": "review", "on": "2026-09-24"}]
+    payload["outside"]["promoted"] = [
+        {"name": "scripts/zzz.py:MIN_GHOST", "layer": "review", "label": "없는 하한", "on": "2026-09-24"}
+    ]
     record.write_text(json.dumps(payload, ensure_ascii=False, indent=2), "utf-8")
 
     gate = subprocess.run(
@@ -921,6 +923,83 @@ def test_cli_a_promotion_fact_the_record_cannot_support_is_refused(tmp_path: Pat
     assert gate.returncode == 1, gate.stdout
     assert "그 층에서 읽지 못한다" in gate.stderr and "MIN_GHOST" in gate.stderr, gate.stderr
     assert "면제로 선언하고 있다" not in gate.stderr, gate.stderr
+
+
+def test_the_wiring_map_links_known_floors_to_their_layer(ledger_module: Any, ledger: Any) -> None:  # noqa: ANN401
+    """표가 하한으로 아는 이름은 **어느 층의 하한인지**까지 이어져 있다 — 승격을 잇는 자리는 라벨이 아니라 코드의 배선이다.
+
+    하한의 라벨은 사람이 쓴 이름(`pin`·`회차`)이라 상수 이름으로 잇지 못한다: 라벨로 이으려 한 첫 구현은 합성 자료로 돌린
+    자기시험을 전부 통과했는데 실제 저장소에서는 승격 감지가 **0건**이었다(합성 입력이 결함을 가렸다). 그래서 표는 roster 의
+    스크립트를 AST 로 읽어 `Floor(..., minimum=<이름>)` 에 실제로 넘겨진 상수를 모으고 그 이름을 그 하한을 드는 층에 잇는다 —
+    이어지지 않은 이름이 남으면 면제가 정말로 층이 되는 순간에 그 사실을 잇지 못한다.
+    """
+
+    wiring = dict(ledger.wiring)
+    names = {str(layer.name) for layer in ledger.rows}
+    labels = {floor.label for row in ledger.rows for floor in row.floors}
+
+    assert len(wiring) == len(ledger.covered) > 0, wiring
+    assert set(wiring) == set(ledger.covered)
+    assert set(wiring.values()) <= names, wiring
+    assert wiring["scripts/floor_ledger.py:_MIN_FLOORS"] == "floor_ledger"
+    # 실제 라벨은 상수 이름이 아니다 — 라벨로 이으려 한 첫 구현이 이 저장소에서 0건을 이은 이유다(배선으로 이어야 한다).
+    assert "pin" in labels and "pin" not in wiring
+    assert ledger_module.promotion_layer(ledger, "scripts/floor_ledger.py:_MIN_FLOORS") == "floor_ledger"
+
+
+@pytest.mark.slow
+def test_cli_a_promotion_fact_carries_the_label_the_layer_uses(tmp_path: Path) -> None:
+    """승격 사실은 그 층이 그 하한을 부르는 **이름**(라벨)까지 담아야 한다 — 담지 않으면 기록이 자기 사실을 확인할 수 없다.
+
+    라벨이 없으면 “그 층에 그 하한이 실렸는가” 를 기록 안에서 물을 수 없고(라벨은 상수 이름과 다르다), 라벨이 있어도 그 층의
+    하한이 아니면 문다. 둘 다 지나면 다음 물음(표는 그 상수를 아직 면제로 선언하고 있는가)이 나온다 — 손으로 쓴 사실이 그
+    자리까지 가는지를 CLI 로 확인한다(승격 감지가 라벨을 상수 이름으로 보던 동안에는 이 자국이 나오지 않았다).
+    """
+
+    evidence = tmp_path / "evidence"
+    evidence.mkdir()
+    record = evidence / "floor_ledger.json"
+    first = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--record", "--method", "첫 승인", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert first.returncode == 0, first.stderr
+    payload = json.loads(record.read_text(encoding="utf-8"))
+    name = payload["outside"]["declared"][0]["name"]
+    floor = payload["floors"][0]
+
+    def run() -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [sys.executable, str(LEDGER_SCRIPT), "--gate", "--evidence", str(evidence)],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    payload["outside"]["promoted"] = [{"name": name, "layer": floor["layer"], "on": "2026-09-24"}]
+    record.write_text(json.dumps(payload, ensure_ascii=False, indent=2), "utf-8")
+    without = run()
+
+    assert without.returncode == 1
+    assert "(라벨)이 없다" in without.stderr and name in without.stderr, without.stderr
+
+    payload["outside"]["promoted"] = [
+        {"name": name, "layer": floor["layer"], "label": floor["label"], "on": "2026-09-24"}
+    ]
+    payload["outside"]["declared"] = [item for item in payload["outside"]["declared"] if item["name"] != name]
+    record.write_text(json.dumps(payload, ensure_ascii=False, indent=2), "utf-8")
+    labelled = run()
+
+    assert labelled.returncode == 1
+    assert "(라벨)이 없다" not in labelled.stderr, labelled.stderr
+    assert "그 층에서 읽지 못한다" not in labelled.stderr, labelled.stderr
+    # 라벨까지 맞으면 남는 물음은 표 쪽이다 — 표는 그 상수를 아직 면제로 선언하고 있다(승격은 선언을 지워야 끝난다).
+    assert "면제로 선언하고 있다" in labelled.stderr, labelled.stderr
 
 
 @pytest.mark.slow

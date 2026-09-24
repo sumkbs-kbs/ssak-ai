@@ -73,7 +73,7 @@ import sys
 import tempfile
 import time
 import unicodedata
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from datetime import date
 from pathlib import Path
@@ -401,31 +401,57 @@ def floor_candidates(directory: Path = SCRIPTS_DIR) -> tuple[str, ...]:
     return tuple(sorted(found))
 
 
-def wired_constants(sources: Iterable[Path]) -> frozenset[str]:
-    """표가 **실제로 읽는** 상수 — `Floor(..., minimum=<상수>)` 의 그 상수만이다.
+def wired_names(source: Path) -> frozenset[str]:
+    """한 스크립트가 `Floor(..., minimum=<이름>)` 으로 넘긴 **상수 이름** — 파일 이름은 부르는 촉이 안다.
 
     위치 인수 셋째 자리와 `minimum=` 키워드 둘 다 본다. 상수를 다른 이름으로 넘기거나 계산해서 넘기면 이 눈은
     못 보므로, 그때는 선언부가 그 사실을 밝힌다(스캔의 침묵을 선언이 덮는다).
     """
 
     wired: set[str] = set()
-    for path in sources:
-        try:
-            tree = ast.parse(Path(path).read_text(encoding="utf-8"))
-        except (OSError, SyntaxError):
+    try:
+        tree = ast.parse(source.read_text(encoding="utf-8"))
+    except (OSError, SyntaxError):
+        return frozenset()
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call) or not _is_floor_call(node):
             continue
-        for node in ast.walk(tree):
-            if not isinstance(node, ast.Call) or not _is_floor_call(node):
-                continue
-            argument: ast.expr | None = None
-            for keyword in node.keywords:
-                if keyword.arg == "minimum":
-                    argument = keyword.value
-            if argument is None and len(node.args) >= 3:
-                argument = node.args[2]
-            if isinstance(argument, ast.Name):
-                wired.add(f"{_display(Path(path))}:{argument.id}")
+        argument: ast.expr | None = None
+        for keyword in node.keywords:
+            if keyword.arg == "minimum":
+                argument = keyword.value
+        if argument is None and len(node.args) >= 3:
+            argument = node.args[2]
+        if isinstance(argument, ast.Name):
+            wired.add(argument.id)
     return frozenset(wired)
+
+
+def wired_layers(sources: Mapping[str, Path], candidates: Sequence[str]) -> dict[str, str]:
+    """배선된 상수 → **그 하한을 드는 층** — 표가 실제로 읽는 상수와 그 상수의 층을 한 번에 낸다.
+
+    “배선됐다” 만 말하는 눈은 면제가 층이 되었을 때 **어느 층의 하한이 되었는지** 말하지 못한다.
+    그리고 하한의 **라벨**로는 이을 수 없다: 라벨은 사람이 쓴 이름(`pin`·`회차`·`하한 후보 스캔` 처럼)이라 상수 이름과
+    같지 않다 — 이을 수 있는 것은 코드의 배선(`Floor(..., minimum=NAME)`)뿐이다(라벨로 이으려 한 첫 구현은 자기시험이
+    합성 라벨로 통과해 주는 바람에 실제 저장소에서 한 번도 물지 않았다: 그 교훈을 시험으로 고정했다).
+    한 이름이 여러 파일의 상수일 때는 그 층의 스크립트가 **정의 파일**인 것을 먼저 보고(자기 파일의 상수를 자기 층이 쓰는
+    것이 보통이다), 이름이 하나뿐이면 그것으로 이으며 — 둘 다 아니면 잇지 않는다(추측으로 층을 정하지 않는다).
+    """
+
+    by_name: dict[str, list[str]] = {}
+    for name in candidates:
+        by_name.setdefault(name.rsplit(":", 1)[-1], []).append(name)
+    wiring: dict[str, str] = {}
+    for layer, source in sources.items():
+        for bare in sorted(wired_names(source)):
+            options = by_name.get(bare, [])
+            if not options:
+                continue
+            own = [item for item in options if item.rsplit(":", 1)[0] == _display(source)]
+            chosen = own[0] if len(own) == 1 else (options[0] if len(options) == 1 else "")
+            if chosen and chosen not in wiring:
+                wiring[chosen] = layer
+    return wiring
 
 
 def _is_floor_call(node: ast.Call) -> bool:
@@ -827,6 +853,8 @@ class Ledger:
     outside: tuple[OutsideFloor, ...] = ()
     # 기록 대조의 상태(경로·승인·이동·문제) — JSON 보고에 그대로 실린다.
     record: dict[str, object] = field(default_factory=dict)
+    # 배선된 상수 → 그 하한을 든 층 — 승격을 **라벨이 아니라 코드의 배선**으로 잇는 자리다(라벨은 사람이 쓴 이름이다).
+    wiring: Mapping[str, str] = field(default_factory=dict)
 
     @property
     def canvas(self) -> int:
@@ -875,11 +903,15 @@ class Ledger:
                 "record_exemptions_reviewed": len(_record_lines(_record_dict(self.record, "outside"), "reviewed")),
                 "record_exemptions_moves": len(_record_lines(_record_dict(self.record, "outside"), "deadline_moves")),
                 "record_exemptions_promoted": len(_record_lines(_record_dict(self.record, "outside"), "promoted")),
+                "wired_layers": len(self.wiring),
             },
             "record": dict(self.record),
             "outside": {
                 "scanned": len(self.candidates),
                 "wired": len(self.covered),
+                # 배선된 이름 → 그 하한을 드는 층 — 읽는 사람이 “이 이름은 어느 층의 하한인가” 를 표 밖에서도 볼 수 있다
+                # (라벨은 사람이 쓴 이름이라 이름만으로는 잇지 못한다: 그 자리가 승격을 잇는 자리다).
+                "wiring": dict(self.wiring),
                 "declared": [item.as_mapping() for item in self.outside],
                 # 기록이 승인한 면제와의 대조 — 읽는 사람이 선언과 승인을 같은 자리에서 본다.
                 "record": _record_dict(self.record, "outside"),
@@ -1400,25 +1432,88 @@ def deadline_move_problems(stored: dict[str, object] | None) -> list[str]:
     return problems
 
 
-def recorded_promotions(stored: dict[str, object] | None) -> tuple[tuple[str, str, str], ...]:
-    """기록이 **사실로** 남긴 면제의 승격 — (이름, 층, 승인 날짜).
+def recorded_promotions(stored: dict[str, object] | None) -> tuple[tuple[str, str, str, str], ...]:
+    """기록이 **사실로** 남긴 면제의 승격 — (이름, 층, 그 층이 그 하한을 부르는 이름, 승인 날짜).
 
     면제가 층이 되는 순간 그 이름은 `outside.declared` 에서 사라지고 어떤 층의 하한 목록에 나타난다 — 그 사실을 적지
     않으면 기록에는 **새 하한 하나가 늘어난 것**으로만 남는다(“그 도구가 층이 되었다” 는 약속이 지켜졌는지, 아니면 그
     상수를 지운 것인지 알 수 없다). 이름 변경이 `renames`, 기한 이동이 `deadline_moves` 로 사실이 된 것과 같은 자리다.
+    **층이 그 하한을 부르는 이름**(라벨)도 함께 담는다: 라벨은 사람이 쓴 이름이라 상수 이름과 같지 않고(`실험 승격`·
+    `pin` 처럼), 그것 없이는 기록이 “그 층에 그 하한이 실렸는가” 를 자기 안에서 확인할 수 없다(내 확인은 세 번
+    틀렸다: 라벨을 상수 이름으로 본 자국은 실제 저장소에서 한 번도 물지 않았다).
     """
 
     value = _record_dict(stored or {}, "outside").get("promoted")
     if not isinstance(value, list):
         return ()
-    facts: list[tuple[str, str, str]] = []
+    facts: list[tuple[str, str, str, str]] = []
     for item in value:
         if not isinstance(item, dict):
             continue
         name, layer = str(item.get("name", "")), str(item.get("layer", ""))
         if not name.strip() or not layer.strip():
             continue
-        facts.append((name, layer, str(item.get("on", ""))))
+        facts.append((name, layer, str(item.get("label", "")), str(item.get("on", ""))))
+    return tuple(facts)
+
+
+def added_floors(ledger: Ledger, previous: dict[str, object] | None) -> dict[str, tuple[str, ...]]:
+    """기록에 없던 하한 — 층 이름 → 새 하한 라벨들(승격한 하한을 잇는 **유일한 근거**다)."""
+
+    before = recorded_floors(previous)
+    added: dict[str, list[str]] = {}
+    for layer, label, _minimum, _why in judged_floors(ledger):
+        if (layer, label) not in before:
+            added.setdefault(layer, []).append(label)
+    return {layer: tuple(sorted(labels)) for layer, labels in added.items()}
+
+
+def unlinked_promotions(ledger: Ledger, previous: dict[str, object] | None) -> tuple[tuple[str, str, int], ...]:
+    """승격으로 보이는데 **어느 하한인지 잇지 못한** 이름들 — (이름, 층, 그 층의 새 하한 수).
+
+    잇지 못하는 경우는 둘이다: 그 층에 기록에 없던 하한이 없거나(배선은 생겼는데 하한이 안 생겼다 — 배선이 하한을
+    안 드는 코드라면 그렇다), 둘 이상이거나(한 회차에 둘을 승격했다 — 어느 것이 어느 상수인지 기계는 모른다).
+    그때는 잇지 않고 기록을 거부한다: 잘못 이으면 기록이 틀린 하한을 승격으로 남긴다(추측을 사실처럼 말하지 않는다).
+    """
+
+    was_declared = recorded_outside(previous).promises
+    fresh = added_floors(ledger, previous)
+    still_declared = {item.name for item in ledger.outside}
+    known = {fact[0] for fact in recorded_promotions(previous)}
+    unlinked: list[tuple[str, str, int]] = []
+    for name in sorted(was_declared):
+        layer = promotion_layer(ledger, name)
+        if name in known or name in still_declared or not layer:
+            continue
+        links = fresh.get(layer, ())
+        if len(links) != 1:
+            unlinked.append((name, layer, len(links)))
+    return tuple(unlinked)
+
+
+def detected_promotions(
+    ledger: Ledger, previous: dict[str, object] | None, *, on: str
+) -> tuple[tuple[str, str, str, str], ...]:
+    """이번 회차에 **기록할** 승격 사실 — 앞 기록이 승인한 사실은 그대로 이어 가고, 새로 찾은 것을 더한다.
+
+    세 가지가 함께 맞을 때만 적는다: 그 이름을 앞 기록이 **면제로 승인했고**, 표가 그 이름을 이제 면제로 선언하지
+    않으며, 어떤 층이 그것을 **하한으로 배선했고** 그 층에 기록에 없던 하한이 **하나뿐**이다(그 하한이 곧 그 상수의
+    자리다 — 라벨은 사람이 쓴 이름이라 상수 이름으로는 잇지 못한다).
+    """
+
+    facts: list[tuple[str, str, str, str]] = list(recorded_promotions(previous))
+    settled = {fact[0] for fact in facts}
+    was_declared = recorded_outside(previous).promises
+    fresh = added_floors(ledger, previous)
+    still_declared = {item.name for item in ledger.outside}
+    for name in sorted(was_declared):
+        layer = promotion_layer(ledger, name)
+        if name in settled or name in still_declared or not layer:
+            continue
+        links = fresh.get(layer, ())
+        if len(links) != 1:
+            continue  # 잇지 못한 것은 `unlinked_promotions` 가 문장으로 낸다(기록은 거부된다)
+        facts.append((name, layer, links[0], on))
     return tuple(facts)
 
 
@@ -1446,10 +1541,16 @@ def promotion_problems(stored: dict[str, object] | None) -> list[str]:
     promised = recorded_outside(stored).promises
     floors = recorded_floors(stored)
     seen: set[str] = set()
-    for name, layer, on in facts:
-        stamp = f"({name} → {layer})"
+    for name, layer, label, on in facts:
+        shown = f"{label} “{label}”" if label else "(이름 없음)"
+        stamp = f"({name} → {layer} 의 {shown})"
         if not on.strip():
             problems.append(f"기록의 승격 이력에 승인 날짜가 없다: {stamp} — 언제 이 판단을 내렸는지 말하지 못한다")
+        if not label.strip():
+            problems.append(
+                f"기록의 승격 이력에 **그 층이 그 하한을 부르는 이름**(라벨)이 없다: {stamp} — 라벨이 없으면 기록이 "
+                "“그 층에 그 하한이 실렸는가” 를 확인할 수 없다(하한 라벨은 사람이 쓴 이름이라 상수 이름으로는 잇지 못한다)"
+            )
         if name in seen:
             problems.append(f"기록의 승격 이력에 같은 이름이 두 번 있다: {stamp} — 하나는 틀렸다")
         seen.add(name)
@@ -1458,7 +1559,7 @@ def promotion_problems(stored: dict[str, object] | None) -> list[str]:
                 f"기록이 {name} 를 {layer} 의 하한으로 승격했다고 하면서 동시에 면제로 선언하고 있다: {stamp} — "
                 "하나의 하한이 면제이면서 하한일 수는 없다(둘 중 하나를 지워라)"
             )
-        if floors.get((layer, name)) is None:
+        if label.strip() and floors.get((layer, label)) is None:
             problems.append(
                 f"기록이 승격했다고 하는 하한을 그 층에서 읽지 못한다: {stamp} — 기록이 자기 사실을 담고 있지 않다"
                 "(`--record --method` 로 다시 기록하면 지금 표의 하한 목록이 함께 담긴다)"
@@ -1478,20 +1579,39 @@ def promotion_table_problems(ledger: "Ledger", stored: dict[str, object] | None)
     if not facts:
         return []
     declared_now = {item.name for item in ledger.outside}
-    live = {floor.label: row.name for row in ledger.rows for floor in row.floors}
+    judged = {(row.name, floor.label) for row in ledger.rows for floor in row.floors}
     problems: list[str] = []
-    for name, layer, _on in facts:
+    for name, layer, label, _on in facts:
         if name in declared_now:
             problems.append(
                 f"기록은 {name} 를 {layer} 의 하한으로 승격했다고 하는데 표는 그 상수를 아직 면제로 선언하고 있다 — "
                 "승격은 선언을 지워야 끝난다(`--promote` 가 남은 일을 낸다)"
             )
-        elif live.get(name) != layer:
+            continue
+        if label.strip() and (layer, label) not in judged:
             problems.append(
-                f"기록은 {name} 를 {layer} 의 하한으로 승격했다고 하는데 그 층은 그 하한을 읽지 못한다"
-                f"(지금 {live.get(name, '어느 층에도 없다')}) — 기록과 표가 다른 말을 한다(`--promote` 가 남은 일을 낸다)"
+                f"기록은 {name} 를 {layer} 의 하한 “{label}” 로 승격했다고 하는데 그 층은 그 하한을 읽지 못한다 — "
+                "기록과 표가 다른 말을 한다(`--promote` 가 남은 일을 낸다)"
+            )
+            continue
+        where = promotion_layer(ledger, name)
+        if where and where != layer:
+            problems.append(
+                f"기록은 {name} 를 {layer} 의 하한으로 승격했다고 하는데 그 상수는 지금 {where} 의 하한으로 배선되어 있다"
+                " — 기록과 표가 다른 말을 한다(`--promote` 가 남은 일을 낸다)"
             )
     return problems
+
+
+def promotion_layer(ledger: Ledger, name: str) -> str:
+    """이 상수가 **지금 어느 층의 하한으로 읽히는가** — 없으면 빈 문자열.
+
+    잇는 자리는 코드의 배선이다(`ledger.wiring`): 하한 라벨은 사람이 쓴 이름이라 상수 이름과 같지 않다. 다만 라벨이
+    상수 이름과 같은 경우(그 층이 그 상수를 그 이름으로 부르는 경우)는 그것도 근거이므로 함께 본다.
+    """
+
+    label_now = {floor.label: row.name for row in ledger.rows for floor in row.floors}
+    return ledger.wiring.get(name, "") or label_now.get(name, "")
 
 
 def promotion_plan(ledger: Ledger, name: str) -> tuple[bool, str]:
@@ -1505,10 +1625,15 @@ def promotion_plan(ledger: Ledger, name: str) -> tuple[bool, str]:
     """
 
     source, _, label = name.partition(":")
+    # 그 파일을 **스크립트로 쓰는 층**(자연스러운 자리)과 지금 그 하한을 **실제로 드는 층**(배선)은 다를 수 있다.
     layer = next((row.name for row in ledger.rows if row.source == source), "")
+    wired_layer = promotion_layer(ledger, name)
     declared = next((item for item in ledger.outside if item.name == name), None)
     wired = name in ledger.covered
-    record_known = recorded_outside(ledger.record).promises
+    # `ledger.record` 는 기록의 사본이 아니라 **보고**다 — 보고가 실은 이름과 사실로 묻는다(보고가 그 둘을 빠트리면
+    # 이 명령은 “면제로 선언된 적이 없다” 고 거짓말한다: 그 거짓말은 실험 중에 실제로 나왔다).
+    outside_report = ledger.record.get("outside")
+    record_known = _record_lines(outside_report, "recorded_names") if isinstance(outside_report, dict) else []
     facts = recorded_promotions(ledger.record)
     mine = next((fact for fact in facts if fact[0] == name), None)
     recorded_fact = mine is not None
@@ -1524,12 +1649,27 @@ def promotion_plan(ledger: Ledger, name: str) -> tuple[bool, str]:
         )
         lines.append("  판정: 이 절차의 대상이 아니다")
         return (False, "\n".join(lines))
-    if layer:
-        lines.append(f"  상수가 있는 파일  {source} (그 파일을 읽는 층: {layer})")
+    target_row = next((row for row in ledger.rows if row.name == (wired_layer or layer)), None)
+    if target_row is not None and target_row.kind == KIND_RECORDED:
+        # 기록 artifact 로 하한을 드는 층에서는 코드에 싣는 것만으로 하한이 되지 않는다 — 그 층이 스스로 기록해야 한다.
+        lines.append(
+            f"  그 층의 하한은 **기록 artifact** 가 들고 있다(`{target_row.source}`): 코드의 하한 목록(`coverage_floors`)과 "
+            "artifact 가 같은 것을 말해야 하므로(카나리아가 이름·값으로 대조한다) artifact 를 쓰는 것은 **그 층의 "
+            "절차**다(층마다 다르다: `--record` 를 드는 층도 있고 측정이 artifact 를 쓰는 층도 있다) — 코드에만 싣고 "
+            "artifact 가 옛 하한을 들고 있으면 승격은 끝나지 않았다"
+        )
+        lines.append(
+            "  그 층이 지금 내는 하한: " + ", ".join(f"{floor.label}({floor.minimum})" for floor in target_row.floors)
+        )
+    if wired_layer:
+        lines.append(f"  상수가 있는 파일  {source} (그 하한을 드는 층: {wired_layer})")
+    elif layer:
+        lines.append(f"  상수가 있는 파일  {source} (그 파일이 그 층의 스크립트다: {layer})")
     else:
         lines.append(
-            f"  상수가 있는 파일  {source} — 그 파일을 읽는 층이 없다(어느 층의 하한으로 세울지는 사람이 정한다: 그 도구를 "
-            "카나리아 roster 에 넣는 일이 함께 가고, 순서는 신경 쓰지 않아도 된다 — 층이 생기면 표가 그 하한을 읽는다)"
+            f"  상수가 있는 파일  {source} — 그 파일을 스크립트로 쓰는 층도, 이 상수를 하한으로 드는 층도 없다(어느 층의 "
+            "하한으로 세울지는 사람이 정한다: 그 도구를 카나리아 roster 에 넣는 일이 함께 가고, 순서는 신경 쓰지 않아도 "
+            "된다 — 층이 생기면 표가 그 하한을 읽는다)"
         )
     if declared is not None:
         lines.append(
@@ -1537,7 +1677,7 @@ def promotion_plan(ledger: Ledger, name: str) -> tuple[bool, str]:
             f"{declared.review_by}"
         )
     if recorded_fact and mine is not None:
-        lines.append(f"  기록된 승격  층 {mine[1]} · {mine[2] or '날짜 없음'} 승인")
+        lines.append(f"  기록된 승격  층 {mine[1]} · 하한 “{mine[2] or '이름 없음'}” · {mine[3] or '날짜 없음'} 승인")
     if not was_declared:
         lines.append(
             "  이 상수는 **면제로 선언된 적이 없다**(표도 기록도 그것을 면제로 승인한 적이 없고, 기록의 승격 이력에도 없다) "
@@ -1555,7 +1695,14 @@ def promotion_plan(ledger: Ledger, name: str) -> tuple[bool, str]:
         return (False, "\n".join(lines))
     lines.append("  승격은 셋이다 — 하나라도 빠지면 승격이 아니다:")
     if wired:
-        lines.append(f"    [x] ① {name} 가 어느 층의 하한 목록에 실렸다(관측 = 그 층이 재는 것)")
+        artifact_note = (
+            " — 다만 그 층의 하한은 artifact 가 들고 있으니 거기에도 실려야 끝난다(위 문장)"
+            if (target_row is not None and target_row.kind == KIND_RECORDED)
+            else ""
+        )
+        lines.append(
+            f"    [x] ① {name} 가 {wired_layer or '어느 한 층'} 의 하한 목록에 실렸다(관측 = 그 층이 재는 것){artifact_note}"
+        )
     elif layer:
         lines.append(
             f'    [ ] ① {source} 의 `coverage_floors` 에 실어라 — `Floor(..., minimum={label}, why="'
@@ -1585,7 +1732,7 @@ def promotion_plan(ledger: Ledger, name: str) -> tuple[bool, str]:
     return (not undone, "\n".join(lines))
 
 
-def record_refusals(ledger: Ledger) -> tuple[str, ...]:
+def record_refusals(ledger: Ledger, previous: dict[str, object] | None = None) -> tuple[str, ...]:
     """이 실행을 기록하면 **지워지는 사실** — 그래서 기록을 거부하는 이유.
 
     `--record` 는 이미 두 가지를 거부한다: 승인 문장이 없으면 쓰지 않고(무엇을 보고 승인했는지 없는 기록은 기록이
@@ -1601,13 +1748,26 @@ def record_refusals(ledger: Ledger) -> tuple[str, ...]:
         for item in (bare if isinstance(bare, list) else [])
         if isinstance(item, dict) and str(item.get("name", "")).strip()
     ]
-    if not names:
-        return ()
-    return (
-        f"기록하지 않았다 — 확인일 없이 기한만 미룬 면제가 있다: {', '.join(sorted(names))}. 그대로 기록하면 "
-        "옛 기한이 새 기한으로 덮여 “검토 없이 미뤘다” 는 사실이 사라진다: 언제 다시 본 것인지(`reviewed_on`)를 "
-        "함께 적거나 기한을 되돌려라",
-    )
+    refusals: list[str] = []
+    if names:
+        refusals.append(
+            f"기록하지 않았다 — 확인일 없이 기한만 미룬 면제가 있다: {', '.join(sorted(names))}. 그대로 기록하면 "
+            "옛 기한이 새 기한으로 덮여 “검토 없이 미뤘다” 는 사실이 사라진다: 언제 다시 본 것인지(`reviewed_on`)를 "
+            "함께 적거나 기한을 되돌려라"
+        )
+    # 승격도 같은 자리다: 어느 하한이 되었는지 **잇지 못하는** 승격을 그대로 기록하면, 그 면제는 선언에서도 사라지고
+    # 기록에는 새 하한 하나만 남는다(“그 도구가 층이 되었다” 는 사실이 사라진다) — 잇을 수 있게 고치거나 되돌려야 한다.
+    for name, layer, links in unlinked_promotions(ledger, previous):
+        why = (
+            f"{layer} 에 기록에 없던 하한이 {links}개다(어느 것이 이 상수인지 기계는 모른다)"
+            if links
+            else f"{layer} 에 기록에 없던 하한이 없다(배선은 생겼는데 새 하한이 안 생겼다)"
+        )
+        refusals.append(
+            f"기록하지 않았다 — 면제 {name} 가 층이 된 것으로 보이는데 어느 하한인지 잇지 못한다: {why}. 한 회차에 "
+            "하나씩 승격하고(그 층의 새 하한이 하나가 되도록), 기록되지 않은 새 하한을 먼저 그 층의 절차로 남겨라"
+        )
+    return tuple(refusals)
 
 
 def record_payload(
@@ -1663,15 +1823,7 @@ def record_payload(
     # 면제의 **승격도 사실로 이어진다** — 앞 기록이 승인한 사실은 그대로 두고, 이번에 하한이 된 면제를 덧붙인다.
     # 승격은 셋이 다 된 순간에만 적힌다: 앞 기록이 면제로 승인했고(그래야 “면제가 층이 되었다” 는 사실이 된다) 지금 표가
     # 그 상수를 면제로 선언하지 않으며 그 이름이 어떤 층의 하한으로 읽히며 — 앞 기록이 모르는 이름은 승격이 아니라 새 하한이다.
-    promoted: list[tuple[str, str, str]] = list(recorded_promotions(previous))
-    settled = {fact[0] for fact in promoted}
-    live_now = {floor.label: row.name for row in ledger.rows for floor in row.floors}
-    still_declared = {item.name for item in ledger.outside}
-    for name in sorted(was_outside.promises):
-        became = live_now.get(name)
-        if name in settled or name in still_declared or became is None:
-            continue
-        promoted.append((name, became, on))
+    promoted = detected_promotions(ledger, previous, on=on)
     return {
         "command": ["python", "scripts/floor_ledger.py", "--record"],
         "recorded_on": on,
@@ -1703,7 +1855,10 @@ def record_payload(
                 {"name": name, "from": was, "to": now, "on": declared_on} for name, was, now, declared_on in moves
             ],
             # 면제가 층이 된 순간 — 기록이 스스로 적어 이어 간다(그 사실이 없으면 새 하한 하나와 구별되지 않는다).
-            "promoted": [{"name": name, "layer": layer, "on": declared_on} for name, layer, declared_on in promoted],
+            "promoted": [
+                {"name": name, "layer": layer, "label": label, "on": declared_on}
+                for name, layer, label, declared_on in promoted
+            ],
         },
         "probe": probe.as_mapping(),
         "verdict": "PASS",
@@ -1759,6 +1914,9 @@ def record_report(
         "outside": {
             "declared": len(ledger.outside),
             "recorded": len(recorded.entries),
+            # 기록이 면제로 승인한 **이름들** — 승격 절차(`--promote`)가 “이 상수는 면제였다” 를 물을 자리다.
+            # (`ledger.record` 는 기록 그대로가 아니라 이 **보고**다: 보고가 이름을 싣지 않으면 승격 절차가 거짓말한다.)
+            "recorded_names": sorted(recorded.entries),
             "shape": recorded.shape,
             "window_days": _MAX_REVIEW_WINDOW_DAYS,
             "recorded_window_days": recorded.window_days,
@@ -1774,8 +1932,8 @@ def record_report(
                 for name, was, now, declared_on in recorded_deadline_moves(stored)
             ],
             "promoted": [
-                {"name": name, "layer": layer, "on": declared_on}
-                for name, layer, declared_on in recorded_promotions(stored)
+                {"name": name, "layer": layer, "label": label, "on": declared_on}
+                for name, layer, label, declared_on in recorded_promotions(stored)
             ],
         },
         "problems": list(issues),
@@ -1869,7 +2027,12 @@ def build(*, evidence_dir: Path = EVIDENCE_DIR, record: Path | None = None) -> L
         )
     # 표 밖 스캔 — 하한처럼 생긴 상수가 어떤 하한 목록에도 안 실렸는데 선언도 없으면 이름을 대고 실패한다.
     candidates = floor_candidates()
-    wired = wired_constants(canary.script_for(str(name)) for name in canary.HARNESSES)
+    scripts = {str(name): Path(canary.script_for(str(name))) for name in canary.HARNESSES}
+    # 배선은 **어느 층의 하한인가**까지 읽는다 — “배선됐다” 만으로는 승격을 이을 수 없고(하한 라벨은 사람이 쓴 이름이다),
+    # 같은 파일의 상수만 배선으로 보면 다른 모듈의 상수를 하한으로 쓰는 층을 못 본다(그 경우 표가 “선언도 배선도 아닌
+    # 후보” 로 잘못 물게 된다 — 승격하려는 선언 대부분이 바로 그 모양이다: 그 도구가 roster 밖이기 때문이다).
+    wiring = wired_layers(scripts, candidates)
+    wired = frozenset(wiring)
     covered = tuple(name for name in candidates if name in wired)
     # 면제(선언)는 **판단**이다 — 기록이 그것을 승인했는지도 함께 묻는다. 기록을 여기서 먼저 읽는 까닭은 “이름만 바뀐 것으로
     # 보이는가” 가 기록이 아는 약속을 근거로 서기 때문이다(그 판단을 기록 읽기 뒤로 미루면 같은 일을 두 번 세게 된다).
@@ -1880,11 +2043,11 @@ def build(*, evidence_dir: Path = EVIDENCE_DIR, record: Path | None = None) -> L
     # 자기 행의 하한은 **자기 층의 전체 하한 목록**이다(캔버스 하한 + 표 밖 스캔 하한) — 자기 행을 먼저 만들고
     # 그 수로 다시 만든다. 하나만 실으면 표가 자기 하한을 절반만 말한다(“하한이 몇 개인가” 가 표 밖에 남는다).
     first_pass = tuple(row for row, _ in readings)
-    provisional = Ledger(first_pass, orphans, (), 0.0, candidates, covered, OUTSIDE)
+    provisional = Ledger(first_pass, orphans, (), 0.0, candidates, covered, OUTSIDE, wiring=wiring)
     rows = tuple(
         replace(row, floors=tuple(coverage_floors(provisional))) if row.name == SELF_NAME else row for row in first_pass
     )
-    ledger = Ledger(rows, orphans, (), 0.0, candidates, covered, OUTSIDE)
+    ledger = Ledger(rows, orphans, (), 0.0, candidates, covered, OUTSIDE, wiring=wiring)
     problems.extend(floor_problems(coverage_floors(ledger)))
     # 기록 대조 — 기록이 없거나 읽히지 않아도 “없음” 을 통과로 삼키지 않는다(그 사실이 판정이다).
     # 기록 문제를 `problems` 에 **합치지 않는** 까닭은 기록을 만드는 실행(`--record`)이 그 문제 때문에 자기 기록을 못 쓰게
@@ -1910,6 +2073,7 @@ def build(*, evidence_dir: Path = EVIDENCE_DIR, record: Path | None = None) -> L
         covered,
         OUTSIDE,
         report,
+        wiring,
     )
 
 
@@ -2046,17 +2210,35 @@ def self_probe() -> Probe:
             "문을 못 여는 파일이 있어도 살아남는다(그 자리는 그 파일을 돌리는 층이 실패한다)",
             "grid.py:MIN_ALPHA" in scanned,
         )
-        wired = wired_constants([probe_dir / "grid.py"])
+        wired = wired_layers({"grid": probe_dir / "grid.py"}, scanned)
         cases.equal(
-            "위치 인수 셋째 자리와 `minimum=` 둘 다 배선으로 읽는다",
+            "위치 인수 셋째 자리와 `minimum=` 둘 다 배선으로 읽고, 그 하한을 드는 층까지 잇는다",
             sorted(wired),
             ["grid.py:MIN_ALPHA", "grid.py:MIN_BETA"],
         )
+        cases.check("배선은 층 이름을 함께 낸다(승격을 이을 수 있는 유일한 자리다)", set(wired.values()) == {"grid"})
         cases.check(
             "하한에 안 넘긴 상수(`FLOOR_DELTA`)는 배선이 아니다 — 선언이나 하한 목록에 실려야 한다",
             "grid.py:FLOOR_DELTA" not in wired,
         )
         cases.check("숫자 리터럴을 그대로 넘긴 하한은 상수가 아니라 배선이 아니다", "grid.py:7" not in wired)
+        # 다른 모듈의 상수를 그 층이 하한으로 쓰는 경우 — 같은 파일만 보던 첫 눈은 이것을 “배선 없음” 으로 읽었다.
+        (probe_dir / "elsewhere.py").write_text("MIN_IMPORTED = 3\n", encoding="utf-8")
+        (probe_dir / "grid.py").write_text(
+            (probe_dir / "grid.py")
+            .read_text(encoding="utf-8")
+            .replace(
+                'Floor("c", 100, 7, why="근거")',
+                'Floor("d", 100, MIN_IMPORTED, why="다른 모듈의 상수를 하한으로 쓴다")',
+            ),
+            encoding="utf-8",
+        )
+        elsewhere = wired_layers({"grid": probe_dir / "grid.py"}, floor_candidates(probe_dir))
+        cases.equal(
+            "다른 모듈의 상수라도 그 층이 하한으로 쓰면 그 층의 하한이다(이름으로 잇는다)",
+            elsewhere.get("elsewhere.py:MIN_IMPORTED"),
+            "grid",
+        )
     undeclared, stale = outside_floors(
         ("scripts/a.py:MIN_X", "scripts/b.py:MIN_Y"),
         ("scripts/a.py:MIN_X",),
@@ -2342,12 +2524,17 @@ def self_probe() -> Probe:
     promoted_name = "scripts/x.py:MIN_Z"
 
     def promo_record(
-        *, also_declared: bool = False, floor: bool = True, on: str = "2026-09-24", twice: bool = False
+        *,
+        also_declared: bool = False,
+        floor: bool = True,
+        on: str = "2026-09-24",
+        twice: bool = False,
+        label: str = "회차",
     ) -> dict[str, object]:
         """합성 기록 — 승격 사실 하나를 가진 기록(기본은 성한 모양)."""
 
         declared = replace(healthy_declaration, name=promoted_name) if also_declared else healthy_declaration
-        fact = {"name": promoted_name, "layer": "review", "on": on}
+        fact = {"name": promoted_name, "layer": "review", "label": label, "on": on}
         record: dict[str, object] = {
             "outside": {
                 "declared": [declared.as_mapping()],
@@ -2358,14 +2545,14 @@ def self_probe() -> Probe:
         }
         if floor:
             record["floors"] = [
-                {"layer": "review", "label": promoted_name, "minimum": 1, "observed": 3, "why": "이제 하한이다"}
+                {"layer": "review", "label": "회차", "minimum": 1, "observed": 3, "why": "이제 하한이다"}
             ]
         return record
 
     cases.equal(
-        "승격 이력은 사실로 읽힌다(이름·층·날짜)",
+        "승격 이력은 사실로 읽힌다(이름·층·그 층이 그 하한을 부르는 이름·날짜)",
         recorded_promotions(promo_record()),
-        ((promoted_name, "review", "2026-09-24"),),
+        ((promoted_name, "review", "회차", "2026-09-24"),),
     )
     cases.equal("승격이 담긴 기록은 조용하다", promotion_problems(promo_record()), [])
     cases.equal(
@@ -2414,15 +2601,19 @@ def self_probe() -> Probe:
         any("같은 이름이 두 번" in problem for problem in promotion_problems(promo_record(twice=True))),
     )
 
-    def promo_ledger(*, wired: bool, declared: bool, fact: bool = True) -> Ledger:
-        """합성 표 — 한 층이 그 이름을 하한으로 읽는가(그리고 그 이름을 아직 선언하는가)를 가른다."""
+    def promo_ledger(*, wired: bool, declared: bool, fact: bool = True, fact_label: str = "회차") -> Ledger:
+        """합성 표 — 한 층이 그 이름을 하한으로 드는가(그리고 그 이름을 아직 선언하는가)를 가른다.
 
-        label = promoted_name if wired else "다른 하한"
+        이는 자리는 **배선**(`wiring`)이다: 하한의 라벨은 사람이 쓴 이름이라 상수 이름과 같지 않다(실제 저장소의 라벨도
+        `pin`·`회차` 처럼 짧은 말이다) — 그래서 합성 입력도 라벨을 상수 이름으로 두지 않고, 라벨을 **다르게** 두어
+        “배선으로 잇는다” 를 시험이 실제로 묻게 했다.
+        """
+
         row = LayerRow(
             "review",
             KIND_MEASURED,
             "scripts/x.py",
-            (Floor(label, 3, 1, "이제 하한이다"),),
+            (Floor("회차", 3, 1, "이제 하한이다"),),
             {},
             None,
         )
@@ -2432,16 +2623,95 @@ def self_probe() -> Probe:
                 "declared": [item.as_mapping()],
                 "review_window": wind,
                 "deadline_moves": [],
-                "promoted": [{"name": promoted_name, "layer": "review", "on": "2026-09-24"}] if fact else [],
+                "promoted": [{"name": promoted_name, "layer": "review", "label": fact_label, "on": "2026-09-24"}]
+                if fact
+                else [],
             }
         }
-        return Ledger((row,), (), (), 0.0, (promoted_name,), (promoted_name,) if wired else (), (item,), record)
+        return Ledger(
+            (row,),
+            (),
+            (),
+            0.0,
+            (promoted_name,),
+            (promoted_name,) if wired else (),
+            (item,),
+            record,
+            {promoted_name: "review"} if wired else {},
+        )
 
     quiet = promo_ledger(wired=True, declared=False)
     cases.equal(
         "표가 그 층의 하한으로 읽고 선언도 지웠으면 승격이 끝났다",
         promotion_table_problems(quiet, quiet.record),
         [],
+    )
+    # 승격 감지 — 면제였던 이름을 어떤 층의 **새 하한**으로 잇는다(라벨은 사람이 쓴 이름이라 상수 이름으로 잇지 못한다).
+    previous_declaring: dict[str, object] = {
+        "outside": {
+            "declared": [replace(healthy_declaration, name=promoted_name).as_mapping()],
+            "review_window": wind,
+            "deadline_moves": [],
+            "promoted": [],
+        }
+    }
+    fresh_table = promo_ledger(wired=True, declared=False, fact=False)
+    cases.equal(
+        "면제였던 이름이 그 층의 새 하한 하나로 이어지면 승격으로 적는다(라벨까지)",
+        detected_promotions(fresh_table, previous_declaring, on="2026-09-24"),
+        ((promoted_name, "review", "회차", "2026-09-24"),),
+    )
+    cases.equal("새 하한이 하나뿐이면 잇지 못한 승격은 없다", unlinked_promotions(fresh_table, previous_declaring), ())
+    two_floors = Ledger(
+        (
+            LayerRow(
+                "review",
+                KIND_MEASURED,
+                "scripts/x.py",
+                (Floor("회차", 3, 1, "근거"), Floor("새 하한", 2, 1, "근거")),
+                {},
+                None,
+            ),
+        ),
+        (),
+        (),
+        0.0,
+        (promoted_name,),
+        (promoted_name,),
+        (healthy_declaration,),
+        {},
+        {promoted_name: "review"},
+    )
+    cases.equal(
+        "한 회차에 그 층의 새 하한이 둘이면 잇지 않는다(어느 것이 그 상수인지 기계는 모른다)",
+        detected_promotions(two_floors, previous_declaring, on="2026-09-24"),
+        (),
+    )
+    cases.check(
+        "잇지 못한 승격은 기록을 거부한다(그대로 쓰면 “그 도구가 층이 되었다” 는 사실이 사라진다)",
+        any("잇지 못한다" in refusal for refusal in record_refusals(two_floors, previous_declaring)),
+    )
+    cases.equal(
+        "하한 라벨이 상수 이름과 달라도 배선으로 잇는다(라벨은 사람이 쓴 `회차` 같은 이름이다)",
+        promotion_layer(quiet, promoted_name),
+        "review",
+    )
+    cases.equal(
+        "배선이 없어도 그 층이 그 이름으로 하한을 부르면 그것도 근거다",
+        promotion_layer(
+            Ledger(
+                (
+                    LayerRow(
+                        "review", KIND_MEASURED, "scripts/x.py", (Floor(promoted_name, 3, 1, "그 이름이다"),), {}, None
+                    ),
+                ),
+                (),
+                (),
+                0.0,
+            ),
+            promoted_name,
+        ),
+        "review",
     )
     cases.check(
         "승격했다는데 표가 아직 면제로 선언하고 있으면 승격이 끝나지 않았다",
@@ -2453,13 +2723,18 @@ def self_probe() -> Probe:
         ),
     )
     cases.check(
-        "승격했다는데 그 층이 그 하한을 읽지 못하면 기록과 표가 다른 말을 한다",
+        "기록이 말한 하한 라벨을 그 층이 내지 않으면 기록과 표가 다른 말을 한다",
         any(
             "읽지 못한다" in problem
             for problem in promotion_table_problems(
-                promo_ledger(wired=False, declared=False), promo_ledger(wired=False, declared=False).record
+                promo_ledger(wired=False, declared=False, fact_label="없는 하한"),
+                promo_ledger(wired=False, declared=False, fact_label="없는 하한").record,
             )
         ),
+    )
+    cases.check(
+        "승격 사실에 그 층이 그 하한을 부르는 이름(라벨)이 없으면 기록이 자기 사실을 확인할 수 없다",
+        any("라벨)이 없다" in problem for problem in promotion_problems(promo_record(label=""))),
     )
     cases.equal(
         "승격 사실이 없는 표는 승격을 묻지 않는다",
@@ -2478,11 +2753,27 @@ def self_probe() -> Probe:
     cases.check(
         "승격 절차는 남은 일을 종류별로 내고 아직 끝나지 않았다고 말한다",
         not open_plan
-        and "그 파일을 읽는 층: review" in open_text
+        and "그 파일이 그 층의 스크립트다: review" in open_text
         and "[ ] ①" in open_text
         and "[ ] ②" in open_text
         and "[ ] ③" in open_text
         and "남은 일 3개" in open_text,
+    )
+    # 승격 절차가 기록을 읽는 자리는 **보고**다(기록 그대로가 아니다) — 보고가 그 이름을 싣는지도 시험이 묻는다.
+    reported = Ledger(
+        promo_ledger(wired=False, declared=False, fact=False).rows,
+        (),
+        (),
+        0.0,
+        (promoted_name,),
+        (),
+        (),
+        {"outside": {"recorded_names": [promoted_name], "promoted": []}},
+    )
+    reported_plan, reported_text = promotion_plan(reported, promoted_name)
+    cases.check(
+        "기록이 면제로 승인한 이름은 “선언된 적이 없다” 가 아니다(승격 절차는 기록이 아니라 보고를 읽는다)",
+        not reported_plan and "면제로 선언된 적이 없다" not in reported_text and "남은 일 2개" in reported_text,
     )
     never_plan, never_text = promotion_plan(promo_ledger(wired=True, declared=False, fact=False), promoted_name)
     cases.check(
@@ -2505,6 +2796,36 @@ def self_probe() -> Probe:
     cases.check(
         "선언도 배선도 아닌 후보는 표가 실패시키는 자리다(이 절차가 그 사실을 말한다)",
         not loose_plan and "선언도 배선도 아니다" in loose_text,
+    )
+    recorded_layer_plan, recorded_layer_text = promotion_plan(
+        Ledger(
+            (
+                LayerRow(
+                    "digest_drift",
+                    KIND_RECORDED,
+                    "docs/evidence/digest_drift.json",
+                    (Floor("pin", 3, 1, "근거"),),
+                    {},
+                    None,
+                ),
+            ),
+            (),
+            (),
+            0.0,
+            (promoted_name,),
+            (promoted_name,),
+            (),
+            {"outside": {"recorded_names": [promoted_name], "promoted": []}},
+            {promoted_name: "digest_drift"},
+        ),
+        promoted_name,
+    )
+    cases.check(
+        "기록 artifact 로 하한을 드는 층에는 코드에 싣는 것만으로 끝나지 않는다(artifact 를 쓰는 것은 그 층의 절차다)",
+        not recorded_layer_plan
+        and "기록 artifact" in recorded_layer_text
+        and "docs/evidence/digest_drift.json" in recorded_layer_text
+        and "그 층이 지금 내는 하한: pin(1)" in recorded_layer_text,
     )
     outsider_plan, outsider_text = promotion_plan(
         promo_ledger(wired=False, declared=True), "scripts/x.py:NOT_A_CANDIDATE"
@@ -3048,7 +3369,7 @@ def describe(ledger: Ledger, probe: Probe) -> str:
             if isinstance(fact, dict):
                 lines.append(
                     f"    · 면제 승격(기록이 사실로 남긴 것 — 그 도구가 층이 된 순간): {fact.get('name')} → "
-                    f"층 {fact.get('layer')}({fact.get('on') or '날짜 없음'} 승인)"
+                    f"층 {fact.get('layer')} 의 하한 “{fact.get('label')}”({fact.get('on') or '날짜 없음'} 승인)"
                 )
         moves = exempted.get("deadline_moves")
         for fact in moves if isinstance(moves, list) else []:
@@ -3157,13 +3478,13 @@ def main(argv: list[str] | None = None) -> int:
             for problem in problems:
                 print(f"[FAIL] {problem}", file=sys.stderr)
             return EXIT_FAIL
+        path = args.evidence / RECORD.name
         # 셋째 거부: **지워지는 사실**이 있는 실행은 기록하지 않는다(면죄부가 스스로를 씻지 못하게).
-        refusals = record_refusals(ledger)
+        refusals = record_refusals(ledger, read_record(path))
         if refusals:
             for refusal in refusals:
                 print(f"[FAIL] {refusal}", file=sys.stderr)
             return EXIT_FAIL
-        path = args.evidence / RECORD.name
         write_record(
             path,
             record_payload(
