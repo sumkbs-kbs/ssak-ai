@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "2026-09-24 이름 변경 이력 회차: --record 가 층 이름 변경을 renames(옛 이름 → 새 이름 · 그대로인 하한 이름들 · 승인 날짜)로 남기고 그 사실이 다음 기록으로 이어진다 — 기록은 자기 이력과 모순될 수 없고(새 이름이 하한에 있어야 · 옛 이름은 거기 없어야 · 같은 이름으로 두 번은 모순 · 고리는 모순), 기록이 승인한 옛 이름이 표에 돌아오면 다시 승인받는다(기록된 이름 변경 이력 0)"
+    "2026-09-24 면제 승인 회차: 표 밖 면제를 기록이 이름·근거·소유자·기한까지 승인하고(선언 10 = 기록 10), 면제를 만들거나·거두거나·기한을 미루면 승인이 필요하다(기한 미룸 0 · 기한 당김 0보고 · 이름만 바뀐 듯한 면제 0) — counts.record_exemptions·record_exemptions_pulled 가 새로 실리고 cognitive_tests 738 → 743"
   ],
   "layers": {
     "audit_enum_identity": {
@@ -51,10 +51,12 @@
       "counts.outside_declared": 10,
       "counts.outside_scanned": 32,
       "counts.outside_silent": 0,
+      "counts.record_exemptions": 10,
+      "counts.record_exemptions_pulled": 0,
       "counts.record_layers_moved": 0,
       "counts.record_layers_renamed": 0,
       "counts.record_lowered": 0,
-      "counts.record_moved": 1,
+      "counts.record_moved": 0,
       "counts.record_renames": 0,
       "counts.recorded": 4,
       "counts.recorded_floors": 21,
@@ -126,7 +128,7 @@
       "checks": 16,
       "measured.canary_harnesses": 11,
       "measured.canary_ok": 11,
-      "measured.cognitive_tests": 738,
+      "measured.cognitive_tests": 743,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
@@ -160,6 +162,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "2026-09-24 이름 변경 이력 회차: --record 가 층 이름 변경을 renames(옛 이름 → 새 이름 · 그대로인 하한 이름들 · 승인 날짜)로 남기고 그 사실이 다음 기록으로 이어진다 — 기록은 자기 이력과 모순될 수 없고(새 이름이 하한에 있어야 · 옛 이름은 거기 없어야 · 같은 이름으로 두 번은 모순 · 고리는 모순), 기록이 승인한 옛 이름이 표에 돌아오면 다시 승인받는다(기록된 이름 변경 이력 0)",
+  "method": "2026-09-24 면제 승인 회차: 표 밖 면제를 기록이 이름·근거·소유자·기한까지 승인하고(선언 10 = 기록 10), 면제를 만들거나·거두거나·기한을 미루면 승인이 필요하다(기한 미룸 0 · 기한 당김 0보고 · 이름만 바뀐 듯한 면제 0) — counts.record_exemptions·record_exemptions_pulled 가 새로 실리고 cognitive_tests 738 → 743",
   "recorded_on": "2026-09-24"
 }

@@ -1276,7 +1276,7 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
 
     원장은 하한을 한 자리에 모으는 층이므로, 여기서 물을 수 있는 것은 “하한이 있는가” 가 아니라 **보고의 정합성**이다:
     층별 하한 합계 = 헤더 합계 · 승인을 못 읽은 층이 없음 · 고아 기록 수 = 헤더 수 · 하한에 근거가 있음 ·
-    원장이 자기 판정(`verdict`)과 종료 코드에서 모순되지 않음.
+    표 밖 **면제**(선언)가 기록이 승인한 수와 같음 · 원장이 자기 판정(`verdict`)과 종료 코드에서 모순되지 않음.
     """
 
     if report is None:
@@ -1294,6 +1294,7 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
     unapproved = [str(layer.get("name")) for layer in layers if str(layer.get("approval_text")) == UNREAD_APPROVAL]
     baseless = [str(floor.get("label")) for floor in floors if not str(floor.get("why", "")).strip()]
     record = _as_dict(report.get("record"))
+    exempted = _as_dict(record.get("outside"))
     record_problems = [str(item) for item in _as_list(record.get("problems"))]
     problems: list[str] = []
     exit_code = _as_int(report.get("exit_code"))
@@ -1323,6 +1324,11 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
         problems.append(f"고아 기록 수가 목록과 다르다({_as_int(counts.get('orphans'))} ≠ {len(orphans)})")
     if baseless:
         problems.append(f"근거 없는 하한을 표에 싣고도 통과했다: {', '.join(baseless)}")
+    if verdict == "PASS" and _as_int(exempted.get("declared")) != _as_int(exempted.get("recorded")):
+        problems.append(
+            f"원장이 통과라고 하는데 면제가 기록과 다르다(선언 {_as_int(exempted.get('declared'))} ≠ "
+            f"기록 {_as_int(exempted.get('recorded'))}) — 승인되지 않은 면제가 있다는 뜻이다"
+        )
     if _as_int(coverage.get("min_floors")) > _as_int(counts.get("canvas")):
         problems.append(
             f"원장이 본 하한({_as_int(counts.get('canvas'))}개)이 자기 하한({_as_int(coverage.get('min_floors'))}개) 아래다"
@@ -1337,7 +1343,10 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
             f"하한 기록 {record.get('recorded_on')} 승인({record.get('floors')}개 · 판단 이동 내려감 {record.get('lowered')} · "
             f"층 이동 {len(_as_list(record.get('vanished_layers'))) + len(_as_list(record.get('added_layers')))}"
             f"(이름 변경 후보 {len(_as_list(record.get('renamed_layers')))}) · "
-            f"관측 이동 {len(_as_list(record.get('moves')))}보고)"
+            f"관측 이동 {len(_as_list(record.get('moves')))}보고) · "
+            f"면제 기록 {_as_int(exempted.get('recorded'))}개(선언 {_as_int(exempted.get('declared'))}개 · "
+            f"기한 미룸 {len(_as_list(exempted.get('deferred')))} · 이름만 바뀐 듯한 면제 "
+            f"{len(_as_list(exempted.get('renamed')))} · 기한 당김 {len(_as_list(exempted.get('pulled')))}보고)"
         ),
         observed=summed,
     )

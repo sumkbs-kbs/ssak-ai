@@ -9,6 +9,11 @@
   * 아무도 읽지 않는 기록(`floors` 를 담았는데 어떤 harness 도 안 읽음)은 면죄부로 남지 않고 실패로 간다.
   * **표 밖의 하한**이 침묵하지 않는다 — 이름이 하한처럼 생긴 상수는 하한 목록에 실리거나, 왜 아닌지(근거·소유자·기한)
     선언돼야 한다. 선언은 양방향이다(하한이 되거나 사라지면 낡은 선언으로 실패한다 — 면죄부가 다음 결함을 가린다).
+  * 그리고 그 면제는 **기록이 약속까지 승인한 것**이어야 한다 — 면제를 만들거나·거두거나·근거·소유자를 바꾸거나
+    **기한을 미루면** 그 결정이 기록을 지나야 한다(날짜를 미루는 것은 “다시 보겠다” 는 약속을 미루는 결정인데, 표는
+    날짜가 있으면 통과시키므로 승인 없이는 어디에도 안 남는다 — 면죄부가 스스로 갱신되지 않는다). 기한을 **앞당긴**
+    것은 더 자주 보는 쪽이므로 보고일 뿐이고, 약속이 그대로인 채 이름만 바뀐 것으로 보이면 한 문장으로 말하되
+    “보인다” 까지만 말한다(원장은 상수의 동일성을 모른다).
   * **사람이 승인한 하한 기록**과 지금 표가 같다 — 기록에서 하한이 사라지거나, 하한값이 내려가거나, 근거가 바뀌면
     그 판단이 어디에도 안 남으므로 실패다. 관측이 움직인 것은 보고일 뿐이다(그것까지 실패로 만들면 기록이 잡음이 된다).
   * 그 이동은 **층 단위로 묶여** 말해진다 — 층 하나가 roster 에서 빠지면 하한이 한꺼번에 사라지는데, 그것을 하한 개수만큼의
@@ -155,6 +160,79 @@ def test_a_declaration_is_not_a_perpetual_excuse(ledger_module: Any) -> None:  #
     assert stale == (name,)
     assert ledger_module.outside_problems((name,), (name,), ledger_module.OUTSIDE)  # 실제 선언도 이때는 낡은 것이다
     assert {item.name for item in ledger_module.OUTSIDE} <= set(ledger_module.floor_candidates())
+
+
+def test_the_committed_record_approves_the_exemptions_with_their_promise(ledger_module: Any, ledger: Any) -> None:  # noqa: ANN401
+    """커밋된 기록이 면제를 **약속까지** 승인한다 — 이름만 담긴 기록은 기한을 물을 자리가 없다.
+
+    면제는 “이 상수는 하한이 아니다” 라는 판단이므로, 기록이 그 판단을 왜·누가·언제까지와 함께 승인해야 다음 회차가
+    “기한을 미룬 것인가” 를 물을 수 있다(이름만 담긴 기록에서는 그 물음을 할 수 없고, 물을 수 없으면 면죄부가 스스로 갱신된다).
+    """
+
+    stored = ledger_module.read_record()
+    assert stored is not None
+    recorded = ledger_module.recorded_outside(stored)
+
+    assert recorded.shape == ledger_module.OUTSIDE_SHAPE_FULL, "기록이 면제를 이름으로만 담고 있다"
+    assert recorded.names == {item.name for item in ledger_module.OUTSIDE}
+    assert all(item.reason.strip() and item.owner.strip() and item.review_by.strip() for item in ledger_module.OUTSIDE)
+    assert ledger_module.outside_record_problems(ledger_module.OUTSIDE, recorded) == []
+    assert ledger.record["outside"]["recorded"] == len(ledger_module.OUTSIDE)
+    assert ledger.record["outside"]["deferred"] == []
+    assert ledger.record["outside"]["renamed"] == []
+
+
+def test_an_exemption_is_not_a_free_extension(ledger_module: Any) -> None:  # noqa: ANN401
+    """면제의 생성·거둠·근거 변경은 승인을 지나야 하고, **기한을 미루는 것은 특히** 그렇다(면죄부의 자기 갱신을 막는다).
+
+    반대로 기한을 앞당기는 것은 더 자주 보겠다는 뜻이므로 실패가 아니라 보고다 — 안전한 쪽으로 틀리는 것을 실패로 만들면
+    그 실패가 잡음이 되고, 잡음 속에서 진짜 결정(미룸)이 안 보인다.
+    """
+
+    exemption = ledger_module.OutsideFloor("scripts/b.py:MIN_Y", "하한이 아니라 유효성 임계다", "tester", "2099-01-01")
+    approved = ledger_module.RecordedOutside(ledger_module.OUTSIDE_SHAPE_FULL, {exemption.name: exemption.promise})
+    moved_up = ledger_module.replace(exemption, review_by="2098-01-01")
+
+    assert ledger_module.outside_record_problems((exemption,), approved) == []
+    empty = ledger_module.RecordedOutside(ledger_module.OUTSIDE_SHAPE_FULL, {})
+    made = ledger_module.outside_record_problems((exemption,), empty)
+    assert len(made) == 1 and "기록에 없는 면제" in made[0] and "`--record --method`" in made[0]
+    assert any("면제를 거두는 것" in item for item in ledger_module.outside_record_problems((), approved))
+    assert any(
+        "근거·소유자가 달라진 면제" in item
+        for item in ledger_module.outside_record_problems((ledger_module.replace(exemption, owner="other"),), approved)
+    )
+    renewed = ledger_module.outside_record_problems(
+        (ledger_module.replace(exemption, review_by="2100-01-01"),), approved
+    )
+    assert len(renewed) == 1 and "기한을 미뤘다" in renewed[0] and "2099-01-01 → 2100-01-01" in renewed[0]
+    assert ledger_module.outside_record_problems((moved_up,), approved) == [], "앞당긴 기한은 실패가 아니다"
+    assert ledger_module.outside_pulled((moved_up,), approved) == ("scripts/b.py:MIN_Y 2099-01-01 → 2098-01-01",)
+
+
+def test_a_renamed_exemption_is_one_sentence_that_still_needs_approval(ledger_module: Any) -> None:  # noqa: ANN401
+    """약속이 그대로인 면제는 **이름만 바뀐 것으로 보인다** — 다만 그것도 결정이므로 승인 전에는 초록이 아니다.
+
+    옛 이름은 낡은 선언으로 따로 말하지 않는다(하나의 결정이 두 문장이 되면 읽는 사람이 다시 묶어야 한다). 그리고 약속이
+    일부라도 다르면 짝짓지 않는다 — 이름 변경이 아니라 다른 판단일 수 있고, 원장은 상수의 동일성을 아는 것이 아니다.
+    """
+
+    old = ledger_module.OutsideFloor("scripts/a.py:MIN_OLD", "판정 기준이다(관측 대상이 없다)", "qa", "2026-12-31")
+    new = ledger_module.replace(old, name="scripts/a.py:MIN_NEW")
+    recorded = ledger_module.RecordedOutside(ledger_module.OUTSIDE_SHAPE_FULL, {old.name: old.promise})
+    live = (new.name,)
+    pairs = ledger_module.renamed_declarations((new,), recorded, candidates=live, wired=())
+
+    assert pairs == ((old.name, new.name),)
+    assert ledger_module.outside_problems(live, (), (old, new), renamed=pairs) == []
+    said = ledger_module.outside_record_problems((new,), recorded, renamed=pairs)
+    assert len(said) == 1 and "이름만 바뀐 것으로 보인다" in said[0] and "`--record --method`" in said[0]
+    assert (
+        ledger_module.renamed_declarations(
+            (ledger_module.replace(new, reason="다른 이유"),), recorded, candidates=live, wired=()
+        )
+        == ()
+    )
 
 
 def test_the_promoted_review_floor_is_in_the_table(ledger: Any) -> None:  # noqa: ANN401
@@ -515,6 +593,65 @@ def test_a_rename_is_carried_into_the_record_as_a_fact(tmp_path: Path) -> None:
 
     assert gate.returncode == 0, gate.stdout + gate.stderr
     assert "이름 변경 이력" in gate.stdout
+
+
+@pytest.mark.slow
+def test_cli_a_renewed_exemption_must_pass_through_the_record(tmp_path: Path) -> None:
+    """면제의 재검토 기한을 미루면 그 결정이 기록을 지나야 한다 — 그리고 기록을 지나면 다시 통과한다.
+
+    이 자리가 이 규칙의 핵심이다: 날짜를 뒤로 미는 것은 “그 도구가 층이 되었는지 다시 본다” 는 약속을 한 회차 더 미루는
+    결정인데, 표는 날짜가 있으면 통과시켰다(면죄부가 스스로 갱신되고, 검토가 있었는지 없었는지 아무도 몰랐다).
+    그래서 기록 안에서만 면제 하나의 기한을 **옛날로** 옮겨 두고(표가 그만큼 미룬 상태를 만든다) 게이트가 그것을
+    잡는지 묻고, 그 상태로 `--record` 를 지나면 승인이 되어 다시 초록이 되는지까지 확인한다(막다른 길이 아니다).
+    """
+
+    evidence = tmp_path / "evidence"
+    evidence.mkdir()
+    record = evidence / "floor_ledger.json"
+    first = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--record", "--method", "첫 승인", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert first.returncode == 0, first.stderr
+    payload = json.loads(record.read_text(encoding="utf-8"))
+    declared = payload["outside"]["declared"]
+    assert declared and all(item["review_by"] and item["owner"] for item in declared), declared
+    declared[0]["review_by"] = "2020-01-01"
+    record.write_text(json.dumps(payload, ensure_ascii=False, indent=2), "utf-8")
+
+    gate = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--gate", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert gate.returncode == 1, gate.stdout
+    assert "기한을 미뤘다" in gate.stderr and declared[0]["name"] in gate.stderr, gate.stderr
+    assert "`--record --method`" in gate.stderr
+
+    second = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--record", "--method", "기한 미룸 승인", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    again = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--gate", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert second.returncode == 0, second.stderr
+    assert again.returncode == 0, again.stderr
 
 
 @pytest.mark.slow

@@ -552,6 +552,31 @@ def test_a_pass_carrying_record_problems_is_a_contradiction(review: Any) -> None
     assert "모순" in result.detail
 
 
+def test_a_pass_with_unapproved_exemptions_is_a_contradiction(review: Any) -> None:  # noqa: ANN401
+    """원장이 통과라는데 **면제**가 기록과 다르면 모순이다 — 승인되지 않은 면제가 있다는 뜻이다.
+
+    면제는 “이 상수는 하한이 아니다” 라는 판단이므로 기록이 승인한 수와 같아야 한다(다르면 그 차이를 만든 결정이
+    어디에도 안 남았다). 원장 자신이 그 차이를 문장으로 내므로 실제 실행에서는 이 자국이 나오지 않는다 — 보고가
+    스스로 말한 것과 어긋나는 순간을 여기서 고정한다(보고를 읽는 검사는 보고의 정합성을 묻는다).
+    """
+
+    report = _ledger_report()
+    record = dict(report["record"])  # type: ignore[arg-type]
+    record["outside"] = {"declared": 2, "recorded": 1, "deferred": [], "pulled": [], "renamed": []}
+    result = review.check_floor_ledger(_ledger_report(record=record))
+
+    assert result.passed is False
+    assert "면제가 기록과 다르다" in result.detail
+    ok = review.check_floor_ledger(
+        _ledger_report(
+            record={**record, "outside": {"declared": 2, "recorded": 2, "deferred": [], "pulled": [], "renamed": []}}
+        )
+    )
+
+    assert ok.passed is True, ok.detail
+    assert "면제 기록 2개" in ok.detail
+
+
 def test_repository_ledger_has_a_recorded_approval(review: Any) -> None:  # noqa: ANN401
     """이 저장소의 원장은 **사람이 승인한 하한 목록**을 들고 있다 — 표와 기록의 하한 수가 같다."""
 
@@ -562,6 +587,9 @@ def test_repository_ledger_has_a_recorded_approval(review: Any) -> None:  # noqa
     assert report["record"]["present"] is True  # type: ignore[index]
     assert str(report["record"]["method"]).strip()  # type: ignore[index]
     assert report["counts"]["recorded_floors"] == report["counts"]["floors"]  # type: ignore[index]
+    # 면제도 같은 자리에서 승인된다 — 표의 선언과 기록이 승인한 면제가 같은 수다.
+    assert report["record"]["outside"]["recorded"] == report["counts"]["outside_declared"]  # type: ignore[index]
+    assert report["record"]["outside"]["shape"] == "full"  # type: ignore[index]
 
 
 def test_invalidated_reverification_fails_the_check(review: Any) -> None:  # noqa: ANN401

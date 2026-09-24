@@ -30,6 +30,13 @@
     **바뀐 근거** · **기록에 없는 새 하한**은 실패다(내려간 하한은 이름·옛값·새값을 함께 낸다). **관측**은 대조하지 않는다 —
     관측은 매 회차 움직이고, 각 층의 하한값이 실제로 무는지는 그 층의 게이트가 판정한다(원장은 목록의 승인을 맡는다).
     관측 이동은 **보고**일 뿐이고(안전한 쪽으로 틀리는 것을 실패로 만들면 기록이 잡음이 된다), 하한을 늘린 것도 보고다.
+  * **승인 없는 면제** — 면제(`OUTSIDE` 선언)도 **판단**이다(“이 상수는 하한이 아니다”). 그러므로 기록은 면제를
+    **이름만이 아니라 약속까지**(왜 하한이 아닌지·누가 소유하는지·언제 다시 볼지) 담고, 표는 그 기록과 대조한다:
+    기록에 없는 **새 면제** · 기록이 승인했는데 표에 없는 **거둔 면제** · **바뀐 근거·소유자** · **미룬 재검토 기한**은 실패다.
+    기한을 미루는 것이 이 자리의 핵심이다 — 날짜를 뒤로 미는 것은 “그 도구가 층이 되었는지 다시 본다” 는 약속을 한 회차
+    더 미루는 결정인데, 표는 날짜가 있으면 통과시키므로 승인 없이는 그 결정이 어디에도 안 남는다(면죄부가 스스로 갱신된다).
+    기한을 **앞당긴** 것은 안전한 쪽이므로 보고만 하고, 옛 이름이 사라지고 새 이름이 생겼는데 약속이 그대로면 한 문장으로
+    “이름만 바뀐 것으로 보인다” 고 말한다(**보인다** 까지만 — 원장은 상수의 동일성을 모른다).
 
 ```sh
 .venv/bin/python scripts/floor_ledger.py --gate        # 표 + 판정(하나라도 어긋나면 exit 1)
@@ -109,12 +116,21 @@ _WHY_MIN_CANDIDATES: Final[str] = (
 )
 
 
+# 기록이 담은 면제의 모양 — 이름만 담은 옛 기록과 약속(근거·소유자·기한)까지 담은 기록을 구별한다.
+# 이름만 아는 기록으로는 “기한을 미뤘다” 를 물을 수 없다: 그 기록은 왜·누가·언제까지를 승인한 적이 없다.
+OUTSIDE_SHAPE_FULL: Final[str] = "full"
+OUTSIDE_SHAPE_NAMES: Final[str] = "names"
+OUTSIDE_SHAPE_ABSENT: Final[str] = "absent"
+OUTSIDE_SHAPE_NONE: Final[str] = "no-record"
+
+
 @dataclass(frozen=True, slots=True)
 class OutsideFloor:
     """표 밖의 하한 하나 — 이름·왜 아닌지·누가 소유하는지·언제 다시 볼지.
 
     면죄부가 되지 않도록 등록은 양방향이고 기한이 있다: 상수가 하한 목록에 실리거나 사라지면 낡은 선언으로,
     기한이 지나도 실패한다(그 사이 그 도구가 게이트에 들어왔는지 다시 보라는 뜻이다).
+    기한은 **미루는 것도 결정**이다 — 그것을 승인으로 묶으려고 기록도 면제를 약속까지 담는다.
     """
 
     name: str
@@ -122,8 +138,36 @@ class OutsideFloor:
     owner: str
     review_by: str
 
+    @property
+    def promise(self) -> tuple[str, str, str]:
+        """이 면제가 하는 약속 — 왜 하한이 아닌지·누가 소유하는지·언제 다시 볼지."""
+
+        return (self.reason, self.owner, self.review_by)
+
     def as_mapping(self) -> dict[str, str]:
         return {"name": self.name, "reason": self.reason, "owner": self.owner, "review_by": self.review_by}
+
+
+@dataclass(frozen=True, slots=True)
+class RecordedOutside:
+    """기록이 승인한 면제들 — 모양(`shape`)과 이름별 약속.
+
+    `entries` 의 값이 `None` 이면 그 이름은 **이름만** 승인된 것이다(약속을 비교할 근거가 없다). 기록이 없으면
+    `shape` 는 `OUTSIDE_SHAPE_NONE` 이고, 그 사실은 `record_problems` 가 말한다(같은 사실을 두 번 말하지 않는다).
+    """
+
+    shape: str
+    entries: dict[str, tuple[str, str, str] | None]
+
+    @property
+    def names(self) -> frozenset[str]:
+        return frozenset(self.entries)
+
+    @property
+    def promises(self) -> dict[str, tuple[str, str, str]]:
+        """약속까지 아는 면제만 — 이름만 아는 기록에서는 빈 사전이다."""
+
+        return {name: promise for name, promise in self.entries.items() if promise is not None}
 
 
 # 선언부. 여기 없는 후보를 스캔이 찾으면 원장이 그 이름을 대며 실패한다 — 표 밖은 침묵이 아니라 목록이다.
@@ -363,11 +407,18 @@ def outside_problems(
     declared: Sequence[OutsideFloor],
     *,
     today: date | None = None,
+    renamed: Sequence[tuple[str, str]] = (),
 ) -> list[str]:
-    """표 밖 하한의 판정 — 선언 없는 후보·낡은 선언·근거 없는 선언·기한 경과를 모두 실패로 만든다."""
+    """표 밖 하한의 판정 — 선언 없는 후보·낡은 선언·근거 없는 선언·기한 경과를 모두 실패로 만든다.
+
+    `renamed` 는 “이름만 바뀐 것으로 보이는” 짝이다(그 판단은 `outside_record_problems` 가 문장으로 낸다) —
+    그 옛 이름은 낡은 선언으로 한 번 더 말하지 않는다(하나의 결정이 두 문장으로 보이지 않게).
+    """
 
     as_of = today or date.today()
     undeclared, stale = outside_floors(candidates, wired, [item.name for item in declared])
+    paired = {old for old, _new in renamed}
+    stale = tuple(name for name in stale if name not in paired)
     problems: list[str] = []
     if undeclared:
         problems.append(
@@ -391,6 +442,191 @@ def outside_problems(
                 f"표 밖 선언의 재검토 기한이 지났다: {item.name}({item.review_by}) — 그 도구가 층이 되었는지 다시 보라"
             )
     return problems
+
+
+def _as_day(text: str) -> date | None:
+    """날짜로 읽히면 그 날짜, 아니면 `None` — 못 읽는 기한은 표 쪽 규칙이 이미 문장으로 낸다(여기서 또 말하지 않는다)."""
+
+    try:
+        return date.fromisoformat(text.strip())
+    except ValueError:
+        return None
+
+
+def recorded_outside(stored: dict[str, object] | None) -> RecordedOutside:
+    """기록이 승인한 면제를 읽는다 — 모양(없음·이름만·약속까지)과 이름별 약속.
+
+    옛 기록은 면제를 **이름으로만** 담았다(`declared: ["scripts/x.py:MIN_Y", …]`). 그 기록은 면제를 승인한 적이
+    있지만 왜·누가·언제까지를 승인한 적은 없으므로, “기한을 미뤘다” 를 물을 자리가 없다 — 그 사실을 통과로 삼키지 않고
+    문장으로 내기 위해 모양을 함께 돌려준다.
+    """
+
+    if stored is None:
+        return RecordedOutside(OUTSIDE_SHAPE_NONE, {})
+    block = stored.get("outside")
+    if not isinstance(block, dict):
+        return RecordedOutside(OUTSIDE_SHAPE_ABSENT, {})
+    declared = block.get("declared")
+    if not isinstance(declared, list):
+        return RecordedOutside(OUTSIDE_SHAPE_ABSENT, {})
+    entries: dict[str, tuple[str, str, str] | None] = {}
+    promises_known = True
+    for item in declared:
+        if isinstance(item, dict) and str(item.get("name", "")).strip():
+            entries[str(item["name"])] = (
+                str(item.get("reason", "")),
+                str(item.get("owner", "")),
+                str(item.get("review_by", "")),
+            )
+        elif isinstance(item, str) and item.strip():
+            entries[item] = None
+            promises_known = False
+    if not entries:
+        return RecordedOutside(OUTSIDE_SHAPE_ABSENT, {})
+    return RecordedOutside(OUTSIDE_SHAPE_FULL if promises_known else OUTSIDE_SHAPE_NAMES, entries)
+
+
+def renamed_declarations(
+    declared: Sequence[OutsideFloor],
+    recorded: RecordedOutside,
+    *,
+    candidates: Sequence[str],
+    wired: Iterable[str],
+) -> tuple[tuple[str, str], ...]:
+    """이름만 바뀐 것으로 **보이는** 면제 짝 — (기록의 옛 이름, 표의 새 이름).
+
+    짝의 조건은 좁다: 옛 이름이 기록이 승인한 면제인데 표에서 사라졌거나 낡은 선언이고, 새 이름은 **실재하는 후보**이며
+    표가 선언했는데 기록은 모르며, 약속(근거·소유자·기한)이 **토씨 하나 안 틀리고 같을 때**만 말한다. 일부라도 다르면
+    짝짓지 않는다 — 그것은 이름 변경이 아니라 다른 판단일 수 있고, 원장은 상수의 동일성을 아는 것이 아니다(추측을
+    사실처럼 말하지 않는다). 옛 면제 하나를 두 새 면제가 나눠 가질 수는 없으므로 먼저 온 짝이 가져간다.
+    """
+
+    if recorded.shape != OUTSIDE_SHAPE_FULL:
+        return ()  # 약속을 모르는 기록으로는 “이름만 바뀌었다” 를 말할 근거가 없다
+    promised = recorded.promises
+    now = {item.name: item.promise for item in declared}
+    _undeclared, stale = outside_floors(candidates, wired, list(now))
+    live = set(candidates)
+    fresh = sorted(name for name in now if name not in promised and name in live)
+    pairs: list[tuple[str, str]] = []
+    claimed: set[str] = set()
+    for old in sorted(promised):
+        if old in now and old not in set(stale):
+            continue  # 옛 이름이 아직 표에 살아 있다 — 이름이 바뀐 자리가 아니다
+        for new in fresh:
+            if new in claimed or now[new] != promised[old]:
+                continue
+            pairs.append((old, new))
+            claimed.add(new)
+            break
+    return tuple(pairs)
+
+
+def outside_record_problems(
+    declared: Sequence[OutsideFloor],
+    recorded: RecordedOutside,
+    *,
+    renamed: Sequence[tuple[str, str]] = (),
+) -> list[str]:
+    """기록이 승인한 **면제**와 지금 표의 면제가 같은가 — 면제의 생성·거둠·근거 변경·기한 연장을 승인으로 묶는다.
+
+    하한이 아니라 면제를 묻는 까닭은 면제가 “이 상수는 하한이 아니다” 라는 **판단**이기 때문이다. 그중에서도
+    **기한을 미루는 것**이 이 자리의 핵심이다: 날짜를 뒤로 미는 것은 “그 도구가 층이 되었는지 다시 본다” 는 약속을
+    한 회차 더 미루는 결정인데, 표는 날짜가 있으면 통과시키므로 승인 없이는 그 결정이 어디에도 안 남는다.
+    """
+
+    if recorded.shape == OUTSIDE_SHAPE_NONE:
+        return []  # “기록이 없다” 는 문장은 `record_problems` 가 낸다
+    if recorded.shape == OUTSIDE_SHAPE_ABSENT:
+        return [
+            "기록에 면제 목록(`outside`)이 없다 — 무엇이 면제됐는지 승인하지 않은 기록은 면제의 목록이 아니다"
+            "(`--record --method` 로 다시 기록하라)"
+        ]
+    paired = {name for pair in renamed for name in pair}
+    problems: list[str] = []
+    if recorded.shape == OUTSIDE_SHAPE_NAMES:
+        problems.append(
+            f"기록이 면제를 **이름으로만** 담고 있다({len(recorded.entries)}개) — 왜 하한이 아닌지·누가 소유하는지·"
+            "언제까지인지를 승인한 적이 없으므로 “기한을 미뤘다” 를 물을 자리가 없다: `--record --method` 로 약속까지 담아 "
+            "다시 기록하라"
+        )
+    names_now = {item.name for item in declared}
+    appeared = sorted(name for name in names_now - recorded.names if name not in paired)
+    if appeared:
+        problems.append(
+            f"기록에 없는 면제가 있다: {', '.join(appeared)} — 면제를 만드는 것도 결정이다: 왜 하한이 아닌지·누가 "
+            "소유하는지·언제까지를 `--record --method` 로 승인하라(면제는 승인된 목록에 실려야 한다)"
+        )
+    withdrawn = sorted(name for name in recorded.names - names_now if name not in paired)
+    if withdrawn:
+        problems.append(
+            f"기록이 승인한 면제가 표에 없다: {', '.join(withdrawn)} — 면제를 거두는 것(하한으로 승격했거나 그 상수를 "
+            "지운 것)도 결정이다: `--record --method` 로 남겨라"
+        )
+    if recorded.shape == OUTSIDE_SHAPE_FULL:
+        changes, deferred = _outside_moves(declared, recorded, paired)
+        if changes:
+            problems.append(
+                f"기록과 근거·소유자가 달라진 면제가 있다: {', '.join(changes)} — 면제의 근거가 바뀌면 그것은 다른 "
+                "판단이다(`--record --method` 로 다시 기록하라)"
+            )
+        if deferred:
+            moved = "; ".join(f"{name} {was} → {now}" for name, was, now in deferred)
+            problems.append(
+                f"면제의 재검토 기한을 미뤘다({moved}) — “그 도구가 층이 되었는지 다시 본다” 는 약속을 뒤로 미루는 "
+                "것도 결정이다: 무엇을 보고 미뤘는지 `--record --method` 로 남겨라"
+            )
+    for old, new in renamed:
+        was = recorded.promises.get(old)
+        owner, review_by = (was[1], was[2]) if was else ("", "")
+        problems.append(
+            f"기록의 면제 {old} 가 표의 {new} 로 **이름만 바뀐 것으로 보인다**(근거·소유자·재검토 기한이 그대로다: "
+            f"소유자 {owner} · 재검토 {review_by}) — 상수 이름을 바꾸는 것도 결정이다: 옛 이름의 선언을 정리하고 "
+            "`--record --method` 로 그 결정을 남겨라. 이름이 바뀐 것이 아니라면 왜 옛 이름이 사라지고 새 이름이 생겼는지 "
+            "남겨라 — 원장은 상수의 동일성을 모른다"
+        )
+    return problems
+
+
+def _outside_moves(
+    declared: Sequence[OutsideFloor], recorded: RecordedOutside, paired: set[str]
+) -> tuple[tuple[str, ...], tuple[tuple[str, str, str], ...]]:
+    """기록과 달라진 면제 — (근거·소유자가 바뀐 이름들, 기한을 **미룬** 것들).
+
+    기한을 당긴 것은 안전한 쪽이므로 여기 안 든다(`outside_pulled` 가 보고만 한다). 근거·소유자가 바뀐 면제는
+    그 자체가 다른 판단이므로 기한 이동으로 한 번 더 말하지 않는다.
+    """
+
+    changes: list[str] = []
+    deferred: list[tuple[str, str, str]] = []
+    for item in declared:
+        was = recorded.promises.get(item.name)
+        if was is None or item.name in paired:
+            continue
+        if (was[0], was[1]) != (item.reason, item.owner):
+            changes.append(item.name)
+            continue
+        before, after = _as_day(was[2]), _as_day(item.review_by)
+        if before is not None and after is not None and after > before:
+            deferred.append((item.name, was[2], item.review_by))
+    return tuple(sorted(changes)), tuple(sorted(deferred))
+
+
+def outside_pulled(
+    declared: Sequence[OutsideFloor], recorded: RecordedOutside, *, paired: Iterable[str] = ()
+) -> tuple[str, ...]:
+    """기록보다 기한을 **앞당긴** 면제 — 실패가 아니라 보고다(더 자주 보는 쪽은 안전한 쪽이다)."""
+
+    skipped = set(paired)
+    pulled: list[str] = []
+    for item in declared:
+        was = recorded.promises.get(item.name)
+        if was is None or item.name in skipped:
+            continue
+        before, after = _as_day(was[2]), _as_day(item.review_by)
+        if before is not None and after is not None and after < before:
+            pulled.append(f"{item.name} {was[2]} → {item.review_by}")
+    return tuple(sorted(pulled))
 
 
 @dataclass(frozen=True, slots=True)
@@ -498,12 +734,16 @@ class Ledger:
                 + len(_record_lines(self.record, "added_layers")),
                 "record_layers_renamed": len(_record_lines(self.record, "renamed_layers")),
                 "record_renames": len(_record_lines(self.record, "renames")),
+                "record_exemptions": _record_int(_record_dict(self.record, "outside"), "recorded"),
+                "record_exemptions_pulled": len(_record_lines(_record_dict(self.record, "outside"), "pulled")),
             },
             "record": dict(self.record),
             "outside": {
                 "scanned": len(self.candidates),
                 "wired": len(self.covered),
                 "declared": [item.as_mapping() for item in self.outside],
+                # 기록이 승인한 면제와의 대조 — 읽는 사람이 선언과 승인을 같은 자리에서 본다.
+                "record": _record_dict(self.record, "outside"),
                 "min_candidates": _MIN_CANDIDATES,
                 "note": (
                     "이름이 하한처럼 생긴 숫자 상수만 본다(AST) — 다른 이름으로 넘긴 하한·다른 패턴의 임계값은 이 스캔이 못 본다"
@@ -523,6 +763,13 @@ class Ledger:
             "problems": list(self.problems),
             "verdict": "PASS" if self.ok else "FAIL",
         }
+
+
+def _record_dict(record: dict[str, object], key: str) -> dict[str, object]:
+    """기록 보고에서 객체 하나 — 없거나 객체가 아니면 빈 사전."""
+
+    value = record.get(key)
+    return value if isinstance(value, dict) else {}
 
 
 def _record_int(record: dict[str, object], key: str) -> int:
@@ -992,9 +1239,10 @@ def record_payload(
             for row in ledger.rows
             for floor in row.floors
         ],
+        # 면제는 **이름만이 아니라 약속까지** 담는다: 이름만 담으면 다음 기록이 “기한을 미뤘다” 를 물을 자리가 없다.
         "outside": {
             "scanned": len(ledger.candidates),
-            "declared": [item.name for item in ledger.outside],
+            "declared": [item.as_mapping() for item in ledger.outside],
         },
         "probe": probe.as_mapping(),
         "verdict": "PASS",
@@ -1009,11 +1257,21 @@ def write_record(path: Path, payload: dict[str, object]) -> None:
 
 
 def record_report(
-    record: Path, stored: dict[str, object] | None, ledger: Ledger, issues: list[str]
+    record: Path,
+    stored: dict[str, object] | None,
+    ledger: Ledger,
+    issues: list[str],
+    *,
+    renamed: Sequence[tuple[str, str]] = (),
 ) -> dict[str, object]:
     """기록의 상태를 JSON 보고에 싣는다 — 게이트와 리뷰가 읽는 출력에서 “왜 실패했나” 를 읽을 수 있어야 한다."""
 
     changes = record_changes(judged_floors(ledger), stored)
+    recorded = recorded_outside(stored)
+    paired_names = {name for pair in renamed for name in pair}
+    moved, deferred = _outside_moves(ledger.outside, recorded, paired_names)
+    if recorded.shape != OUTSIDE_SHAPE_FULL:  # 약속을 모르는 기록에서는 이동을 물을 수 없다
+        moved, deferred = (), ()
     return {
         "path": _display(record),
         "present": stored is not None,
@@ -1036,6 +1294,16 @@ def record_report(
         ],
         "moves": list(record_moves(ledger, stored)),
         "raised": list(record_raised(ledger, stored)),
+        # 면제 — 기록이 승인한 면제와 지금 표의 면제를 같은 자리에서 읽을 수 있게 싣는다.
+        "outside": {
+            "declared": len(ledger.outside),
+            "recorded": len(recorded.entries),
+            "shape": recorded.shape,
+            "changed": list(moved),
+            "deferred": [f"{name} {was} → {now}" for name, was, now in deferred],
+            "pulled": list(outside_pulled(ledger.outside, recorded, paired=paired_names)),
+            "renamed": [{"from": old, "to": new} for old, new in renamed],
+        },
         "problems": list(issues),
     }
 
@@ -1129,7 +1397,12 @@ def build(*, evidence_dir: Path = EVIDENCE_DIR, record: Path | None = None) -> L
     candidates = floor_candidates()
     wired = wired_constants(canary.script_for(str(name)) for name in canary.HARNESSES)
     covered = tuple(name for name in candidates if name in wired)
-    problems.extend(outside_problems(candidates, wired, OUTSIDE))
+    # 면제(선언)는 **판단**이다 — 기록이 그것을 승인했는지도 함께 묻는다. 기록을 여기서 먼저 읽는 까닭은 “이름만 바뀐 것으로
+    # 보이는가” 가 기록이 아는 약속을 근거로 서기 때문이다(그 판단을 기록 읽기 뒤로 미루면 같은 일을 두 번 세게 된다).
+    stored = read_record(record_path)
+    recorded_outside_state = recorded_outside(stored)
+    renamed_outside = renamed_declarations(OUTSIDE, recorded_outside_state, candidates=candidates, wired=wired)
+    problems.extend(outside_problems(candidates, wired, OUTSIDE, renamed=renamed_outside))
     # 자기 행의 하한은 **자기 층의 전체 하한 목록**이다(캔버스 하한 + 표 밖 스캔 하한) — 자기 행을 먼저 만들고
     # 그 수로 다시 만든다. 하나만 실으면 표가 자기 하한을 절반만 말한다(“하한이 몇 개인가” 가 표 밖에 남는다).
     first_pass = tuple(row for row, _ in readings)
@@ -1142,7 +1415,6 @@ def build(*, evidence_dir: Path = EVIDENCE_DIR, record: Path | None = None) -> L
     # 기록 대조 — 기록이 없거나 읽히지 않아도 “없음” 을 통과로 삼키지 않는다(그 사실이 판정이다).
     # 기록 문제를 `problems` 에 **합치지 않는** 까닭은 기록을 만드는 실행(`--record`)이 그 문제 때문에 자기 기록을 못 쓰게
     # 되기 때문이다(자기가 없어서 자기를 못 만드는 고리). 대신 보고에 따로 실어 호출자가 판정에 합친다.
-    stored = read_record(record_path)
     # 층 생사를 묻는 자리에는 roster 를 넘긴다 — “그 층이 빠진 결정” 과 “표가 그 층을 읽지 못한 결함” 은 다른 문장이어야 한다.
     record_issues = record_problems(
         judged_floors(ledger),
@@ -1150,7 +1422,9 @@ def build(*, evidence_dir: Path = EVIDENCE_DIR, record: Path | None = None) -> L
         record=record_path,
         roster=tuple(str(name) for name in canary.HARNESSES),
     )
-    report = record_report(record_path, stored, ledger, record_issues)
+    # 면제의 이동도 **판단의 이동**이다(하한과 같은 자리에서 묻는다) — 면제를 만들고·거두고·기한을 미루면 승인이 필요하다.
+    record_issues.extend(outside_record_problems(OUTSIDE, recorded_outside_state, renamed=renamed_outside))
+    report = record_report(record_path, stored, ledger, record_issues, renamed=renamed_outside)
     return Ledger(
         rows,
         orphans,
@@ -1351,6 +1625,93 @@ def self_probe() -> Probe:
     cases.check(
         "기한을 읽지 못하는 선언도 실패한다",
         bool(outside_problems(("scripts/b.py:MIN_Y",), (), (replace(healthy_declaration, review_by="언젠가"),))),
+    )
+    # 면제는 **판단**이다 — 기록이 “이 상수는 하한이 아니다” 를 약속까지 승인했는가.
+    approved = RecordedOutside(OUTSIDE_SHAPE_FULL, {healthy_declaration.name: healthy_declaration.promise})
+    cases.equal(
+        "기록이 승인한 면제와 지금 표가 같으면 조용하다", outside_record_problems((healthy_declaration,), approved), []
+    )
+    cases.check(
+        "기록에 없는 면제는 승인 없이 못 들어온다(면제를 만드는 것도 결정이다)",
+        bool(outside_record_problems((healthy_declaration,), RecordedOutside(OUTSIDE_SHAPE_FULL, {}))),
+    )
+    cases.check(
+        "면제를 거두는 것도 결정이다(기록이 승인한 면제가 표에 없다)",
+        bool(outside_record_problems((), approved)),
+    )
+    cases.check(
+        "면제의 근거·소유자가 바뀌면 그것은 다른 판단이다",
+        bool(outside_record_problems((replace(healthy_declaration, reason="다른 이유"),), approved)),
+    )
+    deferred = replace(healthy_declaration, review_by="2100-01-01")
+    pushed = outside_record_problems((deferred,), approved)
+    cases.check(
+        "기한을 미룬 면제는 승인이 필요하다(면죄부가 스스로 갱신되지 않는다)",
+        len(pushed) == 1 and "기한을 미뤘다" in pushed[0] and "2099-01-01 → 2100-01-01" in pushed[0],
+    )
+    cases.check(
+        "기한을 앞당긴 면제는 실패가 아니라 보고다(더 자주 보는 쪽이 안전한 쪽이다)",
+        not outside_record_problems((replace(healthy_declaration, review_by="2098-01-01"),), approved)
+        and outside_pulled((replace(healthy_declaration, review_by="2098-01-01"),), approved)
+        == ("scripts/b.py:MIN_Y 2099-01-01 → 2098-01-01",),
+    )
+    cases.check(
+        "기록이 면제를 이름으로만 담으면 그것은 승인이 아니다(기한을 물을 자리가 없다)",
+        bool(outside_record_problems((healthy_declaration,), RecordedOutside(OUTSIDE_SHAPE_NAMES, {"x": None}))),
+    )
+    cases.check(
+        "기록에 면제 목록이 없으면 그것도 실패다(무엇이 면제됐는지 말하지 않는 기록)",
+        bool(outside_record_problems((healthy_declaration,), RecordedOutside(OUTSIDE_SHAPE_ABSENT, {}))),
+    )
+    cases.equal(
+        "기록이 없으면 면제 이야기는 `record_problems` 한테 맡긴다(같은 사실을 두 번 말하지 않는다)",
+        outside_record_problems((healthy_declaration,), RecordedOutside(OUTSIDE_SHAPE_NONE, {})),
+        [],
+    )
+    # 이름만 바뀐 것으로 **보이는** 면제 — 두 이름이 같은 약속을 들고 있을 때만(추측을 사실처럼 말하지 않는다).
+    old_exemption = OutsideFloor("scripts/a.py:MIN_OLD", "판정 기준이다(관측 대상이 없다)", "qa", "2026-12-31")
+    new_exemption = replace(old_exemption, name="scripts/a.py:MIN_NEW")
+    recorded_old = RecordedOutside(OUTSIDE_SHAPE_FULL, {old_exemption.name: old_exemption.promise})
+    live = ("scripts/a.py:MIN_NEW",)
+    pairs = renamed_declarations((new_exemption,), recorded_old, candidates=live, wired=())
+    cases.equal("약속이 그대로면 이름만 바뀐 것으로 보인다", list(pairs), [(old_exemption.name, new_exemption.name)])
+    cases.equal(
+        "짝의 옛 이름은 낡은 선언으로 두 번 말하지 않는다(하나의 결정이 두 문장이 되지 않는다)",
+        outside_problems(live, (), (old_exemption, new_exemption), renamed=pairs),
+        [],
+    )
+    renamed_said = outside_record_problems((new_exemption,), recorded_old, renamed=pairs)
+    cases.check(
+        "그래도 짝을 승인하기 전에는 초록이 아니다(보인다 — 단정하지 않는다)",
+        len(renamed_said) == 1
+        and "이름만 바뀐 것으로 보인다" in renamed_said[0]
+        and "`--record --method`" in renamed_said[0],
+    )
+    cases.equal(
+        "표가 아직 새 이름을 선언하지 않았으면 짝지을 근거가 없다(사라짐·선언 없음 두 문장이 맞다)",
+        list(renamed_declarations((old_exemption,), recorded_old, candidates=live, wired=())),
+        [],
+    )
+    cases.equal(
+        "약속이 일부라도 다르면 짝짓지 않는다(이름 변경이 아니라 다른 판단일 수 있다)",
+        list(
+            renamed_declarations(
+                (replace(new_exemption, review_by="2027-01-31"),), recorded_old, candidates=live, wired=()
+            )
+        ),
+        [],
+    )
+    cases.equal(
+        "약속을 모르는 기록으로는 이름이 바뀌었다고 말할 근거가 없다",
+        list(
+            renamed_declarations(
+                (new_exemption,),
+                RecordedOutside(OUTSIDE_SHAPE_NAMES, {old_exemption.name: None}),
+                candidates=live,
+                wired=(),
+            )
+        ),
+        [],
     )
     # 하한 기록 — **판단의 이동**은 실패, 관측·올림은 보고. 합성 입력으로 다시 묻는다.
     probe_row = LayerRow("p", KIND_MEASURED, "scripts/p.py", (Floor("수", 3, 1, why="근거"),), {}, _COMMIT_SAMPLE)
@@ -1659,6 +2020,21 @@ def describe(ledger: Ledger, probe: Probe) -> str:
     for item in ledger.outside:
         lines.append(f"    · {item.name}({item.owner}, 재검토 {item.review_by}) — {item.reason}")
     record = ledger.record
+    exempted = _record_dict(record, "outside")
+    if record.get("present"):
+        lines.append(
+            f"  면제 기록  선언 {len(ledger.outside)}개 · 기록이 승인한 면제 {exempted.get('recorded', 0)}개 "
+            f"({exempted.get('shape', '')}) — 면제를 만들거나·거두거나·기한을 미루면 승인이 필요하다"
+        )
+        for line in _record_lines(exempted, "pulled"):
+            lines.append(f"    · 면제 기한을 앞당김(보고만 — 더 자주 보는 쪽이다): {line}")
+        pairs = exempted.get("renamed")
+        for pair in pairs if isinstance(pairs, list) else []:
+            if isinstance(pair, dict):
+                lines.append(
+                    f"    · 이름만 바뀐 것으로 보이는 면제(단정하지 않는다 — 판단은 사람 몫): "
+                    f"{pair.get('from')} → {pair.get('to')}"
+                )
     if record.get("present"):
         lines.append(
             f"  하한 기록  {record.get('path')} · {record.get('recorded_on') or '날짜 없음'} 승인 · "
