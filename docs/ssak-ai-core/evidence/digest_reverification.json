@@ -53,15 +53,22 @@
       "doc": "T02_canonical_store.md",
       "path": "src/antigravity_k/engine/cognitive/legacy_adapter.py",
       "verified_digest": "fbd4e1d9ef11aea5160dabf14e1c30afa18ad1a503140d716b973523b30b5334",
-      "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_store.py 17 passed + test_legacy_adapter.py 8 passed — append-only·git commit·digest tamper·reopen 계약이 현재 트리에서 그대로 성립."
+      "verified_on": "2026-09-25",
+      "method": "P02 실제 Vault 동시성 회차: test_store.py(17→19)를 현재 트리에서 재실행해 5회 반복 19 passed(요동 0), 실제 VaultEngine(git 자동 commit 포함)과의 동시 폭풍 실패 0·digest 6/6을 확인했다."
     },
     {
       "doc": "T02_canonical_store.md",
       "path": "src/antigravity_k/engine/cognitive/store.py",
       "verified_digest": "26a65e6f6a2392352283521989964bc98a90ce6f71cba16b5751771c86cd7e36",
-      "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_store.py 17 passed + test_legacy_adapter.py 8 passed — append-only·git commit·digest tamper·reopen 계약이 현재 트리에서 그대로 성립."
+      "verified_on": "2026-09-25",
+      "method": "P02 실제 Vault 동시성 회차: test_store.py(17→19)를 현재 트리에서 재실행해 5회 반복 19 passed(요동 0), 실제 VaultEngine(git 자동 commit 포함)과의 동시 폭풍 실패 0·digest 6/6을 확인했다."
+    },
+    {
+      "doc": "T02_canonical_store.md",
+      "path": "tests/cognitive/test_store.py",
+      "verified_digest": "6f8ba5bc9068811ce7b80e32a1861b0ee6643b34e450dc028534e00d8a5e542c",
+      "verified_on": "2026-09-25",
+      "method": "P02 실제 Vault 동시성 회차: test_store.py(17→19)를 현재 트리에서 재실행해 5회 반복 19 passed(요동 0), 실제 VaultEngine(git 자동 commit 포함)과의 동시 폭풍 실패 0·digest 6/6을 확인했다."
     },
     {
       "doc": "T03_T04_context_brain.md",
@@ -215,6 +222,6 @@
     "python",
     "scripts/digest_drift.py",
     "--record",
-    "T01b_protection.md"
+    "T02_canonical_store.md"
   ]
 }

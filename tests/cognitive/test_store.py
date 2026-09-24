@@ -315,3 +315,84 @@ def test_references_survive_roundtrip_through_store(tmp_path: Path) -> None:
     assert restored.producer == PRODUCER
     assert str(restored.entity_type) == "BrainJudgment"
     assert (store.root / COMMITTED_DIR).exists()
+
+
+# ── T02(실제 Vault 통합): VaultEngine write 경로와의 동시성 ────────────────
+
+
+def test_real_vault_writer_shares_the_same_lock_and_serializes(tmp_path: Path) -> None:
+    # 같은 repo root 배치에서 실제 VaultEngine의 write(git add/commit)와 CanonicalStore의
+    # publish(git add/commit)가 **같은 lock 파일**(.git/.agk_vault.lock)로 직렬화된다 —
+    # git index 경합(index.lock) 없이 모두 성공하고 원본은 그대로다.
+    from antigravity_k.engine.vault import VaultEngine
+
+    root = tmp_path / "shared-root"
+    root.mkdir()
+    vault = VaultEngine(str(root), sync_rag=False)  # .git 생성(같은 root 배치의 전제 순서)
+    project = project_id()
+    stores = [CanonicalStore(root, git_enabled=True, lock_timeout=30.0) for _ in range(2)]
+    assert all(store.lock_path == root / ".git" / ".agk_vault.lock" for store in stores)
+
+    errors: list[str] = []
+
+    def vault_writes(tag: str) -> None:
+        for i in range(3):
+            try:
+                vault.write_note(f"notes/{tag}-{i}.md", {"title": f"{tag}-{i}"}, f"body {tag} {i}")
+            except Exception as exc:  # noqa: BLE001 — 폭풍에서 실패를 모아 보고한다
+                errors.append(f"vault {tag}-{i}: {exc}")
+
+    def store_commits(store: CanonicalStore, tag: str) -> None:
+        for i in range(3):
+            try:
+                store.commit_records([build_experience(project)], transaction_id=f"cog-{tag}-{i}")
+            except Exception as exc:  # noqa: BLE001
+                errors.append(f"store {tag}-{i}: {exc}")
+
+    threads = [
+        threading.Thread(target=vault_writes, args=("w1",)),
+        threading.Thread(target=vault_writes, args=("w2",)),
+        threading.Thread(target=store_commits, args=(stores[0], "s1")),
+        threading.Thread(target=store_commits, args=(stores[1], "s2")),
+    ]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=60)
+
+    assert errors == []
+    assert len(stores[0].list_committed()) == 6
+    assert stores[0].verify_digests() == 6
+    for tag in ("w1", "w2"):
+        for i in range(3):
+            assert (root / "notes" / f"{tag}-{i}.md").exists()
+
+
+def test_default_layout_coexists_with_vault_git_without_shared_lock(tmp_path: Path) -> None:
+    # 기본 배치(default_store: .cognitive/canonical, git 비활성)는 vault와 lock 파일을 공유하지
+    # 않는다 — store가 .git과 git index를 전혀 건드리지 않으므로 공유할 경합 자체가 없다.
+    from antigravity_k.engine.cognitive.context import default_store
+    from antigravity_k.engine.vault import VaultEngine
+
+    root = tmp_path / "project"
+    root.mkdir()
+    vault = VaultEngine(str(root), sync_rag=False)
+    store = default_store(root)
+
+    assert store.lock_path != root / ".git" / ".agk_vault.lock"
+
+    errors: list[str] = []
+    for i in range(3):
+        try:
+            vault.write_note(f"notes/n-{i}.md", {"title": f"n-{i}"}, f"body {i}")
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"vault {i}: {exc}")
+        try:
+            store.commit_records([build_experience(project_id())], transaction_id=f"txn-{i}")
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"store {i}: {exc}")
+
+    assert errors == []
+    assert len(store.list_committed()) == 3
+    assert store.verify_digests() == 3
+    assert len(list((root / "notes").glob("n-*.md"))) == 3

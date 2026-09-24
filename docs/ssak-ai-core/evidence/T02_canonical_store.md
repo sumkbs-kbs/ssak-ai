@@ -58,3 +58,35 @@ ruff check / ruff format --check / mypy src/antigravity_k/engine/cognitive → c
 - P03: protected target enforcement — store의 writer allowlist와 연결해야 한다(현재 store는 경로 보호를 강제하지 않는다).
 - P07: action receipt와 제출 idempotency를 legacy task 매핑과 연결한다.
 - P12: 기존 DB → canonical backfill dry-run과 ID mapping 보고서.
+
+## 2026-09-24 회차 — 실제 VaultEngine write 경로와의 동시성 (T02 남은 limitations를 닫음)
+
+위 limitations("VaultEngine 내부 write 경로와의 동시성은 실사용 통합 시점에 다시 시험한다")를
+현재 트리에서 닫은 회차다. **실제 VaultEngine**(git 자동 commit 포함, `sync_rag=False`)과 함께 돌렸다.
+
+```yaml
+check_id: T02-vault-concurrency
+status: PASS (실제 VaultEngine 통합)
+owner: storage
+source_head: 456731b0 (dirty — 본 회차: tests/cognitive/test_store.py)
+command: .venv/bin/python -m pytest tests/cognitive/test_store.py -q (5회 반복)
+exit_code: 0 (19 passed × 5 — 요동 0)
+observed_behavior: 아래 두 배치
+artifact: tests/cognitive/test_store.py (17→19 시험)
+limitations: 실제 사용자 경로(API·CLI에서 이 store를 호출하는 배선)는 P11 이월.
+verified_at: 2026-09-24T20:10:17Z
+```
+
+### 두 배치의 관찰
+
+- **같은 repo root 배치(공유 lock)** — vault와 store가 같은 root에서 같은 `.git`을 쓸 때,
+  양쪽 lock 파일이 **문자 그대로 같은 파일**(`root/.git/.agk_vault.lock`)임을 확인하고, 실제
+  VaultEngine `write_note`(노트 파일 + git add/commit) 2스레드 × 3회와 CanonicalStore
+  `commit_records`(records/.cognitive + git add/commit) 2인스턴스 × 3회를 **동시에** 돌렸다.
+  결과: 실패 0(git index 경합으로 깨지는 commit 없음) · 공개 record 6 · `verify_digests()` 6 ·
+  노트 6 전부 실재. store 스레드는 인스턴스를 분리해 썼다 — 같은 `SoftFileLock` 인스턴스는
+  프로세스 안 재진입으로 세므로 스레드를 직렬화하지 않는다(기존 동시성 시험과 같은 형태).
+- **기본 배치(공유 없음이 설계)** — `default_store()`은 `.cognitive/canonical`에 git 비활성으로
+  놓인다. store가 `.git`과 git index를 전혀 건드리지 않으므로 vault와 **공유할 경합 자체가 없다**
+  (lock 파일이 다른 것이 결함이 아니라 설계다 — 이유를 시험으로 고정). vault 3노트 + store 3commit
+  병렬·교차 실행 모두 성공, 원본·digest 불변.

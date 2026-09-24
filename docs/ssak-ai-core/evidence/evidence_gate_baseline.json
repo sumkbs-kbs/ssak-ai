@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "T01b 진입 경로 회차: test_protection 4건 추가(cognitive 767→771), T01b·T12 문서 pin 재확인(재확인 28→30), state_claim_mentions 6→7. 게이트 full 11/11 PASS 상태에서 승인."
+    "P02 실제 Vault 동시성 회차: test_store 2건 추가(cognitive 771→773), T02 문서 pin 재확인(재확인 30→31). 게이트 full 11/11 PASS 상태에서 승인."
   ],
   "layers": {
     "audit_enum_identity": {
@@ -33,9 +33,9 @@
     },
     "digest_drift": {
       "counts.drift": 0,
-      "counts.match": 20,
+      "counts.match": 19,
       "counts.missing": 0,
-      "counts.reverified": 30,
+      "counts.reverified": 31,
       "counts.stale_reverification": 0,
       "coverage.docs": 13,
       "coverage.min_docs": 1,
@@ -134,11 +134,11 @@
       "checks": 16,
       "measured.canary_harnesses": 11,
       "measured.canary_ok": 11,
-      "measured.cognitive_tests": 771,
+      "measured.cognitive_tests": 773,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
-      "measured.digest_reverified": 30,
+      "measured.digest_reverified": 31,
       "measured.digest_stale": 0,
       "measured.drift_questions": 10,
       "measured.drift_triggered": 0,
@@ -170,6 +170,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "T01b 진입 경로 회차: test_protection 4건 추가(cognitive 767→771), T01b·T12 문서 pin 재확인(재확인 28→30), state_claim_mentions 6→7. 게이트 full 11/11 PASS 상태에서 승인.",
-  "recorded_on": "2026-09-24"
+  "method": "P02 실제 Vault 동시성 회차: test_store 2건 추가(cognitive 771→773), T02 문서 pin 재확인(재확인 30→31). 게이트 full 11/11 PASS 상태에서 승인.",
+  "recorded_on": "2026-09-25"
 }

@@ -121,6 +121,7 @@ P04는 P03~P07과 소유 파일이 겹치지 않을 때 병렬 가능하다. 공
 - 복구: feature off, 기존 DB 불변; 신규 store root 보존. backfill은 dry-run 전용.
 - 인계 산출물: 변경 파일 목록, API/schema diff, 검증 evidence, 미해결 제약, 다음 카드 진입 가능 여부.
 - v1.1 추가 인수: T02/T09에서 OPERATIONAL_ONLY 기록도 보존하며, 뒤늦은 Experience 형성이 원본을 변경하지 않음을 확인한다. 실제 Vault writer와의 동시성은 P11/P12에서 연결 시험하고 그 전에는 module 결과로만 표시한다.
+- 2026-09-24 구현 보고(P02 실제 Vault 동시성): PASS — test_store 17→19, source head 456731b0(dirty: test_store.py). 증거: evidence/T02_canonical_store.md §2026-09-24. 이전 limitations가 남긴 "VaultEngine 내부 write 경로와의 동시성"을 **실제 VaultEngine**(git 자동 commit 포함)로 닫았다. ① **같은 root 배치** — 양쪽 lock이 문자 그대로 같은 파일(`root/.git/.agk_vault.lock`)임을 확인하고 vault `write_note` 2스레드×3 + store `commit_records` 2인스턴스×3 동시 폭풍에서 실패 0(git index 경합 없음)·record 6·digest 검증 6·노트 6 실재. store 스레드에 인스턴스를 분리한 이유도 고정: 같은 `SoftFileLock` 인스턴스는 프로세스 안 재진입이라 스레드를 직렬화하지 않는다(기존 동시성 시험과 같은 형태). ② **기본 배치** — `default_store()`(.cognitive/canonical, git 비활성)는 vault와 lock을 공유하지 않는 것이 **설계**임을 시험으로 고정: store가 .git/git index를 전혀 쓰지 않으므로 공유할 경합이 없다. 검증: 5회 반복 19 passed(요동 0) · ruff · mypy clean. **미완/이월:** 실제 사용자 경로(API·CLI 배선)는 P11(행 미체크 유지).
 
 
 ### P03 — 헌법·보호 권한 enforcement

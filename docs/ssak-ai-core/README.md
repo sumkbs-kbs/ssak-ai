@@ -67,7 +67,7 @@ v1은 Canonical Markdown + explicit references, Git persistence, rebuild 가능�
 |---|---|---|
 | P00 | [기준선](evidence/T00_baseline.md) §5 + [benchmark_spec](evidence/benchmark_spec.md): 경계·매니페스트 재대조·T00b-A/B 관찰 PASS | 사용자 표면 실호출·별도 data root 기준선은 P11 이월 |
 | P01 | [Typed model](evidence/T01a_typed_model.md): 모듈 시험 PASS | v1.1 선별·계보 계약 schema 정합화는 2026-09-24 회차가 통과 — runtime 연결은 P08/P11 |
-| P02 | [Canonical store](evidence/T02_canonical_store.md): 모듈 시험 PASS | 실제 Vault 동시성·사용자 경로 통합 |
+| P02 | [Canonical store](evidence/T02_canonical_store.md): 모듈 + 실제 VaultEngine 동시성 PASS | 사용자 경로 통합은 P11 이월 |
 | P03 | [보호 경계](evidence/T01b_protection.md): 모듈/tool gate/store PASS | migration/evolution 실제 hook, 승인 발급·검증 |
 | P04 | [Context·Brain](evidence/T03_T04_context_brain.md): 모듈 시험 PASS | 실제 provider/router 통합(T03-D provider context window 포함) — v1.1 철학 시나리오(T03-A~C·T04-A~C)는 2026-09-24 회차가 module 시험으로 통과 |
 | P05 | [Governance](evidence/T05_governance.md): module + tool_executor surface PASS (31 시험) | CLI/API/stream/background 연결, 승인 발급 주체 검증은 P11 이월 |

@@ -3,10 +3,10 @@
     "python",
     "scripts/digest_drift.py"
   ],
-  "source_head": "7ea468e9",
+  "source_head": "456731b0",
   "counts": {
-    "match": 20,
-    "reverified": 30,
+    "match": 19,
+    "reverified": 31,
     "drift": 0,
     "stale_reverification": 0,
     "missing": 0
@@ -27,8 +27,8 @@
       "missing": 0
     },
     "T02_canonical_store.md": {
-      "match": 2,
-      "reverified": 2,
+      "match": 1,
+      "reverified": 3,
       "drift": 0,
       "stale_reverification": 0,
       "missing": 0
@@ -183,7 +183,7 @@
       "recorded": "cc972338",
       "actual": "fbd4e1d9ef11aea5160dabf14e1c30afa18ad1a503140d716b973523b30b5334",
       "status": "reverified",
-      "reverified_on": "2026-09-23"
+      "reverified_on": "2026-09-25"
     },
     {
       "doc": "T02_canonical_store.md",
@@ -191,7 +191,7 @@
       "recorded": "2172a9b6",
       "actual": "26a65e6f6a2392352283521989964bc98a90ce6f71cba16b5751771c86cd7e36",
       "status": "reverified",
-      "reverified_on": "2026-09-23"
+      "reverified_on": "2026-09-25"
     },
     {
       "doc": "T02_canonical_store.md",
@@ -205,9 +205,9 @@
       "doc": "T02_canonical_store.md",
       "path": "tests/cognitive/test_store.py",
       "recorded": "de5d411c",
-      "actual": "de5d411c4b0cab86f4861cd4ac64a84fa02078fe5853fd466587a41eb2f78ad1",
-      "status": "match",
-      "reverified_on": ""
+      "actual": "6f8ba5bc9068811ce7b80e32a1861b0ee6643b34e450dc028534e00d8a5e542c",
+      "status": "reverified",
+      "reverified_on": "2026-09-25"
     },
     {
       "doc": "T03_T04_context_brain.md",
