@@ -115,3 +115,17 @@ verified_at: 2026-09-24T12:44:07Z
 - `ContextBuilder.build`는 L2 후보를 `_l2_candidates`로 모은 뒤 `_goal_mismatch`(레코드 payload의 applicability profile `goal_match`)인 항목을 제외·handle 발급하고 `_build_layer`에는 관련 이력만 넘긴다. L3(project-scope evidence fallback)은 그대로다 — evidence는 현재 자료이고 무관 주입은 pollution metric(growth)이 관찰·보고하는 대상이지, Body가 의미적으로 걸러낼 수 있는 것이 아니다.
 - `StructuredBrainClient`는 `timer`(기본 `time.monotonic`)로 경과를 재고, 검증을 통과했어도 선언 `timeout_seconds` 초과면 `TIMEOUT` 실패를 낸다. token 비용은 시도(repair 포함)를 합산해 `BrainJudgment.prompt_tokens/completion_tokens/elapsed_seconds`에 기록한다.
 - `BrainDirector.engage_secondaries`는 복수 Secondary를 같은 frozen context로 호출해 각각 `SecondaryEngagement`(독립 evidence)로 돌려준다. 기존 단일 `engage_secondary`는 동작·오류 문장 그대로 유지된다.
+
+### 2026-09-24 T03-D 실측 — 실제 provider context window에서의 확인
+
+"실제 provider context window에서도 확인한다"(T03-D 마지막 문장)를 실provider 값으로 닫았다.
+**실제 창: 32,768 tokens** — ollama `ssak-finetuned:qwen2.5-0.5b`의 `qwen2.context_length`
+(`/api/show` 조회, 2026-09-24). 관찰 세 가지(임시 실측 스크립트, exit 0):
+
+1. **적합**: 실제 창을 `token_budget`으로 넣고 조립 → `integrity=COMPLETE` · `tokens_used=235 ≤ 32,768`.
+2. **초과 명시**: L0 보호 제약이 실제 창을 넘으면 `L0_OVER_BUDGET`로 **명시적 실패** — 오류 문장이
+   실제 창 값(32768)을 이름한다(조용한 삭제 없음; module 시험과 같은 계약이 실제 값에서 재현).
+3. **실모델 왕복**: 같은 provider로 실생성("2+3=?" → "5") — 조립·예산 경로가 실 provider와 함께 동작.
+
+한계: ollama 런타임 `num_ctx`는 모델 최대(32,768)보다 작게 설정될 수 있다(요청별 옵션) — 예산의
+소스는 모델 capability이며 런타임 옵션과의 차이는 provider adapter 배치(P11 ACTIVE)에서 다룬다.

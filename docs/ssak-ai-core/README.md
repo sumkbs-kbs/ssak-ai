@@ -69,7 +69,7 @@ v1은 Canonical Markdown + explicit references, Git persistence, rebuild 가능�
 | P01 | [Typed model](evidence/T01a_typed_model.md): 모듈 시험 PASS | v1.1 선별·계보 계약 schema 정합화는 2026-09-24 회차가 통과 — runtime 연결은 P08/P11 |
 | P02 | [Canonical store](evidence/T02_canonical_store.md): 모듈 + 실제 VaultEngine 동시성 PASS | 사용자 경로 통합은 P11 이월 |
 | P03 | [보호 경계](evidence/T01b_protection.md): 모듈/tool gate/store PASS | migration/evolution 실제 hook, 승인 발급·검증 |
-| P04 | [Context·Brain](evidence/T03_T04_context_brain.md): 모듈 시험 PASS | 실제 provider/router 통합(T03-D provider context window 포함) — v1.1 철학 시나리오(T03-A~C·T04-A~C)는 2026-09-24 회차가 module 시험으로 통과 |
+| P04 | [Context·Brain](evidence/T03_T04_context_brain.md): 모듈 + T03-D 실제 provider window(32,768) 실측 PASS | 실제 router 통합만 P11 이월 — T03-A~D·T04-A~C 모두 충족 |
 | P05 | [Governance](evidence/T05_governance.md): module + tool_executor surface PASS (31 시험) | CLI/API/stream/background 연결, 승인 발급 주체 검증은 P11 이월 |
 | P06 | [COMMIT](evidence/T06_commit.md): module + canonical store 표면 PASS (28 시험) | loop(P08)·사용자 표면(P11) 실행 경로 연결 이월 |
 | P07 | [Action](evidence/T07_actions.md): module + ToolExecutor·CanonicalStore 표면 PASS (17 시험) | task_state_store 재시작 복구, OBSERVE 경험 형성은 P08/P11 이월 |
@@ -77,7 +77,7 @@ v1은 Canonical Markdown + explicit references, Git persistence, rebuild 가능�
 | P09 | [Learning lifecycle](evidence/T10_learning.md): module + CanonicalStore 표면 PASS (29 시험) | 실제 성장 효과 계측(P10), runtime·사용자 표면 연결(P11) |
 | P10 | [성장·ablation](evidence/T13_growth.md): deterministic fixture PASS (17 시험 + CLI artifact) | live pilot NOT_RUN, 실제 provider·표본 확대·실측 latency 이월 |
 | P10 (live) | [live pilot harness](evidence/T13_live_pilot.md): harness·분리 계약 PASS (12 시험) | 실제 provider·확증 표본 등록은 사람 결정 필요 |
-| P11 (부분) | [사용자 표면 opt-in](evidence/T11_surface.md): 실측 + adapter + read-only CLI/API(SSE 포함) + feature-off 회귀 PASS + **shadow 관찰 배선(스트림·background)** | 실모델 QA, resume/cancel, ACTIVE 실검증 이월 |
+| P11 (부분) | [사용자 표면 opt-in](evidence/T11_surface.md): 실측 + adapter + read-only 표면 + feature-off 회귀 + **shadow 배선(스트림·background) + 실모델 대화 1건 비교** | resume/cancel QA, ACTIVE 실검증(사람 승인) 이월 |
 | P12 (부분) | [migration dry-run](evidence/T12_migration.md): source read-only·별도 root·mapping·index·rollback PASS (14 시험) | destructive 변환 NOT_RUN, 실사용 DB dry-run 이월 |
 | P12 (T14) | [최종 Architecture Review](ARCHITECTURE_REVIEW.md): 헌법 24원칙(covered 15·partial 9·gap 0)·§63 12질문·§52 10질문 매핑 + 기계 검증 16 checks PASS(인용의 실재·추적, 증거 digest 의 drift, 증거 산문의 상태 주장, 하한 원장까지 측정) · 고정 순서 전량 회귀 5 failed/7666 passed(cognitive 실패 0), 남은 5건은 커밋 이력·패키징·문서 기준선으로 분리 · 회귀가 찾은 enum identity 결함을 `same_enum`으로 95곳 통일 + 감사 위반 0 (8 시험) | 실표면 QA(P11)·사람 승인 이월 |
 | P12 (T14 증거 digest) | [증거 digest drift](ARCHITECTURE_REVIEW.md): pin 50개를 실제 파일과 대조하는 harness(`scripts/digest_drift.py`) — 그대로 29 · **재확인 21** · 미확인 0 · 재확인 무효 0, 재확인은 `--method` 없이 기록 불가 (25 시험) | 실모델·실 vault 재확인은 이월 |

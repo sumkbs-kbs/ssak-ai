@@ -505,3 +505,22 @@ def test_background_outcome_recorder_fires_shadow_after_recording() -> None:
     assert recorded == ["case-1"], "기존 outcome 기록은 그대로 먼저 일어난다"
     assert adapter.status().last_episode_id == "task:case-1"
     assert adapter.status().dispatched_actions == 0
+
+
+def test_surface_brain_port_does_not_claim_material_judgment() -> None:
+    # 관찰 요약 think는 물질 판단을 주장하지 않는다(delta=None → simple 경로).
+    # 모델 실패는 failed think로만 나타난다(legacy와 무관).
+    from antigravity_k.engine.cognitive_surface import SurfaceBrainPort
+
+    ok = SurfaceBrainPort(lambda prompt: f"요약:{prompt[:20]}")
+    outcome = ok.think(context_ref="legacy:agent-stream", request_signature="stream:1", attempt=1)
+    assert outcome.failed is False
+    assert outcome.delta is None
+    assert outcome.judgment_ref.startswith("judgment:")
+
+    def explode(prompt: str) -> str:
+        raise RuntimeError("모델 고장")
+
+    failed = SurfaceBrainPort(explode).think(context_ref="c", request_signature="s", attempt=1)
+    assert failed.failed is True
+    assert failed.judgment_ref == ""

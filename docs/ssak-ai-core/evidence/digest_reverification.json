@@ -173,14 +173,14 @@
       "path": "scripts/measure_cognitive_surface.py",
       "verified_digest": "dd9137f71b928aec7871042b116aaea9787675ea404a0283e2c80cfca2e6c5c9",
       "verified_on": "2026-09-25",
-      "method": "P11 shadow 배선 회차: cognitive_surface.py에 SurfaceBrainPort를 추가했다. test_surface 20→24(관찰 계약 4·기준선 갱신)·SSE/API/runtime 회귀 148 passed·feature-off 회귀 PASS(transcript digest 동일 6a9a4142…)·ruff·mypy clean을 현재 트리에서 확인했다."
+      "method": "실모델 회차: SurfaceBrainPort가 관찰 요약에 물질 판단(delta)을 주장하지 않도록 고쳤다(실측이 무조건 BLOCKED_READINESS로 끝나던 오주장 잡음 — test_surface_brain_port_does_not_claim_material_judgment로 고정). test_surface 25 passed·실모델 관찰(대화 1건 비교) 완료."
     },
     {
       "doc": "T11_surface.md",
       "path": "src/antigravity_k/engine/cognitive_surface.py",
-      "verified_digest": "7f7ad78463563d845fc37fbd6a6da51ad6375da4dd12594f019b349f5e3dfe67",
+      "verified_digest": "460f399a0fde183f5da2bfce6689629b508d6dac2cf14ed0e790d67e46defcc1",
       "verified_on": "2026-09-25",
-      "method": "P11 shadow 배선 회차: cognitive_surface.py에 SurfaceBrainPort를 추가했다. test_surface 20→24(관찰 계약 4·기준선 갱신)·SSE/API/runtime 회귀 148 passed·feature-off 회귀 PASS(transcript digest 동일 6a9a4142…)·ruff·mypy clean을 현재 트리에서 확인했다."
+      "method": "실모델 회차: SurfaceBrainPort가 관찰 요약에 물질 판단(delta)을 주장하지 않도록 고쳤다(실측이 무조건 BLOCKED_READINESS로 끝나던 오주장 잡음 — test_surface_brain_port_does_not_claim_material_judgment로 고정). test_surface 25 passed·실모델 관찰(대화 1건 비교) 완료."
     },
     {
       "doc": "T12_migration.md",

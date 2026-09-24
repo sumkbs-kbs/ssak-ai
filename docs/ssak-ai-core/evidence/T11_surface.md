@@ -235,3 +235,36 @@ verified_at: 2026-09-24T21:04:20Z
 - 실모델 대화 1건의 응답·도구 호출 수 비교(shadow가 실제 모델 think port로 돌았을 때의 관찰) — 이
   환경에는 모델이 없다(NOT_RUN).
 - resume/cancel QA · ACTIVE 실검증(사람 승인·dispatch port·실도구) — 사람 결정 필요.
+
+## 6. 2026-09-24 실모델 회차 — 대화 1건의 응답·도구 호출 수 비교 (이월 2항을 닫음)
+
+**환경 관찰 정정**: 2026-09-20 웹 통합 트랙이 남긴 "모델 없는 환경"은 낡았다 — 재확인(2026-09-24)한
+ollama(127.0.0.1:11434)에 5종(`ssak-finetuned:qwen2.5-0.5b` · `qwen3.8:latest` 등)이 떠 있고
+`get_model_manager().generate`가 실응답을 냈다. §5가 NOT_RUN으로 남긴 실모델 비교를 돌렸다.
+
+```yaml
+check_id: T11-real-model
+status: PASS (실모델 1건 관찰)
+owner: integration
+source_head: ae9ec6a9 (dirty — cognitive_surface.py의 SurfaceBrainPort delta 수정 · test_surface.py)
+command: 실측 스크립트(임시): 실 AgentRuntime+OrchestratorAgent+VaultEngine(tmp) + get_model_manager() → complete() 1건 → observe_interaction(SurfaceBrainPort=같은 모델)
+exit_code: 0
+observed_behavior: 아래 비교
+limitations: 1회 관찰이다(표본 1 — 성능 주장 아님). resume/cancel QA·ACTIVE 실검증은 여전히 이월.
+verified_at: 2026-09-24T21:54:58Z
+```
+
+### 비교 관찰 (실모델 `orchestrator-swarm` 해상, 2026-09-24)
+
+| 항목 | legacy 실행 | shadow 관찰 |
+|---|---|---|
+| 응답 | 실 응답 118자("🛡️ [정밀 엔지니어링 모드]…" · "5입니다") — 완주 | legacy 응답은 이미 완료된 뒤 관찰(무영향 확인) |
+| 도구 호출 | **0회**(CountingRegistry 실측) | **dispatch 0**·refused 0(관찰은 실행하지 않는다) |
+| 모델 호출 | orchestrator 경유 | `SurfaceBrainPort`가 **같은 모델** 호출(brain_calls 1) — BRAIN_FAILED 아님 |
+| episode | — | `stream:real-model-1` · termination `BLOCKED_READINESS`(action 없는 대화의 관찰 사실 — episode 계약상 COMPLETED는 readiness 필요, 시험 483/503이 고정) |
+
+**이 관찰이 잡은 설계 결함(수정함)**: `SurfaceBrainPort` 첫 구현이 관찰 요약마다
+`delta=EpisodeDelta(judgment=True)`를 실어 **모든 관찰을 확장 경로·readiness 요구로 몰았다**(실측:
+종료가 무조건 BLOCKED_READINESS). 관찰 요약이 물질 판단을 주장하면 안 되므로 `delta=None`으로 고치고
+계약을 시험으로 고정했다(`test_surface_brain_port_does_not_claim_material_judgment` — 성공 시
+delta 없음·모델 실패 시 failed think).

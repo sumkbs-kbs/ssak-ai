@@ -45,7 +45,6 @@ from antigravity_k.engine.cognitive.references import is_canonical_id
 from antigravity_k.engine.cognitive.runtime import (
     CognitiveRuntime,
     Episode,
-    EpisodeDelta,
     EpisodePlan,
     EpisodeRequest,
     ThinkOutcome,
@@ -334,9 +333,11 @@ class SurfaceBrainPort:
             detail = str(self._generate(prompt))
         except Exception as exc:  # noqa: BLE001 — 모델 실패는 failed think로 끝난다
             return ThinkOutcome(judgment_ref="", failed=True, detail=f"surface brain port: {exc}")
+        # 관찰 요약이 물질 판단을 주장하지 않는다 — delta를 비워 simple 경로로 끝나고,
+        # material 여부는 Primary가 다른 경로에서 주장할 일이다(Body가 대신 정하지 않는다).
         return ThinkOutcome(
             judgment_ref=f"judgment:{uuid.uuid4()}",
-            delta=EpisodeDelta(judgment=True),
+            delta=None,
             detail=detail[:500],
         )
 

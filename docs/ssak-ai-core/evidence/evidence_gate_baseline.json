@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "P11 shadow 배선 회차: test_surface 4건 추가(cognitive 773→777), T11 문서 pin 재확인. 게이트 full 11/11 PASS 상태에서 승인."
+    "실모델 회차: test_surface 1건 추가(cognitive 778), T11 pin 재확인. 게이트 full 11/11 PASS 상태에서 승인."
   ],
   "layers": {
     "audit_enum_identity": {
@@ -134,7 +134,7 @@
       "checks": 16,
       "measured.canary_harnesses": 11,
       "measured.canary_ok": 11,
-      "measured.cognitive_tests": 777,
+      "measured.cognitive_tests": 778,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
@@ -170,6 +170,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "P11 shadow 배선 회차: test_surface 4건 추가(cognitive 773→777), T11 문서 pin 재확인. 게이트 full 11/11 PASS 상태에서 승인.",
+  "method": "실모델 회차: test_surface 1건 추가(cognitive 778), T11 pin 재확인. 게이트 full 11/11 PASS 상태에서 승인.",
   "recorded_on": "2026-09-25"
 }
