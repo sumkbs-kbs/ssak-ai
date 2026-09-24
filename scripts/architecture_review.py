@@ -1278,6 +1278,8 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
     층별 하한 합계 = 헤더 합계 · 승인을 못 읽은 층이 없음 · 고아 기록 수 = 헤더 수 · 하한에 근거가 있음 ·
     표 밖 **면제**(선언)가 기록이 승인한 수와 같고 **재검토 창**도 기록과 같음(창을 넓히는 것도 결정이므로 승인된 창과
     재는 자가 갈라지면 안 된다) · 원장이 자기 판정(`verdict`)과 종료 코드에서 모순되지 않음.
+    기한 이동 이력은 **보고만** 한다(그 이력이 자기 기한과 맞는지는 원장이 묻고, 어긋나면 기록 문제로 실려 위의
+    “통과라는데 기록 문제가 있다” 가 문다) — 리뷰가 수를 옮겨 적는 자리와 판정하는 자리를 가르는 규칙은 원장과 같다.
     """
 
     if report is None:
@@ -1354,7 +1356,8 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
             f"창 {_as_int(exempted.get('recorded_window_days'))}일) · 면제의 판단 이동 0(검토 없이 미룸 "
             f"{len(_as_list(exempted.get('bare_deferred')))} · 기한 미룸 {len(_as_list(exempted.get('deferred')))} · "
             f"이름만 바뀐 듯한 면제 {len(_as_list(exempted.get('renamed')))} · 기한 당김 "
-            f"{len(_as_list(exempted.get('pulled')))}보고 · 확인일 갱신 {len(_as_list(exempted.get('reviewed')))}보고)"
+            f"{len(_as_list(exempted.get('pulled')))}보고 · 확인일 갱신 {len(_as_list(exempted.get('reviewed')))}보고 · "
+            f"기록된 기한 이동 {len(_as_list(exempted.get('deadline_moves')))}) — 재검토는 `--review` 가 기한 순서로 낸다"
         ),
         observed=summed,
     )

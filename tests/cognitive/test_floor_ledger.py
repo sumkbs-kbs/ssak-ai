@@ -185,6 +185,13 @@ def test_the_committed_record_approves_the_exemptions_with_their_promise(ledger_
     assert ledger.record["outside"]["recorded"] == len(ledger_module.OUTSIDE)
     assert ledger.record["outside"]["deferred"] == []
     assert ledger.record["outside"]["renamed"] == []
+    # 기한 이동 이력 — “몇 번째 재검토인가” 를 세는 근거는 기록이 **사실로** 남긴 이동뿐이다(주장이 아니라 계산이다).
+    assert isinstance(stored["outside"]["deadline_moves"], list), "기록이 기한 이동 이력 칸을 갖고 있지 않다"
+    assert ledger_module.deadline_move_problems(stored) == [], "기록의 이력이 이어지지 않거나 지금 기한과 어긋난다"
+    approved = {item["name"]: item["review_by"] for item in stored["outside"]["declared"]}
+    for name, _was, now, on in ledger_module.recorded_deadline_moves(stored):
+        assert on.strip(), f"이력에 승인 날짜가 없다: {name}"
+        assert now == approved[name], f"이력의 마지막 기한이 지금 승인된 기한과 다르다: {name}"
 
 
 def test_an_exemption_deadline_is_bounded_by_a_confirmation(ledger_module: Any, ledger: Any) -> None:  # noqa: ANN401
@@ -760,6 +767,77 @@ def test_cli_a_deferred_deadline_without_a_fresh_confirmation_is_not_a_renewal(t
 
     assert second.returncode == 0, second.stderr
     assert gate().returncode == 0
+
+
+@pytest.mark.slow
+def test_cli_a_bare_extension_is_refused_rather_than_written_away(tmp_path: Path) -> None:
+    """검토 없이 기한만 미룬 실행은 **기록을 거부**한다 — 그대로 쓰면 그 사실이 지워지기 때문이다.
+
+    원장은 이미 둘을 거부한다(승인 문장 없는 실행, 표가 실패한 실행). 셋째는 성질이 다르다: 기록이 **사실을 지우는**
+    경우다. 기록 안에서만 면제 하나의 기한을 옛날로 옮겨 두면(표가 그만큼 미룬 상태다) 표는 “기한만 미뤘다” 라고 하는데,
+    그대로 기록하면 옛 기한이 새 기한으로 덮여 그 사실 자체가 사라진다 — 그래서 파일이 손대지지 않고 남아야 한다.
+    확인일까지 옮기면 그것은 검토를 지난 결정이므로 기록을 통과해 다시 초록이 되고, 그 이동이 **기록의 사실**로 남아
+    재검토 시트가 “미룸 1회” 를 셀 수 있게 된다.
+    """
+
+    evidence = tmp_path / "evidence"
+    evidence.mkdir()
+    record = evidence / "floor_ledger.json"
+    first = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--record", "--method", "첫 승인", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert first.returncode == 0, first.stderr
+    payload = json.loads(record.read_text(encoding="utf-8"))
+    assert payload["outside"]["deadline_moves"] == [], "첫 기록에 이동 이력 칸이 없다"
+    declared = payload["outside"]["declared"]
+    name, was = declared[0]["name"], declared[0]["review_by"]
+    moved = was[:4] + "-01-31"  # 기록이 옛 기한을 승인한 상태가 된다(표가 그만큼 검토 없이 미룬 셈이다)
+    declared[0]["review_by"] = moved
+    record.write_text(json.dumps(payload, ensure_ascii=False, indent=2), "utf-8")
+    before = record.read_text(encoding="utf-8")
+
+    def ledger(*extra: str) -> Any:  # noqa: ANN401
+        return subprocess.run(
+            [sys.executable, str(LEDGER_SCRIPT), *extra, "--evidence", str(evidence)],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    bare = ledger("--gate")
+
+    assert bare.returncode == 1, bare.stdout
+    assert "기한만 미뤘다" in bare.stderr and name in bare.stderr, bare.stderr
+
+    refused = ledger("--record", "--method", "검토 없이 미룸")
+
+    assert refused.returncode == 1, refused.stdout
+    assert "기록하지 않았다" in refused.stderr and "기한만 미룬" in refused.stderr, refused.stderr
+    assert record.read_text(encoding="utf-8") == before, "거부한 기록이 파일을 덮었다(사실이 사라졌다)"
+
+    declared[0]["reviewed_on"] = "2026-01-01"  # 검토를 지난 연장(기록이 옛 확인·옛 기한을 낸다)
+    record.write_text(json.dumps(payload, ensure_ascii=False, indent=2), "utf-8")
+
+    second = ledger("--record", "--method", "검토하고 미룸 승인")
+
+    assert second.returncode == 0, second.stderr
+    assert ledger("--gate").returncode == 0
+    written = json.loads(record.read_text(encoding="utf-8"))
+    moves = [item for item in written["outside"]["deadline_moves"] if item["name"] == name]
+
+    assert len(moves) == 1, written["outside"]["deadline_moves"]
+    assert moves[0]["from"] == moved and moves[0]["to"] == was and moves[0]["on"], moves
+    sheet = ledger("--review")
+
+    assert sheet.returncode == 0, sheet.stderr
+    assert f"{name} — " in sheet.stdout and "미룸 1회" in sheet.stdout, sheet.stdout
+    assert was in sheet.stdout and "승인" in sheet.stdout, sheet.stdout
 
 
 @pytest.mark.slow
