@@ -192,6 +192,14 @@ def test_the_committed_record_approves_the_exemptions_with_their_promise(ledger_
     for name, _was, now, on in ledger_module.recorded_deadline_moves(stored):
         assert on.strip(), f"이력에 승인 날짜가 없다: {name}"
         assert now == approved[name], f"이력의 마지막 기한이 지금 승인된 기한과 다르다: {name}"
+    # 승격 이력 — 면제가 층이 되는 순간도 사실이라야 “그 도구가 층이 되었다” 와 “그 상수를 지웠다” 가 갈린다.
+    assert isinstance(stored["outside"]["promoted"], list), "기록이 승격 이력 칸을 갖고 있지 않다"
+    assert stored["outside"]["promoted"] == [], "이 기록에는 층이 된 면제가 없다 — 그 사실이 빈 것도 사실이다"
+    assert ledger_module.promotion_problems(stored) == [], "기록이 자기 승격 사실과 모순된다"
+    # 같은 상수가 면제이면서 동시에 하한일 수는 없다(둘은 다른 판단이고 한 이름은 한 자리다).
+    exempt = {item.name for item in ledger_module.OUTSIDE}
+    floors = {floor.label for row in ledger.rows for floor in row.floors}
+    assert not (exempt & floors), exempt & floors
 
 
 def test_an_exemption_deadline_is_bounded_by_a_confirmation(ledger_module: Any, ledger: Any) -> None:  # noqa: ANN401
@@ -838,6 +846,81 @@ def test_cli_a_bare_extension_is_refused_rather_than_written_away(tmp_path: Path
     assert sheet.returncode == 0, sheet.stderr
     assert f"{name} — " in sheet.stdout and "미룸 1회" in sheet.stdout, sheet.stdout
     assert was in sheet.stdout and "승인" in sheet.stdout, sheet.stdout
+
+
+@pytest.mark.slow
+def test_cli_promotion_plan_says_what_is_left(ledger_module: Any) -> None:  # noqa: ANN401
+    """면제를 층으로 올리는 일은 셋이다 — `--promote` 가 그 셋을 한 자리에서 읽고 남은 일을 낸다.
+
+    승격은 하한 목록에 싣고(`coverage_floors`)·면제 선언을 지우고·기록하는 일인데, 셋이 서로 다른 파일에 흩어져 있으면
+    사람이 매번 맞춰야 하고 하나를 빼먹었는지도 모른다. 이 명령은 코드를 대신 고치지는 않는다(어느 층의 하한인가는 그 층의
+    파일에 사람이 쓴다) — 대신 **어디까지 왔는지**를 말하고, 끝나지 않았으면 exit 1 로 말한다. 스캔이 보지 못하는 이름은
+    추측으로 올리지 않고 “대상이 아니다” 라고 말한다.
+    """
+
+    name = ledger_module.OUTSIDE[0].name
+    planned = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--promote", name],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert planned.returncode == 1, planned.stdout
+    assert "면제 승격 절차" in planned.stdout and name in planned.stdout, planned.stdout
+    assert "[ ] ②" in planned.stdout and "OUTSIDE" in planned.stdout, planned.stdout
+    assert "--record --method" in planned.stdout, planned.stdout
+    assert "아직 끝나지 않았다" in planned.stdout, planned.stdout
+
+    outsider = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--promote", "scripts/whatever.py:NOT_THERE"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert outsider.returncode == 1
+    assert "대상이 아니다" in outsider.stdout, outsider.stdout
+
+
+@pytest.mark.slow
+def test_cli_a_promotion_fact_the_record_cannot_support_is_refused(tmp_path: Path) -> None:
+    """기록이 "이 면제는 그 층의 하한이 되었다" 고 말하면 그 하한이 기록에 있어야 한다 — 손으로 넣은 사실은 문다.
+
+    승격은 기록 한 줄로 끝나지 않는다(그 층의 하한 목록에 실리고 선언이 지워져야 끝난다). 그래서 기록이 승격했다고 하면서
+    그 하한을 자기 `floors` 에 담고 있지 않으면 그것은 사실이 아니라 주장이고, 게이트가 그 자리에서 멈춘다.
+    """
+
+    evidence = tmp_path / "evidence"
+    evidence.mkdir()
+    record = evidence / "floor_ledger.json"
+    first = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--record", "--method", "첫 승인", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert first.returncode == 0, first.stderr
+    payload = json.loads(record.read_text(encoding="utf-8"))
+    assert payload["outside"]["promoted"] == []
+    payload["outside"]["promoted"] = [{"name": "scripts/zzz.py:MIN_GHOST", "layer": "review", "on": "2026-09-24"}]
+    record.write_text(json.dumps(payload, ensure_ascii=False, indent=2), "utf-8")
+
+    gate = subprocess.run(
+        [sys.executable, str(LEDGER_SCRIPT), "--gate", "--evidence", str(evidence)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert gate.returncode == 1, gate.stdout
+    assert "그 층에서 읽지 못한다" in gate.stderr and "MIN_GHOST" in gate.stderr, gate.stderr
+    assert "면제로 선언하고 있다" not in gate.stderr, gate.stderr
 
 
 @pytest.mark.slow

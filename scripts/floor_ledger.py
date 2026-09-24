@@ -41,6 +41,10 @@
     창 자체도 기록이 승인하는 값이라, 창을 넓히려면 상수를 고치고 `--record` 로 다시 기록해야 한다(둘이 갈라지면 기록이 먼저 실패한다).
     기한을 **앞당기거나** 확인일만 새로 잡은 것은 안전한 쪽이므로 보고만 하고, 옛 이름이 사라지고 새 이름이 생겼는데 약속이
     그대로면 한 문장으로 “이름만 바뀐 것으로 보인다” 고 말한다(**보인다** 까지만 — 원장은 상수의 동일성을 모른다).
+    면제가 층이 되는 순간(**승격**)도 사실로 남는다(`promoted` — 그 사실이 없으면 기록에는 새 하한 하나가 늘어난 것으로만
+    남아 “그 도구가 층이 되었다” 와 “그 상수를 지웠다” 가 구분되지 않는다). 승격은 셋이 다 되어야 끝난다: 그 상수를 어떤 층의
+    하한 목록에 싣고·면제 선언을 지우고·기록한다 — `--promote <이름>` 이 그 셋을 한 자리에서 읽어 남은 일을 말하고,
+    끝났는지를 종료 코드로 말한다(코드를 대신 고치지는 않는다 — 어느 층의 하한인가는 그 층의 파일에 사람이 쓴다).
     기한이 움직인 순간은 기록이 **스스로 적어 이어 가고**(`deadline_moves` — 미룬 횟수는 주장이 아니라 계산된 사실이다),
     그 이력은 기록이 자기 기한과 맞는지 검사받는다(마지막 이동의 새 기한이 지금 승인된 기한과 다르거나 이력이 이어지지
     않으면 실패다). 그리고 검토 없이 미룬 면제가 있는 실행은 **기록을 거부한다** — 그대로 기록하면 옛 기한이 덮여 그 사실이
@@ -52,6 +56,7 @@
 .venv/bin/python scripts/floor_ledger.py --emit-json   # 리뷰·게이트 stage 가 읽는다(판정은 종료 코드)
 .venv/bin/python scripts/floor_ledger.py --self-test   # 자기시험만(저장소를 읽지 않는다)
 .venv/bin/python scripts/floor_ledger.py --review      # 면제 재검토 시트(기한이 가까운 것부터 · 두 가지 답)
+.venv/bin/python scripts/floor_ledger.py --promote NAME # 면제 승격 절차(하한 목록에 싣고·선언을 지우고·기록한다 — 셋이 다 되어야 끝난다)
 .venv/bin/python scripts/floor_ledger.py --record --method "무엇을 보고 승인했는가"  # 지금 목록을 승인으로 남긴다
 ```
 """
@@ -869,6 +874,7 @@ class Ledger:
                 "record_exemptions_pulled": len(_record_lines(_record_dict(self.record, "outside"), "pulled")),
                 "record_exemptions_reviewed": len(_record_lines(_record_dict(self.record, "outside"), "reviewed")),
                 "record_exemptions_moves": len(_record_lines(_record_dict(self.record, "outside"), "deadline_moves")),
+                "record_exemptions_promoted": len(_record_lines(_record_dict(self.record, "outside"), "promoted")),
             },
             "record": dict(self.record),
             "outside": {
@@ -1207,6 +1213,7 @@ def record_problems(
         ]
     problems.extend(rename_claim_problems(stored))
     problems.extend(deadline_move_problems(stored))  # 기록이 자기 기한 이력과 맞는가(면제)
+    problems.extend(promotion_problems(stored))  # 기록이 자기 승격 사실과 맞는가(면제의 끝)
     changes = record_changes(judged, stored)
     lowered, reasons = changes.lowered, changes.reasons
     vanished = changes.partial(changes.vanished)
@@ -1393,6 +1400,191 @@ def deadline_move_problems(stored: dict[str, object] | None) -> list[str]:
     return problems
 
 
+def recorded_promotions(stored: dict[str, object] | None) -> tuple[tuple[str, str, str], ...]:
+    """기록이 **사실로** 남긴 면제의 승격 — (이름, 층, 승인 날짜).
+
+    면제가 층이 되는 순간 그 이름은 `outside.declared` 에서 사라지고 어떤 층의 하한 목록에 나타난다 — 그 사실을 적지
+    않으면 기록에는 **새 하한 하나가 늘어난 것**으로만 남는다(“그 도구가 층이 되었다” 는 약속이 지켜졌는지, 아니면 그
+    상수를 지운 것인지 알 수 없다). 이름 변경이 `renames`, 기한 이동이 `deadline_moves` 로 사실이 된 것과 같은 자리다.
+    """
+
+    value = _record_dict(stored or {}, "outside").get("promoted")
+    if not isinstance(value, list):
+        return ()
+    facts: list[tuple[str, str, str]] = []
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        name, layer = str(item.get("name", "")), str(item.get("layer", ""))
+        if not name.strip() or not layer.strip():
+            continue
+        facts.append((name, layer, str(item.get("on", ""))))
+    return tuple(facts)
+
+
+def promotion_problems(stored: dict[str, object] | None) -> list[str]:
+    """기록이 **자기 승격 사실과 모순되지 않는가** — 그 사실은 기록 안에서도 맞아야 한다.
+
+    승격은 면제가 하한이 되는 순간이므로 기록 안에서 두 모습을 동시에 가질 수 없다: 승격된 이름은 **면제로 선언된
+    채로 남아 있을 수 없고**(둘 중 하나는 틀렸다), 그 이름은 **그 층의 하한으로 기록에 실려 있어야 하며**(그러지
+    않으면 기록이 자기 사실을 담고 있지 않다), 언제 승인했는지가 있어야 하고 같은 이름이 두 번 실릴 수 없다.
+    약속을 담은 기록은 이 칸도 담아야 한다: 칸이 없으면 “그 도구가 층이 되었다” 와 “그 상수를 지웠다” 가 같은 줄로
+    읽힌다.
+    """
+
+    problems: list[str] = []
+    outside = _record_dict(stored or {}, "outside")
+    if recorded_outside(stored).shape == OUTSIDE_SHAPE_FULL and not isinstance(outside.get("promoted"), list):
+        problems.append(
+            "기록이 면제의 **승격 이력**(`outside.promoted`)을 담고 있지 않다 — 그 사실이 없으면 “그 도구가 층이 되었다” 와 "
+            "“그 상수를 지웠다” 가 같은 줄로 읽힌다(기록에는 새 하한 하나가 늘어난 것으로만 남는다): "
+            "`--record --method` 로 이력 칸까지 담아 다시 기록하라"
+        )
+    facts = recorded_promotions(stored)
+    if not facts:
+        return problems
+    promised = recorded_outside(stored).promises
+    floors = recorded_floors(stored)
+    seen: set[str] = set()
+    for name, layer, on in facts:
+        stamp = f"({name} → {layer})"
+        if not on.strip():
+            problems.append(f"기록의 승격 이력에 승인 날짜가 없다: {stamp} — 언제 이 판단을 내렸는지 말하지 못한다")
+        if name in seen:
+            problems.append(f"기록의 승격 이력에 같은 이름이 두 번 있다: {stamp} — 하나는 틀렸다")
+        seen.add(name)
+        if name in promised:
+            problems.append(
+                f"기록이 {name} 를 {layer} 의 하한으로 승격했다고 하면서 동시에 면제로 선언하고 있다: {stamp} — "
+                "하나의 하한이 면제이면서 하한일 수는 없다(둘 중 하나를 지워라)"
+            )
+        if floors.get((layer, name)) is None:
+            problems.append(
+                f"기록이 승격했다고 하는 하한을 그 층에서 읽지 못한다: {stamp} — 기록이 자기 사실을 담고 있지 않다"
+                "(`--record --method` 로 다시 기록하면 지금 표의 하한 목록이 함께 담긴다)"
+            )
+    return problems
+
+
+def promotion_table_problems(ledger: "Ledger", stored: dict[str, object] | None) -> list[str]:
+    """기록이 말한 승격이 **표에서 끝났는가** — 승격은 하한 목록에 실리고 선언이 지워져야 끝난다.
+
+    기록이 “이 면제는 층이 되었다” 고 말하면, 그 사실은 표에서도 보여야 한다: 상수가 그 층의 하한으로 읽히고 면제 목록에서
+    사라져야 한다. 아직 면제로 선언된 채 남았으면 그 판단은 두 모습을 동시에 가진 것이고(면죄부와 하한이 같은 상수를 두 번
+    말한다), 어느 층의 하한으로도 안 읽히면 기록이 표보다 앞가 한 것이다 — 둘 다 “승격이 끝나지 않았다” 는 한 문장이다.
+    """
+
+    facts = recorded_promotions(stored)
+    if not facts:
+        return []
+    declared_now = {item.name for item in ledger.outside}
+    live = {floor.label: row.name for row in ledger.rows for floor in row.floors}
+    problems: list[str] = []
+    for name, layer, _on in facts:
+        if name in declared_now:
+            problems.append(
+                f"기록은 {name} 를 {layer} 의 하한으로 승격했다고 하는데 표는 그 상수를 아직 면제로 선언하고 있다 — "
+                "승격은 선언을 지워야 끝난다(`--promote` 가 남은 일을 낸다)"
+            )
+        elif live.get(name) != layer:
+            problems.append(
+                f"기록은 {name} 를 {layer} 의 하한으로 승격했다고 하는데 그 층은 그 하한을 읽지 못한다"
+                f"(지금 {live.get(name, '어느 층에도 없다')}) — 기록과 표가 다른 말을 한다(`--promote` 가 남은 일을 낸다)"
+            )
+    return problems
+
+
+def promotion_plan(ledger: Ledger, name: str) -> tuple[bool, str]:
+    """면제 하나를 층으로 올리는 절차가 어디까지 왔는가 — (끝났는가, 계획).
+
+    승격은 한 파일의 문장이 아니라 **셋**이다: ① 그 상수를 어느 층의 하한 목록에 싣는다(관측 = 그 층이 재는 것) ② 면제
+    선언을 지운다(남기면 면죄부와 하한이 같은 상수를 두 번 말한다) ③ `--record` 로 그 사실을 남긴다(적지 않으면 기록에는
+    새 하한 하나가 늘어난 것으로만 남는다). 셋이 흩어져 있으면 사람이 매번 세 파일을 손으로 맞춰야 하고 하나를 빼먹었는지도
+    모른다 — 이 명령이 그 셋을 한 자리에서 읽고 **남은 일을 말한다**. 코드를 대신 고치지는 않는다(어느 층의 하한인가는
+    판단이고, 그 판단은 그 층의 파일에 사람이 쓴다).
+    """
+
+    source, _, label = name.partition(":")
+    layer = next((row.name for row in ledger.rows if row.source == source), "")
+    declared = next((item for item in ledger.outside if item.name == name), None)
+    wired = name in ledger.covered
+    record_known = recorded_outside(ledger.record).promises
+    facts = recorded_promotions(ledger.record)
+    mine = next((fact for fact in facts if fact[0] == name), None)
+    recorded_fact = mine is not None
+    # “면제였는가” 를 묻는 자리가 둘이다: 지금 선언되어 있거나, 기록이 그것을 면제로(혹은 이미 승격한 것으로)
+    # 아는 경우 — 모르면 이 명령은 “승격할 것이 없다” 고 말해야 한다(없는 사실을 요구하면 그 절차는 영원히 끝나지 않는다).
+    was_declared = declared is not None or name in record_known or recorded_fact
+    lines = [f"[ledger] 면제 승격 절차 — {name}"]
+    if name not in ledger.candidates:
+        lines.append(
+            "  이 상수는 **하한처럼 생긴 숫자 상수가 아니다** — 스캔이 보는 후보만 이 절차로 올릴 수 있다(다른 이름의 "
+            "임계값·계산해서 넘긴 하한은 스캔의 사각이다: 그 사실은 문서에 있고, 그 자리는 이 명령이 아니라 그 층의 "
+            "`coverage_floors` 가 말한다)"
+        )
+        lines.append("  판정: 이 절차의 대상이 아니다")
+        return (False, "\n".join(lines))
+    if layer:
+        lines.append(f"  상수가 있는 파일  {source} (그 파일을 읽는 층: {layer})")
+    else:
+        lines.append(
+            f"  상수가 있는 파일  {source} — 그 파일을 읽는 층이 없다(어느 층의 하한으로 세울지는 사람이 정한다: 그 도구를 "
+            "카나리아 roster 에 넣는 일이 함께 가고, 순서는 신경 쓰지 않아도 된다 — 층이 생기면 표가 그 하한을 읽는다)"
+        )
+    if declared is not None:
+        lines.append(
+            f"  선언  근거 “{declared.reason}” · 소유자 {declared.owner} · 확인 {declared.reviewed_on} → 기한 "
+            f"{declared.review_by}"
+        )
+    if recorded_fact and mine is not None:
+        lines.append(f"  기록된 승격  층 {mine[1]} · {mine[2] or '날짜 없음'} 승인")
+    if not was_declared:
+        lines.append(
+            "  이 상수는 **면제로 선언된 적이 없다**(표도 기록도 그것을 면제로 승인한 적이 없고, 기록의 승격 이력에도 없다) "
+            "— 면제가 층이 되는 자리가 아니므로 승격할 것도 없다"
+        )
+        if wired:
+            lines.append(
+                "  판정: 이미 하한이다 — 이 절차가 할 일이 없다(그 하한이 무는지는 그 층의 게이트가 보고, 지금 값·근거는 "
+                "기록이 들고 있다)"
+            )
+            return (True, "\n".join(lines))
+        lines.append(
+            "  판정: 이 상수는 선언도 배선도 아니다 — 표가 이 이름을 대며 실패한다(하한으로 올리거나 면제로 선언해야 한다)"
+        )
+        return (False, "\n".join(lines))
+    lines.append("  승격은 셋이다 — 하나라도 빠지면 승격이 아니다:")
+    if wired:
+        lines.append(f"    [x] ① {name} 가 어느 층의 하한 목록에 실렸다(관측 = 그 층이 재는 것)")
+    elif layer:
+        lines.append(
+            f'    [ ] ① {source} 의 `coverage_floors` 에 실어라 — `Floor(..., minimum={label}, why="'
+            '선언의 근거를 옮겨 적어라(왜 지금은 하한인가)")` (그 근거가 “왜 하한이 아닌가” 를 “왜 하한인가” 로 뒤집는 자리다)'
+        )
+    else:
+        lines.append(
+            "    [ ] ① 그 상수를 읽을 층을 정해(`coverage_floors`) 하한으로 세워라 — 지금은 어떤 층도 이 파일을 읽지 않는다"
+        )
+    if declared is None:
+        lines.append("    [x] ② 면제 선언이 없다(면죄부와 하한이 같은 상수를 두 번 말하지 않는다)")
+    else:
+        lines.append(f"    [ ] ② `OUTSIDE` 에서 {name} 선언을 지워라 — 남아 있으면 표가 “낡은 선언” 으로 멈춘다")
+    if recorded_fact:
+        lines.append("    [x] ③ 기록이 그 승격을 사실로 남겼다(선언이 사라진 것과 상수를 지운 것은 다른 사건이다)")
+    else:
+        lines.append(
+            '    [ ] ③ `--record --method "무엇을 보고 승격했는가"` 로 남겨라 — 승격의 순간과 그 상수를 지운 순간은 '
+            "기록에서 같아 보인다(새 하한 하나가 늘어난 것과 구별되지 않는다)"
+        )
+    undone = (0 if wired else 1) + (1 if declared is not None else 0) + (0 if recorded_fact else 1)
+    lines.append(
+        "  판정: 승격이 끝났다 — 이 상수는 이제 면제가 아니라 하한이다"
+        if not undone
+        else f"  판정: 아직 끝나지 않았다(남은 일 {undone}개) — 셋이 다 되어야 승격이다"
+    )
+    return (not undone, "\n".join(lines))
+
+
 def record_refusals(ledger: Ledger) -> tuple[str, ...]:
     """이 실행을 기록하면 **지워지는 사실** — 그래서 기록을 거부하는 이유.
 
@@ -1468,6 +1660,18 @@ def record_payload(
         if now_due > was_due and not refreshed:
             continue  # 검토 없이 미룬 것은 사실로 적지 않는다(그리고 `record_refusals` 가 기록을 거부한다)
         moves.append((item.name, was[3], item.review_by, on))
+    # 면제의 **승격도 사실로 이어진다** — 앞 기록이 승인한 사실은 그대로 두고, 이번에 하한이 된 면제를 덧붙인다.
+    # 승격은 셋이 다 된 순간에만 적힌다: 앞 기록이 면제로 승인했고(그래야 “면제가 층이 되었다” 는 사실이 된다) 지금 표가
+    # 그 상수를 면제로 선언하지 않으며 그 이름이 어떤 층의 하한으로 읽히며 — 앞 기록이 모르는 이름은 승격이 아니라 새 하한이다.
+    promoted: list[tuple[str, str, str]] = list(recorded_promotions(previous))
+    settled = {fact[0] for fact in promoted}
+    live_now = {floor.label: row.name for row in ledger.rows for floor in row.floors}
+    still_declared = {item.name for item in ledger.outside}
+    for name in sorted(was_outside.promises):
+        became = live_now.get(name)
+        if name in settled or name in still_declared or became is None:
+            continue
+        promoted.append((name, became, on))
     return {
         "command": ["python", "scripts/floor_ledger.py", "--record"],
         "recorded_on": on,
@@ -1498,6 +1702,8 @@ def record_payload(
             "deadline_moves": [
                 {"name": name, "from": was, "to": now, "on": declared_on} for name, was, now, declared_on in moves
             ],
+            # 면제가 층이 된 순간 — 기록이 스스로 적어 이어 간다(그 사실이 없으면 새 하한 하나와 구별되지 않는다).
+            "promoted": [{"name": name, "layer": layer, "on": declared_on} for name, layer, declared_on in promoted],
         },
         "probe": probe.as_mapping(),
         "verdict": "PASS",
@@ -1566,6 +1772,10 @@ def record_report(
             "deadline_moves": [
                 {"name": name, "from": was, "to": now, "on": declared_on}
                 for name, was, now, declared_on in recorded_deadline_moves(stored)
+            ],
+            "promoted": [
+                {"name": name, "layer": layer, "on": declared_on}
+                for name, layer, declared_on in recorded_promotions(stored)
             ],
         },
         "problems": list(issues),
@@ -1688,6 +1898,8 @@ def build(*, evidence_dir: Path = EVIDENCE_DIR, record: Path | None = None) -> L
     )
     # 면제의 이동도 **판단의 이동**이다(하한과 같은 자리에서 묻는다) — 면제를 만들고·거두고·기한을 미루면 승인이 필요하다.
     record_issues.extend(outside_record_problems(OUTSIDE, recorded_outside_state, renamed=renamed_outside))
+    # 기록이 말한 승격은 **표에서도 끝나야** 한다(선언을 지우고 그 층의 하한으로 읽혀야) — 반쪽짜리 승격을 막는다.
+    record_issues.extend(promotion_table_problems(ledger, stored))
     report = record_report(record_path, stored, ledger, record_issues, renamed=renamed_outside)
     return Ledger(
         rows,
@@ -2126,6 +2338,181 @@ def self_probe() -> Probe:
         record_refusals(Ledger((), (), (), 0.0, (), (), (), {"outside": {"bare_deferred": []}})),
         (),
     )
+    # 면제의 승격 — 면제가 층이 되는 순간도 사실로 남는다(그 사실이 없으면 새 하한 하나와 구별되지 않는다).
+    promoted_name = "scripts/x.py:MIN_Z"
+
+    def promo_record(
+        *, also_declared: bool = False, floor: bool = True, on: str = "2026-09-24", twice: bool = False
+    ) -> dict[str, object]:
+        """합성 기록 — 승격 사실 하나를 가진 기록(기본은 성한 모양)."""
+
+        declared = replace(healthy_declaration, name=promoted_name) if also_declared else healthy_declaration
+        fact = {"name": promoted_name, "layer": "review", "on": on}
+        record: dict[str, object] = {
+            "outside": {
+                "declared": [declared.as_mapping()],
+                "review_window": wind,
+                "deadline_moves": [],
+                "promoted": [fact, fact] if twice else [fact],
+            }
+        }
+        if floor:
+            record["floors"] = [
+                {"layer": "review", "label": promoted_name, "minimum": 1, "observed": 3, "why": "이제 하한이다"}
+            ]
+        return record
+
+    cases.equal(
+        "승격 이력은 사실로 읽힌다(이름·층·날짜)",
+        recorded_promotions(promo_record()),
+        ((promoted_name, "review", "2026-09-24"),),
+    )
+    cases.equal("승격이 담긴 기록은 조용하다", promotion_problems(promo_record()), [])
+    cases.equal(
+        "약속을 담은 기록이 승격 칸을 비워 두면 이력 없는 기록이다(새 하한과 구별되지 않는다)",
+        len(
+            promotion_problems(
+                {
+                    "outside": {
+                        "declared": [healthy_declaration.as_mapping()],
+                        "review_window": wind,
+                        "deadline_moves": [],
+                    }
+                }
+            )
+        ),
+        1,
+    )
+    cases.equal(
+        "승격 칸이 있는데 비어 있는 기록은 조용하다(층이 된 면제가 없다는 사실도 사실이다)",
+        promotion_problems(
+            {
+                "outside": {
+                    "declared": [healthy_declaration.as_mapping()],
+                    "review_window": wind,
+                    "deadline_moves": [],
+                    "promoted": [],
+                }
+            }
+        ),
+        [],
+    )
+    cases.check(
+        "승격한 이름을 면제로도 선언하면 모순이다(하나의 하한이 둘일 수는 없다)",
+        any("면제로 선언하고 있다" in problem for problem in promotion_problems(promo_record(also_declared=True))),
+    )
+    cases.check(
+        "승격했다고 하는 하한을 그 층에서 읽지 못하면 기록이 자기 사실을 담고 있지 않다",
+        any("그 층에서 읽지 못한다" in problem for problem in promotion_problems(promo_record(floor=False))),
+    )
+    cases.check(
+        "승격 이력에 승인 날짜가 없으면 언제 내린 판단인지 말하지 못한다",
+        any("승인 날짜가 없다" in problem for problem in promotion_problems(promo_record(on=""))),
+    )
+    cases.check(
+        "같은 이름이 두 번 승격되면 하나는 틀렸다",
+        any("같은 이름이 두 번" in problem for problem in promotion_problems(promo_record(twice=True))),
+    )
+
+    def promo_ledger(*, wired: bool, declared: bool, fact: bool = True) -> Ledger:
+        """합성 표 — 한 층이 그 이름을 하한으로 읽는가(그리고 그 이름을 아직 선언하는가)를 가른다."""
+
+        label = promoted_name if wired else "다른 하한"
+        row = LayerRow(
+            "review",
+            KIND_MEASURED,
+            "scripts/x.py",
+            (Floor(label, 3, 1, "이제 하한이다"),),
+            {},
+            None,
+        )
+        item = replace(healthy_declaration, name=promoted_name) if declared else healthy_declaration
+        record: dict[str, object] = {
+            "outside": {
+                "declared": [item.as_mapping()],
+                "review_window": wind,
+                "deadline_moves": [],
+                "promoted": [{"name": promoted_name, "layer": "review", "on": "2026-09-24"}] if fact else [],
+            }
+        }
+        return Ledger((row,), (), (), 0.0, (promoted_name,), (promoted_name,) if wired else (), (item,), record)
+
+    quiet = promo_ledger(wired=True, declared=False)
+    cases.equal(
+        "표가 그 층의 하한으로 읽고 선언도 지웠으면 승격이 끝났다",
+        promotion_table_problems(quiet, quiet.record),
+        [],
+    )
+    cases.check(
+        "승격했다는데 표가 아직 면제로 선언하고 있으면 승격이 끝나지 않았다",
+        any(
+            "아직 면제로 선언하고 있다" in problem
+            for problem in promotion_table_problems(
+                promo_ledger(wired=True, declared=True), promo_ledger(wired=True, declared=True).record
+            )
+        ),
+    )
+    cases.check(
+        "승격했다는데 그 층이 그 하한을 읽지 못하면 기록과 표가 다른 말을 한다",
+        any(
+            "읽지 못한다" in problem
+            for problem in promotion_table_problems(
+                promo_ledger(wired=False, declared=False), promo_ledger(wired=False, declared=False).record
+            )
+        ),
+    )
+    cases.equal(
+        "승격 사실이 없는 표는 승격을 묻지 않는다",
+        promotion_table_problems(
+            promo_ledger(wired=False, declared=True, fact=False),
+            promo_ledger(wired=False, declared=True, fact=False).record,
+        ),
+        [],
+    )
+    done_plan, done_text = promotion_plan(promo_ledger(wired=True, declared=False), promoted_name)
+    cases.check(
+        "승격 절차는 셋이 다 되었을 때만 끝났다고 말한다",
+        done_plan and "승격이 끝났다" in done_text,
+    )
+    open_plan, open_text = promotion_plan(promo_ledger(wired=False, declared=True, fact=False), promoted_name)
+    cases.check(
+        "승격 절차는 남은 일을 종류별로 내고 아직 끝나지 않았다고 말한다",
+        not open_plan
+        and "그 파일을 읽는 층: review" in open_text
+        and "[ ] ①" in open_text
+        and "[ ] ②" in open_text
+        and "[ ] ③" in open_text
+        and "남은 일 3개" in open_text,
+    )
+    never_plan, never_text = promotion_plan(promo_ledger(wired=True, declared=False, fact=False), promoted_name)
+    cases.check(
+        "면제로 선언된 적이 없는 하한은 승격할 것이 없다(없는 사실을 요구하면 그 절차는 끝나지 않는다)",
+        never_plan and "이미 하한이다" in never_text and "[ ] ③" not in never_text,
+    )
+    loose_plan, loose_text = promotion_plan(
+        Ledger(
+            promo_ledger(wired=False, declared=False, fact=False).rows,
+            (),
+            (),
+            0.0,
+            ("scripts/x.py:_MIN_LOOSE",),
+            (),
+            (),
+            {"outside": {"declared": [], "review_window": wind, "deadline_moves": [], "promoted": []}},
+        ),
+        "scripts/x.py:_MIN_LOOSE",
+    )
+    cases.check(
+        "선언도 배선도 아닌 후보는 표가 실패시키는 자리다(이 절차가 그 사실을 말한다)",
+        not loose_plan and "선언도 배선도 아니다" in loose_text,
+    )
+    outsider_plan, outsider_text = promotion_plan(
+        promo_ledger(wired=False, declared=True), "scripts/x.py:NOT_A_CANDIDATE"
+    )
+    cases.check(
+        "스캔이 보지 못하는 이름은 이 절차의 대상이 아니다(추측으로 올리지 않는다)",
+        not outsider_plan and "대상이 아니다" in outsider_text,
+    )
     # 재검토 시트 — 기한이 가까운 것부터, 면제마다 그 면제의 사실(남은 날·창·미룸)을 붙여 낸다.
     sheet_row = Ledger(
         (),
@@ -2162,7 +2549,7 @@ def self_probe() -> Probe:
         and "미룸 1회" in sheet
         and "그 도구가 층이 되었는가" in sheet
         and '--record --method "' in sheet
-        and "`coverage_floors`" in sheet,
+        and "`--promote " in sheet,
     )
     cases.check(
         "시트는 기한이 지난 것도 지남으로 셀 수 있게 말한다",
@@ -2595,7 +2982,7 @@ def review_sheet(ledger: Ledger, *, today: date | None = None) -> str:
         '적고 `--record --method "무엇을 보고 미뤘는가"`'
     )
     lines.append(
-        "    ② 되었다 → 그 상수를 그 층의 `coverage_floors` 에 실어 카나리아 앞에 세워라(그 선언은 낡은 선언이 되어 지워야 한다)"
+        "    ② 되었다 → `--promote <이름>` 이 남은 일을 낸다(그 층의 하한 목록에 싣고·선언을 지우고·기록한다 — 셋이 다 되어야 승격이다)"
     )
     deferred_total = sum(_deadline_history(ledger, item.name)[1] for item in ledger.outside)
     lines.append(
@@ -2653,8 +3040,16 @@ def describe(ledger: Ledger, probe: Probe) -> str:
         lines.append(
             f"  면제 기록  선언 {len(ledger.outside)}개 · 기록이 승인한 면제 {exempted.get('recorded', 0)}개 "
             f"({exempted.get('shape', '')}, 창 {exempted.get('recorded_window_days', 0)}일) · 기록된 기한 이동 "
-            f"{len(_record_lines(exempted, 'deadline_moves'))}회 — 면제를 만들거나·거두거나·기한을 미루면 승인이 필요하다"
+            f"{len(_record_lines(exempted, 'deadline_moves'))}회 · 기록된 승격 "
+            f"{len(_record_lines(exempted, 'promoted'))}개 — 면제를 만들거나·거두거나·기한을 미루거나 층으로 올리면 승인이 필요하다"
         )
+        promoted = exempted.get("promoted")
+        for fact in promoted if isinstance(promoted, list) else []:
+            if isinstance(fact, dict):
+                lines.append(
+                    f"    · 면제 승격(기록이 사실로 남긴 것 — 그 도구가 층이 된 순간): {fact.get('name')} → "
+                    f"층 {fact.get('layer')}({fact.get('on') or '날짜 없음'} 승인)"
+                )
         moves = exempted.get("deadline_moves")
         for fact in moves if isinstance(moves, list) else []:
             if isinstance(fact, dict):
@@ -2735,6 +3130,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--record", action="store_true", help="지금 하한 목록을 승인으로 남긴다(--method 필수)")
     parser.add_argument("--method", default="", help="--record 와 함께: 무엇을 보고 승인했는가")
     parser.add_argument("--review", action="store_true", help="면제 재검토 시트를 낸다(기한이 가까운 것부터)")
+    parser.add_argument(
+        "--promote", default="", metavar="이름", help="면제 하나의 승격 절차를 본다(끝났는지를 종료 코드로 말한다)"
+    )
     args = parser.parse_args(argv)
 
     probe = _probe_or_failure()
@@ -2789,6 +3187,13 @@ def main(argv: list[str] | None = None) -> int:
         for problem in problems:
             print(f"[FAIL] {problem}", file=sys.stderr)
         return EXIT_FAIL if problems else EXIT_OK
+    if args.promote:
+        # 승격 절차도 **진단이 아니라 판정**이다: 끝나지 않았으면 exit 1(“아직이다” 와 “끝났다” 를 종료 코드로 가른다).
+        done, plan = promotion_plan(ledger, args.promote)
+        print(plan)
+        for problem in problems:
+            print(f"[FAIL] {problem}", file=sys.stderr)
+        return EXIT_OK if done and not problems else EXIT_FAIL
     if args.emit_json:
         print(json.dumps(ledger.as_mapping(probe), ensure_ascii=False, indent=2))
         # JSON 을 내는 실행도 **판정을 종료 코드로** 말한다 — 진단은 stdout 에 그대로 남는다.

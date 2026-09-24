@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "2026-09-24 재검토 절차 회차: 면제의 기한 이동 이력이 기록의 사실이 되고(`counts.record_exemptions_moves` 새 수), 확인일 없이 미룬 연장은 기록을 지나지 못하며(파일을 손대지 않는다), 재검토는 `--review` 가 기한 순서로 낸다 — 층 11 과 이번 실행의 수치를 기준으로 승인한다."
+    "2026-09-24 승격 절차 회차: 면제가 층이 되는 순간(승격)이 기록의 사실이 되고(counts.record_exemptions_promoted 새 수), 승격은 셋이 다 되어야 끝나므로 --promote 가 남은 일을 내며 끝났는지를 종료 코드로 말한다 — 층 11 과 이번 실행의 수치를 기준으로 승인한다."
   ],
   "layers": {
     "audit_enum_identity": {
@@ -53,13 +53,14 @@
       "counts.outside_silent": 0,
       "counts.record_exemptions": 10,
       "counts.record_exemptions_moves": 0,
+      "counts.record_exemptions_promoted": 0,
       "counts.record_exemptions_pulled": 0,
       "counts.record_exemptions_reviewed": 0,
       "counts.record_exemptions_window": 366,
       "counts.record_layers_moved": 0,
       "counts.record_layers_renamed": 0,
       "counts.record_lowered": 0,
-      "counts.record_moved": 0,
+      "counts.record_moved": 1,
       "counts.record_renames": 0,
       "counts.recorded": 4,
       "counts.recorded_floors": 21,
@@ -131,7 +132,7 @@
       "checks": 16,
       "measured.canary_harnesses": 11,
       "measured.canary_ok": 11,
-      "measured.cognitive_tests": 746,
+      "measured.cognitive_tests": 748,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
@@ -165,6 +166,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "2026-09-24 재검토 절차 회차: 면제의 기한 이동 이력이 기록의 사실이 되고(`counts.record_exemptions_moves` 새 수), 확인일 없이 미룬 연장은 기록을 지나지 못하며(파일을 손대지 않는다), 재검토는 `--review` 가 기한 순서로 낸다 — 층 11 과 이번 실행의 수치를 기준으로 승인한다.",
+  "method": "2026-09-24 승격 절차 회차: 면제가 층이 되는 순간(승격)이 기록의 사실이 되고(counts.record_exemptions_promoted 새 수), 승격은 셋이 다 되어야 끝나므로 --promote 가 남은 일을 내며 끝났는지를 종료 코드로 말한다 — 층 11 과 이번 실행의 수치를 기준으로 승인한다.",
   "recorded_on": "2026-09-24"
 }

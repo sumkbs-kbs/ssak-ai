@@ -1357,7 +1357,8 @@ def check_floor_ledger(report: dict[str, object] | None) -> CheckResult:
             f"{len(_as_list(exempted.get('bare_deferred')))} · 기한 미룸 {len(_as_list(exempted.get('deferred')))} · "
             f"이름만 바뀐 듯한 면제 {len(_as_list(exempted.get('renamed')))} · 기한 당김 "
             f"{len(_as_list(exempted.get('pulled')))}보고 · 확인일 갱신 {len(_as_list(exempted.get('reviewed')))}보고 · "
-            f"기록된 기한 이동 {len(_as_list(exempted.get('deadline_moves')))}) — 재검토는 `--review` 가 기한 순서로 낸다"
+            f"기록된 기한 이동 {len(_as_list(exempted.get('deadline_moves')))} · 기록된 승격 "
+            f"{len(_as_list(exempted.get('promoted')))}) — 재검토는 `--review` 가 기한 순서로, 승격은 `--promote` 가 남은 일을 낸다"
         ),
         observed=summed,
     )
