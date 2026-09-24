@@ -69,7 +69,7 @@ v1은 Canonical Markdown + explicit references, Git persistence, rebuild 가능�
 | P01 | [Typed model](evidence/T01a_typed_model.md): 모듈 시험 PASS | 현재 소스 재대조, v1.1 선별·계보 계약과 schema 정합화 |
 | P02 | [Canonical store](evidence/T02_canonical_store.md): 모듈 시험 PASS | 실제 Vault 동시성·사용자 경로 통합 |
 | P03 | [보호 경계](evidence/T01b_protection.md): 모듈/tool gate/store PASS | migration/evolution 실제 hook, 승인 발급·검증 |
-| P04 | [Context·Brain](evidence/T03_T04_context_brain.md): 모듈 시험 PASS | 최소충분 Context·의미 경계 추가 시험, 실제 provider/router 통합 |
+| P04 | [Context·Brain](evidence/T03_T04_context_brain.md): 모듈 시험 PASS | 실제 provider/router 통합(T03-D provider context window 포함) — v1.1 철학 시나리오(T03-A~C·T04-A~C)는 2026-09-24 회차가 module 시험으로 통과 |
 | P05 | [Governance](evidence/T05_governance.md): module + tool_executor surface PASS (31 시험) | CLI/API/stream/background 연결, 승인 발급 주체 검증은 P11 이월 |
 | P06 | [COMMIT](evidence/T06_commit.md): module + canonical store 표면 PASS (28 시험) | loop(P08)·사용자 표면(P11) 실행 경로 연결 이월 |
 | P07 | [Action](evidence/T07_actions.md): module + ToolExecutor·CanonicalStore 표면 PASS (17 시험) | task_state_store 재시작 복구, OBSERVE 경험 형성은 P08/P11 이월 |

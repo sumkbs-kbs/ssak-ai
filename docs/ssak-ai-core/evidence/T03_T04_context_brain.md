@@ -76,3 +76,42 @@ ruff check / ruff format --check / mypy                              → clean
 - P05: governance disposition/feedback을 실제 tool gate 흐름에 연결하고 authority grant를 context 요청 승인에 반영한다.
 - P06: `DecisionAssurance` 9 check를 순수 함수로 구현한다(현재 payload 계약만 존재).
 - P08: 이 builder/adapter를 실제 운영 루프(`runtime.py`)에 연결하고 `context_shaper`/`model_router` 경계에서 hook한다.
+
+## 2026-09-24 v1.1 철학 시나리오 — T03-A~D / T04-A~C (module-level)
+
+v1.1 추가 인수(체크리스트 §4의 T03-A~D·T04-A~C)를 현재 트리에서 구현·시험으로 닫은 회차다.
+무관 이력 미주입(T03-A)과 시간·비용 제한(T04-B)·복수 Secondary(T04-C)는 구현이 없어서 이 회차에 새로 들어갔다.
+
+```yaml
+check_id: T03-A~D / T04-A~C
+status: PASS (module-level)
+owner: Brain/context 담당(P04)
+source_head: 29a72e75139832e1 (dirty — 본 회차 4파일: context.py·brain.py·두 시험 파일)
+command: .venv/bin/python -m pytest tests/cognitive/test_context.py tests/cognitive/test_brain.py -q
+exit_code: 0
+observed_behavior: 40 passed (context 16 · brain 24) — 아래 시나리오 매핑 참조
+artifact:
+  - src/antigravity_k/engine/cognitive/context.py — L2 RELEVANCE 제외(applicability goal_match=MISMATCH) + detail handle
+  - src/antigravity_k/engine/cognitive/brain.py — TIMEOUT 강제·시도 합산 비용 계상·engage_secondaries(복수 Secondary)
+  - tests/cognitive/test_context.py (16 시험)
+  - tests/cognitive/test_brain.py (24 시험)
+limitations: 실제 provider context window 대비 확인(T03-D)과 실제 router 연결은 P11 이월(NOT_RUN). timeout 강제는 client 수준의 경과 검사다 — adapter 스스로의 중단은 provider adapter의 몫이고, 여기서는 선언된 능력(timeout_seconds)을 넘은 응답을 받지 않는다.
+verified_at: 2026-09-24T12:44:07Z
+```
+
+### 시나리오 매핑
+
+- **T03-A 최소 주입** — `test_irrelevant_history_is_not_injected_even_with_budget_left`: 예산이 넉넉해도(100_000) applicability가 `goal_match=MISMATCH`를 선언한 이력은 L2에 주입되지 않고 `RELEVANCE:` 사유 제외 + detail handle로만 남는다. applicability를 선언하지 않은 이력은 advisory로 그대로 주입된다(무관하다고 단정하지 않는다).
+  **무관성의 기계적 신호를 applicability 계약으로만 잡은 이유**: 참조 도달성(goal 참조 그래프)로 정의하면 성장 데모의 전제가 깨진다 — growth fixture의 goal은 일부러 evidence를 참조하지 않는다("어떤 evidence가 필요한지는 축적된 경험이 안다", `growth.py goal_record`). 그 이상의 의미적 무관성 판단은 Brain의 몫이라 계약이 정한 경계를 넘지 않는다.
+- **T03-B 선택적 확장** — `test_selective_handle_expansion_returns_only_that_record`: 제외된 무관 이력 둘 중 하나의 handle만 확장하면 그 기록의 원문만 돌아오고 다른 무관 이력은 content에 없다(전체 이력 재주입이 없다). 권한·만료·digest 재확인은 기존 `test_handle_resolution_checks_permission_expiry_and_digest`가 지킨다.
+- **T03-C 현재 우선** — `test_past_conclusion_with_context_mismatch_stays_advisory`: 높은 confidence(0.9 프로필) + `context_match=MISMATCH` 원칙은 L2 advisory 항목으로만 오고(항목의 `applicability=MISMATCH`가 그대로 보인다) L0/L1(현재 상태)에 들어가지 않으며, confidence는 레코드 payload 안에만 있다 — `ContextItem`에는 confidence 필드가 없다(confidence/applicability/assurance 미혼합).
+- **T03-D 제약 보존** — module 반쪽은 기존 시험이 이미 지킨다: `test_l0_over_budget_fails_loudly`(L0 초과는 조용히 버리지 않고 실패)·`test_budget_overflow_is_explicit_with_handle`(예산 초과 명시 + handle)·`test_missing_required_id_reports_incomplete`(불완전 상태 처리). **실제 provider context window 대비 확인은 P11 이월(NOT_RUN).**
+- **T04-A 연속성** — `test_brain_swap_keeps_records_and_does_not_force_previous_conclusion`: 같은 canonical store에서 provider A의 판단을 commit하고 context를 다시 짓면 이전 판단은 L1 "recent judgment" **이력 항목**으로만 온다. process restart 뒤 새 client/director(provider B)가 같은 기록 위에서 **다른 결론**을 내려도 유효하다 — 새 judgment ID, `supersedes` 없음(think는 rethink가 아니다), 원본 판단 digest 불변.
+- **T04-B protocol** — `test_elapsed_over_declared_timeout_is_rejected`: adapter가 선언한 `timeout_seconds`(30)을 넘은 유효 응답은 `TIMEOUT`으로 거부된다(선언된 능력 밖의 응답은 쓰지 않는다). `test_repair_cost_is_accounted_on_the_judgment`: repair 시도의 token 비용도 합쳐 judgment에 계상된다(prompt 10+7=17, completion 5+3=8). repair 1회 제한·fallback 동일 frozen context·plain-text 승격 금지는 기존 시험 세트가 지킨다.
+- **T04-C 의미 권한** — `test_multiple_secondaries_are_delivered_verbatim_without_majority`: 반대 의견("찬성"/"반대")을 낸 두 Secondary가 각자의 MODEL_JUDGMENT evidence로 **그대로** 남는다(claim 변형 없음, independence_group 별개), 최종 결론은 두 evidence를 grounds로 참조한 **Primary의 새 판단 기록**이다. `test_unanimous_secondaries_are_not_collapsed`: 같은 의견도 하나의 'consensus' 기록으로 합쳐지지 않는다. `test_secondary_set_requires_governance_approval`: governance 승인 없이 복수 Secondary도 거부된다. `test_secondary_set_fails_closed_when_one_member_fails`: 하나가 실패하면 부분 결과를 내지 않는다 — 일부 의견만 남은 자료는 "여럿이 다수로 말했다"로 읽히므로 전체 실패다(fail-closed).
+
+### 구현 노트
+
+- `ContextBuilder.build`는 L2 후보를 `_l2_candidates`로 모은 뒤 `_goal_mismatch`(레코드 payload의 applicability profile `goal_match`)인 항목을 제외·handle 발급하고 `_build_layer`에는 관련 이력만 넘긴다. L3(project-scope evidence fallback)은 그대로다 — evidence는 현재 자료이고 무관 주입은 pollution metric(growth)이 관찰·보고하는 대상이지, Body가 의미적으로 걸러낼 수 있는 것이 아니다.
+- `StructuredBrainClient`는 `timer`(기본 `time.monotonic`)로 경과를 재고, 검증을 통과했어도 선언 `timeout_seconds` 초과면 `TIMEOUT` 실패를 낸다. token 비용은 시도(repair 포함)를 합산해 `BrainJudgment.prompt_tokens/completion_tokens/elapsed_seconds`에 기록한다.
+- `BrainDirector.engage_secondaries`는 복수 Secondary를 같은 frozen context로 호출해 각각 `SecondaryEngagement`(독립 evidence)로 돌려준다. 기존 단일 `engage_secondary`는 동작·오류 문장 그대로 유지된다.

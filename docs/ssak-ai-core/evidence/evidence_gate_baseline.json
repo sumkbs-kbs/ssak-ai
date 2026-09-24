@@ -4,7 +4,7 @@
     "scripts/evidence_gate.py",
     "--record-baseline",
     "--method",
-    "기한 이동 이력 회차: 앞당긴 이동은 모순이 아니라 사실이고, 이동마다 확인일을 담아 늦은 검토(옛 기한을 지나서 다시 본 연장)를 센다 — 그 새 수 둘(floor_ledger counts.record_exemptions_late 0 · review measured.ledger_late_reviews 0)이 기준에 없던 수이고, cognitive_tests 는 새 계약 시험 3건으로 751 → 754 다(11/11 PASS)."
+    "P04 v1.1 철학 시나리오 회차: 시험 10건 추가(context 16·brain 24, cognitive 764 수집)로 cognitive_tests ▲10, T03/T04 문서 pin 4개 재확인으로 reverified ▲3·match ▼3. 게이트 full 11/11 PASS 상태에서 승인."
   ],
   "layers": {
     "audit_enum_identity": {
@@ -33,9 +33,9 @@
     },
     "digest_drift": {
       "counts.drift": 0,
-      "counts.match": 28,
+      "counts.match": 25,
       "counts.missing": 0,
-      "counts.reverified": 22,
+      "counts.reverified": 25,
       "counts.stale_reverification": 0,
       "coverage.docs": 13,
       "coverage.min_docs": 1,
@@ -134,11 +134,11 @@
       "checks": 16,
       "measured.canary_harnesses": 11,
       "measured.canary_ok": 11,
-      "measured.cognitive_tests": 754,
+      "measured.cognitive_tests": 764,
       "measured.digest_drifted": 0,
       "measured.digest_missing": 0,
       "measured.digest_pinned": 50,
-      "measured.digest_reverified": 22,
+      "measured.digest_reverified": 25,
       "measured.digest_stale": 0,
       "measured.drift_questions": 10,
       "measured.drift_triggered": 0,
@@ -170,6 +170,6 @@
       "measured.state_claims_stale": 0
     }
   },
-  "method": "기한 이동 이력 회차: 앞당긴 이동은 모순이 아니라 사실이고, 이동마다 확인일을 담아 늦은 검토(옛 기한을 지나서 다시 본 연장)를 센다 — 그 새 수 둘(floor_ledger counts.record_exemptions_late 0 · review measured.ledger_late_reviews 0)이 기준에 없던 수이고, cognitive_tests 는 새 계약 시험 3건으로 751 → 754 다(11/11 PASS).",
+  "method": "P04 v1.1 철학 시나리오 회차: 시험 10건 추가(context 16·brain 24, cognitive 764 수집)로 cognitive_tests ▲10, T03/T04 문서 pin 4개 재확인으로 reverified ▲3·match ▼3. 게이트 full 11/11 PASS 상태에서 승인.",
   "recorded_on": "2026-09-24"
 }

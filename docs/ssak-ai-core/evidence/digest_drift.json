@@ -3,10 +3,10 @@
     "python",
     "scripts/digest_drift.py"
   ],
-  "source_head": "d0a67d37",
+  "source_head": "29a72e75",
   "counts": {
-    "match": 28,
-    "reverified": 22,
+    "match": 25,
+    "reverified": 25,
     "drift": 0,
     "stale_reverification": 0,
     "missing": 0
@@ -34,8 +34,8 @@
       "missing": 0
     },
     "T03_T04_context_brain.md": {
-      "match": 3,
-      "reverified": 1,
+      "match": 0,
+      "reverified": 4,
       "drift": 0,
       "stale_reverification": 0,
       "missing": 0
@@ -213,33 +213,33 @@
       "doc": "T03_T04_context_brain.md",
       "path": "src/antigravity_k/engine/cognitive/brain.py",
       "recorded": "d6e3e45c",
-      "actual": "d6e3e45c7fb70c78d11fd99c5663e70fc68b5f00a61c65c5148d83133ca8a37a",
-      "status": "match",
-      "reverified_on": ""
+      "actual": "43cb0d49090d5486c47c37a5389018649a2a1501b05690fd81899c0cc1668d2c",
+      "status": "reverified",
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T03_T04_context_brain.md",
       "path": "src/antigravity_k/engine/cognitive/context.py",
       "recorded": "0e506935",
-      "actual": "dcdc152b90fa3a273cf5131e1b089f13219358181a241c4000d13cbc2fd53af4",
+      "actual": "eaa05d1807246c3302b7665411ea6c3962db47409cdfbf405a2e1fdb62b25df1",
       "status": "reverified",
-      "reverified_on": "2026-09-23"
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T03_T04_context_brain.md",
       "path": "tests/cognitive/test_brain.py",
       "recorded": "2781dbc1",
-      "actual": "2781dbc134c9ee041313d2c91fa76bd1050db40892c25d63640f9a9ec6183149",
-      "status": "match",
-      "reverified_on": ""
+      "actual": "6dae372e9e4f5be7a20678860c898068d6e987598c4620e1e826db1299b2cdb3",
+      "status": "reverified",
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T03_T04_context_brain.md",
       "path": "tests/cognitive/test_context.py",
       "recorded": "1a1dd559",
-      "actual": "1a1dd5591f2344f7e1a217bfcf3267ff3cb02889f8f7f4cc7434a328728848e3",
-      "status": "match",
-      "reverified_on": ""
+      "actual": "a90f1c1709443c01e3694ed410087735466dd5d3e081672bee7360d9faba785b",
+      "status": "reverified",
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T05_governance.md",

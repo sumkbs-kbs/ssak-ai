@@ -5,16 +5,20 @@
 - ``rethink(previous_judgment_id, feedback_ids, affected_ground_ids, context_delta) -> BrainJudgment | BrainFailure``
 - 모델 출력은 신뢰할 수 없는 입력이다: 알 수 없는 enum, 잘못된 ID, 다른 project reference, oversize 응답을 거부한다.
 - 형식 오류는 **1회**만 repair한다. repair에도 모델·비용·시간을 계상하고 실패하면 ``BRAIN_PROTOCOL_ERROR``다.
+  adapter가 선언한 ``timeout_seconds``를 넘긴 유효 응답은 ``TIMEOUT``으로 거부한다(늦은 응답은
+  선언된 능력 밖이다). token 비용은 시도를 합쳐 judgment에 기록한다.
 - 원래 판단은 수정하지 않는다. rethink 결과는 새 judgment이며 ``supersedes`` reference로 연결한다.
 - provider fallback은 같은 frozen ContextPackage를 새 adapter에 전달하고 **새 judgment ID**를 만든다.
 - plain-text 응답을 FACT/READY로 포장하지 않는다.
 
-Secondary는 conditional이다. 그 출력은 MODEL_JUDGMENT evidence로 Primary에 전달될 뿐 최종 통합 권한이 없다.
+Secondary는 conditional이다. 여러 Secondary를 불러도 각자의 응답은 **그대로** MODEL_JUDGMENT evidence로
+Primary에 전달될 뿐 최종 통합 권한이 없다 — Body가 다수결·merge·치환으로 결론을 만들지 않는다.
 이 모듈은 provider SDK/UI를 import하지 않는다 — adapter가 주입된다.
 """
 
 from __future__ import annotations
 
+import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -82,6 +86,7 @@ class BrainFailure:
     detail: str
     repair_attempts: int = 0
     provider_model_version: str = ""
+    elapsed_seconds: float = 0.0
 
     @property
     def ok(self) -> bool:
@@ -109,6 +114,10 @@ class BrainJudgment:
     provider_model_version: str
     repair_attempts: int = 0
     supersedes_record_id: str | None = None
+    #: 시간·비용 계상 — repair 시도를 합친 값이다(선언된 능력 안에서 돌았는지의 근거).
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    elapsed_seconds: float = 0.0
 
     @property
     def ok(self) -> bool:
@@ -150,6 +159,7 @@ class StructuredBrainClient:
         producer: Producer | None = None,
         clock: Callable[[], datetime] | None = None,
         max_response_chars: int = MAX_RESPONSE_CHARS,
+        timer: Callable[[], float] | None = None,
     ) -> None:
         self.adapter = adapter
         self.project_id = project_id
@@ -157,6 +167,7 @@ class StructuredBrainClient:
             producer if producer is not None else Producer(kind=ProducerKind.BRAIN, actor_id=f"brain:{adapter.name}")
         )
         self._clock = clock if clock is not None else _now
+        self._timer = timer if timer is not None else time.monotonic
         self.max_response_chars = max_response_chars
 
     # ── think ───────────────────────────────────────────
@@ -223,14 +234,21 @@ class StructuredBrainClient:
                 detail=f"context project {context_project} != adapter project {self.project_id}",
             )
 
+        started = self._timer()
         response = self.adapter.respond(context_wire, request_id)
+        prompt_tokens = response.prompt_tokens
+        completion_tokens = response.completion_tokens
         attempts = 0
         rejection = self._validate(response, request_id)
         if rejection is not None:
             attempts = 1
             repair_response = self.adapter.respond(context_wire, request_id, repair_of=dict(context_wire))
+            # repair에도 모델·비용을 계상한다 — 원래 시도의 비용은 사라지지 않는다.
+            prompt_tokens += repair_response.prompt_tokens
+            completion_tokens += repair_response.completion_tokens
             rejection = self._validate(repair_response, request_id)
             response = repair_response
+        elapsed = self._timer() - started
         if rejection is not None:
             return BrainFailure(
                 request_id=request_id,
@@ -238,6 +256,20 @@ class StructuredBrainClient:
                 detail=rejection,
                 repair_attempts=attempts,
                 provider_model_version=response.provider_model_version,
+                elapsed_seconds=elapsed,
+            )
+        timeout_seconds = self.adapter.capabilities.timeout_seconds
+        if timeout_seconds > 0 and elapsed > timeout_seconds:
+            return BrainFailure(
+                request_id=request_id,
+                kind=BrainFailureKind.TIMEOUT,
+                detail=(
+                    f"adapter elapsed {elapsed:.3f}s exceeds declared timeout_seconds={timeout_seconds}"
+                    " — 선언된 능력 밖의 응답은 쓰지 않는다"
+                ),
+                repair_attempts=attempts,
+                provider_model_version=response.provider_model_version,
+                elapsed_seconds=elapsed,
             )
         if attempts > MAX_REPAIR_ATTEMPTS:
             return BrainFailure(
@@ -245,6 +277,7 @@ class StructuredBrainClient:
                 kind=BrainFailureKind.BRAIN_PROTOCOL_ERROR,
                 detail="schema repair exceeded the single allowed attempt",
                 repair_attempts=attempts,
+                elapsed_seconds=elapsed,
             )
 
         assert response.structured is not None
@@ -265,6 +298,9 @@ class StructuredBrainClient:
             provider_model_version=response.provider_model_version,
             repair_attempts=attempts,
             supersedes_record_id=supersedes,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            elapsed_seconds=elapsed,
         )
 
     def _validate(self, response: BrainResponse, request_id: str) -> str | None:
@@ -339,11 +375,13 @@ class BrainDirector:
         project_id: str,
         primary: StructuredBrainClient,
         secondary: StructuredBrainClient | None = None,
+        secondaries: Sequence[StructuredBrainClient] = (),
         clock: Callable[[], datetime] | None = None,
     ) -> None:
         self.project_id = project_id
         self.primary = primary
         self.secondary = secondary
+        self.secondaries = tuple(secondaries)
         self._clock = clock if clock is not None else _now
 
     def think(self, context_wire: Mapping[str, object], request_id: str) -> BrainOutcome:
@@ -385,18 +423,81 @@ class BrainDirector:
                 kind=BrainFailureKind.UNSUPPORTED_CAPABILITY,
                 detail="secondary engagement requires an approved governance decision",
             )
-        outcome = self.secondary.think(context_wire, request_id)
+        return self._engage_one_secondary(
+            self.secondary,
+            context_wire,
+            request_id,
+            requested_by=requested_by,
+            governance_decision_id=governance_decision_id,
+            project_id=project_id,
+        )
+
+    def engage_secondaries(
+        self,
+        context_wire: Mapping[str, object],
+        request_id: str,
+        *,
+        requested_by: BrainJudgment,
+        governance_decision_id: str | None,
+        project_id: str | None = None,
+    ) -> list[SecondaryEngagement] | BrainFailure:
+        """여러 Secondary를 같은 frozen context로 부른다.
+
+        각 응답은 **그대로** 각자의 MODEL_JUDGMENT evidence로 남는다 — 다수결·merge·치환으로
+        합쳐진 결론을 만들지 않는다(최종 통합은 Primary다). 하나라도 실패하면 전체 실패다:
+        일부 의견만 남은 자료는 "여럿이 다수로 말했다" 로 읽히므로 부분 결과를 내지 않는다.
+        """
+
+        clients = self.secondaries or ((self.secondary,) if self.secondary is not None else ())
+        if not clients:
+            return BrainFailure(
+                request_id=request_id,
+                kind=BrainFailureKind.UNSUPPORTED_CAPABILITY,
+                detail="no secondary adapters are configured",
+            )
+        if governance_decision_id is None:
+            return BrainFailure(
+                request_id=request_id,
+                kind=BrainFailureKind.UNSUPPORTED_CAPABILITY,
+                detail="secondary engagement requires an approved governance decision",
+            )
+        engagements: list[SecondaryEngagement] = []
+        for client in clients:
+            engaged = self._engage_one_secondary(
+                client,
+                context_wire,
+                request_id,
+                requested_by=requested_by,
+                governance_decision_id=governance_decision_id,
+                project_id=project_id,
+            )
+            if isinstance(engaged, BrainFailure):
+                return engaged
+            engagements.append(engaged)
+        return engagements
+
+    def _engage_one_secondary(
+        self,
+        client: StructuredBrainClient,
+        context_wire: Mapping[str, object],
+        request_id: str,
+        *,
+        requested_by: BrainJudgment,
+        governance_decision_id: str,
+        project_id: str | None,
+    ) -> SecondaryEngagement | BrainFailure:
+        outcome = client.think(context_wire, request_id)
         if isinstance(outcome, BrainFailure):
             return outcome
         evidence = Record.create(
             entity_type=EntityType.EVIDENCE,
             project_id=project_id if project_id is not None else self.project_id,
-            producer=Producer(kind=ProducerKind.TOOL, actor_id=f"brain-secondary:{self.secondary.adapter.name}"),
+            producer=Producer(kind=ProducerKind.TOOL, actor_id=f"brain-secondary:{client.adapter.name}"),
             payload=EvidencePayload(
                 kind=EvidenceKind.MODEL_JUDGMENT,
                 claim=outcome.payload.current_judgment,
                 provenance=Provenance(
-                    source_uri=f"brain:{self.secondary.adapter.name}",
+                    source_uri=f"brain:{client.adapter.name}",
                     source_version=outcome.provider_model_version,
                     content_digest=outcome.record.id,
                     observed_at=self._clock(),
@@ -404,7 +505,7 @@ class BrainDirector:
                 ),
                 time=self._clock(),
                 digest=outcome.record.id,
-                independence_group=f"secondary:{self.secondary.adapter.name}",
+                independence_group=f"secondary:{client.adapter.name}",
             ),
             references=(
                 Reference(

@@ -4,6 +4,9 @@
 - L0 protected constraints는 압축·예산으로 잃을 수 없다. 초과하면 조용히 버리지 않고 명시적으로 실패한다.
 - 필수 필드가 없으면 빈 context로 성공하지 않는다. ``CONTEXT_INCOMPLETE``와 누락 ID를 남긴다.
 - 검색은 넓게 하되 주입은 좁게. 다른 project/owner 자료는 주입하지 않는다.
+- 관련성이 없는 이력은 예산이 남아도 주입하지 않는다. 기계적 신호는 레코드 자체의
+  applicability 계약(goal_match=MISMATCH)뿐이며, 그 이상의 의미 판단은 Brain의 몫이다.
+  제외된 이력은 detail handle로만 다시 요청할 수 있다.
 - 선택/제외 이유와 token 수를 항목마다 기록한다.
 - handle은 capability token이 아니다. 조회 시 현재 권한·digest·만료를 다시 확인한다.
 - ``(projection_version, last_event_sequence)``로 stale projection을 표시하고 canonical replay로 복원한다.
@@ -213,8 +216,23 @@ class ContextBuilder:
             principal=principal,
         )
         remaining -= l1_tokens
+        # T03-A: 무관한 이력(goal과 무관하다고 applicability가 선언된 기록)은 예산이 남아도
+        # 기본 context에 주입하지 않는다. 제외 이유와 detail handle만 남긴다.
+        related_l2: list[tuple[Record, str]] = []
+        for record, reason in self._l2_candidates(by_type):
+            if _goal_mismatch(record):
+                exclusions.append(
+                    ContextExclusion(
+                        record_id=record.id,
+                        reason_excluded="RELEVANCE: 현재 goal과 무관한 이력이다(applicability goal_match=MISMATCH)",
+                        token_estimate=estimate_tokens(_record_text(record)),
+                    )
+                )
+                handles.append(self._handle_for(record))
+                continue
+            related_l2.append((record, reason))
         l2_items, l2_tokens = self._build_layer(
-            candidates=self._l2_candidates(by_type),
+            candidates=related_l2,
             limit=l2_limit,
             disclosure=DisclosureLevel.L1_SUMMARY,
             layer_reason="L2 relevant history",
@@ -488,6 +506,16 @@ class ContextBuilder:
 
 def _goal_related(record: Record, goal_id: str) -> bool:
     return record.id == goal_id or any(reference.target_id == goal_id for reference in record.references)
+
+
+def _goal_mismatch(record: Record) -> bool:
+    """L2 이력의 기계적 무관성 신호. 의미 해석이 아니라 레코드가 스스로 선언한
+    applicability 계약만 본다(프로필이 없는 이력은 무관하다고 단정하지 않는다)."""
+
+    profile = getattr(record.payload, "applicability", None) or getattr(record.payload, "applicability_profile", None)
+    if profile is None:
+        return False
+    return str(getattr(profile, "goal_match", "UNKNOWN")) == "MISMATCH"
 
 
 def _applicability_for(record: Record) -> str:

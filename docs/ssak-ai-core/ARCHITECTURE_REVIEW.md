@@ -86,14 +86,14 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 16 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 754 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 764 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
 | regression_drift | 0 | seed 를 바꾸면 달라지는 실패 |
 | regression_unowned | 0 | 소유자 없는 결정적 실패 |
 | digest_pinned | 50 | 증거 문서가 파일에 못 박은 sha256 수 |
-| digest_reverified | 22 | 그 뒤에 바뀌었지만 재확인 기록이 있고 그 뒤로 바뀌지 않은 pin |
+| digest_reverified | 25 | 그 뒤에 바뀌었지만 재확인 기록이 있고 그 뒤로 바뀌지 않은 pin |
 | digest_drifted | 0 | 재확인 없이 지나간 revision 을 가리키는 pin |
 | digest_stale | 0 | 재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 |
 | digest_missing | 0 | 파일이 없는데 digest 를 못 박은 항목 |
@@ -123,14 +123,14 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=16 -->
-<!-- measured:cognitive_tests=754 -->
+<!-- measured:cognitive_tests=764 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
 <!-- measured:regression_drift=0 -->
 <!-- measured:regression_unowned=0 -->
 <!-- measured:digest_pinned=50 -->
-<!-- measured:digest_reverified=22 -->
+<!-- measured:digest_reverified=25 -->
 <!-- measured:digest_drifted=0 -->
 <!-- measured:digest_stale=0 -->
 <!-- measured:digest_missing=0 -->

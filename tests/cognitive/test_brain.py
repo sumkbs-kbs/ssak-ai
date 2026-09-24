@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from pathlib import Path
 
 import pytest
 
@@ -15,7 +16,16 @@ from antigravity_k.engine.cognitive.brain import (
     BrainResponse,
     StructuredBrainClient,
 )
+from antigravity_k.engine.cognitive.context import ContextBuilder, ContextPrincipal
+from antigravity_k.engine.cognitive.models import ContextBudget, to_wire
 from antigravity_k.engine.cognitive.references import EntityType, new_id
+from antigravity_k.engine.cognitive.store import CanonicalStore, canonical_digest
+from tests.cognitive._fixtures import (
+    build_constitution_rule,
+    build_evidence,
+    build_goal,
+    build_project,
+)
 
 PROJECT = new_id(EntityType.PROJECT)
 EVIDENCE_ID = new_id(EntityType.EVIDENCE)
@@ -291,3 +301,209 @@ def test_judgment_records_are_provider_version_tagged(version: str) -> None:
 
     assert isinstance(outcome, BrainJudgment)
     assert outcome.provider_model_version == version
+
+
+def test_elapsed_over_declared_timeout_is_rejected() -> None:
+    # T04-B: adapter가 선언한 timeout_seconds를 넘긴 유효 응답은 쓰지 않는다.
+    ticks = iter([0.0, 45.0])
+    slow = StructuredBrainClient(
+        FakeAdapter("slow", [valid_response()]),
+        project_id=PROJECT,
+        timer=lambda: next(ticks),
+    )
+
+    outcome = slow.think(CONTEXT_WIRE, "req-timeout")
+
+    assert isinstance(outcome, BrainFailure)
+    assert outcome.kind is BrainFailureKind.TIMEOUT
+    assert outcome.elapsed_seconds == 45.0
+    assert "timeout_seconds=30" in outcome.detail
+
+
+def test_repair_cost_is_accounted_on_the_judgment() -> None:
+    # T04-B: repair에도 모델·비용을 계상한다 — 원래 시도의 비용은 사라지지 않는다.
+    malformed = BrainResponse(text="그냥 텍스트", prompt_tokens=10, completion_tokens=5)
+    repaired = BrainResponse(
+        structured={"judgment": judgment_dict()},
+        provider_model_version="test-1",
+        prompt_tokens=7,
+        completion_tokens=3,
+    )
+    flaky = client(FakeAdapter("flaky", [malformed, repaired]))
+
+    outcome = flaky.think(CONTEXT_WIRE, "req-cost")
+
+    assert isinstance(outcome, BrainJudgment)
+    assert outcome.repair_attempts == 1
+    assert outcome.prompt_tokens == 17
+    assert outcome.completion_tokens == 8
+    assert outcome.elapsed_seconds >= 0.0
+
+
+def test_brain_swap_keeps_records_and_does_not_force_previous_conclusion(tmp_path: Path) -> None:
+    # T04-A: 같은 Body 기록 위에서 A→B Brain 교체·재시작 — 이전 판단은 이력으로만 오고
+    # 새 Brain의 다른 결론을 강제하지 않는다(원본 판단도 불변이다).
+    project = new_id(EntityType.PROJECT)
+    store = CanonicalStore(tmp_path / "canonical", git_enabled=False)
+    rule = build_constitution_rule(project)
+    goal = build_goal(project)
+    evidence = build_evidence(project)
+    store.commit_records([build_project(project, protected_constraints=(rule.id,)), rule, goal, evidence])
+    wire: dict[str, object] = {
+        "schema_version": "1.0",
+        "entity_type": "ContextPackage",
+        "project_id": project,
+        "payload": {"goal_id": goal.id},
+    }
+
+    client_a = StructuredBrainClient(
+        FakeAdapter(
+            "provider-a", [structured({"judgment": judgment_dict(grounds=(evidence.id,))}, version="provider-a/1")]
+        ),
+        project_id=project,
+    )
+    judgment_a = client_a.think(wire, "req-a")
+    assert isinstance(judgment_a, BrainJudgment)
+    store.commit_records([judgment_a.record])
+
+    builder = ContextBuilder(store)
+    result = builder.build(
+        goal_id=goal.id,
+        state_revision=1,
+        principal=ContextPrincipal(subject="human:mr.k", project_id=project),
+        budget=ContextBudget(token_budget=100_000, tokens_used=0, l0_reserved_tokens=0),
+    )
+    old_item = next(item for item in result.payload.l1_state if item.record_id == judgment_a.record.id)
+    assert old_item.reason_selected == "L1 recent judgment", "이전 판단은 이력 항목으로만 온다"
+
+    different = structured(
+        {
+            "judgment": {
+                **judgment_dict(grounds=(evidence.id,)),
+                "current_judgment": "이전 판단과 다른 결론",
+                "brain_version": "provider-b/1",
+            }
+        },
+        version="provider-b/1",
+    )
+    # process restart 뒤 새 client/director가 같은 기록 위에서 다른 결론을 내린다.
+    client_b = StructuredBrainClient(FakeAdapter("provider-b", [different]), project_id=project)
+    judgment_b = client_b.think(wire, "req-b")
+
+    assert isinstance(judgment_b, BrainJudgment)
+    assert judgment_b.record.id != judgment_a.record.id
+    assert judgment_b.supersedes_record_id is None, "think는 rethink가 아니다 — 이전 판단 채택을 강제하지 않는다"
+    assert judgment_b.payload.current_judgment != judgment_a.payload.current_judgment
+    stored_a = store.read(judgment_a.record.id)
+    assert stored_a is not None
+    assert canonical_digest(to_wire(stored_a)) == canonical_digest(to_wire(judgment_a.record)), "원본 판단은 불변이다"
+
+
+def secondary_client(name: str, conclusion: str) -> StructuredBrainClient:
+    response = structured(
+        {"judgment": {**judgment_dict(), "current_judgment": conclusion, "brain_version": f"{name}/1"}},
+        version=f"{name}/1",
+    )
+    return StructuredBrainClient(FakeAdapter(name, [response]), project_id=PROJECT)
+
+
+def test_multiple_secondaries_are_delivered_verbatim_without_majority() -> None:
+    # T04-C: 반대 의견이 나와도 Body는 다수결·merge·치환을 하지 않는다 — 각자의
+    # MODEL_JUDGMENT evidence로 그대로 전달하고 최종 통합은 Primary의 새 판단 기록이다.
+    primary = client(FakeAdapter("primary", [valid_response(version="primary/1")]))
+    director = BrainDirector(
+        project_id=PROJECT,
+        primary=primary,
+        secondaries=(secondary_client("secondary-1", "찬성"), secondary_client("secondary-2", "반대")),
+    )
+    requested_by = director.think(CONTEXT_WIRE, "req-c")
+    assert isinstance(requested_by, BrainJudgment)
+
+    engaged = director.engage_secondaries(
+        CONTEXT_WIRE, "req-c-2", requested_by=requested_by, governance_decision_id="decision:approve-1"
+    )
+
+    assert isinstance(engaged, list)
+    assert len(engaged) == 2
+    assert [item.evidence.payload.claim for item in engaged] == ["찬성", "반대"], "의견은 그대로 전달된다"
+    assert len({item.evidence.id for item in engaged}) == 2, "반대 의견은 각자의 evidence로 남는다"
+    assert all(item.has_authority is False for item in engaged)
+    assert {str(item.evidence.payload.kind) for item in engaged} == {"MODEL_JUDGMENT"}
+    assert len({item.evidence.payload.independence_group for item in engaged}) == 2
+    assert all(item.approved_by_governance_id == "decision:approve-1" for item in engaged)
+
+    evidence_ids = [item.evidence.id for item in engaged]
+    integrated = structured(
+        {
+            "judgment": {
+                **judgment_dict(grounds=evidence_ids),
+                "current_judgment": "Primary가 둘을 종합한 결론",
+                "brain_version": "primary/1",
+            }
+        },
+        version="primary/1",
+    )
+    final = StructuredBrainClient(FakeAdapter("primary-final", [integrated]), project_id=PROJECT).think(
+        CONTEXT_WIRE, "req-final"
+    )
+
+    assert isinstance(final, BrainJudgment)
+    assert final.record.id not in {item.evidence.id for item in engaged}, "최종은 Primary의 판단 기록이다"
+    assert set(final.payload.grounds) == set(evidence_ids), "통합 판단은 Secondary 의견을 grounds로 참조한다"
+
+
+def test_unanimous_secondaries_are_not_collapsed() -> None:
+    # T04-C: 같은 의견도 하나의 'consensus' 기록으로 합쳐지지 않는다.
+    primary = client(FakeAdapter("primary-u", [valid_response()]))
+    director = BrainDirector(
+        project_id=PROJECT,
+        primary=primary,
+        secondaries=(secondary_client("secondary-3", "찬성"), secondary_client("secondary-4", "찬성")),
+    )
+    requested_by = director.think(CONTEXT_WIRE, "req-u")
+    assert isinstance(requested_by, BrainJudgment)
+
+    engaged = director.engage_secondaries(
+        CONTEXT_WIRE, "req-u-2", requested_by=requested_by, governance_decision_id="decision:approve-2"
+    )
+
+    assert isinstance(engaged, list)
+    assert [item.evidence.payload.claim for item in engaged] == ["찬성", "찬성"]
+    assert len({item.evidence.id for item in engaged}) == 2, "같은 의견도 각자의 evidence다"
+
+
+def test_secondary_set_requires_governance_approval() -> None:
+    primary = client(FakeAdapter("primary-g", [valid_response()]))
+    director = BrainDirector(
+        project_id=PROJECT,
+        primary=primary,
+        secondaries=(secondary_client("secondary-5", "찬성"),),
+    )
+    requested_by = director.think(CONTEXT_WIRE, "req-g")
+    assert isinstance(requested_by, BrainJudgment)
+
+    rejected = director.engage_secondaries(
+        CONTEXT_WIRE, "req-g-2", requested_by=requested_by, governance_decision_id=None
+    )
+
+    assert isinstance(rejected, BrainFailure)
+    assert rejected.kind is BrainFailureKind.UNSUPPORTED_CAPABILITY
+
+
+def test_secondary_set_fails_closed_when_one_member_fails() -> None:
+    # 하나가 실패하면 일부 의견만 남은 자료를 내지 않는다 — 그것은 다수결의 재료가 된다.
+    primary = client(FakeAdapter("primary-f", [valid_response()]))
+    broken = StructuredBrainClient(FakeAdapter("broken", [BrainResponse(text="고장")]), project_id=PROJECT)
+    director = BrainDirector(
+        project_id=PROJECT,
+        primary=primary,
+        secondaries=(secondary_client("secondary-6", "찬성"), broken),
+    )
+    requested_by = director.think(CONTEXT_WIRE, "req-f")
+    assert isinstance(requested_by, BrainJudgment)
+
+    engaged = director.engage_secondaries(
+        CONTEXT_WIRE, "req-f-2", requested_by=requested_by, governance_decision_id="decision:approve-3"
+    )
+
+    assert isinstance(engaged, BrainFailure)
