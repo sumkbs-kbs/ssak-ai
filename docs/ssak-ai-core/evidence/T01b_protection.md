@@ -75,3 +75,56 @@ ruff check / ruff format --check / mypy                              → clean
 - P05/P06: 사람 승인 record 발급·검증을 governance/readiness와 연결한다(현재는 승인 객체를 호출부가 주입).
 - P07: action receipt와 protected target 승인을 같은 digest 체계로 묶는다.
 - P11: migration/self-evolution 실행 경로에 guard hook을 강제한다.
+
+## 2026-09-24 회차 — migration/evolution 실제 경로 hook + 승인 발급·취소
+
+위 limitations가 스스로 지적한 두 빈자리("migration 전용 runner와 self-evolution의 실제 실행 경로에는
+아직 hook을 넣지 않았다")를 닫은 회차다. guard 함수 시험과 **실제 진입 경로** 시험을 분리했다(v1.1).
+
+```yaml
+check_id: T01b-entry-paths
+status: PASS (module + 실제 진입 경로)
+owner: principal
+source_head: 7ea468e9 (dirty — 본 회차: protected_targets.py · migration.py · evolution.py · test_protection.py · tests/test_evolution.py)
+command: .venv/bin/python -m pytest tests/cognitive/test_protection.py tests/cognitive/test_migration.py tests/test_evolution*.py tests/test_self_evolution*.py tests/test_meta_evolution*.py tests/test_prompt_meta_evolution.py -q
+exit_code: 0 (43 passed — protection 19→23)
+observed_behavior: 아래 매핑
+artifact:
+  - src/antigravity_k/engine/cognitive/protected_targets.py — issue_human_approval · guard.revoke(APPROVAL_REVOKED) · migration_guard factory
+  - src/antigravity_k/engine/cognitive/migration.py — LegacyMigrationRunner._target_store(write_guard=migration_guard)
+  - src/antigravity_k/engine/evolution.py — EvolutionManager 기본 guard 결선 + _save_draft(EVOLUTION channel)
+  - tests/cognitive/test_protection.py (23 시험)
+limitations: 발급 주체의 진위(그 사람이 실제로 입력했는가)·사용자 표면에서의 실제 우회 경로 관찰은 P11 이월. evolution API/coordinator 호출처는 기본 결선으로 보호된다(별도 전달 없이 vault root guard).
+verified_at: 2026-09-24T14:40:42Z
+```
+
+### 실제 진입 경로 매핑
+
+- **migration** — `LegacyMigrationRunner`의 대상 store가 항상 `migration_guard`를 단다(run·rollback
+  rehearsal 모두 `_target_store()`로). guard의 범위와 이유: migration의 **선언된 임무**는 사람이
+  dry-run report로 검토하는 새 root에 legacy identity를 최초 구축하는 일이므로 PROJECT_PREMISE의
+  최초 CREATE는 열고, constitution·authority·공개 이력 manifest·계보 mapping은 닫는다(ActorKind.MIGRATION은
+  승인이 있어도 금지). 시험: 실제 legacy DB dry-run이 그대로 성공(premise 구축 허용 관찰) +
+  같은 결선의 store에 constitution rule record를 넣으면 `PROTECTED_WITHOUT_APPROVAL`로 거부.
+- **evolution** — `EvolutionManager`가 **기본으로** vault root guard를 달고(`write_guard=None`이면
+  자동 결선 — 별도 전달이 없는 기존 호출처도 보호된다), draft 저장이 `open()` 직접 쓰기에서
+  `_save_draft`(guard `assert_allowed`, channel=EVOLUTION, actor=EVOLUTION)로 바뀐다. skills/system-prompt
+  draft는 보호 대상이 아니라 그대로 허용, 헌법 문서 경로로의 draft는 `ACTOR_FORBIDDEN`(사람 승인으로도
+  열리지 않는다). vault root 밖 경로는 `PATH_ESCAPE`.
+- **승인 발급** — `issue_human_approval`: 발급자는 사람 식별자만, **digest 결박 없는 승인은 발급
+  단계에서 거부**(빈 digest 승인은 모든 쓰기에 재사용되는 면주). 발급 주체의 진위는 사용자 표면(P11)의
+  몫으로 경계를 문서에 박았다.
+- **승인 취소** — `guard.revoke(approval)`: 취소는 즉시 반영된다(만료 전 승인도 revoke 뒤 아무 쓰기를
+  열지 않는다, `APPROVAL_REVOKED`). 취소 대상은 발급자·digest·개정 key로 특정한다.
+
+### 이 회차가 잡은 결함 둘
+
+- **enum identity 감사가 이 회차 자신의 위반을 잡았다**: `migration_guard`의 첫 구현이
+  `protected_class is not ProtectedClass.PROJECT_PREMISE`(raw identity)로 써서
+  `audit_enum_identity`가 즉시 위반 1건으로 게이트를 멈췄다 — `same_enum`으로 고쳤다(재발 감사 0건).
+- **시험 결함
+
+`tests/test_evolution.py::test_evolve_skill_not_found`는 `vault_path=MagicMock`이라 `skill_path.exists()`가
+항상 참인데, 예전 구현의 `open(MagicMock)`이 우연히 TypeError를 내며 None을 반환해 **우연히** 통과했다.
+draft 저장이 `write_text`로 바뀌며 우연이 사라져 드러났다 — 시험을 실경로(tmp_path)로 고쳐 의도(없는
+스킬→None)를 보존했다.

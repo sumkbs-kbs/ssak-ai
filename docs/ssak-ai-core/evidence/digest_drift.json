@@ -3,10 +3,10 @@
     "python",
     "scripts/digest_drift.py"
   ],
-  "source_head": "b019dc80",
+  "source_head": "7ea468e9",
   "counts": {
-    "match": 22,
-    "reverified": 28,
+    "match": 20,
+    "reverified": 30,
     "drift": 0,
     "stale_reverification": 0,
     "missing": 0
@@ -20,8 +20,8 @@
       "missing": 0
     },
     "T01b_protection.md": {
-      "match": 3,
-      "reverified": 2,
+      "match": 2,
+      "reverified": 3,
       "drift": 0,
       "stale_reverification": 0,
       "missing": 0
@@ -83,8 +83,8 @@
       "missing": 0
     },
     "T12_migration.md": {
-      "match": 3,
-      "reverified": 0,
+      "match": 2,
+      "reverified": 1,
       "drift": 0,
       "stale_reverification": 0,
       "missing": 0
@@ -141,9 +141,9 @@
       "doc": "T01b_protection.md",
       "path": "src/antigravity_k/engine/cognitive/protected_targets.py",
       "recorded": "090bc97f",
-      "actual": "a6657978ce0dbd0af81832dace7ac62605c5d82964f68bd07e06e12fde7453d0",
+      "actual": "d9b1155ff97618949e07e6dd56fe28c7b2944523b1fa6cccf8721eb9d1cb5fa7",
       "status": "reverified",
-      "reverified_on": "2026-09-23"
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T01b_protection.md",
@@ -165,9 +165,9 @@
       "doc": "T01b_protection.md",
       "path": "tests/cognitive/test_protection.py",
       "recorded": "b5774397",
-      "actual": "b57743979ee3c74308cdbb6a1b1aa7b444e3dec315a3f0267dffbef5a36c5a40",
-      "status": "match",
-      "reverified_on": ""
+      "actual": "0462483bf06c85cdf77269d42172ca4126376e9b2f88457e3a6c9f4ebe95cce3",
+      "status": "reverified",
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T01b_protection.md",
@@ -175,7 +175,7 @@
       "recorded": "8244251f",
       "actual": "6ec637ab70ed86de3a6586af565a0098f295c0efdea7a7fcdefda9d12165908a",
       "status": "reverified",
-      "reverified_on": "2026-09-23"
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T02_canonical_store.md",
@@ -437,9 +437,9 @@
       "doc": "T12_migration.md",
       "path": "src/antigravity_k/engine/cognitive/migration.py",
       "recorded": "f45e974f01a6e124",
-      "actual": "f45e974f01a6e124fd8438cdd26497a8d58bf181fbe8be21fd1d4f05910a8a40",
-      "status": "match",
-      "reverified_on": ""
+      "actual": "cdb49eef5347bf209a43fe124386661f203d2191cff8485fd27b28f108e6ff65",
+      "status": "reverified",
+      "reverified_on": "2026-09-24"
     },
     {
       "doc": "T12_migration.md",

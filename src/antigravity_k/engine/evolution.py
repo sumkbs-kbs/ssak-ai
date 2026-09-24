@@ -8,6 +8,13 @@ Hermes Agent Self-Evolution의 핵심 원리를 도입하여,
 import logging
 from pathlib import Path
 
+from antigravity_k.engine.cognitive.protected_targets import (
+    ActorKind,
+    ProtectedWriteGuard,
+    ProtectedWriteRequest,
+    WriteChannel,
+    WriteOperation,
+)
 from antigravity_k.engine.model_manager import ModelManager
 from antigravity_k.engine.vault import VaultEngine
 
@@ -39,12 +46,20 @@ Return ONLY the fully evolved text (including frontmatter if it had one), with n
 class EvolutionManager:
     """Manages self-directed code evolution cycles with validation gates."""
 
-    def __init__(self, model_manager: ModelManager, vault_engine: VaultEngine | None) -> None:
+    def __init__(
+        self,
+        model_manager: ModelManager,
+        vault_engine: VaultEngine | None,
+        write_guard: ProtectedWriteGuard | None = None,
+    ) -> None:
         """Initialize the EvolutionManager.
 
         Args:
             model_manager (ModelManager): ModelManager model manager.
             vault_engine (VaultEngine): VaultEngine vault engine.
+            write_guard (ProtectedWriteGuard | None): draft 쓰기 보호 guard.
+                기본으로 vault root에 대한 guard를 단다 — evolution 진입 경로가 보호 대상을
+                건드리는 일은 EVOLUTION actor로 금지된다(사람 승인으로도 열리지 않는다).
 
         """
         if vault_engine is None:
@@ -55,6 +70,27 @@ class EvolutionManager:
         self.manager: ModelManager = model_manager
         self.vault: VaultEngine = vault_engine
         self.skills_dir: Path = self.vault.vault_path / ".agent" / "skills"
+        self.write_guard: ProtectedWriteGuard = write_guard or ProtectedWriteGuard(self.vault.vault_path)
+
+    def _save_draft(self, draft_path: Path, text: str) -> None:
+        """evolution draft는 보호 guard를 통과해서만 쓴다(실제 진입 경로 hook).
+
+        skills/system-prompt draft는 보호 대상이 아니라 그대로 허용되고, 보호 대상(헌법·authority
+        계열 경로)이나 vault root 밖으로 나가는 경로는 EVOLUTION actor라 거부된다.
+        """
+
+        self.write_guard.assert_allowed(
+            ProtectedWriteRequest(
+                channel=WriteChannel.EVOLUTION,
+                actor_kind=ActorKind.EVOLUTION,
+                actor_id="evolution:draft",
+                targets=(str(draft_path),),
+                operation=WriteOperation.CREATE,
+                project_root=str(self.vault.vault_path),
+            )
+        )
+        draft_path.parent.mkdir(parents=True, exist_ok=True)
+        draft_path.write_text(text, encoding="utf-8")
 
     def _gather_failures(self, query: str, limit: int = 5) -> str:
         """Vault(Second Brain)에서 과거 에러 로그와 교훈을 검색합니다."""
@@ -117,10 +153,9 @@ class EvolutionManager:
             if evolved_text.endswith("```"):
                 evolved_text = evolved_text[:-3]
 
-            # 안전하게 Draft 파일로 저장 (Human-in-the-loop)
+            # 안전하게 Draft 파일로 저장 (Human-in-the-loop) — 보호 guard 통과
             draft_path = self.skills_dir / skill_name / "SKILL_EVOLVED.md"
-            with open(draft_path, "w", encoding="utf-8") as f:
-                _ = f.write(evolved_text.strip())
+            self._save_draft(draft_path, evolved_text.strip())
 
             logger.info("Successfully evolved skill '%s'. Saved to %s", skill_name, draft_path)
             return str(draft_path)
@@ -159,8 +194,7 @@ class EvolutionManager:
                 evolved_text = evolved_text[:-3]
 
             draft_path = self.vault.vault_path / "SYSTEM_PROMPT_EVOLVED.md"
-            with open(draft_path, "w", encoding="utf-8") as f:
-                _ = f.write(evolved_text.strip())
+            self._save_draft(draft_path, evolved_text.strip())
 
             logger.info("Successfully evolved System Prompt. Saved to %s", draft_path)
             return str(draft_path)

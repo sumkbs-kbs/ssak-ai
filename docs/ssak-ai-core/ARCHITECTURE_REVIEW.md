@@ -86,21 +86,21 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 17 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 767 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 771 | `tests/cognitive` 수집 시험 수 |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
 | regression_drift | 0 | seed 를 바꾸면 달라지는 실패 |
 | regression_unowned | 0 | 소유자 없는 결정적 실패 |
 | digest_pinned | 50 | 증거 문서가 파일에 못 박은 sha256 수 |
-| digest_reverified | 28 | 그 뒤에 바뀌었지만 재확인 기록이 있고 그 뒤로 바뀌지 않은 pin |
+| digest_reverified | 30 | 그 뒤에 바뀌었지만 재확인 기록이 있고 그 뒤로 바뀌지 않은 pin |
 | digest_drifted | 0 | 재확인 없이 지나간 revision 을 가리키는 pin |
 | digest_stale | 0 | 재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 |
 | digest_missing | 0 | 파일이 없는데 digest 를 못 박은 항목 |
 | state_claims | 4 | 산문이 지금 트리에 대해 한 상태 주장(test node 지정) 수 |
 | state_claims_fixed | 4 | 그중 실제와 달라 정정 표기를 붙인 주장 |
 | state_claims_stale | 0 | 정정 없이 남은 낡은 주장 |
-| state_claim_mentions | 6 | node 를 지목한 산문 줄 수 — 상태 어휘가 없어도 세는 상한 집합(탐지력 하한 1) |
+| state_claim_mentions | 7 | node 를 지목한 산문 줄 수 — 상태 어휘가 없어도 세는 상한 집합(탐지력 하한 1) |
 | state_claim_probe_cases | 17 | 매 실행 자기시험이 다시 재판정한 항목 수(어휘·요구 어휘·펜스·정정 창·상태 계산) — 0이면 검사하지 않은 것이다 |
 | canary_harnesses | 11 | 하한 카나리아가 눈멀게 한 사본으로 시험한 harness 수(여섯 측정 harness + 증거 게이트 + red 리허설 + 배포 산출물 + 하한 원장 + 리뷰) |
 | canary_ok | 11 | 그중 정상 통과·사본 차단·근거 동봉을 모두 만족한 harness 수 |
@@ -123,21 +123,21 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=17 -->
-<!-- measured:cognitive_tests=767 -->
+<!-- measured:cognitive_tests=771 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
 <!-- measured:regression_drift=0 -->
 <!-- measured:regression_unowned=0 -->
 <!-- measured:digest_pinned=50 -->
-<!-- measured:digest_reverified=28 -->
+<!-- measured:digest_reverified=30 -->
 <!-- measured:digest_drifted=0 -->
 <!-- measured:digest_stale=0 -->
 <!-- measured:digest_missing=0 -->
 <!-- measured:state_claims=4 -->
 <!-- measured:state_claims_fixed=4 -->
 <!-- measured:state_claims_stale=0 -->
-<!-- measured:state_claim_mentions=6 -->
+<!-- measured:state_claim_mentions=7 -->
 <!-- measured:state_claim_probe_cases=17 -->
 <!-- measured:canary_harnesses=11 -->
 <!-- measured:canary_ok=11 -->

@@ -350,3 +350,107 @@ def test_store_rejects_brain_authored_constitution_change(project: Path, tmp_pat
         store.commit_records([rule], approvals=approvals)
 
     assert excinfo.value.decision.code is DecisionCode.ACTOR_FORBIDDEN
+
+
+# ── T01b v1.1: 승인 발급·취소 + migration/evolution 실제 진입 경로 ────────
+
+
+def test_approval_issuance_requires_human_issuer_and_digest_binding() -> None:
+    # 발급 경로가 없으면 승인은 시험 fixture에서만 존재한다. 발급 단계에서 계약을 강제한다:
+    # 사람 발급자만, digest 결박 없는 승인은 발급 자체가 거부된다.
+    from antigravity_k.engine.cognitive.protected_targets import issue_human_approval
+
+    with pytest.raises(ValueError, match="human actor id"):
+        issue_human_approval(
+            issuer="body:runtime",
+            protected_class=ProtectedClass.CONSTITUTION,
+            action_digest="sha256:" + "1" * 64,
+            resource_scope=str(Path("/tmp/anywhere")),
+        )
+    with pytest.raises(ValueError, match="action digest"):
+        issue_human_approval(
+            issuer="human:mr.k",
+            protected_class=ProtectedClass.CONSTITUTION,
+            action_digest="",
+            resource_scope=str(Path("/tmp/anywhere")),
+        )
+
+    approval = issue_human_approval(
+        issuer="human:mr.k",
+        protected_class=ProtectedClass.CONSTITUTION,
+        action_digest="sha256:" + "2" * 64,
+        resource_scope=str(Path("/tmp/anywhere")),
+    )
+    assert approval.approved_by == "human:mr.k"
+    assert approval.action_digest == "sha256:" + "2" * 64
+
+
+def test_revoked_approval_no_longer_opens_protected_write(project: Path) -> None:
+    # 취소는 즉시 반영된다 — 만료 전 승인도 revoke 뒤에는 아무 쓰기를 열지 않는다.
+    guard = ProtectedWriteGuard(project)
+    digest = "sha256:" + "3" * 64
+    target = str(project / CONSTITUTION_RELATIVE)
+    approval = approval_for(target, action_digest=digest)
+    request = request_for(target, approvals=(approval,), digest=digest)
+
+    assert guard.evaluate(request).allowed is True
+
+    guard.revoke(approval)
+    decision = guard.evaluate(request)
+
+    assert decision.allowed is False
+    assert decision.code is DecisionCode.APPROVAL_REVOKED
+
+
+def test_migration_runner_writes_through_guarded_store(tmp_path: Path) -> None:
+    # migration 실제 경로: 정상 dry-run(legacy identity 최초 구축)은 그대로 되고,
+    # 같은 결선으로 몰래 들어가는 constitution record는 거부된다.
+    from tests.cognitive.test_migration import LegacyMigrationRunner, LegacySQLiteSource, make_legacy_db
+
+    db_path = make_legacy_db(tmp_path)
+    runner = LegacyMigrationRunner(LegacySQLiteSource(db_path), tmp_path / "target")
+
+    report = runner.run()
+
+    assert report.imported["events"] + report.imported["objectives"] + report.imported["tasks"] > 0
+
+    store = runner._target_store()
+    rule = Record.create(
+        entity_type=EntityType.CONSTITUTION_RULE,
+        project_id=new_id(EntityType.PROJECT),
+        producer=Producer(kind=ProducerKind.BODY, actor_id="body:migration-smuggle"),
+        payload=ConstitutionRulePayload(
+            principle_number=1,
+            verbatim_text="THE BRAIN IS REPLACEABLE.",
+            source_digest="sha256:" + "b" * 64,
+            version="1.0",
+        ),
+    )
+
+    with pytest.raises(ProtectionViolation) as excinfo:
+        store.commit_records([rule])
+
+    assert excinfo.value.decision.code is DecisionCode.PROTECTED_WITHOUT_APPROVAL
+
+
+def test_evolution_draft_write_is_guarded_on_the_real_path(tmp_path: Path) -> None:
+    # evolution 실제 경로: draft는 항상 guard를 지난다. skills draft는 허용되고
+    # 보호 대상 경로(헌법 문서)로의 draft는 EVOLUTION actor라 거부된다(승인으로도 열리지 않는다).
+    from unittest.mock import MagicMock
+
+    from antigravity_k.engine.evolution import EvolutionManager
+
+    vault = MagicMock()
+    vault.vault_path = tmp_path
+    manager = EvolutionManager(MagicMock(), vault)
+
+    draft = tmp_path / ".agent" / "skills" / "demo" / "SKILL_EVOLVED.md"
+    manager._save_draft(draft, "evolved text")
+
+    assert draft.read_text(encoding="utf-8") == "evolved text"
+
+    constitution = tmp_path / "docs" / "ssak-ai-core" / "SSAK_AI_CONSTITUTION.md"
+    with pytest.raises(ProtectionViolation) as excinfo:
+        manager._save_draft(constitution, "몰래 바꾼 헌법")
+
+    assert excinfo.value.decision.code is DecisionCode.ACTOR_FORBIDDEN

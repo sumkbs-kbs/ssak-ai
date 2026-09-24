@@ -78,6 +78,7 @@ class DecisionCode(StrEnum):
     APPROVAL_DIGEST_MISMATCH = "APPROVAL_DIGEST_MISMATCH"
     APPROVAL_SCOPE_MISMATCH = "APPROVAL_SCOPE_MISMATCH"
     APPROVAL_EXPIRED = "APPROVAL_EXPIRED"
+    APPROVAL_REVOKED = "APPROVAL_REVOKED"
     APPROVAL_CLASS_MISMATCH = "APPROVAL_CLASS_MISMATCH"
     PATH_ESCAPE = "PATH_ESCAPE"
     SHELL_WRITE_INDETERMINATE = "SHELL_WRITE_INDETERMINATE"
@@ -173,6 +174,44 @@ class HumanApproval:
         reference = now if now is not None else datetime.now(UTC)
         return self.expires_at <= reference
 
+    @property
+    def revocation_key(self) -> tuple[str, str, int]:
+        """취소 대상을 특정하는 key — 발급자·결박된 digest·개정."""
+
+        return (self.approved_by, self.action_digest, self.revision)
+
+
+def issue_human_approval(
+    *,
+    issuer: str,
+    protected_class: ProtectedClass,
+    action_digest: str,
+    resource_scope: str,
+    revision: int = 1,
+    expires_at: datetime | None = None,
+) -> HumanApproval:
+    """사람 승인의 **발급** 경로. 검증(guard)만 있고 발급이 없으면 승인은 시험 fixture에서만 존재한다.
+
+    발급 단계에서 계약을 강제한다: 발급자는 사람 식별자여야 하고(Body/Brain이 대신 발급할 수 없다),
+    digest 결박 없는 승인은 만들어질 수 없다(빈 digest 승인은 모든 쓰기에 재사용되는 면허가 된다).
+    발급 주체의 진위(그 사람이 실제로 입력했는가)는 사용자 표면(P11)의 몫이다 — 여기는 그 표면이
+    지켜야 할 계약을 정의한다.
+    """
+
+    if not issuer.startswith("human:"):
+        raise ValueError(f"approval issuer must be a human actor id (human:...), got {issuer!r}")
+    if not action_digest:
+        raise ValueError("approval must bind the action digest of the exact change being approved")
+    return HumanApproval(
+        protected_class=protected_class,
+        action_digest=action_digest,
+        approved_by=issuer,
+        resource_scope=resource_scope,
+        issued_at=datetime.now(UTC),
+        revision=revision,
+        expires_at=expires_at,
+    )
+
 
 @dataclass(frozen=True, slots=True)
 class ProtectedWriteRequest:
@@ -248,6 +287,12 @@ class ProtectedWriteGuard:
             else default_protected_roots(self.project_root, store_roots=store_roots)
         )
         self._clock = clock
+        self._revoked: set[tuple[str, str, int]] = set()
+
+    def revoke(self, approval: HumanApproval) -> None:
+        """승인을 취소한다. 취소된 승인은 즉시 아무 쓰기도 열지 않는다(만료 전이라도)."""
+
+        self._revoked.add(approval.revocation_key)
 
     # ── 분류 ────────────────────────────────────────────
     def _now(self) -> datetime:
@@ -372,6 +417,15 @@ class ProtectedWriteGuard:
                     allowed=False,
                     code=DecisionCode.APPROVAL_EXPIRED,
                     detail=f"approval expired at {approval.expires_at}",
+                    matched_class=root.protected_class,
+                    matched_path=root.absolute_path,
+                    matched_root=root.absolute_path,
+                )
+            if approval.revocation_key in self._revoked:
+                return ProtectionDecision(
+                    allowed=False,
+                    code=DecisionCode.APPROVAL_REVOKED,
+                    detail=f"approval by {approval.approved_by} (revision {approval.revision}) was revoked",
                     matched_class=root.protected_class,
                     matched_path=root.absolute_path,
                     matched_root=root.absolute_path,
@@ -529,6 +583,26 @@ def extract_shell_write_targets(command: str, project_root: str) -> tuple[str, .
     return tuple(dict.fromkeys(targets))
 
 
+def migration_guard(target_root: str | Path) -> ProtectedWriteGuard:
+    """legacy migration 대상 root용 guard. migration 실제 경로(LegacyMigrationRunner)가 쓴다.
+
+    migration의 **선언된 임무**는 사람이 dry-run report로 검토하는 새 canonical root에 legacy
+    identity를 최초로 구축하는 일이다 — 그래서 PROJECT_PREMISE의 최초 CREATE는 이 guard가 연다.
+    그 외의 protected class(헌법 rule·authority profile·공개 이력 manifest·계보 mapping)는
+    migration 경로로 몰래 들어올 수 없다(ActorKind.MIGRATION은 승인이 있어도 금지다).
+    이미 세워진 운영 store의 premise 변경은 이 guard가 아니라 그 store의 보호가 담당한다.
+    """
+
+    root = Path(target_root)
+    store_dir = root / "canonical"
+    roots = [
+        protected
+        for protected in default_protected_roots(root, store_roots=(store_dir,))
+        if not same_enum(protected.protected_class, ProtectedClass.PROJECT_PREMISE)
+    ]
+    return ProtectedWriteGuard(root, protected_roots=tuple(roots))
+
+
 __all__ = [
     "ALLOWED_POLICY_TARGETS",
     "APPROVAL_REQUIRED_ACTORS",
@@ -546,4 +620,6 @@ __all__ = [
     "WriteOperation",
     "default_protected_roots",
     "extract_shell_write_targets",
+    "issue_human_approval",
+    "migration_guard",
 ]

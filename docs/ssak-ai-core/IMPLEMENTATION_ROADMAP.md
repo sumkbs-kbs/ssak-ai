@@ -134,6 +134,7 @@ P04는 P03~P07과 소유 파일이 겹치지 않을 때 병렬 가능하다. 공
 - 복구: flag off; 기존 보호를 낮추지 않는다. 경계 누락이면 승격 중단.
 - 인계 산출물: 변경 파일 목록, API/schema diff, 검증 evidence, 미해결 제약, 다음 카드 진입 가능 여부.
 - v1.1 추가 인수: T01b는 guard 함수 시험과 실제 shell/plugin/migration/evolution 진입 경로 시험을 분리한다. 호출부 hook 누락이 있으면 전체 보호 PASS가 아니다. 인간 승인 발급 주체의 진위·scope·digest·만료·취소 검증을 P05/P07/P11과 연결한다.
+- 2026-09-24 구현 보고(P03 v1.1 진입 경로): module + 실제 진입 경로 PASS — test_protection 19→23, source head 7ea468e9(dirty 5파일). 증거: evidence/T01b_protection.md §2026-09-24. 이전 limitations가 스스로 남긴 두 빈자리를 닫았다. ① **migration hook** — `LegacyMigrationRunner`의 대상 store(run·rollback 모두)가 `migration_guard`를 단다: migration의 선언된 임무(사람이 검토하는 dry-run으로 새 root에 legacy identity 최초 구축)이므로 PROJECT_PREMISE 최초 CREATE는 허용하고 constitution·authority·이력·계보 mapping은 닫는다(MIGRATION actor는 승인이 있어도 금지). 실제 legacy DB dry-run 무회귀 + 같은 결선으로 constitution record 밀입 시도 거부를 관찰. ② **evolution hook** — `EvolutionManager`가 기본으로 vault root guard를 달고(기존 호출처도 별도 전달 없이 보호) draft 저장이 guard `assert_allowed`(EVOLUTION channel)를 지난다 — skills draft 허용·헌법 경로 `ACTOR_FORBIDDEN`. 이 결선이 `tests/test_evolution.py`의 우연 통과(MagicMock `exists()` 참 + `open()` TypeError로 None)를 드러나게 해 시험을 실경로로 고쳤다. ③ **승인 발급·취소** — `issue_human_approval`(사람 발급자만·digest 결박 없는 발급 거부)와 `guard.revoke`(취소 즉시 반영, `APPROVAL_REVOKED`). 검증: protection·migration·evolution 계열 43 passed · ruff · mypy clean. **미완/이월:** 발급 주체의 진위·사용자 표면 실제 우회 경로 관찰은 P11(행 미체크 유지).
 
 
 ### P04 — Context reconstruction·Brain adapter

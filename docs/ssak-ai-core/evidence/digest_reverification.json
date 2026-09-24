@@ -31,16 +31,23 @@
     {
       "doc": "T01b_protection.md",
       "path": "src/antigravity_k/engine/cognitive/protected_targets.py",
-      "verified_digest": "a6657978ce0dbd0af81832dace7ac62605c5d82964f68bd07e06e12fde7453d0",
-      "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_protection.py 19 passed + 우회 4경로(realpath/symlink/shell/policy) 문장을 현재 protected_targets.py에서 재확인. 다만 문서가 '기존 red'로 적은 sandbox coverage 시험은 이후 등록(FIXED_ARGV)으로 green이 됐다 — 그 문장은 낡았다."
+      "verified_digest": "d9b1155ff97618949e07e6dd56fe28c7b2944523b1fa6cccf8721eb9d1cb5fa7",
+      "verified_on": "2026-09-24",
+      "method": "T01b 진입 경로 회차(최종): enum identity 감사가 migration_guard 첫 구현의 raw is not 비교를 잡아 same_enum으로 고쳤다. protected_targets.py·test_protection.py를 최종 상태에서 재실행해 23 passed·감사 0건·ruff·mypy clean을 확인했다."
+    },
+    {
+      "doc": "T01b_protection.md",
+      "path": "tests/cognitive/test_protection.py",
+      "verified_digest": "0462483bf06c85cdf77269d42172ca4126376e9b2f88457e3a6c9f4ebe95cce3",
+      "verified_on": "2026-09-24",
+      "method": "T01b 진입 경로 회차(최종): enum identity 감사가 migration_guard 첫 구현의 raw is not 비교를 잡아 same_enum으로 고쳤다. protected_targets.py·test_protection.py를 최종 상태에서 재실행해 23 passed·감사 0건·ruff·mypy clean을 확인했다."
     },
     {
       "doc": "T01b_protection.md",
       "path": "tests/test_tool_sandbox_coverage.py",
       "verified_digest": "6ec637ab70ed86de3a6586af565a0098f295c0efdea7a7fcdefda9d12165908a",
-      "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_protection.py 19 passed + 우회 4경로(realpath/symlink/shell/policy) 문장을 현재 protected_targets.py에서 재확인. 다만 문서가 '기존 red'로 적은 sandbox coverage 시험은 이후 등록(FIXED_ARGV)으로 green이 됐다 — 그 문장은 낡았다."
+      "verified_on": "2026-09-24",
+      "method": "T01b 진입 경로 회차(최종): enum identity 감사가 migration_guard 첫 구현의 raw is not 비교를 잡아 same_enum으로 고쳤다. protected_targets.py·test_protection.py를 최종 상태에서 재실행해 23 passed·감사 0건·ruff·mypy clean을 확인했다."
     },
     {
       "doc": "T02_canonical_store.md",
@@ -169,6 +176,13 @@
       "method": "measure_cognitive_surface.py 를 마지막 수정 뒤 다시 돌려 표면 표(legacy 7/9 · core 2/9)와 artifact 의 floors(entrypoint 9≥1 · 실재 9≥1, 각 근거 문장 포함)를 확인했다"
     },
     {
+      "doc": "T12_migration.md",
+      "path": "src/antigravity_k/engine/cognitive/migration.py",
+      "verified_digest": "cdb49eef5347bf209a43fe124386661f203d2191cff8485fd27b28f108e6ff65",
+      "verified_on": "2026-09-24",
+      "method": "T01b 진입 경로 회차가 migration.py 대상 store를 migration_guard로 결선했다. migration 시험 14건을 현재 트리에서 재실행해 전부 통과(dry-run·rollback rehearsal·idempotent replay 그대로)하고 constitution 밀입 거부 신규 관찰을 확인했다."
+    },
+    {
       "doc": "T13_growth.md",
       "path": "scripts/benchmark_cognitive_growth.py",
       "verified_digest": "c3d0a151d9133abd69e618b890416dac01e674f0966d62e74d9b23e199c9bd7b",
@@ -201,6 +215,6 @@
     "python",
     "scripts/digest_drift.py",
     "--record",
-    "T08_T09_episode.md"
+    "T01b_protection.md"
   ]
 }

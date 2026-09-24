@@ -30,6 +30,7 @@ from antigravity_k.engine.cognitive.legacy_adapter import (
     LegacyAdapterError,
     LegacyAgencyAdapter,
 )
+from antigravity_k.engine.cognitive.protected_targets import migration_guard
 from antigravity_k.engine.cognitive.store import CanonicalStore
 
 DRY_RUN: Final[str] = "dry-run"
@@ -332,7 +333,7 @@ class LegacyMigrationRunner:
         errors: list[str] = []
         imported = {"events": 0, "objectives": 0, "tasks": 0}
         self.target_root.mkdir(parents=True, exist_ok=True)
-        store = CanonicalStore(self.target_root / "canonical", git_enabled=False)
+        store = self._target_store()
         adapter = LegacyAgencyAdapter(store, mapping_path=self.mapping_path)
 
         for row in self.source.events():
@@ -388,6 +389,17 @@ class LegacyMigrationRunner:
             warnings=tuple(_warnings(before, mapping_carried_over=mapping_carried_over)),
         )
 
+    def _target_store(self, *, scratch: Path | None = None) -> CanonicalStore:
+        """migration 대상 store는 항상 보호 guard를 달고 만든다(migration 실제 경로 hook).
+
+        guard가 지키는 범위와 이유는 ``migration_guard`` docstring에 있다 — premise 최초 구축은
+        migration의 선언된 임무로 열고, constitution·authority·이력·계보 mapping은 닫는다.
+        """
+
+        root = scratch if scratch is not None else self.target_root
+        store_dir = root / "canonical"
+        return CanonicalStore(store_dir, git_enabled=False, write_guard=migration_guard(root))
+
     def _replay(self, store: CanonicalStore, adapter: LegacyAgencyAdapter, baseline: int) -> int:
         """같은 store·같은 mapping으로 다시 import해 record 수가 늘지 않는지 본다."""
 
@@ -425,7 +437,7 @@ class LegacyMigrationRunner:
 
         scratch = self.target_root / "rollback-rehearsal"
         scratch.mkdir(parents=True, exist_ok=True)
-        store = CanonicalStore(scratch / "canonical", git_enabled=False)
+        store = self._target_store(scratch=scratch)
         adapter = LegacyAgencyAdapter(store, mapping_path=scratch / "legacy" / "agency_map.json")
         for row in self.source.events():
             try:

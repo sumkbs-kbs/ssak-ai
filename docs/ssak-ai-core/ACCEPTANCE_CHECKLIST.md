@@ -24,7 +24,7 @@ v1.1의 전체 인수 체크는 모두 미체크로 시작한다. 이는 기존 
 |---|---|---|
 | T00 | [기준선](evidence/T00_baseline.md): 일부 경계·회귀 PASS | 2026-09-24 회차가 T00a 재확인·T00b-A/B를 닫음(§3 행) — 사용자 표면 실호출·별도 data root는 P11 |
 | T01a | [모델](evidence/T01a_typed_model.md): 30종 entity, module PASS | v1.1 선별 기록·계보 정합화는 2026-09-24 회차가 닫음(§3 행) |
-| T01b | [보호](evidence/T01b_protection.md): module/tool gate/store PASS | migration/evolution hook·승인 발급 미완료로 보고됨 |
+| T01b | [보호](evidence/T01b_protection.md): module/tool gate/store PASS | migration/evolution 실제 hook·승인 발급·취소는 2026-09-24 회차가 닫음 — 발급 진위·사용자 표면 관찰은 P11 |
 | T02 | [저장](evidence/T02_canonical_store.md): module PASS | 실제 Vault writer 동시성·사용자 표면 통합 필요 |
 | T03/T04 | [Context·Brain](evidence/T03_T04_context_brain.md): module PASS | 실제 provider/router·Context window(P11) — 신규 철학 시나리오(T03-A~C·T04-A~C)는 2026-09-24 회차가 닫음(§3 행 참조) |
 | T05 | [Governance](evidence/T05_governance.md): module + tool_executor surface PASS (31 시험) | CLI/API/stream/background 연결, 사람 승인 발급 주체 검증은 P11 이월 |
@@ -48,6 +48,7 @@ v1.1의 전체 인수 체크는 모두 미체크로 시작한다. 이는 기존 
 - [x] **T01a 모델·계보** — P01. roundtrip, enum/time/ref/type/project 오류 거부, 관찰·해석 분리, 선별 기록·당시 Context 계보.
   증거: [T01a_typed_model.md](evidence/T01a_typed_model.md) — module PASS(58 시험, 2026-09-22) + §2026-09-24 v1.1 정합화(**61 시험**): 선별 기록이 canonical Event(`EventPayload.selection` — disposition·reasons·evidence·policy_version)로 왕복하고 producer는 envelope이 보존하며, 모르는 disposition/reason·빈 사유는 거부되고(타입 경계), `ExperienceCore`의 당시 Context 계보가 `REL_CONTEXT` 타입 reference로 남는다. 별도 entity 추가 없음(계약 최소 확장)·schema 재생성·기존 30종 roundtrip 무영향.
 - [ ] **T01b 헌법·보호 권한** — P03/P05/P07/P11. 신뢰 가능한 승인 발급·검증, 실제 우회 경로 차단, 취소·scope·digest·만료 검증. hook 미연결 상태는 전체 PASS 불가.
+  - 진행 보고(2026-09-24): [T01b_protection.md](evidence/T01b_protection.md) §2026-09-24 — module + 실제 진입 경로 PASS(test_protection 19→23). **migration/evolution hook 연결 완료**: migration 대상 store가 `migration_guard`를 붙고(premise 최초 구축만 허용·constitution/authority/이력/계보는 MIGRATION actor 금지), evolution draft가 기본 guard를 통과한다(헌법 경로 `ACTOR_FORBIDDEN`). **승인 발급·취소**: `issue_human_approval`(사람 발급자·digest 결박 필수)·`guard.revoke`(즉시 `APPROVAL_REVOKED`). scope·digest·만료 검증은 기존 시험 유지. **미완:** 발급 주체의 진위·사용자 표면 실제 우회 경로 관찰은 P11 — 이 행은 그 확인 전까지 체크하지 않는다.
 - [ ] **T02 불변 저장·복구** — P02/P11/P12. 동시 write·중복 ID·write/commit/publish crash, 미완료 노출 0, 실제 Vault writer 통합, 원본 보존.
 - [ ] **T03 Context** — P04/P08/P11. L0·필수 항목·권한·handle·최소충분·선택적 확장·현재 applicability. T03-A~D 충족.
   - 진행 보고(2026-09-24): [T03_T04_context_brain.md](evidence/T03_T04_context_brain.md) §2026-09-24 — v1.1 시나리오 A~C를 module 시험으로 닫았다(test_context 13→16). **A**: 예산이 남아도 applicability `goal_match=MISMATCH`를 선언한 이력은 `RELEVANCE:` 사유 제외 + detail handle로만 남는다(무관성의 기계적 신호는 applicability 계약뿐 — 참조 도달성은 growth fixture의 "goal은 evidence를 참조하지 않는다" 전제와 충돌하고 의미적 무관성은 Brain의 몫이다). **B**: 제외 이력의 handle 확장은 그 기록 원문만 돌려준다(전체 이력 재주입 없음). **C**: 높은 과거 confidence + `context_match=MISMATCH` 원칙은 L2 advisory로만 오고 L0/L1에 못 들어가며 confidence는 레코드 payload 안에만 있다(`ContextItem`에 confidence 필드 없음). **D**의 module 반쪽(L0 초과 명시 실패·예산 초과 handle·불완전 상태)은 기존 시험이 지킨다. **미완:** D의 실제 provider context window 대비 확인은 P11(NOT_RUN) — 이 행은 그 확인 전까지 체크하지 않는다.
