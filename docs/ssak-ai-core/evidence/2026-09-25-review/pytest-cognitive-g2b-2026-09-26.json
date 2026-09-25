@@ -1,0 +1,54 @@
+{
+  "date": "2026-09-26",
+  "head": "6be0263d121c1e2a7ade92d3127af226c5e0581f",
+  "branch": "codex/m1-task-events",
+  "command": ".venv/bin/python -m pytest tests/cognitive -q",
+  "exit_code": 1,
+  "duration_seconds": 754.92,
+  "collected": 817,
+  "passed": 804,
+  "failed": 12,
+  "skipped": 1,
+  "warnings": 1,
+  "source_test_python_files": 573,
+  "source_test_aggregate_sha256_before": "205d6323bc62d5ab5e3f0b56ebd8c7d94763378df3dc8240e0fac7bc4f8e15a0",
+  "source_test_aggregate_sha256_after": "205d6323bc62d5ab5e3f0b56ebd8c7d94763378df3dc8240e0fac7bc4f8e15a0",
+  "failure_groups": {
+    "architecture_review_and_measurement_markers": 4,
+    "digest_drift_artifact_and_reverification": 3,
+    "evidence_gate_dependent_on_review_and_digest": 5
+  },
+  "failing_tests": [
+    "tests/cognitive/test_architecture_review.py::test_repository_state_passes_every_check",
+    "tests/cognitive/test_architecture_review.py::test_cli_writes_artifact_and_reports_verdict",
+    "tests/cognitive/test_architecture_review.py::test_repository_digest_report_is_current_and_counted",
+    "tests/cognitive/test_architecture_review.py::test_collected_test_count_matches_document_marker",
+    "tests/cognitive/test_digest_drift.py::test_gate_passes_with_a_current_artifact_and_no_broken_pins",
+    "tests/cognitive/test_digest_drift.py::test_emit_json_and_gate_reach_the_same_verdict",
+    "tests/cognitive/test_digest_drift.py::test_repository_artifact_is_current",
+    "tests/cognitive/test_evidence_gate.py::test_fast_tier_runs_every_layer_it_claims",
+    "tests/cognitive/test_evidence_gate.py::test_layer_without_readable_numbers_is_a_failure",
+    "tests/cognitive/test_evidence_gate.py::test_cli_writes_the_summary_beside_the_json",
+    "tests/cognitive/test_evidence_gate.py::test_recording_a_baseline_round_trips",
+    "tests/cognitive/test_evidence_gate.py::test_a_normal_run_does_not_touch_the_baseline"
+  ],
+  "observations": [
+    "Architecture review reports measured cognitive_tests marker 810 versus 817 collected.",
+    "Architecture review reports stale digest artifact and four stale reverification entries; the cognitive_tests document marker is also stale.",
+    "Evidence-gate failures are downstream of the architecture-review/digest-drift stage failures.",
+    "Source/test files were already dirty before execution; source ownership and staged/unstaged provenance are not established by this test run."
+  ],
+  "targeted_regression": {
+    "command": ".venv/bin/python -m pytest tests/cognitive/test_migration.py tests/cognitive/test_legacy_adapter.py tests/cognitive/test_store.py -q",
+    "exit_code": 0,
+    "passed": 48,
+    "failed": 0,
+    "duration_seconds": 2.51,
+    "aggregate_sha256_after": "205d6323bc62d5ab5e3f0b56ebd8c7d94763378df3dc8240e0fac7bc4f8e15a0"
+  },
+  "limits": [
+    "This is a full tests/cognitive run, not the repository-wide tests/ suite.",
+    "The legacy architecture/digest artifacts were not regenerated as part of the test run.",
+    "No source or test edits were made in response to failures; refresh evidence only after separately reviewing the dirty-tree ownership and approval requirements."
+  ]
+}
