@@ -5,5 +5,6 @@
     "src/antigravity_k/engine/cognitive/action_types.py",
     "src/antigravity_k/engine/cognitive/actions.py",
     "tests/cognitive/test_action_safety.py"
-  ]
+  ],
+  "head": "444058685b70c299316b67e1286a63130d113039"
 }
