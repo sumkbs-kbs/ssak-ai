@@ -185,3 +185,11 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - architecture_review: **111 passed** (already green after digest re-verify)
 - Added `evidence/current-remediation/INDEPENDENT_REVIEW_CHECKLIST.md` (V not claimed)
 - Ops/cutover / CR-14 still **NO-GO**
+
+## 2026-09-26 21:15 KST — failure-model residual re-scan (priority cards)
+
+- Tip
+- Wrote
+- Cards: R01, R02, R03, R04, R08, R10, R15
+- **Not** independent V; ops/CR-14 still **NO-GO**
+- Top residuals: R15 default/composition, R01 non-macOS + seatbelt order, R08 live binding TOCTOU, R03 cross-process stage race
