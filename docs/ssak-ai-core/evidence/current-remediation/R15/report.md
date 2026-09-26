@@ -32,5 +32,6 @@ Closed implementer residuals without flipping production default:
 ## Limits
 
 - Production default remains OFF / not ops-enabled. Self-review ≠ release GO.
+- Implementer/secondary attack dry-run (2026-09-27): [V_ATTACK_DRYRUN_2026-09-27.md](./V_ATTACK_DRYRUN_2026-09-27.md) — **NOT Independent R15-V**.
 - Independent R15-V still open.
 - Production ACTIVE service must wire store-backed freshness_resolver (not fixture `_matching_freshness`).

@@ -1,0 +1,50 @@
+ATTACK1 empty config: effective_mode=<SurfaceMode.OFF: 'off'> (expect OFF)
+ATTACK1 enabled=false mode=active: effective_mode=<SurfaceMode.OFF: 'off'> (must not be ACTIVE)
+ATTACK1 enabled+shadow: effective_mode=<SurfaceMode.OFF: 'off'>
+ATTACK2: _attach_cognitive_surface returns early unless effective_mode==SHADOW; mode=active never installs adapter.
+ATTACK3/4: covered by test_r15_composition 503 + extra forbid (pytest).
+ATTACK5: measure_surface_reach labels (9): ['API agent SSE', 'API chat', 'API server', 'CLI', 'agent runtime', 'background/durable task', 'legacy hook(tool_loop)', 'legacy loop 소유', '대화 경로(EngineContext)']
+ATTACK5: claimed backtick tokens in matrix: [] ... count=0
+ATTACK5: test required labels missing=NONE
+ATTACK6: observe_interaction source excerpt:
+      def observe_interaction(
+          self,
+          *,
+          episode_id: str,
+          context_ref: str,
+          goal_ref: str,
+          expected_outcome: str = "",
+      ) -> ShadowObservation | None:
+          """legacy 대화/과제가 **끝난 뒤** shadow episode를 돈다(선택·관찰만).
+
+          surface가 없거나 설정이 OFF면 아무 일도 없고, shadow 실패는 legacy 경로를 절대
+          깨지 않는다 — 관찰이 본체를 해치면 관찰이 아니다. ACTIVE는 사람 승인 경로
+          (run_active)로만 실행하므로 여기서 조용히 돌지 않는다.
+          """
+
+          from antigravity_k.engine.cognitive_surface import SurfaceEpisodeRequest, SurfaceMode
+
+          surface = self.cognitive_surface
+          if surface is None:
+              return None
+          settings = getattr(surface.settings, "effective_mode", SurfaceMode.OFF)
+          if str(settings) != str(SurfaceMode.SHADOW):
+              return None
+          request = SurfaceEpisodeRequest(
+              episode_id=episode_id,
+              context_ref=context_ref,
+              goal_ref=goal_ref,
+              expected_outcome=expected_outcome,
+          )
+          try:
+              run = surface.run_shadow(request)
+          except Exception:  # noqa: BLE001 — shadow는 legacy를 깨지 않는다(실패는 조용히 녹임)
+              logger.warning("cognitive shadow observation failed for %s", episode_id, exc_info=True)
+              return None
+          return ShadowObservation(
+              episode_id=run.episode_id,
+              termination=run.termination,
+              dispatched_actions=run.dispatched_actions,
+              refused_actions=run.refused_actions,
+          )
+ATTACK6: WARNING run_active mentioned in observe_interaction

@@ -1,6 +1,6 @@
 # Current remediation status (R-series)
 
-기준: 2026-09-27 04:51 KST · tip advances with R08 V attack dry-run docs (parent `b745adf6`); residual pins unchanged · branch `codex/m1-task-events` (ahead; no push).
+기준: 2026-09-27 04:53 KST · tip advances with R08+R15 V attack dry-run docs (parent `42e109c4`); residual pins unchanged · branch `codex/m1-task-events` (ahead; no push).
 
 이 표가 **현재 작업의 유일한 진입점**이다. 아래 HISTORICAL 행의 과거 PASS는 보존하되 CURRENT_PASS로 자동 승계하지 않는다.
 Source digest가 바뀌면 해당 행은 재검증 전까지 HISTORICAL이다 ([R00 evidence](evidence/current-remediation/R00/)).
@@ -293,3 +293,11 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - Attacks RUN: 1 (ACTIVE without resolver), 2 (box-head drift), 3 (authority-alone refuse), 4 (args digest overlay), 6 (boot SHADOW-only / no `_matching_freshness` in src). **NOT_RUN:** 5 multi-process daemon race.
 - OPEN: Independent R08-V, multi-process reservation, production ACTIVE store-backed resolver wiring.
 - ATTACK_NOTES Verdict slots left blank/OPEN. Next: R15 dry-run or independent reviewer.
+
+## 2026-09-27 04:53 KST — R15 Independent V attack dry-run (NOT R15-V)
+
+- Parent tip: `42e109c4`. Docs-only implementer/secondary dry-run; **no Independent R15-V PASS**, ops/CR-14 still **NO-GO**.
+- Evidence: `docs/ssak-ai-core/evidence/current-remediation/R15/V_ATTACK_DRYRUN_2026-09-27.md`
+- Baseline: active+surface+feature_off+r15_composition **48 passed**. Composition/feature_off nodes **12 passed**.
+- Attacks RUN: 1–6 (default OFF, boot skip ACTIVE, 503, body forbid, ENTRY_MATRIX labels, observe never run_active). **NOT_RUN:** none for listed scenarios (live multi-host ACTIVE ownership remains OPEN out-of-scope).
+- ATTACK_NOTES Verdict slots left blank/OPEN.

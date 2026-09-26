@@ -174,6 +174,7 @@ Composition-root reading against **live boot** (not only `test_r15_composition`)
 
 ### 7. Must remain open / out of scope
 
+- Implementer/secondary dry-run evidence (not V): [R15/V_ATTACK_DRYRUN_2026-09-27.md](./R15/V_ATTACK_DRYRUN_2026-09-27.md)
 - Enabling production ACTIVE / ops cutover
 - Confusing isolated HTTP fixture Brain with production boot
 - Multi-host ACTIVE ownership
