@@ -1,7 +1,7 @@
 # Failure-model residual review — priority cards
 
-Date: 2026-09-26 21:20 KST
-Tip at write: `c94fb491` (`c94fb491752037432eb8823c044fac73cfc84584`)
+Date: 2026-09-27 03:58 KST
+Tip at write: `ce9e5a27` (`ce9e5a2779ced64c3eede946d1c4346886284119`)
 Scope: R01, R02, R03, R04, R08, R10, R15
 Reviewer role: **implementer re-scan** (마뱀). This is **not** independent R*-V and does **not** change ops/CR-14 NO-GO.
 
@@ -19,7 +19,7 @@ Method: re-read pack tasks plus repo evidence reports, spot-check owned symbols 
 
 | Failure mode | Covered by suite? | Residual risk |
 |---|---|---|
-| Interpreter write_bytes / os.replace / parent rename / symlink write under seatbelt | Yes (A1) | Medium on non-macOS: Docker readonly mount not added; Linux path must fail-closed or deny capability |
+| Interpreter write_bytes / os.replace / parent rename / symlink write under seatbelt | Yes (A1) | **Low in code evidence:** Docker protected paths now use `:ro` mounts and non-Darwin without Docker fails closed; real-daemon/V boundary confirmation remains open |
 | Quiet unsandboxed fallback that looks safe | A4 require_sandbox+disabled refused | Medium: any new entry that skips SandboxRunner still needs gate+deny |
 | Wide /var/folders allow then protected deny order inverted | deny section appended after root allow in restrict mode | High for V: confirm later allow cannot re-open protected paths |
 | Approval reused on different target/args | A3 digest | Low if all write paths go through gate |
@@ -48,7 +48,7 @@ Code note: `_protected_write_deny_section` is documented to follow allow(root); 
 | stage(B,T) overwrites stage(A,T) | A1 | Low in-process |
 | Identical restage mutates bytes | A2 | Low |
 | Two writers different payload same T | A3 dual SoftFileLock + A3 cross-process spawn | **Low on one host**: SoftFileLock multiprocess proven 2026-09-27 (two OS processes / two SoftFileLock objects). Still not multi-host / cross-FS. SoftFileLock retained (Vault/legacy protocol). |
-| Crash then hijack stage | A4 | Medium: recovery must refuse foreign content_identity |
+| Crash then hijack stage | A4 | **Low on one host:** recovery refusal for foreign `content_identity` is covered; Independent V should attack crash-manifest compatibility and multi-host behavior |
 
 **Independent V focus:** multi-host / NFS lock semantics (out of SoftFileLock single-host proof); crash manifest compatibility with R04/R21.
 
@@ -64,22 +64,18 @@ Code note: `_protected_write_deny_section` is documented to follow allow(root); 
 
 **Independent V focus:** snapshot fields bind logical content + file bundle evidence; conflict implies passed=False; multi-host/NFS shared DB still unproven; R21 apply Human.
 
-### R08 — pre-dispatch current revision  (**highest code residual in this scan**)
+### R08 — pre-dispatch current revision (code residual closed 2026-09-26; Independent V open)
 
-| Failure mode | Covered? | Residual |
+| Failure mode | Covered? | Residual risk |
 |---|---|---|
-| Authority fresh but decision/state/policy stale still dispatches | Partially | **High** |
-| Revoke / args change between intent persist and effect | Authority re-resolve + args_digest vs readiness | Medium for args/authority; High for decision/state/policy |
-| Concurrent dispatch vs reopen ordering | Suite claimed A3 | High: need explicit expected_revision/reservation story |
-| Double execute on same binding | A4 | Medium |
+| Authority fresh but decision/state/policy stale still dispatches | Yes, live-resolver regression suite | **Closed in implementer code/tests 2026-09-26; Independent V must verify the production store-backed resolver** |
+| Revoke / args change between intent persist and effect | Yes, resolver + args binding tests | Low code residual; Independent V must exercise the timing window |
+| Concurrent dispatch vs reopen ordering | A3 race tests | **Medium for Independent V:** multi-process reservation/ordering remains open |
+| Double execute on same binding | A4 | Low in code evidence; Independent V may still challenge duplicate-binding behavior |
 
-**Code finding (2026-09-26):** `action_admission.preconditions` calls
+The prior 2026-09-26 self-compare finding was addressed by `freshness_resolver` + `_authoritative_freshness`: when wired, decision/state/policy/authority revisions come from the live resolver rather than intent fields. The implementer code residual is therefore closed at the 2026-09-26 fix tip; this does **not** establish R08-V PASS.
 
-`ReadinessGate().assert_fresh(readiness, intent.freshness())`
-
-`intent.freshness()` rebuilds a FreshnessBinding from the **same intent fields** that typically populated `readiness.freshness`. Authority is re-read via `authority_resolver` when wired, but this call site does **not** load an authoritative live decision/state/policy binding from the store. That matches the card's forbidden shortcut (intent freshness compared to itself) for those three axes unless another layer refreshes intent fields before admit.
-
-**Independent V focus:** prove a live store/head read for decision_revision, state_revision, and policy_version immediately before effect; race tests must mutate the store, not only the intent object.
+**Independent V focus:** prove a live store/head read for decision_revision, state_revision, and policy_version immediately before effect; race tests must mutate the store, not only the intent object; inspect the multi-process reservation story. Do not reopen implementer R08 code solely from the superseded self-compare note.
 
 ### R10 — UNKNOWN observe / reconcile / restart
 
@@ -90,7 +86,7 @@ Code note: `_protected_write_deny_section` is documented to follow allow(root); 
 | Stale revision / foreign project accepted | A3 | Low |
 | Timeout clears claim and auto-retries | A4 | Low if pending_reason holds |
 | UNKNOWN promoted to success | Forbidden in actions module docstring | Critical if any helper maps unknown to ok |
-| Late older observation downgrades projection | CAS refuse + late_observation_history append | Low single-process; Medium multi-process live |
+| Late older observation downgrades projection | CAS refuse + 2026-09-27 history append close | **Low/closed single-process; Medium multi-process live remains** |
 
 **Independent V focus:** never delete claim on timeout; observe never redispatches; external non-idempotent unknown never auto-retry.
 
@@ -128,10 +124,9 @@ Code note: `_protected_write_deny_section` is documented to follow allow(root); 
 - Repo reports under docs/ssak-ai-core/evidence/current-remediation/R*/
 - Spot-check: action_admission.py assert_fresh call; sandbox.py protected deny section; store.py content_identity; actions.py UNKNOWN / submit_observation; dependencies.py ACTIVE not default-wired
 
-## Update 2026-09-26 21:25 KST — R08 code fix landed (self-review)
+## Update 2026-09-26 21:25 KST — R08 code residual closed (self-review)
 
-`freshness_resolver` + `_authoritative_freshness` address the admit self-compare finding when a resolver is wired; ACTIVE requires the resolver.
-Residual for independent V: prove the **production** resolver reads store heads (not fixture `_matching_freshness`), and race/reservation story under multi-process load.
+`freshness_resolver` + `_authoritative_freshness` address the admit self-compare finding when a resolver is wired; ACTIVE requires the resolver. The implementer residual is closed by code/tests. Independent R08-V remains open: prove the **production** resolver reads store heads (not fixture `_matching_freshness`) and review the multi-process race/reservation story.
 
 ## Update 2026-09-26 21:35 KST — R15 composition residual tests
 
@@ -181,3 +176,10 @@ Next implementer priority was R03 (closed 2026-09-27 SoftFileLock cross-process)
 - Suite `test_migration.py` + `test_legacy_adapter.py`: **39 passed**; r04 nodes 3× flake green.
 - Residual lowered: single-host SQLite snapshot isolation proven; multi-host/NFS still open; R21 `--apply` still Human.
 - Ops/CR-14 still **NO-GO**. Next implementer priority: check status — remaining independent V / ops cards (R08 already code-fixed; do not reopen unless status says). Prefer next FM residual honesty card or independent V prep; not ops GO.
+
+
+## Queue state — 2026-09-27 03:58 KST
+
+**Implementer queue empty for priority cards:** R01, R02, R03, R04, R08, R10, and R15 have their documented implementer residuals closed or lowered to the evidence above. This is not an R*-V or operations approval.
+
+Next is **Independent V**, including the explicitly open multi-host/multi-process boundaries, followed by **Human ops** review for cutover/CR-14. No production ACTIVE, migration `--apply`, ops GO, multi-host PASS, or CR-14 GO is claimed.

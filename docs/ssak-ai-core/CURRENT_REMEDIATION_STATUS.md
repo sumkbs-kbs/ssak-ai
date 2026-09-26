@@ -1,6 +1,6 @@
 # Current remediation status (R-series)
 
-기준: 2026-09-26 19:55 KST · HEAD `2862584ea8f79641fefd9a78de9c145851ea515b` · dirty 205 · 감사 fingerprint `e8abbf75…` (2026-09-26).
+기준: 2026-09-27 03:58 KST · HEAD `ce9e5a2779ced64c3eede946d1c4346886284119` · branch `codex/m1-task-events` (ahead; no push).
 
 이 표가 **현재 작업의 유일한 진입점**이다. 아래 HISTORICAL 행의 과거 PASS는 보존하되 CURRENT_PASS로 자동 승계하지 않는다.
 Source digest가 바뀌면 해당 행은 재검증 전까지 HISTORICAL이다 ([R00 evidence](evidence/current-remediation/R00/)).
@@ -268,3 +268,11 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - Suite **34 passed** (action_safety + active_api)
 - Residual honesty: single-process history Low/closed; multi-process live still Medium; Independent R10-V open
 - Ops/CR-14 still **NO-GO**. Next: independent V prep — not ops GO. Do not reopen R08.
+
+
+## 2026-09-27 03:58 KST — implementer priority queue flushed
+
+- Tip: `ce9e5a2779ced64c3eede946d1c4346886284119` (docs follow-up; no push).
+- Priority residuals R01, R02, R03, R04, R08, R10, and R15 are reflected at their evidence level; R08 implementer code residual is closed, while Independent R08-V and multi-process reservation remain open.
+- R03/R04 multi-host or NFS behavior is not proven; R10 multi-process live history remains open/Medium. Independent V is not claimed.
+- **Implementer priority residual queue is empty. Next: Independent V / multi-host review / Human ops for cutover and CR-14.** Ops/CR-14 remains **NO-GO**.
