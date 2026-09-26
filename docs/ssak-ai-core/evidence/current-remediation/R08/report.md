@@ -39,7 +39,7 @@ Reviewer: implementer (마뱀). Independent R08-V not claimed.
 - `actions.py`: `freshness_resolver` field
 - `action_context.py`: protocol property
 - `cognitive_surface.py`: ACTIVE requires + wires `_active_freshness`
-- `tests/cognitive/test_action_safety.py`: `test_r08_a1`…`a3`
+- `tests/cognitive/test_action_safety.py`: `test_r08_a1`…`a3`, `test_r08_a5_cross_process_concurrent_admit_with_reopen`
 
 ## Limits
 
@@ -47,3 +47,4 @@ Reviewer: implementer (마뱀). Independent R08-V not claimed.
 - Implementer/secondary attack dry-run (2026-09-27): [V_ATTACK_DRYRUN_2026-09-27.md](./V_ATTACK_DRYRUN_2026-09-27.md) — **NOT Independent R08-V**; evidence for future independent reviewer only.
 - Unit tests use an injectable live box; production must wire a store-backed resolver that reads decision head / state / active policy (not request body).
 - Cross-process reservation locks beyond the admit double-check are not claimed here.
+- 2026-09-27 implementer residual: `test_r08_a5_cross_process_concurrent_admit_with_reopen` — single-host SoftFileLock JSON box + shared journal PARTIAL only; production ACTIVE/daemon store-head race still OPEN. Not Independent R08-V PASS.

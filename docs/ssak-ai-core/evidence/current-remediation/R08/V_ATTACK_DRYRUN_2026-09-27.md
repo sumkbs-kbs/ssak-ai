@@ -9,8 +9,8 @@
 ╚══════════════════════════════════════════════════════════════════╝
 ```
 
-Prepared: 2026-09-27 04:51 KST  
-Executor tip (docs commit parent): `b745adf60e6aaee0cd969f71460ffa01f85fb143` on `codex/m1-task-events` (**no push**)  
+Prepared: 2026-09-27 04:51 KST · Attack 5 PARTIAL update: 2026-09-27 05:33 KST  
+Executor tip advances with residual test commit on `codex/m1-task-events` (**no push**)  
 Residual-close pin (unchanged): `3ab29d11` (`fix(ssak-ai): R08 live freshness_resolver before effect`)  
 Playbook: [../INDEPENDENT_V_ATTACK_NOTES.md](../INDEPENDENT_V_ATTACK_NOTES.md) § R08  
 Verdict slots in ATTACK_NOTES: **left blank / OPEN** (this dry-run does not fill them)
@@ -52,15 +52,15 @@ Inspection transcript: `attack_inspection_2026-09-27.txt`
 | 2 | Intent freshness still matches readiness, but live store head advanced → STALE / calls 0 | **RUN** (box stand-in) | `test_r08_a1` / `test_r08_a2` mutate `_resolver_from_box` **box** heads (decision reopen on persist), not only the intent object → `STALE_READINESS`, dispatcher calls `[]`. **Caveat:** box is an injectable store stand-in, not a live multi-process CanonicalStore/daemon head. |
 | 3 | Authority fresh while decision/state/policy stale → still refuse | **RUN** | A1 + inspection: authority resolver still allows; box `decision_revision+1` → refuse `STALE_READINESS`, calls `[]`. Authority alone does not green-light. |
 | 4 | Args mutated / digest drift; overlay uses `intent.args_digest()` | **RUN** | A2 mismatched readiness+args → STALE. Inspection: evil resolver returns `action_digest="EVIL"`; `_authoritative_freshness` always overlays `action_digest=intent.args_digest()` (both resolver and fallback branches). |
-| 5 | Two concurrent admit paths; multi-process preferred | **NOT_RUN** | Reason: no Human/live multi-process daemon harness in this dry-run. Existing `test_r08_a3` is **in-process threads** only; ATTACK_NOTES explicitly say multi-process reservation remains open and in-process alone must not claim PASS. |
+| 5 | Two concurrent admit paths; multi-process preferred | **PARTIAL** (single-host spawn) | Added `test_r08_a5_cross_process_concurrent_admit_with_reopen` (`spawn` + Barrier + Queue). Two OS processes share `SqliteActionJournal` + SoftFileLock JSON **box stand-in** (not live CanonicalStore/daemon ACTIVE heads). Mid-admit reopen bumps `decision_revision`; claim winner → `STALE_READINESS` / effect 0; peer → `DUPLICATE_ACTION` or STALE; effects empty. Flake 3× green. **Caveat:** not production ACTIVE store-backed resolver / multi-host daemon. |
 | 6 | Production boot wired resolver reads durable heads (not intent / `_matching_freshness`) | **RUN** (inspection) | `_attach_cognitive_surface` is **SHADOW-only**; early-returns unless `effective_mode == SHADOW`; never installs ACTIVE and never wires `freshness_resolver`. `_matching_freshness` appears **only in tests** (`src/` hits: NONE). `run_active` wires `freshness_resolver=self._active_freshness` → injected callable after require-deps. **Production durable store/policy head resolver for ACTIVE is not installed at boot** — remains OPEN for independent V / ops composition. |
 
 ## Remaining OPEN items (for future independent reviewer)
 
 1. **Independent R08-V** itself — this file is dry-run evidence only; Verdict slot stays OPEN.
-2. **Multi-process** admit/reservation race against a real shared store/daemon (Attack 5).
+2. **Production / daemon** multi-process reservation against a **live CanonicalStore or ACTIVE-wired** store/policy head (Attack 5 remaining gap). Single-host SoftFileLock JSON box + shared journal is PARTIAL only.
 3. **Production ACTIVE** composition that supplies a **store/policy-backed** `freshness_resolver` (Attack 6 gap): boot path currently refuses silent ACTIVE; no durable-head wiring to attack live yet.
-4. Do not treat fixture `_matching_freshness` or suite green as production evidence.
+4. Do not treat fixture `_matching_freshness`, SoftFileLock JSON box stand-in, or suite green as production evidence.
 5. **Ops / CR-14 / production ACTIVE enablement** — still **NO-GO**.
 
 ## Explicit non-claims
@@ -69,6 +69,13 @@ Inspection transcript: `attack_inspection_2026-09-27.txt`
 - **No ops GO / cutover GO / CR-14 GO**
 - Suite green ≠ V PASS
 - Implementer/secondary ≠ independent reviewer
+
+
+## Implementer residual update — 2026-09-27 05:33 KST (NOT Independent R08-V)
+
+- Node: `tests/cognitive/test_action_safety.py::test_r08_a5_cross_process_concurrent_admit_with_reopen`
+- Evidence: `pytest_r08_a5_multiproc_2026-09-27.txt` (action_safety+actions **47 passed** with A5 only), `pytest_r08_a5_node_2026-09-27.txt`, `pytest_r08_a5_flake3_2026-09-27.txt` (3× green)
+- Honesty: SoftFileLock JSON box stand-in on one host; **no** production ACTIVE enablement; **no** Independent R08-V PASS; ATTACK_NOTES Verdict slot remains OPEN.
 
 ## Pointers
 

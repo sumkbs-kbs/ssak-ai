@@ -688,3 +688,151 @@ def test_r10_late_older_observation_does_not_flip_projection(tmp_path) -> None:
     assert hist.payload.observed_at == older_observed
     assert hist.payload.observed_at < settle_at
     assert f"received_at:{late_receive.isoformat()}" in hist.payload.source
+
+
+def _r08_a5_read_box(box_path: str) -> dict:
+    import json
+    from pathlib import Path
+
+    from filelock import SoftFileLock
+
+    path = Path(box_path)
+    with SoftFileLock(str(path) + ".lock", timeout=30):
+        return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _r08_a5_bump_decision(box_path: str) -> int:
+    import json
+    from pathlib import Path
+
+    from filelock import SoftFileLock
+
+    path = Path(box_path)
+    with SoftFileLock(str(path) + ".lock", timeout=30):
+        box = json.loads(path.read_text(encoding="utf-8"))
+        box["decision_revision"] = int(box["decision_revision"]) + 1
+        path.write_text(json.dumps(box), encoding="utf-8")
+        return int(box["decision_revision"])
+
+
+def _r08_a5_admit_worker(journal_path, box_path, effects_path, barrier, results, role: str) -> None:
+    """spawn worker: shared journal + SoftFileLock JSON box stand-in (not live ACTIVE daemon)."""
+
+    from pathlib import Path
+
+    from antigravity_k.engine.cognitive.action_journal import SqliteActionJournal
+    from antigravity_k.engine.cognitive.actions import ActionDispatcher, CallablePort
+    from antigravity_k.engine.cognitive.readiness import FreshnessBinding
+    from tests.cognitive.test_actions import BODY, NOW, PROJECT, make_intent
+
+    def resolve(intent, now):
+        box = _r08_a5_read_box(box_path)
+        return FreshnessBinding(
+            decision_revision=box["decision_revision"],
+            action_digest=intent.args_digest(),
+            state_revision=box["state_revision"],
+            authority_revision=box["authority_revision"],
+            policy_version=box["policy_version"],
+        )
+
+    def effect(*_args):
+        with Path(effects_path).open("a", encoding="utf-8") as stream:
+            stream.write(f"effect:{role}\n")
+
+    intent = make_intent(action_key="r08-a5-xproc", submission_id=f"submission:r08-a5:{role}")
+
+    if role == "reopen_peer":
+        # Wait until admitter is mid-persist, bump live decision head, then attempt admit.
+        barrier.wait(timeout=30)
+        _r08_a5_bump_decision(box_path)
+        dispatcher = ActionDispatcher(
+            port=CallablePort(effect),
+            journal=SqliteActionJournal(Path(journal_path)),
+            authority_resolver=lambda i, _n: i.clearance.authority,
+            freshness_resolver=resolve,
+            clock=lambda: NOW,
+        )
+        result = dispatcher.execute(intent, project_id=PROJECT, producer=BODY)
+    else:
+        # Claim winner: sync with peer reopen inside record_sink, then re-check freshness.
+        def reopen_on_persist(_records):
+            barrier.wait(timeout=30)
+            # Peer may already have bumped; bump again so second preconditions always sees drift
+            # if we somehow raced past peer without observing it.
+            _r08_a5_bump_decision(box_path)
+
+        dispatcher = ActionDispatcher(
+            port=CallablePort(effect),
+            journal=SqliteActionJournal(Path(journal_path)),
+            record_sink=reopen_on_persist,
+            authority_resolver=lambda i, _n: i.clearance.authority,
+            freshness_resolver=resolve,
+            clock=lambda: NOW,
+        )
+        result = dispatcher.execute(intent, project_id=PROJECT, producer=BODY)
+
+    results.put(
+        {
+            "role": role,
+            "refused": bool(result.refused),
+            "refusal": None if result.refusal is None else result.refusal.name,
+            "status": None if result.status is None else result.status.name,
+        }
+    )
+
+
+def test_r08_a5_cross_process_concurrent_admit_with_reopen(tmp_path):
+    """R08-A5 residual: two OS processes race admit; SoftFileLock JSON box reopen mid-admit.
+
+    Closest honest single-host proof without enabling production ACTIVE / live CanonicalStore
+    decision-head wiring. Shared SqliteActionJournal + SoftFileLock JSON box stand-in.
+    Independent R08-V / production store-backed resolver remain OPEN.
+    """
+    import json
+    import multiprocessing
+
+    intent = make_intent(action_key="r08-a5-xproc")
+    box = _live_box_from_intent(intent)
+    box_path = tmp_path / "freshness_box.json"
+    box_path.write_text(json.dumps(box), encoding="utf-8")
+    journal_path = tmp_path / "claims.sqlite"
+    effects_path = tmp_path / "effects"
+    effects_path.write_text("", encoding="utf-8")
+
+    context = multiprocessing.get_context("spawn")
+    barrier = context.Barrier(2)
+    results = context.Queue()
+    workers = [
+        context.Process(
+            target=_r08_a5_admit_worker,
+            args=(str(journal_path), str(box_path), str(effects_path), barrier, results, role),
+        )
+        for role in ("admit_persist", "reopen_peer")
+    ]
+    for worker in workers:
+        worker.start()
+    try:
+        outcomes = [results.get(timeout=45) for _ in workers]
+        for worker in workers:
+            worker.join(timeout=30)
+            assert worker.exitcode == 0, (worker.exitcode, outcomes)
+    finally:
+        for worker in workers:
+            if worker.is_alive():
+                worker.terminate()
+                worker.join(timeout=5)
+        results.close()
+
+    by_role = {item["role"]: item for item in outcomes}
+    assert set(by_role) == {"admit_persist", "reopen_peer"}
+    # At most one DISPATCHED / effect; mid-admit reopen should force claim-winner STALE.
+    effect_text = effects_path.read_text(encoding="utf-8")
+    assert effect_text.count("effect:") <= 1
+    dispatched = [item for item in outcomes if item.get("status") == "DISPATCHED" and not item["refused"]]
+    assert len(dispatched) <= 1
+    # Expected honest ordering: claim winner refuses STALE after box bump; peer refuses duplicate/stale.
+    assert by_role["admit_persist"]["refused"] is True
+    assert by_role["admit_persist"]["refusal"] == "STALE_READINESS"
+    assert by_role["reopen_peer"]["refused"] is True
+    assert by_role["reopen_peer"]["refusal"] in {"DUPLICATE_ACTION", "STALE_READINESS"}
+    assert effect_text == ""
