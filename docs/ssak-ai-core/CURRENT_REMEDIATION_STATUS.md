@@ -1,6 +1,6 @@
 # Current remediation status (R-series)
 
-기준: 2026-09-27 04:57 KST · tip advances with R08+R15+R01+R02 V attack dry-run docs (parent `1c14b135`); residual pins unchanged · branch `codex/m1-task-events` (ahead; no push).
+기준: 2026-09-27 04:59 KST · tip advances with R08+R15+R01+R02+R10 V attack dry-run docs (parent `551a55c1`); residual pins unchanged · branch `codex/m1-task-events` (ahead; no push).
 
 이 표가 **현재 작업의 유일한 진입점**이다. 아래 HISTORICAL 행의 과거 PASS는 보존하되 CURRENT_PASS로 자동 승계하지 않는다.
 Source digest가 바뀌면 해당 행은 재검증 전까지 HISTORICAL이다 ([R00 evidence](evidence/current-remediation/R00/)).
@@ -318,3 +318,11 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - Baseline: digest_bound+authority_lifecycle+governance **38 passed**. Attack nodes **6 passed**.
 - Attacks RUN: 1–6 (empty/omit digest reuse, authorize None/mismatch, adapter digest pass-through, revoke ancestry, expiry inherit, HumanApproval/score hunt). **NOT_RUN:** cross-process grant cache (OPEN §7).
 - ATTACK_NOTES Verdict slots left blank/OPEN. Next: R10 dry-run or independent reviewer.
+
+## 2026-09-27 04:59 KST — R10 Independent V attack dry-run (NOT R10-V)
+
+- Parent tip: `551a55c1`. Docs-only implementer/secondary dry-run; **no Independent R10-V PASS**, ops/CR-14 still **NO-GO**.
+- Evidence: `docs/ssak-ai-core/evidence/current-remediation/R10/V_ATTACK_DRYRUN_2026-09-27.md`
+- Baseline: action_safety+active_api **34 passed**. Attack nodes **9 passed**.
+- Attacks RUN: 1–5 (unobserved ValueError, PROJECTION_SETTLED+late history, timeout leaves claim, observe redispatched=False, UNKNOWN no auto-redispatch). **NOT_RUN:** 6 multi-process live late conflicting observes.
+- ATTACK_NOTES Verdict slots left blank/OPEN. Next: R03 dry-run or independent reviewer.

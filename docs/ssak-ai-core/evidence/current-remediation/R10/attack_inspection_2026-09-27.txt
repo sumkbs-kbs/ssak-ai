@@ -1,0 +1,38 @@
+R10 attack inspection log — implementer/secondary dry-run
+NOT Independent R10-V. Tip at run: 551a55c1365f0d8271aaf22c9d35d7225e276840
+When: 2026-09-27 ~04:58 KST (Asia/Seoul)
+
+ATTACK1: ActionObservation unobserved declaring succeeded
+  ValueError match unobserved: ValueError('unobserved ActionObservation cannot declare succeeded')
+  observed=True succeeded=True OK: observed=True succeeded=True
+  observed=False succeeded=None OK: observed=False succeeded=None
+
+ATTACK2: settled + conflicting digest → PROJECTION_SETTLED + late_observation_history
+  suite: test_r10_settled_projection_rejects_conflicting_observation PASSED
+  suite: test_r10_late_older_observation_does_not_flip_projection PASSED
+330:                    method="late_observation_history",
+341:                refusal=ActionRefusal.PROJECTION_SETTLED,
+
+ATTACK3: timeout does not clear claim
+  suite: test_r10_a4_timeout_does_not_release_claim PASSED
+440:    def pending_with_reasons(self, project_id: str) -> tuple:
+441:        """Operator-visible pending claims; timeout never clears these rows."""
+
+ATTACK4: observe never redispatches (restart)
+  suite: test_r10_a1_restart_observe_keeps_dispatch_count_one PASSED
+  suite: test_r10_http_observe_and_pending (redispatched False) PASSED
+245:        """Append observation onto a durable pending claim. Never redispatches."""
+287:                redispatched=False,
+350:                redispatched=False,
+437:            redispatched=False,
+
+ATTACK5: UNKNOWN stays until observation; no auto redispatch
+  suite: test_r10_dispatch_exception_stays_unknown_until_observation PASSED
+  observe docstring: Never redispatches.
+
+ATTACK6: multi-process live late conflicting observes — NOT_RUN
+  R10 late-history suite is single-process. Multiprocessing in test_action_safety
+  is for R08 dual-dispatch workers, not R10 late-observe concurrency.
+  Multi-process live late-history remains Medium/OPEN per ATTACK_NOTES §7.
+
+Verdict: OPEN (this file is not Independent R10-V PASS).

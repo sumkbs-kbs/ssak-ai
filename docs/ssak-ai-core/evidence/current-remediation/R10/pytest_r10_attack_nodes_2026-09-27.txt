@@ -1,0 +1,25 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.12, pytest-9.1.1, pluggy-1.6.0 -- /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python
+rootdir: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+configfile: pyproject.toml
+plugins: cov-7.1.0, asyncio-1.4.0, anyio-4.13.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 9 items
+
+tests/cognitive/test_action_safety.py::test_r10_unobserved_cannot_declare_succeeded PASSED [ 11%]
+tests/cognitive/test_action_safety.py::test_r10_settled_projection_rejects_conflicting_observation PASSED [ 22%]
+tests/cognitive/test_action_safety.py::test_r10_late_older_observation_does_not_flip_projection PASSED [ 33%]
+tests/cognitive/test_action_safety.py::test_r10_a4_timeout_does_not_release_claim PASSED [ 44%]
+tests/cognitive/test_active_api.py::test_r10_a1_restart_observe_keeps_dispatch_count_one PASSED [ 55%]
+tests/cognitive/test_action_safety.py::test_r10_dispatch_exception_stays_unknown_until_observation PASSED [ 66%]
+tests/cognitive/test_action_safety.py::test_r10_a2_identical_observation_keeps_ids PASSED [ 77%]
+tests/cognitive/test_action_safety.py::test_r10_a3_stale_or_foreign_observation_refused PASSED [ 88%]
+tests/cognitive/test_active_api.py::test_r10_http_observe_and_pending PASSED [100%]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+========================= 9 passed, 1 warning in 1.57s =========================

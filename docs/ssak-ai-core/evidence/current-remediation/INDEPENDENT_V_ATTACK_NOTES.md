@@ -374,6 +374,7 @@ Evidence that timeout leaves claim, observe never redispatches, unobserved canno
 
 ### 7. Must remain open / out of scope
 
+- Implementer/secondary dry-run evidence (not V): [R10/V_ATTACK_DRYRUN_2026-09-27.md](./R10/V_ATTACK_DRYRUN_2026-09-27.md)
 - Multi-process live late-history races (unless newly proven)
 - Mapping UNKNOWN → success in any helper
 - Ops GO

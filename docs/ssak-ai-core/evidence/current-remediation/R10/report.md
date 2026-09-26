@@ -28,3 +28,4 @@ Prior A1–A4 still green via `test_action_safety` / `test_active_api`.
 
 - Independent R10-V open. Single-process late-observation history append closed; multi-process live still Medium.
 - Ops/CR-14 still NO-GO.
+- Implementer/secondary dry-run (not V): [V_ATTACK_DRYRUN_2026-09-27.md](./V_ATTACK_DRYRUN_2026-09-27.md)
