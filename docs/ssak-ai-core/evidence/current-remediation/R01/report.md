@@ -31,6 +31,6 @@
 
 ## Limits
 
-- Live Docker RO mount not exercised against a real daemon in this run (cmd shape asserted).
+- Live Docker RO remount residual RUN on disposable tmp_path (2026-09-27 Attack 3b); Independent R01-V / real non-Darwin host still OPEN.
 - Implementer/secondary attack dry-run (2026-09-27): [V_ATTACK_DRYRUN_2026-09-27.md](./V_ATTACK_DRYRUN_2026-09-27.md) — **NOT Independent R01-V**.
 - Independent human R01-V open. Ops/CR-14 still NO-GO.

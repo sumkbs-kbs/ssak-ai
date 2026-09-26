@@ -69,3 +69,40 @@ def test_r01_protection_action_digest_binds_approval(tmp_path: Path) -> None:
     gate.set_protection_approvals((approval_for(".", action_digest=digest),))
     assert gate.check("write_file", args) is Permission.ALLOW
     assert gate.check("write_file", {**args, "content": "other"}) is Permission.DENY
+
+
+def test_r01_live_docker_ro_remount_rejects_protected_write(tmp_path: Path) -> None:
+    """R01 Attack 3b residual: live Docker daemon remounts protected paths :ro.
+
+    Forces Linux+Docker path on Darwin host. Disposable tmp_path project only
+    (no host vault_data). Independent R01-V still OPEN.
+    """
+
+    import pytest
+
+    if not SandboxRunner._is_docker_available():  # noqa: SLF001 — intentional availability gate
+        pytest.skip("Docker daemon unavailable")
+
+    cons = tmp_path / CONSTITUTION_DOC
+    cons.parent.mkdir(parents=True)
+    cons.write_bytes(b"CONST-KEEP\n")
+    (tmp_path / "scratch").mkdir()
+    runner = SandboxRunner(project_root=str(tmp_path), enabled=True, network="none", require_sandbox=True)
+
+    with patch.object(runner, "_platform", "Linux"):
+        denied = runner.execute(
+            "python -c \"open('/workspace/%s','w').write('HACK')\"" % CONSTITUTION_DOC,
+            timeout=90,
+        )
+        allowed = runner.execute(
+            "python -c \"open('/workspace/scratch/ok.txt','w').write('yes')\"",
+            timeout=90,
+        )
+
+    assert denied.sandboxed is True
+    assert denied.success is False
+    combined = f"{denied.stderr or ''}{denied.error or ''}"
+    assert "Read-only file system" in combined or "Errno 30" in combined or denied.return_code != 0
+    assert cons.read_bytes() == b"CONST-KEEP\n"
+    assert allowed.success is True
+    assert (tmp_path / "scratch/ok.txt").read_text(encoding="utf-8") == "yes"
