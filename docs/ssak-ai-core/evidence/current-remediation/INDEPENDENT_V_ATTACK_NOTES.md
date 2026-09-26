@@ -241,6 +241,7 @@ Profile text order evidence + at least one real sandbox execution deny + require
 
 ### 7. Must remain open / out of scope
 
+- Implementer/secondary dry-run evidence (not V): [R01/V_ATTACK_DRYRUN_2026-09-27.md](./R01/V_ATTACK_DRYRUN_2026-09-27.md)
 - Live Docker daemon RO proof if not run
 - Treating shell-regex hints as the boundary when seatbelt disabled
 - Multi-host sandbox policy

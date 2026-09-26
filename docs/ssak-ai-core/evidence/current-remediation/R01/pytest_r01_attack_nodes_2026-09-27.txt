@@ -1,0 +1,17 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.12, pytest-9.1.1, pluggy-1.6.0 -- /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python
+rootdir: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+configfile: pyproject.toml
+plugins: cov-7.1.0, asyncio-1.4.0, anyio-4.13.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 7 items
+
+tests/cognitive/test_r01_residual.py::test_r01_seatbelt_deny_follows_broad_allow PASSED [ 14%]
+tests/cognitive/test_r01_residual.py::test_r01_non_darwin_without_docker_is_fail_closed PASSED [ 28%]
+tests/cognitive/test_r01_residual.py::test_r01_docker_cmd_includes_readonly_protected_mounts PASSED [ 42%]
+tests/cognitive/test_r01_residual.py::test_r01_protection_action_digest_binds_approval PASSED [ 57%]
+tests/cognitive/test_r01_protected_sandbox.py::test_r01_a1_write_bytes_os_replace_parent_rename_symlink_immutable PASSED [ 71%]
+tests/cognitive/test_r01_protected_sandbox.py::test_r01_a4_unavailable_or_disabled_sandbox_is_fail_closed PASSED [ 85%]
+tests/cognitive/test_r01_protected_sandbox.py::test_r01_a3_approval_does_not_reuse_across_args PASSED [100%]
+
+============================== 7 passed in 0.59s ===============================

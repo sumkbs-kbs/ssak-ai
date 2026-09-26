@@ -32,4 +32,5 @@
 ## Limits
 
 - Live Docker RO mount not exercised against a real daemon in this run (cmd shape asserted).
+- Implementer/secondary attack dry-run (2026-09-27): [V_ATTACK_DRYRUN_2026-09-27.md](./V_ATTACK_DRYRUN_2026-09-27.md) — **NOT Independent R01-V**.
 - Independent human R01-V open. Ops/CR-14 still NO-GO.

@@ -1,0 +1,46 @@
+R01 attack inspection log — implementer/secondary dry-run
+NOT Independent R01-V. Tip at run: 13c651172a8849b70f280e44e3da48f1394f620b
+When: 2026-09-27 ~04:55 KST (Asia/Seoul)
+Platform: Darwin arm64 release=25.6.0
+sandbox-exec: /usr/bin/sandbox-exec
+docker binary: /usr/local/bin/docker
+SandboxRunner._is_docker_available(): True
+
+ATTACK1: seatbelt profile deny-after-allow (restrict=False default)
+  allow_root idx=156
+  folders allow idx=410
+  deny_cons idx=626
+  order OK (allow/folders before deny): True
+  marker present; snippet:
+    ;; 보호 경로 deny (넓은 allow 이후 — 이후 규칙/구체 path 우선)
+    (deny file-write* (subpath "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/r01-v-dryrun-sc066dqf/docs/ssak-ai-core/SSAK_AI_CONSTITUTION.md"))
+    (
+
+ATTACK2: live sandbox-exec write to protected CONSTITUTION_DOC
+  success=False sandboxed=True
+  error=''
+  bytes unchanged: True
+  (suite also covers os.replace / parent rename / symlink — see pytest_r01_attack_nodes)
+
+ATTACK3: Docker docker_cmd :ro mount shape (process mocked; NOT live daemon)
+  sandboxed=True success=True
+  :ro mounts sample: ['/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/r01-v-dryrun-sc066dqf/docs/ssak-ai-core/SSAK_AI_CONSTITUTION.md:/workspace/docs/ssak-ai-core/SSAK_AI_CONSTITUTION.md:ro', '/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/r01-v-dryrun-sc066dqf/docs/ssak-ai-core/SOURCE_MANIFEST.json:/workspace/docs/ssak-ai-core/SOURCE_MANIFEST.json:ro', '/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/r01-v-dryrun-sc066dqf/docs/ssak-ai-core/MASTER_PROMPT_V2_SOURCE.md:/workspace/docs/ssak-ai-core/MASTER_PROMPT_V2_SOURCE.md:ro']
+  joined contains :ro=True ssak-ai-core=True
+  LIVE Docker daemon RO remount: NOT_RUN in this dry-run (cmd-shape only per ATTACK_NOTES §5.3 / pass bar)
+
+ATTACK4: enabled=False require_sandbox=True
+  success=False error='Sandbox is disabled by configuration; raw execution is refused.'
+  refused phrase present: True
+
+ATTACK5: forced Linux platform + docker unavailable (host is Darwin; path forced)
+  success=False error='Sandbox is unavailable on Linux; raw execution is disabled.'
+  fail-closed keyword hit: True
+  Note: actual non-Darwin host not used; Linux path patched on Darwin dry-run host.
+
+ATTACK6: protection_action_digest reuse across args
+  same args → Permission.ALLOW
+  mutated content → Permission.DENY
+  (cognitive protection-before-overrides covered by protection suite baseline)
+
+ATTACK_LIVE_DOCKER_DAEMON: NOT_RUN — dry-run scoped to cmd-shape; not claiming Docker mount V.
+Verdict: OPEN (this file is not Independent R01-V PASS).
