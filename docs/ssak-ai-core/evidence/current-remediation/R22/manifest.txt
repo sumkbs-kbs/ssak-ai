@@ -10,3 +10,8 @@ manifest.txt
 mypy_unblock.md
 mypy_after_unblock.txt
 pytest_after_mypy_fix.txt
+digest_reverify_2026-09-26.md
+digest_reverify_pytest.txt
+digest_after_record.txt
+digest_gate.txt
+arch_after_digest.txt

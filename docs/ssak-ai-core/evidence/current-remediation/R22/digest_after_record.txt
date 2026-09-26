@@ -1,0 +1,46 @@
+[self-probe] digest_drift 9건 재판정 — 통과
+[digest-drift] pin 50개 · 그대로 9 · 재확인 41 · 움직임(미확인) 0 · 재확인 무효 0 · 깨짐 0 (source head 600e3cec)
+  REVERIFY T01a_typed_model.md · docs/ssak-ai-core/contracts/record-entities.schema.json · 기록 051d63e1 ≠ 현재 90f526b5d71d2f3a · 재확인 2026-09-26
+  REVERIFY T01a_typed_model.md · src/antigravity_k/engine/cognitive/models.py · 기록 65abe58b ≠ 현재 f90ccc743f783115 · 재확인 2026-09-26
+  REVERIFY T01a_typed_model.md · src/antigravity_k/engine/cognitive/references.py · 기록 f678df28 ≠ 현재 8887785ef432dba2 · 재확인 2026-09-26
+  REVERIFY T01a_typed_model.md · tests/cognitive/test_models.py · 기록 abe6237b ≠ 현재 b0db21cd95dfd3c3 · 재확인 2026-09-26
+  REVERIFY T01b_protection.md · src/antigravity_k/engine/cognitive/protected_targets.py · 기록 090bc97f ≠ 현재 23534e6ed6c2d921 · 재확인 2026-09-26
+  REVERIFY T01b_protection.md · src/antigravity_k/engine/cognitive/store.py · 기록 26a65e6f ≠ 현재 58a02a89cd66fca9 · 재확인 2026-09-26
+  REVERIFY T01b_protection.md · src/antigravity_k/tools/permission_gate.py · 기록 ca51e2b9 ≠ 현재 b011f71dfc7f6981 · 재확인 2026-09-26
+  REVERIFY T01b_protection.md · tests/cognitive/test_protection.py · 기록 b5774397 ≠ 현재 b3a4490a7d2cfa84 · 재확인 2026-09-26
+  REVERIFY T01b_protection.md · tests/test_tool_sandbox_coverage.py · 기록 8244251f ≠ 현재 6ec637ab70ed86de · 재확인 2026-09-26
+  REVERIFY T02_canonical_store.md · src/antigravity_k/engine/cognitive/legacy_adapter.py · 기록 cc972338 ≠ 현재 dba13d0f5102bb3a · 재확인 2026-09-26
+  REVERIFY T02_canonical_store.md · src/antigravity_k/engine/cognitive/store.py · 기록 2172a9b6 ≠ 현재 58a02a89cd66fca9 · 재확인 2026-09-26
+  REVERIFY T02_canonical_store.md · tests/cognitive/test_legacy_adapter.py · 기록 77a22b03 ≠ 현재 da55738b7603c5bb · 재확인 2026-09-26
+  REVERIFY T02_canonical_store.md · tests/cognitive/test_store.py · 기록 de5d411c ≠ 현재 ae1715ab4831e0c0 · 재확인 2026-09-26
+  REVERIFY T03_T04_context_brain.md · src/antigravity_k/engine/cognitive/brain.py · 기록 d6e3e45c ≠ 현재 e6af5eb9b97e189b · 재확인 2026-09-26
+  REVERIFY T03_T04_context_brain.md · src/antigravity_k/engine/cognitive/context.py · 기록 0e506935 ≠ 현재 28e234993067f8f8 · 재확인 2026-09-26
+  REVERIFY T03_T04_context_brain.md · tests/cognitive/test_brain.py · 기록 2781dbc1 ≠ 현재 23ec6e966aa30ccb · 재확인 2026-09-26
+  REVERIFY T03_T04_context_brain.md · tests/cognitive/test_context.py · 기록 1a1dd559 ≠ 현재 976e665754b6c4d6 · 재확인 2026-09-26
+  REVERIFY T05_governance.md · src/antigravity_k/engine/cognitive/authority.py · 기록 3c36ad73a365752d ≠ 현재 a31c59bf354fb5f3 · 재확인 2026-09-26
+  REVERIFY T05_governance.md · src/antigravity_k/engine/cognitive/governance.py · 기록 ec4f7ff6d35433b5 ≠ 현재 8bb870b5e734e21a · 재확인 2026-09-26
+  REVERIFY T05_governance.md · tests/cognitive/test_governance.py · 기록 07f0b4a8b504f8e7 ≠ 현재 605098022acf15f4 · 재확인 2026-09-26
+  REVERIFY T06_commit.md · src/antigravity_k/engine/cognitive/decisions.py · 기록 444bf04c7b67edbd ≠ 현재 29c6528a152c02ae · 재확인 2026-09-23
+  REVERIFY T06_commit.md · src/antigravity_k/engine/cognitive/readiness.py · 기록 ddbc74bd21874212 ≠ 현재 6198600aadcf695a · 재확인 2026-09-23
+  REVERIFY T07_actions.md · src/antigravity_k/engine/cognitive/actions.py · 기록 894ea5abc6c72426 ≠ 현재 d759b60a1564c3b8 · 재확인 2026-09-26
+  REVERIFY T07_actions.md · tests/cognitive/test_actions.py · 기록 17a26582fe953c2a ≠ 현재 520372eaf6d6ecd7 · 재확인 2026-09-26
+  REVERIFY T08_T09_episode.md · src/antigravity_k/engine/cognitive/experience.py · 기록 a9279ef1bcd51fc5 ≠ 현재 fa71de2177e96a41 · 재확인 2026-09-26
+  REVERIFY T08_T09_episode.md · src/antigravity_k/engine/cognitive/runtime.py · 기록 f77646f20a310a89 ≠ 현재 4d9bcd242cefa644 · 재확인 2026-09-26
+  REVERIFY T08_T09_episode.md · tests/cognitive/test_episode.py · 기록 20e686601a1603e1 ≠ 현재 3e0d24316ff61774 · 재확인 2026-09-26
+  REVERIFY T10_learning.md · src/antigravity_k/engine/cognitive/learning.py · 기록 d6b9234b66d421d9 ≠ 현재 7190d690d3a33665 · 재확인 2026-09-23
+  REVERIFY T10_learning.md · src/antigravity_k/engine/cognitive/policy_store.py · 기록 869458c3bd958d39 ≠ 현재 9da4dd3323d4bbb8 · 재확인 2026-09-23
+  REVERIFY T11_surface.md · scripts/measure_cognitive_surface.py · 기록 76d3a88b1b517171 ≠ 현재 dd9137f71b928aec · 재확인 2026-09-26
+  REVERIFY T11_surface.md · src/antigravity_k/api/routes/cognitive_surface_api.py · 기록 1302f8118555fbc5 ≠ 현재 bfcf54e35487a8d5 · 재확인 2026-09-26
+  REVERIFY T11_surface.md · src/antigravity_k/cli.py · 기록 80b5da5ebd9a5a57 ≠ 현재 bebf434ba03a5763 · 재확인 2026-09-26
+  REVERIFY T11_surface.md · src/antigravity_k/engine/cognitive_surface.py · 기록 2d77ecce28d8748e ≠ 현재 56acd378c1be9a13 · 재확인 2026-09-26
+  REVERIFY T12_migration.md · src/antigravity_k/engine/cognitive/migration.py · 기록 f45e974f01a6e124 ≠ 현재 8333fc0e03ef33b2 · 재확인 2026-09-26
+  REVERIFY T12_migration.md · tests/cognitive/test_migration.py · 기록 ea48c4080eb65f42 ≠ 현재 1d37d7474fe6545b · 재확인 2026-09-26
+  REVERIFY T13_growth.md · scripts/benchmark_cognitive_growth.py · 기록 2a1e2ecf7d5008c0 ≠ 현재 51786ea7c3774239 · 재확인 2026-09-26
+  REVERIFY T13_growth.md · src/antigravity_k/engine/cognitive/growth.py · 기록 f2a5dd011c622d9b ≠ 현재 4a502bf478f5a0e0 · 재확인 2026-09-26
+  REVERIFY T13_growth.md · tests/cognitive/test_growth.py · 기록 aef0c66a21a554d3 ≠ 현재 03156c1f3c8e1195 · 재확인 2026-09-26
+  REVERIFY T13_live_pilot.md · scripts/benchmark_cognitive_growth.py · 기록 9fda14440f9938a7 ≠ 현재 51786ea7c3774239 · 재확인 2026-09-26
+  REVERIFY T13_live_pilot.md · src/antigravity_k/engine/cognitive/live_pilot.py · 기록 f15d923940d22fd7 ≠ 현재 08ec7fb4e9a091e0 · 재확인 2026-09-26
+  REVERIFY T13_live_pilot.md · tests/cognitive/test_live_pilot.py · 기록 49eb5ad5387b1ce5 ≠ 현재 ddce17d50abca138 · 재확인 2026-09-26
+* 움직임은 “그 파일이 그 뒤에 바뀌었다”는 뜻이다. 재확인 기록은 그 시점에 내용을 다시 봤다는 것이고, 그 뒤에 파일이 또 바뀌면 무효(STALE)가 된다 — 재생성만으로는 재확인이 아니다.
+
+측정 artifact: docs/ssak-ai-core/evidence/digest_drift.json

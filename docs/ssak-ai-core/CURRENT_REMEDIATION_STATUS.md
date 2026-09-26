@@ -170,3 +170,10 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - Branch: `codex/m1-task-events` (ahead of origin; **not pushed**)
 - pre-commit: ruff + mypy Passed
 - Ops/cutover / CR-14: still **NO-GO**
+
+## 2026-09-26 — digest pin re-verification
+
+- STALE/DRIFT cleared: match=9, reverified=41, drift=0, stale=0
+- architecture_review: 111 passed
+- Evidence: evidence/R22/digest_reverify_2026-09-26.md
+- Ops/cutover still NO-GO

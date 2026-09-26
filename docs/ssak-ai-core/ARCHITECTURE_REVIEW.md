@@ -99,9 +99,9 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | regression_drift | 0 | seed 를 바꾸면 달라지는 실패 |
 | regression_unowned | 0 | 소유자 없는 결정적 실패 |
 | digest_pinned | 50 | 증거 문서가 파일에 못 박은 sha256 수 |
-| digest_reverified | 11 | 그 뒤에 바뀌었지만 재확인 기록이 있고 그 뒤로 바뀌지 않은 pin(2026-09-26 migration/store 검토 기록 포함) |
-| digest_drifted | 5 | 재확인 없이 지나간 revision 을 가리키는 pin |
-| digest_stale | 25 | 재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 |
+| digest_reverified | 41 | 그 뒤에 바뀌었지만 재확인 기록이 있고 그 뒤로 바뀌지 않은 pin(2026-09-26 migration/store 검토 기록 포함) |
+| digest_drifted | 0 | 재확인 없이 지나간 revision 을 가리키는 pin |
+| digest_stale | 0 | 재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 |
 | digest_missing | 0 | 파일이 없는데 digest 를 못 박은 항목 |
 | state_claims | 4 | 산문이 지금 트리에 대해 한 상태 주장(test node 지정) 수 |
 | state_claims_fixed | 4 | 그중 실제와 달라 정정 표기를 붙인 주장 |
@@ -136,9 +136,9 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:regression_drift=0 -->
 <!-- measured:regression_unowned=0 -->
 <!-- measured:digest_pinned=50 -->
-<!-- measured:digest_reverified=11 -->
-<!-- measured:digest_drifted=5 -->
-<!-- measured:digest_stale=25 -->
+<!-- measured:digest_reverified=41 -->
+<!-- measured:digest_drifted=0 -->
+<!-- measured:digest_stale=0 -->
 <!-- measured:digest_missing=0 -->
 <!-- measured:state_claims=4 -->
 <!-- measured:state_claims_fixed=4 -->

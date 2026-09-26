@@ -4,120 +4,141 @@
       "doc": "T01a_typed_model.md",
       "path": "docs/ssak-ai-core/contracts/record-entities.schema.json",
       "verified_digest": "90f526b5d71d2f3aee598cfebe5325b14c03878ebc11728920970fe8369b7343",
-      "verified_on": "2026-09-24",
-      "method": "P01 v1.1 정합화 회차: 인용 4파일(models.py·references.py·test_models.py·record-entities.schema.json)의 시험을 현재 트리에서 재실행해 test_models 61 passed(신규 3)·generate_record_schema --check 초록·ruff·mypy clean을 확인했다. 기존 30종 roundtrip 무영향(episode·learning·growth 67 passed)."
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T01a_typed_model.md",
       "path": "src/antigravity_k/engine/cognitive/models.py",
-      "verified_digest": "58ffa90f90f3c97adfc65bf8926789208f4795a2a5f90d632a8bfe737aaf4ede",
-      "verified_on": "2026-09-24",
-      "method": "P01 v1.1 정합화 회차: 인용 4파일(models.py·references.py·test_models.py·record-entities.schema.json)의 시험을 현재 트리에서 재실행해 test_models 61 passed(신규 3)·generate_record_schema --check 초록·ruff·mypy clean을 확인했다. 기존 30종 roundtrip 무영향(episode·learning·growth 67 passed)."
+      "verified_digest": "f90ccc743f783115f1641644e43ff7d17fffd694e6ee697a9d0cf6df3855b815",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T01a_typed_model.md",
       "path": "src/antigravity_k/engine/cognitive/references.py",
       "verified_digest": "8887785ef432dba2ce98681a5b220dadb2577a3aa80fb12b3901e0aedb0e49d4",
-      "verified_on": "2026-09-24",
-      "method": "P01 v1.1 정합화 회차: 인용 4파일(models.py·references.py·test_models.py·record-entities.schema.json)의 시험을 현재 트리에서 재실행해 test_models 61 passed(신규 3)·generate_record_schema --check 초록·ruff·mypy clean을 확인했다. 기존 30종 roundtrip 무영향(episode·learning·growth 67 passed)."
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T01a_typed_model.md",
       "path": "tests/cognitive/test_models.py",
       "verified_digest": "b0db21cd95dfd3c333727fd57a0a516fb2b9727b1ce6e74428b34805c638666c",
-      "verified_on": "2026-09-24",
-      "method": "P01 v1.1 정합화 회차: 인용 4파일(models.py·references.py·test_models.py·record-entities.schema.json)의 시험을 현재 트리에서 재실행해 test_models 61 passed(신규 3)·generate_record_schema --check 초록·ruff·mypy clean을 확인했다. 기존 30종 roundtrip 무영향(episode·learning·growth 67 passed)."
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T01b_protection.md",
       "path": "src/antigravity_k/engine/cognitive/protected_targets.py",
-      "verified_digest": "d9b1155ff97618949e07e6dd56fe28c7b2944523b1fa6cccf8721eb9d1cb5fa7",
-      "verified_on": "2026-09-24",
-      "method": "T01b 진입 경로 회차(최종): enum identity 감사가 migration_guard 첫 구현의 raw is not 비교를 잡아 same_enum으로 고쳤다. protected_targets.py·test_protection.py를 최종 상태에서 재실행해 23 passed·감사 0건·ruff·mypy clean을 확인했다."
+      "verified_digest": "23534e6ed6c2d921e08300157d9563ae17696de9f1718e54bce47c273d0957cc",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+    },
+    {
+      "doc": "T01b_protection.md",
+      "path": "src/antigravity_k/engine/cognitive/store.py",
+      "verified_digest": "58a02a89cd66fca9ab4430ce6db0f042156d758ba35a3b1a163f0303fa777b78",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+    },
+    {
+      "doc": "T01b_protection.md",
+      "path": "src/antigravity_k/tools/permission_gate.py",
+      "verified_digest": "b011f71dfc7f6981d9e855e8d9bfda28ec0f1abd685e84d17372f8eac941883d",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T01b_protection.md",
       "path": "tests/cognitive/test_protection.py",
-      "verified_digest": "0462483bf06c85cdf77269d42172ca4126376e9b2f88457e3a6c9f4ebe95cce3",
-      "verified_on": "2026-09-24",
-      "method": "T01b 진입 경로 회차(최종): enum identity 감사가 migration_guard 첫 구현의 raw is not 비교를 잡아 same_enum으로 고쳤다. protected_targets.py·test_protection.py를 최종 상태에서 재실행해 23 passed·감사 0건·ruff·mypy clean을 확인했다."
+      "verified_digest": "b3a4490a7d2cfa840553dfd343d157d7447807442fa06b5c687dc852d2254335",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T01b_protection.md",
       "path": "tests/test_tool_sandbox_coverage.py",
       "verified_digest": "6ec637ab70ed86de3a6586af565a0098f295c0efdea7a7fcdefda9d12165908a",
-      "verified_on": "2026-09-24",
-      "method": "T01b 진입 경로 회차(최종): enum identity 감사가 migration_guard 첫 구현의 raw is not 비교를 잡아 same_enum으로 고쳤다. protected_targets.py·test_protection.py를 최종 상태에서 재실행해 23 passed·감사 0건·ruff·mypy clean을 확인했다."
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T02_canonical_store.md",
       "path": "src/antigravity_k/engine/cognitive/legacy_adapter.py",
-      "verified_digest": "fbd4e1d9ef11aea5160dabf14e1c30afa18ad1a503140d716b973523b30b5334",
-      "verified_on": "2026-09-25",
-      "method": "P02 실제 Vault 동시성 회차: test_store.py(17→19)를 현재 트리에서 재실행해 5회 반복 19 passed(요동 0), 실제 VaultEngine(git 자동 commit 포함)과의 동시 폭풍 실패 0·digest 6/6을 확인했다."
+      "verified_digest": "dba13d0f5102bb3ab7b30b703932f41df7895edeb6ebe9d4cd09705b627b5279",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T02_canonical_store.md",
       "path": "src/antigravity_k/engine/cognitive/store.py",
-      "verified_digest": "26a65e6f6a2392352283521989964bc98a90ce6f71cba16b5751771c86cd7e36",
-      "verified_on": "2026-09-25",
-      "method": "P02 실제 Vault 동시성 회차: test_store.py(17→19)를 현재 트리에서 재실행해 5회 반복 19 passed(요동 0), 실제 VaultEngine(git 자동 commit 포함)과의 동시 폭풍 실패 0·digest 6/6을 확인했다."
+      "verified_digest": "58a02a89cd66fca9ab4430ce6db0f042156d758ba35a3b1a163f0303fa777b78",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+    },
+    {
+      "doc": "T02_canonical_store.md",
+      "path": "tests/cognitive/test_legacy_adapter.py",
+      "verified_digest": "da55738b7603c5bb5cc3f747bfaa33a86801e73f79e61623b6a7ac63779ec5f3",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T02_canonical_store.md",
       "path": "tests/cognitive/test_store.py",
-      "verified_digest": "6f8ba5bc9068811ce7b80e32a1861b0ee6643b34e450dc028534e00d8a5e542c",
-      "verified_on": "2026-09-25",
-      "method": "P02 실제 Vault 동시성 회차: test_store.py(17→19)를 현재 트리에서 재실행해 5회 반복 19 passed(요동 0), 실제 VaultEngine(git 자동 commit 포함)과의 동시 폭풍 실패 0·digest 6/6을 확인했다."
+      "verified_digest": "ae1715ab4831e0c08bc573f938836bfe483b92885dd792483041e4b372f65b45",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T03_T04_context_brain.md",
       "path": "src/antigravity_k/engine/cognitive/brain.py",
-      "verified_digest": "43cb0d49090d5486c47c37a5389018649a2a1501b05690fd81899c0cc1668d2c",
-      "verified_on": "2026-09-24",
-      "method": "T03/T04 v1.1 철학 시나리오 회차: 인용 4파일(context.py·brain.py·test_context.py·test_brain.py)의 시험을 현재 트리에서 재실행해 40 passed(context 16·brain 24)를 확인했고 ruff·mypy clean. 문서의 새 절은 pin을 늘리지 않는다(옛 pin 보존 + 이 재확인)."
+      "verified_digest": "e6af5eb9b97e189b0d046fa19e48ec047187bc47124acee7ecd0abea0dc993cb",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T03_T04_context_brain.md",
       "path": "src/antigravity_k/engine/cognitive/context.py",
-      "verified_digest": "eaa05d1807246c3302b7665411ea6c3962db47409cdfbf405a2e1fdb62b25df1",
-      "verified_on": "2026-09-24",
-      "method": "T03/T04 v1.1 철학 시나리오 회차: 인용 4파일(context.py·brain.py·test_context.py·test_brain.py)의 시험을 현재 트리에서 재실행해 40 passed(context 16·brain 24)를 확인했고 ruff·mypy clean. 문서의 새 절은 pin을 늘리지 않는다(옛 pin 보존 + 이 재확인)."
+      "verified_digest": "28e234993067f8f8a64d0ee63a5a2b928b55ae1e75390eb1d2e755c7562fbb50",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T03_T04_context_brain.md",
       "path": "tests/cognitive/test_brain.py",
-      "verified_digest": "6dae372e9e4f5be7a20678860c898068d6e987598c4620e1e826db1299b2cdb3",
-      "verified_on": "2026-09-24",
-      "method": "T03/T04 v1.1 철학 시나리오 회차: 인용 4파일(context.py·brain.py·test_context.py·test_brain.py)의 시험을 현재 트리에서 재실행해 40 passed(context 16·brain 24)를 확인했고 ruff·mypy clean. 문서의 새 절은 pin을 늘리지 않는다(옛 pin 보존 + 이 재확인)."
+      "verified_digest": "23ec6e966aa30ccb1ddfd2dd6d35bf653f3a4d483cb0fae9bee1b1f9b4e93cb7",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T03_T04_context_brain.md",
       "path": "tests/cognitive/test_context.py",
-      "verified_digest": "a90f1c1709443c01e3694ed410087735466dd5d3e081672bee7360d9faba785b",
-      "verified_on": "2026-09-24",
-      "method": "T03/T04 v1.1 철학 시나리오 회차: 인용 4파일(context.py·brain.py·test_context.py·test_brain.py)의 시험을 현재 트리에서 재실행해 40 passed(context 16·brain 24)를 확인했고 ruff·mypy clean. 문서의 새 절은 pin을 늘리지 않는다(옛 pin 보존 + 이 재확인)."
+      "verified_digest": "976e665754b6c4d6b6056a5c24a607f3d421391aa72cb900e9c23b937da1d6d0",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T05_governance.md",
       "path": "src/antigravity_k/engine/cognitive/authority.py",
-      "verified_digest": "814bf64171df56bec05f7317b54c3c26d9a61d29755ee9e8adaa0107f1412daf",
-      "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_governance.py 32 passed(문서 주장 31에서 1건 증가: 중복 enum 회귀 시험 추가). disposition 5종·RESHAPE 경계·비escalation 문장 재확인."
+      "verified_digest": "a31c59bf354fb5f3292aae5cf340b06c656cf3f78a36755841aebcd89a9953c8",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T05_governance.md",
       "path": "src/antigravity_k/engine/cognitive/governance.py",
-      "verified_digest": "1ca59212d8c957a692934c2755545602afc5e249f990c4f6281c7140e0bdb70a",
-      "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_governance.py 32 passed(문서 주장 31에서 1건 증가: 중복 enum 회귀 시험 추가). disposition 5종·RESHAPE 경계·비escalation 문장 재확인."
+      "verified_digest": "8bb870b5e734e21ac4f08d1172740d81794e290e7d3a82316a2b7b8bf268167e",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T05_governance.md",
       "path": "tests/cognitive/test_governance.py",
-      "verified_digest": "35d65e231cbbf738fc04dc2ad2561b07f7ab8e51b76100e45886513690cff2ef",
-      "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_governance.py 32 passed(문서 주장 31에서 1건 증가: 중복 enum 회귀 시험 추가). disposition 5종·RESHAPE 경계·비escalation 문장 재확인."
+      "verified_digest": "605098022acf15f4a58942b5dfbce9ac6eb7a903b21f769df395b1d1cb050ec8",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T06_commit.md",
@@ -136,23 +157,37 @@
     {
       "doc": "T07_actions.md",
       "path": "src/antigravity_k/engine/cognitive/actions.py",
-      "verified_digest": "00b0c0edccaf5f50dc3998575063a84f4ed89d94cee14f7a07a5d1fe87eab00d",
-      "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_actions.py 17 passed(문서 주장 17과 일치) — dispatcher·readiness bound·dispatch 경계 계약."
+      "verified_digest": "d759b60a1564c3b83d7c2e7f4288dee3fe404681a8552090003306167589731f",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+    },
+    {
+      "doc": "T07_actions.md",
+      "path": "tests/cognitive/test_actions.py",
+      "verified_digest": "520372eaf6d6ecd7d9958640a7a52f2ae2a437faed16a9ce919bcf71c794d01c",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T08_T09_episode.md",
       "path": "src/antigravity_k/engine/cognitive/experience.py",
-      "verified_digest": "eec2a68fbb1f94d6817e56f90e0d01d0045c302802f768525b1a57f2e7d0b839",
-      "verified_on": "2026-09-24",
-      "method": "P01 v1.1 정합화 회차가 experience.py를 고쳤다(선별→Event 계약 필드 실림·타입 context 계보·enum re-export). P08 시험을 현재 트리에서 재실행해 test_episode 21 passed(선별·세 평가·versioning·supplement 계약 그대로)를 확인했다."
+      "verified_digest": "fa71de2177e96a411352a7c41ab1bea3bfff04097b855896bd0726d201e06f70",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T08_T09_episode.md",
       "path": "src/antigravity_k/engine/cognitive/runtime.py",
-      "verified_digest": "07f69cbfaf3f5957537fa235d49418c6f1a5437e0c04900aac120dc886b11deb",
-      "verified_on": "2026-09-24",
-      "method": "P01 v1.1 정합화 회차가 experience.py를 고쳤다(선별→Event 계약 필드 실림·타입 context 계보·enum re-export). P08 시험을 현재 트리에서 재실행해 test_episode 21 passed(선별·세 평가·versioning·supplement 계약 그대로)를 확인했다."
+      "verified_digest": "4d9bcd242cefa644d0aa50efc1a9ea5f6a3f5fbfc7d8fa520e04f8c690890f83",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+    },
+    {
+      "doc": "T08_T09_episode.md",
+      "path": "tests/cognitive/test_episode.py",
+      "verified_digest": "3e0d24316ff61774a46a9e9e6772cda88f48a8771a9243def07b8817c2d4e056",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T10_learning.md",
@@ -172,56 +207,91 @@
       "doc": "T11_surface.md",
       "path": "scripts/measure_cognitive_surface.py",
       "verified_digest": "dd9137f71b928aec7871042b116aaea9787675ea404a0283e2c80cfca2e6c5c9",
-      "verified_on": "2026-09-25",
-      "method": "실모델 회차: SurfaceBrainPort가 관찰 요약에 물질 판단(delta)을 주장하지 않도록 고쳤다(실측이 무조건 BLOCKED_READINESS로 끝나던 오주장 잡음 — test_surface_brain_port_does_not_claim_material_judgment로 고정). test_surface 25 passed·실모델 관찰(대화 1건 비교) 완료."
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+    },
+    {
+      "doc": "T11_surface.md",
+      "path": "src/antigravity_k/api/routes/cognitive_surface_api.py",
+      "verified_digest": "bfcf54e35487a8d5c54f076757ecb4f86a0852148c1f683f3ff5b284c9ec96b9",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+    },
+    {
+      "doc": "T11_surface.md",
+      "path": "src/antigravity_k/cli.py",
+      "verified_digest": "bebf434ba03a5763ca0288e374657cd4fdbf20dc3ba10f53598802ac151f2cd9",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T11_surface.md",
       "path": "src/antigravity_k/engine/cognitive_surface.py",
-      "verified_digest": "460f399a0fde183f5da2bfce6689629b508d6dac2cf14ed0e790d67e46defcc1",
-      "verified_on": "2026-09-25",
-      "method": "실모델 회차: SurfaceBrainPort가 관찰 요약에 물질 판단(delta)을 주장하지 않도록 고쳤다(실측이 무조건 BLOCKED_READINESS로 끝나던 오주장 잡음 — test_surface_brain_port_does_not_claim_material_judgment로 고정). test_surface 25 passed·실모델 관찰(대화 1건 비교) 완료."
+      "verified_digest": "56acd378c1be9a131cdff84bae131d435ce36195b041498a56c6af129fc87902",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T12_migration.md",
       "path": "src/antigravity_k/engine/cognitive/migration.py",
-      "verified_digest": "cdb49eef5347bf209a43fe124386661f203d2191cff8485fd27b28f108e6ff65",
-      "verified_on": "2026-09-24",
-      "method": "T01b 진입 경로 회차가 migration.py 대상 store를 migration_guard로 결선했다. migration 시험 14건을 현재 트리에서 재실행해 전부 통과(dry-run·rollback rehearsal·idempotent replay 그대로)하고 constitution 밀입 거부 신규 관찰을 확인했다."
+      "verified_digest": "8333fc0e03ef33b249bb1934bc4bbe85d13e4771482836c5600e5e4b63868161",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+    },
+    {
+      "doc": "T12_migration.md",
+      "path": "tests/cognitive/test_migration.py",
+      "verified_digest": "1d37d7474fe6545bc3cbe3ebd66733a77f9ae8022af6c643c3fcf9a4d562d4fd",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T13_growth.md",
       "path": "scripts/benchmark_cognitive_growth.py",
-      "verified_digest": "c3d0a151d9133abd69e618b890416dac01e674f0966d62e74d9b23e199c9bd7b",
-      "verified_on": "2026-09-24",
-      "method": "P00/T00b-B 회차: T00b-B 직접 관찰 배터리가 상대 경로 --store-root 이중 경로 결함을 잡아 CLI(benchmark_cognitive_growth.py)에 절대 경로 정규화를 넣었다. growth 시험 17 passed·demo/fresh/mature/ablation 전 mode exit 0(상대·절대)·live-pilot NOT_RUN exit 2을 재실측해 T13의 성장 관찰이 여전히 재현됨을 확인."
+      "verified_digest": "51786ea7c3774239c468315b60c462f19a4ffdc35c900d619d59563a5de846b6",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T13_growth.md",
       "path": "src/antigravity_k/engine/cognitive/growth.py",
-      "verified_digest": "745f1c105fa4ab6b3d92bf087db0e0dc632610389f85eb76db7c199da0d54111",
-      "verified_on": "2026-09-24",
-      "method": "P00/T00b-B 회차: T00b-B 직접 관찰 배터리가 상대 경로 --store-root 이중 경로 결함을 잡아 CLI(benchmark_cognitive_growth.py)에 절대 경로 정규화를 넣었다. growth 시험 17 passed·demo/fresh/mature/ablation 전 mode exit 0(상대·절대)·live-pilot NOT_RUN exit 2을 재실측해 T13의 성장 관찰이 여전히 재현됨을 확인."
+      "verified_digest": "4a502bf478f5a0e024a76a2fca785b884212efd71b7c0200918765afc5299f3e",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+    },
+    {
+      "doc": "T13_growth.md",
+      "path": "tests/cognitive/test_growth.py",
+      "verified_digest": "03156c1f3c8e119533bd170e4454966fc248b218e4e265278f3adda7f6036e0a",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T13_live_pilot.md",
       "path": "scripts/benchmark_cognitive_growth.py",
-      "verified_digest": "c3d0a151d9133abd69e618b890416dac01e674f0966d62e74d9b23e199c9bd7b",
-      "verified_on": "2026-09-24",
-      "method": "P00/T00b-B 회차: CLI 절대 경로 정규화 수정 뒤 --mode live-pilot가 여전히 NOT_RUN exit 2('이 CLI는 deterministic fixture harness다')로 거부됨을 직접 재관찰했다(NOT_RUN artifact가 fixture 수치로 대체되지 않는 계약 그대로)."
+      "verified_digest": "51786ea7c3774239c468315b60c462f19a4ffdc35c900d619d59563a5de846b6",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     },
     {
       "doc": "T13_live_pilot.md",
       "path": "src/antigravity_k/engine/cognitive/live_pilot.py",
-      "verified_digest": "16697ffda06f006fd5d7fee3575bcd19c10a98a03db23da240cddca36bf7b374",
-      "verified_on": "2026-09-24",
-      "method": "P00/T00b-B 회차: CLI 절대 경로 정규화 수정 뒤 --mode live-pilot가 여전히 NOT_RUN exit 2('이 CLI는 deterministic fixture harness다')로 거부됨을 직접 재관찰했다(NOT_RUN artifact가 fixture 수치로 대체되지 않는 계약 그대로)."
+      "verified_digest": "08ec7fb4e9a091e0da4ef1a834d2a4aa1f2a11999f9c5b4cd5ad4df0992f1f44",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+    },
+    {
+      "doc": "T13_live_pilot.md",
+      "path": "tests/cognitive/test_live_pilot.py",
+      "verified_digest": "ddce17d50abca1385e1ed59fab1e2313cfaaf3a1fa6c520e3f5e77709136fdb9",
+      "verified_on": "2026-09-26",
+      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
     }
   ],
   "command": [
     "python",
     "scripts/digest_drift.py",
     "--record",
-    "T11_surface.md"
+    "T13_live_pilot.md"
   ]
 }
