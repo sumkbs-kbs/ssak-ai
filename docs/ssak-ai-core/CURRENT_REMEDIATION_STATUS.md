@@ -177,3 +177,11 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - architecture_review: 111 passed
 - Evidence: evidence/R22/digest_reverify_2026-09-26.md
 - Ops/cutover still NO-GO
+
+## 2026-09-26 — feature_off/release recheck + independent V checklist
+
+- tip `80e43e76` (docs commit for R22 follow-up + checklist)
+- feature_off + release_artifacts: **104 passed** (post-digest tip)
+- architecture_review: **111 passed** (already green after digest re-verify)
+- Added `evidence/current-remediation/INDEPENDENT_REVIEW_CHECKLIST.md` (V not claimed)
+- Ops/cutover / CR-14 still **NO-GO**
