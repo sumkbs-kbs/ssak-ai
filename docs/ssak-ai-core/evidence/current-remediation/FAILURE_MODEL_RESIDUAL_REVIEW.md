@@ -150,3 +150,9 @@ Next implementer priority: **R02** digest-bound approval on all authorize paths.
 Code finding: empty `action_digest` skipped reuse checks; `authorize_execution(None)` skipped execution binding; adapter admit omitted digest.
 Now deny on missing digest. Independent R02-V still open.
 Next implementer priority: **R10** UNKNOWN never success / no timeout unlock.
+
+## Update 2026-09-26 21:34 KST — R10 settled non-downgrade + unobserved invariant
+
+Code finding: forged unobserved success was constructible; settled claims could flip via conflicting observe.
+Now invariant + PROJECTION_SETTLED refuse. History-append for late obs still open for V.
+Next implementer priority: **R03** staged transaction identity (then R04).

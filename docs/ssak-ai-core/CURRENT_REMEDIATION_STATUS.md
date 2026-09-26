@@ -230,3 +230,10 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - `authorize_execution` requires digest; ToolGovernanceAdapter binds it
 - Suite **38 passed** (r02 lifecycle + governance + residual)
 - Independent R02-V still open; ops/CR-14 still **NO-GO**
+
+## 2026-09-26 21:34 KST — R10 residual close
+
+- Unobserved ActionObservation cannot declare succeeded
+- Settled claim rejects conflicting observation (`PROJECTION_SETTLED`)
+- Suite **33 passed** (action_safety + active_api)
+- Independent R10-V still open; ops/CR-14 still **NO-GO**

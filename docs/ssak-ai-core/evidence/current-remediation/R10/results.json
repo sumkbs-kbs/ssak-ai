@@ -1,0 +1,16 @@
+{
+  "card": "R10",
+  "checks": {
+    "R10-A1": "PASS",
+    "R10-A2": "PASS",
+    "R10-A3": "PASS",
+    "R10-A4": "PASS",
+    "R10-residual-unobserved-invariant": "PASS",
+    "R10-residual-settled-nondowngrade": "PASS",
+    "R10-E": "PASS",
+    "R10-V": "NOT_CLAIMED"
+  },
+  "pytest": "33 passed",
+  "self_review": true,
+  "ops_cr14": "NO-GO"
+}

@@ -529,3 +529,83 @@ def test_r08_a3_concurrent_reopen_and_dispatch_ordering():
     ).execute(intent_ok, project_id=PROJECT, producer=BODY)
     assert ok.status is ActionExecutionStatus.DISPATCHED
     assert calls == [1]
+
+
+def test_r10_unobserved_cannot_declare_succeeded() -> None:
+    """R10 residual: ActionObservation forbids succeeded without observed."""
+    with pytest.raises(ValueError, match="unobserved"):
+        ActionObservation(observed=False, succeeded=True)
+
+
+def test_r10_dispatch_exception_stays_unknown_until_observation(tmp_path) -> None:
+    """R10 residual: executor crash → UNKNOWN; no success without observation."""
+    from antigravity_k.engine.cognitive.action_journal import SqliteActionJournal
+    from antigravity_k.engine.cognitive.store import CanonicalStore
+
+    def boom(*_a, **_k):
+        raise RuntimeError("crash after effect possible")
+
+    store = CanonicalStore(tmp_path / "store", git_enabled=False)
+    dispatcher = ActionDispatcher(
+        port=CallablePort(boom),
+        journal=SqliteActionJournal(tmp_path / "claims.sqlite"),
+        record_sink=lambda records: store.commit_records(list(records)),
+        clock=lambda: NOW,
+    )
+    run = dispatcher.execute(make_intent(action_key="r10-unk"), project_id=PROJECT, producer=BODY)
+    assert run.status is ActionExecutionStatus.UNKNOWN
+    assert run.receipt is not None
+    assert run.receipt.status.value == "UNKNOWN"
+    assert run.reconciliation_required
+
+
+def test_r10_settled_projection_rejects_conflicting_observation(tmp_path) -> None:
+    """R10 residual: after settle, a different observation cannot downgrade the projection."""
+    from antigravity_k.engine.cognitive.action_journal import SqliteActionJournal
+    from antigravity_k.engine.cognitive.actions import ObservationSubmission
+    from antigravity_k.engine.cognitive.store import CanonicalStore
+
+    store = CanonicalStore(tmp_path / "store", git_enabled=False)
+    journal = SqliteActionJournal(tmp_path / "claims.sqlite")
+    dispatcher = ActionDispatcher(
+        port=CallablePort(lambda *a: "ok"),
+        journal=journal,
+        record_sink=lambda records: store.commit_records(list(records)),
+        clock=lambda: NOW,
+    )
+    intent = make_intent(action_key="r10-settle")
+    run = dispatcher.execute(intent, project_id=PROJECT, producer=BODY)
+    assert run.receipt is not None
+    first = dispatcher.submit_observation(
+        ObservationSubmission(
+            project_id=PROJECT,
+            action_key="r10-settle",
+            expected_receipt_id=run.receipt.receipt_id,
+            observation=ActionObservation(observed=True, succeeded=True, detail="ok"),
+        ),
+        producer=BODY,
+        load_record=store.read,
+        now=NOW,
+    )
+    assert first.accepted
+    claim = journal.get(PROJECT, "r10-settle")
+    assert claim is not None and claim.status == "settled"
+    conflict = dispatcher.submit_observation(
+        ObservationSubmission(
+            project_id=PROJECT,
+            action_key="r10-settle",
+            expected_receipt_id=first.receipt_id or "",
+            observation=ActionObservation(observed=True, succeeded=False, detail="late flip"),
+        ),
+        producer=BODY,
+        load_record=store.read,
+        now=NOW,
+    )
+    assert not conflict.accepted
+    assert conflict.refusal is ActionRefusal.PROJECTION_SETTLED
+    # Projection unchanged
+    claim2 = journal.get(PROJECT, "r10-settle")
+    assert claim2 is not None
+    assert claim2.observation_digest == claim.observation_digest
+    assert claim2.observation_record_id == claim.observation_record_id
+    assert claim2.projection_revision == claim.projection_revision

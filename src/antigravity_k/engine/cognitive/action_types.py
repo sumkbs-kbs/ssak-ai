@@ -50,6 +50,7 @@ class ActionRefusal(StrEnum):
     PROJECT_MISMATCH = "PROJECT_MISMATCH"
     STALE_RECEIPT_REVISION = "STALE_RECEIPT_REVISION"
     MALFORMED_OBSERVATION = "MALFORMED_OBSERVATION"
+    PROJECTION_SETTLED = "PROJECTION_SETTLED"
 
 
 class ActionDispatchError(RuntimeError):
@@ -212,6 +213,10 @@ class ActionObservation:
     external_ref: str = ""
     detail: str = ""
     status: ObservationStatus = ObservationStatus.COMPLETE
+
+    def __post_init__(self) -> None:
+        if not self.observed and self.succeeded is not None:
+            raise ValueError("unobserved ActionObservation cannot declare succeeded")
 
 
 def new_receipt_id() -> str:

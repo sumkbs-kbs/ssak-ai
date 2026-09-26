@@ -287,6 +287,14 @@ class ActionDispatcher:
                 redispatched=False,
                 reason="idempotent observation replay",
             )
+        # Settled projection must not be overwritten by a conflicting observation
+        # (prevents late/alternate success↔fail downgrades without history append).
+        if claim.status == SETTLED:
+            return ReconciliationResult(
+                accepted=False,
+                refusal=ActionRefusal.PROJECTION_SETTLED,
+                reason="settled projection refuses conflicting observation (non-downgrade)",
+            )
 
         receipt_record = load_record(claim.receipt_id)
         action_record = load_record(claim.action_record_id) if claim.action_record_id else None

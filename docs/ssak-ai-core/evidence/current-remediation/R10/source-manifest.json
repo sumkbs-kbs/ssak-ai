@@ -1,0 +1,9 @@
+{
+  "card": "R10",
+  "captured_at": "2026-09-26T21:34:04.833473+09:00",
+  "paths": [
+    "src/antigravity_k/engine/cognitive/action_types.py",
+    "src/antigravity_k/engine/cognitive/actions.py",
+    "tests/cognitive/test_action_safety.py"
+  ]
+}
