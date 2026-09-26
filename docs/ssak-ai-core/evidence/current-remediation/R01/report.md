@@ -1,37 +1,35 @@
 # R01 report — 보호 파일을 실제 실행 경계에서 강제
 
-- 실행: 2026-09-26 19:59 KST
-- HEAD: `2862584ea8f79641fefd9a78de9c145851ea515b` (+ dirty working tree)
+- 실행: 2026-09-26 21:30 KST (residual close)
+- tip before: `c21f0695`; this commit restores seatbelt deny + gate digest wiring
 - reviewer: 마뱀 (self-review limitation)
 
-## Before / after
+## Before / after (residual)
 
-- Before: seatbelt가 project root 전체 write를 허용해 `Path.write_bytes`가 임시 헌법을 승인 없이 변경 (F01 REPRODUCED).
+- Before (tip): `sandbox_protected_write_denies` existed but was **not** wired into seatbelt; `protection_action_digest` missing → R01 tests ImportError; override could open protected writes; injected guard replaced.
 - After:
-  1. `SandboxRunner`가 `default_protected_roots` 경로에 `file-write*` deny, 부모 디렉터리에 `file-write-unlink` deny를 **넓은 /var/folders allow 이후**에 적용.
-  2. `evaluate_shell_command`가 보호 경로+interpreter/변이 징후(`write_bytes`, `os.rename` 등)면 토큰 목록 없이도 거절. 순수 `cat` 읽기는 유지.
-  3. `require_sandbox` + disabled → fail-closed (기존).
+  1. `SandboxRunner._protected_write_deny_section` after broad `/var/folders` allow (write + unlink parent denies).
+  2. Docker path remounts protected host paths `:ro` over `/workspace`.
+  3. Non-Darwin without Docker remains fail-closed when sandbox enabled.
+  4. `protection_action_digest` restored; cognitive protection runs **before** tool overrides; injected guard root preserved.
 
 ## R01-A*
 
 | ID | 관측 | 결과 |
 |---|---|---|
-| A1 | write_bytes / os.replace / parent rename / symlink write → digest 불변 | PASS |
-| A2 | 일반 ok.txt + sibling NOTES.md 쓰기 성공 | PASS |
-| A3 | 승인 digest 일치만 ALLOW, content 변경 DENY | PASS |
-| A4 | enabled=False+require_sandbox → refused, 실행 0 | PASS |
-| E | evidence/current-remediation/R01/ | PASS |
-| V | self-review | PASS w/ limitation |
+| A1–A4 | Darwin suite + residual tests | PASS (self-review) |
+| Residual order/Linux/Docker RO/digest | `test_r01_residual.py` | PASS |
+| E | evidence/R01/ | PASS |
+| V | independent | NOT claimed |
 
 ## Commands
 
 ```
-.venv/bin/python -m pytest tests/cognitive/test_r01_protected_sandbox.py tests/cognitive/test_protection_boundaries.py tests/cognitive/test_protection.py tests/test_sandbox_isolation.py -q -p no:cacheprovider
-# 58 passed
+.venv/bin/python -m pytest tests/cognitive/test_r01_residual.py tests/cognitive/test_r01_protected_sandbox.py tests/cognitive/test_protection_boundaries.py tests/cognitive/test_protection.py tests/test_sandbox_isolation.py -q -p no:cacheprovider
+# 62 passed
 ```
 
 ## Limits
 
-- Docker readonly mount for protected paths not added in this card (macOS seatbelt primary).
-- Independent human reviewer slot open.
-- Card ≠ release / ops activation.
+- Live Docker RO mount not exercised against a real daemon in this run (cmd shape asserted).
+- Independent human R01-V open. Ops/CR-14 still NO-GO.

@@ -138,3 +138,9 @@ Residual for independent V: prove the **production** resolver reads store heads 
 Implementer closed documented R15 residuals with `test_r15_composition.py` + `ENTRY_MATRIX.md` (no production default change).
 Remaining for independent V: human review of composition root + entry table vs live boot; still not CR-14 GO.
 Next code priority for implementer: **R01** seatbelt order + non-macOS fail-closed.
+
+## Update 2026-09-26 21:40 KST — R01 seatbelt deny re-wired
+
+Code finding: deny helpers existed but tip seatbelt profile omitted them; also missing `protection_action_digest` and override-before-protection.
+Restored deny-after-allow, Docker RO mounts, gate digest binding. Independent R01-V still open.
+Next implementer priority: **R02** digest-bound approval on all authorize paths.

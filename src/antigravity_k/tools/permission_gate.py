@@ -13,6 +13,8 @@ Claw Code의 PermissionPolicy 아키텍처를 이식.
     if decision == Permission.ALLOW: ...
 """
 
+import hashlib
+import json
 import logging
 import os
 import re
@@ -58,6 +60,17 @@ WRITE_TOOL_HINTS = (
     "snapshot",
 )
 PATH_ARG_KEYS = ("file_path", "path", "target", "dir_path", "target_path", "src", "dest")
+
+
+def protection_action_digest(tool_name: str, args: Mapping[str, ToolArgument]) -> str:
+    encoded = json.dumps(
+        {"tool": tool_name, "arguments": dict(args)},
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    ).encode("utf-8")
+    return "sha256:" + hashlib.sha256(encoded).hexdigest()
 
 
 class PermissionGate:
@@ -125,6 +138,7 @@ class PermissionGate:
         self._protection_guard: ProtectedWriteGuard | None = None
         self._protection_guard_root: str | None = None
         self._protection_approvals: tuple[HumanApproval, ...] = ()
+        self._protection_approval_root: str | None = None
 
         logger.info("PermissionGate initialized: mode=%s, project_root=%s", mode, self.project_root)
 
@@ -142,11 +156,13 @@ class PermissionGate:
         """protected target 판정기를 주입한다(None이면 project_root 기준 기본값으로 재생성)."""
 
         self._protection_guard = guard
+        self._protection_guard_root = guard.project_root if guard is not None else None
 
     def set_protection_approvals(self, approvals: Sequence[HumanApproval]) -> None:
         """사람 승인 record를 등록한다. 승인이 없으면 protected 쓰기는 거부된다."""
 
         self._protection_approvals = tuple(approvals)
+        self._protection_approval_root = os.path.realpath(self.effective_root())
 
     @property
     def protection_guard(self) -> ProtectedWriteGuard:
@@ -162,6 +178,11 @@ class PermissionGate:
         """헌법·authority·premise·이력 쓰기 시도를 거부한다. 거부 사유가 없으면 None."""
 
         guard = self.protection_guard
+        approvals = self._protection_approvals if self._protection_approval_root == guard.project_root else ()
+        try:
+            digest = protection_action_digest(tool_name, args)
+        except (TypeError, ValueError):
+            return "Tool arguments cannot be bound to a canonical approval digest."
         if tool_name in SHELL_TOOL_NAMES:
             raw_command = args.get("command")
             command = raw_command if isinstance(raw_command, str) else ""
@@ -171,7 +192,8 @@ class PermissionGate:
                 command,
                 actor_kind=ActorKind.BODY,
                 actor_id="body:permission-gate",
-                approvals=self._protection_approvals,
+                action_digest=digest,
+                approvals=approvals,
             )
             if not decision.allowed:
                 return f"Protected cognitive target ({decision.code.value}): {decision.detail}"
@@ -190,8 +212,9 @@ class PermissionGate:
                 actor_id="body:permission-gate",
                 targets=targets,
                 operation=WriteOperation.UPDATE,
+                action_digest=digest,
                 project_root=self.project_root,
-                approvals=self._protection_approvals,
+                approvals=approvals,
             )
         )
         if not decision.allowed:
@@ -236,6 +259,19 @@ class PermissionGate:
         tool_name = invocation.spec.name
         args: Mapping[str, ToolArgument] = invocation.arguments
         risk_level = invocation.spec.risk_level
+
+        # Cognitive protection first: tool overrides must not open constitution/authority writes.
+        protection_reason = self._check_cognitive_protection(tool_name, args)
+        if protection_reason is not None:
+            logger.warning("DENIED protected cognitive target write: %s", protection_reason)
+            return PermissionDecision(
+                spec=invocation.spec,
+                permission=Permission.DENY,
+                source="cognitive_protection",
+                reason=protection_reason,
+                inspected_path=None,
+                executed_path=None,
+            )
 
         if tool_name in self._overrides:
             return PermissionDecision(
@@ -286,19 +322,6 @@ class PermissionGate:
                         inspected_path=None,
                         executed_path=None,
                     )
-
-        # 2c. cognitive protected target (P03) — 헌법/authority/premise/이력 쓰기 allowlist
-        protection_reason = self._check_cognitive_protection(tool_name, args)
-        if protection_reason is not None:
-            logger.warning("DENIED protected cognitive target write: %s", protection_reason)
-            return PermissionDecision(
-                spec=invocation.spec,
-                permission=Permission.DENY,
-                source="cognitive_protection",
-                reason=protection_reason,
-                inspected_path=None,
-                executed_path=None,
-            )
 
         # 3. 경로 기반 샌드박싱 (파일 도구) — inspected path == executed path (WS-02)
         path_decision = None

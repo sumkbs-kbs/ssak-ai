@@ -229,6 +229,7 @@ class SandboxRunner:
         restrict_reads: bool = False,
         require_sandbox: bool = False,
         read_allow_paths: Sequence[str] = (),
+        protected_write_deny_paths: Sequence[str] | None = None,
     ):
         """Initialize the SandboxRunner.
 
@@ -242,6 +243,9 @@ class SandboxRunner:
             require_sandbox: True면 ``enabled``와 무관하게 실제 샌드박스 실행만
                 허용한다(설정으로 꺼져 있으면 raw 실행 대신 fail-closed).
             read_allow_paths: restrict_reads=True일 때 추가로 읽기를 허용할 경로.
+            protected_write_deny_paths: project root 안에서도 쓰기를 거부할 절대경로.
+                None이면 default_protected_roots(project_root)를 사용한다.
+                빈 시퀀스는 명시적으로 deny 없음을 뜻한다.
 
         """
         self.project_root: str = os.path.realpath(os.path.abspath(project_root))
@@ -256,6 +260,26 @@ class SandboxRunner:
         self.read_allow_paths: tuple[str, ...] = tuple(
             os.path.realpath(os.path.abspath(p)) for p in read_allow_paths if p
         )
+        if protected_write_deny_paths is None:
+            try:
+                from antigravity_k.engine.cognitive.protected_targets import (
+                    sandbox_protected_unlink_denies,
+                    sandbox_protected_write_denies,
+                )
+
+                self.protected_write_deny_paths: tuple[str, ...] = sandbox_protected_write_denies(self.project_root)
+                self.protected_unlink_deny_paths: tuple[str, ...] = sandbox_protected_unlink_denies(self.project_root)
+            except Exception as exc:
+                # Prefer empty deny only for unsandboxed compatibility; require_sandbox
+                # callers still fail closed when no Darwin/Docker boundary exists.
+                logger.warning("protected write deny list unavailable: %s", exc)
+                self.protected_write_deny_paths = ()
+                self.protected_unlink_deny_paths = ()
+        else:
+            self.protected_write_deny_paths = tuple(
+                os.path.realpath(os.path.abspath(p)) for p in protected_write_deny_paths if p
+            )
+            self.protected_unlink_deny_paths = ()
         self._platform: str = platform.system()
 
     def execute(
@@ -385,6 +409,28 @@ class SandboxRunner:
             if profile_path and os.path.exists(profile_path):
                 os.unlink(profile_path)
 
+    def _protected_write_deny_section(self) -> str:
+        """seatbelt: allow(root) 뒤에 오는 보호 경로 write/unlink deny."""
+        lines: list[str] = []
+        root = self.project_root
+
+        def _in_project(real: str) -> bool:
+            return real == root or real.startswith(root + os.sep)
+
+        for path in self.protected_write_deny_paths:
+            real = os.path.realpath(path)
+            if not _in_project(real) or real == root:
+                continue
+            lines.append(f'(deny file-write* (subpath "{real}"))')
+            lines.append(f'(deny file-write* (literal "{real}"))')
+        for path in getattr(self, "protected_unlink_deny_paths", ()):
+            real = os.path.realpath(path)
+            if not _in_project(real) or real == root:
+                continue
+            lines.append(f'(deny file-write-unlink (subpath "{real}"))')
+            lines.append(f'(deny file-write-unlink (literal "{real}"))')
+        return "\n".join(lines)
+
     def build_seatbelt_profile(self) -> str:
         """Return the seatbelt profile used by long-lived sandbox clients."""
         return self._build_seatbelt_profile()
@@ -431,10 +477,17 @@ class SandboxRunner:
                 read_rules.append(f'(allow file-read* (subpath "{p}"))')
             read_section = "\n".join(read_rules)
             # restrict 모드: 쓰기도 root만. /tmp, /var/folders 전체 쓰기 허용 제거.
-            write_section = f'(allow file-write* (subpath "{root}"))\n(allow file-write* (literal "/dev/null"))'
+            deny = self._protected_write_deny_section()
+            write_section = f'(allow file-write* (subpath "{root}"))\n(allow file-write* (literal "/dev/null"))' + (
+                f"\n{deny}" if deny else ""
+            )
         else:
             read_section = "(allow file-read*)"
             cache_section = f'(allow file-write* (subpath "{os.path.expanduser("~/.cache")}"))'
+            deny = self._protected_write_deny_section()
+            # 보호 deny는 /tmp·/var/folders 등 넓은 allow보다 뒤에 둔다.
+            # 임시 project root가 /var/folders 아래일 때 넓은 allow가
+            # 앞선 deny를 무력화하지 않게 한다.
             write_section = f""";; 프로젝트 디렉토리 쓰기 허용
 (allow file-write* (subpath "{root}"))
 ;; 임시 디렉토리 (빌드 산출물)
@@ -444,7 +497,9 @@ class SandboxRunner:
 (allow file-write* (subpath "/private/var/folders"))
 (allow file-write* (literal "/dev/null"))
 ;; 사용자 캐시 (pip, npm 등)
-{cache_section}"""
+{cache_section}
+;; 보호 경로 deny (넓은 allow 이후 — 이후 규칙/구체 path 우선)
+{deny}"""
 
         return f"""(version 1)
 (deny default)
@@ -499,6 +554,13 @@ class SandboxRunner:
             "-w",
             working_dir,
         ]
+        # Protected paths: remount read-only over the RW workspace bind (later mounts win).
+        for host_path in self.protected_write_deny_paths:
+            real = os.path.realpath(host_path)
+            if not (real == self.project_root or real.startswith(self.project_root + os.sep)):
+                continue
+            rel = os.path.relpath(real, self.project_root).replace(os.sep, "/")
+            docker_cmd.extend(["-v", f"{real}:/workspace/{rel}:ro"])
         if network_flag:
             docker_cmd.append(network_flag)
         docker_cmd.extend(["python:3.12-slim", "sh", "-c", self._limited_command(command, timeout)])

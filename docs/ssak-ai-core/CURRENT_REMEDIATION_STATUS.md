@@ -215,3 +215,11 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - Added `R15/ENTRY_MATRIX.md`
 - Suite active+surface+feature_off+r15_composition: **48 passed**
 - Independent R15-V still open; ops/CR-14 still **NO-GO**
+
+## 2026-09-26 21:40 KST — R01 residual close
+
+- Restored seatbelt `_protected_write_deny_section` (after broad allow)
+- Docker `:ro` remounts for protected paths; Linux without Docker fail-closed
+- Restored `protection_action_digest`; protection before overrides; injected guard preserved
+- Suite **62 passed** (`test_r01_residual` + prior R01 suites)
+- Independent R01-V still open; ops/CR-14 still **NO-GO**

@@ -5,8 +5,14 @@
     "R01-A2": "PASS",
     "R01-A3": "PASS",
     "R01-A4": "PASS",
+    "R01-residual-order": "PASS",
+    "R01-residual-linux-fail-closed": "PASS",
+    "R01-residual-docker-ro": "PASS",
+    "R01-residual-digest": "PASS",
     "R01-E": "PASS",
-    "R01-V": "PASS_SELF_REVIEW_LIMITATION"
+    "R01-V": "NOT_CLAIMED"
   },
-  "pytest": "58 passed"
+  "pytest": "62 passed",
+  "self_review": true,
+  "ops_cr14": "NO-GO"
 }

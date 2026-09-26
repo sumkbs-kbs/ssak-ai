@@ -6,6 +6,7 @@
         ".venv/bin/python",
         "-m",
         "pytest",
+        "tests/cognitive/test_r01_residual.py",
         "tests/cognitive/test_r01_protected_sandbox.py",
         "tests/cognitive/test_protection_boundaries.py",
         "tests/cognitive/test_protection.py",
@@ -14,8 +15,7 @@
         "-p",
         "no:cacheprovider"
       ],
-      "exit": 0,
-      "summary": "58 passed"
+      "expected": "62 passed"
     }
   ]
 }
