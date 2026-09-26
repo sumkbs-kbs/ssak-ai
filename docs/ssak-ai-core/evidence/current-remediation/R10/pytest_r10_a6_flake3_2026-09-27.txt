@@ -1,0 +1,9 @@
+=== flake 1 ===
+.                                                                        [100%]
+1 passed in 1.19s
+=== flake 2 ===
+.                                                                        [100%]
+1 passed in 1.22s
+=== flake 3 ===
+.                                                                        [100%]
+1 passed in 1.24s

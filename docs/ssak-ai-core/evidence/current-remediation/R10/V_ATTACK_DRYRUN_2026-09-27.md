@@ -9,8 +9,8 @@
 ╚══════════════════════════════════════════════════════════════════╝
 ```
 
-Prepared: 2026-09-27 04:59 KST  
-Executor tip (docs commit parent): `551a55c1365f0d8271aaf22c9d35d7225e276840` on `codex/m1-task-events` (**no push**)  
+Prepared: 2026-09-27 04:59 KST · Attack 6 PARTIAL update: 2026-09-27 05:36 KST  
+Executor tip advances with residual test commit on `codex/m1-task-events` (**no push**)  
 Residual-close pin (unchanged): `7e0fd643` (`fix(ssak-ai): R10 late-observation history without projection mutate`)  
 Playbook: [../INDEPENDENT_V_ATTACK_NOTES.md](../INDEPENDENT_V_ATTACK_NOTES.md) § R10  
 Verdict slots in ATTACK_NOTES: **left blank / OPEN** (this dry-run does not fill them)
@@ -54,12 +54,12 @@ Inspection transcript: `attack_inspection_2026-09-27.txt`
 | 3 | UNKNOWN/timeout pending — timeout does not clear claim | **RUN** | `test_r10_a4_timeout_does_not_release_claim` green; `pending_with_reasons` docstring: *timeout never clears these rows*. |
 | 4 | Crash/restart observe never redispatches | **RUN** | `test_r10_a1_restart_observe_keeps_dispatch_count_one` green (`redispatched is False`, dispatch count 1); HTTP observe also `redispatched: false`. |
 | 5 | External UNKNOWN — no auto redispatch without auth | **RUN** | `test_r10_dispatch_exception_stays_unknown_until_observation` green; `observe` docstring *Never redispatches*; all observe return paths set `redispatched=False`. |
-| 6 | Two processes late conflicting observes on settled claim | **NOT_RUN** | No R10 multi-process late-observe harness. Existing multiprocessing in `test_action_safety` is R08 dual-dispatch, not late-history. Multi-process live remains Medium/OPEN. |
+| 6 | Two processes late conflicting observes on settled claim | **PARTIAL** (single-host spawn) | Added `test_r10_a6_cross_process_late_conflicting_observes` (`spawn` + Barrier + Queue). Settled claim + two OS processes submit conflicting late observes against shared `CanonicalStore` SoftFileLock + `SqliteActionJournal`. Both → `PROJECTION_SETTLED`, `redispatched=False`, distinct `late_observation_history` rows; claim projection unchanged. Flake 3× green. **Caveat:** one-host SoftFileLock store, not multi-host/NFS live. |
 
 ## Remaining OPEN items (for future independent reviewer)
 
 1. **Independent R10-V** itself — this file is dry-run evidence only; Verdict slot stays OPEN.
-2. **Multi-process live** late-history / concurrent conflicting observe races (ATTACK_NOTES §7).
+2. **Multi-host / NFS** late-history races beyond single-host SoftFileLock CanonicalStore (Attack 6 remaining gap). Single-host spawn PARTIAL only.
 3. Mapping UNKNOWN → success in any helper (must stay forbidden).
 4. **Ops / CR-14 / production enablement** — still **NO-GO**.
 
@@ -70,6 +70,14 @@ Inspection transcript: `attack_inspection_2026-09-27.txt`
 - Suite green ≠ V PASS
 - Implementer/secondary ≠ independent reviewer
 - Single-process late-history ≠ multi-process PASS
+- Single-host SoftFileLock late-observe ≠ multi-host / Independent R10-V PASS
+
+
+## Implementer residual update — 2026-09-27 05:36 KST (NOT Independent R10-V)
+
+- Node: `tests/cognitive/test_action_safety.py::test_r10_a6_cross_process_late_conflicting_observes`
+- Evidence: `pytest_r10_a6_multiproc_2026-09-27.txt` (action_safety+active_api **36 passed**), `pytest_r10_a6_node_2026-09-27.txt`, `pytest_r10_a6_flake3_2026-09-27.txt` (3× green)
+- Honesty: single-host CanonicalStore SoftFileLock; **no** Independent R10-V PASS; ATTACK_NOTES Verdict slot remains OPEN; ops/CR-14 **NO-GO**.
 
 ## Pointers
 

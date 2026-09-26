@@ -836,3 +836,154 @@ def test_r08_a5_cross_process_concurrent_admit_with_reopen(tmp_path):
     assert by_role["reopen_peer"]["refused"] is True
     assert by_role["reopen_peer"]["refusal"] in {"DUPLICATE_ACTION", "STALE_READINESS"}
     assert effect_text == ""
+
+
+def _r10_a6_late_observe_worker(
+    store_root: str,
+    journal_path: str,
+    receipt_id: str,
+    detail: str,
+    barrier,
+    results,
+) -> None:
+    """spawn worker: conflicting late observe against shared settled claim + CanonicalStore."""
+
+    from datetime import timedelta
+    from pathlib import Path
+
+    from antigravity_k.engine.cognitive.action_journal import SqliteActionJournal
+    from antigravity_k.engine.cognitive.actions import (
+        ActionDispatcher,
+        ActionObservation,
+        ActionRefusal,
+        CallablePort,
+        ObservationSubmission,
+    )
+    from antigravity_k.engine.cognitive.store import CanonicalStore
+    from tests.cognitive.test_actions import BODY, NOW, PROJECT
+
+    store = CanonicalStore(Path(store_root), git_enabled=False, lock_timeout=30.0)
+    journal = SqliteActionJournal(Path(journal_path))
+    dispatcher = ActionDispatcher(
+        port=CallablePort(lambda *_a: "unused"),
+        journal=journal,
+        record_sink=lambda records: store.commit_records(list(records)),
+        clock=lambda: NOW,
+    )
+    barrier.wait(timeout=30)
+    receive_at = NOW + timedelta(minutes=10)
+    result = dispatcher.submit_observation(
+        ObservationSubmission(
+            project_id=PROJECT,
+            action_key="r10-a6-xproc",
+            expected_receipt_id=receipt_id,
+            observation=ActionObservation(observed=True, succeeded=False, detail=detail),
+            observed_at=NOW - timedelta(hours=2),
+        ),
+        producer=BODY,
+        load_record=store.read,
+        now=receive_at,
+    )
+    results.put(
+        {
+            "detail": detail,
+            "accepted": bool(result.accepted),
+            "refusal": None if result.refusal is None else result.refusal.name,
+            "redispatched": bool(result.redispatched),
+            "observation_record_id": result.observation_record_id,
+            "projection_revision": result.projection_revision,
+            "receipt_id": result.receipt_id,
+            "expected_refusal": ActionRefusal.PROJECTION_SETTLED.name,
+        }
+    )
+
+
+def test_r10_a6_cross_process_late_conflicting_observes(tmp_path):
+    """R10-A6 residual: two OS processes late-observe a settled claim; projection stays put.
+
+    Shared CanonicalStore SoftFileLock + SqliteActionJournal on one host. Not multi-host.
+    Independent R10-V remains OPEN.
+    """
+    import multiprocessing
+
+    from antigravity_k.engine.cognitive.action_journal import SqliteActionJournal
+    from antigravity_k.engine.cognitive.actions import ObservationSubmission
+    from antigravity_k.engine.cognitive.store import CanonicalStore
+
+    store_root = tmp_path / "store"
+    journal_path = tmp_path / "claims.sqlite"
+    store = CanonicalStore(store_root, git_enabled=False, lock_timeout=30.0)
+    journal = SqliteActionJournal(journal_path)
+    dispatcher = ActionDispatcher(
+        port=CallablePort(lambda *_a: "ok"),
+        journal=journal,
+        record_sink=lambda records: store.commit_records(list(records)),
+        clock=lambda: NOW,
+    )
+    run = dispatcher.execute(make_intent(action_key="r10-a6-xproc"), project_id=PROJECT, producer=BODY)
+    assert run.receipt is not None
+    first = dispatcher.submit_observation(
+        ObservationSubmission(
+            project_id=PROJECT,
+            action_key="r10-a6-xproc",
+            expected_receipt_id=run.receipt.receipt_id,
+            observation=ActionObservation(observed=True, succeeded=True, detail="settle-ok"),
+        ),
+        producer=BODY,
+        load_record=store.read,
+        now=NOW,
+    )
+    assert first.accepted
+    claim = journal.get(PROJECT, "r10-a6-xproc")
+    assert claim is not None and claim.status == "settled"
+    settle_digest = claim.observation_digest
+    settle_obs_id = claim.observation_record_id
+    settle_rev = claim.projection_revision
+    receipt_id = claim.receipt_id
+    assert receipt_id is not None
+
+    context = multiprocessing.get_context("spawn")
+    barrier = context.Barrier(2)
+    results = context.Queue()
+    workers = [
+        context.Process(
+            target=_r10_a6_late_observe_worker,
+            args=(str(store_root), str(journal_path), receipt_id, detail, barrier, results),
+        )
+        for detail in ("late-flip-A", "late-flip-B")
+    ]
+    for worker in workers:
+        worker.start()
+    try:
+        outcomes = [results.get(timeout=45) for _ in workers]
+        for worker in workers:
+            worker.join(timeout=30)
+            assert worker.exitcode == 0, (worker.exitcode, outcomes)
+    finally:
+        for worker in workers:
+            if worker.is_alive():
+                worker.terminate()
+                worker.join(timeout=5)
+        results.close()
+
+    assert len(outcomes) == 2
+    for item in outcomes:
+        assert item["accepted"] is False
+        assert item["refusal"] == "PROJECTION_SETTLED"
+        assert item["redispatched"] is False
+        assert item["observation_record_id"] is not None
+        assert item["observation_record_id"] != settle_obs_id
+        assert item["projection_revision"] == settle_rev
+        assert item["receipt_id"] == receipt_id
+        history = store.read(item["observation_record_id"])
+        assert history is not None
+        assert history.payload.method == "late_observation_history"
+
+    claim2 = journal.get(PROJECT, "r10-a6-xproc")
+    assert claim2 is not None
+    assert claim2.observation_digest == settle_digest
+    assert claim2.observation_record_id == settle_obs_id
+    assert claim2.projection_revision == settle_rev
+    assert claim2.status == "settled"
+    assert {item["detail"] for item in outcomes} == {"late-flip-A", "late-flip-B"}
+    assert len({item["observation_record_id"] for item in outcomes}) == 2
