@@ -7,5 +7,6 @@
     "tests/cognitive/test_r01_residual.py",
     "tests/cognitive/test_r01_protected_sandbox.py",
     "docs/ssak-ai-core/evidence/current-remediation/R01/"
-  ]
+  ],
+  "head": "84210aec7e8c05e56d7be6310c31641195c9e5f9"
 }
