@@ -193,3 +193,11 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - Cards: R01, R02, R03, R04, R08, R10, R15
 - **Not** independent V; ops/CR-14 still **NO-GO**
 - Top residuals: R15 default/composition, R01 non-macOS + seatbelt order, R08 live binding TOCTOU, R03 cross-process stage race
+
+## 2026-09-26 21:20 KST — failure-model residual re-scan (priority cards)
+
+- Tip `c94fb491`
+- Wrote evidence/current-remediation/FAILURE_MODEL_RESIDUAL_REVIEW.md
+- Cards: R01, R02, R03, R04, R08, R10, R15
+- Code residual highlight: R08 admit path still compares readiness to intent.freshness() (authority re-resolve separate)
+- Not independent V; ops/CR-14 still NO-GO

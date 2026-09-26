@@ -36,7 +36,16 @@ R00, R05–R07, R09, R11–R14, R16–R19, R23 — suite evidence present; V sti
 - Do not treat R19 scripted harness as live LLM growth efficacy.
 - Do not authorize destructive migration or production ACTIVE default from this checklist.
 
-## Implementer failure-model re-scan (2026-09-26 21:15 KST)
+## Implementer failure-model re-scan (2026-09-26 21:20 KST)
+<<<<<<< Updated upstream
 
-See [FAILURE_MODEL_RESIDUAL_REVIEW.md](FAILURE_MODEL_RESIDUAL_REVIEW.md) (tip ).
-This scan **does not** check any R*-V box. Highest residual: R15 defaults, R01 non-macOS/seatbelt order, R08 TOCTOU, R03 cross-process stage race.
+See [FAILURE_MODEL_RESIDUAL_REVIEW.md](FAILURE_MODEL_RESIDUAL_REVIEW.md) (tip `c94fb491`).
+This scan does **not** check any R*-V box.
+Highest residual from code re-read: **R08** `assert_fresh(readiness, intent.freshness())` may still self-compare decision/state/policy; then R15 defaults, R01 non-macOS/seatbelt order, R03 cross-process stage race.
+=======
+
+See [FAILURE_MODEL_RESIDUAL_REVIEW.md](FAILURE_MODEL_RESIDUAL_REVIEW.md) (tip `c94fb491`).
+This scan does **not** check any R*-V box.
+Highest residual from code re-read: **R08** `assert_fresh(readiness, intent.freshness())` may still self-compare decision/state/policy; then R15 defaults, R01 non-macOS/seatbelt order, R03 cross-process stage race.
+
+>>>>>>> Stashed changes
