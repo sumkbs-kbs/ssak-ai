@@ -162,3 +162,11 @@ Source digest가 바뀌면 해당 행은 재검증 전까지 HISTORICAL이다 ([
 ## 2026-09-26 — mypy unblock for local commit
 
 pre-commit mypy cleared (542 files Success). Remediation commit attempted after this note. Ops/cutover still **NO-GO**.
+
+## 2026-09-26 — local commit landed
+
+- Commit: `d3aee3d8` (`d3aee3d8ccc4c3d167841f9ce8497a08d8834487`)
+- Message: chore(ssak-ai): R00–R23 remediation + mypy/ruff unblock (ops NO-GO)
+- Branch: `codex/m1-task-events` (ahead of origin; **not pushed**)
+- pre-commit: ruff + mypy Passed
+- Ops/cutover / CR-14: still **NO-GO**
