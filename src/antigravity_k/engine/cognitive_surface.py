@@ -50,7 +50,7 @@ from antigravity_k.engine.cognitive.models import (
     same_enum,
     to_wire,
 )
-from antigravity_k.engine.cognitive.readiness import ReadinessResult
+from antigravity_k.engine.cognitive.readiness import FreshnessBinding, ReadinessResult
 from antigravity_k.engine.cognitive.references import is_canonical_id
 from antigravity_k.engine.cognitive.runtime import (
     CognitiveRuntime,
@@ -240,6 +240,7 @@ class CognitiveSurfaceAdapter:
         journal: ActionJournal | None = None,
         record_sink: Callable[[Sequence[Record]], CommitReceipt | None] | None = None,
         authority_resolver: Callable[[ActionIntent, datetime], AuthorityDecision] | None = None,
+        freshness_resolver: Callable[[ActionIntent, datetime], FreshnessBinding] | None = None,
         activation_authorizer: Callable[[str, str, datetime], bool] | None = None,
         producer: Producer | None = None,
         clock: Callable[[], datetime] | None = None,
@@ -253,6 +254,7 @@ class CognitiveSurfaceAdapter:
         self.journal = journal
         self.record_sink = record_sink
         self.authority_resolver = authority_resolver
+        self.freshness_resolver = freshness_resolver
         self.activation_authorizer = activation_authorizer
         self.producer = producer or Producer(kind=ProducerKind.BODY, actor_id="body:surface")
         self._clock = clock
@@ -344,9 +346,15 @@ class CognitiveSurfaceAdapter:
         return self._clock() if self._clock is not None else datetime.now(UTC)
 
     def _require_active_dependencies(self) -> None:
-        if self.journal is None or self.record_sink is None or self.authority_resolver is None:
+        if (
+            self.journal is None
+            or self.record_sink is None
+            or self.authority_resolver is None
+            or self.freshness_resolver is None
+        ):
             raise SurfaceNotReadyError(
-                "ACTIVE requires a durable journal, canonical record sink and live authority resolver"
+                "ACTIVE requires a durable journal, canonical record sink, "
+                "live authority resolver and live freshness resolver"
             )
         if self.activation_authorizer is None:
             raise SurfaceNotReadyError("ACTIVE requires authenticated human activation authorization")
@@ -398,6 +406,7 @@ class CognitiveSurfaceAdapter:
             journal=self.journal,
             record_sink=self.record_sink,
             authority_resolver=self._active_authority,
+            freshness_resolver=self._active_freshness,
         )
         runtime = self._build_runtime(dispatcher, think=think, rethink=self.rethink)
         episode = runtime.run(self._episode_request(request))
@@ -410,6 +419,14 @@ class CognitiveSurfaceAdapter:
         resolver = self.authority_resolver
         if activation is None or resolver is None:
             raise SurfaceNotReadyError("ACTIVE authorization context is missing")
+        self._authorize_activation(activation.approver, now)
+        return resolver(intent, now)
+
+    def _active_freshness(self, intent: ActionIntent, now: datetime) -> FreshnessBinding:
+        activation = self._activation
+        resolver = self.freshness_resolver
+        if activation is None or resolver is None:
+            raise SurfaceNotReadyError("ACTIVE freshness context is missing")
         self._authorize_activation(activation.approver, now)
         return resolver(intent, now)
 

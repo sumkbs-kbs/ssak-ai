@@ -8,7 +8,7 @@ from antigravity_k.engine.cognitive.action_context import ActionContext
 from antigravity_k.engine.cognitive.action_types import ActionIntent, ActionRefusal, ActionRun
 from antigravity_k.engine.cognitive.authority import scope_covers
 from antigravity_k.engine.cognitive.models import ReceiptStatus, same_enum
-from antigravity_k.engine.cognitive.readiness import ReadinessGate, StaleReadinessError
+from antigravity_k.engine.cognitive.readiness import FreshnessBinding, ReadinessGate, StaleReadinessError
 
 
 def preconditions(
@@ -68,7 +68,7 @@ def preconditions(
             f"readiness {readiness.verdict.value}: {list(readiness.blocking_conditions)}",
         )
     try:
-        ReadinessGate().assert_fresh(readiness, intent.freshness())
+        ReadinessGate().assert_fresh(readiness, _authoritative_freshness(self, intent, now))
     except StaleReadinessError as exc:
         return self._refuse(intent, ActionRefusal.STALE_READINESS, str(exc))
     if authority is not None and authority.profile_revision != (
@@ -125,3 +125,33 @@ def preconditions(
                 receipt=existing,
             )
     return None
+
+
+def _authoritative_freshness(self: ActionContext, intent: ActionIntent, now: datetime) -> FreshnessBinding:
+    """Compare readiness against live heads, never intent.freshness vs itself.
+
+    ``freshness_resolver`` supplies trusted decision/state/policy/authority revisions.
+    Request body and intent fields are not authoritative for those axes.
+    ``action_digest`` always comes from this intent's normalized args.
+    """
+
+    resolver = self.freshness_resolver
+    if resolver is not None:
+        live = resolver(intent, now)
+        return FreshnessBinding(
+            decision_revision=live.decision_revision,
+            action_digest=intent.args_digest(),
+            state_revision=live.state_revision,
+            authority_revision=live.authority_revision,
+            policy_version=live.policy_version,
+        )
+    # Unit/legacy paths without a resolver: still recompute action_digest.
+    # Decision/state/policy fall back to intent fields. ACTIVE must wire a resolver.
+    base = intent.freshness()
+    return FreshnessBinding(
+        decision_revision=base.decision_revision,
+        action_digest=intent.args_digest(),
+        state_revision=base.state_revision,
+        authority_revision=base.authority_revision,
+        policy_version=base.policy_version,
+    )

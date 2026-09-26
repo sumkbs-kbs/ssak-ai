@@ -127,3 +127,8 @@ Code note: `_protected_write_deny_section` is documented to follow allow(root); 
 - Pack tasks under SSAK_AI_REVIEW_2026-09-26/tasks/
 - Repo reports under docs/ssak-ai-core/evidence/current-remediation/R*/
 - Spot-check: action_admission.py assert_fresh call; sandbox.py protected deny section; store.py content_identity; actions.py UNKNOWN / submit_observation; dependencies.py ACTIVE not default-wired
+
+## Update 2026-09-26 21:25 KST — R08 code fix landed (self-review)
+
+`freshness_resolver` + `_authoritative_freshness` address the admit self-compare finding when a resolver is wired; ACTIVE requires the resolver.
+Residual for independent V: prove the **production** resolver reads store heads (not fixture `_matching_freshness`), and race/reservation story under multi-process load.

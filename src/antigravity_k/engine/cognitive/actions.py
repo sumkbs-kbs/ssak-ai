@@ -60,6 +60,7 @@ from antigravity_k.engine.cognitive.models import (
     Record,
     same_enum,
 )
+from antigravity_k.engine.cognitive.readiness import FreshnessBinding
 from antigravity_k.engine.cognitive.references import REL_ACTION, REL_RECEIPT, EntityType, Reference
 
 
@@ -76,6 +77,7 @@ class ActionDispatcher:
     clock: Callable[[], datetime] | None = None
     journal: ActionJournal | None = None
     authority_resolver: Callable[[ActionIntent, datetime], AuthorityDecision] | None = None
+    freshness_resolver: Callable[[ActionIntent, datetime], FreshnessBinding] | None = None
     _receipts: dict[str, ActionReceipt] = field(default_factory=dict, repr=False)
     _attempts: dict[str, int] = field(default_factory=dict, repr=False)
     _submissions: dict[str, str] = field(default_factory=dict, repr=False)

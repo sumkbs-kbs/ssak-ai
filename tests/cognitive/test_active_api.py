@@ -42,6 +42,23 @@ class ActiveFixture:
     history: DurableSurfaceHistoryStore
 
 
+def _matching_freshness(intent, now):
+    """ACTIVE fixture live head: matches readiness, recomputes action_digest from args."""
+    from antigravity_k.engine.cognitive.readiness import FreshnessBinding
+
+    readiness = intent.readiness
+    if readiness is None:
+        raise AssertionError("fixture intent requires readiness")
+    fr = readiness.freshness
+    return FreshnessBinding(
+        decision_revision=fr.decision_revision,
+        action_digest=intent.args_digest(),
+        state_revision=fr.state_revision,
+        authority_revision=fr.authority_revision,
+        policy_version=fr.policy_version,
+    )
+
+
 def build_active_fixture(root: Path) -> ActiveFixture:
     epoch = [1]
     tokens = TokenService(root / "jwt-secret", epoch_provider=lambda: epoch[0])
@@ -114,6 +131,7 @@ def build_active_fixture(root: Path) -> ActiveFixture:
             journal=journal,
             record_sink=store.commit_records,
             authority_resolver=resolve,
+            freshness_resolver=_matching_freshness,
             activation_authorizer=authorize,
             history_store=history,
         )

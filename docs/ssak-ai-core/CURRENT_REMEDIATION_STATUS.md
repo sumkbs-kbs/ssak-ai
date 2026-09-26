@@ -201,3 +201,10 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - Cards: R01, R02, R03, R04, R08, R10, R15
 - Code residual highlight: R08 admit path still compares readiness to intent.freshness() (authority re-resolve separate)
 - Not independent V; ops/CR-14 still NO-GO
+
+## 2026-09-26 21:25 KST — R08 live freshness fix
+
+- Implemented `freshness_resolver` + `_authoritative_freshness` (no intent self-compare for live axes when resolver wired)
+- ACTIVE requires freshness_resolver
+- Tests: action_safety+actions **42 passed**; active_api+surface **36 passed**
+- Independent R08-V still open; ops/CR-14 still **NO-GO**

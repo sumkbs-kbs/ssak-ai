@@ -5,8 +5,10 @@ from datetime import timedelta
 
 import pytest
 
-from antigravity_k.engine.cognitive.actions import ActionDispatcher, ActionObservation, CallablePort
+from antigravity_k.engine.cognitive.actions import ActionDispatcher, ActionObservation, ActionRefusal, CallablePort
 from antigravity_k.engine.cognitive.authority import AuthorityGrant
+from antigravity_k.engine.cognitive.models import ActionExecutionStatus
+from antigravity_k.engine.cognitive.readiness import FreshnessBinding
 from tests.cognitive.test_actions import BODY, NOW, PROJECT, make_intent
 
 
@@ -352,3 +354,178 @@ def test_r10_a4_timeout_does_not_release_claim(tmp_path):
     assert pending[0].status == PENDING
     assert pending[0].pending_reason
     assert journal.get(PROJECT, "r10-a4") is not None
+
+
+def _live_box_from_intent(intent):
+    """Mutable authoritative binding seeded from readiness (fixture store stand-in)."""
+    fr = intent.readiness.freshness
+    return {
+        "decision_revision": fr.decision_revision,
+        "state_revision": fr.state_revision,
+        "authority_revision": fr.authority_revision,
+        "policy_version": fr.policy_version,
+    }
+
+
+def _resolver_from_box(box):
+    def resolve(intent, now):
+        return FreshnessBinding(
+            decision_revision=box["decision_revision"],
+            action_digest=intent.args_digest(),
+            state_revision=box["state_revision"],
+            authority_revision=box["authority_revision"],
+            policy_version=box["policy_version"],
+        )
+
+    return resolve
+
+
+def test_r08_a1_decision_state_policy_drift_blocks_dispatch_when_authority_unchanged():
+    """R08-A1: authority same, but live decision/state/policy drift => dispatch 0."""
+    from tests.cognitive.test_actions import BODY, PROJECT, make_intent
+
+    calls: list[int] = []
+    intent = make_intent()
+    box = _live_box_from_intent(intent)
+    authority = intent.clearance.authority
+
+    # Drift decision only; authority resolver still allows.
+    box["decision_revision"] = box["decision_revision"] + 1
+    dispatcher = ActionDispatcher(
+        port=CallablePort(lambda *args: calls.append(1)),
+        authority_resolver=lambda intent, now: authority,
+        freshness_resolver=_resolver_from_box(box),
+        clock=lambda: NOW,
+    )
+    result = dispatcher.execute(intent, project_id=PROJECT, producer=BODY)
+    assert result.refused
+    assert result.refusal is ActionRefusal.STALE_READINESS
+    assert calls == []
+
+    # State drift
+    box["decision_revision"] = intent.readiness.freshness.decision_revision
+    box["state_revision"] = box["state_revision"] + 1
+    result = dispatcher.execute(intent, project_id=PROJECT, producer=BODY)
+    assert result.refusal is ActionRefusal.STALE_READINESS
+    assert calls == []
+
+    # Policy invalidation
+    box["state_revision"] = intent.readiness.freshness.state_revision
+    box["policy_version"] = "policy/v2-reopened"
+    result = dispatcher.execute(intent, project_id=PROJECT, producer=BODY)
+    assert result.refusal is ActionRefusal.STALE_READINESS
+    assert calls == []
+
+
+def test_r08_a2_live_freshness_or_args_change_during_persist_blocks_effect():
+    """R08-A2: after intent persist, live decision reopen or args digest drift => effect 0."""
+    from dataclasses import replace
+
+    from tests.cognitive.test_actions import BODY, PROJECT, make_intent
+
+    calls: list[int] = []
+    intent = make_intent()
+    box = _live_box_from_intent(intent)
+    authority = [intent.clearance.authority]
+
+    def reopen_on_persist(records):
+        box["decision_revision"] = box["decision_revision"] + 1
+
+    dispatcher = ActionDispatcher(
+        port=CallablePort(lambda *args: calls.append(1)),
+        record_sink=reopen_on_persist,
+        authority_resolver=lambda intent, now: authority[0],
+        freshness_resolver=_resolver_from_box(box),
+        clock=lambda: NOW,
+    )
+    result = dispatcher.execute(intent, project_id=PROJECT, producer=BODY)
+    assert result.refused
+    assert result.refusal is ActionRefusal.STALE_READINESS
+    assert calls == []
+
+    # Args change path: readiness bound to old digest, intent carries new args.
+    calls.clear()
+    intent2 = make_intent(arguments={"file_path": "src/a.py", "content": "changed"})
+    # readiness still on original digest from a different intent
+    old = make_intent()
+    mismatched = replace(intent2, readiness=old.readiness)
+    box2 = _live_box_from_intent(old)  # live heads match old readiness, not new args digest
+    dispatcher2 = ActionDispatcher(
+        port=CallablePort(lambda *args: calls.append(1)),
+        authority_resolver=lambda intent, now: mismatched.clearance.authority,
+        freshness_resolver=_resolver_from_box(box2),
+        clock=lambda: NOW,
+    )
+    result2 = dispatcher2.execute(mismatched, project_id=PROJECT, producer=BODY)
+    assert result2.refusal is ActionRefusal.STALE_READINESS
+    assert calls == []
+
+
+def test_r08_a3_concurrent_reopen_and_dispatch_ordering():
+    """R08-A3: reopen that wins the live head before second admit rejects; stable head allows one effect."""
+    import threading
+
+    from tests.cognitive.test_actions import BODY, PROJECT, make_intent
+
+    calls: list[int] = []
+    intent = make_intent(action_key="r08-race")
+    box = _live_box_from_intent(intent)
+    lock = threading.Lock()
+    barrier = threading.Barrier(2)
+
+    def resolve(intent, now):
+        with lock:
+            return FreshnessBinding(
+                decision_revision=box["decision_revision"],
+                action_digest=intent.args_digest(),
+                state_revision=box["state_revision"],
+                authority_revision=box["authority_revision"],
+                policy_version=box["policy_version"],
+            )
+
+    def reopen_on_persist(records):
+        # Simulate concurrent reopen after first admit passed and claim persisted.
+        barrier.wait(timeout=2)
+        with lock:
+            box["decision_revision"] = box["decision_revision"] + 1
+
+    dispatcher = ActionDispatcher(
+        port=CallablePort(lambda *args: calls.append(1)),
+        record_sink=reopen_on_persist,
+        authority_resolver=lambda intent, now: intent.clearance.authority,
+        freshness_resolver=resolve,
+        clock=lambda: NOW,
+    )
+
+    def reopen_worker():
+        barrier.wait(timeout=2)
+        with lock:
+            # If persist already bumped, keep; else bump as concurrent reopen.
+            box["decision_revision"] = max(box["decision_revision"], intent.readiness.freshness.decision_revision + 1)
+
+    worker = threading.Thread(target=reopen_worker)
+    worker.start()
+    result = dispatcher.execute(intent, project_id=PROJECT, producer=BODY)
+    worker.join(timeout=2)
+    # Second preconditions sees drifted head => refuse, or if ordering lost the race
+    # after dispatch we still require calls <= 1 and refuse when drift observed.
+    assert calls == [] or result.refused
+    if not result.refused:
+        # Extremely tight race: effect happened — still only one call allowed.
+        assert calls == [1]
+    else:
+        assert result.refusal is ActionRefusal.STALE_READINESS
+        assert calls == []
+
+    # Stable head: exactly one successful dispatch.
+    calls.clear()
+    intent_ok = make_intent(action_key="r08-stable")
+    box_ok = _live_box_from_intent(intent_ok)
+    ok = ActionDispatcher(
+        port=CallablePort(lambda *args: calls.append(1)),
+        authority_resolver=lambda intent, now: intent.clearance.authority,
+        freshness_resolver=_resolver_from_box(box_ok),
+        clock=lambda: NOW,
+    ).execute(intent_ok, project_id=PROJECT, producer=BODY)
+    assert ok.status is ActionExecutionStatus.DISPATCHED
+    assert calls == [1]

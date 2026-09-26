@@ -14,6 +14,7 @@ from antigravity_k.engine.cognitive.action_types import (
 )
 from antigravity_k.engine.cognitive.authority import AuthorityDecision
 from antigravity_k.engine.cognitive.models import Record
+from antigravity_k.engine.cognitive.readiness import FreshnessBinding
 
 
 class ActionContext(Protocol):
@@ -22,6 +23,9 @@ class ActionContext(Protocol):
 
     @property
     def authority_resolver(self) -> Callable[[ActionIntent, datetime], AuthorityDecision] | None: ...
+
+    @property
+    def freshness_resolver(self) -> Callable[[ActionIntent, datetime], FreshnessBinding] | None: ...
 
     @property
     def journal(self) -> ActionJournal | None: ...

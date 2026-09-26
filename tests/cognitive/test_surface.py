@@ -54,6 +54,23 @@ POLICY_VERSION = "surface-v1"
 ACTION_KEY = "surface:append:1"
 
 
+def _matching_freshness(intent, now):
+    """ACTIVE fixture live head: matches readiness, recomputes action_digest from args."""
+    from antigravity_k.engine.cognitive.readiness import FreshnessBinding
+
+    readiness = intent.readiness
+    if readiness is None:
+        raise AssertionError("fixture intent requires readiness")
+    fr = readiness.freshness
+    return FreshnessBinding(
+        decision_revision=fr.decision_revision,
+        action_digest=intent.args_digest(),
+        state_revision=fr.state_revision,
+        authority_revision=fr.authority_revision,
+        policy_version=fr.policy_version,
+    )
+
+
 def surface_intent(*, with_clearance: bool = True, readiness: object | None = "auto") -> SurfaceIntentRequest:
     request = raw_surface_intent()
     digest = request.to_intent().args_digest()
@@ -296,6 +313,7 @@ def test_active_requires_human_approval_and_ports(tmp_path: Path) -> None:
         journal=SqliteActionJournal(tmp_path / "claims.sqlite"),
         record_sink=store.commit_records,
         authority_resolver=lambda action, now: decision,
+        freshness_resolver=_matching_freshness,
         activation_authorizer=lambda project, actor, now: project == ACTIVE_PROJECT_ID and actor == "human:owner",
     )
     with pytest.raises(SurfaceNotReadyError, match="사람 승인"):
@@ -575,6 +593,7 @@ def test_active_revalidates_authenticated_activation(tmp_path: Path) -> None:
         journal=SqliteActionJournal(tmp_path / "claims.sqlite"),
         record_sink=store.commit_records,
         authority_resolver=lambda action, now: decision,
+        freshness_resolver=_matching_freshness,
         activation_authorizer=lambda project, actor, now: allowed[0],
     )
     with pytest.raises(SurfaceNotReadyError, match="authorization denied"):
