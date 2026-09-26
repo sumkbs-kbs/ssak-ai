@@ -1,6 +1,6 @@
 # Current remediation status (R-series)
 
-기준: 2026-09-27 05:01 KST · tip advances with R08→R15→R01→R02→R10→R03→R04 V attack dry-run docs complete as implementer secondary evidence (parent `c151853d`); Independent V still OPEN; residual pins unchanged · branch `codex/m1-task-events` (ahead; no push).
+기준: 2026-09-27 05:37 KST · tip `e4add6b6` — R08 Attack5 + R10 Attack6 multiproc residuals PARTIAL (single-host); Independent V still OPEN; residual-close pins unchanged · branch `codex/m1-task-events` (ahead; no push).
 
 이 표가 **현재 작업의 유일한 진입점**이다. 아래 HISTORICAL 행의 과거 PASS는 보존하되 CURRENT_PASS로 자동 승계하지 않는다.
 Source digest가 바뀌면 해당 행은 재검증 전까지 HISTORICAL이다 ([R00 evidence](evidence/current-remediation/R00/)).
@@ -350,3 +350,12 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - **No ops GO, cutover GO, or CR-14 GO.** Residual-close pins unchanged.
 - Multi-host/NFS (R03/R04), multi-process live late-history (R10), and other §7 OPEN items remain for a future independent reviewer / Human ops.
 - Next: independent reviewer executes ATTACK_NOTES; Human for cutover/CR-14 (**NO-GO**).
+
+## 2026-09-27 05:37 KST — R08/R10 multiproc residual (implementer secondary; NOT Independent V)
+
+- Commits: `d56cf1c9` (`test(ssak-ai): R08 multi-process admit race residual`), `e4add6b6` (`test(ssak-ai): R10 multi-process late-observe residual`). **No push.**
+- **R08 Attack 5:** `test_r08_a5_cross_process_concurrent_admit_with_reopen` — `spawn`+Barrier+Queue; SoftFileLock JSON box stand-in + shared journal. Mid-admit reopen → claim winner `STALE_READINESS` / effect 0; peer refuse. Dry-run **PARTIAL** (not live ACTIVE/daemon CanonicalStore heads). Flake 3× green. Suite action_safety+actions **48 passed** (after R10 node also landed).
+- **R10 Attack 6:** `test_r10_a6_cross_process_late_conflicting_observes` — settled claim + two OS late conflicting observes; both `PROJECTION_SETTLED` / `redispatched=False` / distinct `late_observation_history`; projection unchanged. Dry-run **PARTIAL** (single-host SoftFileLock). Flake 3× green. Suite action_safety+active_api **36 passed**.
+- **No** Independent R*-V PASS, ops GO, cutover GO, CR-14 GO. ATTACK_NOTES Verdict slots remain OPEN.
+- Remaining OPEN: production ACTIVE store-backed freshness_resolver; R08 daemon/store-head multiproc beyond JSON box; R10 multi-host/NFS late-history; residual-close pins unchanged (`3ab29d11` / `7e0fd643`).
+- Next: Independent V by separate reviewer (not implementer queue reclaim). Boot stays SHADOW-only; no R21 `--apply`.

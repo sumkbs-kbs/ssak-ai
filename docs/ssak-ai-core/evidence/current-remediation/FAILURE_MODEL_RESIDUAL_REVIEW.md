@@ -70,7 +70,7 @@ Code note: `_protected_write_deny_section` is documented to follow allow(root); 
 |---|---|---|
 | Authority fresh but decision/state/policy stale still dispatches | Yes, live-resolver regression suite | **Closed in implementer code/tests 2026-09-26; Independent V must verify the production store-backed resolver** |
 | Revoke / args change between intent persist and effect | Yes, resolver + args binding tests | Low code residual; Independent V must exercise the timing window |
-| Concurrent dispatch vs reopen ordering | A3 race tests | **Medium for Independent V:** multi-process reservation/ordering remains open |
+| Concurrent dispatch vs reopen ordering | A3 race + A5 cross-process spawn (2026-09-27) | **Low/PARTIAL single-host** SoftFileLock JSON box + shared journal (`test_r08_a5…`); production ACTIVE/daemon store-head multiproc still **Medium/OPEN** for Independent V |
 | Double execute on same binding | A4 | Low in code evidence; Independent V may still challenge duplicate-binding behavior |
 
 The prior 2026-09-26 self-compare finding was addressed by `freshness_resolver` + `_authoritative_freshness`: when wired, decision/state/policy/authority revisions come from the live resolver rather than intent fields. The implementer code residual is therefore closed at the 2026-09-26 fix tip; this does **not** establish R08-V PASS.
@@ -86,7 +86,7 @@ The prior 2026-09-26 self-compare finding was addressed by `freshness_resolver` 
 | Stale revision / foreign project accepted | A3 | Low |
 | Timeout clears claim and auto-retries | A4 | Low if pending_reason holds |
 | UNKNOWN promoted to success | Forbidden in actions module docstring | Critical if any helper maps unknown to ok |
-| Late older observation downgrades projection | CAS refuse + 2026-09-27 history append close | **Low/closed single-process; Medium multi-process live remains** |
+| Late older observation downgrades projection | CAS refuse + history append + A6 cross-process spawn (2026-09-27) | **Low/closed single-process; Low/PARTIAL single-host SoftFileLock** (`test_r10_a6…`); multi-host/NFS still **Medium/OPEN** |
 
 **Independent V focus:** never delete claim on timeout; observe never redispatches; external non-idempotent unknown never auto-retry.
 
@@ -183,3 +183,9 @@ Next implementer priority was R03 (closed 2026-09-27 SoftFileLock cross-process)
 **Implementer queue empty for priority cards:** R01, R02, R03, R04, R08, R10, and R15 have their documented implementer residuals closed or lowered to the evidence above. This is not an R*-V or operations approval.
 
 Next is **Independent V**, including the explicitly open multi-host/multi-process boundaries, followed by **Human ops** review for cutover/CR-14. No production ACTIVE, migration `--apply`, ops GO, multi-host PASS, or CR-14 GO is claimed.
+
+## Update 2026-09-27 05:37 KST — R08/R10 single-host multiproc residuals (NOT Independent V)
+
+- R08: `test_r08_a5_cross_process_concurrent_admit_with_reopen` — SoftFileLock JSON box stand-in; Attack 5 dry-run **PARTIAL**. Production ACTIVE store-backed resolver / daemon head race still OPEN.
+- R10: `test_r10_a6_cross_process_late_conflicting_observes` — SoftFileLock CanonicalStore; Attack 6 dry-run **PARTIAL**. Multi-host/NFS still OPEN.
+- Suites green; flake 3× on new nodes. **No** R*-V PASS / ops / CR-14 GO. Residual-close pins unchanged. Implementer priority queue still empty for Independent V reclaim — secondary evidence only.

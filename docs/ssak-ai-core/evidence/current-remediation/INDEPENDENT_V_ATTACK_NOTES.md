@@ -2,7 +2,7 @@
 
 Prepared: 2026-09-27 04:18 KST  
 Review tip: `78c2c8f6` (`78c2c8f6f041d6cffce44107612d31c97a2ba1aa`) on `codex/m1-task-events` (ahead; **no push**) — product/code tip for V; this file lands in a docs-only follow-up commit  
-Residual-close pins: still those in [INDEPENDENT_REVIEW_CHECKLIST.md](./INDEPENDENT_REVIEW_CHECKLIST.md) (R01 `84210aec`, R02 `12a0af54`, R03 `30af5c9e`, R04 `52af3bfa`, R08 `3ab29d11`, R10 `7e0fd643`, R15 `c21f0695`) — tip advances docs/queue only.
+Residual-close pins: still those in [INDEPENDENT_REVIEW_CHECKLIST.md](./INDEPENDENT_REVIEW_CHECKLIST.md) (R01 `84210aec`, R02 `12a0af54`, R03 `30af5c9e`, R04 `52af3bfa`, R08 `3ab29d11`, R10 `7e0fd643`, R15 `c21f0695`) — tip advances docs/queue only. Tip note 2026-09-27 05:37 KST: dry-runs + R08/R10 multiproc PARTIAL through `e4add6b6`; residual-close pins unchanged; no V PASS.
 
 ## Purpose
 
@@ -105,7 +105,7 @@ Dated initials + (a) production resolver source listing proving store/head reads
 ### 7. Must remain open / out of scope
 
 - Implementer/secondary dry-run evidence (not V): [R08/V_ATTACK_DRYRUN_2026-09-27.md](./R08/V_ATTACK_DRYRUN_2026-09-27.md)
-- Multi-process reservation/ordering beyond admit double-check (unless separately proven)
+- Multi-process reservation/ordering beyond single-host SoftFileLock JSON box stand-in (see R08 dry-run Attack 5 PARTIAL; production ACTIVE/daemon store-head still open)
 - Treating fixture `_matching_freshness` as production evidence
 - Ops / CR-14 / production ACTIVE enablement
 
@@ -366,7 +366,7 @@ timeout·crash 후 claim이 지워지거나 자동 redispatch되지 않고, unob
 
 6. **Given** two processes submitting late conflicting observes on same settled claim  
    **When** concurrent reconcile  
-   **Then** projection non-downgrade holds; history append semantics documented. Multi-process live remains **Medium/open** — do not claim PASS from single-process suite alone.
+   **Then** projection non-downgrade holds; history append semantics documented. Single-host SoftFileLock spawn is PARTIAL (see dry-run Attack 6); multi-host/NFS remains **Medium/open** — do not claim PASS from single-process or single-host alone.
 
 ### 6. Pass bar for reviewer (later)
 
@@ -375,7 +375,7 @@ Evidence that timeout leaves claim, observe never redispatches, unobserved canno
 ### 7. Must remain open / out of scope
 
 - Implementer/secondary dry-run evidence (not V): [R10/V_ATTACK_DRYRUN_2026-09-27.md](./R10/V_ATTACK_DRYRUN_2026-09-27.md)
-- Multi-process live late-history races (unless newly proven)
+- Multi-host/NFS late-history races beyond single-host SoftFileLock CanonicalStore (see R10 dry-run Attack 6 PARTIAL)
 - Mapping UNKNOWN → success in any helper
 - Ops GO
 
