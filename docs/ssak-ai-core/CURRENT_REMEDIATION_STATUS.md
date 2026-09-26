@@ -208,3 +208,10 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - ACTIVE requires freshness_resolver
 - Tests: action_safety+actions **42 passed**; active_api+surface **36 passed**
 - Independent R08-V still open; ops/CR-14 still **NO-GO**
+
+## 2026-09-26 21:35 KST — R15 composition residual close
+
+- Added `test_r15_composition.py` (503 / body inject / boot skip ACTIVE / observe never ACTIVE / entry labels)
+- Added `R15/ENTRY_MATRIX.md`
+- Suite active+surface+feature_off+r15_composition: **48 passed**
+- Independent R15-V still open; ops/CR-14 still **NO-GO**

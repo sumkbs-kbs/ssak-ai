@@ -132,3 +132,9 @@ Code note: `_protected_write_deny_section` is documented to follow allow(root); 
 
 `freshness_resolver` + `_authoritative_freshness` address the admit self-compare finding when a resolver is wired; ACTIVE requires the resolver.
 Residual for independent V: prove the **production** resolver reads store heads (not fixture `_matching_freshness`), and race/reservation story under multi-process load.
+
+## Update 2026-09-26 21:35 KST — R15 composition residual tests
+
+Implementer closed documented R15 residuals with `test_r15_composition.py` + `ENTRY_MATRIX.md` (no production default change).
+Remaining for independent V: human review of composition root + entry table vs live boot; still not CR-14 GO.
+Next code priority for implementer: **R01** seatbelt order + non-macOS fail-closed.
