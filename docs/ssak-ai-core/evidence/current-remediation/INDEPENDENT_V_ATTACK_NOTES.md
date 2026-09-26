@@ -308,6 +308,7 @@ All authorize/reuse entry points listed with digest-required evidence; revoke an
 
 ### 7. Must remain open / out of scope
 
+- Implementer/secondary dry-run evidence (not V): [R02/V_ATTACK_DRYRUN_2026-09-27.md](./R02/V_ATTACK_DRYRUN_2026-09-27.md)
 - Cross-process / replicated grant cache freshness
 - Multi-host authority projection
 

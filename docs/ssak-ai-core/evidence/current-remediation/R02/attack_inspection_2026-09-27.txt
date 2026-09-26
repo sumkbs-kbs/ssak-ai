@@ -1,0 +1,43 @@
+R02 attack inspection log — implementer/secondary dry-run
+NOT Independent R02-V. Tip at run: 1c14b1356a9f7fc0841881c2abfe2f36f7b5f959
+When: 2026-09-27 ~04:57 KST (Asia/Seoul)
+
+ATTACK1: reuse_approval missing/empty digest
+  omit digest → DIGEST_MISMATCH
+  empty digest → DIGEST_MISMATCH
+  matching digest → REUSED
+
+ATTACK2: authorize_execution None/mismatch
+  admits_execution=True
+  omit digest → allowed=False reason='실행 직전 action digest 결박이 없다'
+  mismatch → allowed=False reason='승인된 action digest와 실행 대상이 다르다'
+  match → allowed=True
+
+ATTACK3: ToolGovernanceAdapter → authorize_execution digest pass-through
+  action_digest=reauthorized.action_digest in adapter body: True
+  authorize_execution call sites outside governance.py: NONE
+
+ATTACK4: parent revoke → grandchild deny
+  suite: test_r02_a2_transitive_revoke_keeps_independent_grant PASSED
+  AuthorityProfile._ancestor_failure used on evaluate (source present).
+
+ATTACK5: child expires=None inherits parent ceiling
+  suite: test_r02_a1_omitted_child_expiry_inherits_parent_ceiling PASSED
+
+ATTACK6: HumanApproval / score-autonomy hunt
+  HumanApproval( sites under src/:
+    src/antigravity_k/engine/cognitive/protected_targets.py:222: return HumanApproval(
+  autonomy_score mentions:
+    src/antigravity_k/engine/cognitive/policy_store.py:59: "autonomy_score",
+  policy_store context L56-61:
+    56|         "ceiling",
+    57|         "human_ceiling",
+    58|         "max_autonomy",
+    59|         "autonomy_score",
+    60|         "constitution",
+    61|         "constitutional_authority",
+    62|     }
+  Note: autonomy_score appears as a denied/ignored policy field name list item — not an allow shortcut.
+  Cross-process / replicated grant cache: NOT_RUN (ATTACK_NOTES §7 OPEN).
+
+Verdict: OPEN (this file is not Independent R02-V PASS).

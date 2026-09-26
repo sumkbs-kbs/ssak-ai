@@ -1,0 +1,16 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.12, pytest-9.1.1, pluggy-1.6.0 -- /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python
+rootdir: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+configfile: pyproject.toml
+plugins: cov-7.1.0, asyncio-1.4.0, anyio-4.13.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 6 items
+
+tests/cognitive/test_r02_digest_bound.py::test_r02_reuse_approval_rejects_missing_digest PASSED [ 16%]
+tests/cognitive/test_r02_digest_bound.py::test_r02_authorize_execution_requires_digest PASSED [ 33%]
+tests/cognitive/test_r02_authority_lifecycle.py::test_r02_a1_omitted_child_expiry_inherits_parent_ceiling PASSED [ 50%]
+tests/cognitive/test_r02_authority_lifecycle.py::test_r02_a2_transitive_revoke_keeps_independent_grant PASSED [ 66%]
+tests/cognitive/test_r02_authority_lifecycle.py::test_r02_a3_governance_digest_mismatch_is_not_approve PASSED [ 83%]
+tests/cognitive/test_r02_authority_lifecycle.py::test_r02_a4_valid_subset_and_matching_digest_succeed PASSED [100%]
+
+============================== 6 passed in 0.30s ===============================

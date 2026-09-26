@@ -25,5 +25,6 @@ Prior A1–A4 still green. Residual tests in `test_r02_digest_bound.py`.
 
 ## Limits
 
+- Implementer/secondary attack dry-run (2026-09-27): [V_ATTACK_DRYRUN_2026-09-27.md](./V_ATTACK_DRYRUN_2026-09-27.md) — **NOT Independent R02-V**.
 - Independent R02-V open. Cross-process grant cache still out of scope.
 - Ops/CR-14 still NO-GO.

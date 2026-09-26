@@ -1,6 +1,6 @@
 # Current remediation status (R-series)
 
-기준: 2026-09-27 04:55 KST · tip advances with R08+R15+R01 V attack dry-run docs (parent `13c65117`); residual pins unchanged · branch `codex/m1-task-events` (ahead; no push).
+기준: 2026-09-27 04:57 KST · tip advances with R08+R15+R01+R02 V attack dry-run docs (parent `1c14b135`); residual pins unchanged · branch `codex/m1-task-events` (ahead; no push).
 
 이 표가 **현재 작업의 유일한 진입점**이다. 아래 HISTORICAL 행의 과거 PASS는 보존하되 CURRENT_PASS로 자동 승계하지 않는다.
 Source digest가 바뀌면 해당 행은 재검증 전까지 HISTORICAL이다 ([R00 evidence](evidence/current-remediation/R00/)).
@@ -310,3 +310,11 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - Attacks RUN: 1 (profile deny-after-allow), 2 (live sandbox-exec write deny), 3 (Docker `:ro` cmd-shape), 4 (require_sandbox refuse), 5 (non-Darwin fail-closed patched), 6 (digest bind). **NOT_RUN:** 3b live Docker daemon RO remount.
 - OPEN: Independent R01-V, live Docker RO daemon proof, real non-Darwin host, multi-host sandbox policy.
 - ATTACK_NOTES Verdict slots left blank/OPEN. Next: R02 dry-run or independent reviewer.
+
+## 2026-09-27 04:57 KST — R02 Independent V attack dry-run (NOT R02-V)
+
+- Parent tip: `1c14b135`. Docs-only implementer/secondary dry-run; **no Independent R02-V PASS**, ops/CR-14 still **NO-GO**.
+- Evidence: `docs/ssak-ai-core/evidence/current-remediation/R02/V_ATTACK_DRYRUN_2026-09-27.md`
+- Baseline: digest_bound+authority_lifecycle+governance **38 passed**. Attack nodes **6 passed**.
+- Attacks RUN: 1–6 (empty/omit digest reuse, authorize None/mismatch, adapter digest pass-through, revoke ancestry, expiry inherit, HumanApproval/score hunt). **NOT_RUN:** cross-process grant cache (OPEN §7).
+- ATTACK_NOTES Verdict slots left blank/OPEN. Next: R10 dry-run or independent reviewer.
