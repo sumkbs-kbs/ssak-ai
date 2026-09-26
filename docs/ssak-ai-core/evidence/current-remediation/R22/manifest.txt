@@ -15,3 +15,5 @@ digest_reverify_pytest.txt
 digest_after_record.txt
 digest_gate.txt
 arch_after_digest.txt
+r22_off_release_post_digest.txt
+INDEPENDENT_REVIEW_CHECKLIST.md

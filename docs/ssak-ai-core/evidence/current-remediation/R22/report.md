@@ -80,3 +80,16 @@ Harness canary check itself PASS in architecture review output. New cognitive ex
 ## Rollback
 
 No operational switch was thrown. Safe rollback = keep OFF defaults; ignore optional ACTIVE composition; retain history/receipts from dry-runs.
+
+## Follow-up 2026-09-26 — digest + architecture gate cleared
+
+After local remediation commits (`d3aee3d8` … tip `531a5de3`):
+
+| Check | Result |
+|-------|--------|
+| digest_drift --gate | exit 0 · match=9 · reverified=41 · drift=0 · stale=0 |
+| test_architecture_review | **111 passed** |
+| test_feature_off_regression + test_release_artifacts | **104 passed** |
+
+Architecture digest/citation failures recorded in the original R22 close are **cleared on this tip**.  
+**Operational cutover / CR-14 GO still NO-GO.** Independent R*-V still open (see `INDEPENDENT_REVIEW_CHECKLIST.md`).
