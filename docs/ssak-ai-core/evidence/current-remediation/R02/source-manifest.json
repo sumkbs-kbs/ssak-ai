@@ -7,5 +7,6 @@
     "tests/cognitive/test_r02_digest_bound.py",
     "tests/cognitive/test_r02_authority_lifecycle.py",
     "tests/cognitive/test_governance.py"
-  ]
+  ],
+  "head": "12a0af54bf76d1a0b71a8b41d05e275bdd11bce9"
 }
