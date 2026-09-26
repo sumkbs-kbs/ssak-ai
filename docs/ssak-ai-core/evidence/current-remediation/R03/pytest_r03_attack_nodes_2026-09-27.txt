@@ -1,0 +1,15 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.12, pytest-9.1.1, pluggy-1.6.0 -- /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python
+rootdir: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+configfile: pyproject.toml
+plugins: cov-7.1.0, asyncio-1.4.0, anyio-4.13.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 5 items
+
+tests/cognitive/test_store.py::test_r03_a1_second_stage_with_different_content_conflicts PASSED [ 20%]
+tests/cognitive/test_store.py::test_r03_a2_identical_restage_is_idempotent PASSED [ 40%]
+tests/cognitive/test_store.py::test_r03_a3_concurrent_different_payload_one_wins PASSED [ 60%]
+tests/cognitive/test_store.py::test_r03_a3_cross_process_different_payload_one_wins PASSED [ 80%]
+tests/cognitive/test_store.py::test_r03_a4_crash_recover_preserves_original_digest PASSED [100%]
+
+============================== 5 passed in 0.71s ===============================

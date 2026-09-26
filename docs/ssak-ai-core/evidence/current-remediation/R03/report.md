@@ -38,3 +38,4 @@ Tip before residual: `e170fbf4`
 - Cross-process SoftFileLock serialization on **one host / one filesystem** is now proven. Still **not** multi-host / multi-volume / NFS-vs-local lock semantics.
 - SoftFileLock lock file is removed on release (path identity asserted; file may not exist after unlock).
 - PASS ≠ release GO. Ops/CR-14 remains **NO-GO**. Independent R03-V still open.
+- Implementer/secondary dry-run (not V): [V_ATTACK_DRYRUN_2026-09-27.md](./V_ATTACK_DRYRUN_2026-09-27.md)

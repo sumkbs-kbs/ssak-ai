@@ -440,6 +440,7 @@ One-host SoftFileLock cross-process reconfirm + crash/hijack probe + written mul
 
 ### 7. Must remain open / out of scope
 
+- Implementer/secondary dry-run evidence (not V): [R03/V_ATTACK_DRYRUN_2026-09-27.md](./R03/V_ATTACK_DRYRUN_2026-09-27.md)
 - Multi-host / multi-volume / NFS lock semantics
 - Switching to `FileLock` without Vault/legacy protocol review
 - R21 `--apply`

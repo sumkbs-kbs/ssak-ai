@@ -1,0 +1,38 @@
+R03 attack inspection log — implementer/secondary dry-run
+NOT Independent R03-V. Tip at run: 842ecdae961e77a830bb1fb260e314c40a6a54c4
+When: 2026-09-27 ~04:59 KST (Asia/Seoul)
+
+ATTACK1: stage(B,T) after stage(A,T) different payload → TransactionConflictError
+  suite: test_r03_a1_second_stage_with_different_content_conflicts
+73:class TransactionConflictError(CanonicalStoreError):
+135:    def content_identity(self) -> tuple[str | None, tuple[str, ...]]:
+535:            if prior.content_identity() == proposed.content_identity():
+538:            raise TransactionConflictError(
+849:    "TransactionConflictError",
+
+ATTACK2: identical restage idempotent
+  suite: test_r03_a2_identical_restage_is_idempotent
+
+ATTACK3: cross-process SoftFileLock (spawn×2)
+  suite: test_r03_a3_cross_process_different_payload_one_wins (+ in-process dual SoftFileLock A3)
+28:from filelock import SoftFileLock
+321:            # Git repo를 lock 생성 전에 확보한다. SoftFileLock이 `.git` 디렉터리를 먼저 만들면
+325:        self._file_lock = SoftFileLock(str(self.root / lock_relative), timeout=lock_timeout)
+  SoftFileLock retained (not FileLock):
+src/antigravity_k/engine/cognitive/legacy_adapter.py:21:from filelock import SoftFileLock
+src/antigravity_k/engine/cognitive/legacy_adapter.py:152:        self._file_lock = SoftFileLock(str(store.lock_path), timeout=lock_timeout)
+src/antigravity_k/engine/cognitive/store.py:28:from filelock import SoftFileLock
+src/antigravity_k/engine/cognitive/store.py:325:        self._file_lock = SoftFileLock(str(self.root / lock_relative), timeout=lock_timeout)
+
+ATTACK4: crash mid-stage + foreign identity hijack
+  suite: test_r03_a4_crash_recover_preserves_original_digest
+
+ATTACK5: lock file path after SoftFileLock unlock (inspect)
+  SoftFileLock path while held exists=True; after unlock exists=False
+  Absence after unlock is expected — NOT a multi-host/NFS PASS.
+
+ATTACK6: multi-host / NFS concurrent stage — NOT_RUN
+  No second host / NFS-mounted shared root available in this dry-run.
+  Single-host SoftFileLock cross-process ≠ multi-host PASS.
+
+Verdict: OPEN (this file is not Independent R03-V PASS).
