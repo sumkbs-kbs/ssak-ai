@@ -2,7 +2,7 @@
 
 Prepared: 2026-09-27 04:18 KST  
 Review tip: `78c2c8f6` (`78c2c8f6f041d6cffce44107612d31c97a2ba1aa`) on `codex/m1-task-events` (ahead; **no push**) — product/code tip for V; this file lands in a docs-only follow-up commit  
-Residual-close pins: still those in [INDEPENDENT_REVIEW_CHECKLIST.md](./INDEPENDENT_REVIEW_CHECKLIST.md) (R01 `84210aec`, R02 `12a0af54`, R03 `30af5c9e`, R04 `52af3bfa`, R08 `3ab29d11`, R10 `7e0fd643`, R15 `c21f0695`) — tip advances docs/queue only. Tip note 2026-09-27 05:37 KST: dry-runs + R08/R10 multiproc PARTIAL through `e4add6b6`; residual-close pins unchanged; no V PASS.
+Residual-close pins: still those in [INDEPENDENT_REVIEW_CHECKLIST.md](./INDEPENDENT_REVIEW_CHECKLIST.md) (R01 `84210aec`, R02 `12a0af54`, R03 `30af5c9e`, R04 `52af3bfa`, R08 `3ab29d11`, R10 `7e0fd643`, R15 `c21f0695`) — tip advances docs/queue only. Tip note 2026-09-27 05:45 KST: dry-runs + R08/R10 multiproc PARTIAL + R02 `6a1d4e42` grant-cache PARTIAL + R01 `5c8fcf55` live Docker 3b RUN; residual-close pins unchanged; no V PASS.
 
 ## Purpose
 
@@ -242,7 +242,7 @@ Profile text order evidence + at least one real sandbox execution deny + require
 ### 7. Must remain open / out of scope
 
 - Implementer/secondary dry-run evidence (not V): [R01/V_ATTACK_DRYRUN_2026-09-27.md](./R01/V_ATTACK_DRYRUN_2026-09-27.md)
-- Live Docker daemon RO proof if not run
+- Real non-Darwin host fail-closed (Attack 5 path-patched on Darwin; Attack 3b live Docker RUN on disposable tmp_path)
 - Treating shell-regex hints as the boundary when seatbelt disabled
 - Multi-host sandbox policy
 
@@ -309,7 +309,7 @@ All authorize/reuse entry points listed with digest-required evidence; revoke an
 ### 7. Must remain open / out of scope
 
 - Implementer/secondary dry-run evidence (not V): [R02/V_ATTACK_DRYRUN_2026-09-27.md](./R02/V_ATTACK_DRYRUN_2026-09-27.md)
-- Cross-process / replicated grant cache freshness
+- Multi-host / replicated grant cache freshness (single-host CanonicalStore SoftFileLock spawn is PARTIAL in dry-run Attack 6)
 - Multi-host authority projection
 
 ### 8. Verdict slot

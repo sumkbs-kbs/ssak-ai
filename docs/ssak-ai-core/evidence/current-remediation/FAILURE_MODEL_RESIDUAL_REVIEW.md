@@ -19,7 +19,7 @@ Method: re-read pack tasks plus repo evidence reports, spot-check owned symbols 
 
 | Failure mode | Covered by suite? | Residual risk |
 |---|---|---|
-| Interpreter write_bytes / os.replace / parent rename / symlink write under seatbelt | Yes (A1) | **Low in code evidence:** Docker protected paths now use `:ro` mounts and non-Darwin without Docker fails closed; real-daemon/V boundary confirmation remains open |
+| Interpreter write_bytes / os.replace / parent rename / symlink write under seatbelt | Yes (A1) + live Docker 3b (2026-09-27) | **Low in code evidence:** Docker `:ro` cmd-shape + **live daemon RO remount RUN** on disposable tmp_path; non-Darwin without Docker fails closed; Independent R01-V / real non-Darwin host still open |
 | Quiet unsandboxed fallback that looks safe | A4 require_sandbox+disabled refused | Medium: any new entry that skips SandboxRunner still needs gate+deny |
 | Wide /var/folders allow then protected deny order inverted | deny section appended after root allow in restrict mode | High for V: confirm later allow cannot re-open protected paths |
 | Approval reused on different target/args | A3 digest | Low if all write paths go through gate |
@@ -37,7 +37,7 @@ Code note: `_protected_write_deny_section` is documented to follow allow(root); 
 | Deep revoke misses grandchild | A2 | Low in-process |
 | Governance reuses HumanApproval on digest mismatch | A3 | Medium: pure Governance vs final dispatcher both must bind digest |
 | Body self-asserts HUMAN | Task forbids | Medium: any caller that constructs authority outside authority.py |
-| Cross-process / replicated grant cache | Out of card scope | High if multi-process hosts share stale grant projections |
+| Cross-process / replicated grant cache | A6 single-host spawn (2026-09-27) | **Low/PARTIAL single-host** CanonicalStore SoftFileLock re-read (`test_r02_a6…`); multi-host/replicated still **High/OPEN** |
 
 **Independent V focus:** ancestry evaluation on every authorize; no score-based autonomy; profile/cache callers re-read revision before allow.
 
@@ -189,3 +189,9 @@ Next is **Independent V**, including the explicitly open multi-host/multi-proces
 - R08: `test_r08_a5_cross_process_concurrent_admit_with_reopen` — SoftFileLock JSON box stand-in; Attack 5 dry-run **PARTIAL**. Production ACTIVE store-backed resolver / daemon head race still OPEN.
 - R10: `test_r10_a6_cross_process_late_conflicting_observes` — SoftFileLock CanonicalStore; Attack 6 dry-run **PARTIAL**. Multi-host/NFS still OPEN.
 - Suites green; flake 3× on new nodes. **No** R*-V PASS / ops / CR-14 GO. Residual-close pins unchanged. Implementer priority queue still empty for Independent V reclaim — secondary evidence only.
+
+## Update 2026-09-27 05:45 KST — R02 grant-cache + R01 live Docker residuals (NOT Independent V)
+
+- R02: single-host SoftFileLock AuthorityProfile revoke visibility / stale-cache vs re-read PARTIAL. Multi-host/replicated still OPEN.
+- R01: live Docker RO remount RUN on disposable project; Independent R01-V / real non-Darwin host still OPEN.
+- Implementer secondary leftovers closed or PARTIAL; queue empty again. **No** R*-V / ops / CR-14 GO.

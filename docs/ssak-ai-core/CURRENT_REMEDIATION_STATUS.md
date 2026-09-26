@@ -1,6 +1,6 @@
 # Current remediation status (R-series)
 
-기준: 2026-09-27 05:37 KST · tip `e4add6b6` — R08 Attack5 + R10 Attack6 multiproc residuals PARTIAL (single-host); Independent V still OPEN; residual-close pins unchanged · branch `codex/m1-task-events` (ahead; no push).
+기준: 2026-09-27 05:45 KST · tip `5c8fcf55` — R02 grant-cache PARTIAL + R01 live Docker 3b RUN + prior R08/R10 multiproc PARTIAL; implementer secondary queue empty; Independent V still OPEN; residual-close pins unchanged · branch `codex/m1-task-events` (ahead; no push).
 
 이 표가 **현재 작업의 유일한 진입점**이다. 아래 HISTORICAL 행의 과거 PASS는 보존하되 CURRENT_PASS로 자동 승계하지 않는다.
 Source digest가 바뀌면 해당 행은 재검증 전까지 HISTORICAL이다 ([R00 evidence](evidence/current-remediation/R00/)).
@@ -359,3 +359,12 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - **No** Independent R*-V PASS, ops GO, cutover GO, CR-14 GO. ATTACK_NOTES Verdict slots remain OPEN.
 - Remaining OPEN: production ACTIVE store-backed freshness_resolver; R08 daemon/store-head multiproc beyond JSON box; R10 multi-host/NFS late-history; residual-close pins unchanged (`3ab29d11` / `7e0fd643`).
 - Next: Independent V by separate reviewer (not implementer queue reclaim). Boot stays SHADOW-only; no R21 `--apply`.
+
+## 2026-09-27 05:45 KST — implementer secondary queue flush (R02/R01 leftovers; NOT Independent V)
+
+- Commits: `6a1d4e42` (`test(ssak-ai): R02 cross-process grant cache residual`), `5c8fcf55` (`test(ssak-ai): R01 live Docker RO remount residual`). **No push.**
+- **R02 Attack 6 / §7:** `test_r02_a6_cross_process_grant_cache_requires_reread` — spawn holder caches `AuthorityProfile`; revoker commits revoke on shared CanonicalStore SoftFileLock (`records/authority_profile`). Stale cache still allows; store re-read → `REVOKED`. Dry-run **PARTIAL** (single-host). Flake 3× green. Suite digest+lifecycle+cross_process+governance **39 passed**.
+- **R01 Attack 3b:** `test_r01_live_docker_ro_remount_rejects_protected_write` — live Docker daemon on disposable `tmp_path` (forced Linux path); protected CONSTITUTION write → Errno 30 RO; scratch RW ok. Dry-run **NOT_RUN → RUN**. Flake 3× green. Suite R01+protection+sandbox **63 passed**.
+- **Explicitly still OPEN (Human / independent reviewer only):** Independent R*-V Verdicts; multi-host/NFS (R03/R04/R10); multi-host/replicated grant cache; production ACTIVE enablement / store-backed resolver at boot (SHADOW-only); R21 `--apply`; CR-14; P10 live provider growth; real non-Darwin host fail-closed.
+- **No** Independent R*-V PASS, ops GO, cutover GO, CR-14 GO. ATTACK_NOTES Verdict slots remain OPEN. Residual-close pins unchanged (`84210aec` / `12a0af54` / …).
+- **Implementer secondary multiproc/docker leftovers closed or PARTIAL; implementer queue empty again.** Next: Independent V by separate reviewer; Human ops for cutover/CR-14 (**NO-GO**). Boot stays SHADOW-only; no R21 `--apply`.

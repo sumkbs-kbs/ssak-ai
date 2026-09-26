@@ -3,7 +3,7 @@
 Prepared: 2026-09-27 03:58 KST · tip bump 2026-09-27 04:18 KST
 Code/docs tip under review: `78c2c8f6` (`78c2c8f6f041d6cffce44107612d31c97a2ba1aa`) (`codex/m1-task-events`; no push)
 Residual-close pins below are unchanged from the 03:58 prep (R01 `84210aec` … R15 `c21f0695`). Docs-only attack-notes commit advances HEAD afterward; V still attacks tip `78c2c8f6` + residual pins.
-Tip note 2026-09-27 05:37 KST: implementer secondary multiproc residuals landed through tip `e4add6b6` (R08 A5 + R10 A6 PARTIAL dry-runs); residual-close pins below **unchanged**; still **no V PASS**.
+Tip note 2026-09-27 05:45 KST: implementer secondary leftovers closed/PARTIAL through tip `5c8fcf55` (R02 grant-cache PARTIAL + R01 live Docker 3b RUN + prior R08/R10 multiproc); residual-close pins unchanged; Independent V / Human ops still next; no V PASS.
 
 Purpose: give a separate reviewer a reproducible punch-list after the implementer priority queue was flushed. **This file does not satisfy any R*-V checkbox and records no V PASS.**
 
