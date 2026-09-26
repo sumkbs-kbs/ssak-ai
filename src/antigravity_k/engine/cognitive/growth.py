@@ -101,7 +101,7 @@ from antigravity_k.engine.cognitive.readiness import (
     ReadinessResult,
     check_readiness,
 )
-from antigravity_k.engine.cognitive.references import REL_EVIDENCE, EntityType, Reference
+from antigravity_k.engine.cognitive.references import REL_EVIDENCE, EntityType, Reference, new_id
 from antigravity_k.engine.cognitive.runtime import (
     CognitiveRequestEnvelope,
     CognitiveRuntime,
@@ -1563,6 +1563,32 @@ class GrowthRunner:
         )
         return "sha256:" + hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
+    def _observe_selection(
+        self,
+        store: CanonicalStore,
+        task: GrowthTask,
+        *,
+        policy_version: str | None,
+        limits: Mapping[str, int],
+    ) -> tuple[str, ...]:
+        """Call the real ContextBuilder selector; never synthesize selection IDs."""
+        builder = ContextBuilder(store, clock=self._now)
+        built = build_context_once(
+            builder,
+            task=task,
+            state_revision=STATE_REVISION,
+            policy_version=policy_version,
+            limits=limits,
+        )
+        return tuple(item.record_id for item in built.payload.l3_evidence)
+
+    def _policy_limits_for_task(self, task: GrowthTask, mature: ArmInputs) -> tuple[str | None, Mapping[str, int]]:
+        """Negative-transfer / out-of-scope tasks keep baseline limits (policy not applied)."""
+        baseline = ArmInputs(role=ArmRole.FRESH).effective_limits()
+        if task.negative_transfer:
+            return None, baseline
+        return mature.policy_version, mature.effective_limits()
+
     # ── arm 실행 ────────────────────────────────────
     def run_arm(
         self,
@@ -1782,18 +1808,57 @@ class GrowthRunner:
             reason="validation을 통과한 context depth policy",
             occurred_at=self._now(),
         )
+        # R13: observe real post-policy selector output on the same frozen corpus+advisory store.
+        if not store.is_committed(advisory.id):
+            store.commit_records([advisory], message="growth advisory before selection observe")
+        mature_select = ArmInputs(
+            role=ArmRole.MATURE,
+            policy_version=policy_version.version,
+            advisory_refs=advisory_refs,
+        )
+        baseline_limits = ArmInputs(role=ArmRole.FRESH).effective_limits()
         trace_ids: list[str] = []
-        for run, task in zip(train_runs, train):
+        first_shadow: tuple[str, ...] = ()
+        first_actual: tuple[str, ...] = ()
+        for index, (run, task) in enumerate(zip(train_runs, train)):
+            episode_id = f"episode:trace:{task.task_id}"
+            pinned = policy_store.pin(episode_id, policy_version.policy_id, pinned_at=self._now())
+            shadow_selection = self._observe_selection(
+                store,
+                task,
+                policy_version=None,
+                limits=baseline_limits,
+            )
+            actual_policy, actual_limits = self._policy_limits_for_task(task, mature_select)
+            # Episode pin freezes the version used for this observation (mid-episode promotion must not rewrite it).
+            if actual_policy is not None:
+                actual_policy = pinned.policy_version
+            actual_selection = self._observe_selection(
+                store,
+                task,
+                policy_version=actual_policy,
+                limits=actual_limits,
+            )
+            if (
+                policy_store.pin_of(episode_id) is None
+                or policy_store.pin_of(episode_id).policy_version != pinned.policy_version
+            ):
+                raise GrowthBenchmarkError("episode policy pin changed during selection observe")
+            outcome_ref = new_id(EntityType.OUTCOME) if run.outcome.success else None
             trace = policy_store.record_behavior_change(
                 policy_id=policy_version.policy_id,
-                version=policy_version.version,
+                version=pinned.policy_version,
                 task_id=task.task_id,
-                shadow_selection=run.selected_evidence,
-                actual_selection=run.selected_evidence + advisory_refs,
+                shadow_selection=shadow_selection,
+                actual_selection=actual_selection,
                 producer=self.producer,
                 recorded_at=self._now(),
+                outcome_ref=outcome_ref,
             )
             trace_ids.append(trace.trace_id)
+            if index == 0:
+                first_shadow = shadow_selection
+                first_actual = actual_selection
         commit_records = (advisory, *candidates.records, *policy_store.records)
         return GrowthPhase(
             candidate_id=candidate.candidate_id,
@@ -1806,8 +1871,8 @@ class GrowthRunner:
             policy_version=policy_version.version,
             activation_id=activation.activation_id,
             behavior_trace_ids=tuple(trace_ids),
-            shadow_selection=train_runs[0].selected_evidence,
-            actual_selection=(*train_runs[0].selected_evidence, *advisory_refs),
+            shadow_selection=first_shadow,
+            actual_selection=first_actual,
             advisory_refs=advisory_refs,
             train_task_ids=tuple(task.task_id for task in train),
             commit_records=commit_records,

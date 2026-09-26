@@ -1,0 +1,6 @@
+tests/cognitive/test_live_pilot.py::test_r17_a1_invalid_inputs_refuse_before_provider_call
+tests/cognitive/test_live_pilot.py::test_r17_a2_fresh_or_mature_safety_fails_verdict
+tests/cognitive/test_live_pilot.py::test_r17_a3_timeout_keeps_partial_ledger_and_not_complete
+tests/cognitive/test_live_pilot.py::test_r17_a4_independent_aggregator_matches_harness
+
+4/16 tests collected (12 deselected) in 0.18s

@@ -1,0 +1,5 @@
+R06 evidence 2026-09-26 20:09 KST
+2862584ea8f79641fefd9a78de9c145851ea515b
+ M src/antigravity_k/engine/cognitive/context.py
+ M src/antigravity_k/engine/cognitive/models.py
+ M tests/cognitive/test_context.py

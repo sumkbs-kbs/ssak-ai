@@ -1,0 +1,146 @@
+[
+  {
+    "card": "R00",
+    "status": "PASS",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R01",
+    "status": "PASS",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R02",
+    "status": "PASS (self-review)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R03",
+    "status": "PASS (self-review limitation)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R04",
+    "status": "PASS (self-review limitation)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R05",
+    "status": "PASS (self-review limitation)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R06",
+    "status": "PASS (self-review limitation)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R07",
+    "status": "PASS (self-review limitation)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R08",
+    "status": "PASS (self-review)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R09",
+    "status": "PASS (self-review limitation)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R10",
+    "status": "PASS (self-review limitation)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R11",
+    "status": "PASS (self-review)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R12",
+    "status": "PASS (self-review)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R13",
+    "status": "PASS (self-review)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R14",
+    "status": "PASS (self-review)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R15",
+    "status": "PASS (self-review)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R16",
+    "status": "PASS (self-review)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R17",
+    "status": "PASS (self-review)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R18",
+    "status": "PASS (self-review)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R19",
+    "status": "PASS (self-review)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R20",
+    "status": "PASS (self-review)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R21",
+    "status": "PASS (self-review)",
+    "pack_report": true,
+    "core_report": true
+  },
+  {
+    "card": "R22",
+    "status": "IN_PROGRESS",
+    "pack_report": false,
+    "core_report": false
+  },
+  {
+    "card": "R23",
+    "status": "PASS (self-review)",
+    "pack_report": true,
+    "core_report": true
+  }
+]

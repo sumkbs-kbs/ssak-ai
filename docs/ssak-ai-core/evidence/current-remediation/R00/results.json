@@ -1,0 +1,36 @@
+{
+  "card": "R00",
+  "checks": {
+    "R00-A1": "PASS",
+    "R00-A2": "PASS",
+    "R00-A3": "PASS",
+    "R00-E": "PASS",
+    "R00-V": "PASS_SELF_REVIEW_PENDING_INDEPENDENT"
+  },
+  "status_table": {
+    "P10_fixture_growth": {
+      "status": "HISTORICAL_MODULE_PASS",
+      "surface": "deterministic_fixture",
+      "current_claim": "NOT auto CURRENT_PASS",
+      "note": "T13 growth fixture PASS preserved as historical; not live growth"
+    },
+    "P10_live_growth": {
+      "status": "OPEN",
+      "surface": "live_provider",
+      "current_claim": "NOT_RUN / OPEN",
+      "note": "live pilot NOT_RUN; distinct from fixture"
+    },
+    "P11_isolated_authenticated_ACTIVE": {
+      "status": "HISTORICAL_ISOLATED_HTTP",
+      "surface": "isolated_authenticated_ACTIVE_fixture_Brain",
+      "current_claim": "preserved evidence, not production PASS",
+      "note": "audit: effect1 + restart dispatch0 on fixture composition"
+    },
+    "P11_production_ACTIVE": {
+      "status": "OPEN",
+      "surface": "production_boot_composition",
+      "current_claim": "OPEN",
+      "note": "default bootstrap SHADOW; production ACTIVE incomplete (F14)"
+    }
+  }
+}

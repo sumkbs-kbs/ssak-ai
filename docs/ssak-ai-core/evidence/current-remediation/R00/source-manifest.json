@@ -1,0 +1,28 @@
+{
+  "head": "2862584ea8f79641fefd9a78de9c145851ea515b",
+  "dirty": true,
+  "dirty_count": 205,
+  "anchors": {
+    "src/antigravity_k/engine/cognitive/protected_targets.py": "1223efbfbfdde20e4ba5dd067d6825d5a0bce53dd4f6890ac5d05c57c9b4eb8f",
+    "src/antigravity_k/engine/sandbox.py": "35fff15c6e63b84bd4e55f0aa525e1b746a5d62472876dca28c9ec63ea9e0cfa",
+    "src/antigravity_k/engine/cognitive/authority.py": "814bf64171df56bec05f7317b54c3c26d9a61d29755ee9e8adaa0107f1412daf",
+    "src/antigravity_k/engine/cognitive/governance.py": "1ca59212d8c957a692934c2755545602afc5e249f990c4f6281c7140e0bdb70a",
+    "src/antigravity_k/engine/cognitive/store.py": "8c794de8ebba9ec0816a326a3bbda9623b35897e83af397f54aed3006babebce",
+    "src/antigravity_k/engine/cognitive/migration.py": "4c035550024aa149639000b2393c8666fd2d2a35fdaa2b0acf2391c4f41dc342",
+    "src/antigravity_k/engine/cognitive/context.py": "eaa05d1807246c3302b7665411ea6c3962db47409cdfbf405a2e1fdb62b25df1",
+    "src/antigravity_k/engine/cognitive/runtime.py": "07f69cbfaf3f5957537fa235d49418c6f1a5437e0c04900aac120dc886b11deb",
+    "src/antigravity_k/engine/cognitive/action_admission.py": "04f1335de29ff5229a80fc524d54642ebaa5a6a40cb5edc70b59599fb13fab6b",
+    "src/antigravity_k/engine/cognitive/actions.py": "4caa7f79372e7a69831eed631c7c2d1010620eee0300ddb3ee94c16e48deac42",
+    "src/antigravity_k/engine/cognitive/cognitive_surface.py": null,
+    "src/antigravity_k/engine/cognitive/action_journal.py": "d2ccec70d9ade962d7b444df2b490115d387d82e617f4b06d502847b62e9e5d5",
+    "src/antigravity_k/engine/cognitive/experience.py": "eec2a68fbb1f94d6817e56f90e0d01d0045c302802f768525b1a57f2e7d0b839",
+    "src/antigravity_k/engine/cognitive/growth.py": "745f1c105fa4ab6b3d92bf087db0e0dc632610389f85eb76db7c199da0d54111",
+    "src/antigravity_k/api/dependencies.py": "08a7b9e41458061475649b224528b45560dd908ce12d403cd8d8faaca84e89de",
+    "src/antigravity_k/api/routes/cognitive_active_api.py": "a9071f70769dabb2f6af46c567ae40c3c040b5c4c902ae939d12b3573bdac7ee",
+    "src/antigravity_k/api/routes/cognitive_surface_api.py": "00651289b141ef3585bf41a5178f2e44b158331eee3c32df8927ec54721ce37b",
+    "docs/ssak-ai-core/README.md": "bf602043191b470a785750e55aa1d16dc6efc90101f9f0a605236194d711a60f",
+    "docs/ssak-ai-core/IMPLEMENTATION_ROADMAP.md": "2ef4c749289868421abade657fdbbed570393a0d8d4fed3ff43d84859e6be818",
+    "docs/ssak-ai-core/ACCEPTANCE_CHECKLIST.md": "715dbcd6634edd06f1348e787015a74f4271fa469f164fd1dd79b8b223d92ef5"
+  },
+  "dirty_manifest_sha256": "fd5c52804fe2bc2cf5f4644a61dc9a1d384d9fd774a0768edbf0352601b3f383"
+}

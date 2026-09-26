@@ -1,0 +1,23 @@
+{
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "2862584ea8f79641fefd9a78de9c145851ea515b"
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit": 0,
+      "lines": 205
+    }
+  ]
+}

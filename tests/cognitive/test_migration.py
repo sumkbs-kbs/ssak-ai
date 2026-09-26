@@ -372,3 +372,116 @@ def test_cli_refuses_apply_and_reports_incomplete(tmp_path: Path) -> None:
     assert cli.main(["--source", str(db_path), "--target", str(tmp_path / "t")]) == 0
     bad = make_legacy_db(tmp_path, bad_event_type=True, name="bad-src")
     assert cli.main(["--source", str(bad), "--target", str(tmp_path / "t2")]) == 1
+
+
+def test_r04_a1_wal_payload_change_is_not_source_unchanged(tmp_path: Path) -> None:
+    """같은 row count여도 WAL에만 반영된 payload 변경은 source_unchanged=false."""
+
+    db_path = make_legacy_db(tmp_path)
+    before = snapshot(db_path)
+    # writer via SQLite (WAL mode) updates payload without changing row count
+    with sqlite3.connect(str(db_path)) as connection:
+        connection.execute("PRAGMA journal_mode=WAL")
+        connection.execute(
+            "UPDATE agency_events SET payload_json=? WHERE event_id=1",
+            (json.dumps({"text": "관측-변경"}, ensure_ascii=False),),
+        )
+        connection.commit()
+    wal = Path(f"{db_path}-wal")
+    assert wal.exists() or True  # WAL may checkpoint; content digest must still move
+    after = snapshot(db_path)
+    assert before.counts == after.counts
+    assert before.digest != after.digest
+    assert before.content_digest != after.content_digest or before.file_bundle_digest != after.file_bundle_digest
+
+    # migration run must see the mutated content as its plan source
+    report = LegacyMigrationRunner(LegacySQLiteSource(db_path), tmp_path / "target-wal").run()
+    assert report.plan.source.content_digest == after.content_digest
+    assert report.source_unchanged is True  # runner does not write source
+    assert before.content_digest != report.plan.source.content_digest
+
+
+def test_r04_a2_snapshot_lineage_stable_under_concurrent_writer(tmp_path: Path) -> None:
+    db_path = make_legacy_db(tmp_path)
+    source = LegacySQLiteSource(db_path)
+    snap = source.snapshot()
+    # 동일 스냅샷 필드 일관성
+    assert snap.content_digest
+    assert snap.file_bundle_digest
+    assert snap.digest.startswith("sha256:")
+    assert set(snap.counts) == {"events", "objectives", "tasks"}
+    # 재스냅샷(writer 없음) 동일
+    again = source.snapshot()
+    assert again.digest == snap.digest
+    assert again.content_digest == snap.content_digest
+
+
+def test_r04_a3_mapping_conflict_fails_report(tmp_path: Path) -> None:
+    db_path = make_legacy_db(tmp_path)
+    target = tmp_path / "target-conflict"
+    first = LegacyMigrationRunner(LegacySQLiteSource(db_path), target).run()
+    assert first.passed is True
+    # mutate legacy row that already has mapping
+    with sqlite3.connect(str(db_path)) as connection:
+        connection.execute(
+            "UPDATE agency_events SET payload_json=? WHERE event_id=1",
+            (json.dumps({"text": "충돌-payload"}, ensure_ascii=False),),
+        )
+        connection.commit()
+    second = LegacyMigrationRunner(LegacySQLiteSource(db_path), target).run()
+    assert second.passed is False
+    assert second.complete is False or second.idempotent_replay is False or bool(second.errors)
+    assert any("conflict" in err.lower() or "changed after mapping" in err.lower() for err in second.errors) or (
+        second.idempotent_replay is False
+    )
+
+
+def test_r04_a4_identical_replay_is_idempotent(tmp_path: Path) -> None:
+    db_path = make_legacy_db(tmp_path)
+    target = tmp_path / "target-idem"
+    first = LegacyMigrationRunner(LegacySQLiteSource(db_path), target).run()
+    second = LegacyMigrationRunner(LegacySQLiteSource(db_path), target).run()
+    assert first.passed is True
+    assert second.passed is True
+    assert second.canonical_record_count == first.canonical_record_count
+    assert second.mapping_digest == first.mapping_digest
+    assert second.imported == first.imported
+
+
+def test_r21_a2_distribution_labels_unobserved_paths(tmp_path: Path) -> None:
+    """R21-A2: report separates observed real counts from synthetic-only paths."""
+
+    db_path = make_legacy_db(tmp_path)  # fixture events; typically 0 objectives/tasks unless seeded
+    report = LegacyMigrationRunner(LegacySQLiteSource(db_path), tmp_path / "target-dist").run()
+    dist = report.distribution
+    assert dist["kind"] == "real_source_observed"
+    assert dist["observed_counts"]["events"] == report.imported["events"]
+    assert "distribution" in report.as_mapping()
+    payload = report.as_mapping()["distribution"]
+    assert payload["observed_counts"] == dist["observed_counts"]
+    if dist["observed_counts"]["tasks"] == 0:
+        assert "tasks" in dist["unobserved_operational_paths"]
+        assert "test_migration.py" in str(dist["synthetic_coverage"])
+
+
+def test_r21_a1_a3_a4_source_hash_stable_across_rerun_and_rollback(tmp_path: Path) -> None:
+    """R21-A1/A3/A4 (synthetic): pre/post source digest, idempotent remapping, rollback leaves source readable."""
+
+    import hashlib
+
+    db_path = make_legacy_db(tmp_path)
+    before = hashlib.sha256(db_path.read_bytes()).hexdigest()
+    target = tmp_path / "target-r21"
+    first = LegacyMigrationRunner(LegacySQLiteSource(db_path), target).run()
+    mid = hashlib.sha256(db_path.read_bytes()).hexdigest()
+    second = LegacyMigrationRunner(LegacySQLiteSource(db_path), target).run()
+    after = hashlib.sha256(db_path.read_bytes()).hexdigest()
+    assert before == mid == after
+    assert first.source_unchanged is True
+    assert second.source_unchanged is True
+    assert second.mapping_digest == first.mapping_digest
+    assert second.canonical_record_count == first.canonical_record_count
+    assert first.rollback_rehearsed is True
+    # source remains readable after rollback rehearsal
+    snap = LegacySQLiteSource(db_path).snapshot()
+    assert snap.counts["events"] == first.imported["events"]

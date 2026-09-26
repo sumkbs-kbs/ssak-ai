@@ -1,0 +1,5 @@
+{
+  "src/antigravity_k/engine/gbrain.py": "c59a19563e773a1d61bbe648b1c69f75080babdc58922d1cd6cc00aae6402201",
+  "docs/ssak-ai-core/GBRAIN_REWARD_POLICY.md": "6d478f0681075a19c497e603b2693fa61b2f34a7518d730c1f6472bf3ef36c43",
+  "tests/test_gbrain.py": "bffc1e5254fb4095e5168a6a543df836dc30e424a519fe87db7afde9a3f18454"
+}

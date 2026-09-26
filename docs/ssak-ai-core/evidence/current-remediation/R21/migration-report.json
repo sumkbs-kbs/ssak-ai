@@ -1,0 +1,108 @@
+{
+  "canonical_record_count": 56961,
+  "complete": true,
+  "destructive_executed": false,
+  "destructive_reason": "dry-run 전용 — in-place 변환·삭제는 사람 결정으로 분리한다",
+  "digests_verified": 56961,
+  "errors": [],
+  "idempotent_replay": true,
+  "imported": {
+    "events": 56961,
+    "objectives": 0,
+    "tasks": 0
+  },
+  "index_rebuilt": 56961,
+  "mapping_carried_over": false,
+  "mapping_digest": "sha256:3c4271900dae4066df40159f5f1b4d7fd9e6aadfe743bc491497a855d5a4d999",
+  "mapping_entries": 56961,
+  "mode": "dry-run",
+  "passed": true,
+  "rollback_record_count": 56961,
+  "rollback_rehearsed": true,
+  "source": {
+    "content_digest": "sha256:c67830796c6e976768f94f9b02cb6bf266a89b8a0b3338d39d540cfbb80f1e34",
+    "counts": {
+      "events": 56961,
+      "objectives": 0,
+      "tasks": 0
+    },
+    "digest": "sha256:c67830796c6e976768f94f9b02cb6bf266a89b8a0b3338d39d540cfbb80f1e34",
+    "file_bundle_digest": "sha256:9527425e162c94e00e78f3383f6d7e727921b470e10875c1f797300fd4f7680d",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.antigravity_k/agency.db",
+    "size_bytes": 26206208,
+    "tables": [
+      "agency_controls",
+      "agency_events",
+      "agency_objective_tasks",
+      "agency_objectives",
+      "agency_task_results",
+      "sqlite_sequence"
+    ]
+  },
+  "source_counts_match_imports": true,
+  "source_head": "2862584ea8f79641fefd9a78de9c145851ea515b",
+  "source_unchanged": true,
+  "target_root": "/tmp/ssak-r21-migr-vohZbl/canonical",
+  "timings_seconds": {
+    "digest_verification": 31.884614292066544,
+    "idempotent_replay": 34.3052925420925,
+    "identity_and_mapping_summary": 0.4829484997317195,
+    "import": 47.65111774997786,
+    "index_rebuild": 0.37226670887321234,
+    "rollback_rehearsal": 53.3372578327544,
+    "source_snapshot_after": 0.11058083362877369,
+    "source_snapshot_before": 0.10627041617408395,
+    "total": 168.2503488752991
+  },
+  "warnings": [
+    "mapping manifest를 새로 만들었다 — project canonical ID는 이 root에서 발급되며, root를 옮길 때는 mapping manifest를 함께 옮겨야 identity가 유지된다",
+    "legacy task가 0건이다 — task 경로는 이번 dry-run에서 관측되지 않았다"
+  ],
+  "distribution": {
+    "kind": "real_source_observed",
+    "observed_counts": {
+      "events": 56961,
+      "objectives": 0,
+      "tasks": 0
+    },
+    "unobserved_operational_paths": [
+      "objectives",
+      "tasks"
+    ],
+    "synthetic_coverage": "tests/cognitive/test_migration.py (+ test_legacy_adapter.py) for objective/task paths",
+    "note": "distribution field added to MigrationReport.as_mapping after this dry-run; counts match the live report"
+  },
+  "payload_provenance_samples": [
+    {
+      "event_id": 1,
+      "event_type": "observation",
+      "note": "first row readable from source after dry-run"
+    },
+    {
+      "event_id": 28481,
+      "event_type": "observation",
+      "note": "mid row"
+    },
+    {
+      "event_id": 56961,
+      "event_type": "observation",
+      "note": "last row"
+    }
+  ],
+  "event_type_histogram": {
+    "observation": 56961
+  },
+  "source_file_sha256": "6bc93092b6b476f25f6d4af402a95c4963b4d6d79a04afd2f9df12c8c4aa4fd5",
+  "source_file_sha256_after": "6bc93092b6b476f25f6d4af402a95c4963b4d6d79a04afd2f9df12c8c4aa4fd5",
+  "code_pins_at_rehearsal": {
+    "src/antigravity_k/engine/cognitive/migration.py": "694743d7ad317cda1121f0eba35f8b2fb2ab14bb2871816d2478a4ef7daab0e4",
+    "src/antigravity_k/engine/cognitive/legacy_adapter.py": "955f5ee54b650becadddf7f507d12b395c9a674c80753f93b628502ca26310d2",
+    "src/antigravity_k/engine/cognitive/store.py": "58a02a89cd66fca9ab4430ce6db0f042156d758ba35a3b1a163f0303fa777b78",
+    "scripts/migrate_legacy_to_canonical.py": "23df5ed576da56a2bfa4b6c8aa1f53f06fa1846f0e6255addaa717a5c9d706cd",
+    "tests/cognitive/test_migration.py": "fbabf3a8c19b2d338548aa0dfd5c2a7626a39acf383b244be2fc840887bcb15a",
+    "tests/cognitive/test_legacy_adapter.py": "da55738b7603c5bb5cc3f747bfaa33a86801e73f79e61623b6a7ac63779ec5f3"
+  },
+  "historical_pin_comparison_note": "context-review-manifest migration_pin_comparison had 4 mismatches at R00 audit; this rehearsal binds CURRENT tree hashes above and does not reuse historical PASS numbers as new evidence beyond the same source file sha256.",
+  "r21_rehearsal_at": "2026-09-26T11:51:13.395510+00:00",
+  "digest_lineage_note": "Historical snapshot_digest 7d69ed65… was pre-R04 content digest scheme. Current content_digest=sha256:c67830796c6e976768f94f9b02cb6bf266a89b8a0b3338d39d540cfbb80f1e34; file bytes sha256 unchanged from registered source."
+}

@@ -70,6 +70,10 @@ class DuplicateRecordError(CanonicalStoreError):
     """이미 공개된 ID를 다른 내용으로 다시 쓰려 할 때 발생한다(create-only)."""
 
 
+class TransactionConflictError(CanonicalStoreError):
+    """같은 transaction ID에 다른 content identity를 stage하려 할 때 발생한다."""
+
+
 class TransactionNotFoundError(CanonicalStoreError):
     """알 수 없는 transaction ID."""
 
@@ -127,6 +131,11 @@ class TransactionManifest:
     status: str
     episode_id: str | None
     entries: tuple[ManifestEntry, ...]
+
+    def content_identity(self) -> tuple[str | None, tuple[str, ...]]:
+        """episode와 entry digest 순서로 transaction content를 식별한다."""
+
+        return self.episode_id, tuple(entry.digest for entry in self.entries)
 
     def to_json(self) -> dict[str, object]:
         return {
@@ -511,7 +520,7 @@ class CanonicalStore:
         if existing.exists():
             raise DuplicateRecordError(f"transaction already committed: {transaction_id}")
         self._assert_creatable(records, committed=committed)
-        manifest = TransactionManifest(
+        proposed = TransactionManifest(
             transaction_id=transaction_id,
             created_at=datetime.now(UTC).isoformat(),
             status=STAGED,
@@ -519,10 +528,20 @@ class CanonicalStore:
             entries=tuple(self._entry_for(record) for record in records),
         )
         path = self.staged_manifest_path(transaction_id)
+        if path.exists():
+            prior = self._load_manifest(path)
+            if prior is None:
+                raise CanonicalStoreError(f"unreadable staged manifest: {transaction_id}")
+            if prior.content_identity() == proposed.content_identity():
+                # 동일 content의 idempotent replay — manifest byte를 덮어쓰지 않는다.
+                return prior
+            raise TransactionConflictError(
+                f"transaction {transaction_id} already staged with different content identity"
+            )
         path.parent.mkdir(parents=True, exist_ok=True)
-        self._write_atomic(path, json.dumps(manifest.to_json(), ensure_ascii=False, indent=2, sort_keys=True))
+        self._write_atomic(path, json.dumps(proposed.to_json(), ensure_ascii=False, indent=2, sort_keys=True))
         _fsync_path(path)
-        return manifest
+        return proposed
 
     def commit(self, transaction_id: str, *, message: str | None = None) -> CommitReceipt:
         """staged transaction을 공개한다. Git commit 뒤에만 committed manifest를 쓴다."""
@@ -827,6 +846,7 @@ __all__ = [
     "CanonicalStoreError",
     "CommitReceipt",
     "DuplicateRecordError",
+    "TransactionConflictError",
     "GitCommitError",
     "ManifestEntry",
     "ReferenceValidationError",

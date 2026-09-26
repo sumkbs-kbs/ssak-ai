@@ -374,6 +374,16 @@ class OutcomeEvaluation:
 
 
 @dataclass(frozen=True, slots=True)
+class DecisionAssessment:
+    """Primary/Human의 명시적 판단 평가. Body는 이 기록이 없으면 decision quality를 주장하지 않는다."""
+
+    status: OutcomeStatus
+    available_at_decision: bool
+    reason: str
+    evidence_refs: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
 class DecisionEvaluation:
     """당시 이용 가능했던 정보에 비춘 판단 평가."""
 
@@ -441,12 +451,37 @@ def evaluate_outcome(comparison: OutcomeComparison) -> OutcomeEvaluation:
 def evaluate_decision(
     comparison: OutcomeComparison,
     *,
-    available_at_decision: bool,
-    reason: str,
+    available_at_decision: bool | None = None,
+    reason: str = "",
     evidence_refs: Sequence[str] = (),
+    assessed_status: OutcomeStatus | None = None,
+    assessment: DecisionAssessment | None = None,
 ) -> DecisionEvaluation:
-    """당시 정보로 합리적이었다면 결과 실패를 판단 실패로 자동 치환하지 않는다."""
+    """결정 품질은 outcome과 별축이다. 명시 assessment가 없으면 UNKNOWN이다(readiness≠판단)."""
 
+    if assessment is not None:
+        return DecisionEvaluation(
+            status=assessment.status,
+            available_at_decision=assessment.available_at_decision,
+            reason=assessment.reason,
+            evidence_refs=tuple(assessment.evidence_refs),
+        )
+    if available_at_decision is None and assessed_status is None:
+        return DecisionEvaluation(
+            status=OutcomeStatus.UNKNOWN,
+            available_at_decision=False,
+            reason=reason or "decision quality unevaluated — readiness PASS is not semantic decision assessment",
+            evidence_refs=tuple(evidence_refs),
+        )
+    if assessed_status is not None:
+        return DecisionEvaluation(
+            status=assessed_status,
+            available_at_decision=bool(available_at_decision) if available_at_decision is not None else False,
+            reason=reason,
+            evidence_refs=tuple(evidence_refs),
+        )
+    # Explicit contemporaneous flag without separate status (legacy unit-test path).
+    assert available_at_decision is not None
     if same_enum(comparison.status, OutcomeStatus.UNKNOWN):
         status = OutcomeStatus.UNKNOWN
     elif available_at_decision:
@@ -484,6 +519,7 @@ class ExperienceLedger:
         self._interpretations: dict[str, list[Interpretation]] = {}
         self._supplements: dict[str, list[ExperienceSupplement]] = {}
         self._records: list[Record] = []
+        self._sink_cursor: int = 0
 
     # ── 조회 ────────────────────────────────────────────
     @property
@@ -497,6 +533,14 @@ class ExperienceLedger:
     @property
     def records(self) -> tuple[Record, ...]:
         return tuple(self._records)
+
+    def pending_sink_records(self) -> tuple[Record, ...]:
+        return tuple(self._records[self._sink_cursor :])
+
+    def mark_sunk(self, count: int) -> None:
+        if count < 0:
+            raise ExperienceContractError("sink count must be non-negative")
+        self._sink_cursor = min(len(self._records), self._sink_cursor + count)
 
     def core(self, experience_id: str) -> ExperienceCore | None:
         return self._cores.get(experience_id)
@@ -589,11 +633,52 @@ class ExperienceLedger:
             raise ExperienceContractError(f"{selection.disposition} 선별로는 Experience를 형성하지 않는다")
         if core.episode_reference != selection.episode_reference:
             raise ExperienceContractError("Experience core가 선별된 episode와 다르다")
+        digest = core.digest()
+        for existing_id, digests in self._core_digests.items():
+            existing = self._cores.get(existing_id)
+            if existing is not None and existing.episode_reference == core.episode_reference and digest in digests:
+                return existing
         if core.experience_id in self._cores:
             raise ExperienceContractError(f"duplicate experience: {core.experience_id}")
         self._cores[core.experience_id] = core
-        self._core_digests.setdefault(core.experience_id, []).append(core.digest())
+        self._core_digests.setdefault(core.experience_id, []).append(digest)
         self._records.append(core.to_record(project_id=project_id, producer=producer, created_at=created_at))
+        return core
+
+    def cores_for_episode(self, episode_reference: str) -> tuple[ExperienceCore, ...]:
+        return tuple(core for core in self._cores.values() if core.episode_reference == episode_reference)
+
+    def ingest_core_record(self, record: Record, *, episode_reference: str = "") -> ExperienceCore:
+        """Provider-neutral reader: rebuild an ExperienceCore from a committed Experience record."""
+        if not same_enum(record.entity_type, EntityType.EXPERIENCE):
+            raise ExperienceContractError("not an Experience record")
+        payload = record.payload
+        by_rel = {ref.relation: ref.target_id for ref in record.references}
+        obs = tuple(ref.target_id for ref in record.references if ref.relation == REL_OBSERVATION)
+        core = ExperienceCore(
+            experience_id=record.id,
+            episode_reference=episode_reference
+            or next(iter(getattr(payload, "historical_refs", ()) or ()), "")
+            or record.id,
+            trigger=str(getattr(payload, "trigger", "") or "ingested"),
+            context_ref=by_rel.get(REL_CONTEXT),
+            judgment_ref=by_rel.get(REL_JUDGMENT),
+            governance_ref=by_rel.get(REL_GOVERNANCE),
+            decision_ref=by_rel.get(REL_DECISION),
+            action_ref=by_rel.get(REL_ACTION),
+            observation_refs=obs,
+            outcome_ref=by_rel.get(REL_OUTCOME),
+            remaining_unknowns=tuple(getattr(payload, "remaining_unknowns", ()) or ()),
+            future_attention=tuple(getattr(payload, "future_attention", ()) or ()),
+            integrity=getattr(payload, "integrity", IntegrityStatus.COMPLETE),
+            missing_references=tuple(getattr(payload, "missing_references", ()) or ()),
+        )
+        if core.experience_id in self._cores:
+            return self._cores[core.experience_id]
+        self._cores[core.experience_id] = core
+        self._core_digests.setdefault(core.experience_id, []).append(core.digest())
+        if record not in self._records:
+            self._records.append(record)
         return core
 
     # ── 해석·보충 ───────────────────────────────────────
@@ -699,6 +784,7 @@ __all__ = [
     "EXPERIENCE_REASONS",
     "INTERPRETATION_AUTHORS",
     "SELECTION_STATE",
+    "DecisionAssessment",
     "DecisionEvaluation",
     "EpisodeEvaluations",
     "EpisodeSignals",

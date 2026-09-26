@@ -1,0 +1,5 @@
+event_id=1 observation first
+event_id=28481 observation mid
+event_id=56961 observation last
+all event_type=observation (56961)
+objectives=0 tasks=0 — operational objective/task distribution NOT observed in this real source

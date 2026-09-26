@@ -1,0 +1,16 @@
+R09 source/test/spec manifest
+date: 2026-09-26 20:15 KST
+
+modified:
+  src/antigravity_k/engine/cognitive/action_journal.py
+  src/antigravity_k/engine/cognitive/action_types.py
+  src/antigravity_k/engine/cognitive/action_context.py
+  src/antigravity_k/engine/cognitive/actions.py
+  src/antigravity_k/engine/cognitive/action_lifecycle.py
+  tests/cognitive/test_actions.py
+
+commands:
+  .venv/bin/python -m pytest tests/cognitive/test_actions.py tests/cognitive/test_store.py tests/cognitive/test_episode.py -q -p no:cacheprovider
+  exit 0 — 72 passed
+  .venv/bin/python -m pytest tests/cognitive/test_actions.py -k r09 -q -p no:cacheprovider
+  exit 0 — 4 passed

@@ -17,9 +17,21 @@ from antigravity_k.engine.cognitive.brain import (
     StructuredBrainClient,
 )
 from antigravity_k.engine.cognitive.context import ContextBuilder, ContextPrincipal
-from antigravity_k.engine.cognitive.models import ContextBudget, to_wire
+from antigravity_k.engine.cognitive.models import (
+    ApplicabilityLevel,
+    ContextBudget,
+    ContextItem,
+    ContextPackagePayload,
+    DisclosureLevel,
+    IntegrityStatus,
+    Producer,
+    ProducerKind,
+    Record,
+    to_wire,
+)
 from antigravity_k.engine.cognitive.references import EntityType, new_id
 from antigravity_k.engine.cognitive.store import CanonicalStore, canonical_digest
+from antigravity_k.engine.cognitive_surface import StructuredSurfaceBrainPort
 from tests.cognitive._fixtures import (
     build_constitution_rule,
     build_evidence,
@@ -374,7 +386,7 @@ def test_brain_swap_keeps_records_and_does_not_force_previous_conclusion(tmp_pat
         budget=ContextBudget(token_budget=100_000, tokens_used=0, l0_reserved_tokens=0),
     )
     old_item = next(item for item in result.payload.l1_state if item.record_id == judgment_a.record.id)
-    assert old_item.reason_selected == "L1 recent judgment", "이전 판단은 이력 항목으로만 온다"
+    assert "judgment" in old_item.reason_selected.lower(), "이전 판단은 이력/state 항목으로만 온다"
 
     different = structured(
         {
@@ -507,3 +519,196 @@ def test_secondary_set_fails_closed_when_one_member_fails() -> None:
     )
 
     assert isinstance(engaged, BrainFailure)
+
+
+# ─── R14 structured surface brain / bounded context wire ─────────────
+
+
+def _r14_fixture(tmp_path: Path):
+    from datetime import UTC, datetime
+
+    project = new_id(EntityType.PROJECT)
+    store = CanonicalStore(tmp_path / "r14", git_enabled=False)
+    rule = build_constitution_rule(project)
+    goal = build_goal(project, statement="R14 goal: real context to provider")
+    evidence = build_evidence(project, claim="R14 evidence: observed fixture claim")
+    store.commit_records([build_project(project, protected_constraints=(rule.id,)), rule, goal, evidence])
+
+    # Explicit package with L1 state + L3 evidence so the renderer has real text to send.
+    def item(rid: str) -> ContextItem:
+        return ContextItem(
+            record_id=rid,
+            reason_selected="r14 fixture",
+            token_estimate=32,
+            disclosure_level=DisclosureLevel.L2_DETAIL,
+            applicability=ApplicabilityLevel.MATCH,
+        )
+
+    package = ContextPackagePayload(
+        goal_id=goal.id,
+        state_revision=1,
+        l1_state=(item(goal.id),),
+        l3_evidence=(item(evidence.id),),
+        budget=ContextBudget(token_budget=100_000, tokens_used=64, l0_reserved_tokens=0),
+        integrity=IntegrityStatus.COMPLETE,
+    )
+    pkg_record = Record.create(
+        entity_type=EntityType.CONTEXT_PACKAGE,
+        project_id=project,
+        producer=Producer(kind=ProducerKind.BODY, actor_id="body:r14"),
+        payload=package,
+        created_at=datetime(2026, 9, 26, tzinfo=UTC),
+    )
+    store.commit_records([pkg_record])
+
+    class _Built:
+        record = pkg_record
+        payload = package
+
+    built = _Built()
+
+    def load_package(ref: str):
+        if ref in (pkg_record.id, "context:r14"):
+            return store.read(pkg_record.id)
+        return store.read(ref)
+
+    def load_record(rid: str):
+        return store.read(rid)
+
+    return project, store, built, goal, evidence, load_package, load_record
+
+
+def test_r14_a1_provider_payload_has_goal_state_evidence_text(tmp_path: Path) -> None:
+    project, store, built, goal, evidence, load_package, load_record = _r14_fixture(tmp_path)
+    adapter = FakeAdapter("r14-a", [valid_response(version="r14/1")])
+    # Patch judgment grounds to fixture evidence
+    adapter = FakeAdapter(
+        "r14-a",
+        [
+            structured(
+                {
+                    "judgment": judgment_dict(
+                        grounds=(evidence.id,), context_digest=canonical_digest(to_wire(built.record))
+                    )
+                },
+                version="r14/1",
+            )
+        ],
+    )
+    port = StructuredSurfaceBrainPort(
+        adapter,
+        project_id=project,
+        load_context_package=load_package,
+        load_record=load_record,
+    )
+    outcome = port.think(context_ref=built.record.id, request_signature="req-r14-a1", attempt=1)
+    assert outcome.failed is False
+    assert port.provider_calls >= 1
+    assert adapter.calls, "provider must receive a wire"
+    wire = adapter.calls[0]["context"]
+    assert isinstance(wire.get("goal"), dict)
+    assert "R14 goal" in str(wire["goal"].get("text", ""))
+    assert wire.get("evidence"), "evidence snippets required"
+    assert any("R14 evidence" in str(e.get("text", "")) for e in wire["evidence"])
+    # Not opaque-ID-only: goal/evidence entries carry text, not merely ids
+    assert wire["goal"]["id"] == goal.id
+    assert all("text" in e and e["text"] for e in wire["evidence"])
+
+
+def test_r14_a2_low_context_window_does_not_hide_required_omissions(tmp_path: Path) -> None:
+    project, store, built, goal, evidence, load_package, load_record = _r14_fixture(tmp_path)
+    adapter = FakeAdapter(
+        "r14-low",
+        [valid_response()],
+        caps=capabilities(context_limit=8),  # too small for real snippets
+    )
+    port = StructuredSurfaceBrainPort(
+        adapter,
+        project_id=project,
+        load_context_package=load_package,
+        load_record=load_record,
+    )
+    outcome = port.think(context_ref=built.record.id, request_signature="req-r14-a2", attempt=1)
+    assert outcome.failed is True
+    assert "CONTEXT_OVERFLOW" in outcome.detail or "omitted" in outcome.detail
+    assert port.provider_calls == 0
+    assert adapter.calls == []
+
+
+def test_r14_a3_malformed_repair_stays_within_budget() -> None:
+    # Reuse StructuredBrainClient repair contract already owned by brain.py
+    adapter = FakeAdapter(
+        "r14-repair",
+        [BrainResponse(text="not json"), valid_response()],
+    )
+    outcome = client(adapter).think(CONTEXT_WIRE, "req-r14-a3")
+    assert isinstance(outcome, BrainJudgment)
+    assert outcome.repair_attempts == 1
+    assert len(adapter.calls) == 2
+    # Second failure stops
+    adapter2 = FakeAdapter("r14-repair2", [BrainResponse(text="x"), BrainResponse(text="y")])
+    outcome2 = client(adapter2).think(CONTEXT_WIRE, "req-r14-a3b")
+    assert isinstance(outcome2, BrainFailure)
+    assert outcome2.repair_attempts == 1
+    assert len(adapter2.calls) == 2
+
+
+def test_r14_a4_two_providers_read_same_fixture_ids(tmp_path: Path) -> None:
+    project, store, built, goal, evidence, load_package, load_record = _r14_fixture(tmp_path)
+    digest = canonical_digest(to_wire(built.record))
+    resp = structured({"judgment": judgment_dict(grounds=(evidence.id,), context_digest=digest)}, version="p1")
+    resp_b = structured({"judgment": judgment_dict(grounds=(evidence.id,), context_digest=digest)}, version="p2")
+    a = FakeAdapter("prov-a", [resp], caps=capabilities(provider_model_version="p1"))
+    b = FakeAdapter("prov-b", [resp_b], caps=capabilities(provider_model_version="p2"))
+    port_a = StructuredSurfaceBrainPort(
+        a, project_id=project, load_context_package=load_package, load_record=load_record
+    )
+    port_b = StructuredSurfaceBrainPort(
+        b, project_id=project, load_context_package=load_package, load_record=load_record
+    )
+    out_a = port_a.think(context_ref=built.record.id, request_signature="a", attempt=1)
+    out_b = port_b.think(context_ref=built.record.id, request_signature="b", attempt=1)
+    assert out_a.failed is False and out_b.failed is False
+    assert a.calls[0]["context"]["goal"]["id"] == b.calls[0]["context"]["goal"]["id"] == goal.id
+    evid_a = {e["id"] for e in a.calls[0]["context"]["evidence"]}
+    evid_b = {e["id"] for e in b.calls[0]["context"]["evidence"]}
+    assert evid_a == evid_b
+    assert evidence.id in evid_a
+
+
+def test_r14_a5_incomplete_context_provider_call_zero(tmp_path: Path) -> None:
+    project = new_id(EntityType.PROJECT)
+    store = CanonicalStore(tmp_path / "r14-inc", git_enabled=False)
+    goal = build_goal(project)
+    missing = new_id(EntityType.EVIDENCE)
+    from datetime import UTC, datetime
+
+    package = ContextPackagePayload(
+        goal_id=goal.id,
+        state_revision=1,
+        l1_state=(),
+        l3_evidence=(),
+        budget=ContextBudget(token_budget=1000, tokens_used=0, l0_reserved_tokens=0),
+        integrity=IntegrityStatus.INCOMPLETE,
+        missing_ids=(missing,),
+    )
+    pkg_record = Record.create(
+        entity_type=EntityType.CONTEXT_PACKAGE,
+        project_id=project,
+        producer=Producer(kind=ProducerKind.BODY, actor_id="body:r14"),
+        payload=package,
+        created_at=datetime(2026, 9, 26, tzinfo=UTC),
+    )
+    store.commit_records([build_project(project), goal, pkg_record])
+    adapter = FakeAdapter("blocked", [valid_response()])
+    port = StructuredSurfaceBrainPort(
+        adapter,
+        project_id=project,
+        load_context_package=lambda ref: store.read(pkg_record.id) if ref in (pkg_record.id, "c") else store.read(ref),
+        load_record=store.read,
+    )
+    outcome = port.think(context_ref=pkg_record.id, request_signature="req-inc", attempt=1)
+    assert outcome.failed is True
+    assert "CONTEXT_INCOMPLETE" in outcome.detail
+    assert port.provider_calls == 0
+    assert adapter.calls == []

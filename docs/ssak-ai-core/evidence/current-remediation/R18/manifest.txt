@@ -1,0 +1,2 @@
+src/antigravity_k/engine/cognitive/live_trial_adapter.py
+tests/cognitive/test_live_trial_adapter.py

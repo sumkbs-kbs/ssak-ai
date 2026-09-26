@@ -1,0 +1,38 @@
+...........................F........                                     [100%]
+=================================== FAILURES ===================================
+_____________ test_authenticated_actual_tool_and_durable_duplicate _____________
+
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-8887/test_authenticated_actual_tool0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1052bdf60>
+
+    def test_authenticated_actual_tool_and_durable_duplicate(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        fixture = build_active_fixture(tmp_path)
+        monkeypatch.setattr(api, "get_token_service", lambda: fixture.tokens)
+        client = TestClient(fixture.app)
+        headers = {"Authorization": "Bearer " + fixture.tokens.issue_token("owner")}
+        view = client.get(BASE + "/requests/request-1", headers=headers)
+        assert view.status_code == 200
+        assert "one effect" in view.json()["arguments_json"]
+        payload = {"request_id": "request-1", "action_digest": view.json()["action_digest"], "reason": "isolated QA"}
+        first = client.post(BASE + "/execute", headers=headers, json=payload)
+        assert first.status_code == 200, first.text
+        assert first.json()["dispatched_actions"] == 1, first.text
+        assert (tmp_path / "effect.txt").read_text() == "one effect"
+>       assert len(fixture.store.committed_manifests()) == 2
+E       AssertionError: assert 3 == 2
+E        +  where 3 = len((TransactionManifest(transaction_id='016bdc59e0f3476886d7c0633c76ad72', created_at='2026-09-26T11:34:51.438649+00:00',... 'body'}, 'project_id': 'project:96e7e0a6-08db-59a3-b249-868f74e41d87', 'references': [], 'schema_version': '1.0'}),))))
+E        +    where (TransactionManifest(transaction_id='016bdc59e0f3476886d7c0633c76ad72', created_at='2026-09-26T11:34:51.438649+00:00',... 'body'}, 'project_id': 'project:96e7e0a6-08db-59a3-b249-868f74e41d87', 'references': [], 'schema_version': '1.0'}),))) = committed_manifests()
+E        +      where committed_manifests = <antigravity_k.engine.cognitive.store.CanonicalStore object at 0x10537ead0>.committed_manifests
+E        +        where <antigravity_k.engine.cognitive.store.CanonicalStore object at 0x10537ead0> = ActiveFixture(app=<fastapi.applications.FastAPI object at 0x1053e5010>, tokens=<antigravity_k.engine.auth.TokenService...sion=1), history=<antigravity_k.engine.cognitive_surface_measurement.DurableSurfaceHistoryStore object at 0x10537e490>).store
+
+tests/cognitive/test_active_api.py:144: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/cognitive/test_active_api.py::test_authenticated_actual_tool_and_durable_duplicate
+1 failed, 35 passed, 1 warning in 13.49s
+exit:1

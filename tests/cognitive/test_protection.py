@@ -32,7 +32,7 @@ from antigravity_k.engine.cognitive.protected_targets import (
 )
 from antigravity_k.engine.cognitive.references import EntityType, new_id
 from antigravity_k.engine.cognitive.store import CanonicalStore, canonical_digest
-from antigravity_k.tools.permission_gate import PermissionGate
+from antigravity_k.tools.permission_gate import PermissionGate, protection_action_digest
 from antigravity_k.tools.tool_contracts import Permission
 
 NOW = datetime(2026, 9, 22, 3, 0, 0, tzinfo=UTC)
@@ -53,7 +53,7 @@ def approval_for(
     target: str,
     *,
     protected_class: ProtectedClass = ProtectedClass.CONSTITUTION,
-    action_digest: str = "",
+    action_digest: str = "sha256:action",
     scope: str | None = None,
     expires_at: datetime | None = None,
 ) -> HumanApproval:
@@ -74,7 +74,7 @@ def request_for(
     actor: ActorKind = ActorKind.BODY,
     approvals: tuple[HumanApproval, ...] = (),
     operation: WriteOperation = WriteOperation.UPDATE,
-    digest: str = "",
+    digest: str = "sha256:action",
 ) -> ProtectedWriteRequest:
     return ProtectedWriteRequest(
         channel=WriteChannel.FILE_TOOL,
@@ -225,6 +225,7 @@ def test_shell_reads_allowed_writes_denied(project: Path) -> None:
 
     approved = guard.evaluate_shell_command(
         f"echo '# 변경' > {CONSTITUTION_RELATIVE}",
+        action_digest="sha256:action",
         approvals=(approval_for("docs/ssak-ai-core"),),
     )
     assert approved.allowed
@@ -270,7 +271,8 @@ def test_permission_gate_denies_protected_write(project: Path) -> None:
     shell_denied = gate.check("run_bash_command", {"command": f"echo x > {CONSTITUTION_RELATIVE}"}, "safe")
     assert shell_denied is Permission.DENY
 
-    gate.set_protection_approvals((approval_for("docs/ssak-ai-core"),))
+    digest = protection_action_digest("write_file", {"file_path": CONSTITUTION_RELATIVE})
+    gate.set_protection_approvals((approval_for("docs/ssak-ai-core", action_digest=digest),))
     assert gate.check("write_file", {"file_path": CONSTITUTION_RELATIVE}, "safe") is Permission.ALLOW
 
 

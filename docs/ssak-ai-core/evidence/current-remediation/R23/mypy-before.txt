@@ -1,0 +1,7 @@
+src/antigravity_k/knowledge/wiki_graph.py:68: error: Incompatible types in assignment (expression has type "tuple[tuple[int, int], ...]", variable has type "tuple[int, ...]")  [assignment]
+src/antigravity_k/knowledge/wiki_graph.py:70: error: "int" has no attribute "__iter__"; maybe "__int__"? (not iterable)  [attr-defined]
+src/antigravity_k/knowledge/obsidian_links.py:77: error: Incompatible types in assignment (expression has type "tuple[str, ...]", variable has type "tuple[str] | tuple[()]")  [assignment]
+src/antigravity_k/knowledge/wiki.py:643: error: Incompatible types in assignment (expression has type "Row | None", variable has type "Row")  [assignment]
+src/antigravity_k/knowledge/wiki.py:873: error: Name "mirrors_to_remove" already defined on line 748  [no-redef]
+pyproject.toml: note: unused section(s): module = ['tests.*']
+Found 5 errors in 3 files (checked 3 source files)

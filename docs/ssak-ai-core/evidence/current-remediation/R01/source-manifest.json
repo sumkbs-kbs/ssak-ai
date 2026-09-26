@@ -1,0 +1,11 @@
+{
+  "card": "R01",
+  "head": "2862584ea8f79641fefd9a78de9c145851ea515b",
+  "captured_at": "2026-09-26T10:59:13.656110+00:00",
+  "files": {
+    "src/antigravity_k/engine/cognitive/protected_targets.py": "929f7aa7fd8f66250dfed86176f547428c9dd8ac33831fc2e857c27bc8f8560f",
+    "src/antigravity_k/engine/sandbox.py": "6469f3ad804a3109f6816485d341f1f79a845867b37a2d7d35f1e784e67a0c5f",
+    "src/antigravity_k/tools/permission_gate.py": "b011f71dfc7f6981d9e855e8d9bfda28ec0f1abd685e84d17372f8eac941883d",
+    "tests/cognitive/test_r01_protected_sandbox.py": "2a3d085ef4f227dacace3c282ac4dc4f80acd37a12dae434c4321853529d94e4"
+  }
+}

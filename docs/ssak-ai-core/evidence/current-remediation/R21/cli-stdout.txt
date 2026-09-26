@@ -1,0 +1,10 @@
+mode: dry-run · source digest sha256:c67830796c6e976768f94f9b02cb6bf266a89b8a0b3338d39d540cfbb80f1e34
+source counts: {'events': 56961, 'objectives': 0, 'tasks': 0}
+imported: {'events': 56961, 'objectives': 0, 'tasks': 0} · canonical records 56961
+mapping entries 56961 · digest sha256:3c4271900dae4066df40159f5f1b4d7fd9e6aadfe743bc491497a855d5a4d999
+index rebuilt 56961 · digests verified 56961 · idempotent replay True
+source unchanged True · rollback rehearsed True · destructive executed False
+  warning: mapping manifest를 새로 만들었다 — project canonical ID는 이 root에서 발급되며, root를 옮길 때는 mapping manifest를 함께 옮겨야 identity가 유지된다
+  warning: legacy task가 0건이다 — task 경로는 이번 dry-run에서 관측되지 않았다
+verdict: passed=True complete=True
+wrote /tmp/ssak-r21-migr-vohZbl/migration-report.json

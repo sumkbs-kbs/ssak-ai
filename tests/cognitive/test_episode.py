@@ -32,6 +32,7 @@ from antigravity_k.engine.cognitive.authority import (
     AuthorityVerdict,
 )
 from antigravity_k.engine.cognitive.experience import (
+    DecisionAssessment,
     EpisodeEvaluations,
     EpisodeSignals,
     ExperienceContractError,
@@ -59,6 +60,7 @@ from antigravity_k.engine.cognitive.models import (
     Record,
     RiskLevel,
     RiskProfile,
+    same_enum,
 )
 from antigravity_k.engine.cognitive.readiness import (
     ActionScope,
@@ -423,7 +425,10 @@ def test_repeated_signature_without_material_delta_stops() -> None:
     assert first.termination is EpisodeTermination.COMPLETED
     assert second.termination is EpisodeTermination.STOPPED_NO_DELTA
     assert "새 ID는 새 의미가 아니다" in second.note
-    assert second.selection is None
+    # R11: no-delta still leaves an operational trail; never auto-forms Experience.
+    assert second.selection is not None
+    assert second.selection.disposition is SelectionDisposition.OPERATIONAL_ONLY
+    assert runtime.experience.cores_for_episode(EPISODE) == ()
     assert len(think.calls) == 1
 
 
@@ -872,3 +877,584 @@ def test_store_adapter_for_readiness_is_used_by_runtime() -> None:
 
     assert not check.fresh
     assert check.changed == ("state_revision",)
+
+
+# ─── R07 feedback / rethink loop ─────────────────────────────────────
+
+
+def test_r07_a1_successful_evidence_updates_plan_before_commit() -> None:
+    intent = make_action_intent(action_key="collect-evidence")
+    intent = replace(intent, readiness=ready_readiness(intent.args_digest()))
+    envelope = CognitiveRequestEnvelope(
+        request_id="request:evidence",
+        request_type=CognitiveRequestType.TOOL,
+        purpose="근거 수집",
+        target="src/a.py",
+        expected_decision_impact="ground 보강",
+        evidence_revision="ev:1",
+        dimension=AuthorityDimension.TOOL_WRITE,
+        action=intent,
+        authority=AuthorityProfile(
+            revision=1,
+            grants=(
+                AuthorityGrant(
+                    subject=SUBJECT,
+                    dimension=AuthorityDimension.TOOL_WRITE,
+                    resource_scope="src",
+                    allowed_operations=("execute_tool",),
+                    granted_by="human:mr.k",
+                    issued_at=NOW,
+                    revision=1,
+                ),
+            ),
+        ),
+    )
+    initial_plan, _ = plan_with_action(target="src/old.txt")
+    updated_plan, updated_intent = plan_with_action(
+        observation=ActionObservation(observed=True, succeeded=True, detail="새 plan으로 완료"),
+        target="src/new.txt",
+    )
+    think = FakeThink(ThinkOutcome(judgment_ref="judgment:1", requests=(envelope,)))
+    rethink = FakeRethink(
+        [
+            ThinkOutcome(
+                judgment_ref="judgment:2",
+                delta=EpisodeDelta(judgment=True, ground=True, action=True, description="새 evidence로 plan 갱신"),
+                plan=updated_plan,
+            )
+        ]
+    )
+    port_targets: list[str] = []
+    runtime = CognitiveRuntime(
+        think=think,
+        rethink=rethink,
+        actions=ActionDispatcher(
+            port=CallablePort(
+                lambda tool, args, action_id: (
+                    port_targets.append(str(args.get("path") or args.get("target") or tool)),
+                    "ok",
+                )[1]
+            ),
+            clock=lambda: NOW,
+        ),
+        clock=lambda: NOW,
+        project_id=PROJECT,
+        producer=BODY,
+    )
+    episode = runtime.run(
+        EpisodeRequest(
+            episode_id="episode:r07-a1",
+            context_ref="context:1",
+            goal_ref="goal:1",
+            simple=False,
+            plan=initial_plan,
+        )
+    )
+    assert episode.termination is EpisodeTermination.COMPLETED
+    assert episode.judgment_ref == "judgment:2"
+    assert rethink.calls and "request:evidence" in rethink.calls[0]["feedback_refs"]
+    assert episode.feedback[0].executed is True
+    assert episode.action_run is not None
+    assert episode.action_run.intent.scope == "src/new.txt"
+    assert episode.action_run.intent.arguments.get("file_path") == "src/new.txt"
+
+
+def test_r07_a2_deny_then_safe_alternative_runs_next_round() -> None:
+    denied = CognitiveRequestEnvelope(
+        request_id="request:deny",
+        request_type=CognitiveRequestType.TOOL,
+        purpose="위험 도구",
+        target="src/secret.py",
+        expected_decision_impact="보강",
+        authority=AuthorityProfile(revision=1),
+    )
+    alt_intent = make_action_intent(action_key="safe-alt", target="src/safe.py")
+    alt_intent = replace(alt_intent, readiness=ready_readiness(alt_intent.args_digest()))
+    alternative = CognitiveRequestEnvelope(
+        request_id="request:alt",
+        request_type=CognitiveRequestType.TOOL,
+        purpose="안전한 대안",
+        target="src/safe.py",
+        expected_decision_impact="보강",
+        evidence_revision="ev:2",
+        dimension=AuthorityDimension.TOOL_WRITE,
+        action=alt_intent,
+        authority=AuthorityProfile(
+            revision=1,
+            grants=(
+                AuthorityGrant(
+                    subject=SUBJECT,
+                    dimension=AuthorityDimension.TOOL_WRITE,
+                    resource_scope="src",
+                    allowed_operations=("execute_tool",),
+                    granted_by="human:mr.k",
+                    issued_at=NOW,
+                    revision=1,
+                ),
+            ),
+        ),
+    )
+    think = FakeThink(ThinkOutcome(judgment_ref="judgment:1", requests=(denied,)))
+    plan, _ = plan_with_action(observation=ActionObservation(observed=True, succeeded=True, detail="ok"))
+    rethink = FakeRethink(
+        [
+            ThinkOutcome(
+                judgment_ref="judgment:2",
+                delta=EpisodeDelta(action=True, description="안전한 대안으로 교체"),
+                requests=(alternative,),
+            )
+        ]
+    )
+    runtime = CognitiveRuntime(
+        think=think,
+        rethink=rethink,
+        actions=ActionDispatcher(port=CallablePort(lambda tool, args, action_id: "ok"), clock=lambda: NOW),
+        clock=lambda: NOW,
+        project_id=PROJECT,
+        producer=BODY,
+    )
+    episode = runtime.run(
+        EpisodeRequest(
+            episode_id="episode:r07-a2",
+            context_ref="context:1",
+            goal_ref="goal:1",
+            simple=False,
+            plan=plan,
+            affected_grounds=("ground:1",),
+        )
+    )
+    assert episode.counters.rethink_rounds >= 1
+    assert any(item.request_id == "request:alt" and item.executed for item in episode.feedback)
+    assert any(item.request_id == "request:deny" and not item.executed for item in episode.feedback)
+    assert LoopState.EXECUTE in episode.states()
+
+
+def test_r07_a3_repeat_signature_stops_but_new_evidence_revision_retries() -> None:
+    def envelope(request_id: str, evidence_revision: str, action_key: str) -> CognitiveRequestEnvelope:
+        intent = make_action_intent(action_key=action_key)
+        intent = replace(intent, readiness=ready_readiness(intent.args_digest()))
+        return CognitiveRequestEnvelope(
+            request_id=request_id,
+            request_type=CognitiveRequestType.TOOL,
+            purpose="동일 목적",
+            target="src/a.py",
+            expected_decision_impact="보강",
+            evidence_revision=evidence_revision,
+            dimension=AuthorityDimension.TOOL_WRITE,
+            action=intent,
+            authority=AuthorityProfile(
+                revision=1,
+                grants=(
+                    AuthorityGrant(
+                        subject=SUBJECT,
+                        dimension=AuthorityDimension.TOOL_WRITE,
+                        resource_scope="src",
+                        allowed_operations=("execute_tool",),
+                        granted_by="human:mr.k",
+                        issued_at=NOW,
+                        revision=1,
+                    ),
+                ),
+            ),
+        )
+
+    first = envelope("request:1", "ev:1", "key-a")
+    repeat = envelope("request:2", "ev:1", "key-b")
+    changed = envelope("request:3", "ev:2", "key-c")
+    think = FakeThink(ThinkOutcome(judgment_ref="judgment:1", requests=(first,)))
+    rethink = FakeRethink(
+        [
+            ThinkOutcome(
+                judgment_ref="judgment:2",
+                delta=EpisodeDelta(ground=True, description="재시도"),
+                requests=(repeat, changed),
+            )
+        ]
+    )
+    plan, _ = plan_with_action(observation=ActionObservation(observed=True, succeeded=True, detail="ok"))
+    runtime = CognitiveRuntime(
+        think=think,
+        rethink=rethink,
+        actions=ActionDispatcher(port=CallablePort(lambda tool, args, action_id: "ok"), clock=lambda: NOW),
+        budget=EpisodeBudget(repeat_signature_limit=1, expansion_rounds=3),
+        clock=lambda: NOW,
+        project_id=PROJECT,
+        producer=BODY,
+    )
+    episode = runtime.run(
+        EpisodeRequest(
+            episode_id="episode:r07-a3",
+            context_ref="context:1",
+            goal_ref="goal:1",
+            simple=False,
+            plan=plan,
+        )
+    )
+    by_id = {item.request_id: item for item in episode.feedback}
+    assert by_id["request:1"].executed is True
+    assert by_id["request:2"].disposition == "REPEAT_STOP"
+    assert by_id["request:2"].executed is False
+    assert by_id["request:3"].executed is True
+
+
+def test_r07_a4_total_request_budget_caps_large_initial_batch() -> None:
+    envelopes = tuple(
+        CognitiveRequestEnvelope(
+            request_id=f"request:{i}",
+            request_type=CognitiveRequestType.TOOL,
+            purpose=f"purpose-{i}",
+            target=f"src/{i}.py",
+            expected_decision_impact="x",
+            authority=AuthorityProfile(revision=1),
+        )
+        for i in range(100)
+    )
+    think = FakeThink(ThinkOutcome(judgment_ref="judgment:1", requests=envelopes))
+    plan, _ = plan_with_action()
+    runtime = CognitiveRuntime(
+        think=think,
+        actions=ActionDispatcher(port=CallablePort(lambda tool, args, action_id: "ok"), clock=lambda: NOW),
+        budget=EpisodeBudget(max_total_requests=5, expansion_rounds=0),
+        clock=lambda: NOW,
+        project_id=PROJECT,
+        producer=BODY,
+    )
+    episode = runtime.run(
+        EpisodeRequest(
+            episode_id="episode:r07-a4",
+            context_ref="context:1",
+            goal_ref="goal:1",
+            simple=False,
+            plan=plan,
+        )
+    )
+    assert episode.termination is EpisodeTermination.STOPPED_BUDGET
+    assert len(episode.feedback) <= 5
+    assert LoopState.ACTION not in episode.states()
+
+
+def test_r07_a5_simple_and_no_delta_stop_without_extra_secondary() -> None:
+    think = FakeThink(ThinkOutcome(judgment_ref="judgment:1"))
+    plan, _ = plan_with_action(observation=ActionObservation(observed=True, succeeded=True, detail="ok"))
+    runtime = CognitiveRuntime(
+        think=think,
+        rethink=FakeRethink([]),
+        actions=ActionDispatcher(port=CallablePort(lambda tool, args, action_id: "ok"), clock=lambda: NOW),
+        clock=lambda: NOW,
+        project_id=PROJECT,
+        producer=BODY,
+    )
+    simple = runtime.run(
+        EpisodeRequest(episode_id="episode:r07-a5s", context_ref="context:1", goal_ref="goal:1", simple=True, plan=plan)
+    )
+    assert simple.termination is EpisodeTermination.COMPLETED
+    assert simple.counters.rethink_rounds == 0
+    assert simple.counters.secondary_requests == 0
+
+    denied = CognitiveRequestEnvelope(
+        request_id="request:1",
+        request_type=CognitiveRequestType.TOOL,
+        purpose="x",
+        target="src/a.py",
+        expected_decision_impact="y",
+        authority=AuthorityProfile(revision=1),
+    )
+    think2 = FakeThink(ThinkOutcome(judgment_ref="judgment:1", requests=(denied,)))
+    rethink = FakeRethink([ThinkOutcome(judgment_ref="judgment:2", delta=EpisodeDelta(description="표현만"))])
+    runtime2 = CognitiveRuntime(
+        think=think2,
+        rethink=rethink,
+        actions=ActionDispatcher(port=CallablePort(lambda tool, args, action_id: "ok"), clock=lambda: NOW),
+        clock=lambda: NOW,
+        project_id=PROJECT,
+        producer=BODY,
+    )
+    stopped = runtime2.run(
+        EpisodeRequest(
+            episode_id="episode:r07-a5n",
+            context_ref="context:1",
+            goal_ref="goal:1",
+            simple=False,
+            plan=plan,
+        )
+    )
+    assert stopped.termination is EpisodeTermination.STOPPED_NO_DELTA
+
+
+# ─── R11 operational trail + selected Experience persistence ─────────
+
+
+def test_r11_a1_stopped_no_delta_has_operational_trail_without_experience() -> None:
+    think = FakeThink(ThinkOutcome(judgment_ref="judgment:1"))
+    plan, _intent = plan_with_action(observation=ActionObservation(observed=True, succeeded=True, detail="T08 통과"))
+    sunk: list[Record] = []
+    runtime = CognitiveRuntime(
+        think=think,
+        actions=ActionDispatcher(port=CallablePort(lambda tool, args, action_id: "ok"), clock=lambda: NOW),
+        budget=EpisodeBudget(repeat_signature_limit=1),
+        clock=lambda: NOW,
+        project_id=PROJECT,
+        producer=BODY,
+        record_sink=lambda records: sunk.extend(records),
+    )
+    runtime.run(EpisodeRequest(episode_id=EPISODE, context_ref="context:1", goal_ref="goal:1", plan=plan))
+    stopped = runtime.run(EpisodeRequest(episode_id=EPISODE, context_ref="context:1", goal_ref="goal:1", plan=plan))
+
+    assert stopped.termination is EpisodeTermination.STOPPED_NO_DELTA
+    assert stopped.selection is not None
+    assert stopped.selection.disposition is SelectionDisposition.OPERATIONAL_ONLY
+    assert any(r.record_id.startswith("operational:") for r in runtime.experience.operational_records)
+    assert runtime.experience.cores_for_episode(EPISODE) == ()
+    assert len(sunk) >= 1
+
+
+def test_r11_a2_deviation_core_survives_restart_via_canonical_records() -> None:
+    sunk: list[Record] = []
+    ledger = ExperienceLedger()
+    context_ref = new_id(EntityType.CONTEXT_PACKAGE)
+    judgment_ref = new_id(EntityType.BRAIN_JUDGMENT)
+    runtime = CognitiveRuntime(
+        think=FakeThink(ThinkOutcome(judgment_ref=judgment_ref)),
+        actions=ActionDispatcher(
+            port=CallablePort(lambda tool, args, action_id: "wrong"),
+            clock=lambda: NOW,
+        ),
+        clock=lambda: NOW,
+        project_id=PROJECT,
+        producer=BODY,
+        experience=ledger,
+        record_sink=lambda records: sunk.extend(records),
+    )
+    plan, _intent = plan_with_action(observation=ActionObservation(observed=True, succeeded=True, detail="편차 결과"))
+    plan = EpisodePlan(
+        readiness=plan.readiness, action=plan.action, expected_outcome="기대 결과", observation=plan.observation
+    )
+    episode = runtime.run(
+        EpisodeRequest(episode_id="episode:r11-a2", context_ref=context_ref, goal_ref="goal:1", plan=plan)
+    )
+    assert episode.selection is not None
+    assert episode.selection.disposition is SelectionDisposition.EXPERIENCE
+    cores = ledger.cores_for_episode("episode:r11-a2")
+    assert len(cores) == 1
+    core = cores[0]
+    digest = core.digest()
+    experience_records = [r for r in sunk if same_enum(r.entity_type, EntityType.EXPERIENCE)]
+    assert len(experience_records) == 1
+
+    restored = ExperienceLedger()
+    restored.ingest_core_record(experience_records[0], episode_reference="episode:r11-a2")
+    again = restored.cores_for_episode("episode:r11-a2")
+    assert len(again) == 1
+    assert again[0].experience_id == core.experience_id
+    assert again[0].digest() == digest
+
+
+def test_r11_a3_routine_match_stays_operational_only() -> None:
+    plan, _intent = plan_with_action(observation=ActionObservation(observed=True, succeeded=True, detail="T08 통과"))
+    runtime = CognitiveRuntime(
+        think=FakeThink(ThinkOutcome(judgment_ref="judgment:1")),
+        actions=ActionDispatcher(port=CallablePort(lambda tool, args, action_id: "ok"), clock=lambda: NOW),
+        clock=lambda: NOW,
+        project_id=PROJECT,
+        producer=BODY,
+    )
+    episode = runtime.run(
+        EpisodeRequest(episode_id="episode:r11-a3", context_ref="context:1", goal_ref="goal:1", plan=plan)
+    )
+    assert episode.termination is EpisodeTermination.COMPLETED
+    assert episode.selection is not None
+    assert episode.selection.disposition is SelectionDisposition.OPERATIONAL_ONLY
+    assert SelectionReason.ROUTINE in episode.selection.reasons
+    assert runtime.experience.cores_for_episode("episode:r11-a3") == ()
+
+
+def test_r11_a4_provider_neutral_core_reader() -> None:
+    ledger = ExperienceLedger()
+    record = ledger.record_operational(operational("operational:r11-a4"))
+    selection = ledger.select(
+        record,
+        comparison=compare_outcome("쓰기 성공", "권한 거부", delta="쓰기 미실행"),
+        signals=EpisodeSignals(failure=True),
+        producer=BODY,
+        recorded_at=NOW,
+    )
+    context_ref = new_id(EntityType.CONTEXT_PACKAGE)
+    judgment_ref = new_id(EntityType.BRAIN_JUDGMENT)
+    core = ledger.form_experience(
+        selection,
+        ExperienceCore(
+            experience_id=new_id(EntityType.EXPERIENCE),
+            episode_reference=EPISODE,
+            trigger="실패",
+            context_ref=context_ref,
+            judgment_ref=judgment_ref,
+        ),
+        project_id=PROJECT,
+        producer=BODY,
+        created_at=NOW,
+    )
+    stored = ledger.records[-1]
+    other = ExperienceLedger()
+    rebuilt = other.ingest_core_record(stored, episode_reference=EPISODE)
+    assert rebuilt.experience_id == core.experience_id
+    assert rebuilt.context_ref == context_ref
+    assert rebuilt.judgment_ref == judgment_ref
+    assert rebuilt.digest() == core.digest()
+
+
+def test_r11_a5_deferred_then_late_interpretation_leaves_core_bytes() -> None:
+    ledger = ExperienceLedger()
+    record = ledger.record_operational(operational("operational:r11-a5"))
+    pending = OutcomeComparison(expected="쓰기", observed=None, delta=None, status=OutcomeStatus.PENDING)
+    deferred = ledger.select(record, comparison=pending, signals=EpisodeSignals(), producer=BODY, recorded_at=NOW)
+    assert deferred.disposition is SelectionDisposition.DEFERRED
+
+    late = ledger.select(
+        record,
+        comparison=compare_outcome("쓰기", "실패", delta="미실행"),
+        signals=EpisodeSignals(failure=True),
+        producer=BODY,
+        recorded_at=NOW,
+    )
+    assert late.disposition is SelectionDisposition.EXPERIENCE
+    core = ledger.form_experience(
+        late,
+        ExperienceCore(
+            experience_id=new_id(EntityType.EXPERIENCE),
+            episode_reference=EPISODE,
+            trigger="late-obs",
+        ),
+        project_id=PROJECT,
+        producer=BODY,
+        created_at=NOW,
+    )
+    before = core.digest()
+    ledger.interpret(
+        core.experience_id,
+        author=PRIMARY,
+        meaning="초기 해석",
+        confidence_profile=confidence(),
+        recorded_at=NOW,
+        project_id=PROJECT,
+        created_at=NOW,
+    )
+    ledger.interpret(
+        core.experience_id,
+        author=PRIMARY,
+        meaning="후속 해석",
+        confidence_profile=confidence(),
+        recorded_at=NOW,
+        project_id=PROJECT,
+        created_at=NOW,
+    )
+    assert ledger.core(core.experience_id).digest() == before
+    assert len(ledger.interpretations(core.experience_id)) == 2
+
+
+def test_r11_a6_selected_core_idempotent_on_replay() -> None:
+    ledger = ExperienceLedger()
+    record = ledger.record_operational(operational("operational:r11-a6"))
+    selection = ledger.select(
+        record,
+        comparison=compare_outcome("a", "b", delta="d"),
+        signals=EpisodeSignals(failure=True),
+        producer=BODY,
+        recorded_at=NOW,
+    )
+    core_spec = ExperienceCore(
+        experience_id=EXPERIENCE_ID,
+        episode_reference=EPISODE,
+        trigger="replay",
+    )
+    first = ledger.form_experience(selection, core_spec, project_id=PROJECT, producer=BODY, created_at=NOW)
+    second = ledger.form_experience(selection, core_spec, project_id=PROJECT, producer=BODY, created_at=NOW)
+    assert first.experience_id == second.experience_id == EXPERIENCE_ID
+    assert len(ledger.cores_for_episode(EPISODE)) == 1
+
+
+# ─── R12 decision quality vs outcome axes ────────────────────────────
+
+
+def test_r12_a1_good_outcome_poor_decision_are_separate_axes() -> None:
+    plan, _ = plan_with_action(observation=ActionObservation(observed=True, succeeded=True, detail="T08 통과"))
+    plan = EpisodePlan(
+        readiness=plan.readiness,
+        action=plan.action,
+        expected_outcome="T08 통과",
+        observation=plan.observation,
+        decision_assessment=DecisionAssessment(
+            status=OutcomeStatus.FAILED,
+            available_at_decision=False,
+            reason="당시 근거가 부실했다",
+            evidence_refs=("evidence:thin",),
+        ),
+    )
+    runtime = CognitiveRuntime(
+        think=FakeThink(ThinkOutcome(judgment_ref="judgment:1")),
+        actions=ActionDispatcher(port=CallablePort(lambda tool, args, action_id: "ok"), clock=lambda: NOW),
+        clock=lambda: NOW,
+        project_id=PROJECT,
+        producer=BODY,
+    )
+    episode = runtime.run(
+        EpisodeRequest(episode_id="episode:r12-a1", context_ref="context:1", goal_ref="goal:1", plan=plan)
+    )
+    assert episode.evaluations is not None
+    assert episode.evaluations.outcome.status is OutcomeStatus.MATCH
+    assert episode.evaluations.decision.status is OutcomeStatus.FAILED
+    assert episode.evaluations.execution.status is OutcomeStatus.MATCH
+    assert not episode.evaluations.agrees
+
+
+def test_r12_a2_bad_outcome_sound_contemporaneous_decision() -> None:
+    plan, _ = plan_with_action(observation=ActionObservation(observed=True, succeeded=False, detail="환경 장애"))
+    plan = EpisodePlan(
+        readiness=plan.readiness,
+        action=plan.action,
+        expected_outcome="T08 통과",
+        observation=plan.observation,
+        decision_assessment=DecisionAssessment(
+            status=OutcomeStatus.MATCH,
+            available_at_decision=True,
+            reason="당시 정보로는 합리적 선택이었다",
+            evidence_refs=("evidence:then",),
+        ),
+    )
+    runtime = CognitiveRuntime(
+        think=FakeThink(ThinkOutcome(judgment_ref="judgment:1")),
+        actions=ActionDispatcher(port=CallablePort(lambda tool, args, action_id: "ok"), clock=lambda: NOW),
+        clock=lambda: NOW,
+        project_id=PROJECT,
+        producer=BODY,
+    )
+    episode = runtime.run(
+        EpisodeRequest(episode_id="episode:r12-a2", context_ref="context:1", goal_ref="goal:1", plan=plan)
+    )
+    assert episode.evaluations is not None
+    assert episode.evaluations.outcome.status is OutcomeStatus.DEVIATION
+    assert episode.evaluations.decision.status is OutcomeStatus.MATCH
+    assert episode.evaluations.decision.available_at_decision is True
+    assert episode.evaluations.execution.status is OutcomeStatus.FAILED
+
+
+def test_r12_a3_no_assessment_means_decision_unknown_despite_readiness() -> None:
+    plan, _ = plan_with_action(observation=ActionObservation(observed=True, succeeded=True, detail="T08 통과"))
+    assert plan.readiness is not None
+    runtime = CognitiveRuntime(
+        think=FakeThink(ThinkOutcome(judgment_ref="judgment:1")),
+        actions=ActionDispatcher(port=CallablePort(lambda tool, args, action_id: "ok"), clock=lambda: NOW),
+        clock=lambda: NOW,
+        project_id=PROJECT,
+        producer=BODY,
+    )
+    episode = runtime.run(
+        EpisodeRequest(episode_id="episode:r12-a3", context_ref="context:1", goal_ref="goal:1", plan=plan)
+    )
+    assert episode.evaluations is not None
+    assert episode.evaluations.outcome.status is OutcomeStatus.MATCH
+    assert episode.evaluations.decision.status is OutcomeStatus.UNKNOWN
+    assert episode.evaluations.decision.available_at_decision is False
+    assert (
+        "readiness" in episode.evaluations.decision.reason.lower()
+        or "unevaluated" in episode.evaluations.decision.reason.lower()
+    )

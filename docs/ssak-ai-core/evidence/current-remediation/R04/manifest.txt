@@ -1,0 +1,5 @@
+R04 evidence 2026-09-26 20:05 KST
+HEAD: 2862584ea8f79641fefd9a78de9c145851ea515b
+ M src/antigravity_k/engine/cognitive/legacy_adapter.py
+ M src/antigravity_k/engine/cognitive/migration.py
+ M tests/cognitive/test_migration.py

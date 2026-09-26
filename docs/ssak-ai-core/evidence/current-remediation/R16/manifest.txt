@@ -1,0 +1,6 @@
+R16 source/test changes
+src/antigravity_k/engine/cognitive_surface_measurement.py
+src/antigravity_k/engine/cognitive_surface.py
+src/antigravity_k/api/routes/cognitive_surface_api.py
+src/antigravity_k/cli.py
+tests/cognitive/test_active_api.py

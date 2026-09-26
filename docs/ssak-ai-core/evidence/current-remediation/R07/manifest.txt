@@ -1,0 +1,4 @@
+R07 evidence 2026-09-26 20:11 KST
+2862584ea8f79641fefd9a78de9c145851ea515b
+ M src/antigravity_k/engine/cognitive/runtime.py
+ M tests/cognitive/test_episode.py

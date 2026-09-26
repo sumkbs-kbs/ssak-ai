@@ -44,6 +44,10 @@ from antigravity_k.engine.cognitive.growth import (
     split_ids,
     tasks_for,
 )
+from antigravity_k.engine.cognitive.models import same_enum
+from antigravity_k.engine.cognitive.policy_store import PolicyStore, PromotionRefused
+from antigravity_k.engine.cognitive.references import EntityType
+from antigravity_k.engine.cognitive.store import CanonicalStore
 from antigravity_k.engine.growth_fixture_tools import fixture_tool_port
 
 SCRIPT = Path(__file__).resolve().parents[2] / "scripts" / "benchmark_cognitive_growth.py"
@@ -366,6 +370,54 @@ def test_cli_rejects_tampered_spec(tmp_path: Path) -> None:
     assert cli.main(["--mode", "fresh", "--manifest", str(tampered), "--store-root", str(tmp_path / "run")]) == 2
 
 
+def test_r23_a2_missing_manifest_is_clean_usage_error(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """R23-A2: missing manifest → stderr diagnosis, nonzero exit, no traceback, no run."""
+    cli = load_cli()
+    missing = tmp_path / "does-not-exist.json"
+    code = cli.main(["--mode", "demo", "--manifest", str(missing), "--store-root", str(tmp_path / "run")])
+    captured = capsys.readouterr()
+    assert code == 2
+    assert "spec 오류" in captured.err
+    assert "manifest 파일이 없다" in captured.err
+    assert "Traceback" not in captured.err
+    assert "FileNotFoundError" not in captured.err
+    assert not (tmp_path / "run").exists()
+
+
+def test_r23_a2_malformed_manifest_is_clean_usage_error(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """R23-A2: malformed JSON / missing spec key → clean usage error."""
+    cli = load_cli()
+    bad = tmp_path / "bad.json"
+    bad.write_text("not-json{{{", encoding="utf-8")
+    code = cli.main(["--mode", "demo", "--manifest", str(bad), "--store-root", str(tmp_path / "run")])
+    err = capsys.readouterr().err
+    assert code == 2
+    assert "spec 오류" in err
+    assert "JSON" in err or "깨졌다" in err
+    assert "Traceback" not in err
+
+    empty = tmp_path / "empty-obj.json"
+    empty.write_text("{}", encoding="utf-8")
+    code = cli.main(["--mode", "demo", "--manifest", str(empty), "--store-root", str(tmp_path / "run")])
+    err = capsys.readouterr().err
+    assert code == 2
+    assert "spec 형식이 아니다" in err
+    assert "Traceback" not in err
+
+
+def test_r23_a3_help_and_demo_still_work(tmp_path: Path) -> None:
+    """R23-A3: --help text and default demo path remain usable."""
+    cli = load_cli()
+    help_text = cli.build_parser().format_help()
+    assert "--manifest" in help_text
+    assert "registered-live" in help_text
+    output = tmp_path / "demo.json"
+    code = cli.main(["--mode", "demo", "--store-root", str(tmp_path / "run"), "--output", str(output)])
+    assert code == 0
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    assert "comparison" in payload
+
+
 def test_cli_runs_fresh_arm_with_registered_spec(tmp_path: Path) -> None:
     cli = load_cli()
     spec_path = tmp_path / "spec.json"
@@ -391,3 +443,99 @@ def test_cli_runs_fresh_arm_with_registered_spec(tmp_path: Path) -> None:
     assert payload["manifest"]["source_head"] == "test-head"
     assert payload["manifest"]["spec_digest"].startswith("sha256:")
     assert payload["metrics"]["values"][METRIC_TASK_SUCCESS] > 0
+
+
+# ─── R13 real post-policy selection + pin/rollback ───────────────────
+
+
+def test_r13_a1_trace_matches_observed_selector_outputs(runner: GrowthRunner) -> None:
+    phase = runner.growth_phase()
+    traces = [
+        record for record in phase.commit_records if same_enum(record.entity_type, EntityType.BEHAVIOR_CHANGE_TRACE)
+    ]
+    assert len(traces) == len(phase.behavior_trace_ids)
+    first = traces[0].payload
+    assert tuple(first.shadow_selection) == phase.shadow_selection
+    assert tuple(first.actual_selection) == phase.actual_selection
+    # Re-run the real selector on the frozen growth-train store — IDs must match the trace.
+    store = CanonicalStore(runner.root / "growth-train" / "store", git_enabled=False)
+    task = tasks_for(runner.tasks, SplitRole.TRAIN)[0]
+    shadow = runner._observe_selection(
+        store,
+        task,
+        policy_version=None,
+        limits=ArmInputs(role=ArmRole.FRESH).effective_limits(),
+    )
+    mature = ArmInputs(
+        role=ArmRole.MATURE,
+        policy_version=phase.policy_version,
+        advisory_refs=phase.advisory_refs,
+    )
+    actual = runner._observe_selection(
+        store,
+        task,
+        policy_version=phase.policy_version,
+        limits=mature.effective_limits(),
+    )
+    assert shadow == phase.shadow_selection
+    assert actual == phase.actual_selection
+
+
+def test_r13_a2_negative_transfer_keeps_baseline_limits(runner: GrowthRunner) -> None:
+    phase = runner.growth_phase()
+    drifted = next(task for task in runner.tasks if task.negative_transfer)
+    mature = ArmInputs(role=ArmRole.MATURE, policy_version=phase.policy_version, advisory_refs=phase.advisory_refs)
+    policy_ver, limits = runner._policy_limits_for_task(drifted, mature)
+    assert policy_ver is None
+    assert dict(limits) == dict(ArmInputs(role=ArmRole.FRESH).effective_limits())
+
+
+def test_r13_a4_pin_survives_later_promotion() -> None:
+    import tests.cognitive.test_learning as tl
+
+    store, candidate, v1, v2 = tl.two_version_policy()
+    policy_id = candidate.candidate_id
+    store.promote(policy_id, version=v1, expected_active_version=None, actor=tl.BODY, reason="a", occurred_at=tl.LATER)
+    pinned = store.pin("episode:r13-a4", policy_id, pinned_at=tl.LATEST)
+    store.promote(policy_id, version=v2, expected_active_version=v1, actor=tl.BODY, reason="b", occurred_at=tl.LATEST)
+    assert store.active_version(policy_id) == v2
+    assert store.pin_of("episode:r13-a4").policy_version == v1
+    assert pinned.policy_version == v1
+
+
+def test_r13_a3_rollback_restores_selection_pin_target() -> None:
+    import tests.cognitive.test_learning as tl
+
+    store, candidate, v1, v2 = tl.two_version_policy()
+    policy_id = candidate.candidate_id
+    store.promote(
+        policy_id, version=v1, expected_active_version=None, actor=tl.BODY, reason="initial", occurred_at=tl.LATER
+    )
+    store.promote(policy_id, version=v2, expected_active_version=v1, actor=tl.BODY, reason="up", occurred_at=tl.LATER)
+    store.rollback(
+        policy_id,
+        to_version=v1,
+        reason="restore",
+        expected_active_version=v2,
+        actor=tl.BODY,
+        occurred_at=tl.LATEST,
+    )
+    assert store.active_version(policy_id) == v1
+    pinned = store.pin("episode:after-rollback", policy_id, pinned_at=tl.LATEST)
+    assert pinned.policy_version == v1
+    resolved = store.resolve(pinned)
+    assert resolved.version == v1
+
+
+def test_r13_a5_failed_validation_cannot_register_policy() -> None:
+    from dataclasses import replace
+
+    import tests.cognitive.test_learning as tl
+
+    store = PolicyStore()
+    candidate = tl.policy_candidate(tl.summary_of(tl.learning_observations(2)))
+    report = tl.validate(candidate)
+    assert report.passed is True
+    failed = replace(report, passed=False)
+    with pytest.raises(PromotionRefused):
+        store.register(candidate, failed, version="1.0.0", producer=tl.BODY, created_at=tl.NOW)

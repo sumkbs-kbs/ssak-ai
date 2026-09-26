@@ -131,3 +131,7 @@ KEEP/MODIFY/REFACTOR/REMOVE/NEW/DEFER는 변경 전략이며 구현 완료 상�
 P01/P08은 COGNITIVE_DATA_MODEL·EXPERIENCE_AND_LEARNING·COGNITIVE_OPERATING_LOOP의 선별 표현을 정합화한다. P04/P09는 Brain/Context/학습 의미 책임을 명시한다. P00/P01/P10은 BENCHMARK_AND_ABLATION과 초기 계측 계약을 연결한다. P12는 Architecture Invariants→카드→시험→증거의 추적표와 기존 보고서를 갱신한다.
 
 이는 누락된 실행 계약의 구체화이며 헌법을 수정하는 작업이 아니다. 세부 명세와의 실제 충돌이 발견되면 상위 원칙을 유지하고 별도 Architecture Conflict를 기록한다. 이번 완성본 작성만으로 해당 코드 변경이나 runtime 인수를 완료했다고 주장하지 않는다.
+
+## 2026-09-26 remediation close note
+
+Defect cards R00–R23 addressed under self-review evidence. Remaining gaps for *operations*: independent review (R*-V), digest pin freshness (25 stale), citation git-tracking on dirty tree, live growth efficacy, destructive migration apply, CR-14 GO. R22 judgment: **ops NO-GO**.

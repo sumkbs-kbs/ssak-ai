@@ -14,6 +14,7 @@ from antigravity_k.engine.cognitive.context import (
     ContextFailureReason,
     ContextPrincipal,
     HandleResolutionStatus,
+    IntegrityStatus,
     estimate_tokens,
 )
 from antigravity_k.engine.cognitive.models import (
@@ -46,10 +47,16 @@ NOW = datetime(2026, 9, 22, 4, 0, 0, tzinfo=UTC)
 
 
 def populated_store(project: str, *, tmp_path: Path) -> tuple[CanonicalStore, dict[str, str]]:
+    from antigravity_k.engine.cognitive.references import REL_GROUND, Reference
+
     store = CanonicalStore(tmp_path / "canonical", git_enabled=False)
     rule = build_constitution_rule(project)
-    goal = build_goal(project)
     evidence = build_evidence(project)
+    goal = build_goal(project).model_copy(
+        update={
+            "references": (Reference(relation=REL_GROUND, target_id=evidence.id, expected_type=EntityType.EVIDENCE),)
+        }
+    )
     decision = build_open_decision(project)
     unknown = build_material_unknown(project)
     experience = build_experience(project)
@@ -382,3 +389,200 @@ def test_estimate_tokens_is_deterministic() -> None:
 def test_projection_state_model_roundtrip() -> None:
     state = ProjectionState(projection_version="1", last_event_sequence=3)
     assert state.last_event_sequence == 3
+
+
+def test_r05_a1_l0_only_budget_without_goal_is_incomplete(tmp_path: Path) -> None:
+    project = new_id(EntityType.PROJECT)
+    store, ids = populated_store(project, tmp_path=tmp_path)
+    l0 = result_l0_budget(store, project, ids)
+    result = build_context(store, project, ids, budget=l0)
+    assert result.payload.integrity is IntegrityStatus.INCOMPLETE
+    assert ids["goal"] in result.payload.missing_ids
+    assert ids["goal"] not in {item.record_id for item in result.payload.l1_state}
+
+
+def test_r05_a2_l1_limit_zero_still_preserves_required_goal(tmp_path: Path) -> None:
+    project = new_id(EntityType.PROJECT)
+    store, ids = populated_store(project, tmp_path=tmp_path)
+    builder = ContextBuilder(store, clock=lambda: NOW)
+    result = builder.build(
+        goal_id=ids["goal"],
+        state_revision=1,
+        principal=ContextPrincipal(subject="human:mr.k", project_id=project),
+        budget=ContextBudget(token_budget=100_000, tokens_used=0, l0_reserved_tokens=0),
+        l1_limit=0,
+    )
+    assert ids["goal"] in {item.record_id for item in result.payload.l1_state}
+    assert result.payload.integrity is IntegrityStatus.COMPLETE
+
+
+def test_r05_a3_stale_revision_and_missing_evidence_are_incomplete(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    project = new_id(EntityType.PROJECT)
+    store, ids = populated_store(project, tmp_path=tmp_path)
+    from tests.cognitive._fixtures import build_evidence
+
+    store.commit_records([build_evidence(project)], transaction_id="txn-bump-head")
+    assert len(store.committed_manifests()) >= 2
+    result = build_context(store, project, ids, state_revision=1)
+    assert result.payload.integrity is IntegrityStatus.INCOMPLETE
+    assert any(item.startswith("stale_state_revision:") for item in result.payload.missing_ids)
+
+    from antigravity_k.engine.cognitive.references import REL_GROUND, Reference
+
+    ghost = new_id(EntityType.EVIDENCE)
+    goal = store.read(ids["goal"])
+    assert goal is not None
+    goal_with_ghost = goal.model_copy(
+        update={
+            "references": (
+                *goal.references,
+                Reference(relation=REL_GROUND, target_id=ghost, expected_type=EntityType.EVIDENCE),
+            )
+        }
+    )
+    real_read = store.read
+
+    def read_with_ghost(record_id: str, *args: object, **kwargs: object):
+        if record_id == ids["goal"]:
+            return goal_with_ghost
+        if record_id == ghost:
+            return None
+        return real_read(record_id, *args, **kwargs)
+
+    monkeypatch.setattr(store, "read", read_with_ghost)
+    head = len(store.committed_manifests())
+    result_e = build_context(store, project, ids, state_revision=head)
+    assert result_e.payload.integrity is IntegrityStatus.INCOMPLETE
+    assert ghost in result_e.payload.missing_ids
+
+
+def test_r05_a4_normal_minimum_context_is_complete(tmp_path: Path) -> None:
+    project = new_id(EntityType.PROJECT)
+    store, ids = populated_store(project, tmp_path=tmp_path)
+    head = len(store.committed_manifests())
+    result = build_context(store, project, ids, state_revision=head)
+    assert result.payload.integrity is IntegrityStatus.COMPLETE
+    assert [item.record_id for item in result.payload.l0_constraints] == [ids["rule"]]
+    assert ids["goal"] in {item.record_id for item in result.payload.l1_state}
+
+
+def test_r06_a1_unrelated_evidence_mass_does_not_change_useful_injection(tmp_path: Path) -> None:
+    project = new_id(EntityType.PROJECT)
+    store, ids = populated_store(project, tmp_path=tmp_path)
+    head0 = len(store.committed_manifests())
+    base = build_context(store, project, ids, state_revision=head0)
+    base_layers = {
+        item.record_id
+        for item in (
+            *base.payload.l0_constraints,
+            *base.payload.l1_state,
+            *base.payload.l2_history,
+            *base.payload.l3_evidence,
+        )
+    }
+    noise = [build_evidence(project, claim=f"unrelated-noise-{i}") for i in range(250)]
+    store.commit_records(noise, transaction_id="txn-r06-noise")
+    head1 = len(store.committed_manifests())
+    after = build_context(store, project, ids, state_revision=head1)
+    after_layers = {
+        item.record_id
+        for item in (
+            *after.payload.l0_constraints,
+            *after.payload.l1_state,
+            *after.payload.l2_history,
+            *after.payload.l3_evidence,
+        )
+    }
+    assert after_layers == base_layers
+    assert ids["evidence"] in after_layers
+    assert len(after.payload.handles) <= 32
+    assert after.payload.omitted_handle_count >= 250 - 32
+
+
+def test_r06_a2_superseded_judgment_is_not_current_state(tmp_path: Path) -> None:
+    from antigravity_k.engine.cognitive.models import BrainJudgmentPayload
+    from antigravity_k.engine.cognitive.references import REL_GROUND, REL_SUPERSEDES, Reference
+
+    project = new_id(EntityType.PROJECT)
+    store, ids = populated_store(project, tmp_path=tmp_path)
+    old = Record.create(
+        entity_type=EntityType.BRAIN_JUDGMENT,
+        project_id=project,
+        producer=PRODUCER,
+        payload=BrainJudgmentPayload(
+            current_judgment="old judgment",
+            grounds=(ids["evidence"],),
+            confidence=0.4,
+            brain_version="primary/fixture",
+            context_digest="sha256:" + "a" * 64,
+        ),
+        references=(Reference(relation=REL_GROUND, target_id=ids["evidence"], expected_type=EntityType.EVIDENCE),),
+    )
+    new = Record.create(
+        entity_type=EntityType.BRAIN_JUDGMENT,
+        project_id=project,
+        producer=PRODUCER,
+        payload=BrainJudgmentPayload(
+            current_judgment="latest judgment",
+            grounds=(ids["evidence"],),
+            confidence=0.7,
+            brain_version="primary/fixture",
+            context_digest="sha256:" + "b" * 64,
+        ),
+        references=(
+            Reference(relation=REL_GROUND, target_id=ids["evidence"], expected_type=EntityType.EVIDENCE),
+            Reference(relation=REL_SUPERSEDES, target_id=old.id, expected_type=EntityType.BRAIN_JUDGMENT),
+        ),
+    )
+    store.commit_records([old, new], transaction_id="txn-r06-supersede")
+    result = build_context(store, project, ids, state_revision=len(store.committed_manifests()))
+    l1 = {item.record_id for item in result.payload.l1_state}
+    assert new.id in l1
+    assert old.id not in l1
+    assert any(
+        item.record_id == old.id and item.reason_excluded.startswith("SUPERSEDED") for item in result.payload.exclusions
+    )
+    handles = {handle.record_id: handle for handle in result.payload.handles}
+    assert old.id in handles
+    builder = ContextBuilder(store, clock=lambda: NOW)
+    resolution = builder.resolve_handle(handles[old.id], ContextPrincipal(subject="human:mr.k", project_id=project))
+    assert resolution.status is HandleResolutionStatus.OK
+
+
+def test_r06_a3_serialized_package_stays_within_budget(tmp_path: Path) -> None:
+    from antigravity_k.engine.cognitive.models import to_wire
+
+    project = new_id(EntityType.PROJECT)
+    store, ids = populated_store(project, tmp_path=tmp_path)
+    noise = [build_evidence(project, claim=f"meta-noise-{i}") for i in range(400)]
+    store.commit_records(noise, transaction_id="txn-r06-meta")
+    budget = 8_000
+    result = build_context(store, project, ids, budget=budget, state_revision=len(store.committed_manifests()))
+    serialized = estimate_tokens(str(to_wire(result.payload)))
+    assert result.payload.budget.tokens_used <= budget
+    assert serialized <= budget + 50  # conservative estimator slack for page trim edge
+    assert len(result.payload.handles) <= 32
+    assert result.payload.omitted_handle_count > 0
+
+
+def test_r06_a4_related_evidence_reachable_via_bounded_expansion(tmp_path: Path) -> None:
+    from tests.cognitive._fixtures import build_judgment
+
+    project = new_id(EntityType.PROJECT)
+    store, ids = populated_store(project, tmp_path=tmp_path)
+    extra = build_evidence(project, claim="related material via judgment")
+    judgment = build_judgment(project, extra.id)
+    store.commit_records([extra, judgment], transaction_id="txn-r06-related")
+    result = build_context(store, project, ids, state_revision=len(store.committed_manifests()))
+    l3 = {item.record_id for item in result.payload.l3_evidence}
+    assert extra.id in l3 or extra.id in {h.record_id for h in result.payload.handles}
+    if extra.id not in l3:
+        handle = next(h for h in result.payload.handles if h.record_id == extra.id)
+        builder = ContextBuilder(store, clock=lambda: NOW)
+        resolution = builder.resolve_handle(handle, ContextPrincipal(subject="human:mr.k", project_id=project))
+        assert resolution.status is HandleResolutionStatus.OK
+        assert resolution.record is not None and resolution.record.id == extra.id
+    else:
+        assert extra.id in l3

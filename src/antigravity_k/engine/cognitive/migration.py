@@ -32,9 +32,10 @@ from typing import Final
 from antigravity_k.engine.cognitive.legacy_adapter import (
     LegacyAdapterError,
     LegacyAgencyAdapter,
+    LegacyMappingConflict,
 )
 from antigravity_k.engine.cognitive.protected_targets import migration_guard
-from antigravity_k.engine.cognitive.store import CanonicalStore
+from antigravity_k.engine.cognitive.store import CanonicalStore, TransactionConflictError
 
 DRY_RUN: Final[str] = "dry-run"
 APPLY: Final[str] = "apply"
@@ -54,13 +55,19 @@ class DestructiveMigrationRefused(MigrationError):
 
 @dataclass(frozen=True, slots=True)
 class SourceSnapshot:
-    """source 관찰값. 실행 전후로 같아야 한다."""
+    """source 관찰값. 실행 전후로 같아야 한다.
+
+    ``digest``는 main+WAL+SHM 번들 해시와 단일 read-transaction content 해시를
+    결합한 값이다. row count만 같아도 WAL payload 변경이면 digest가 달라진다.
+    """
 
     path: str
     digest: str
     size_bytes: int
     tables: tuple[str, ...]
     counts: Mapping[str, int]
+    file_bundle_digest: str = ""
+    content_digest: str = ""
 
     def as_mapping(self) -> Mapping[str, object]:
         return {
@@ -69,6 +76,8 @@ class SourceSnapshot:
             "size_bytes": self.size_bytes,
             "tables": list(self.tables),
             "counts": dict(self.counts),
+            "file_bundle_digest": self.file_bundle_digest,
+            "content_digest": self.content_digest,
         }
 
 
@@ -111,6 +120,27 @@ def _sha256_file(path: Path) -> str:
     return "sha256:" + digest.hexdigest()
 
 
+def _sqlite_sidecar_paths(path: Path) -> tuple[Path, ...]:
+    """main DB와 존재하는 WAL/SHM sidecar. checkpoint로 증상을 숨기지 않는다."""
+
+    candidates = (path, Path(f"{path}-wal"), Path(f"{path}-shm"))
+    return tuple(candidate for candidate in candidates if candidate.exists())
+
+
+def _sha256_sqlite_bundle(path: Path) -> str:
+    """main+WAL+SHM 파일 바이트를 묶어 source 물리 변경을 감지한다."""
+
+    digest = hashlib.sha256()
+    for part in _sqlite_sidecar_paths(path):
+        digest.update(part.name.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(_sha256_file(part).encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(str(part.stat().st_size).encode("utf-8"))
+        digest.update(b"\0")
+    return "sha256:" + digest.hexdigest()
+
+
 class LegacySQLiteSource:
     """legacy PersistentAgency SQLite를 읽기 전용으로 읽는다."""
 
@@ -130,30 +160,78 @@ class LegacySQLiteSource:
 
     def tables(self) -> tuple[str, ...]:
         with self._connect() as connection:
-            rows = connection.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name").fetchall()
+            return self._tables_on(connection)
+
+    def _tables_on(self, connection: sqlite3.Connection) -> tuple[str, ...]:
+        rows = connection.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name").fetchall()
         return tuple(str(row["name"]) for row in rows)
 
-    def _count(self, table: str) -> int:
-        if table not in self.tables():
+    def _count_on(self, connection: sqlite3.Connection, table: str, known_tables: set[str]) -> int:
+        if table not in known_tables:
             return 0
-        with self._connect() as connection:
-            row = connection.execute(f"SELECT COUNT(*) AS total FROM {table}").fetchone()  # noqa: S608 - table 화이트리스트
+        row = connection.execute(f"SELECT COUNT(*) AS total FROM {table}").fetchone()  # noqa: S608 - table 화이트리스트
         return int(row["total"]) if row is not None else 0
 
+    def _count(self, table: str) -> int:
+        with self._connect() as connection:
+            return self._count_on(connection, table, set(self._tables_on(connection)))
+
     def counts(self) -> Mapping[str, int]:
-        return {
-            "events": self._count(EVENTS_TABLE),
-            "objectives": self._count(OBJECTIVES_TABLE),
-            "tasks": self._count(OBJECTIVE_TASKS_TABLE),
-        }
+        with self._connect() as connection:
+            known = set(self._tables_on(connection))
+            return {
+                "events": self._count_on(connection, EVENTS_TABLE, known),
+                "objectives": self._count_on(connection, OBJECTIVES_TABLE, known),
+                "tasks": self._count_on(connection, OBJECTIVE_TASKS_TABLE, known),
+            }
+
+    def _content_digest_on(self, connection: sqlite3.Connection, known_tables: set[str]) -> str:
+        """한 read transaction 안에서 관심 table의 정렬된 payload를 묶어 digest한다."""
+
+        digest = hashlib.sha256()
+        for table, columns in (
+            (EVENTS_TABLE, "event_id, project_id, trajectory_id, parent_event_id, event_type, payload_json"),
+            (OBJECTIVES_TABLE, "objective_id, project_id, title, description, trajectory_id"),
+            (OBJECTIVE_TASKS_TABLE, "task_id, objective_id, project_id, trajectory_id, created_at"),
+        ):
+            digest.update(table.encode("utf-8"))
+            digest.update(b"\0")
+            if table not in known_tables:
+                digest.update(b"<missing>\0")
+                continue
+            rows = connection.execute(f"SELECT {columns} FROM {table} ORDER BY 1").fetchall()  # noqa: S608
+            for row in rows:
+                digest.update(repr(tuple(row)).encode("utf-8"))
+                digest.update(b"\0")
+        return "sha256:" + digest.hexdigest()
 
     def snapshot(self) -> SourceSnapshot:
+        """단일 BEGIN 스냅샷으로 counts/content를 읽고, WAL 포함 파일 번들 digest와 결합한다."""
+
+        file_bundle = _sha256_sqlite_bundle(self.path)
+        with self._connect() as connection:
+            connection.execute("BEGIN")
+            try:
+                tables = self._tables_on(connection)
+                known = set(tables)
+                counts = {
+                    "events": self._count_on(connection, EVENTS_TABLE, known),
+                    "objectives": self._count_on(connection, OBJECTIVES_TABLE, known),
+                    "tasks": self._count_on(connection, OBJECTIVE_TASKS_TABLE, known),
+                }
+                content = self._content_digest_on(connection, known)
+            finally:
+                connection.execute("COMMIT")
+        # digest는 logical content에 결박한다(WAL 자동 checkpoint로 흔들리지 않음).
+        # file_bundle_digest는 main+WAL+SHM 물리 바이트로 A1 증거를 남긴다.
         return SourceSnapshot(
             path=str(self.path),
-            digest=_sha256_file(self.path),
+            digest=content,
             size_bytes=self.path.stat().st_size,
-            tables=self.tables(),
-            counts=self.counts(),
+            tables=tables,
+            counts=counts,
+            file_bundle_digest=file_bundle,
+            content_digest=content,
         )
 
     def event_batches(self, batch_size: int = 2048) -> Iterator[tuple[LegacyEventRow, ...]]:
@@ -293,10 +371,33 @@ class MigrationReport:
             and self.rollback_record_count == self.canonical_record_count
         )
 
+    @property
+    def distribution(self) -> Mapping[str, object]:
+        """Distinguish real observed source counts from synthetic-only paths.
+
+        A zero objective/task count means that operational path was not present
+        in this source — it is not a silent PASS for those row types. Synthetic
+        fixtures in tests cover those paths separately.
+        """
+
+        counts = {name: int(self.plan.source.counts.get(name, 0)) for name in ("events", "objectives", "tasks")}
+        unobserved = tuple(name for name in ("objectives", "tasks") if counts[name] == 0)
+        return {
+            "kind": "real_source_observed",
+            "observed_counts": counts,
+            "unobserved_operational_paths": list(unobserved),
+            "synthetic_coverage": (
+                "tests/cognitive/test_migration.py (+ test_legacy_adapter.py) for objective/task paths"
+                if unobserved
+                else "not required — source includes objectives and tasks"
+            ),
+        }
+
     def as_mapping(self) -> Mapping[str, object]:
         return {
             "mode": self.plan.mode,
             "source": self.plan.source.as_mapping(),
+            "distribution": dict(self.distribution),
             "target_root": self.plan.target_root,
             "imported": dict(self.imported),
             "mapping_entries": self.mapping_entries,
@@ -378,7 +479,7 @@ class LegacyMigrationRunner:
                     committed_snapshot=store_snapshot,
                 )
                 imported["events"] += len(records)
-            except (LegacyAdapterError, ValueError) as batch_error:
+            except (LegacyAdapterError, TransactionConflictError, ValueError) as batch_error:
                 errors.append(f"event batch {batch[0].event_id}-{batch[-1].event_id}: {batch_error}")
                 # 유효하지 않은 row만 찾아 batch 원자성을 보존하고 조용한 부분 commit을 금지한다.
                 valid_rows: list[LegacyEventRow] = []
@@ -389,7 +490,7 @@ class LegacyMigrationRunner:
                             update_index=False,
                             committed_snapshot=store_snapshot,
                         )
-                    except (LegacyAdapterError, ValueError) as exc:
+                    except (LegacyAdapterError, TransactionConflictError, ValueError) as exc:
                         errors.append(f"event {row.event_id} ({row.event_type}): {exc}")
                     else:
                         valid_rows.append(row)
@@ -406,7 +507,7 @@ class LegacyMigrationRunner:
                     committed_snapshot=store_snapshot,
                 )
                 imported["objectives"] += 1
-            except (LegacyAdapterError, ValueError) as exc:
+            except (LegacyAdapterError, TransactionConflictError, ValueError) as exc:
                 errors.append(f"objective {objective.objective_id}: {exc}")
         for task in self.source.tasks():
             try:
@@ -419,7 +520,7 @@ class LegacyMigrationRunner:
                     committed_snapshot=store_snapshot,
                 )
                 imported["tasks"] += 1
-            except (LegacyAdapterError, ValueError) as exc:
+            except (LegacyAdapterError, TransactionConflictError, ValueError) as exc:
                 errors.append(f"task {task.task_id}: {exc}")
         timings["import"] = time.perf_counter() - started
 
@@ -437,6 +538,12 @@ class LegacyMigrationRunner:
         # 재실행 idempotency: 같은 store에 다시 import해도 record·매핑이 늘지 않아야 한다.
         started = time.perf_counter()
         replay_records = self._replay(store, adapter, record_count)
+        if replay_records < 0:
+            errors.append("idempotent replay hit LegacyMappingConflict — mapping digest/content conflict")
+            replay_records = store.count_committed()
+            idempotent = False
+        else:
+            idempotent = replay_records == record_count
         timings["idempotent_replay"] = time.perf_counter() - started
         # 되돌림 rehearsal은 별도 scratch에서만 수행하고 dry-run 출력을 보존한다.
         started = time.perf_counter()
@@ -455,11 +562,11 @@ class LegacyMigrationRunner:
             canonical_record_count=record_count,
             index_rebuilt=index_rebuilt,
             digests_verified=verified,
-            idempotent_replay=replay_records == record_count,
+            idempotent_replay=idempotent,
             rollback_rehearsed=rollback_ok,
             rollback_record_count=rollback_record_count,
             mapping_carried_over=mapping_carried_over,
-            source_unchanged=before.digest == after.digest and before.counts == after.counts,
+            source_unchanged=(before.content_digest == after.content_digest and before.counts == after.counts),
             destructive_executed=False,
             destructive_reason="dry-run 전용 — in-place 변환·삭제는 사람 결정으로 분리한다",
             errors=tuple(errors),
@@ -479,9 +586,14 @@ class LegacyMigrationRunner:
         return CanonicalStore(store_dir, git_enabled=False, write_guard=migration_guard(root))
 
     def _replay(self, store: CanonicalStore, adapter: LegacyAgencyAdapter, baseline: int) -> int:
-        """같은 store·같은 mapping으로 다시 import해 record 수가 늘지 않는지 본다."""
+        """같은 store·같은 mapping으로 다시 import해 record 수가 늘지 않는지 본다.
+
+        동일 mapping의 재실행은 허용한다. content conflict는 삼키지 않고 -1을 반환해
+        idempotent_replay=false와 errors 경로를 호출자가 구분하게 한다.
+        """
 
         store_snapshot = store._committed_entries()  # noqa: SLF001 - replay uses one mutable manifest snapshot
+        conflict = False
         for batch in self.source.event_batches(self.EVENT_BATCH_SIZE):
             try:
                 adapter.import_events(
@@ -489,30 +601,48 @@ class LegacyMigrationRunner:
                     update_index=False,
                     committed_snapshot=store_snapshot,
                 )
-            except (LegacyAdapterError, ValueError):
+            except LegacyMappingConflict:
+                conflict = True
+                break
+            except (LegacyAdapterError, TransactionConflictError, ValueError):
                 for row in batch:
                     try:
                         adapter.import_events((row,), update_index=False, committed_snapshot=store_snapshot)
-                    except (LegacyAdapterError, ValueError):
+                    except LegacyMappingConflict:
+                        conflict = True
+                        break
+                    except (LegacyAdapterError, TransactionConflictError, ValueError):
                         continue
-        for objective in self.source.objectives():
-            try:
-                adapter.import_objective(objective, update_index=False, committed_snapshot=store_snapshot)
-            except (LegacyAdapterError, ValueError):
-                continue
-        for task in self.source.tasks():
-            try:
-                adapter.import_task_submission(
-                    task.task_id,
-                    project_id=task.project_id,
-                    prompt_digest=task.prompt_digest,
-                    status=task.status,
-                    update_index=False,
-                    committed_snapshot=store_snapshot,
-                )
-            except (LegacyAdapterError, ValueError):
-                continue
+                if conflict:
+                    break
+        if not conflict:
+            for objective in self.source.objectives():
+                try:
+                    adapter.import_objective(objective, update_index=False, committed_snapshot=store_snapshot)
+                except LegacyMappingConflict:
+                    conflict = True
+                    break
+                except (LegacyAdapterError, TransactionConflictError, ValueError):
+                    continue
+        if not conflict:
+            for task in self.source.tasks():
+                try:
+                    adapter.import_task_submission(
+                        task.task_id,
+                        project_id=task.project_id,
+                        prompt_digest=task.prompt_digest,
+                        status=task.status,
+                        update_index=False,
+                        committed_snapshot=store_snapshot,
+                    )
+                except LegacyMappingConflict:
+                    conflict = True
+                    break
+                except (LegacyAdapterError, TransactionConflictError, ValueError):
+                    continue
         _ = baseline
+        if conflict:
+            return -1
         return store.count_committed()
 
     # 주의: canonical project ID는 최초 매핑 시 발급되는 random ID라서 **다른 root에서 새로 만들면 달라진다**.
@@ -553,7 +683,7 @@ class LegacyMigrationRunner:
                     committed_snapshot=store_snapshot,
                 )
                 imported_record_ids.update(record.id for record in records)
-            except (LegacyAdapterError, ValueError) as batch_error:
+            except (LegacyAdapterError, TransactionConflictError, ValueError) as batch_error:
                 errors.append(f"event batch: {batch_error}")
                 for row in batch:
                     try:
@@ -563,7 +693,7 @@ class LegacyMigrationRunner:
                             committed_snapshot=store_snapshot,
                         )[0]
                         imported_record_ids.add(record.id)
-                    except (LegacyAdapterError, ValueError) as exc:
+                    except (LegacyAdapterError, TransactionConflictError, ValueError) as exc:
                         errors.append(f"event {row.event_id}: {exc}")
         for objective in self.source.objectives():
             try:
@@ -574,7 +704,7 @@ class LegacyMigrationRunner:
                         committed_snapshot=store_snapshot,
                     ).id
                 )
-            except (LegacyAdapterError, ValueError) as exc:
+            except (LegacyAdapterError, TransactionConflictError, ValueError) as exc:
                 errors.append(f"objective {objective.objective_id}: {exc}")
         for task in self.source.tasks():
             try:
@@ -588,7 +718,7 @@ class LegacyMigrationRunner:
                         committed_snapshot=store_snapshot,
                     ).id
                 )
-            except (LegacyAdapterError, ValueError) as exc:
+            except (LegacyAdapterError, TransactionConflictError, ValueError) as exc:
                 errors.append(f"task {task.task_id}: {exc}")
         store.rebuild_index()
         discarded = store.count_committed()

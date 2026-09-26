@@ -28,8 +28,10 @@ from typing import Final, Protocol, runtime_checkable
 from antigravity_k.engine.cognitive.models import (
     AssumptionPayload,
     BrainJudgmentPayload,
+    ContextPackagePayload,
     EvidenceKind,
     EvidencePayload,
+    IntegrityStatus,
     Producer,
     ProducerKind,
     Provenance,
@@ -37,6 +39,8 @@ from antigravity_k.engine.cognitive.models import (
     UnknownCategory,
     UnknownMateriality,
     UnknownPayload,
+    same_enum,
+    to_wire,
 )
 from antigravity_k.engine.cognitive.references import (
     REL_GROUND,
@@ -522,6 +526,134 @@ class BrainDirector:
         )
 
 
+@dataclass(frozen=True, slots=True)
+class BrainContextRender:
+    """Bounded provider wire built from a canonical ContextPackage (not opaque IDs alone)."""
+
+    wire: Mapping[str, object]
+    omitted_required: tuple[str, ...] = ()
+    truncated: bool = False
+
+    @property
+    def ready_for_provider(self) -> bool:
+        return not self.omitted_required
+
+
+def _snippet_from_record(record: Record, *, max_chars: int) -> str:
+    payload = record.payload
+    for attr in ("statement", "content", "verbatim_text", "claim", "meaning", "title", "summary", "text"):
+        value = getattr(payload, attr, None)
+        if isinstance(value, str) and value.strip():
+            return value.strip()[:max_chars]
+    wire = to_wire(record)
+    text = str(wire.get("payload", wire))
+    return text[:max_chars]
+
+
+def render_context_for_brain(
+    package: ContextPackagePayload,
+    *,
+    project_id: str,
+    context_digest: str,
+    load_record: Callable[[str], Record | None],
+    context_limit: int,
+    snippet_chars: int = 400,
+) -> BrainContextRender:
+    """Expand ContextPackage items into provider wire with real goal/state/evidence text.
+
+    When ``context_limit`` cannot hold required goal/state/evidence snippets, those IDs are
+    listed in ``omitted_required`` — callers must not hide the omission or call the provider.
+    """
+
+    if context_limit < 1:
+        return BrainContextRender(
+            wire={
+                "schema_version": "1.0",
+                "entity_type": "ContextPackage",
+                "project_id": project_id,
+                "context_digest": context_digest,
+                "integrity": str(package.integrity),
+                "missing_ids": list(package.missing_ids),
+                "goal": None,
+                "state": [],
+                "evidence": [],
+                "omitted_required": ["goal", "state", "evidence"],
+                "context_limit": context_limit,
+            },
+            omitted_required=("goal", "state", "evidence"),
+            truncated=True,
+        )
+
+    omitted: list[str] = []
+    used = 0
+
+    def take(label: str, record_id: str, required: bool) -> dict[str, object] | None:
+        nonlocal used
+        record = load_record(record_id)
+        if record is None:
+            if required:
+                omitted.append(record_id)
+            return None
+        snippet = _snippet_from_record(record, max_chars=snippet_chars)
+        entry: dict[str, object] = {
+            "id": record_id,
+            "entity_type": str(record.entity_type),
+            "text": snippet,
+        }
+        cost = max(1, len(str(entry)) // 4)
+        if used + cost > context_limit:
+            if required:
+                omitted.append(record_id)
+            return None
+        used += cost
+        return entry
+
+    goal_entry = take("goal", package.goal_id, required=True)
+    state_entries: list[dict[str, object]] = []
+    for item in package.l1_state:
+        entry = take("state", item.record_id, required=True)
+        if entry is not None:
+            state_entries.append(entry)
+    evidence_entries: list[dict[str, object]] = []
+    for item in package.l3_evidence:
+        entry = take("evidence", item.record_id, required=True)
+        if entry is not None:
+            evidence_entries.append(entry)
+
+    # Required surface: at least goal text when package is COMPLETE.
+    if same_enum(package.integrity, IntegrityStatus.COMPLETE) and goal_entry is None:
+        if package.goal_id not in omitted:
+            omitted.append(package.goal_id)
+
+    wire: dict[str, object] = {
+        "schema_version": "1.0",
+        "entity_type": "ContextPackage",
+        "project_id": project_id,
+        "context_digest": context_digest,
+        "content_digest": context_digest,
+        "integrity": str(package.integrity),
+        "missing_ids": list(package.missing_ids),
+        "state_revision": package.state_revision,
+        "goal": goal_entry,
+        "state": state_entries,
+        "evidence": evidence_entries,
+        "evidence_ids": [e["id"] for e in evidence_entries],
+        "payload": {
+            "goal_id": package.goal_id,
+            "state_revision": package.state_revision,
+            "integrity": str(package.integrity),
+        },
+        "omitted_required": list(omitted),
+        "context_limit": context_limit,
+        "tokens_used_estimate": used,
+    }
+    return BrainContextRender(
+        wire=wire,
+        omitted_required=tuple(omitted),
+        truncated=bool(omitted),
+    )
+
+
 def assumption_record(
     statement: str, scope: str, *, project_id: str, actor_id: str = "body:brain-engagement"
 ) -> Record:
@@ -574,7 +706,9 @@ __all__ = [
     "BrainOutcome",
     "BrainResponse",
     "SecondaryEngagement",
+    "BrainContextRender",
     "StructuredBrainClient",
+    "render_context_for_brain",
     "assumption_record",
     "new_judgment_id",
     "unknown_record",

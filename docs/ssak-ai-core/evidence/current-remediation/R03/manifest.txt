@@ -1,0 +1,4 @@
+R03 evidence 2026-09-26 20:02 KST
+HEAD: 2862584ea8f79641fefd9a78de9c145851ea515b
+ M src/antigravity_k/engine/cognitive/store.py
+ M tests/cognitive/test_store.py

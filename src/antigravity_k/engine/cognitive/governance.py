@@ -449,6 +449,7 @@ class GovernanceGate:
                 operation=request.action.operation,
             ),
             now=self._now(),
+            action_digest=request.action.digest(),
         )
         return request.human_approval.approval_id if reuse.reusable else ""
 

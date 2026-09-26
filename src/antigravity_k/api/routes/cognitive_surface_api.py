@@ -27,19 +27,52 @@ from antigravity_k.config import config
 from antigravity_k.engine.cognitive_surface import (
     CognitiveCoreSettings,
     CognitiveSurfaceAdapter,
+    DurableSurfaceHistoryStore,
     SurfaceMeasurement,
     measure_surface_reach,
 )
 
+from .cognitive_active_api import router as active_router
+
 router = APIRouter(prefix="/api/cognitive/surface", tags=["cognitive"])
+router.include_router(active_router)
 
 _reach_cache: SurfaceMeasurement | None = None
 
 
-def get_surface_adapter() -> CognitiveSurfaceAdapter:
-    """설정에서 만든 read-only adapter. 실행 port·brain은 연결하지 않는다."""
+def _history_store_from_config() -> DurableSurfaceHistoryStore | None:
+    """Optional durable history path from cognitive_core.surface_history_path or default under project."""
 
-    return CognitiveSurfaceAdapter(CognitiveCoreSettings.from_config(config))
+    from pathlib import Path as _Path
+
+    raw = getattr(config, "_raw", None)
+    section: dict[str, object] = {}
+    if isinstance(raw, dict):
+        section = raw.get("cognitive_core") or {}
+    path_value = None
+    if isinstance(section, dict):
+        path_value = section.get("surface_history_path")
+    if not path_value:
+        root = getattr(getattr(config, "paths", None), "project_root", None)
+        if root:
+            path_value = str(_Path(str(root)) / ".ssak" / "surface_history.sqlite")
+    if not path_value:
+        return None
+    path = _Path(str(path_value))
+    # Read-only status may open an empty store; that is still a durable projection, not invented counters.
+    return DurableSurfaceHistoryStore(path)
+
+
+def get_surface_adapter() -> CognitiveSurfaceAdapter:
+    """설정에서 만든 read-only adapter. 실행 port·brain은 연결하지 않는다.
+
+    history_store가 있으면 새 빈 adapter라도 durable episode/dispatch를 보고한다.
+    """
+
+    return CognitiveSurfaceAdapter(
+        CognitiveCoreSettings.from_config(config),
+        history_store=_history_store_from_config(),
+    )
 
 
 def get_surface_measurement(*, refresh: bool = False) -> SurfaceMeasurement:
@@ -62,9 +95,21 @@ def reset_surface_measurement_cache() -> None:
 def cognitive_surface_status(
     adapter: Annotated[CognitiveSurfaceAdapter, Depends(get_surface_adapter)],
 ) -> dict[str, object]:
-    """현재 표면이 legacy loop와 신규 core 중 무엇을 쓰는지, 어떤 mode인지 보고한다."""
+    """현재 표면이 legacy loop와 신규 core 중 무엇을 쓰는지, 어떤 mode인지 보고한다.
 
-    return dict(adapter.status().as_mapping())
+    configured/requested mode · actual activation · durable history는 분리된 필드로 노출한다.
+    이 조회는 episode/Brain/action/learning을 실행하지 않는다(side effect 0).
+    """
+
+    status = adapter.status()
+    payload = dict(status.as_mapping())
+    payload["configured_mode"] = status.mode.value if hasattr(status.mode, "value") else str(status.mode)
+    payload["requested_mode"] = status.requested_mode
+    payload["actual_active"] = status.activation is not None
+    payload["static_reach_is_runtime_evidence"] = False
+    hist_notes = [n for n in status.notes if n.startswith("history_source=")]
+    payload["history_source"] = hist_notes[0].split("=", 1)[1] if hist_notes else "in_memory"
+    return payload
 
 
 @router.get("/reach")

@@ -22,6 +22,7 @@ from antigravity_k.engine.cognitive.store import (
     DuplicateRecordError,
     GitCommitError,
     ManifestEntry,
+    TransactionConflictError,
     parse_record_markdown,
     record_relative_path,
     render_record_markdown,
@@ -433,3 +434,96 @@ def test_default_layout_coexists_with_vault_git_without_shared_lock(tmp_path: Pa
     assert len(store.list_committed()) == 3
     assert store.verify_digests() == 3
     assert len(list((root / "notes").glob("n-*.md"))) == 3
+
+
+def test_r03_a1_second_stage_with_different_content_conflicts(tmp_path: Path) -> None:
+    store = make_store(tmp_path)
+    project = project_id()
+    goal_a = build_goal(project, statement="goal-A")
+    goal_b = build_goal(project, statement="goal-B")
+    first = store.stage([goal_a], transaction_id="txn-r03")
+    with pytest.raises(TransactionConflictError):
+        store.stage([goal_b], transaction_id="txn-r03")
+    receipt = store.commit("txn-r03")
+    assert receipt.committed_ids == (goal_a.id,)
+    published = {record.id: record for record in store.list_committed()}
+    assert goal_a.id in published
+    assert goal_b.id not in published
+    assert published[goal_a.id].payload.statement == "goal-A"
+    assert first.content_identity()[1] == (first.entries[0].digest,)
+
+
+def test_r03_a2_identical_restage_is_idempotent(tmp_path: Path) -> None:
+    store = make_store(tmp_path)
+    goal = build_goal(project_id())
+    first = store.stage([goal], transaction_id="txn-idem")
+    path = store.staged_manifest_path("txn-idem")
+    before = path.read_bytes()
+    second = store.stage([goal], transaction_id="txn-idem")
+    assert second.content_identity() == first.content_identity()
+    assert path.read_bytes() == before
+    receipt = store.commit("txn-idem")
+    assert receipt.committed_ids == (goal.id,)
+    # duplicate publish 없음
+    assert len(list(store.list_committed())) == 1
+
+
+def test_r03_a3_concurrent_different_payload_one_wins(tmp_path: Path) -> None:
+    store = make_store(tmp_path)
+    project = project_id()
+    goal_a = build_goal(project, statement="concurrent-A")
+    goal_b = build_goal(project, statement="concurrent-B")
+    errors: list[BaseException] = []
+    results: list[str] = []
+
+    def writer(goal: object, tag: str) -> None:
+        try:
+            store.stage([goal], transaction_id="txn-race")  # type: ignore[list-item]
+            results.append(tag)
+        except BaseException as exc:  # noqa: BLE001 — collect for assertion
+            errors.append(exc)
+
+    threads = [
+        threading.Thread(target=writer, args=(goal_a, "A")),
+        threading.Thread(target=writer, args=(goal_b, "B")),
+    ]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert len(results) == 1
+    assert len(errors) == 1
+    assert isinstance(errors[0], TransactionConflictError)
+    receipt = store.commit("txn-race")
+    assert len(receipt.committed_ids) == 1
+    published = list(store.list_committed())
+    assert len(published) == 1
+    assert published[0].payload.statement in {"concurrent-A", "concurrent-B"}
+
+
+def test_r03_a4_crash_recover_preserves_original_digest(tmp_path: Path) -> None:
+    def failing_committer(root: Path, message: str) -> str | None:
+        raise GitCommitError("simulated crash")
+
+    store = make_store(tmp_path, git_enabled=True, commit_hook=failing_committer)
+    project = project_id()
+    original = build_goal(project, statement="recover-me")
+    store.stage([original], transaction_id="txn-crash-r03")
+    with pytest.raises(GitCommitError):
+        store.commit("txn-crash-r03")
+    other = build_goal(project, statement="hijack")
+    with pytest.raises(TransactionConflictError):
+        store.stage([other], transaction_id="txn-crash-r03")
+
+    def ok_committer(root: Path, message: str) -> str | None:
+        return "r03beef"
+
+    store._git_committer = ok_committer  # noqa: SLF001
+    assert store.recover() == ("txn-crash-r03",)
+    published = {record.id: record for record in store.list_committed()}
+    assert original.id in published
+    assert published[original.id].payload.statement == "recover-me"
+    assert other.id not in published
+    # 복구 후에도 다른 content로 같은 T를 다시 stage하면 committed duplicate
+    with pytest.raises(DuplicateRecordError):
+        store.stage([other], transaction_id="txn-crash-r03")

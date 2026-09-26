@@ -36,6 +36,7 @@ from antigravity_k.engine.cognitive.actions import (
 )
 from antigravity_k.engine.cognitive.authority import AuthorityProfile
 from antigravity_k.engine.cognitive.experience import (
+    DecisionAssessment,
     EpisodeEvaluations,
     EpisodeSignals,
     ExperienceCore,
@@ -68,7 +69,7 @@ from antigravity_k.engine.cognitive.models import (
     same_enum,
 )
 from antigravity_k.engine.cognitive.readiness import ReadinessGate, ReadinessResult
-from antigravity_k.engine.cognitive.references import EntityType, new_id
+from antigravity_k.engine.cognitive.references import EntityType, is_canonical_id, new_id
 
 #: v1 기본 예산. 헌법이 아니라 task별로 조정 가능한 값이다.
 DEFAULT_EXPANSION_ROUNDS: Final[int] = 3
@@ -94,6 +95,7 @@ class EpisodeTermination(StrEnum):
 class EpisodeBudget:
     expansion_rounds: int = DEFAULT_EXPANSION_ROUNDS
     repeat_signature_limit: int = DEFAULT_REPEAT_SIGNATURE_LIMIT
+    max_total_requests: int = 32
 
 
 @dataclass(frozen=True, slots=True)
@@ -120,6 +122,7 @@ class ThinkOutcome:
     delta: EpisodeDelta | None = None
     detail: str = ""
     failed: bool = False
+    plan: EpisodePlan | None = None
 
 
 @runtime_checkable
@@ -158,13 +161,17 @@ class CognitiveRequestEnvelope:
     risk: RiskProfile = field(default_factory=RiskProfile)
 
     def signature(self) -> str:
-        """request type + 정규화 target + 목적 + evidence revision."""
+        """request type + target + normalized args + purpose + evidence revision."""
 
+        arguments: dict[str, object] = {}
+        if self.action is not None:
+            arguments = {str(key): self.action.arguments[key] for key in sorted(self.action.arguments)}
         payload = {
             "request_type": self.request_type.value,
             "target": self.target.strip(),
             "purpose": self.purpose.strip(),
             "evidence_revision": self.evidence_revision,
+            "arguments": arguments,
         }
         return (
             "sha256:"
@@ -247,6 +254,7 @@ class EpisodePlan:
     action: ActionIntent | None = None
     expected_outcome: str = ""
     observation: ActionObservation | None = None
+    decision_assessment: DecisionAssessment | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -301,6 +309,7 @@ class CognitiveRuntime:
         project_id: str = "",
         producer: Producer | None = None,
         clock: Callable[[], datetime] | None = None,
+        record_sink: Callable[[Sequence[Record]], object] | None = None,
     ) -> None:
         self.think = think
         self.rethink = rethink
@@ -312,6 +321,7 @@ class CognitiveRuntime:
         self.project_id = project_id
         self.producer = producer or Producer(kind=ProducerKind.BODY, actor_id="body:runtime")
         self._clock = clock
+        self.record_sink = record_sink
         self._signature_counts: dict[str, int] = {}
 
     # ── 실행 ────────────────────────────────────────────
@@ -353,47 +363,86 @@ class CognitiveRuntime:
             return self._episode(request, events, counters, EpisodeTermination.BRAIN_FAILED, note=thought.detail)
         judgment_ref = thought.judgment_ref
 
-        # 3) COGNITIVE REQUEST → GOVERN → EXECUTE → FEEDBACK (simple이면 생략)
+        # 3–4) GOVERN → EXECUTE → FEEDBACK → TARGETED_RETHINK* (simple이면 생략)
+        # 성공 feedback도 Primary에 전달하고, rethink의 새 request는 같은 gate로 다음 round 실행한다.
+        active_plan = thought.plan if thought.plan is not None else request.plan
         if not request.simple and thought.requests:
             governance = self.governance or GovernanceGate()
-            for envelope in thought.requests:
-                counters = _bump(
-                    counters,
-                    tool_requests=1 if same_enum(envelope.request_type, CognitiveRequestType.TOOL) else 0,
-                    secondary_requests=1
-                    if same_enum(envelope.request_type, CognitiveRequestType.SECONDARY_BRAIN)
-                    else 0,
-                )
-                transition(LoopState.GOVERN, judgment_ref, envelope.request_id)
-                outcome = governance.evaluate(
-                    GovernanceRequest(
-                        request_id=envelope.request_id,
-                        project_id=self.project_id,
-                        subject=self.producer.actor_id,
-                        action=envelope.to_requested_action(),
-                        authority=envelope.authority,
-                        unknowns=envelope.unknowns,
-                        advisory_notes=envelope.advisory_notes,
-                        state_revision=request.state_revision,
+            pending: list[CognitiveRequestEnvelope] = list(thought.requests)
+            rounds = 0
+            total_requests = 0
+            while pending:
+                if total_requests >= self.budget.max_total_requests:
+                    transition(
+                        LoopState.COMMIT,
+                        "stop-conditions",
+                        f"total request budget={self.budget.max_total_requests}",
                     )
-                )
-                executed = False
-                detail = outcome.reason
-                receipt_ref: str | None = None
-                effects_observed: bool | None = None
-                if outcome.admits_execution and envelope.action is not None and self.actions is not None:
-                    transition(LoopState.EXECUTE, envelope.request_id, outcome.disposition.value)
-                    run = self.actions.execute(envelope.action, project_id=self.project_id, producer=self.producer)
-                    executed = same_enum(run.status, ActionExecutionStatus.DISPATCHED)
-                    detail = run.reason or detail
-                    if run.receipt is not None:
-                        receipt_ref = run.receipt.receipt_id
-                        effects_observed = run.receipt.effects_observed
-                elif same_enum(outcome.disposition, GovernanceDisposition.DENY):
-                    transition(LoopState.BLOCKED_CONTEXT, envelope.request_id, outcome.reason)
-                transition(LoopState.FEEDBACK, envelope.request_id, outcome.disposition.value)
-                feedback.append(
-                    RequestFeedback(
+                    return self._episode(
+                        request,
+                        events,
+                        counters,
+                        EpisodeTermination.STOPPED_BUDGET,
+                        note="request budget exhausted",
+                        feedback=tuple(feedback),
+                        judgment_ref=judgment_ref,
+                    )
+                round_feedback: list[RequestFeedback] = []
+                truncated_by_budget = False
+                for envelope in pending:
+                    if total_requests >= self.budget.max_total_requests:
+                        truncated_by_budget = True
+                        break
+                    sig_stop = self._observe_signature(envelope.signature())
+                    if sig_stop is not None:
+                        transition(LoopState.FEEDBACK, envelope.request_id, "REPEAT_STOP")
+                        item = RequestFeedback(
+                            request_id=envelope.request_id,
+                            request_signature=envelope.signature(),
+                            disposition="REPEAT_STOP",
+                            executed=False,
+                            detail=sig_stop,
+                        )
+                        feedback.append(item)
+                        round_feedback.append(item)
+                        continue
+                    total_requests += 1
+                    counters = _bump(
+                        counters,
+                        tool_requests=1 if same_enum(envelope.request_type, CognitiveRequestType.TOOL) else 0,
+                        secondary_requests=1
+                        if same_enum(envelope.request_type, CognitiveRequestType.SECONDARY_BRAIN)
+                        else 0,
+                    )
+                    transition(LoopState.GOVERN, judgment_ref, envelope.request_id)
+                    outcome = governance.evaluate(
+                        GovernanceRequest(
+                            request_id=envelope.request_id,
+                            project_id=self.project_id,
+                            subject=self.producer.actor_id,
+                            action=envelope.to_requested_action(),
+                            authority=envelope.authority,
+                            unknowns=envelope.unknowns,
+                            advisory_notes=envelope.advisory_notes,
+                            state_revision=request.state_revision,
+                        )
+                    )
+                    executed = False
+                    detail = outcome.reason
+                    receipt_ref: str | None = None
+                    effects_observed: bool | None = None
+                    if outcome.admits_execution and envelope.action is not None and self.actions is not None:
+                        transition(LoopState.EXECUTE, envelope.request_id, outcome.disposition.value)
+                        run = self.actions.execute(envelope.action, project_id=self.project_id, producer=self.producer)
+                        executed = same_enum(run.status, ActionExecutionStatus.DISPATCHED)
+                        detail = run.reason or detail
+                        if run.receipt is not None:
+                            receipt_ref = run.receipt.receipt_id
+                            effects_observed = run.receipt.effects_observed
+                    elif same_enum(outcome.disposition, GovernanceDisposition.DENY):
+                        transition(LoopState.BLOCKED_CONTEXT, envelope.request_id, outcome.reason)
+                    transition(LoopState.FEEDBACK, envelope.request_id, outcome.disposition.value)
+                    item = RequestFeedback(
                         request_id=envelope.request_id,
                         request_signature=envelope.signature(),
                         disposition=outcome.disposition.value,
@@ -402,22 +451,37 @@ class CognitiveRuntime:
                         receipt_ref=receipt_ref,
                         effects_observed=effects_observed,
                     )
-                )
+                    feedback.append(item)
+                    round_feedback.append(item)
 
-            # 4) TARGETED RETHINK — 바뀐 grounds/unknowns 범위만
-            rounds = 0
-            while (
-                self.rethink is not None
-                and feedback
-                and any(not item.executed for item in feedback)
-                and rounds < self.budget.expansion_rounds
-            ):
+                pending = []
+                if truncated_by_budget:
+                    transition(
+                        LoopState.COMMIT,
+                        "stop-conditions",
+                        f"total request budget={self.budget.max_total_requests}",
+                    )
+                    return self._episode(
+                        request,
+                        events,
+                        counters,
+                        EpisodeTermination.STOPPED_BUDGET,
+                        note="request budget exhausted",
+                        feedback=tuple(feedback),
+                        judgment_ref=judgment_ref,
+                    )
+                # 성공·실패 feedback 모두 Primary 재통합 대상이다(실패만 rethink 금지).
+                should_rethink = (
+                    self.rethink is not None and bool(round_feedback) and rounds < self.budget.expansion_rounds
+                )
+                if not should_rethink:
+                    break
                 rounds += 1
                 counters = _bump(counters, rethink_rounds=1, expansion_rounds=1)
                 transition(LoopState.TARGETED_RETHINK, judgment_ref, f"round={rounds}")
                 rethought = self.rethink.rethink(
                     previous_judgment_ref=judgment_ref,
-                    feedback_refs=tuple(item.request_id for item in feedback if not item.executed),
+                    feedback_refs=tuple(item.request_id for item in round_feedback),
                     affected_grounds=request.affected_grounds,
                     round_index=rounds,
                 )
@@ -428,6 +492,8 @@ class CognitiveRuntime:
                         request, events, counters, EpisodeTermination.BRAIN_FAILED, note=rethought.detail
                     )
                 judgment_ref = rethought.judgment_ref
+                if rethought.plan is not None:
+                    active_plan = rethought.plan
                 if rethought.delta is None or not rethought.delta.material:
                     transition(
                         LoopState.COMMIT,
@@ -443,13 +509,14 @@ class CognitiveRuntime:
                         feedback=tuple(feedback),
                         judgment_ref=judgment_ref,
                     )
-                if not rethought.requests:
+                if rethought.requests:
+                    pending = list(rethought.requests)
+                else:
                     break
-                feedback = [item for item in feedback if item.executed]
 
-        # 5) COMMIT — readiness만 검사한다
+        # 5) COMMIT — readiness만 검사한다 (최신 plan/judgment)
         transition(LoopState.COMMIT, judgment_ref, "readiness")
-        readiness = request.plan.readiness
+        readiness = active_plan.readiness
         if readiness is None:
             transition(LoopState.BLOCKED_READINESS, "commit", "readiness 없음")
             return self._episode(request, events, counters, EpisodeTermination.BLOCKED_READINESS, note="readiness 없음")
@@ -467,7 +534,7 @@ class CognitiveRuntime:
             )
 
         # 6) ACTION
-        action = request.plan.action
+        action = active_plan.action
         if action is None:
             return self._episode(
                 request,
@@ -519,7 +586,7 @@ class CognitiveRuntime:
             )
 
         # 7) OBSERVE
-        observed = request.plan.observation
+        observed = active_plan.observation
         if observed is None:
             transition(LoopState.OBSERVE, "action", "관측 대기")
             episode = self._episode(
@@ -536,13 +603,12 @@ class CognitiveRuntime:
             return episode
         transition(LoopState.OBSERVE, "action", observed.detail or "observed")
         action_run = self.actions.reconcile(action_run, observed, project_id=self.project_id, producer=self.producer)
-        comparison = _outcome_comparison(request.plan.expected_outcome, observed)
+        comparison = _outcome_comparison(active_plan.expected_outcome, observed)
         evaluations = EpisodeEvaluations(
             outcome=evaluate_outcome(comparison),
             decision=evaluate_decision(
                 comparison,
-                available_at_decision=True,
-                reason="당시 readiness와 근거로 판단했다",
+                assessment=active_plan.decision_assessment,
             ),
             execution=evaluate_execution(
                 succeeded=observed.succeeded,
@@ -572,9 +638,10 @@ class CognitiveRuntime:
         episode: Episode,
         *,
         action_run: ActionRun | None,
+        force_operational_only: bool = False,
     ) -> ExperienceSelection:
         record = OperationalRecord(
-            record_id=f"operational:{request.episode_id}",
+            record_id=f"operational:{request.episode_id}:{len(self.experience.operational_records) + 1}",
             episode_reference=request.episode_id,
             kind="EPISODE",
             detail=episode.note or episode.termination.value,
@@ -584,15 +651,25 @@ class CognitiveRuntime:
             recorded_at=self._now(),
             producer=self.producer,
         )
-        self.experience.record_operational(record)
-        comparison = episode.outcome or compare_outcome(request.plan.expected_outcome, None)
-        signals = EpisodeSignals(
-            failure=episode.termination in (EpisodeTermination.REFUSED_ACTION, EpisodeTermination.BRAIN_FAILED),
-            unresolved=request.unresolved or same_enum(episode.termination, EpisodeTermination.OBSERVATION_PENDING),
-            risk_shaping=bool(action_run and action_run.intent.guards),
-            recovery=False,
+        created = self._now()
+        self.experience.record_operational(
+            record,
+            project_id=self.project_id,
+            producer=self.producer,
+            created_at=created,
         )
-        return self.experience.select(
+        if force_operational_only:
+            comparison = compare_outcome(request.plan.expected_outcome, request.plan.expected_outcome)
+            signals = EpisodeSignals()
+        else:
+            comparison = episode.outcome or compare_outcome(request.plan.expected_outcome, None)
+            signals = EpisodeSignals(
+                failure=episode.termination in (EpisodeTermination.REFUSED_ACTION, EpisodeTermination.BRAIN_FAILED),
+                unresolved=request.unresolved or same_enum(episode.termination, EpisodeTermination.OBSERVATION_PENDING),
+                risk_shaping=bool(action_run and action_run.intent.guards),
+                recovery=False,
+            )
+        selection = self.experience.select(
             record,
             comparison=comparison,
             signals=signals,
@@ -601,6 +678,9 @@ class CognitiveRuntime:
             policy_version=request.policy_version,
             note=episode.termination.value,
         )
+        if self.project_id:
+            self.experience._records.append(selection.to_record(project_id=self.project_id, created_at=self._now()))
+        return selection
 
     def form_experience_core(
         self,
@@ -608,8 +688,8 @@ class CognitiveRuntime:
         *,
         trigger: str,
         experience_id: str | None = None,
-        context_ref: str,
-        judgment_ref: str | None,
+        context_ref: str | None = None,
+        judgment_ref: str | None = None,
         decision_ref: str | None = None,
         action_ref: str | None = None,
         observation_refs: Sequence[str] = (),
@@ -641,6 +721,17 @@ class CognitiveRuntime:
         )
 
     # ── 내부 ────────────────────────────────────────────
+
+    def _flush_experience_records(self) -> None:
+        """Push newly formed experience/operational/selection records through record_sink."""
+        if self.record_sink is None:
+            return
+        batch = self.experience.pending_sink_records()
+        if not batch:
+            return
+        self.record_sink(batch)
+        self.experience.mark_sunk(len(batch))
+
     def _observe_signature(self, signature: str) -> str | None:
         seen = self._signature_counts.get(signature, 0)
         self._signature_counts[signature] = seen + 1
@@ -683,9 +774,37 @@ class CognitiveRuntime:
             counters=counters,
             note=note,
         )
-        if not same_enum(termination, EpisodeTermination.STOPPED_NO_DELTA):
+        # R11: every terminal/pending path leaves an operational trail; STOPPED_NO_DELTA is
+        # operational-only and never auto-forms Experience.
+        if same_enum(termination, EpisodeTermination.STOPPED_NO_DELTA):
+            selection = self._record_experience(
+                request,
+                episode,
+                action_run=action_run,
+                force_operational_only=True,
+            )
+            episode = _with_selection(episode, selection)
+        else:
             selection = self._record_experience(request, episode, action_run=action_run)
             episode = _with_selection(episode, selection)
+            if selection.reusable:
+                action_ref = None
+                if action_run is not None and is_canonical_id(action_run.intent.action_id):
+                    action_ref = action_run.intent.action_id
+                ctx = request.context_ref if is_canonical_id(request.context_ref) else None
+                jref = judgment_ref or episode.judgment_ref
+                if jref is not None and not is_canonical_id(jref):
+                    jref = None
+                # Historical core still forms when selection says EXPERIENCE; non-canonical
+                # shorthand refs stay out of Reference edges (remain in trigger/note only).
+                self.form_experience_core(
+                    selection,
+                    trigger=episode.termination.value,
+                    context_ref=ctx,
+                    judgment_ref=jref,
+                    action_ref=action_ref,
+                )
+        self._flush_experience_records()
         return episode
 
 

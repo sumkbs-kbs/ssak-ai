@@ -1,0 +1,27 @@
+=== missing ===
+spec 오류: manifest 파일이 없다: /no/such/manifest.json
+EXIT:2
+=== malformed ===
+spec 오류: manifest JSON이 깨졌다: /tmp/bad_manifest.json (Expecting value: line 1 column 1 (char 0))
+EXIT:2
+=== help excerpt ===
+usage: benchmark_cognitive_growth [-h]
+                                  [--mode {fresh,mature,ablation,demo,live-pilot,registered-live}]
+                                  [--manifest MANIFEST] [--output OUTPUT]
+                                  [--store-root STORE_ROOT] [--seed SEED]
+                                  [--mechanism {CONTEXT_BUILDER,EXPERIENCE_ADVISORY,TARGETED_REREASONING,EXPERIENCE,RISK_SHAPING,GOVERNANCE_LEARNING}]
+                                  [--source-head SOURCE_HEAD] [--print-spec]
+
+SSAK-AI cognitive growth paired benchmark (deterministic fixture demo)
+
+options:
+  -h, --help            show this help message and exit
+  --mode {fresh,mature,ablation,demo,live-pilot,registered-live}
+  --manifest MANIFEST   사전 등록한 spec JSON
+  --output OUTPUT       결과 JSON artifact 경로
+  --store-root STORE_ROOT
+                        격리된 실행 root(production vault 아님)
+  --seed SEED
+  --mechanism {CONTEXT_BUILDER,EXPERIENCE_ADVISORY,TARGETED_REREASONING,EXPERIENCE,RISK_SHAPING,GOVERNANCE_LEARNING}
+  --source-head SOURCE_HEAD
+  --print-spec          등록용 spec을 출력하고 종료한다

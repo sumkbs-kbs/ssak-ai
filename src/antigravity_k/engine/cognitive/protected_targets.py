@@ -126,6 +126,23 @@ _PROTECTED_NAME_HINTS: Final[tuple[str, ...]] = (
 )
 _PATH_TOKEN_RE: Final[re.Pattern[str]] = re.compile(r"[A-Za-z0-9_./~$-]*(?:/[A-Za-z0-9_.*-]+)+")
 
+# write_bytes 등 토큰 목록 밖의 interpreter/변이 징후. 보호 경로와 함께면 거절.
+_SHELL_MUTATION_HINTS: Final[tuple[str, ...]] = (
+    "write_bytes",
+    "write_text",
+    "os.replace",
+    "os.rename",
+    "os.remove",
+    "os.unlink",
+    "pathlib",
+    "open(",
+    "python",
+    "python3",
+    "node ",
+    "ruby ",
+    "perl ",
+)
+
 
 class ProtectionViolation(PermissionError):
     """protected target 쓰기 시도가 거부됐다."""
@@ -236,6 +253,54 @@ class ProtectionDecision:
     evidence: Mapping[str, object] = field(default_factory=dict)
 
 
+def sandbox_protected_write_denies(
+    project_root: str | Path,
+    *,
+    store_roots: Sequence[str | Path] = (),
+) -> tuple[str, ...]:
+    """Absolute paths the OS sandbox must refuse to write (realpath).
+
+    These are enforced at the seatbelt/Docker boundary so interpreter writes
+    that evade shell-token heuristics still cannot mutate protected bytes.
+    """
+
+    paths: list[str] = []
+    seen: set[str] = set()
+    for root in default_protected_roots(project_root, store_roots=store_roots):
+        path = root.absolute_path
+        if path not in seen:
+            seen.add(path)
+            paths.append(path)
+    return tuple(paths)
+
+
+def sandbox_protected_unlink_denies(
+    project_root: str | Path,
+    *,
+    store_roots: Sequence[str | Path] = (),
+) -> tuple[str, ...]:
+    """Parents of protected targets: deny unlink/rename without blocking data writes beside them.
+
+    Parent directory rename would move constitution bytes out of the protected
+    path; seatbelt file-write* on the file alone does not stop that.
+    """
+
+    project = os.path.realpath(str(project_root))
+    parents: list[str] = []
+    seen: set[str] = set()
+    for root in default_protected_roots(project_root, store_roots=store_roots):
+        parent = os.path.dirname(root.absolute_path)
+        while parent and parent not in seen:
+            if parent == project or not parent.startswith(project + os.sep):
+                break
+            seen.add(parent)
+            parents.append(parent)
+            # 한 단계 부모만 기본 보호 (docs/ssak-ai-core). 더 윗조상(docs, .)은
+            # gate의 ancestor 정책이 담당하고, OS에서 project root unlink를 막지 않는다.
+            break
+    return tuple(parents)
+
+
 def default_protected_roots(
     project_root: str | Path,
     *,
@@ -336,13 +401,19 @@ class ProtectedWriteGuard:
                 )
             resolved_targets.append((target, resolved))
 
+        decision = ProtectionDecision(allowed=True, code=DecisionCode.ALLOWED, detail="not a protected target")
         for target, resolved in resolved_targets:
-            root = self.classify(resolved)
-            if root is None:
-                continue
-            return self._evaluate_protected(request, target, resolved, root)
-
-        return ProtectionDecision(allowed=True, code=DecisionCode.ALLOWED, detail="not a protected target")
+            for root in self.protected_roots:
+                if not (
+                    resolved == root.absolute_path
+                    or resolved.startswith(root.absolute_path + os.sep)
+                    or root.absolute_path.startswith(resolved + os.sep)
+                ):
+                    continue
+                decision = self._evaluate_protected(request, target, resolved, root)
+                if not decision.allowed:
+                    return decision
+        return decision
 
     def _evaluate_protected(
         self,
@@ -386,7 +457,9 @@ class ProtectedWriteGuard:
     def _match_approval(
         self, request: ProtectedWriteRequest, root: ProtectedRoot
     ) -> HumanApproval | ProtectionDecision:
-        candidates = [approval for approval in request.approvals if approval.protected_class is root.protected_class]
+        candidates = [
+            approval for approval in request.approvals if same_enum(approval.protected_class, root.protected_class)
+        ]
         if not candidates:
             code = (
                 DecisionCode.APPROVAL_CLASS_MISMATCH if request.approvals else DecisionCode.PROTECTED_WITHOUT_APPROVAL
@@ -402,7 +475,7 @@ class ProtectedWriteGuard:
         digest_matched = False
         scope_matched = False
         for approval in candidates:
-            if request.action_digest and approval.action_digest != request.action_digest:
+            if not request.action_digest or approval.action_digest != request.action_digest:
                 continue
             digest_matched = True
             scope = self._resolve(approval.resource_scope)
@@ -474,23 +547,46 @@ class ProtectedWriteGuard:
         action_digest: str = "",
         approvals: Sequence[HumanApproval] = (),
     ) -> ProtectionDecision:
-        """shell 문자열에서 쓰기 대상을 추출해 같은 보호 경계로 판정한다."""
+        """shell 문자열에서 쓰기 대상을 추출해 같은 보호 경계로 판정한다.
+
+        write_bytes처럼 토큰 목록에 없는 interpreter 쓰기라도 보호 경로와
+        변이 징후가 함께면 거절한다. 순수 읽기(cat 등)는 허용한다. OS sandbox
+        deny와 이중으로 막는다.
+        """
 
         lowered = command.lower()
-        if not any(token in lowered for token in _SHELL_WRITE_TOKENS):
+        has_write_token = any(token in lowered for token in _SHELL_WRITE_TOKENS)
+        has_mutation_hint = any(hint in lowered for hint in _SHELL_MUTATION_HINTS)
+        mentions_protected = any(hint in lowered for hint in _PROTECTED_NAME_HINTS)
+        for root in self.protected_roots:
+            rel = os.path.relpath(root.absolute_path, self.project_root)
+            rel_posix = Path(rel).as_posix().lower()
+            if rel_posix != "." and rel_posix in lowered.replace(chr(92), "/"):
+                mentions_protected = True
+                break
+            parent_rel = Path(rel).parent.as_posix().lower()
+            if parent_rel not in {"", "."} and parent_rel in lowered.replace(chr(92), "/"):
+                mentions_protected = True
+                break
+            if Path(root.absolute_path).name.lower() in lowered:
+                mentions_protected = True
+                break
+
+        # 순수 읽기는 허용. write token 또는 (보호경로+변이징후)만 추가 검사.
+        if not has_write_token and not (mentions_protected and has_mutation_hint):
             return ProtectionDecision(allowed=True, code=DecisionCode.ALLOWED, detail="no write indicator")
 
         targets = extract_shell_write_targets(command, self.project_root)
         if not targets:
-            if any(hint in lowered for hint in _PROTECTED_NAME_HINTS):
+            if mentions_protected:
                 return ProtectionDecision(
                     allowed=False,
                     code=DecisionCode.SHELL_WRITE_INDETERMINATE,
-                    detail="protected 이름을 포함한 쓰기 명령을 안전하게 해석할 수 없다",
+                    detail="protected 이름을 포함한 명령을 안전하게 해석할 수 없다",
                 )
             return ProtectionDecision(allowed=True, code=DecisionCode.ALLOWED, detail="no protected write target")
 
-        return self.evaluate(
+        decision = self.evaluate(
             ProtectedWriteRequest(
                 channel=WriteChannel.SHELL,
                 actor_kind=actor_kind,
@@ -502,6 +598,17 @@ class ProtectedWriteGuard:
                 approvals=tuple(approvals),
             )
         )
+        if (
+            decision.allowed
+            and decision.matched_class is None
+            and any(hint in lowered for hint in _PROTECTED_NAME_HINTS)
+        ):
+            return ProtectionDecision(
+                allowed=False,
+                code=DecisionCode.SHELL_WRITE_INDETERMINATE,
+                detail="protected name in unresolved shell write",
+            )
+        return decision
 
     def evaluate_policy_target(
         self,
@@ -566,6 +673,8 @@ def extract_shell_write_targets(command: str, project_root: str) -> tuple[str, .
             continue
         if token.startswith("-"):
             continue
+        if index > 0 and tokens[0] in ("rm", "rmdir", "mv", "cp", "chmod", "chown"):
+            candidates.append(token)
     for match in _PATH_TOKEN_RE.finditer(command):
         candidates.append(match.group(0))
 
@@ -573,8 +682,6 @@ def extract_shell_write_targets(command: str, project_root: str) -> tuple[str, .
     for candidate in candidates:
         cleaned = candidate.strip().strip("'\"").rstrip(",;")
         if not cleaned or cleaned in ("/dev/null", "/dev/stderr", "/dev/stdout"):
-            continue
-        if not (cleaned.startswith("~") or "/" in cleaned):
             continue
         expanded = os.path.expanduser(cleaned)
         if not os.path.isabs(expanded):
@@ -619,6 +726,8 @@ __all__ = [
     "WriteChannel",
     "WriteOperation",
     "default_protected_roots",
+    "sandbox_protected_write_denies",
+    "sandbox_protected_unlink_denies",
     "extract_shell_write_targets",
     "issue_human_approval",
     "migration_guard",

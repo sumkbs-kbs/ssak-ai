@@ -1,0 +1,4 @@
+ scripts/benchmark_cognitive_growth.py |  79 +++-
+ src/antigravity_k/knowledge/wiki.py   | 767 +++++++++++++++++++++++++++-------
+ tests/cognitive/test_growth.py        | 151 +++++++
+ 3 files changed, 850 insertions(+), 147 deletions(-)

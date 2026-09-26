@@ -1,0 +1,12 @@
+{
+  "card": "R01",
+  "checks": {
+    "R01-A1": "PASS",
+    "R01-A2": "PASS",
+    "R01-A3": "PASS",
+    "R01-A4": "PASS",
+    "R01-E": "PASS",
+    "R01-V": "PASS_SELF_REVIEW_LIMITATION"
+  },
+  "pytest": "58 passed"
+}

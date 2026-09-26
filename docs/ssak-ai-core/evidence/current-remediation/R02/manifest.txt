@@ -1,0 +1,8 @@
+R02 evidence 2026-09-26 20:01 KST
+branch: codex/m1-task-events
+HEAD: 2862584ea8f79641fefd9a78de9c145851ea515b
+touched:
+ M src/antigravity_k/engine/cognitive/authority.py
+ M src/antigravity_k/engine/cognitive/governance.py
+ M tests/cognitive/test_governance.py
+?? tests/cognitive/test_r02_authority_lifecycle.py

@@ -1,0 +1,11 @@
+# Ollama probe 2026-09-26 20:44 KST
+
+NAME                           ID              SIZE      MODIFIED
+ssak-finetuned:qwen2.5-0.5b    bac64e9e331d    994 MB    3 weeks ago
+qwen3.8:latest                 22130167c4c2    17 GB     5 weeks ago
+nomic-embed-text:latest        0a109f422b47    274 MB    2 months ago
+llava:latest                   8dd30f6b0cb1    4.7 GB    3 months ago
+llama3.2-vision:11b            6f2f9757ae97    7.8 GB    3 months ago
+
+Note: full FINAL18×3×2=108 live generations NOT executed this card.
+Contract PASS uses scripted LiveTrialPort; live LLM smoke remains optional/NOT_RUN for promotion claims.

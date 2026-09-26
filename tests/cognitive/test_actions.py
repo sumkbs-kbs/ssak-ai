@@ -672,3 +672,144 @@ def test_cancel_note_never_claims_reversal(reason: str) -> None:
 
     assert not claims_reversal(cancelled.cancellation_note)
     assert claims_reversal("이미 되돌렸다")
+
+
+# ─── R09 durable episode/decision/receipt lineage ────────────────────
+
+
+def test_r09_a1_reverse_trace_committed_receipt_ids(tmp_path: Path) -> None:
+    """R09-A1: dispatch references reverse-trace from committed canonical records."""
+    from antigravity_k.engine.cognitive.action_journal import SqliteActionJournal
+    from antigravity_k.engine.cognitive.references import REL_ACTION
+
+    store = CanonicalStore(tmp_path / "store", git_enabled=False)
+    journal = SqliteActionJournal(tmp_path / "claims.sqlite")
+    dispatcher = ActionDispatcher(
+        port=CallablePort(lambda tool, args, action_id: "ok"),
+        record_sink=lambda records: store.commit_records(list(records)),
+        journal=journal,
+        clock=lambda: NOW,
+    )
+    intent = make_intent(action_key="r09-a1")
+
+    run = dispatcher.execute(intent, project_id=PROJECT, producer=BODY)
+
+    assert run.receipt is not None
+    receipt = run.receipt
+    # durable receipt_id is the committed record id
+    assert receipt.receipt_id.startswith("execution_receipt:")
+    committed = store.read(receipt.receipt_id)
+    assert committed is not None
+    assert committed.id == receipt.receipt_id
+    assert committed.payload.action_id == intent.action_id  # type: ignore[union-attr]
+    action = store.read(intent.action_id)
+    assert action is not None
+    assert action.entity_type is EntityType.ACTION
+    assert any(ref.relation == REL_ACTION and ref.target_id == intent.action_id for ref in committed.references)
+    # republish keeps the same durable id (evaluation ref stable)
+    again = receipt.to_record(project_id=PROJECT, producer=BODY, created_at=NOW)
+    assert again.id == receipt.receipt_id == committed.id
+    claim = journal.get(PROJECT, intent.action_key)
+    assert claim is not None
+    assert claim.action_record_id == intent.action_id
+    assert claim.receipt_id == receipt.receipt_id
+
+
+def test_r09_a2_persist_failure_zero_tool_calls(tmp_path: Path) -> None:
+    """R09-A2: intent persistence failure means tool calls stay at 0."""
+    from antigravity_k.engine.cognitive.action_journal import SqliteActionJournal
+
+    calls: list[int] = []
+
+    def boom(records):
+        raise OSError("canonical sink unavailable")
+
+    dispatcher = ActionDispatcher(
+        port=CallablePort(lambda *args: calls.append(1)),
+        journal=SqliteActionJournal(tmp_path / "claims.sqlite"),
+        record_sink=boom,
+        clock=lambda: NOW,
+    )
+    with pytest.raises(OSError):
+        dispatcher.execute(make_intent(action_key="r09-a2"), project_id=PROJECT, producer=BODY)
+    assert calls == []
+
+
+def test_r09_a3_restart_pending_preserves_ids(tmp_path: Path) -> None:
+    """R09-A3: after process restart, pending action and original decision/receipt IDs remain."""
+    from antigravity_k.engine.cognitive.action_journal import PENDING, SqliteActionJournal
+
+    store = CanonicalStore(tmp_path / "store", git_enabled=False)
+    journal_path = tmp_path / "claims.sqlite"
+    journal = SqliteActionJournal(journal_path)
+    first = ActionDispatcher(
+        port=CallablePort(lambda tool, args, action_id: "ok"),
+        record_sink=lambda records: store.commit_records(list(records)),
+        journal=journal,
+        clock=lambda: NOW,
+    )
+    intent = make_intent(action_key="r09-a3")
+    run = first.execute(intent, project_id=PROJECT, producer=BODY)
+    assert run.receipt is not None
+    original_receipt_id = run.receipt.receipt_id
+    original_action_id = intent.action_id
+
+    # Simulate process restart: new dispatcher, same journal + store.
+    restarted = ActionDispatcher(
+        port=CallablePort(lambda *args: None),
+        record_sink=lambda records: store.commit_records(list(records)),
+        journal=SqliteActionJournal(journal_path),
+        clock=lambda: NOW,
+    )
+    pending = restarted.pending_claims(PROJECT)
+    assert len(pending) == 1
+    claim = pending[0]
+    assert claim.action_key == "r09-a3"
+    assert claim.action_record_id == original_action_id
+    assert claim.receipt_id == original_receipt_id
+    assert claim.status == PENDING
+    assert store.read(original_receipt_id) is not None
+    assert store.read(original_action_id) is not None
+
+
+def test_r09_a4_reconcile_append_supersedes_keeps_prior_bytes(tmp_path: Path) -> None:
+    """R09-A4: new receipt revision appends; prior canonical bytes stay intact."""
+    from antigravity_k.engine.cognitive.action_journal import SETTLED, SqliteActionJournal
+    from antigravity_k.engine.cognitive.references import REL_SUPERSEDES
+
+    store = CanonicalStore(tmp_path / "store", git_enabled=False)
+    journal = SqliteActionJournal(tmp_path / "claims.sqlite")
+    dispatcher = ActionDispatcher(
+        port=CallablePort(lambda tool, args, action_id: "ok"),
+        record_sink=lambda records: store.commit_records(list(records)),
+        journal=journal,
+        clock=lambda: NOW,
+    )
+    intent = make_intent(action_key="r09-a4")
+    run = dispatcher.execute(intent, project_id=PROJECT, producer=BODY)
+    assert run.receipt is not None
+    prior_id = run.receipt.receipt_id
+    prior = store.read(prior_id)
+    assert prior is not None
+    prior_bytes = prior.model_dump_json().encode("utf-8")
+
+    settled = dispatcher.reconcile(
+        run,
+        ActionObservation(observed=True, succeeded=True, detail="ok"),
+        project_id=PROJECT,
+        producer=BODY,
+        now=NOW,
+    )
+    assert settled.receipt is not None
+    assert settled.receipt.receipt_id != prior_id
+    # prior row unchanged
+    still = store.read(prior_id)
+    assert still is not None
+    assert still.model_dump_json().encode("utf-8") == prior_bytes
+    newer = store.read(settled.receipt.receipt_id)
+    assert newer is not None
+    assert any(ref.relation == REL_SUPERSEDES and ref.target_id == prior_id for ref in newer.references)
+    claim = journal.get(PROJECT, intent.action_key)
+    assert claim is not None
+    assert claim.receipt_id == settled.receipt.receipt_id
+    assert claim.status == SETTLED

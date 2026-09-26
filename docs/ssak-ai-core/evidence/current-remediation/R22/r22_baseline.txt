@@ -1,0 +1,50 @@
+.....F...............F........................F......................... [ 33%]
+..................F..................................................... [ 66%]
+.......................................................................  [100%]
+=================================== FAILURES ===================================
+E   AssertionError: architecture review 검사 실패: ['추적되지 않는 인용 7건: docs/ssak-ai-core/CURRENT_REMEDIATION_STATUS.md:tests/cognitive/test_r02_authority_lifecycle.py, docs/ssak-ai-core/evidence/current-remediation/R01/report.md:tests/cognitive/test_r01_protected_sandbox.py, docs/ssak-ai-core/evidence/current-remediation/R02/report.md:tests/cognitive/test_r02_authority_lifecycle.py, docs/ssak-ai-core/evidence/current-remediation/R18/SUMMARY.md:tests/cognitive/test_live_trial_adapter.py, docs/ssak-ai-core/evidence/current-remediation/R18/report.md:tests/cognitive/test_live_trial_adapter.py, docs/ssak-ai-core/evidence/current-remediation/R23/report.md:src/antigravity_k/knowledge/obsidian_links.py, docs/ssak-ai-core/evidence/current-remediation/R23/report.md:src/antigravity_k/knowledge/wiki_graph.py', 'artifact 가 최신이 아니다(counts, docs, pins 불일치) — digest_drift.py 를 다시 돌려야 한다 / 재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 25건', 'cognitive_tests 마커 822 ≠ 실제 901; digest_drifted 마커 0 ≠ 실제 5; digest_reverified 마커 36 ≠ 실제 11; digest_stale 마커 0 ≠ 실제 25']
+    assert False is True
+     +  where False = ReviewMeasurement(principles=(Principle(number=1, title='Brain Replaceability', cards=('T01a', 'T02', 'T04'), evidence..._recorded_floors': 21, 'ledger_late_reviews': 0, 'rehearsal_layers': 2, 'rehearsal_ok': 2, 'evidence_gate_stages': 11}).passed
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/cognitive/test_architecture_review.py:47: AssertionError: architecture review 검사 실패: ['추적되지 않는 인용 7건: docs/ssak-ai-core/CURRENT_REMEDIATION_STATUS.md:tests/cognitive/test_r02_authority_lifecycle.py, docs/ssak-ai-core/evidence/current-remediation/R01/report.md:tests/cognitive/test_r01_protected_sandbox.py, docs/ssak-ai-core/evidence/current-remediation/R02/report.md:tests/cognitive/test_r02_authority_lifecycle.py, docs/ssak-ai-core/evidence/current-remediation/R18/SUMMARY.md:tests/cognitive/test_live_trial_adapter.py, docs/ssak-ai-core/evidence/current-remediation/R18/report.md:tests/cognitive/test_live_trial_adapter.py, docs/ssak-ai-core/evidence/current-remediation/R23/report.md:src/antigravity_k/knowledge/obsidian_links.py, docs/ssak-ai-core/evidence/current-remediation/R23/report.md:src/antigravity_k/knowledge/wiki_graph.py', 'artifact 가 최신이 아니다(counts, docs, pins 불일치) — digest_drift.py 를 다시 돌려야 한다 / 재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 25건', 'cognitive_tests 마커 822 ≠ 실제 901; digest_drifted 마커 0 ≠ 실제 5; digest_reverified 마커 36 ≠ 실제 11; digest_stale 마커 0 ≠ 실제 25']
+E   AssertionError: check                  result detail
+      ------------------------------------
+      source_alignment       PASS   헌법 24원칙 · §63 12질문 · §52 10질문과 매핑이 일치
+      artifacts_exist        PASS   163개 artifact 참조가 모두 실재한다
+      doc_links_resolve      PASS   상대 link 275건이 모두 해석된다
+      checklist_coverage     PASS   인수 항목 17개가 모두 최소 한 원칙에 매핑된다
+      evidence_referenced    PASS   증거 문서 17건이 모두 인용되고, 인용된 증거가 모두 실재한다
+      citation_tracking      FAIL   추적되지 않는 인용 7건: docs/ssak-ai-core/CURRENT_REMEDIATION_STATUS.md:tests/cognitive/test_r02_authority_lifecycle.py, docs/ssak-ai-core/evidence/current-remediation/R01/report.md:tests/cognitive/test_r01_protected_sandbox.py, docs/ssak-ai-core/evidence/current-remediation/R02/report.md:tests/cognitive/test_r02_authority_lifecycle.py, docs/ssak-ai-core/evidence/current-remediation/R18/SUMMARY.md:tests/cognitive/test_live_trial_adapter.py, docs/ssak-ai-core/evidence/current-remediation/R18/report.md:tests/cognitive/test_live_trial_adapter.py, docs/ssak-ai-core/evidence/current-remediation/R23/report.md:src/antigravity_k/knowledge/obsidian_links.py, docs/ssak-ai-core/evidence/current-remediation/R23/report.md:src/antigravity_k/knowledge/wiki_graph.py
+      test_collection        PASS   tests/cognitive 수집 901건
+      regression_ledger      PASS   scope 9개 · 회차 21개 · 결정적 실패 11건 전부 소유자 있음 · variant 민감 0건
+      digest_report          FAIL   artifact 가 최신이 아니다(counts, docs, pins 불일치) — digest_drift.py 를 다시 돌려야 한다 / 재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 25건
+      state_claims           PASS   상태 주장 4건 — 그대로 0 · 정정 붙임 4 · 낡음 0 · 자기시험 17건 통과(증거 문서 17개 · node 지목 산문 7줄) · 하한 node 지목 산문 7≥1(여유 6) · 하한 상태 주장 4≥1(여유 3)
+      harness_canary         PASS   harness 11개 하한이 실제로 문다 — 정상 통과·눈멀게 한 사본 차단·근거 동봉 (ok 11)
+      floor_ledger           PASS   층 11개 · 하한 21개가 한 표에 있고, 각 층의 승인(누가 언제)이 실려 있다 — 하한 기록 2026-09-24 승인(21개 · 판단 이동 내려감 0 · 층 이동 0(이름 변경 후보 0) · 관측 이동 4보고) · 표 밖 배선 22개(어느 층의 하한인지 이어진 이름 — 승격을 잇는 자리다) · 면제 기록 10개(선언 10개 · 창 366일) · 면제의 판단 이동 0(검토 없이 미룸 0 · 기한 미룸 0 · 이름만 바뀐 듯한 면제 0 · 기한 당김 0보고 · 확인일 갱신 0보고 · 기록된 기한 이동 0 · 늦은 검토 0 (기한을 넘겨 다시 본 연장) · 기록된 승격 0) — 재검토는 `--review` 가 기한 순서로, 승격은 `--promote` 가 남은 일을 낸다
+      red_rehearsal          PASS   층 2개에 **진짜 파일로 위반을 심어** red 를 재현했다 — 심은 트리 exit 1·지목, 경계 사례 8개 오탐 0, 대조군(허용 형태) 초록, 빈 트리 차단(ok 2)
+      evidence_gate          PASS   stage 11개(전부 스크립트 실재·하한 근거 기록)를 한 번에 도는 명령이 있다 — fast 9개 · 자기시험 47건 통과 · 기준 11개 층(2026-09-25 승인)
+      review_document        PASS   리뷰 문서가 24원칙·§63·§52와 매핑 artifact를 모두 담는다
+      measured_markers       FAIL   cognitive_tests 마커 822 ≠ 실제 901; digest_drifted 마커 0 ≠ 실제 5; digest_reverified 마커 36 ≠ 실제 11; digest_stale 마커 0 ≠ 실제 25
+
+      원칙 24개: covered 15 · partial 9 · gap 0
+      §63 질문 12개 · §52 drift 질문 10개(triggered 0)
+      verdict passed=False
+      wrote /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-8912/test_cli_writes_artifact_and_r0/review.json
+
+    assert 1 == 0
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/cognitive/test_architecture_review.py:207: AssertionError: check                  result detail
+E   AssertionError: artifact 가 최신이 아니다(counts, docs, pins 불일치) — digest_drift.py 를 다시 돌려야 한다 / 재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 25건
+    assert False is True
+     +  where False = CheckResult(name='digest_report', passed=False, detail='artifact 가 최신이 아니다(counts, docs, pins 불일치) — digest_drift.py 를 다시 돌려야 한다 / 재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 25건', observed=5).passed
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/cognitive/test_architecture_review.py:693: AssertionError: artifact 가 최신이 아니다(counts, docs, pins 불일치) — digest_drift.py 를 다시 돌려야 한다 / 재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 25건
+E   AssertionError: tests/cognitive 수집 개수가 바뀌었다 — ARCHITECTURE_REVIEW.md의 cognitive_tests 마커를 갱신해야 한다
+    assert '822' == '901'
+
+      - 901
+      + 822
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/cognitive/test_architecture_review.py:1336: AssertionError: tests/cognitive 수집 개수가 바뀌었다 — ARCHITECTURE_REVIEW.md의 cognitive_tests 마커를 갱신해야 한다
+=========================== short test summary info ============================
+FAILED tests/cognitive/test_architecture_review.py::test_repository_state_passes_every_check
+FAILED tests/cognitive/test_architecture_review.py::test_cli_writes_artifact_and_reports_verdict
+FAILED tests/cognitive/test_architecture_review.py::test_repository_digest_report_is_current_and_counted
+FAILED tests/cognitive/test_architecture_review.py::test_collected_test_count_matches_document_marker
+4 failed, 211 passed in 123.08s (0:02:03)

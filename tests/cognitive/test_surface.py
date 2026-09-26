@@ -272,7 +272,7 @@ def active_settings(**overrides: object) -> CognitiveCoreSettings:
     return replace(base, **overrides) if overrides else base
 
 
-def test_active_requires_human_approval_and_ports() -> None:
+def test_active_requires_human_approval_and_ports(tmp_path: Path) -> None:
     settings = active_settings()
     no_ports = CognitiveSurfaceAdapter(settings, think=StubThink())
     with pytest.raises(SurfaceNotReadyError, match="dispatch port와 governance gate"):
@@ -280,8 +280,23 @@ def test_active_requires_human_approval_and_ports() -> None:
     with pytest.raises(SurfaceNotReadyError, match="사람 승인 기록이 없다"):
         no_ports.run_active(episode_request(intent=surface_intent()))
 
+    from antigravity_k.engine.cognitive.action_journal import SqliteActionJournal
+    from antigravity_k.engine.cognitive.store import CanonicalStore
+
+    intent = surface_intent()
+    assert intent.clearance is not None
+    decision = intent.clearance.authority
+    assert decision is not None
+    store = CanonicalStore(tmp_path / "canonical")
     adapter = CognitiveSurfaceAdapter(
-        settings, think=StubThink(), governance=GovernanceGate(), dispatch_port=StubDispatchPort()
+        settings,
+        think=StubThink(),
+        governance=GovernanceGate(),
+        dispatch_port=StubDispatchPort(),
+        journal=SqliteActionJournal(tmp_path / "claims.sqlite"),
+        record_sink=store.commit_records,
+        authority_resolver=lambda action, now: decision,
+        activation_authorizer=lambda project, actor, now: project == ACTIVE_PROJECT_ID and actor == "human:owner",
     )
     with pytest.raises(SurfaceNotReadyError, match="사람 승인"):
         adapter.activate(approver="  ", reason="승인")
@@ -295,6 +310,13 @@ def test_active_requires_human_approval_and_ports() -> None:
     assert status.source is SurfaceSource.CORE_ACTIVE
     assert status.activation is not None and status.activation.approver == "human:owner"
     assert status.dispatched_actions == 1
+    assert "active" in run.note and "shadow" not in run.note
+    repeated = adapter.run_active(episode_request(intent=surface_intent()))
+    assert repeated.dispatched_actions == 0
+    assert repeated.refusal == "DUPLICATE_ACTION"
+    # R11: each ACTIVE run sinks action receipts plus operational/selection trail.
+    assert len(store.committed_manifests()) == 4
+    assert len(adapter.experience.operational_records) >= 1
 
 
 def test_active_requires_canonical_project_id() -> None:
@@ -524,3 +546,43 @@ def test_surface_brain_port_does_not_claim_material_judgment() -> None:
     failed = SurfaceBrainPort(explode).think(context_ref="c", request_signature="s", attempt=1)
     assert failed.failed is True
     assert failed.judgment_ref == ""
+
+
+def test_active_rejects_missing_durable_boundaries() -> None:
+    adapter = CognitiveSurfaceAdapter(
+        active_settings(), think=StubThink(), governance=GovernanceGate(), dispatch_port=StubDispatchPort()
+    )
+    with pytest.raises(SurfaceNotReadyError, match="durable journal"):
+        adapter.activate(approver="human:owner", reason="a label is not an authorization")
+
+
+def test_active_revalidates_authenticated_activation(tmp_path: Path) -> None:
+    from antigravity_k.engine.cognitive.action_journal import SqliteActionJournal
+    from antigravity_k.engine.cognitive.store import CanonicalStore
+
+    intent = surface_intent()
+    assert intent.clearance is not None
+    decision = intent.clearance.authority
+    assert decision is not None
+    allowed = [False]
+    port = StubDispatchPort()
+    store = CanonicalStore(tmp_path / "canonical")
+    adapter = CognitiveSurfaceAdapter(
+        active_settings(),
+        think=StubThink(),
+        governance=GovernanceGate(),
+        dispatch_port=port,
+        journal=SqliteActionJournal(tmp_path / "claims.sqlite"),
+        record_sink=store.commit_records,
+        authority_resolver=lambda action, now: decision,
+        activation_authorizer=lambda project, actor, now: allowed[0],
+    )
+    with pytest.raises(SurfaceNotReadyError, match="authorization denied"):
+        adapter.activate(approver="human:owner", reason="forged label")
+    allowed[0] = True
+    adapter.activate(approver="human:owner", reason="trusted application authorizes activation")
+    allowed[0] = False
+    with pytest.raises(SurfaceNotReadyError, match="authorization denied"):
+        adapter.run_active(episode_request(intent=intent))
+    assert port.calls == []
+    assert store.committed_manifests() == ()

@@ -334,6 +334,7 @@ def test_constitutional_dimension_is_human_only_even_with_high_risk(gate: Govern
 def test_human_only_operation_is_allowed_only_with_reusable_human_approval(gate: GovernanceGate) -> None:
     operation = "change_human_ceiling"
     profile = AuthorityProfile(revision=1, grants=(grant(operations=(operation,)),))
+    target = action(operation=operation)
     approval = ApprovalUse(
         approval_id="approval:1",
         principal=SUBJECT,
@@ -341,8 +342,9 @@ def test_human_only_operation_is_allowed_only_with_reusable_human_approval(gate:
         operation=operation,
         issued_at=NOW,
         expires_at=NOW + timedelta(hours=1),
+        action_digest=target.digest(),
     )
-    outcome = gate.evaluate(request_for(action(operation=operation), authority=profile, human_approval=approval))
+    outcome = gate.evaluate(request_for(target, authority=profile, human_approval=approval))
 
     assert outcome.disposition is GovernanceDisposition.APPROVE
 

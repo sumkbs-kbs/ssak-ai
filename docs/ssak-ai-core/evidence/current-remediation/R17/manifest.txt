@@ -1,0 +1,2 @@
+src/antigravity_k/engine/cognitive/live_pilot.py
+tests/cognitive/test_live_pilot.py

@@ -1,0 +1,21 @@
+{
+  "source_file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.antigravity_k/agency.db",
+  "source_file_sha256": "6bc93092b6b476f25f6d4af402a95c4963b4d6d79a04afd2f9df12c8c4aa4fd5",
+  "size_bytes": 26206208,
+  "counts": {
+    "events": 56961,
+    "objectives": 0,
+    "tasks": 0
+  },
+  "code_pins_at_rehearsal": {
+    "src/antigravity_k/engine/cognitive/migration.py": "694743d7ad317cda1121f0eba35f8b2fb2ab14bb2871816d2478a4ef7daab0e4",
+    "src/antigravity_k/engine/cognitive/legacy_adapter.py": "955f5ee54b650becadddf7f507d12b395c9a674c80753f93b628502ca26310d2",
+    "src/antigravity_k/engine/cognitive/store.py": "58a02a89cd66fca9ab4430ce6db0f042156d758ba35a3b1a163f0303fa777b78",
+    "scripts/migrate_legacy_to_canonical.py": "23df5ed576da56a2bfa4b6c8aa1f53f06fa1846f0e6255addaa717a5c9d706cd",
+    "tests/cognitive/test_migration.py": "fbabf3a8c19b2d338548aa0dfd5c2a7626a39acf383b244be2fc840887bcb15a",
+    "tests/cognitive/test_legacy_adapter.py": "da55738b7603c5bb5cc3f747bfaa33a86801e73f79e61623b6a7ac63779ec5f3"
+  },
+  "cli_exit": 0,
+  "wall_seconds_report_total": 168.2503488752991,
+  "passed": true
+}

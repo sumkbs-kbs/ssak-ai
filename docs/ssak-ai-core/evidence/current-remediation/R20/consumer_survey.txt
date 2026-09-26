@@ -1,0 +1,9 @@
+src/antigravity_k/knowledge/wiki_graph.py:85:        score = _reward_score_after_events(old_node_scores.get(node_id, 0.0), node_positions[node_id], total_ticks)
+src/antigravity_k/knowledge/wiki_graph.py:93:        score = _reward_score_after_events(old_link_scores.get(link_pair, 0.0), link_positions[link_pair], total_ticks)
+src/antigravity_k/knowledge/wiki_graph.py:106:def _reward_score_after_events(score: float, positions: Sequence[int], tick_count: int) -> float:
+src/antigravity_k/knowledge/wiki_graph.py:287:                    errors.append("invalid_reward_scores")
+---
+src/antigravity_k/knowledge/wiki.py:49:    KGBinaryValidator,
+src/antigravity_k/knowledge/wiki.py:240:        validation = KGBinaryValidator(self.db_path).validate()
+src/antigravity_k/knowledge/wiki.py:247:        return dict(KGBinaryValidator(self.db_path).validate())
+src/antigravity_k/knowledge/wiki_graph.py:206:class KGBinaryValidator:

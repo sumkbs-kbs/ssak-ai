@@ -92,6 +92,12 @@ def _expired(grant: AuthorityGrant, now: datetime) -> bool:
     return grant.expires_at is not None and grant.expires_at <= now
 
 
+def _is_external_authority_subject(subject: str) -> bool:
+    """프로필에 grant가 없는 사람/외부 주체(루트 발급자)로 본다."""
+
+    return subject.startswith("human:") or subject.startswith("external:")
+
+
 @dataclass(frozen=True, slots=True)
 class AuthorityQuery:
     """특정 dimension의 특정 operation/scope에 대한 권한 질의."""
@@ -212,6 +218,40 @@ class AuthorityProfile:
             revision=self.revision,
         )
 
+    def _ancestor_failure(
+        self, grant: AuthorityGrant, reference: datetime, *, trail: frozenset[str] | None = None
+    ) -> AuthorityVerdict | None:
+        """조상 체인이 유효하면 None, 아니면 EXPIRED/REVOKED/DELEGATION_NOT_SUBSET."""
+
+        seen = set(trail or ())
+        parent_subject = grant.granted_by
+        if parent_subject in seen or parent_subject == grant.subject:
+            return AuthorityVerdict.DELEGATION_NOT_SUBSET
+        seen.add(grant.subject)
+
+        parents = [
+            candidate
+            for candidate in self.grants
+            if candidate.subject == parent_subject and same_enum(candidate.dimension, grant.dimension)
+        ]
+        if not parents:
+            if _is_external_authority_subject(parent_subject):
+                return None
+            # dangling parent: 위임 그래프가 끊긴 자식은 거절
+            return AuthorityVerdict.DELEGATION_NOT_SUBSET
+
+        live = [candidate for candidate in parents if candidate.revoked_at is None]
+        if not live:
+            return AuthorityVerdict.REVOKED
+        unexpired = [candidate for candidate in live if not _expired(candidate, reference)]
+        if not unexpired:
+            return AuthorityVerdict.EXPIRED
+        # 가장 넓은 활성 부모를 따라 계속 올라간다
+        parent = max(unexpired, key=lambda item: (len(item.resource_scope), item.revision))
+        if not scope_covers(parent.resource_scope, grant.resource_scope):
+            return AuthorityVerdict.SCOPE_OUT_OF_RANGE
+        return self._ancestor_failure(parent, reference, trail=frozenset(seen))
+
     # ── 판정 ────────────────────────────────────────────
     def evaluate(self, query: AuthorityQuery, *, now: datetime | None = None) -> AuthorityDecision:
         reference = now if now is not None else datetime.now(UTC)
@@ -318,7 +358,26 @@ class AuthorityProfile:
                 profile_revision=self.revision,
             )
 
-        grant = usable[0]
+        chain_ok: list[AuthorityGrant] = []
+        chain_failures: list[AuthorityVerdict] = []
+        for candidate in usable:
+            failure = self._ancestor_failure(candidate, reference)
+            if failure is None:
+                chain_ok.append(candidate)
+            else:
+                chain_failures.append(failure)
+        if not chain_ok:
+            verdict = chain_failures[0] if chain_failures else AuthorityVerdict.NOT_GRANTED
+            return AuthorityDecision(
+                allowed=False,
+                verdict=verdict,
+                reason=f"조상 grant가 유효하지 않다: {verdict}",
+                dimension=query.dimension,
+                resource_scope=query.resource_scope,
+                profile_revision=self.revision,
+            )
+
+        grant = chain_ok[0]
         missing_constraints = [constraint for constraint in query.constraints if constraint not in grant.constraints]
         if missing_constraints:
             return AuthorityDecision(
@@ -387,6 +446,12 @@ class AuthorityProfile:
                 reason=f"{request.parent_subject}에게 활성 {request.dimension} parent grant가 없다",
             )
         parent = max(parents, key=lambda grant: (len(grant.resource_scope), grant.revision))
+        if request.child_subject == request.parent_subject or request.child_subject == parent.granted_by:
+            return DelegationOutcome(
+                ok=False,
+                verdict=AuthorityVerdict.DELEGATION_NOT_SUBSET,
+                reason="위임 대상이 자기 자신 또는 직접 조상이라 cycle이다",
+            )
 
         if not scope_covers(parent.resource_scope, request.resource_scope):
             return DelegationOutcome(
@@ -411,6 +476,8 @@ class AuthorityProfile:
                 verdict=AuthorityVerdict.DELEGATION_NOT_SUBSET,
                 reason="child 만료가 parent 만료보다 늦다",
             )
+        # 생략된 자식 만료는 부모 ceiling을 상속한다. 부모보다 긴 권한을 만들지 않는다.
+        child_expires = request.expires_at if request.expires_at is not None else parent.expires_at
         dropped = tuple(constraint for constraint in parent.constraints if constraint not in request.constraints)
         if dropped:
             return DelegationOutcome(
@@ -428,7 +495,7 @@ class AuthorityProfile:
             constraints=request.constraints,
             granted_by=parent.subject,
             issued_at=reference,
-            expires_at=request.expires_at,
+            expires_at=child_expires,
             revision=request.revision,
         )
         return DelegationOutcome(ok=True, verdict=AuthorityVerdict.ALLOWED, reason="parent 부분집합 위임", grant=grant)
@@ -440,10 +507,15 @@ class AuthorityProfile:
         parent를 회수하면 그 parent가 발급한 child grant에 전파된다.
         """
 
+        # 후손 전체: granted_by 체인을 고정점까지 닫는다 (손자·증손 누락 방지).
         revoked_subjects: set[str] = {request.subject}
-        for grant in self.grants:
-            if grant.granted_by == request.subject:
-                revoked_subjects.add(grant.subject)
+        changed = True
+        while changed:
+            changed = False
+            for grant in self.grants:
+                if grant.granted_by in revoked_subjects and grant.subject not in revoked_subjects:
+                    revoked_subjects.add(grant.subject)
+                    changed = True
 
         updated: list[AuthorityGrant] = []
         for grant in self.grants:
@@ -502,9 +574,14 @@ class AuthorityProfile:
 
     # ── 승인 재사용 ─────────────────────────────────────
     def reuse_approval(
-        self, approval: ApprovalUse, query: AuthorityQuery, *, now: datetime | None = None
+        self,
+        approval: ApprovalUse,
+        query: AuthorityQuery,
+        *,
+        now: datetime | None = None,
+        action_digest: str = "",
     ) -> ApprovalReuse:
-        """같은 principal·scope·operation·유효기간의 승인만 재사용한다."""
+        """같은 principal·scope·operation·유효기간·action digest의 승인만 재사용한다."""
 
         reference = now if now is not None else datetime.now(UTC)
         if approval.principal != query.subject:
@@ -535,10 +612,19 @@ class AuthorityProfile:
                 reason=f"승인이 {approval.expires_at}에 만료됐다",
                 approval_id=approval.approval_id,
             )
+        # governance가 현재 action digest를 넘기면 승인에 결박된 digest와 일치해야 한다.
+        if action_digest:
+            if not approval.action_digest or approval.action_digest != action_digest:
+                return ApprovalReuse(
+                    reusable=False,
+                    verdict=ApprovalReuseVerdict.DIGEST_MISMATCH,
+                    reason="승인 action digest가 현재 요청 digest와 다르다",
+                    approval_id=approval.approval_id,
+                )
         return ApprovalReuse(
             reusable=True,
             verdict=ApprovalReuseVerdict.REUSED,
-            reason="같은 principal·scope·operation·유효기간 안의 승인이다",
+            reason="같은 principal·scope·operation·유효기간·digest 안의 승인이다",
             approval_id=approval.approval_id,
         )
 

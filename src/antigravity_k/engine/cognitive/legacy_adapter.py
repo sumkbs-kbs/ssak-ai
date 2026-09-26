@@ -41,7 +41,12 @@ from antigravity_k.engine.cognitive.references import (
     ResolvedTarget,
     new_id,
 )
-from antigravity_k.engine.cognitive.store import CanonicalStore, ManifestEntry, canonical_digest
+from antigravity_k.engine.cognitive.store import (
+    CanonicalStore,
+    ManifestEntry,
+    TransactionConflictError,
+    canonical_digest,
+)
 
 MAP_VERSION: Final[str] = "1.0"
 MAP_RELATIVE_PATH: Final[str] = ".cognitive/legacy/agency_map.json"
@@ -357,15 +362,12 @@ class LegacyAgencyAdapter:
             # Persist canonical IDs before records, matching the single-record crash/replay contract.
             transaction_digest = canonical_digest({"record_ids": sorted(record.id for record in new_records)})
             transaction_id = f"legacy-event-batch-{transaction_digest.removeprefix('sha256:')}"
-            if update_index:
-                self.store.commit_records(new_records, transaction_id=transaction_id)
-            else:
-                self.store._commit_records_batch(  # noqa: SLF001 - isolated migration dry-run batch writer
-                    new_records,
-                    transaction_id=transaction_id,
-                    committed_snapshot=committed_entries,
-                    rebuild_index=False,
-                )
+            self._publish_with_stable_transaction(
+                new_records,
+                transaction_id=transaction_id,
+                update_index=update_index,
+                committed_snapshot=committed_entries,
+            )
 
         records_by_id = {record.id: record for record in (*existing_records.values(), *new_records)}
 
@@ -510,6 +512,38 @@ class LegacyAgencyAdapter:
             return ()
         return (Reference(relation=REL_PROJECT, target_id=canonical_project, expected_type=EntityType.PROJECT),)
 
+    def _publish_with_stable_transaction(
+        self,
+        records: Sequence[Record],
+        *,
+        transaction_id: str,
+        update_index: bool,
+        committed_snapshot: dict[str, ManifestEntry] | None,
+    ) -> None:
+        """staged leftover가 있으면 restage하지 않고 commit만 재시도한다 (R03 + crash repair)."""
+
+        staged = self.store.staged_manifest_path(transaction_id)
+        committed = self.store.committed_manifest_path(transaction_id)
+        if staged.exists() and not committed.exists():
+            self.store.commit(transaction_id)
+            return
+        try:
+            if update_index:
+                self.store.commit_records(list(records), transaction_id=transaction_id)
+            else:
+                assert committed_snapshot is not None
+                self.store._commit_records_batch(  # noqa: SLF001 - migration dry-run batch writer
+                    list(records),
+                    transaction_id=transaction_id,
+                    committed_snapshot=committed_snapshot,
+                    rebuild_index=False,
+                )
+        except TransactionConflictError:
+            if staged.exists() and not committed.exists():
+                self.store.commit(transaction_id)
+                return
+            raise
+
     def _map_and_commit(
         self,
         *,
@@ -562,17 +596,14 @@ class LegacyAgencyAdapter:
 
         transaction_digest = canonical_digest({"canonical_id": record.id, "kind": kind})
         transaction_id = f"legacy-{kind}-{transaction_digest.removeprefix('sha256:')}"
-        if update_index:
-            self.store.commit_records([record], transaction_id=transaction_id)
-        else:
-            assert committed_snapshot is not None
-            self.store._commit_records_batch(  # noqa: SLF001 - isolated migration dry-run batch writer
-                [record],
-                transaction_id=transaction_id,
-                committed_snapshot=committed_snapshot,
-                rebuild_index=False,
-            )
-        return record
+        self._publish_with_stable_transaction(
+            [record],
+            transaction_id=transaction_id,
+            update_index=update_index,
+            committed_snapshot=committed_snapshot,
+        )
+        published = self.store.read(record.id)
+        return published if published is not None else record
 
 
 def _stable(value: object) -> object:

@@ -828,6 +828,8 @@ class ContextPackagePayload(EntityPayloadModel):
     integrity: IntegrityStatus = IntegrityStatus.COMPLETE
     missing_ids: tuple[str, ...] = ()
     projection: ProjectionState | None = None
+    omitted_handle_count: int = Field(default=0, ge=0)
+    omitted_exclusion_count: int = Field(default=0, ge=0)
 
     @model_validator(mode="after")
     def _require_missing_ids_when_incomplete(self) -> ContextPackagePayload:

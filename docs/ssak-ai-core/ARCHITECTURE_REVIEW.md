@@ -8,6 +8,12 @@ tags: [ssak-ai, cognitive-core, architecture, review]
 
 # SSAK-AI 최종 Architecture Review (T14)
 
+최종 변경 트리의 판정과 실행 증거는 `evidence/2026-09-25-review/FINAL_REVIEW.md`에 기록한다. 이 문서의 과거 PASS는 그 판정을 대체하지 않는다.
+
+## 2026-09-25 현재 판정 안내
+
+이 문서는 날짜별 누적 관찰을 보존한다. §2~3의 partial 판정은 원래 검토 범위이고, 현재 잔여 조건은 후속 근거를 반영한 §5를 읽는다. [2026-09-25 작업 계획](evidence/2026-09-25-review/WORK_PLAN.md)에 따른 승인/보호·action 지속성·인증된 ACTIVE 통합 보완은 최종 검증 전이다. 과거 source의 module/harness PASS를 변경 중인 트리의 전체 인수로 사용하지 않는다. [문서 정합화 기록](evidence/2026-09-25-review/docs-sync.md)은 정정한 문장과 출처를 설명한다.
+
 ## 0. 이 문서의 성격과 재현 방법
 
 T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 검증 대상**이다. 자유 서술만 있으면 drift를 막을 수
@@ -86,16 +92,16 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | drift_questions | 10 | 원문 §52 Constitution Drift 질문 |
 | drift_triggered | 0 | "YES가 있다"로 Architecture Review 대상이 된 질문 |
 | evidence_docs | 17 | `docs/ssak-ai-core/evidence/*.md` 문서 수 |
-| cognitive_tests | 778 | `tests/cognitive` 수집 시험 수 |
+| cognitive_tests | 901 | `tests/cognitive` 수집 시험 수(2026-09-26 수정 후 collect-only) |
 | regression_scopes | 9 | 전량 회귀를 나눠 잰 scope 수(flat 8구간 + subdir) |
 | regression_runs | 21 | scope 당 두 회차 이상 · 3 scope 는 **수집 순서를 뒤집은 variant** 도 포함 · 중단 회차는 판정에서 제외 · 중단된 회차는 자동으로 한 번 다시 돌리고 그 횟수·로그를 남긴다 |
 | regression_deterministic | 11 | 두 회차 모두에서 같은 실패 |
 | regression_drift | 0 | seed 를 바꾸면 달라지는 실패 |
 | regression_unowned | 0 | 소유자 없는 결정적 실패 |
 | digest_pinned | 50 | 증거 문서가 파일에 못 박은 sha256 수 |
-| digest_reverified | 31 | 그 뒤에 바뀌었지만 재확인 기록이 있고 그 뒤로 바뀌지 않은 pin |
-| digest_drifted | 0 | 재확인 없이 지나간 revision 을 가리키는 pin |
-| digest_stale | 0 | 재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 |
+| digest_reverified | 11 | 그 뒤에 바뀌었지만 재확인 기록이 있고 그 뒤로 바뀌지 않은 pin(2026-09-26 migration/store 검토 기록 포함) |
+| digest_drifted | 5 | 재확인 없이 지나간 revision 을 가리키는 pin |
+| digest_stale | 25 | 재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 |
 | digest_missing | 0 | 파일이 없는데 digest 를 못 박은 항목 |
 | state_claims | 4 | 산문이 지금 트리에 대해 한 상태 주장(test node 지정) 수 |
 | state_claims_fixed | 4 | 그중 실제와 달라 정정 표기를 붙인 주장 |
@@ -123,16 +129,16 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=17 -->
-<!-- measured:cognitive_tests=778 -->
+<!-- measured:cognitive_tests=901 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
 <!-- measured:regression_drift=0 -->
 <!-- measured:regression_unowned=0 -->
 <!-- measured:digest_pinned=50 -->
-<!-- measured:digest_reverified=31 -->
-<!-- measured:digest_drifted=0 -->
-<!-- measured:digest_stale=0 -->
+<!-- measured:digest_reverified=11 -->
+<!-- measured:digest_drifted=5 -->
+<!-- measured:digest_stale=25 -->
 <!-- measured:digest_missing=0 -->
 <!-- measured:state_claims=4 -->
 <!-- measured:state_claims_fixed=4 -->
@@ -865,7 +871,7 @@ nx07만 기존 문서 기준선 문제다. 나머지 파일은 오류 signature�
 |---|---|---|---|---|---|---|
 | **P1** Brain Replaceability | T01a, T02, T04 | T01a_typed_model.md, T02_canonical_store.md, T03_T04_context_brain.md | test_models.py, test_brain.py, test_store.py | models.py, brain.py, store.py | partial | 교체성 guard(cognitive는 도구·UI import 금지)와 canonical record 유지는 시험으로 고정됐다. 실제 A/B provider 교체는 실 provider가 필요해 미실행. |
 | **P2** Brain-Centered Cognition | T04, T05, T06 | T03_T04_context_brain.md, T05_governance.md, T06_commit.md | test_brain.py, test_governance.py, test_readiness.py | brain.py, governance.py, readiness.py | covered | Body는 판단의 정답을 심사하지 않는다(provider LLM 호출 0 spy). 실제 prompt 수준 확인은 실모델 QA로 이월. |
-| **P3** Experienced Cognitive Orchestrator | T08, T10, T13 | T08_T09_episode.md, T10_learning.md, T13_growth.md | test_episode.py, test_learning.py, test_growth.py | runtime.py, learning.py, growth.py | partial | 운영 학습 target이 CONTEXT_DEPTH 하나이고, 사용자 대화 경로는 아직 core를 부르지 않는다(P11). |
+| **P3** Experienced Cognitive Orchestrator | T08, T10, T13 | T08_T09_episode.md, T10_learning.md, T13_growth.md | test_episode.py, test_learning.py, test_growth.py | runtime.py, learning.py, growth.py | partial | 운영 학습 target이 CONTEXT_DEPTH 하나이며, 2026-09-24 사용자 대화·background에 shadow 관찰이 연결됐다(T11 §5). 인증된 ACTIVE 통합 인수는 미완이다. |
 | **P4** Responsibility Boundary | T04, T05, T06 | T05_governance.md, T06_commit.md, T03_T04_context_brain.md | test_governance.py, test_readiness.py, test_brain.py | governance.py, readiness.py, decisions.py | covered | 의미 통합 주체는 Primary(또는 human-assisted)이며 Body 다수결·semantic merge는 시험으로 금지. |
 | **P5** Human Authority | T01b, T05, T11 | T01b_protection.md, T05_governance.md, T11_surface.md | test_protection.py, test_governance.py, test_surface.py, test_enum_identity.py | authority.py, protected_targets.py, ../cognitive_surface.py | partial | ACTIVE 전환은 사람 승인+dispatch port+canonical project id가 모두 필요하고 fail-closed. 승인 발급 주체·보호 hook 실연결은 T01b 이월. |
 | **P6** Current-State Primacy | T03, T10 | T03_T04_context_brain.md, T10_learning.md | test_context.py, test_learning.py | context.py, learning.py | covered | 과거 confidence가 높아도 현재 applicability가 MISMATCH면 advisory로만 제시된다. |
@@ -881,7 +887,7 @@ nx07만 기존 문서 기준선 문제다. 나머지 파일은 오류 signature�
 | **P16** Risk Philosophy | T05, T13 | T05_governance.md, T13_growth.md | test_governance.py, test_growth.py | governance.py, growth.py | covered | RESHAPE는 grant 안에서 scope 축소·checkpoint·verification으로 위험을 줄이고, 고위험이라는 이유만으로 human escalation하지 않는다. |
 | **P17** Unknown is Valid | T05, T06 | T05_governance.md, T06_commit.md | test_governance.py, test_readiness.py | governance.py, readiness.py | covered | ACCEPTABLE Unknown 하나로 NOT_READY가 되지 않고 BLOCKING만 관련 action을 막는다. N_A에는 사유가 필요하다. |
 | **P18** Knowledge is Evidence, not Authority | T03, T10 | T03_T04_context_brain.md, T10_learning.md | test_context.py, test_learning.py | context.py, learning.py | covered | confidence·applicability·assurance를 분리하고 learned policy는 헌법·보호 권한을 바꾸지 못한다. |
-| **P19** Context Philosophy | T03 | T03_T04_context_brain.md | test_context.py | context.py, references.py | partial | 재구성·최소충분·넓게 검색/좁게 주입이 시험으로 고정됐다. 실제 provider context window 확인은 P11 이월. |
+| **P19** Context Philosophy | T03 | T03_T04_context_brain.md | test_context.py | context.py, references.py | partial | 재구성·최소충분·넓게 검색/좁게 주입이 시험으로 고정됐다. 2026-09-24 T03-D에서 실제 provider capability로 예산·초과 실패를 관찰했다. 요청별 num_ctx 배치 차이는 P11 ACTIVE 조건이다. |
 | **P20** Brain Steering | T04 | T03_T04_context_brain.md | test_brain.py | brain.py | partial | Body는 질문·범위를 조정하고 결론을 암시하지 않는다. 실제 모델 응답에서의 편향 부재는 실 provider QA 이월. |
 | **P21** Targeted Re-reasoning | T04, T08, T13 | T03_T04_context_brain.md, T08_T09_episode.md, T13_growth.md | test_brain.py, test_readiness.py, test_growth.py | brain.py, runtime.py, growth.py | covered | 약한 reasoning만 재사고하고 기존 판단은 append 계보로 남는다. ablation에서 이 mechanism을 끄면 safety violation이 재현된다. |
 | **P22** Cognitive Resource Philosophy | T07, T13 | T07_actions.md, T13_growth.md | test_actions.py, test_growth.py | actions.py, growth.py | partial | tool·retry·verification 자원은 측정하지만 latency는 0으로 보고되어(미측정) 실측이 없다. CPU/GPU/network 배분은 v1 core 범위 밖. |
@@ -907,7 +913,7 @@ Body record가 정체성을 유지한다.
 
 **답: yes_with_limits.** store가 canonical record로 유지되고 `rebuild_index()`·`verify_digests()`로 재구성된다.
 migration dry-run은 source를 읽기 전용으로만 열어 보존을 확인한다(test_migration.py).
-한계: 실사용 vault DB·vector index 대상 dry-run은 별도 실행 항목이다.
+한계: 등록된 실사용 `.antigravity_k/agency.db`의 56,961 observation events는 수정 후 전체 read-only dry-run PASS다([T12 evidence](evidence/T12_migration.md)). objectives/tasks는 원본 0건이라 미관측이며, 다른 DB 분포와 vector/RAG index rebuild는 별도 범위다.
 
 ### **Q-brain_boundary** — Brain Boundary
 > Body가 두 번째 Semantic Brain이 되지는 않았는가?
@@ -921,7 +927,7 @@ migration dry-run은 source를 읽기 전용으로만 열어 보존을 확인한
 
 **답: yes.** ContextBuilder가 매 episode 재구성하고, 무관한 과거 기록은 여유 budget이 있어도 기본 Context로
 주입되지 않는다. 확장은 handle 단위이며 권한·digest·만료를 재확인한다(test_context.py).
-한계: 실제 provider context window에서의 축소·불완전 처리 확인은 P11 이월.
+후속 확인: [T03/T04 증거](evidence/T03_T04_context_brain.md) §2026-09-24 T03-D에서 실제 provider capability 32,768 tokens를 사용한 조립·L0 초과 실패·실모델 왕복을 관찰했다. 요청별 num_ctx가 모델 capability보다 작을 수 있는 배치 차이는 P11 ACTIVE 조건이다.
 
 ### **Q-experience** — Experience
 > Brain Judgment와 SSAK-AI Experience가 분리되어 있는가?
@@ -999,21 +1005,19 @@ NOT_RUN으로 no-op 비교를 증거에서 제외한다.
 ## 5. 결론 — 남은 미완과 이월 조건
 
 **이 문서는 PASS 선언이 아니다.** 헌법 원칙 기준으로 근거가 연결된 범위와, 실 환경·사람 결정이 필요한 범위를 구분해
-기록한 것이다. gap은 0이며, partial 9건이 남은 미완의 실체다.
+기록한 것이다. 기존 매핑의 gap 0·partial 9건은 당시 검토 범위의 분류이며, 아래 후속 인수 조건의 완료를 뜻하지 않는다.
+
+아래는 2026-09-25 문서 정합화 기준이다. T00a/T00b·T01a의 2026-09-24 재확인, T02 실제 Vault 동시성, T03-D provider capability 관찰, T11 shadow·실모델·기존 background 재개는 완료된 범위로 분리했다. 새로운 runtime 검증 결과를 추가한 표는 아니다.
 
 | 미완 인수 | 원칙 | 남은 조건 | owner |
 |---|---|---|---|
-| T00a 현재 기준선 | P11 | 각 entrypoint→runtime→gate의 파일·symbol 근거를 현재 source에서 재확인 | integration |
-| T00b 초기 benchmark | P11 | 등록된 metric/split/manifest를 실제 실행에 사용하고 Fresh baseline을 보존 | integration |
-| T01a 모델·계보 | P1 | 현재 schema·선별 기록 계약 대조 | cognitive-core |
-| T01b 헌법·보호 권한 | P5 | 신뢰 가능한 승인 발급·검증 주체와 실제 우회 경로 차단, hook 연결 | cognitive-core + human |
-| T02 불변 저장·복구 | P1, P7 | 실제 Vault writer와의 동시 write·crash 복구 | storage |
-| T03 Context | P19 | 실제 provider context window에서 축소·불완전 처리 확인 | cognitive-core + human |
-| T04 Brain 교체 | P1, P20 | A/B provider 교체와 state 연속성 실측 | cognitive-core + human |
-| T11 사용자 표면 | P3, P24 | 대화 스트림·background 실행 경로 배선, 실모델 대화 QA, resume/cancel QA, ACTIVE 실도구 검증 | integration + human |
-| T14 회귀·최종 리뷰 | P11 | 이 문서의 검사 PASS(회귀 원장 · 인용 추적 · digest 측정 포함) + 실표면 QA. 실표면 QA가 남아 체크박스는 미완으로 유지 | human (Architecture Review) |
-| T01a~T13 증거의 실환경 재확인 | P1, P11 | digest 재확인은 **계약 시험 수준에서 끝냈다**(§1.4 — 21건, `digest_reverification.json`). 남은 것은 실모델·실 vault·사람 승인 표면에서 그 증거가 서는지이며, 각 문서의 `limitations` 에 그대로 있다 | 각 카드 레인 + human |
-| Live pilot | P9, P23 | 실제 provider 예산 승인 후 `run_kind=LIVE_PILOT` 등록 spec으로 실행 | human |
+| T01b 헌법·보호 권한 | P5 | 신뢰 가능한 승인 발급·검증 주체 및 실제 우회 경로 차단. migration/evolution hook은 기존 증거에 연결됐으며 2026-09-25 보호 경계 보완 후 재검증 필요 | cognitive-core + integration |
+| T02 불변 저장·복구 | P1, P7 | 실제 Vault 동시성은 T02 §2026-09-24에서 관찰. 남은 것은 인증된 사용자 실행 경로의 canonical 선기록·receipt·재시작/실패 복구 | storage + integration |
+| T04 Brain 교체 및 T03 배치 | P1, P19, P20 | A/B 연속성 module 증거와 T03-D 실제 capability 관찰은 있음. 실제 router/provider 교체 및 요청별 num_ctx와 배치 예산 정합성은 P11 | cognitive-core + integration |
+| T11 사용자 표면 | P3, P24 | T11 §5~7의 shadow 배선·실모델 1건·기존 background resume/cancel은 완료. 인증된 ACTIVE 실도구·현재 권한/readiness·canonical 기록/receipt·재시작 중복 방지를 함께 관찰 | integration |
+| T12 실사용 데이터 리허설 | P7, P17 | 등록된 실제 legacy DB snapshot의 수정 후 read-only·격리 target full dry-run은 PASS([T12 evidence](evidence/T12_migration.md)); destructive 변환은 수행 대상과 구분. objectives/tasks 0건·vector/RAG index는 미관측/범위 밖 | storage |
+| T14 회귀·최종 리뷰 | P11 | 변경 후 정확한 SHA+dirty digest에 묶인 test/lint/type 및 해당 표면 QA, 문서 정합성. 기존 회귀 실패를 소유 범위와 함께 유지. 사람 Architecture Review 서명은 대리 생성하지 않음 | integration + human review |
+| Live pilot | P9, P23 | 로컬 provider 존재는 T11 §6에서 확인. 실제 trial port 결선 및 LIVE_PILOT spec·예산·attestation·paired trial 실행은 NOT_RUN, fixture와 별도 보고 | growth |
 
 판단 근거를 명시하지 않은 채 복잡도를 늘린 항목은 없다. 반대로, live 성능 증거가 없다는 이유로 learned policy와
 Secondary Brain 계열은 Core로 승격하지 않았다(SELF_IMPROVEMENT_POLICY §56의 CORE/CONDITIONAL/ADVANCED 구분 유지).

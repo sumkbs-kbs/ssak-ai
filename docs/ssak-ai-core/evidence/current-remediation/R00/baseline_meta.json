@@ -1,0 +1,252 @@
+{
+  "card": "R00",
+  "captured_at": "2026-09-26T10:54:33.872165+00:00",
+  "head": "2862584ea8f79641fefd9a78de9c145851ea515b",
+  "dirty_count": 205,
+  "dirty_paths_sample": [
+    ".omo/start-work/ledger.jsonl",
+    "data/benchmark_results.json",
+    "data/token_usage.json",
+    "docs/19_RELIABILITY_AND_CONNECTOME_CHECKLIST.md",
+    "docs/20_CURRENT_STATUS.md",
+    "docs/adr/ADR-DAT-02-conversation-history-journal.md",
+    "docs/qa/2026-09-16-followup/nx10/CLOSURE_RUNBOOK.md",
+    "docs/qa/2026-09-16-followup/nx10/GATE_LEDGER.md",
+    "docs/qa/2026-09-16-followup/nx10/handoff.md",
+    "docs/qa/2026-09-16-followup/nx10/promote-runner-exit.txt",
+    "docs/qa/2026-09-16-followup/nx10/promote3/dry-run3-output.txt",
+    "docs/qa/2026-09-16-followup/nx10/soak-28800.json",
+    "docs/qa/2026-09-16-followup/nx10/soak-exit.txt",
+    "docs/qa/2026-09-16-followup/nx10/soak-recovery-latest.json",
+    "docs/ssak-ai-core/ACCEPTANCE_CHECKLIST.md",
+    "docs/ssak-ai-core/ARCHITECTURE_REVIEW.md",
+    "docs/ssak-ai-core/IMPLEMENTATION_REPORT.md",
+    "docs/ssak-ai-core/IMPLEMENTATION_ROADMAP.md",
+    "docs/ssak-ai-core/README.md",
+    "docs/ssak-ai-core/evidence/2026-09-25-review/WORK_PLAN.md",
+    "docs/ssak-ai-core/evidence/T02_canonical_store.md",
+    "docs/ssak-ai-core/evidence/T11_surface.md",
+    "docs/ssak-ai-core/evidence/T13_live_pilot.md",
+    "docs/ssak-ai-core/evidence/digest_drift.json",
+    "docs/ssak-ai-core/evidence/digest_reverification.json",
+    "docs/ssak-ai-core/evidence/state_claims.json",
+    "src/antigravity_k/api/routes/cognitive_active_api.py",
+    "src/antigravity_k/api/routes/cognitive_surface_api.py",
+    "src/antigravity_k/engine/cognitive/action_admission.py",
+    "src/antigravity_k/engine/cognitive/action_context.py",
+    "src/antigravity_k/engine/cognitive/action_journal.py",
+    "src/antigravity_k/engine/cognitive/action_lifecycle.py",
+    "src/antigravity_k/engine/cognitive/action_records.py",
+    "src/antigravity_k/engine/cognitive/action_types.py",
+    "src/antigravity_k/engine/cognitive/actions.py",
+    "src/antigravity_k/engine/cognitive/protected_targets.py",
+    "src/antigravity_k/engine/cognitive_surface.py",
+    "src/antigravity_k/engine/cognitive_surface_measurement.py",
+    "src/antigravity_k/engine/cognitive_surface_types.py",
+    "src/antigravity_k/engine/gbrain.py"
+  ],
+  "audit_fingerprint": "e8abbf7544ddb68a36c1ff72aff77f7173246ed693ca27fbee4e7abc68cb395c",
+  "interpreter": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python 3.13.12",
+  "pin_comparison": [
+    {
+      "path": "src/antigravity_k/engine/cognitive/migration.py",
+      "expected": "194fc133c8d7539e81de7cce4b4818f3b14b5dcec3bf9d59f6170ab2f61e19d2",
+      "current": "4c035550024aa149639000b2393c8666fd2d2a35fdaa2b0acf2391c4f41dc342",
+      "match": false
+    },
+    {
+      "path": "src/antigravity_k/engine/cognitive/legacy_adapter.py",
+      "expected": "fc589554a8cdbdc0cf095265a5c232a886077754b67dfcede0e1089e24b06a69",
+      "current": "f5584e77440fa0961740bfe404aac38e59fc6b8403fb4b71351347d8a66523a3",
+      "match": false
+    },
+    {
+      "path": "src/antigravity_k/engine/cognitive/store.py",
+      "expected": "8c794de8ebba9ec0816a326a3bbda9623b35897e83af397f54aed3006babebce",
+      "current": "8c794de8ebba9ec0816a326a3bbda9623b35897e83af397f54aed3006babebce",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/engine/cognitive/protected_targets.py",
+      "expected": "1223efbfbfdde20e4ba5dd067d6825d5a0bce53dd4f6890ac5d05c57c9b4eb8f",
+      "current": "1223efbfbfdde20e4ba5dd067d6825d5a0bce53dd4f6890ac5d05c57c9b4eb8f",
+      "match": true
+    },
+    {
+      "path": "scripts/migrate_legacy_to_canonical.py",
+      "expected": "23df5ed576da56a2bfa4b6c8aa1f53f06fa1846f0e6255addaa717a5c9d706cd",
+      "current": "23df5ed576da56a2bfa4b6c8aa1f53f06fa1846f0e6255addaa717a5c9d706cd",
+      "match": true
+    },
+    {
+      "path": "tests/cognitive/test_migration.py",
+      "expected": "99ca6089730d6f6c29cba56dfd9553b9e4c90e6be410a4254a64eb622c98edc2",
+      "current": "918be04cf05d74b334fea0f5264fde26dba78ed489ffbc3851c9c0ab87adc9ce",
+      "match": false
+    },
+    {
+      "path": "tests/cognitive/test_legacy_adapter.py",
+      "expected": "c4d995f3d789f206a21cc354ad6b1d11c32be445bf6092bea84506bede419a9c",
+      "current": "da55738b7603c5bb5cc3f747bfaa33a86801e73f79e61623b6a7ac63779ec5f3",
+      "match": false
+    },
+    {
+      "path": "tests/cognitive/test_store.py",
+      "expected": "8ac3a12b244aae5315cac169e226c64a0b179284e36c989138c72828f7b9b1a9",
+      "current": "8ac3a12b244aae5315cac169e226c64a0b179284e36c989138c72828f7b9b1a9",
+      "match": true
+    }
+  ],
+  "anchor_drift": {
+    "src/antigravity_k/engine/cognitive/protected_targets.py": {
+      "current": "1223efbfbfdde20e4ba5dd067d6825d5a0bce53dd4f6890ac5d05c57c9b4eb8f",
+      "audit": "1223efbfbfdde20e4ba5dd067d6825d5a0bce53dd4f6890ac5d05c57c9b4eb8f",
+      "match": true
+    },
+    "src/antigravity_k/engine/sandbox.py": {
+      "current": "35fff15c6e63b84bd4e55f0aa525e1b746a5d62472876dca28c9ec63ea9e0cfa",
+      "audit": "35fff15c6e63b84bd4e55f0aa525e1b746a5d62472876dca28c9ec63ea9e0cfa",
+      "match": true
+    },
+    "src/antigravity_k/engine/cognitive/authority.py": {
+      "current": "814bf64171df56bec05f7317b54c3c26d9a61d29755ee9e8adaa0107f1412daf",
+      "audit": "814bf64171df56bec05f7317b54c3c26d9a61d29755ee9e8adaa0107f1412daf",
+      "match": true
+    },
+    "src/antigravity_k/engine/cognitive/governance.py": {
+      "current": "1ca59212d8c957a692934c2755545602afc5e249f990c4f6281c7140e0bdb70a",
+      "audit": "1ca59212d8c957a692934c2755545602afc5e249f990c4f6281c7140e0bdb70a",
+      "match": true
+    },
+    "src/antigravity_k/engine/cognitive/store.py": {
+      "current": "8c794de8ebba9ec0816a326a3bbda9623b35897e83af397f54aed3006babebce",
+      "audit": "8c794de8ebba9ec0816a326a3bbda9623b35897e83af397f54aed3006babebce",
+      "match": true
+    },
+    "src/antigravity_k/engine/cognitive/migration.py": {
+      "current": "4c035550024aa149639000b2393c8666fd2d2a35fdaa2b0acf2391c4f41dc342",
+      "audit": "4c035550024aa149639000b2393c8666fd2d2a35fdaa2b0acf2391c4f41dc342",
+      "match": true
+    },
+    "src/antigravity_k/engine/cognitive/context.py": {
+      "current": "eaa05d1807246c3302b7665411ea6c3962db47409cdfbf405a2e1fdb62b25df1",
+      "audit": "eaa05d1807246c3302b7665411ea6c3962db47409cdfbf405a2e1fdb62b25df1",
+      "match": true
+    },
+    "src/antigravity_k/engine/cognitive/runtime.py": {
+      "current": "07f69cbfaf3f5957537fa235d49418c6f1a5437e0c04900aac120dc886b11deb",
+      "audit": "07f69cbfaf3f5957537fa235d49418c6f1a5437e0c04900aac120dc886b11deb",
+      "match": true
+    },
+    "src/antigravity_k/engine/cognitive/action_admission.py": {
+      "current": "04f1335de29ff5229a80fc524d54642ebaa5a6a40cb5edc70b59599fb13fab6b",
+      "audit": "04f1335de29ff5229a80fc524d54642ebaa5a6a40cb5edc70b59599fb13fab6b",
+      "match": true
+    },
+    "src/antigravity_k/engine/cognitive/actions.py": {
+      "current": "4caa7f79372e7a69831eed631c7c2d1010620eee0300ddb3ee94c16e48deac42",
+      "audit": "4caa7f79372e7a69831eed631c7c2d1010620eee0300ddb3ee94c16e48deac42",
+      "match": true
+    },
+    "src/antigravity_k/engine/cognitive/cognitive_surface.py": {
+      "current": null,
+      "audit": null,
+      "match": null
+    },
+    "src/antigravity_k/engine/cognitive/action_journal.py": {
+      "current": "d2ccec70d9ade962d7b444df2b490115d387d82e617f4b06d502847b62e9e5d5",
+      "audit": "d2ccec70d9ade962d7b444df2b490115d387d82e617f4b06d502847b62e9e5d5",
+      "match": true
+    },
+    "src/antigravity_k/engine/cognitive/experience.py": {
+      "current": "eec2a68fbb1f94d6817e56f90e0d01d0045c302802f768525b1a57f2e7d0b839",
+      "audit": "eec2a68fbb1f94d6817e56f90e0d01d0045c302802f768525b1a57f2e7d0b839",
+      "match": true
+    },
+    "src/antigravity_k/engine/cognitive/growth.py": {
+      "current": "745f1c105fa4ab6b3d92bf087db0e0dc632610389f85eb76db7c199da0d54111",
+      "audit": "745f1c105fa4ab6b3d92bf087db0e0dc632610389f85eb76db7c199da0d54111",
+      "match": true
+    },
+    "src/antigravity_k/api/dependencies.py": {
+      "current": "08a7b9e41458061475649b224528b45560dd908ce12d403cd8d8faaca84e89de",
+      "audit": "08a7b9e41458061475649b224528b45560dd908ce12d403cd8d8faaca84e89de",
+      "match": true
+    },
+    "src/antigravity_k/api/routes/cognitive_active_api.py": {
+      "current": "a9071f70769dabb2f6af46c567ae40c3c040b5c4c902ae939d12b3573bdac7ee",
+      "audit": "a9071f70769dabb2f6af46c567ae40c3c040b5c4c902ae939d12b3573bdac7ee",
+      "match": true
+    },
+    "src/antigravity_k/api/routes/cognitive_surface_api.py": {
+      "current": "00651289b141ef3585bf41a5178f2e44b158331eee3c32df8927ec54721ce37b",
+      "audit": "00651289b141ef3585bf41a5178f2e44b158331eee3c32df8927ec54721ce37b",
+      "match": true
+    },
+    "docs/ssak-ai-core/README.md": {
+      "current": "bf602043191b470a785750e55aa1d16dc6efc90101f9f0a605236194d711a60f",
+      "audit": "bf602043191b470a785750e55aa1d16dc6efc90101f9f0a605236194d711a60f",
+      "match": true
+    },
+    "docs/ssak-ai-core/IMPLEMENTATION_ROADMAP.md": {
+      "current": "2ef4c749289868421abade657fdbbed570393a0d8d4fed3ff43d84859e6be818",
+      "audit": "2ef4c749289868421abade657fdbbed570393a0d8d4fed3ff43d84859e6be818",
+      "match": true
+    },
+    "docs/ssak-ai-core/ACCEPTANCE_CHECKLIST.md": {
+      "current": "715dbcd6634edd06f1348e787015a74f4271fa469f164fd1dd79b8b223d92ef5",
+      "audit": "715dbcd6634edd06f1348e787015a74f4271fa469f164fd1dd79b8b223d92ef5",
+      "match": true
+    }
+  },
+  "status_table": {
+    "P10_fixture_growth": {
+      "status": "HISTORICAL_MODULE_PASS",
+      "surface": "deterministic_fixture",
+      "current_claim": "NOT auto CURRENT_PASS",
+      "note": "T13 growth fixture PASS preserved as historical; not live growth"
+    },
+    "P10_live_growth": {
+      "status": "OPEN",
+      "surface": "live_provider",
+      "current_claim": "NOT_RUN / OPEN",
+      "note": "live pilot NOT_RUN; distinct from fixture"
+    },
+    "P11_isolated_authenticated_ACTIVE": {
+      "status": "HISTORICAL_ISOLATED_HTTP",
+      "surface": "isolated_authenticated_ACTIVE_fixture_Brain",
+      "current_claim": "preserved evidence, not production PASS",
+      "note": "audit: effect1 + restart dispatch0 on fixture composition"
+    },
+    "P11_production_ACTIVE": {
+      "status": "OPEN",
+      "surface": "production_boot_composition",
+      "current_claim": "OPEN",
+      "note": "default bootstrap SHADOW; production ACTIVE incomplete (F14)"
+    }
+  },
+  "pass_binding_rule": {
+    "rule": "A prior PASS bound to source digest D is CURRENT_PASS only if current digest equals D for every owned source/test/spec listed in that evidence source-manifest. Changing any listed file drops CURRENT_PASS to HISTORICAL.",
+    "demo": {
+      "scenario_id": "R00-A1",
+      "given": "evidence claims PASS with source-manifest digest for context.py",
+      "when": "context.py bytes change (simulated by comparing audit vs current if differ, else note dirty docs prove binding required)",
+      "then": "status becomes HISTORICAL until re-run against new digest; never auto CURRENT_PASS"
+    }
+  },
+  "owners": {
+    "R00": "docs/ssak-ai-core/{README,IMPLEMENTATION_ROADMAP,ACCEPTANCE_CHECKLIST}.md",
+    "R01": "protected_targets + sandbox",
+    "R02": "authority + governance",
+    "R03": "store",
+    "next_after_R00": [
+      "R01",
+      "R02",
+      "R03",
+      "R05",
+      "R17",
+      "R20",
+      "R23"
+    ]
+  }
+}

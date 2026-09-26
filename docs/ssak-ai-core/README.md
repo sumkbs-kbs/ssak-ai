@@ -61,6 +61,9 @@ v1은 Canonical Markdown + explicit references, Git persistence, rebuild 가능�
 
 ## 5. 현재 상태와 증거 사용법
 
+> **현재 remediation 진입점 (2026-09-26 R00):** [CURRENT_REMEDIATION_STATUS.md](CURRENT_REMEDIATION_STATUS.md).  
+> 과거 P00–P12 PASS는 날짜·module/fixture/isolated HTTP/production/live 구분을 유지한 HISTORICAL 기록이다. source digest가 바뀌면 자동 CURRENT_PASS가 되지 않는다. P10 fixture ≠ P10 live. P11 isolated ACTIVE ≠ production ACTIVE.
+
 아래는 기존 증거 문서의 보고 내용이다. 이번 v1.1 문서 편집에서 코드·시험을 재실행했다는 뜻이 아니다. source SHA뿐 아니라 dirty-file digest, 시험 범위, limitation을 대조해야 한다.
 
 | 영역 | 기존 보고 | 남은 인수 |
@@ -78,7 +81,7 @@ v1은 Canonical Markdown + explicit references, Git persistence, rebuild 가능�
 | P10 | [성장·ablation](evidence/T13_growth.md): deterministic fixture PASS (17 시험 + CLI artifact) | live pilot NOT_RUN, 실제 provider·표본 확대·실측 latency 이월 |
 | P10 (live) | [live pilot harness](evidence/T13_live_pilot.md): harness·분리 계약 PASS (12 시험) | 실제 provider·확증 표본 등록은 사람 결정 필요 |
 | P11 (부분) | [사용자 표면 opt-in](evidence/T11_surface.md): 실측 + adapter + read-only 표면 + feature-off 회귀 + shadow 배선 + 실모델 비교 + **resume/cancel QA(크래시→재개 완주 포함)** | ACTIVE 실검증(사람 승인)만 이월 |
-| P12 (부분) | [migration dry-run](evidence/T12_migration.md): source read-only·별도 root·mapping·index·rollback PASS (14 시험) | destructive 변환 NOT_RUN, 실사용 DB dry-run 이월 |
+| P12 (부분) | [migration dry-run](evidence/T12_migration.md): 수정 후 등록 agency.db snapshot 56,961건 전체 read-only rehearsal PASS, source 불변 | destructive 변환 NOT_RUN, objectives/tasks 실데이터 0건, 다른 DB 분포·vector/RAG index는 별도 |
 | P12 (T14) | [최종 Architecture Review](ARCHITECTURE_REVIEW.md): 헌법 24원칙(covered 15·partial 9·gap 0)·§63 12질문·§52 10질문 매핑 + 기계 검증 16 checks PASS(인용의 실재·추적, 증거 digest 의 drift, 증거 산문의 상태 주장, 하한 원장까지 측정) · 고정 순서 전량 회귀 5 failed/7666 passed(cognitive 실패 0), 남은 5건은 커밋 이력·패키징·문서 기준선으로 분리 · 회귀가 찾은 enum identity 결함을 `same_enum`으로 95곳 통일 + 감사 위반 0 (8 시험) | 실표면 QA(P11)·사람 승인 이월 |
 | P12 (T14 증거 digest) | [증거 digest drift](ARCHITECTURE_REVIEW.md): pin 50개를 실제 파일과 대조하는 harness(`scripts/digest_drift.py`) — 그대로 29 · **재확인 21** · 미확인 0 · 재확인 무효 0, 재확인은 `--method` 없이 기록 불가 (25 시험) | 실모델·실 vault 재확인은 이월 |
 | P12 (T14 상태 주장) | [증거 산문의 상태 주장 재판정](ARCHITECTURE_REVIEW.md): “이 시험은 실패한다” 류 문장(test node 지정)을 현재 트리와 대조하는 감사(`scripts/audit_state_claims.py`) — 주장 4건 중 그대로 0 · **정정 붙임 4** · 낡음 0, 정정 없이 실제와 어긋나면 리뷰 실패 · 감사자 자신이 매 실행 **자기시험 17건**으로 자기 눈을 확인하고, 하한(mention 6≥1 여유 5 · 주장 4≥1 여유 3)을 **근거(`why`)·여유(`margin`)와 함께 artifact 로 기록**해 리뷰가 저장본과 새 측정을 대조 (이빨 22 시험 · 기계 검증 **14 checks PASS**) | 실모델·사람 승인 표면은 이월 |
@@ -110,3 +113,11 @@ P01/P03/P06/P12는 주 담당자, P00/P08/P11은 통합 담당자가 책임진�
 [Master Prompt 원문](MASTER_PROMPT_V2_SOURCE.md), [원문 digest](SOURCE_MANIFEST.json), [코드 기준선 manifest](CURRENT_TREE_MANIFEST.json), [Envelope schema](contracts/record-envelope.schema.json), [Payload schema](contracts/record-entities.schema.json).
 
 [요구사항 추적표](REQUIREMENTS_TRACEABILITY.md), [기존 보완 분석](SUPPLEMENT_ANALYSIS.md), [기존 산출물 보고](IMPLEMENTATION_REPORT.md), [기존 문서 검증 결과](VALIDATION_REPORT.md)는 당시 기록이다. v1.1 신규 요구의 통과 증거로 자동 재사용하지 않는다.
+
+## Current remediation pack (2026-09-26)
+
+R00–R23 defect remediation closed at **self-review** evidence level.  
+Architecture digest pin re-verification and independent R*-V remain open.  
+**Operational cutover / CR-14 GO: NO-GO** until Human authorization.  
+Live growth efficacy: **unproven** (R19 scripted only).  
+Details: [CURRENT_REMEDIATION_STATUS.md](CURRENT_REMEDIATION_STATUS.md), review pack `SSAK_AI_REVIEW_2026-09-26`.

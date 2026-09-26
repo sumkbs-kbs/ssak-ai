@@ -39,7 +39,7 @@ from antigravity_k.engine.cognitive.models import (
     same_enum,
     to_wire,
 )
-from antigravity_k.engine.cognitive.references import EntityType
+from antigravity_k.engine.cognitive.references import REL_SUPERSEDES, EntityType
 from antigravity_k.engine.cognitive.store import CanonicalStore, canonical_digest
 
 #: 대략적인 token 추정. 정확한 tokenizer 없이도 예산 초과를 조용히 넘기지 않기 위한 결정적 추정이다.
@@ -51,6 +51,8 @@ PROJECTION_VERSION: Final[str] = "1"
 DEFAULT_L1_LIMIT: Final[int] = 6
 DEFAULT_L2_LIMIT: Final[int] = 4
 DEFAULT_L3_LIMIT: Final[int] = 6
+DEFAULT_HANDLE_PAGE: Final[int] = 32
+DEFAULT_EXCLUSION_PAGE: Final[int] = 64
 
 _L1_STATE_ORDER: Final[tuple[EntityType, ...]] = (
     EntityType.GOAL,
@@ -205,9 +207,45 @@ class ContextBuilder:
             )
 
         remaining = budget.token_budget - l0_tokens
-        l1_items, l1_tokens = self._build_layer(
-            candidates=self._l1_candidates(by_type, goal_id),
-            limit=l1_limit,
+        # 필수 goal은 optional L1 limit/budget보다 먼저 넣는다. 넣지 못하면 INCOMPLETE.
+        required_candidates: list[tuple[Record, str]] = []
+        if goal_record is not None and goal_record.project_id == principal.project_id:
+            required_candidates.append((goal_record, "L1 goal statement (required)"))
+        required_items, required_tokens = self._build_layer(
+            candidates=required_candidates,
+            limit=max(len(required_candidates), 1),
+            disclosure=requested_disclosure,
+            layer_reason="L1 required",
+            remaining=remaining,
+            exclusions=exclusions,
+            handles=handles,
+            principal=principal,
+        )
+        remaining -= required_tokens
+        required_ids = {item.record_id for item in required_items}
+        if goal_record is not None and goal_record.project_id == principal.project_id and goal_id not in required_ids:
+            missing.append(goal_id)
+
+        superseded_ids = _superseded_record_ids(by_type)
+        optional_l1 = [
+            candidate
+            for candidate in self._l1_candidates(
+                by_type,
+                goal_id,
+                superseded_ids=superseded_ids,
+                exclusions=exclusions,
+                handles=handles,
+            )
+            if candidate[0].id not in required_ids
+        ]
+        # required가 slot을 썼으면 optional limit만 줄인다(무제한 budget 증가 금지).
+        if l1_limit <= 0:
+            optional_limit = 0
+        else:
+            optional_limit = max(l1_limit - len(required_items), 0)
+        optional_items, optional_tokens = self._build_layer(
+            candidates=optional_l1,
+            limit=optional_limit,
             disclosure=requested_disclosure,
             layer_reason="L1 current state",
             remaining=remaining,
@@ -215,7 +253,9 @@ class ContextBuilder:
             handles=handles,
             principal=principal,
         )
-        remaining -= l1_tokens
+        l1_items = [*required_items, *optional_items]
+        l1_tokens = required_tokens + optional_tokens
+        remaining -= optional_tokens
         # T03-A: 무관한 이력(goal과 무관하다고 applicability가 선언된 기록)은 예산이 남아도
         # 기본 context에 주입하지 않는다. 제외 이유와 detail handle만 남긴다.
         related_l2: list[tuple[Record, str]] = []
@@ -243,7 +283,15 @@ class ContextBuilder:
         )
         remaining -= l2_tokens
         l3_items, l3_tokens = self._build_layer(
-            candidates=self._l3_candidates(by_type, (*l1_items, *l2_items)),
+            candidates=self._l3_candidates(
+                by_type,
+                (*l1_items, *l2_items),
+                goal_record=goal_record
+                if goal_record is not None and goal_record.project_id == principal.project_id
+                else None,
+                exclusions=exclusions,
+                handles=handles,
+            ),
             limit=l3_limit,
             disclosure=DisclosureLevel.L3_RAW,
             layer_reason="L3 raw evidence",
@@ -253,7 +301,29 @@ class ContextBuilder:
             principal=principal,
         )
 
-        tokens_used = l0_tokens + l1_tokens + l2_tokens + l3_tokens
+        projection = self.projection_state()
+        if state_revision < projection.last_event_sequence:
+            missing.append(f"stale_state_revision:{state_revision}<{projection.last_event_sequence}")
+
+        included_ids = {item.record_id for item in (*l0_items, *l1_items, *l2_items, *l3_items)}
+        if goal_id and goal_id not in included_ids and goal_id not in missing:
+            missing.append(goal_id)
+
+        if goal_record is not None:
+            for reference in goal_record.references:
+                if (
+                    same_enum(reference.expected_type, EntityType.EVIDENCE)
+                    and self.store.read(reference.target_id) is None
+                ):
+                    missing.append(reference.target_id)
+
+        content_tokens = l0_tokens + l1_tokens + l2_tokens + l3_tokens
+        handles, exclusions, omitted_handles, omitted_exclusions = self._bound_metadata_pages(
+            handles,
+            exclusions,
+            content_tokens=content_tokens,
+            token_budget=budget.token_budget,
+        )
         payload = ContextPackagePayload(
             goal_id=goal_id,
             state_revision=state_revision,
@@ -265,14 +335,51 @@ class ContextBuilder:
             handles=tuple(handles),
             budget=ContextBudget(
                 token_budget=budget.token_budget,
-                tokens_used=tokens_used,
+                tokens_used=0,
                 l0_reserved_tokens=l0_tokens,
             ),
             exclusions=tuple(exclusions),
             integrity=IntegrityStatus.INCOMPLETE if missing else IntegrityStatus.COMPLETE,
             missing_ids=tuple(dict.fromkeys(missing)),
-            projection=self.projection_state(),
+            projection=projection,
+            omitted_handle_count=omitted_handles,
+            omitted_exclusion_count=omitted_exclusions,
         )
+        serialized_tokens = estimate_tokens(str(payload.model_dump(mode="json")))
+        tokens_used = max(content_tokens, serialized_tokens)
+        if tokens_used > budget.token_budget:
+            # metadata를 더 줄여 전송 예산을 맞춘다(내용 layer는 유지).
+            handles, exclusions, oh2, oe2 = self._bound_metadata_pages(
+                list(handles),
+                list(exclusions),
+                content_tokens=content_tokens,
+                token_budget=budget.token_budget,
+                force_handle_limit=max(0, len(handles) // 2),
+            )
+            omitted_handles += oh2
+            omitted_exclusions += oe2
+            payload = payload.model_copy(
+                update={
+                    "handles": tuple(handles),
+                    "exclusions": tuple(exclusions),
+                    "omitted_handle_count": omitted_handles,
+                    "omitted_exclusion_count": omitted_exclusions,
+                }
+            )
+            serialized_tokens = estimate_tokens(str(payload.model_dump(mode="json")))
+            tokens_used = max(content_tokens, serialized_tokens)
+        payload = payload.model_copy(
+            update={
+                "budget": ContextBudget(
+                    token_budget=budget.token_budget,
+                    tokens_used=min(tokens_used, budget.token_budget)
+                    if content_tokens <= budget.token_budget
+                    else tokens_used,
+                    l0_reserved_tokens=l0_tokens,
+                )
+            }
+        )
+        tokens_used = payload.budget.tokens_used
         record = Record.create(
             entity_type=EntityType.CONTEXT_PACKAGE,
             project_id=principal.project_id,
@@ -375,11 +482,28 @@ class ContextBuilder:
             )
         return items, tokens, missing
 
-    def _l1_candidates(self, by_type: dict[EntityType, list[Record]], goal_id: str) -> list[tuple[Record, str]]:
+    def _l1_candidates(
+        self,
+        by_type: dict[EntityType, list[Record]],
+        goal_id: str,
+        *,
+        superseded_ids: set[str],
+        exclusions: list[ContextExclusion],
+        handles: list[ContextHandleRef],
+    ) -> list[tuple[Record, str]]:
         candidates: list[tuple[Record, str]] = []
         for entity_type in _L1_STATE_ORDER:
             for record in by_type.get(entity_type, []):
                 if same_enum(entity_type, EntityType.GOAL):
+                    if record.id != goal_id:
+                        exclusions.append(
+                            ContextExclusion(
+                                record_id=record.id,
+                                reason_excluded="RELEVANCE: 현재 task goal이 아닌 goal은 L1에 넣지 않는다",
+                                token_estimate=estimate_tokens(_record_text(record)),
+                            )
+                        )
+                        continue
                     candidates.append((record, "L1 goal statement"))
                 elif same_enum(entity_type, EntityType.DECISION):
                     closure = str(getattr(record.payload, "closure", ""))
@@ -390,7 +514,17 @@ class ContextBuilder:
                     if materiality in ("MATERIAL", "BLOCKING"):
                         candidates.append((record, "L1 material unknown"))
                 elif same_enum(entity_type, EntityType.BRAIN_JUDGMENT):
-                    candidates.append((record, "L1 recent judgment"))
+                    if record.id in superseded_ids:
+                        exclusions.append(
+                            ContextExclusion(
+                                record_id=record.id,
+                                reason_excluded="SUPERSEDED: 최신 judgment가 이 기록을 대체했다(원본은 handle로 조회)",
+                                token_estimate=estimate_tokens(_record_text(record)),
+                            )
+                        )
+                        handles.append(self._handle_for(record))
+                        continue
+                    candidates.append((record, "L1 current judgment (latest supersedes head)"))
         return sorted(candidates, key=lambda item: (not _goal_related(item[0], goal_id), item[0].id))
 
     def _l2_candidates(self, by_type: dict[EntityType, list[Record]]) -> list[tuple[Record, str]]:
@@ -404,14 +538,30 @@ class ContextBuilder:
         return candidates
 
     def _l3_candidates(
-        self, by_type: dict[EntityType, list[Record]], selected: Sequence[ContextItem]
+        self,
+        by_type: dict[EntityType, list[Record]],
+        selected: Sequence[ContextItem],
+        *,
+        goal_record: Record | None,
+        exclusions: list[ContextExclusion],
+        handles: list[ContextHandleRef],
     ) -> list[tuple[Record, str]]:
+        """Injection은 선택된 L1/L2·goal이 명시한 evidence reference만 허용한다.
+
+        프로젝트 전체 evidence를 slot에 채우지 않는다. 참조되지 않은 항목은
+        exclusion으로만 남기며 handle page로 다시 요청한다(원본 삭제 금지).
+        """
+
         evidence: list[tuple[Record, str]] = []
         seen: set[str] = set()
+        seed_records: list[Record] = []
+        if goal_record is not None:
+            seed_records.append(goal_record)
         for item in selected:
             record = self.store.read(item.record_id)
-            if record is None:
-                continue
+            if record is not None:
+                seed_records.append(record)
+        for record in seed_records:
             for reference in record.references:
                 if not same_enum(reference.expected_type, EntityType.EVIDENCE) or reference.target_id in seen:
                     continue
@@ -423,7 +573,14 @@ class ContextBuilder:
         for record in by_type.get(EntityType.EVIDENCE, []):
             if record.id in seen:
                 continue
-            evidence.append((record, "L3 evidence (project scope)"))
+            exclusions.append(
+                ContextExclusion(
+                    record_id=record.id,
+                    reason_excluded="RELEVANCE: 현재 selected state가 참조하지 않은 evidence",
+                    token_estimate=estimate_tokens(_record_text(record)),
+                )
+            )
+            handles.append(self._handle_for(record))
         return evidence
 
     def _build_layer(
@@ -492,6 +649,39 @@ class ContextBuilder:
             )
         return items, tokens
 
+    def _bound_metadata_pages(
+        self,
+        handles: list[ContextHandleRef],
+        exclusions: list[ContextExclusion],
+        *,
+        content_tokens: int,
+        token_budget: int,
+        force_handle_limit: int | None = None,
+    ) -> tuple[list[ContextHandleRef], list[ContextExclusion], int, int]:
+        """큰 excluded 집합을 bounded handle/exclusion page로 줄이고 예산을 지킨다."""
+
+        handle_limit = DEFAULT_HANDLE_PAGE if force_handle_limit is None else force_handle_limit
+        room = max(token_budget - content_tokens, 0)
+        if room < 500:
+            handle_limit = min(handle_limit, 8)
+        if room < 100:
+            handle_limit = min(handle_limit, 2)
+
+        deduped: list[ContextHandleRef] = []
+        seen_h: set[str] = set()
+        for handle in handles:
+            if handle.record_id in seen_h:
+                continue
+            seen_h.add(handle.record_id)
+            deduped.append(handle)
+        handles = deduped
+
+        omitted_h = max(0, len(handles) - handle_limit)
+        page_handles = handles[:handle_limit]
+        omitted_e = max(0, len(exclusions) - DEFAULT_EXCLUSION_PAGE)
+        page_exclusions = exclusions[:DEFAULT_EXCLUSION_PAGE]
+        return page_handles, page_exclusions, omitted_h, omitted_e
+
     def _handle_for(self, record: Record) -> ContextHandleRef:
         return ContextHandleRef(
             handle_id=f"H-{record.id}",
@@ -502,6 +692,18 @@ class ContextBuilder:
             disclosure_level=DisclosureLevel.L2_DETAIL,
             expires_at=self._clock() + self.handle_ttl,
         )
+
+
+def _superseded_record_ids(by_type: dict[EntityType, list[Record]]) -> set[str]:
+    """최신 supersedes projection: 다른 기록이 supersedes로 가리키면 현재 상태가 아니다."""
+
+    superseded: set[str] = set()
+    for records in by_type.values():
+        for record in records:
+            for reference in record.references:
+                if reference.relation == REL_SUPERSEDES:
+                    superseded.add(reference.target_id)
+    return superseded
 
 
 def _goal_related(record: Record, goal_id: str) -> bool:
@@ -553,6 +755,8 @@ __all__ = [
     "DEFAULT_L1_LIMIT",
     "DEFAULT_L2_LIMIT",
     "DEFAULT_L3_LIMIT",
+    "DEFAULT_HANDLE_PAGE",
+    "DEFAULT_EXCLUSION_PAGE",
     "PROJECTION_VERSION",
     "ContextBuildError",
     "ContextBuildResult",

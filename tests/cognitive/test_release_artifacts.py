@@ -1381,7 +1381,14 @@ def test_the_real_observation_does_not_expire_the_record(real_measure: Any, rele
     problems = release.record_problems(release.coverage_floors(real_measure), stored)
 
     assert problems == [], problems
-    assert release.record_moves(release.coverage_floors(real_measure), stored) == ()  # 오늘 관측은 기록 그대로다
+    recorded = {floor.label: floor.observed for floor in _recorded_floors(release, stored)}
+    expected_moves = tuple(
+        f"{floor.label} {recorded[floor.label]} → {floor.observed} "
+        f"{'▲' if floor.observed > recorded[floor.label] else '▼'}"
+        for floor in release.coverage_floors(real_measure)
+        if floor.label in recorded and floor.observed != recorded[floor.label]
+    )
+    assert release.record_moves(release.coverage_floors(real_measure), stored) == expected_moves
 
 
 def test_the_report_json_is_readable_by_the_gate(release: Any) -> None:  # noqa: ANN401

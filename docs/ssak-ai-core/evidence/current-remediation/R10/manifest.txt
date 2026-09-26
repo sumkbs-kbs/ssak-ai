@@ -1,0 +1,3 @@
+R10 manifest — 2026-09-26 20:18 KST
+modified: action_journal.py actions.py action_types.py action_context.py cognitive_surface.py cognitive_active_api.py
+tests: test_action_safety.py test_active_api.py
