@@ -1,0 +1,19 @@
+{
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "commands": [
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/cognitive/test_r02_digest_bound.py",
+        "tests/cognitive/test_r02_authority_lifecycle.py",
+        "tests/cognitive/test_governance.py",
+        "-q",
+        "-p",
+        "no:cacheprovider"
+      ],
+      "expected": "38 passed"
+    }
+  ]
+}

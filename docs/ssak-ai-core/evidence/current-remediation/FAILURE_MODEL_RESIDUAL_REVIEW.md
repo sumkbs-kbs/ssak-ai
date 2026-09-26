@@ -144,3 +144,9 @@ Next code priority for implementer: **R01** seatbelt order + non-macOS fail-clos
 Code finding: deny helpers existed but tip seatbelt profile omitted them; also missing `protection_action_digest` and override-before-protection.
 Restored deny-after-allow, Docker RO mounts, gate digest binding. Independent R01-V still open.
 Next implementer priority: **R02** digest-bound approval on all authorize paths.
+
+## Update 2026-09-26 21:32 KST — R02 digest binding required
+
+Code finding: empty `action_digest` skipped reuse checks; `authorize_execution(None)` skipped execution binding; adapter admit omitted digest.
+Now deny on missing digest. Independent R02-V still open.
+Next implementer priority: **R10** UNKNOWN never success / no timeout unlock.

@@ -256,8 +256,16 @@ def test_reshaped_action_is_reauthorized_before_execution(gate: GovernanceGate) 
     assert not incomplete.allowed
     assert incomplete.missing_guards
 
-    allowed = gate.authorize_execution(reauthorized, satisfied_guards=reauthorized.guards)
+    allowed = gate.authorize_execution(
+        reauthorized,
+        satisfied_guards=reauthorized.guards,
+        action_digest=reauthorized.action_digest,
+    )
     assert allowed.allowed
+
+    unbound = gate.authorize_execution(reauthorized, satisfied_guards=reauthorized.guards)
+    assert not unbound.allowed
+    assert "digest" in unbound.reason
 
     changed_args = gate.authorize_execution(
         reauthorized,
@@ -569,6 +577,7 @@ def test_approval_reuse_requires_same_principal_scope_operation_and_validity() -
         resource_scope="src/sub/b.py",
         operation="execute_tool",
     )
+    digest = "sha256:" + ("ab" * 32)
     reusable = ApprovalUse(
         approval_id="approval:1",
         principal=SUBJECT,
@@ -576,6 +585,7 @@ def test_approval_reuse_requires_same_principal_scope_operation_and_validity() -
         operation="execute_tool",
         issued_at=NOW,
         expires_at=NOW + timedelta(minutes=10),
+        action_digest=digest,
     )
     mismatches = (
         replace(reusable, principal="agent:other"),
@@ -584,8 +594,18 @@ def test_approval_reuse_requires_same_principal_scope_operation_and_validity() -
         replace(reusable, expires_at=NOW - timedelta(minutes=1)),
     )
 
-    assert profile.reuse_approval(reusable, query, now=NOW).verdict is ApprovalReuseVerdict.REUSED
-    assert [profile.reuse_approval(item, query, now=NOW).reusable for item in mismatches] == [False] * 4
+    assert profile.reuse_approval(reusable, query, now=NOW, action_digest=digest).verdict is ApprovalReuseVerdict.REUSED
+    assert [profile.reuse_approval(item, query, now=NOW, action_digest=digest).reusable for item in mismatches] == [
+        False
+    ] * 4
+    assert (
+        profile.reuse_approval(reusable, query, now=NOW, action_digest="").verdict
+        is ApprovalReuseVerdict.DIGEST_MISMATCH
+    )
+    assert (
+        profile.reuse_approval(replace(reusable, action_digest=""), query, now=NOW, action_digest=digest).verdict
+        is ApprovalReuseVerdict.DIGEST_MISMATCH
+    )
 
 
 def test_no_single_autonomy_score_exists() -> None:

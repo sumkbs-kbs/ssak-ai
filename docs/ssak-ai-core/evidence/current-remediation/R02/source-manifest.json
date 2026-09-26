@@ -1,0 +1,11 @@
+{
+  "card": "R02",
+  "captured_at": "2026-09-26T21:32:05.199374+09:00",
+  "paths": [
+    "src/antigravity_k/engine/cognitive/authority.py",
+    "src/antigravity_k/engine/cognitive/governance.py",
+    "tests/cognitive/test_r02_digest_bound.py",
+    "tests/cognitive/test_r02_authority_lifecycle.py",
+    "tests/cognitive/test_governance.py"
+  ]
+}

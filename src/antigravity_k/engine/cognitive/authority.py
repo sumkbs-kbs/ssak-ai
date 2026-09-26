@@ -612,15 +612,14 @@ class AuthorityProfile:
                 reason=f"승인이 {approval.expires_at}에 만료됐다",
                 approval_id=approval.approval_id,
             )
-        # governance가 현재 action digest를 넘기면 승인에 결박된 digest와 일치해야 한다.
-        if action_digest:
-            if not approval.action_digest or approval.action_digest != action_digest:
-                return ApprovalReuse(
-                    reusable=False,
-                    verdict=ApprovalReuseVerdict.DIGEST_MISMATCH,
-                    reason="승인 action digest가 현재 요청 digest와 다르다",
-                    approval_id=approval.approval_id,
-                )
+        # 모든 재사용 경로는 현재 canonical action digest에 결박한다 (생략/빈 값 불가).
+        if not action_digest or not approval.action_digest or approval.action_digest != action_digest:
+            return ApprovalReuse(
+                reusable=False,
+                verdict=ApprovalReuseVerdict.DIGEST_MISMATCH,
+                reason="승인 action digest가 현재 요청 digest와 다르다",
+                approval_id=approval.approval_id,
+            )
         return ApprovalReuse(
             reusable=True,
             verdict=ApprovalReuseVerdict.REUSED,

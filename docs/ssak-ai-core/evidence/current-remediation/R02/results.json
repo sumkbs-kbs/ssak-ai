@@ -1,0 +1,15 @@
+{
+  "card": "R02",
+  "checks": {
+    "R02-A1": "PASS",
+    "R02-A2": "PASS",
+    "R02-A3": "PASS",
+    "R02-A4": "PASS",
+    "R02-residual-digest-required": "PASS",
+    "R02-E": "PASS",
+    "R02-V": "NOT_CLAIMED"
+  },
+  "pytest": "38 passed",
+  "self_review": true,
+  "ops_cr14": "NO-GO"
+}

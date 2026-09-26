@@ -565,7 +565,15 @@ class GovernanceGate:
                 missing_guards=missing,
                 limits=outcome.limits,
             )
-        if action_digest is not None and action_digest != outcome.action_digest:
+        if not action_digest:
+            return ExecutionAuthorization(
+                allowed=False,
+                reason="실행 직전 action digest 결박이 없다",
+                disposition=outcome.disposition,
+                action_digest=outcome.action_digest,
+                limits=outcome.limits,
+            )
+        if action_digest != outcome.action_digest:
             return ExecutionAuthorization(
                 allowed=False,
                 reason="승인된 action digest와 실행 대상이 다르다",
@@ -708,7 +716,11 @@ class ToolGovernanceAdapter:
 
         satisfied = tuple(self.guard_runner(outcome))
         reauthorized = self.gate.reauthorize(outcome, request)
-        authorization = self.gate.authorize_execution(reauthorized, satisfied_guards=satisfied)
+        authorization = self.gate.authorize_execution(
+            reauthorized,
+            satisfied_guards=satisfied,
+            action_digest=reauthorized.action_digest,
+        )
         if authorization.allowed:
             return reauthorized
         missing = tuple(guard.value for guard in authorization.missing_guards)

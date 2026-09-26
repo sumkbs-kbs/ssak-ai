@@ -223,3 +223,10 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - Restored `protection_action_digest`; protection before overrides; injected guard preserved
 - Suite **62 passed** (`test_r01_residual` + prior R01 suites)
 - Independent R01-V still open; ops/CR-14 still **NO-GO**
+
+## 2026-09-26 21:32 KST — R02 digest-bound residual close
+
+- `reuse_approval` requires non-empty matching action digest
+- `authorize_execution` requires digest; ToolGovernanceAdapter binds it
+- Suite **38 passed** (r02 lifecycle + governance + residual)
+- Independent R02-V still open; ops/CR-14 still **NO-GO**
