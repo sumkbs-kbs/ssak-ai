@@ -44,5 +44,6 @@ Reviewer: implementer (마뱀). Independent R08-V not claimed.
 ## Limits
 
 - Self-review ≠ independent R08-V ≠ CR-14 / ops GO.
+- Implementer/secondary attack dry-run (2026-09-27): [V_ATTACK_DRYRUN_2026-09-27.md](./V_ATTACK_DRYRUN_2026-09-27.md) — **NOT Independent R08-V**; evidence for future independent reviewer only.
 - Unit tests use an injectable live box; production must wire a store-backed resolver that reads decision head / state / active policy (not request body).
 - Cross-process reservation locks beyond the admit double-check are not claimed here.

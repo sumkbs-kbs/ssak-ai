@@ -104,6 +104,7 @@ Dated initials + (a) production resolver source listing proving store/head reads
 
 ### 7. Must remain open / out of scope
 
+- Implementer/secondary dry-run evidence (not V): [R08/V_ATTACK_DRYRUN_2026-09-27.md](./R08/V_ATTACK_DRYRUN_2026-09-27.md)
 - Multi-process reservation/ordering beyond admit double-check (unless separately proven)
 - Treating fixture `_matching_freshness` as production evidence
 - Ops / CR-14 / production ACTIVE enablement

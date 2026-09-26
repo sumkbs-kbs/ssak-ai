@@ -1,0 +1,21 @@
+R08 attack inspection log — implementer/secondary dry-run
+NOT Independent R08-V. Tip at run: b745adf60e6aaee0cd969f71460ffa01f85fb143
+When: 2026-09-27 ~04:51 KST
+
+ATTACK1-iso: ACTIVE with journal/sink/authority/activation_authorizer present and freshness_resolver=None
+  → SurfaceNotReadyError: "ACTIVE requires a durable journal, canonical record sink, live authority resolver and live freshness resolver"
+ATTACK1-control: same deps + matching freshness_resolver
+  → activate OK (approver=human:owner)
+
+ATTACK3: authority resolver allows; live box decision_revision +1
+  → refused STALE_READINESS; dispatcher calls=[]
+
+ATTACK4-overlay: resolver returns action_digest="EVIL"; _authoritative_freshness overlays intent.args_digest()
+  → got sha256:519c4d82… == intent.args_digest(); evil digest discarded
+
+ATTACK6 (source): _attach_cognitive_surface is SHADOW-only; does not wire freshness_resolver.
+  _matching_freshness occurrences under src/: NONE
+  Production ACTIVE store-backed resolver wiring: ABSENT at boot (OPEN for future independent V).
+ATTACK6b: run_active wires ActionDispatcher(freshness_resolver=self._active_freshness) which delegates to injected self.freshness_resolver after _require_active_dependencies.
+
+ATTACK5: multi-process admit race NOT exercised here (see dry-run doc NOT_RUN).
