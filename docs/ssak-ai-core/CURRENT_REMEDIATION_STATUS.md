@@ -1,6 +1,6 @@
 # Current remediation status (R-series)
 
-기준: 2026-09-27 03:58 KST · HEAD `ce9e5a2779ced64c3eede946d1c4346886284119` · branch `codex/m1-task-events` (ahead; no push).
+기준: 2026-09-27 04:18 KST · review tip `78c2c8f6` (docs-only attack-notes commit on top; residual pins from 03:58 checklist) · branch `codex/m1-task-events` (ahead; no push).
 
 이 표가 **현재 작업의 유일한 진입점**이다. 아래 HISTORICAL 행의 과거 PASS는 보존하되 CURRENT_PASS로 자동 승계하지 않는다.
 Source digest가 바뀌면 해당 행은 재검증 전까지 HISTORICAL이다 ([R00 evidence](evidence/current-remediation/R00/)).
@@ -276,3 +276,11 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - Priority residuals R01, R02, R03, R04, R08, R10, and R15 are reflected at their evidence level; R08 implementer code residual is closed, while Independent R08-V and multi-process reservation remain open.
 - R03/R04 multi-host or NFS behavior is not proven; R10 multi-process live history remains open/Medium. Independent V is not claimed.
 - **Implementer priority residual queue is empty. Next: Independent V / multi-host review / Human ops for cutover and CR-14.** Ops/CR-14 remains **NO-GO**.
+
+## 2026-09-27 04:18 KST — Independent V attack notes landed (no V)
+
+- Review tip for V remains `78c2c8f6`; docs-only commit message `docs(ssak-ai): independent V attack notes (no V PASS)` lands this note (HEAD advances; no push).
+- Added `evidence/current-remediation/INDEPENDENT_V_ATTACK_NOTES.md` (R08→R15→R01→R02→R10→R03→R04 playbook; executable Given/When/Then; blank Verdict slots).
+- Checklist tip bumped to `78c2c8f6` + one-line pointer to attack notes; residual-close pins unchanged.
+- **Still no R*-V PASS, ops GO, CR-14 GO, or multi-host PASS.**
+- Next: independent reviewer executes attack notes; Human ops for cutover/CR-14 remains **NO-GO**.

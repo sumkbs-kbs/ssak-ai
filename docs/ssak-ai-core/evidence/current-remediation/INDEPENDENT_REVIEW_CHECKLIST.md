@@ -1,9 +1,12 @@
 # Independent R*-V review checklist (prep only; not executed)
 
-Prepared: 2026-09-27 03:58 KST
-Code/docs tip under review: `ce9e5a2779ced64c3eede946d1c4346886284119` (`codex/m1-task-events`; no push)
+Prepared: 2026-09-27 03:58 KST · tip bump 2026-09-27 04:18 KST
+Code/docs tip under review: `78c2c8f6` (`78c2c8f6f041d6cffce44107612d31c97a2ba1aa`) (`codex/m1-task-events`; no push)
+Residual-close pins below are unchanged from the 03:58 prep (R01 `84210aec` … R15 `c21f0695`). Docs-only attack-notes commit advances HEAD afterward; V still attacks tip `78c2c8f6` + residual pins.
 
 Purpose: give a separate reviewer a reproducible punch-list after the implementer priority queue was flushed. **This file does not satisfy any R*-V checkbox and records no V PASS.**
+
+Richer attack playbook (scenarios beyond suite claims): [INDEPENDENT_V_ATTACK_NOTES.md](./INDEPENDENT_V_ATTACK_NOTES.md) — also records no V PASS.
 
 ## Review rules
 
@@ -16,7 +19,7 @@ Purpose: give a separate reviewer a reproducible punch-list after the implemente
 
 ### R01 — protected files at the execution boundary
 
-- Residual-close pin: `84210aec` (`fix(ssak-ai): R01 seatbelt deny + gate digest residual`); review tip `ce9e5a2779ced64c3eede946d1c4346886284119`.
+- Residual-close pin: `84210aec` (`fix(ssak-ai): R01 seatbelt deny + gate digest residual`); review tip `78c2c8f6` (residual-close pin unchanged).
 - Exact pytest command:
   ```bash
   .venv/bin/python -m pytest tests/cognitive/test_r01_residual.py tests/cognitive/test_r01_protected_sandbox.py tests/cognitive/test_protection_boundaries.py tests/cognitive/test_protection.py tests/test_sandbox_isolation.py -q -p no:cacheprovider
@@ -25,7 +28,7 @@ Purpose: give a separate reviewer a reproducible punch-list after the implemente
 
 ### R02 — authority lifetime, revoke, and approval binding
 
-- Residual-close pin: `12a0af54` (`fix(ssak-ai): R02 require digest on reuse and authorize`); review tip `ce9e5a2779ced64c3eede946d1c4346886284119`.
+- Residual-close pin: `12a0af54` (`fix(ssak-ai): R02 require digest on reuse and authorize`); review tip `78c2c8f6` (residual-close pin unchanged).
 - Exact pytest command:
   ```bash
   .venv/bin/python -m pytest tests/cognitive/test_r02_digest_bound.py tests/cognitive/test_r02_authority_lifecycle.py tests/cognitive/test_governance.py -q -p no:cacheprovider
@@ -34,7 +37,7 @@ Purpose: give a separate reviewer a reproducible punch-list after the implemente
 
 ### R03 — staged transaction identity
 
-- Residual-close pin: `30af5c9e` (`test(ssak-ai): R03 SoftFileLock cross-process stage identity`); review tip `ce9e5a2779ced64c3eede946d1c4346886284119`.
+- Residual-close pin: `30af5c9e` (`test(ssak-ai): R03 SoftFileLock cross-process stage identity`); review tip `78c2c8f6` (residual-close pin unchanged).
 - Exact pytest command:
   ```bash
   .venv/bin/python -m pytest tests/cognitive/test_store.py -q -p no:cacheprovider
@@ -43,7 +46,7 @@ Purpose: give a separate reviewer a reproducible punch-list after the implemente
 
 ### R04 — WAL/snapshot lineage
 
-- Residual-close pin: `52af3bfa` (`test(ssak-ai): R04 mid-digest cross-process snapshot isolation`); review tip `ce9e5a2779ced64c3eede946d1c4346886284119`.
+- Residual-close pin: `52af3bfa` (`test(ssak-ai): R04 mid-digest cross-process snapshot isolation`); review tip `78c2c8f6` (residual-close pin unchanged).
 - Exact pytest command:
   ```bash
   .venv/bin/python -m pytest tests/cognitive/test_migration.py tests/cognitive/test_legacy_adapter.py -q -p no:cacheprovider
@@ -52,7 +55,7 @@ Purpose: give a separate reviewer a reproducible punch-list after the implemente
 
 ### R08 — pre-dispatch current revision
 
-- Residual-close pin: `3ab29d11` (`fix(ssak-ai): R08 live freshness_resolver before effect`); review tip `ce9e5a2779ced64c3eede946d1c4346886284119`.
+- Residual-close pin: `3ab29d11` (`fix(ssak-ai): R08 live freshness_resolver before effect`); review tip `78c2c8f6` (residual-close pin unchanged).
 - Exact pytest commands:
   ```bash
   .venv/bin/python -m pytest tests/cognitive/test_action_safety.py tests/cognitive/test_actions.py -q -p no:cacheprovider
@@ -62,7 +65,7 @@ Purpose: give a separate reviewer a reproducible punch-list after the implemente
 
 ### R10 — UNKNOWN observe/reconcile/restart
 
-- Residual-close pin: `7e0fd643` (`fix(ssak-ai): R10 late-observation history without projection mutate`); review tip `ce9e5a2779ced64c3eede946d1c4346886284119`.
+- Residual-close pin: `7e0fd643` (`fix(ssak-ai): R10 late-observation history without projection mutate`); review tip `78c2c8f6` (residual-close pin unchanged).
 - Exact pytest command:
   ```bash
   .venv/bin/python -m pytest tests/cognitive/test_action_safety.py tests/cognitive/test_active_api.py -q -p no:cacheprovider
@@ -71,7 +74,7 @@ Purpose: give a separate reviewer a reproducible punch-list after the implemente
 
 ### R15 — trusted ACTIVE composition / single owner
 
-- Residual-close pin: `c21f0695` (`test(ssak-ai): R15 composition residual + entry matrix`); review tip `ce9e5a2779ced64c3eede946d1c4346886284119`.
+- Residual-close pin: `c21f0695` (`test(ssak-ai): R15 composition residual + entry matrix`); review tip `78c2c8f6` (residual-close pin unchanged).
 - Exact pytest command:
   ```bash
   .venv/bin/python -m pytest tests/cognitive/test_active_api.py tests/cognitive/test_surface.py tests/cognitive/test_feature_off_regression.py tests/cognitive/test_r15_composition.py -q -p no:cacheprovider
@@ -88,4 +91,4 @@ Purpose: give a separate reviewer a reproducible punch-list after the implemente
 
 ## Next handoff
 
-Implementer priority queue is empty for these cards. Next handoff is Independent V, then Human ops judgment; this checklist remains open until an independent reviewer signs each card.
+Implementer priority queue is empty for these cards. Next handoff is Independent V using [INDEPENDENT_V_ATTACK_NOTES.md](./INDEPENDENT_V_ATTACK_NOTES.md), then Human ops judgment; this checklist remains open until an independent reviewer signs each card. **No R*-V / ops / CR-14 GO is recorded here.**
