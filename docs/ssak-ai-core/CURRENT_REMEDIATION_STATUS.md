@@ -1,6 +1,6 @@
 # Current remediation status (R-series)
 
-기준: 2026-09-27 05:00 KST · tip advances with R08+R15+R01+R02+R10+R03 V attack dry-run docs (parent `842ecdae`); residual pins unchanged · branch `codex/m1-task-events` (ahead; no push).
+기준: 2026-09-27 05:01 KST · tip advances with R08→R15→R01→R02→R10→R03→R04 V attack dry-run docs complete as implementer secondary evidence (parent `c151853d`); Independent V still OPEN; residual pins unchanged · branch `codex/m1-task-events` (ahead; no push).
 
 이 표가 **현재 작업의 유일한 진입점**이다. 아래 HISTORICAL 행의 과거 PASS는 보존하되 CURRENT_PASS로 자동 승계하지 않는다.
 Source digest가 바뀌면 해당 행은 재검증 전까지 HISTORICAL이다 ([R00 evidence](evidence/current-remediation/R00/)).
@@ -334,3 +334,19 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - Baseline: test_store **26 passed**. Attack nodes **5 passed**; cross-process A3 flake 3× green.
 - Attacks RUN: 1–5 (conflict, idempotent restage, SoftFileLock cross-process, crash/hijack, lock-file absence inspect). **NOT_RUN:** 6 multi-host/NFS.
 - ATTACK_NOTES Verdict slots left blank/OPEN. Next: R04 dry-run or independent reviewer.
+
+## 2026-09-27 05:01 KST — R04 Independent V attack dry-run (NOT R04-V)
+
+- Parent tip: `c151853d`. Docs-only implementer/secondary dry-run; **no Independent R04-V PASS**, ops/CR-14 still **NO-GO**.
+- Evidence: `docs/ssak-ai-core/evidence/current-remediation/R04/V_ATTACK_DRYRUN_2026-09-27.md`
+- Baseline: migration+legacy_adapter **39 passed**. Attack nodes **5 passed**; cross-process A2 flake 3× green.
+- Attacks RUN: 1–5 (WAL content_digest, mid-digest untorn thread+cross-process, file_bundle vs content inspect, conflict⇒non-PASS, idempotent replay). **NOT_RUN:** 6 multi-host/NFS and R21 `--apply`.
+- ATTACK_NOTES Verdict slots left blank/OPEN.
+
+## 2026-09-27 05:01 KST — Independent V dry-run sequence complete (still OPEN)
+
+- Sequence **R08 → R15 → R01 → R02 → R10 → R03 → R04** dry-runs landed as **implementer / secondary evidence only**.
+- **Independent V remains OPEN** for all seven cards (Verdict slots blank; no R*-V PASS).
+- **No ops GO, cutover GO, or CR-14 GO.** Residual-close pins unchanged.
+- Multi-host/NFS (R03/R04), multi-process live late-history (R10), and other §7 OPEN items remain for a future independent reviewer / Human ops.
+- Next: independent reviewer executes ATTACK_NOTES; Human for cutover/CR-14 (**NO-GO**).

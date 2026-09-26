@@ -1,0 +1,71 @@
+R04 attack inspection log — implementer/secondary dry-run
+NOT Independent R04-V. Tip at run: c151853d0b522340a26935630651c126d44b6bf6
+When: 2026-09-27 ~05:00 KST (Asia/Seoul)
+
+ATTACK1: WAL payload change with unchanged row counts → content_digest moves
+  suite: test_r04_a1_wal_payload_change_is_not_source_unchanged
+69:    file_bundle_digest: str = ""
+70:    content_digest: str = ""
+79:            "file_bundle_digest": self.file_bundle_digest,
+80:            "content_digest": self.content_digest,
+130:def _sha256_sqlite_bundle(path: Path) -> str:
+188:    def _content_digest_on(self, connection: sqlite3.Connection, known_tables: set[str]) -> str:
+218:        file_bundle = _sha256_sqlite_bundle(self.path)
+229:                content = self._content_digest_on(connection, known)
+233:        # file_bundle_digest는 main+WAL+SHM 물리 바이트로 A1 증거를 남긴다.
+240:            file_bundle_digest=file_bundle,
+241:            content_digest=content,
+351:    source_unchanged: bool
+372:            and self.source_unchanged
+419:            "source_unchanged": self.source_unchanged,
+576:            source_unchanged=(before.content_digest == after.content_digest and before.counts == after.counts),
+
+ATTACK2: mid-digest Barrier + cross-process WAL writer → untorn markers
+  suite: test_r04_a2_snapshot_lineage_stable_under_concurrent_writer (thread)
+  suite: test_r04_a2_cross_process_writer_during_snapshot (spawn)
+191:        테스트 seam: ``_test_after_table(table, connection)``가 callable이면 각 table digest
+210:            hook = getattr(self, "_test_after_table", None)
+215:    def snapshot(self) -> SourceSnapshot:
+
+ATTACK3: file_bundle_digest vs content_digest (inspect)
+  mentions of file_bundle_digest: 5
+  mentions of content_digest: 8
+  mentions of BEGIN: 2
+  SourceSnapshot snippet:
+    class SourceSnapshot:
+        """source 관찰값. 실행 전후로 같아야 한다.
+
+        ``digest``는 main+WAL+SHM 번들 해시와 단일 read-transaction content 해시를
+        결합한 값이다. row count만 같아도 WAL payload 변경이면 digest가 달라진다.
+        """
+
+        path: str
+        digest: str
+        size_bytes: int
+        tables: tuple[str, ...]
+        counts: Mapping[str, int]
+        file_bundle_digest: str = ""
+        content_digest: str = ""
+
+        def as_mapping(self) -> Mapping[str, object]:
+            return {
+                "path": self.path,
+                "digest": self.digest,
+                "size_bytes": self.size_bytes,
+                "tables": list(self.tables),
+                "counts": dict(self.counts),
+                "file_bundle_digest": self.file_bundle_digest,
+                "content_digest": self.content_digest,
+            }
+
+ATTACK4: mapping conflict ⇒ passed=False
+  suite: test_r04_a3_mapping_conflict_fails_report
+
+ATTACK5: identical snapshot re-run idempotent
+  suite: test_r04_a4_identical_replay_is_idempotent
+
+ATTACK6: multi-host/NFS / R21 --apply — NOT_RUN
+  No second host / NFS shared DB. Never ran R21 --apply (Human-only).
+  Single-host SQLite mid-digest isolation ≠ multi-host PASS.
+
+Verdict: OPEN (this file is not Independent R04-V PASS).

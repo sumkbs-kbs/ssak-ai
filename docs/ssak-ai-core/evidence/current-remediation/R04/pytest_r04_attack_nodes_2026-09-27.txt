@@ -1,0 +1,15 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.12, pytest-9.1.1, pluggy-1.6.0 -- /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python
+rootdir: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+configfile: pyproject.toml
+plugins: cov-7.1.0, asyncio-1.4.0, anyio-4.13.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 5 items
+
+tests/cognitive/test_migration.py::test_r04_a1_wal_payload_change_is_not_source_unchanged PASSED [ 20%]
+tests/cognitive/test_migration.py::test_r04_a2_snapshot_lineage_stable_under_concurrent_writer PASSED [ 40%]
+tests/cognitive/test_migration.py::test_r04_a2_cross_process_writer_during_snapshot PASSED [ 60%]
+tests/cognitive/test_migration.py::test_r04_a3_mapping_conflict_fails_report PASSED [ 80%]
+tests/cognitive/test_migration.py::test_r04_a4_identical_replay_is_idempotent PASSED [100%]
+
+============================== 5 passed in 0.65s ===============================

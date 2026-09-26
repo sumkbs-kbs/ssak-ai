@@ -37,3 +37,4 @@ Tip before residual: `30af5c9e`
 - Single-host SQLite WAL snapshot isolation for multi-table logical digest is now proven (in-process + cross-process). Still **not** multi-host / NFS / multi-volume shared DB semantics.
 - `file_bundle_digest` remains outside BEGIN (intentional physical evidence); logical `content_digest`/`digest`/`counts` stay one-txn.
 - PASS ≠ release GO. Ops/CR-14 remains **NO-GO**. Independent R04-V still open. R21 `--apply` still Human.
+- Implementer/secondary dry-run (not V): [V_ATTACK_DRYRUN_2026-09-27.md](./V_ATTACK_DRYRUN_2026-09-27.md)

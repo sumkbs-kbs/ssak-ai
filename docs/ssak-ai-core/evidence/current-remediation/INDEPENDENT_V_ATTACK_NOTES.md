@@ -506,6 +506,7 @@ Reconfirmed content vs counts, mid-digest untorn evidence, conflict⇒non-PASS, 
 
 ### 7. Must remain open / out of scope
 
+- Implementer/secondary dry-run evidence (not V): [R04/V_ATTACK_DRYRUN_2026-09-27.md](./R04/V_ATTACK_DRYRUN_2026-09-27.md)
 - Multi-host / NFS shared-DB snapshot isolation
 - Live user DB mutation / `R21 --apply` without Human
 - Treating `file_bundle_digest` alone as semantic unchanged
