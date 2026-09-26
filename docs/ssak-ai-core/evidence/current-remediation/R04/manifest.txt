@@ -1,5 +1,17 @@
-R04 evidence 2026-09-26 20:05 KST
-HEAD: 2862584ea8f79641fefd9a78de9c145851ea515b
- M src/antigravity_k/engine/cognitive/legacy_adapter.py
+R04 evidence residual close 2026-09-27 03:52 KST
+Tip before: 30af5c9e137bf937f851a61d2430e28c2c512d49
+branch: codex/m1-task-events (ahead local; no push)
+
+Changed (narrow):
  M src/antigravity_k/engine/cognitive/migration.py
  M tests/cognitive/test_migration.py
+ M docs/ssak-ai-core/evidence/current-remediation/R04/report.md
+ M docs/ssak-ai-core/evidence/current-remediation/R04/manifest.txt
+ M docs/ssak-ai-core/evidence/current-remediation/R04/pytest_r04.txt
+ A docs/ssak-ai-core/evidence/current-remediation/R04/pytest_r04_nodes.txt
+ M docs/ssak-ai-core/evidence/current-remediation/FAILURE_MODEL_RESIDUAL_REVIEW.md
+ M docs/ssak-ai-core/CURRENT_REMEDIATION_STATUS.md
+
+pytest migration+legacy_adapter: 39 passed
+r04 nodes ×3: 5 passed each
+Ops/CR-14: NO-GO

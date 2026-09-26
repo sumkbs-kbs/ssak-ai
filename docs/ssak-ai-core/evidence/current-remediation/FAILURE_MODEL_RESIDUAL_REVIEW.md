@@ -57,12 +57,12 @@ Code note: `_protected_write_deny_section` is documented to follow allow(root); 
 | Failure mode | Covered? | Residual |
 |---|---|---|
 | Same row count + WAL payload change marks source_unchanged | A1 | Low if content_digest used |
-| Mid-read writer tears multi-table view | A2 single-BEGIN | Medium: cross-process writer interleaving not separately stressed |
+| Mid-read writer tears multi-table view | A2 single-BEGIN + mid-digest hook + cross-process writer | Low on single-host WAL snapshot isolation; multi-host/NFS still open |
 | Mapping conflict swallowed as skip | A3 | Low |
 | Count parity alone as semantic PASS | Forbidden | Low if reports require content digest |
 | Live user DB mutation during rehearsal | Deferred to R21 dry-run | Ops: never `--apply` without Human |
 
-**Independent V focus:** snapshot fields bind logical content + file bundle evidence; conflict implies passed=False.
+**Independent V focus:** snapshot fields bind logical content + file bundle evidence; conflict implies passed=False; multi-host/NFS shared DB still unproven; R21 apply Human.
 
 ### R08 — pre-dispatch current revision  (**highest code residual in this scan**)
 
@@ -163,4 +163,13 @@ Next implementer priority was R03 (closed 2026-09-27 SoftFileLock cross-process)
 - Added `test_r03_a3_cross_process_different_payload_one_wins` (`spawn` + Barrier + Queue). SoftFileLock **serialized**; no FileLock switch.
 - Suite `tests/cognitive/test_store.py`: **26 passed**; r03 nodes 3× flake green.
 - Residual lowered to single-host SoftFileLock proven; multi-host still open.
-- Ops/CR-14 still **NO-GO**. Next implementer priority: **R04** (FM residual honesty / lineage), not ops GO.
+- Ops/CR-14 still **NO-GO**. Next implementer priority was **R04** (closed 2026-09-27 mid-digest cross-process).
+
+## Update 2026-09-27 03:52 KST — R04 mid-digest cross-process residual close
+
+- Added `_test_after_table` seam on `_content_digest_on` (prod unused).
+- Strengthened A2 in-process thread Barrier mid-digest writer (event marker + objective title same epoch).
+- Added `test_r04_a2_cross_process_writer_during_snapshot` (`spawn` + Barrier + Queue, WAL writer). Recorded markers both pre-writer epoch → untorn multi-table view.
+- Suite `test_migration.py` + `test_legacy_adapter.py`: **39 passed**; r04 nodes 3× flake green.
+- Residual lowered: single-host SQLite snapshot isolation proven; multi-host/NFS still open; R21 `--apply` still Human.
+- Ops/CR-14 still **NO-GO**. Next implementer priority: check status — remaining independent V / ops cards (R08 already code-fixed; do not reopen unless status says). Prefer next FM residual honesty card or independent V prep; not ops GO.

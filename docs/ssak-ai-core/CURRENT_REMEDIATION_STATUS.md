@@ -52,9 +52,12 @@ Source digest가 바뀌면 해당 행은 재검증 전까지 HISTORICAL이다 ([
 - Tests: `tests/cognitive/test_store.py` **26 passed** (r03 nodes 3× flake green)
 - Next: R04 (lineage residual honesty). Ops/CR-14 still **NO-GO**
 
-## R04 — PASS (self-review limitation) — 2026-09-26 20:05 KST
+## R04 — PASS (self-review limitation) — 2026-09-26 20:05 KST; residual mid-digest cross-process 2026-09-27 03:52 KST
 - migration snapshot content/WAL fields; legacy staged resume
+- Residual: `_test_after_table` seam; A2 in-process + spawn cross-process mid-digest writer; single-host snapshot isolation proven
 - evidence: docs/ssak-ai-core/evidence/current-remediation/R04/
+- Tests: migration+legacy_adapter **39 passed**; r04 nodes 3× flake green
+- Next: independent V / remaining FM residuals; Ops/CR-14 still **NO-GO**
 
 ## R05 — PASS (self-review limitation) — 2026-09-26 20:07 KST
 - context.py required goal / incomplete contracts
@@ -247,3 +250,12 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - Independent R03-V still open; multi-host lock not proven
 - Ops/cutover / CR-14 still **NO-GO**
 - Next card: **R04**
+
+## 2026-09-27 03:52 KST — R04 mid-digest cross-process residual close
+
+- Tip before: `30af5c9e`
+- `_test_after_table` seam + A2 thread/cross-process mid-digest writer (WAL); markers untorn (both epoch-0 under reader txn)
+- Suite: **39 passed** (`test_migration.py` + `test_legacy_adapter.py`); r04 nodes ≥3× flake OK
+- Independent R04-V still open; multi-host/NFS snapshot not proven; R21 `--apply` still Human
+- Ops/cutover / CR-14 still **NO-GO**
+- Next: remaining independent V / FM residuals (R08 code already fixed — do not reopen); not ops GO

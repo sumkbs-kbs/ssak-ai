@@ -186,7 +186,11 @@ class LegacySQLiteSource:
             }
 
     def _content_digest_on(self, connection: sqlite3.Connection, known_tables: set[str]) -> str:
-        """한 read transaction 안에서 관심 table의 정렬된 payload를 묶어 digest한다."""
+        """한 read transaction 안에서 관심 table의 정렬된 payload를 묶어 digest한다.
+
+        테스트 seam: ``_test_after_table(table, connection)``가 callable이면 각 table digest
+        갱신 직후 호출한다(프로덕션 기본값은 미설정). mid-digest writer 교차검증용.
+        """
 
         digest = hashlib.sha256()
         for table, columns in (
@@ -198,11 +202,14 @@ class LegacySQLiteSource:
             digest.update(b"\0")
             if table not in known_tables:
                 digest.update(b"<missing>\0")
-                continue
-            rows = connection.execute(f"SELECT {columns} FROM {table} ORDER BY 1").fetchall()  # noqa: S608
-            for row in rows:
-                digest.update(repr(tuple(row)).encode("utf-8"))
-                digest.update(b"\0")
+            else:
+                rows = connection.execute(f"SELECT {columns} FROM {table} ORDER BY 1").fetchall()  # noqa: S608
+                for row in rows:
+                    digest.update(repr(tuple(row)).encode("utf-8"))
+                    digest.update(b"\0")
+            hook = getattr(self, "_test_after_table", None)
+            if callable(hook):
+                hook(table, connection)
         return "sha256:" + digest.hexdigest()
 
     def snapshot(self) -> SourceSnapshot:

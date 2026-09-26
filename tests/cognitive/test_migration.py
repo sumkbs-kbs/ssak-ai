@@ -12,8 +12,10 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import multiprocessing
 import sqlite3
 import sys
+import threading
 from pathlib import Path
 from types import ModuleType
 
@@ -401,19 +403,190 @@ def test_r04_a1_wal_payload_change_is_not_source_unchanged(tmp_path: Path) -> No
     assert before.content_digest != report.plan.source.content_digest
 
 
+MARKER_OBJECTIVE_ID = "obj-marker"
+R04_EPOCH_0 = "epoch-0"
+R04_EPOCH_1 = "epoch-1"
+
+
+def _seed_r04_cross_table_markers(db_path: Path, *, epoch: str = R04_EPOCH_0) -> None:
+    """event payload marker와 objective title을 같은 epoch로 맞춘다(WAL)."""
+
+    with sqlite3.connect(str(db_path)) as connection:
+        connection.execute("PRAGMA journal_mode=WAL")
+        connection.execute(
+            "UPDATE agency_events SET payload_json=? WHERE event_id=1",
+            (json.dumps({"marker": epoch, "text": "관측"}, ensure_ascii=False),),
+        )
+        connection.execute(
+            "INSERT OR REPLACE INTO agency_objectives"
+            " (objective_id, project_id, title, description, priority, status, trajectory_id, created_at, updated_at)"
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                MARKER_OBJECTIVE_ID,
+                LEGACY_PROJECT,
+                epoch,
+                "r04-marker",
+                1,
+                "active",
+                "traj-1",
+                "2026-09-22T00:00:00Z",
+                "2026-09-22T00:00:00Z",
+            ),
+        )
+        connection.commit()
+
+
+def _r04_read_markers(connection: sqlite3.Connection) -> tuple[str, str]:
+    if connection.row_factory is None:
+        connection.row_factory = sqlite3.Row
+    event_row = connection.execute("SELECT payload_json FROM agency_events WHERE event_id=1").fetchone()
+    assert event_row is not None
+    payload = json.loads(str(event_row["payload_json"]))
+    obj_row = connection.execute(
+        "SELECT title FROM agency_objectives WHERE objective_id=?",
+        (MARKER_OBJECTIVE_ID,),
+    ).fetchone()
+    assert obj_row is not None
+    return str(payload["marker"]), str(obj_row["title"])
+
+
+def _r04_a2_writer_worker(
+    db_path: str,
+    barrier: object,
+    results: object,
+    new_epoch: str,
+) -> None:
+    """spawn writer: Barrier 동기 후 단일 txn으로 event+objective epoch를 함께 갱신(WAL)."""
+
+    import json as _json
+    import sqlite3 as _sqlite3
+
+    barrier.wait(timeout=30)  # type: ignore[attr-defined]
+    with _sqlite3.connect(db_path) as connection:
+        connection.execute("PRAGMA journal_mode=WAL")
+        connection.execute("BEGIN IMMEDIATE")
+        connection.execute(
+            "UPDATE agency_events SET payload_json=? WHERE event_id=1",
+            (_json.dumps({"marker": new_epoch, "text": "관측"}, ensure_ascii=False),),
+        )
+        connection.execute(
+            "UPDATE agency_objectives SET title=? WHERE objective_id=?",
+            (new_epoch, MARKER_OBJECTIVE_ID),
+        )
+        connection.commit()
+    barrier.wait(timeout=30)  # type: ignore[attr-defined]
+    results.put("committed")  # type: ignore[attr-defined]
+
+
 def test_r04_a2_snapshot_lineage_stable_under_concurrent_writer(tmp_path: Path) -> None:
+    """In-process: mid-digest writer가 events→objectives 사이를 찢어도 단일 BEGIN view는 옛 epoch."""
+
     db_path = make_legacy_db(tmp_path)
+    _seed_r04_cross_table_markers(db_path)
     source = LegacySQLiteSource(db_path)
-    snap = source.snapshot()
-    # 동일 스냅샷 필드 일관성
-    assert snap.content_digest
-    assert snap.file_bundle_digest
+    barrier = threading.Barrier(2)
+    writer_errors: list[BaseException] = []
+    recorded: list[tuple[str, str]] = []
+
+    def writer() -> None:
+        try:
+            barrier.wait(timeout=30)
+            with sqlite3.connect(str(db_path)) as connection:
+                connection.execute("PRAGMA journal_mode=WAL")
+                connection.execute("BEGIN IMMEDIATE")
+                connection.execute(
+                    "UPDATE agency_events SET payload_json=? WHERE event_id=1",
+                    (json.dumps({"marker": R04_EPOCH_1, "text": "관측"}, ensure_ascii=False),),
+                )
+                connection.execute(
+                    "UPDATE agency_objectives SET title=? WHERE objective_id=?",
+                    (R04_EPOCH_1, MARKER_OBJECTIVE_ID),
+                )
+                connection.commit()
+            barrier.wait(timeout=30)
+        except BaseException as exc:  # noqa: BLE001 — surface in parent
+            writer_errors.append(exc)
+
+    def after_table(table: str, connection: sqlite3.Connection) -> None:
+        if table == "agency_events":
+            event_marker, _ = _r04_read_markers(connection)
+            recorded.append(("events", event_marker))
+            barrier.wait(timeout=30)
+            barrier.wait(timeout=30)
+        elif table == "agency_objectives":
+            _, obj_marker = _r04_read_markers(connection)
+            recorded.append(("objectives", obj_marker))
+
+    thread = threading.Thread(target=writer)
+    thread.start()
+    source._test_after_table = after_table  # noqa: SLF001 — test seam
+    try:
+        snap = source.snapshot()
+    finally:
+        source._test_after_table = None  # noqa: SLF001
+        thread.join(timeout=30)
+        assert not thread.is_alive()
+
+    assert writer_errors == []
+    assert recorded == [("events", R04_EPOCH_0), ("objectives", R04_EPOCH_0)]
+    assert snap.digest == snap.content_digest
     assert snap.digest.startswith("sha256:")
+    assert snap.file_bundle_digest
     assert set(snap.counts) == {"events", "objectives", "tasks"}
-    # 재스냅샷(writer 없음) 동일
-    again = source.snapshot()
-    assert again.digest == snap.digest
-    assert again.content_digest == snap.content_digest
+    assert snap.counts["objectives"] >= 1
+    assert snap.counts["events"] >= 1
+    # writer가 실제로 commit했는지(스냅샷 종료 후 live view)
+    with sqlite3.connect(str(db_path)) as connection:
+        live_event, live_obj = _r04_read_markers(connection)
+    assert live_event == live_obj == R04_EPOCH_1
+
+
+def test_r04_a2_cross_process_writer_during_snapshot(tmp_path: Path) -> None:
+    """Cross-process: spawn writer가 mid-digest에 event+objective를 함께 COMMIT해도 view는 미찢김."""
+
+    db_path = make_legacy_db(tmp_path)
+    _seed_r04_cross_table_markers(db_path)
+    context = multiprocessing.get_context("spawn")
+    barrier = context.Barrier(2)
+    results = context.Queue()
+    worker = context.Process(
+        target=_r04_a2_writer_worker,
+        args=(str(db_path), barrier, results, R04_EPOCH_1),
+    )
+    recorded: list[tuple[str, str]] = []
+    source = LegacySQLiteSource(db_path)
+
+    def after_table(table: str, connection: sqlite3.Connection) -> None:
+        if table == "agency_events":
+            event_marker, _ = _r04_read_markers(connection)
+            recorded.append(("events", event_marker))
+            barrier.wait(timeout=30)
+            barrier.wait(timeout=30)
+        elif table == "agency_objectives":
+            _, obj_marker = _r04_read_markers(connection)
+            recorded.append(("objectives", obj_marker))
+
+    worker.start()
+    source._test_after_table = after_table  # noqa: SLF001 — test seam
+    try:
+        snap = source.snapshot()
+        outcome = results.get(timeout=45)
+        worker.join(timeout=30)
+        assert worker.exitcode == 0
+    finally:
+        source._test_after_table = None  # noqa: SLF001
+        if worker.is_alive():
+            worker.terminate()
+            worker.join(timeout=10)
+
+    assert outcome == "committed"
+    assert recorded == [("events", R04_EPOCH_0), ("objectives", R04_EPOCH_0)]
+    assert snap.digest == snap.content_digest
+    assert snap.counts["objectives"] >= 1
+    assert snap.counts["events"] >= 1
+    with sqlite3.connect(str(db_path)) as connection:
+        live_event, live_obj = _r04_read_markers(connection)
+    assert live_event == live_obj == R04_EPOCH_1
 
 
 def test_r04_a3_mapping_conflict_fails_report(tmp_path: Path) -> None:
