@@ -1,10 +1,14 @@
 {
   "card": "R10",
-  "captured_at": "2026-09-26T21:34:04.833473+09:00",
+  "captured_at": "2026-09-27T03:57:28.884971+09:00",
   "paths": [
-    "src/antigravity_k/engine/cognitive/action_types.py",
     "src/antigravity_k/engine/cognitive/actions.py",
-    "tests/cognitive/test_action_safety.py"
+    "tests/cognitive/test_action_safety.py",
+    "docs/ssak-ai-core/evidence/current-remediation/R10/",
+    "docs/ssak-ai-core/evidence/current-remediation/FAILURE_MODEL_RESIDUAL_REVIEW.md",
+    "docs/ssak-ai-core/CURRENT_REMEDIATION_STATUS.md"
   ],
-  "head": "444058685b70c299316b67e1286a63130d113039"
+  "head": "PENDING_COMMIT",
+  "tip_before": "52af3bfa40ded5d72f3865f1fc4205282ddeb4e5",
+  "note": "late-observation history append residual"
 }

@@ -590,16 +590,18 @@ def test_r10_settled_projection_rejects_conflicting_observation(tmp_path) -> Non
     assert first.accepted
     claim = journal.get(PROJECT, "r10-settle")
     assert claim is not None and claim.status == "settled"
+    receive_at = NOW + timedelta(minutes=5)
     conflict = dispatcher.submit_observation(
         ObservationSubmission(
             project_id=PROJECT,
             action_key="r10-settle",
             expected_receipt_id=first.receipt_id or "",
             observation=ActionObservation(observed=True, succeeded=False, detail="late flip"),
+            observed_at=NOW - timedelta(hours=1),
         ),
         producer=BODY,
         load_record=store.read,
-        now=NOW,
+        now=receive_at,
     )
     assert not conflict.accepted
     assert conflict.refusal is ActionRefusal.PROJECTION_SETTLED
@@ -609,3 +611,80 @@ def test_r10_settled_projection_rejects_conflicting_observation(tmp_path) -> Non
     assert claim2.observation_digest == claim.observation_digest
     assert claim2.observation_record_id == claim.observation_record_id
     assert claim2.projection_revision == claim.projection_revision
+    # Non-mutating late history row persisted; claim still points at first settle id
+    assert conflict.observation_record_id is not None
+    assert conflict.observation_record_id != claim.observation_record_id
+    assert claim.observation_record_id == first.observation_record_id
+    assert conflict.receipt_id == claim.receipt_id
+    assert conflict.projection_revision == claim.projection_revision
+    history = store.read(conflict.observation_record_id)
+    assert history is not None
+    assert history.payload.method == "late_observation_history"
+    assert history.payload.source.startswith("received_at:")
+    assert "received_at:" in history.payload.source
+    assert history.payload.observed_at == NOW - timedelta(hours=1)
+    assert history.payload.observed_at != receive_at
+    assert conflict.records and conflict.records[0].id == conflict.observation_record_id
+
+
+def test_r10_late_older_observation_does_not_flip_projection(tmp_path) -> None:
+    """R10 residual: older observed_at late obs still refuses mutate; history only."""
+    from antigravity_k.engine.cognitive.action_journal import SqliteActionJournal
+    from antigravity_k.engine.cognitive.actions import ObservationSubmission
+    from antigravity_k.engine.cognitive.store import CanonicalStore
+
+    store = CanonicalStore(tmp_path / "store", git_enabled=False)
+    journal = SqliteActionJournal(tmp_path / "claims.sqlite")
+    dispatcher = ActionDispatcher(
+        port=CallablePort(lambda *a: "ok"),
+        journal=journal,
+        record_sink=lambda records: store.commit_records(list(records)),
+        clock=lambda: NOW,
+    )
+    run = dispatcher.execute(make_intent(action_key="r10-older"), project_id=PROJECT, producer=BODY)
+    assert run.receipt is not None
+    settle_at = NOW
+    first = dispatcher.submit_observation(
+        ObservationSubmission(
+            project_id=PROJECT,
+            action_key="r10-older",
+            expected_receipt_id=run.receipt.receipt_id,
+            observation=ActionObservation(observed=True, succeeded=True, detail="settle-ok"),
+            observed_at=settle_at,
+        ),
+        producer=BODY,
+        load_record=store.read,
+        now=settle_at,
+    )
+    assert first.accepted
+    claim = journal.get(PROJECT, "r10-older")
+    assert claim is not None
+    older_observed = settle_at - timedelta(days=1)
+    late_receive = settle_at + timedelta(minutes=30)
+    late = dispatcher.submit_observation(
+        ObservationSubmission(
+            project_id=PROJECT,
+            action_key="r10-older",
+            expected_receipt_id=first.receipt_id or "",
+            observation=ActionObservation(observed=True, succeeded=False, detail="stale flip"),
+            observed_at=older_observed,
+        ),
+        producer=BODY,
+        load_record=store.read,
+        now=late_receive,
+    )
+    assert not late.accepted
+    assert late.refusal is ActionRefusal.PROJECTION_SETTLED
+    claim2 = journal.get(PROJECT, "r10-older")
+    assert claim2 is not None
+    assert claim2.observation_digest == claim.observation_digest
+    assert claim2.observation_record_id == claim.observation_record_id
+    assert claim2.projection_revision == claim.projection_revision
+    assert late.observation_record_id is not None
+    assert late.observation_record_id != claim.observation_record_id
+    hist = store.read(late.observation_record_id)
+    assert hist is not None
+    assert hist.payload.method == "late_observation_history"
+    assert hist.payload.observed_at == older_observed
+    assert hist.payload.observed_at < settle_at
+    assert f"received_at:{late_receive.isoformat()}" in hist.payload.source

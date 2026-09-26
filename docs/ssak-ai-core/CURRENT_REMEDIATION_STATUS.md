@@ -259,3 +259,12 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - Independent R04-V still open; multi-host/NFS snapshot not proven; R21 `--apply` still Human
 - Ops/cutover / CR-14 still **NO-GO**
 - Next: remaining independent V / FM residuals (R08 code already fixed — do not reopen); not ops GO
+
+## 2026-09-27 03:57 KST — R10 late-observation history residual close
+
+- Tip before: `52af3bfa`
+- Settled conflicting observe: `PROJECTION_SETTLED` + non-mutating `late_observation_history` Observation row (`observed_at` vs `received_at`)
+- Projection journal fields unchanged; history id on result only
+- Suite **34 passed** (action_safety + active_api)
+- Residual honesty: single-process history Low/closed; multi-process live still Medium; Independent R10-V open
+- Ops/CR-14 still **NO-GO**. Next: independent V prep — not ops GO. Do not reopen R08.

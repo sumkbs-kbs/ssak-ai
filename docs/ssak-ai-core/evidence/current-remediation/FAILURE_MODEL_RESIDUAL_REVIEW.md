@@ -90,7 +90,7 @@ Code note: `_protected_write_deny_section` is documented to follow allow(root); 
 | Stale revision / foreign project accepted | A3 | Low |
 | Timeout clears claim and auto-retries | A4 | Low if pending_reason holds |
 | UNKNOWN promoted to success | Forbidden in actions module docstring | Critical if any helper maps unknown to ok |
-| Late older observation downgrades projection | Only CAS reject | Medium: non-downgrading history rows not stored yet |
+| Late older observation downgrades projection | CAS refuse + late_observation_history append | Low single-process; Medium multi-process live |
 
 **Independent V focus:** never delete claim on timeout; observe never redispatches; external non-idempotent unknown never auto-retry.
 
@@ -154,8 +154,16 @@ Next implementer priority: **R10** UNKNOWN never success / no timeout unlock.
 ## Update 2026-09-26 21:34 KST — R10 settled non-downgrade + unobserved invariant
 
 Code finding: forged unobserved success was constructible; settled claims could flip via conflicting observe.
-Now invariant + PROJECTION_SETTLED refuse. History-append for late obs still open for V.
-Next implementer priority was R03 (closed 2026-09-27 SoftFileLock cross-process); now **R04**.
+Now invariant + PROJECTION_SETTLED refuse. History-append residual closed 2026-09-27 (see below).
+Next implementer priority was R03 (closed 2026-09-27 SoftFileLock cross-process); then R04.
+
+## Update 2026-09-27 03:57 KST — R10 late-observation history append
+
+- Settled + differing digest: still `PROJECTION_SETTLED` / no journal mutate; additionally persists canonical Observation with `method=late_observation_history`, `source=received_at:…`, distinct `observed_at`.
+- Result returns history id; claim.observation_record_id stays first settle id.
+- Suite action_safety + active_api: **34 passed**.
+- Residual: single-process history closed (Low); multi-process live still Medium. Independent R10-V open. Ops/CR-14 **NO-GO**.
+- Next: independent V prep (not ops GO); do not reopen R08.
 
 ## Update 2026-09-27 03:47 KST — R03 SoftFileLock cross-process residual close
 

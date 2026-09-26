@@ -288,12 +288,66 @@ class ActionDispatcher:
                 reason="idempotent observation replay",
             )
         # Settled projection must not be overwritten by a conflicting observation
-        # (prevents late/alternate success↔fail downgrades without history append).
+        # (late/alternate success↔fail cannot mutate projection; history row may append).
         if claim.status == SETTLED:
+            receipt_record = load_record(claim.receipt_id)
+            action_record = load_record(claim.action_record_id) if claim.action_record_id else None
+            if receipt_record is None or action_record is None:
+                return ReconciliationResult(
+                    accepted=False,
+                    refusal=ActionRefusal.UNKNOWN_ACTION,
+                    reason="canonical action/receipt records missing",
+                )
+            if not same_enum(receipt_record.entity_type, EntityType.EXECUTION_RECEIPT):
+                return ReconciliationResult(
+                    accepted=False,
+                    refusal=ActionRefusal.MALFORMED_OBSERVATION,
+                    reason="receipt record type mismatch",
+                )
+            if action_record.project_id != submission.project_id:
+                return ReconciliationResult(
+                    accepted=False,
+                    refusal=ActionRefusal.PROJECT_MISMATCH,
+                    reason="action record project mismatch",
+                )
+            intent = _intent_from_action_record(action_record)
+            observed_at = submission.observed_at or moment
+            history_record = Record.create(
+                entity_type=EntityType.OBSERVATION,
+                project_id=submission.project_id,
+                producer=producer,
+                references=(
+                    Reference(relation=REL_ACTION, target_id=intent.action_id, expected_type=EntityType.ACTION),
+                    Reference(
+                        relation=REL_RECEIPT,
+                        target_id=claim.receipt_id,
+                        expected_type=EntityType.EXECUTION_RECEIPT,
+                    ),
+                ),
+                payload=ObservationPayload(
+                    raw_measurement_or_handle=digest,
+                    observed_at=observed_at,
+                    method="late_observation_history",
+                    source=f"received_at:{moment.isoformat()}",
+                    status=submission.observation.status
+                    if hasattr(submission.observation, "status")
+                    else ObservationStatus.COMPLETE,
+                ),
+                created_at=moment,
+            )
+            self._persist((history_record,))
             return ReconciliationResult(
                 accepted=False,
                 refusal=ActionRefusal.PROJECTION_SETTLED,
-                reason="settled projection refuses conflicting observation (non-downgrade)",
+                reason=(
+                    "settled projection refuses conflicting observation "
+                    "(late history appended without projection mutate)"
+                ),
+                receipt_id=claim.receipt_id,
+                observation_record_id=history_record.id,
+                projection_revision=claim.projection_revision,
+                records=(history_record,),
+                redispatched=False,
             )
 
         receipt_record = load_record(claim.receipt_id)
