@@ -45,11 +45,12 @@ Source digest가 바뀌면 해당 행은 재검증 전까지 HISTORICAL이다 ([
 - Tests: `tests/cognitive/test_r02_authority_lifecycle.py` + governance suite (36 passed)
 - Next: R03 staged transaction identity
 
-## R03 — PASS (self-review limitation) — 2026-09-26 20:02 KST
+## R03 — PASS (self-review limitation) — 2026-09-26 20:02 KST; residual SoftFileLock cross-process 2026-09-27 03:47 KST
 - Fix: `_stage_locked` content identity; `TransactionConflictError`; idempotent same-digest restage
+- Residual: dual SoftFileLock in-process A3 + spawn cross-process A3; SoftFileLock retained (not FileLock)
 - Evidence: `docs/ssak-ai-core/evidence/current-remediation/R03/`
-- Tests: `tests/cognitive/test_store.py` 25 passed
-- Next: R04 (or roadmap parallel R05/R17/R20/R23)
+- Tests: `tests/cognitive/test_store.py` **26 passed** (r03 nodes 3× flake green)
+- Next: R04 (lineage residual honesty). Ops/CR-14 still **NO-GO**
 
 ## R04 — PASS (self-review limitation) — 2026-09-26 20:05 KST
 - migration snapshot content/WAL fields; legacy staged resume
@@ -192,7 +193,7 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - Wrote
 - Cards: R01, R02, R03, R04, R08, R10, R15
 - **Not** independent V; ops/CR-14 still **NO-GO**
-- Top residuals: R15 default/composition, R01 non-macOS + seatbelt order, R08 live binding TOCTOU, R03 cross-process stage race
+- Top residuals: R15 default/composition, R01 non-macOS + seatbelt order, R08 live binding TOCTOU (R03 cross-process SoftFileLock closed 2026-09-27; multi-host still open)
 
 ## 2026-09-26 21:20 KST — failure-model residual re-scan (priority cards)
 
@@ -237,3 +238,12 @@ pre-commit mypy cleared (542 files Success). Remediation commit attempted after 
 - Settled claim rejects conflicting observation (`PROJECTION_SETTLED`)
 - Suite **33 passed** (action_safety + active_api)
 - Independent R10-V still open; ops/CR-14 still **NO-GO**
+
+## 2026-09-27 03:47 KST — R03 SoftFileLock cross-process residual close
+
+- Tip before: `e170fbf4`
+- Dual-store SoftFileLock A3 + spawn cross-process A3 green; SoftFileLock kept (Vault/legacy protocol)
+- Suite: **26 passed** (`test_store.py`); r03 nodes ≥3× flake OK
+- Independent R03-V still open; multi-host lock not proven
+- Ops/cutover / CR-14 still **NO-GO**
+- Next card: **R04**

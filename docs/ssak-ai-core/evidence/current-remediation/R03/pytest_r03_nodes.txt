@@ -1,0 +1,7 @@
+r03 nodes flake check 2026-09-27 03:47 KST
+nodes: a1, a2, a3 dual-store, a3 cross-process, a4
+run1: 5 passed in 0.72s
+run2: 5 passed in 0.67s
+run3: 5 passed in 0.66s
+cross-process extra ×2: 1 passed each
+full suite: 26 passed in 2.63s exit 0

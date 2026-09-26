@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import multiprocessing
 import subprocess
 import threading
 from pathlib import Path
@@ -468,15 +469,50 @@ def test_r03_a2_identical_restage_is_idempotent(tmp_path: Path) -> None:
     assert len(list(store.list_committed())) == 1
 
 
+def _r03_a3_stage_worker(
+    root: str,
+    project: str,
+    statement: str,
+    transaction_id: str,
+    barrier: object,
+    results: object,
+) -> None:
+    """spawn worker: independent CanonicalStore + SoftFileLock on shared root."""
+
+    from pathlib import Path
+
+    from antigravity_k.engine.cognitive.store import CanonicalStore, TransactionConflictError
+    from tests.cognitive._fixtures import build_goal
+
+    store = CanonicalStore(Path(root), git_enabled=False, lock_timeout=30.0)
+    goal = build_goal(project, statement=statement)
+    barrier.wait(timeout=30)  # type: ignore[attr-defined]
+    try:
+        store.stage([goal], transaction_id=transaction_id)
+        results.put(("ok", statement))  # type: ignore[attr-defined]
+    except TransactionConflictError:
+        results.put(("conflict", statement))  # type: ignore[attr-defined]
+    except BaseException as exc:  # noqa: BLE001 — surface unexpected failures
+        results.put(("error", statement, repr(exc)))  # type: ignore[attr-defined]
+
+
 def test_r03_a3_concurrent_different_payload_one_wins(tmp_path: Path) -> None:
-    store = make_store(tmp_path)
+    """Two CanonicalStore instances (two SoftFileLock objects, same lock path) race stage."""
+
+    root = tmp_path / "store"
+    store_a = CanonicalStore(root, git_enabled=False, lock_timeout=10.0)
+    store_b = CanonicalStore(root, git_enabled=False, lock_timeout=10.0)
+    assert store_a.lock_path == store_b.lock_path
+    assert store_a._file_lock is not store_b._file_lock  # noqa: SLF001 — distinct soft locks
     project = project_id()
     goal_a = build_goal(project, statement="concurrent-A")
     goal_b = build_goal(project, statement="concurrent-B")
     errors: list[BaseException] = []
     results: list[str] = []
+    barrier = threading.Barrier(2)
 
-    def writer(goal: object, tag: str) -> None:
+    def writer(store: CanonicalStore, goal: object, tag: str) -> None:
+        barrier.wait(timeout=10)
         try:
             store.stage([goal], transaction_id="txn-race")  # type: ignore[list-item]
             results.append(tag)
@@ -484,19 +520,64 @@ def test_r03_a3_concurrent_different_payload_one_wins(tmp_path: Path) -> None:
             errors.append(exc)
 
     threads = [
-        threading.Thread(target=writer, args=(goal_a, "A")),
-        threading.Thread(target=writer, args=(goal_b, "B")),
+        threading.Thread(target=writer, args=(store_a, goal_a, "A")),
+        threading.Thread(target=writer, args=(store_b, goal_b, "B")),
     ]
     for thread in threads:
         thread.start()
     for thread in threads:
-        thread.join()
+        thread.join(timeout=30)
+        assert not thread.is_alive()
     assert len(results) == 1
     assert len(errors) == 1
     assert isinstance(errors[0], TransactionConflictError)
-    receipt = store.commit("txn-race")
+    receipt = store_a.commit("txn-race")
     assert len(receipt.committed_ids) == 1
-    published = list(store.list_committed())
+    published = list(store_a.list_committed())
+    assert len(published) == 1
+    assert published[0].payload.statement in {"concurrent-A", "concurrent-B"}
+
+
+def test_r03_a3_cross_process_different_payload_one_wins(tmp_path: Path) -> None:
+    """Two OS processes each own CanonicalStore SoftFileLock; exactly one stage wins."""
+
+    root = tmp_path / "store"
+    # Ensure root + lock path layout exist before spawn (git_enabled=False → .cognitive lock).
+    bootstrap = CanonicalStore(root, git_enabled=False, lock_timeout=10.0)
+    lock_path = bootstrap.lock_path
+    project = project_id()
+    context = multiprocessing.get_context("spawn")
+    barrier = context.Barrier(2)
+    results = context.Queue()
+    workers = [
+        context.Process(
+            target=_r03_a3_stage_worker,
+            args=(str(root), project, statement, "txn-race-xproc", barrier, results),
+        )
+        for statement in ("concurrent-A", "concurrent-B")
+    ]
+    for worker in workers:
+        worker.start()
+    try:
+        outcomes = [results.get(timeout=45) for _ in workers]
+        for worker in workers:
+            worker.join(timeout=30)
+            assert worker.exitcode == 0
+    finally:
+        for worker in workers:
+            if worker.is_alive():
+                worker.terminate()
+                worker.join(timeout=5)
+        results.close()
+
+    statuses = sorted(item[0] for item in outcomes)
+    assert statuses == ["conflict", "ok"], outcomes
+    assert {item[1] for item in outcomes} == {"concurrent-A", "concurrent-B"}
+    # SoftFileLock deletes the lock file on release; path identity still shared.
+    assert lock_path == root / ".cognitive" / "agk_vault.lock"
+    receipt = bootstrap.commit("txn-race-xproc")
+    assert len(receipt.committed_ids) == 1
+    published = list(bootstrap.list_committed())
     assert len(published) == 1
     assert published[0].payload.statement in {"concurrent-A", "concurrent-B"}
 

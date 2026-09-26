@@ -47,10 +47,10 @@ Code note: `_protected_write_deny_section` is documented to follow allow(root); 
 |---|---|---|
 | stage(B,T) overwrites stage(A,T) | A1 | Low in-process |
 | Identical restage mutates bytes | A2 | Low |
-| Two threads different payload same T | A3 | Medium to High: **cross-process flock not separately proven** (threads share FileLock) |
+| Two writers different payload same T | A3 dual SoftFileLock + A3 cross-process spawn | **Low on one host**: SoftFileLock multiprocess proven 2026-09-27 (two OS processes / two SoftFileLock objects). Still not multi-host / cross-FS. SoftFileLock retained (Vault/legacy protocol). |
 | Crash then hijack stage | A4 | Medium: recovery must refuse foreign content_identity |
 
-**Independent V focus:** two OS processes racing `_stage_locked`; crash manifest compatibility with R04/R21.
+**Independent V focus:** multi-host / NFS lock semantics (out of SoftFileLock single-host proof); crash manifest compatibility with R04/R21.
 
 ### R04 — WAL / snapshot lineage
 
@@ -155,4 +155,12 @@ Next implementer priority: **R10** UNKNOWN never success / no timeout unlock.
 
 Code finding: forged unobserved success was constructible; settled claims could flip via conflicting observe.
 Now invariant + PROJECTION_SETTLED refuse. History-append for late obs still open for V.
-Next implementer priority: **R03** staged transaction identity (then R04).
+Next implementer priority was R03 (closed 2026-09-27 SoftFileLock cross-process); now **R04**.
+
+## Update 2026-09-27 03:47 KST — R03 SoftFileLock cross-process residual close
+
+- Strengthened A3 to two `CanonicalStore` instances (two SoftFileLock objects, same lock path).
+- Added `test_r03_a3_cross_process_different_payload_one_wins` (`spawn` + Barrier + Queue). SoftFileLock **serialized**; no FileLock switch.
+- Suite `tests/cognitive/test_store.py`: **26 passed**; r03 nodes 3× flake green.
+- Residual lowered to single-host SoftFileLock proven; multi-host still open.
+- Ops/CR-14 still **NO-GO**. Next implementer priority: **R04** (FM residual honesty / lineage), not ops GO.

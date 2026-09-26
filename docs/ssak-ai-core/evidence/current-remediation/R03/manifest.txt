@@ -1,4 +1,8 @@
-R03 evidence 2026-09-26 20:02 KST
-HEAD: 2862584ea8f79641fefd9a78de9c145851ea515b
- M src/antigravity_k/engine/cognitive/store.py
+R03 evidence residual close 2026-09-27 03:47 KST
+tip before: e170fbf40058ee69ce0ff1e39b65f217ba33b50a
  M tests/cognitive/test_store.py
+ M docs/ssak-ai-core/evidence/current-remediation/R03/report.md
+ M docs/ssak-ai-core/evidence/current-remediation/R03/pytest_r03.txt
+ M docs/ssak-ai-core/evidence/current-remediation/FAILURE_MODEL_RESIDUAL_REVIEW.md
+ M docs/ssak-ai-core/CURRENT_REMEDIATION_STATUS.md
+SoftFileLock retained in store.py (no FileLock switch)
