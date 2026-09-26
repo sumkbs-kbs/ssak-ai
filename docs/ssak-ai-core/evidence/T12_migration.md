@@ -1,11 +1,17 @@
 ---
 title: "T12 — legacy → canonical migration dry-run 증거"
 date: 2026-09-22
-status: verified-dry-run (destructive 변환은 NOT_RUN, 사람 결정)
+status: "historical-module-contract-verified; post-fix-registered-snapshot-full-dry-run-pass; destructive-NOT_RUN"
 owner: 주 에이전트 구현(P12)
+current_verification_head: 0a9498e3846a48bbf158bf870957064cdc9bbb11
+current_full_snapshot_evidence: docs/ssak-ai-core/evidence/2026-09-25-review/migration-real-post-independent-review-2026-09-26.json
+current_full_cognitive_evidence: docs/ssak-ai-core/evidence/2026-09-25-review/pytest-cognitive-post-migration-review-2026-09-26.json
+current_snapshot_digest: 7d69ed65667db079957a9277b59ebcfb232293582beb6d53f267a4f61e726836
 ---
 
 # T12 migration·index (P12)
+
+> 아래 최초 YAML 및 §1~3은 2026-09-22 synthetic/module 실행 당시 기록이다. 수정 후 등록 실데이터 snapshot의 2026-09-26 full dry-run과 전체 cognitive 회귀는 §4에서 별도 증거로 갱신한다.
 
 ```yaml
 check_id: T12
@@ -49,7 +55,7 @@ limitations: >-
   legacy DB가 아니라 **실제 schema로 만든 synthetic DB**를 대상으로 관찰했으므로, 실제 데이터 분포·용량·
   예외 row는 별도 dry-run이 필요하다. canonical index rebuild는 CanonicalStore index 기준이며 vector/RAG
   index 재구축은 이 카드 범위가 아니다. objective 테이블은 비어 있었고(0건) task status는 queue 기준으로 기록된다.
-verified_at: 2026-09-22T07:17:53Z
+verified_at: "2026-09-22T07:17:53Z (original synthetic/module run; post-fix real snapshot run is recorded in §4)"
 ```
 
 ## 1. 실행 흐름과 경계
@@ -95,9 +101,22 @@ verdict: passed=True complete=True
   같은 legacy 데이터가 다른 canonical project ID로 매핑되고, report가 그 사실을 warning으로 남긴다.
 - event/objective/task mapping은 legacy key 기반이라 재실행·재이관에 대해 idempotent하다(uuid5가 아니라 manifest 값 재사용).
 
-## 4. 이월·잔여
+## 4. 독립 검토 보완 — 2026-09-26
+
+수정 후 별도 synthetic DB 회귀에서 두 문제를 재현·수정했다.
+
+1. rollback rehearsal이 고정 경로 `target/rollback-rehearsal`을 `exist_ok`로 재사용하고 마지막에 재귀 삭제해, 해당 디렉터리가 미리 있으면 기존 sentinel 파일도 삭제됐다. 매회 `mkdtemp`로 새 경로를 만들고 생성 회차가 소유한 그 scratch만 정리하도록 바꿨다. 기존 경로에 놓은 파일을 dry-run이 보존하는 regression을 추가했다.
+2. objective/task adapter는 mapping manifest 저장 뒤 record publish가 중단되면 다음 동일 입력에서 `mapped record is not committed`를 던져 영구 복구 불능이었다. mapping의 canonical ID로 record를 재생성하고, record ID/kind 기반 결정적 transaction ID로 재시도해 staged transaction도 재사용하도록 했다. objective/task × public commit/migration batch commit crash·retry 시험을 추가했다.
+
+검증: `tests/cognitive/test_migration.py`, `test_legacy_adapter.py`, `test_store.py`, `test_protection.py`, `test_protection_boundaries.py`, `tests/test_tool_sandbox_coverage.py` 묶음 100 passed, exit0(4.64초). Ruff PASS, changed `migration.py`·`legacy_adapter.py` basedpyright `--level error` 0 errors/warnings/notes. JUnit: [독립 검토 회귀](2026-09-25-review/pytest-migration-independent-review-2026-09-26.xml).
+
+수정 후 전체 검증(2026-09-26): [등록 snapshot full dry-run 증거](2026-09-25-review/migration-real-post-independent-review-2026-09-26.json)는 exit0, 170.47초(170.07초 report total), errors0, passed/complete=true다. 기대 snapshot digest `7d69ed65667db079957a9277b59ebcfb232293582beb6d53f267a4f61e726836`; 56,961 observation event 전량 import·mapping·canonical record·index·digest·replay·rollback rehearsal 각각 56,961로 일치했고 source bytes/count 및 code/test/driver hash는 실행 전후 불변, destructive=false다. 원본 agency.db는 26,206,208 bytes, SHA-256 `6bc93092b6b476f25f6d4af402a95c4963b4d6d79a04afd2f9df12c8c4aa4fd5`; objectives/tasks는 각각 0건이다. 같은 수정 후 source tree의 [전체 cognitive 회귀](2026-09-25-review/pytest-cognitive-post-migration-review-2026-09-26.json)는 822 collected, 821 passed, 0 failed, 1 skipped, 1 warning, exit0, 733.65초다. 이 전체 회귀와 migration dry-run은 별도 검증 범위다. 과거 full run들은 해당 이전 code/test hash에 대한 역사 기록으로 유지하고 최신 증거는 위 두 artifact를 참조한다.
+
+한계: 이 snapshot에서 objectives/tasks가 0건이므로 해당 실데이터 분포는 미관측이며, event 표본은 observation type 56,961건이다. 이 dry-run은 read-only full rehearsal일 뿐 destructive/apply migration, 운영 cutover·release 또는 rollback의 운영 승인 결과가 아니다. `KGBinaryValidator.validate() -> OK=True`도 별도 미실행 gate다.
+
+## 5. 이월·잔여
 
 1. **destructive(in-place) 변환**은 사람 결정·별도 절차가 필요하다(NOT_RUN).
-2. 실사용 vault legacy DB 대상 dry-run(용량·예외 row·긴 실행 시간)은 별도 실행이 필요하다.
+2. 등록된 `.antigravity_k/agency.db` snapshot은 수정 후 전체 read-only dry-run을 마쳤다. 다른 실사용 vault/DB 또는 다른 데이터 분포가 적용 대상이면 별도 hash 결박 dry-run이 필요하다.
 3. vector/RAG index rebuild는 이 카드 범위가 아니다(CanonicalStore index만 확인).
 4. P12의 나머지 항목(T14 회귀·최종 Architecture Review, 헌법 24원칙별 근거, 문서 정합성)은 별도로 남아 있다.

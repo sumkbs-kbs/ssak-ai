@@ -18,7 +18,7 @@ import json
 import os
 import subprocess
 import uuid
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -374,12 +374,7 @@ class CanonicalStore:
         return TransactionManifest.from_json(cast(dict[str, object], loaded))
 
     # ── 읽기 ────────────────────────────────────────────
-    def read(self, record_id: str) -> Record | None:
-        """공개된 record만 반환한다. 미완료 transaction의 파일은 무시한다."""
-
-        entry = self._committed_entries().get(record_id)
-        if entry is None:
-            return None
+    def _read_entry(self, record_id: str, entry: ManifestEntry) -> Record:
         path = self.root / entry.relative_path
         if not path.exists():
             raise CanonicalDigestError(f"committed record file missing: {entry.relative_path}")
@@ -390,15 +385,42 @@ class CanonicalStore:
             raise CanonicalDigestError(f"record digest mismatch for {record_id}")
         return from_wire(wire)
 
+    def read(self, record_id: str) -> Record | None:
+        """공개된 record만 반환한다. 미완료 transaction의 파일은 무시한다."""
+
+        entry = self._committed_entries().get(record_id)
+        return self._read_entry(record_id, entry) if entry is not None else None
+
+    def read_many(
+        self,
+        record_ids: Iterable[str],
+        *,
+        committed_snapshot: Mapping[str, ManifestEntry] | None = None,
+    ) -> Mapping[str, Record]:
+        """committed manifest를 한 번만 읽어 여러 record를 검증·조회한다."""
+
+        entries = self._committed_entries() if committed_snapshot is None else committed_snapshot
+        records: dict[str, Record] = {}
+        for record_id in dict.fromkeys(record_ids):
+            entry = entries.get(record_id)
+            if entry is not None:
+                records[record_id] = self._read_entry(record_id, entry)
+        return records
+
     def list_committed(self, project_id: str | None = None) -> tuple[Record, ...]:
-        records: list[Record] = []
-        for record_id, entry in sorted(self._committed_entries().items()):
-            if project_id is not None and entry.project_id != project_id:
-                continue
-            record = self.read(record_id)
-            if record is not None:
-                records.append(record)
-        return tuple(records)
+        """manifest snapshot당 한 번만 탐색해 committed records를 읽는다."""
+
+        entries = self._committed_entries()
+        return tuple(
+            self._read_entry(record_id, entry)
+            for record_id, entry in sorted(entries.items())
+            if project_id is None or entry.project_id == project_id
+        )
+
+    def count_committed(self) -> int:
+        """record 본문을 deserialize하지 않고 committed ID 수를 반환한다."""
+
+        return len(self._committed_entries())
 
     def resolve(self, target_id: str) -> ResolvedTarget | None:
         """ReferenceResolver 구현. 공개된 record만 해석한다."""
@@ -407,6 +429,21 @@ class CanonicalStore:
         if entry is None:
             return None
         return ResolvedTarget(entity_type=EntityType(entry.entity_type), project_id=entry.project_id)
+
+    def resolve_many(
+        self,
+        target_ids: Iterable[str],
+        *,
+        committed_snapshot: Mapping[str, ManifestEntry] | None = None,
+    ) -> Mapping[str, ResolvedTarget]:
+        """committed manifest를 한 번 읽어 여러 reference target을 해석한다."""
+
+        entries = self._committed_entries() if committed_snapshot is None else committed_snapshot
+        return {
+            target_id: ResolvedTarget(entity_type=EntityType(entry.entity_type), project_id=entry.project_id)
+            for target_id in dict.fromkeys(target_ids)
+            if (entry := entries.get(target_id)) is not None
+        }
 
     def verify_digests(self) -> int:
         """공개된 모든 record의 digest를 재계산해 변조/손상을 검출한다."""
@@ -453,21 +490,38 @@ class CanonicalStore:
             raise CanonicalStoreError("transaction without records is not allowed")
         txn_id = transaction_id if transaction_id is not None else uuid.uuid4().hex
         with self._file_lock:
-            existing = self.committed_manifest_path(txn_id)
-            if existing.exists():
-                raise DuplicateRecordError(f"transaction already committed: {txn_id}")
-            self._assert_creatable(records, committed=self._committed_entries())
-            manifest = TransactionManifest(
+            return self._stage_locked(
+                records,
                 transaction_id=txn_id,
-                created_at=datetime.now(UTC).isoformat(),
-                status=STAGED,
                 episode_id=episode_id,
-                entries=tuple(self._entry_for(record) for record in records),
+                committed=self._committed_entries(),
             )
-            path = self.staged_manifest_path(txn_id)
-            path.parent.mkdir(parents=True, exist_ok=True)
-            self._write_atomic(path, json.dumps(manifest.to_json(), ensure_ascii=False, indent=2, sort_keys=True))
-            _fsync_path(path)
+
+    def _stage_locked(
+        self,
+        records: Sequence[Record],
+        *,
+        transaction_id: str,
+        episode_id: str | None,
+        committed: Mapping[str, ManifestEntry],
+    ) -> TransactionManifest:
+        """caller가 lock을 잡은 상태에서 동일한 committed snapshot으로 transaction을 stage한다."""
+
+        existing = self.committed_manifest_path(transaction_id)
+        if existing.exists():
+            raise DuplicateRecordError(f"transaction already committed: {transaction_id}")
+        self._assert_creatable(records, committed=committed)
+        manifest = TransactionManifest(
+            transaction_id=transaction_id,
+            created_at=datetime.now(UTC).isoformat(),
+            status=STAGED,
+            episode_id=episode_id,
+            entries=tuple(self._entry_for(record) for record in records),
+        )
+        path = self.staged_manifest_path(transaction_id)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self._write_atomic(path, json.dumps(manifest.to_json(), ensure_ascii=False, indent=2, sort_keys=True))
+        _fsync_path(path)
         return manifest
 
     def commit(self, transaction_id: str, *, message: str | None = None) -> CommitReceipt:
@@ -488,6 +542,46 @@ class CanonicalStore:
         self._enforce_protection(records, approvals=approvals)
         manifest = self.stage(records, transaction_id=transaction_id, episode_id=episode_id)
         return self.commit(manifest.transaction_id, message=message)
+
+    def _commit_records_batch(
+        self,
+        records: Sequence[Record],
+        *,
+        committed_snapshot: dict[str, ManifestEntry],
+        transaction_id: str | None = None,
+        episode_id: str | None = None,
+        message: str | None = None,
+        approvals: Sequence[HumanApproval] = (),
+        rebuild_index: bool = False,
+    ) -> CommitReceipt:
+        """migration 전용 batch publish; 임시 단일 writer store에서 snapshot을 재사용한다.
+
+        호출자는 별도 dry-run root의 유일한 writer여야 하며, index를 생략한 경우 최종 index를 rebuild한다.
+        이 private 경로는 일반 writer의 최신 committed manifest 검사 계약을 대체하지 않는다.
+        """
+
+        if not records:
+            raise CanonicalStoreError("transaction without records is not allowed")
+        self._enforce_protection(records, approvals=approvals)
+        txn_id = transaction_id if transaction_id is not None else uuid.uuid4().hex
+        with self._file_lock:
+            fresh_committed = self._committed_entries()
+            if dict(committed_snapshot) != fresh_committed:
+                raise CanonicalStoreError("batch commit snapshot is stale; refresh it before publishing")
+            manifest = self._stage_locked(
+                records,
+                transaction_id=txn_id,
+                episode_id=episode_id,
+                committed=fresh_committed,
+            )
+            receipt = self._commit_locked(
+                manifest.transaction_id,
+                message=message,
+                update_index=rebuild_index,
+                committed=fresh_committed,
+            )
+            committed_snapshot.update((entry.record_id, entry) for entry in manifest.entries)
+            return receipt
 
     def _enforce_protection(self, records: Sequence[Record], *, approvals: Sequence[HumanApproval] = ()) -> None:
         """canonical store도 같은 protected write allowlist를 지난다.
@@ -556,44 +650,53 @@ class CanonicalStore:
                 raise DuplicateRecordError(f"record already committed: {record.id}")
             seen.add(record.id)
 
-    def _validate_references(self, records: Sequence[Record]) -> None:
+    def _validate_references(
+        self,
+        records: Sequence[Record],
+        *,
+        committed: Mapping[str, ManifestEntry] | None = None,
+    ) -> None:
         """존재·타입·project 범위와 supersedes 순환을 공개 전에 검사한다."""
 
         pending: dict[str, ResolvedTarget] = {
             record.id: ResolvedTarget(entity_type=record.entity_type, project_id=record.project_id)
             for record in records
         }
-        committed = self._committed_entries()
+        committed_entries = self._committed_entries() if committed is None else committed
 
         class _Resolver:
             def resolve(self, target_id: str) -> ResolvedTarget | None:
                 if target_id in pending:
                     return pending[target_id]
-                entry = committed.get(target_id)
+                entry = committed_entries.get(target_id)
                 if entry is None:
                     return None
                 return ResolvedTarget(entity_type=EntityType(entry.entity_type), project_id=entry.project_id)
 
-        supersedes: dict[str, tuple[Reference, ...]] = {}
-        for record_id, entry in committed.items():
-            supersedes[record_id] = tuple(
-                Reference.model_validate(reference)
-                for reference in cast(list[object], entry.wire.get("references", []))
-                if isinstance(reference, dict) and reference.get("relation") == REL_SUPERSEDES
-            )
+        supersedes: dict[str, tuple[Reference, ...]] = {
+            record.id: tuple(reference for reference in record.references if reference.relation == REL_SUPERSEDES)
+            for record in records
+        }
 
         resolver = _Resolver()
         for record in records:
             validate_references(record, resolver)
-            supersedes[record.id] = tuple(
-                reference for reference in record.references if reference.relation == REL_SUPERSEDES
-            )
 
         def load(record_id: str) -> Sequence[Reference]:
-            return supersedes.get(record_id, ())
+            if record_id not in supersedes:
+                entry = committed_entries.get(record_id)
+                if entry is None:
+                    return ()
+                supersedes[record_id] = tuple(
+                    Reference.model_validate(reference)
+                    for reference in cast(list[object], entry.wire.get("references", []))
+                    if isinstance(reference, dict) and reference.get("relation") == REL_SUPERSEDES
+                )
+            return supersedes[record_id]
 
         for record in records:
-            assert_no_supersedes_cycle(record.id, load)
+            if any(reference.relation == REL_SUPERSEDES for reference in record.references):
+                assert_no_supersedes_cycle(record.id, load)
 
     def _write_staged_files(self, manifest: TransactionManifest) -> None:
         staged_root = self.staging_dir / manifest.transaction_id / "records"
@@ -617,7 +720,14 @@ class CanonicalStore:
             os.replace(staged_path, final_path)
             _fsync_path(final_path)
 
-    def _publish_locked(self, manifest: TransactionManifest, *, message: str) -> CommitReceipt:
+    def _publish_locked(
+        self,
+        manifest: TransactionManifest,
+        *,
+        message: str,
+        update_index: bool = True,
+        committed: Mapping[str, ManifestEntry] | None = None,
+    ) -> CommitReceipt:
         committed_path = self.committed_manifest_path(manifest.transaction_id)
         if committed_path.exists():
             return CommitReceipt(
@@ -628,8 +738,12 @@ class CanonicalStore:
             )
 
         records = [from_wire(entry.wire) for entry in manifest.entries]
-        self._assert_creatable(records, committed=self._committed_entries())
-        self._validate_references(records)
+        if committed is None:
+            self._assert_creatable(records, committed=self._committed_entries())
+            self._validate_references(records)
+        else:
+            self._assert_creatable(records, committed=committed)
+            self._validate_references(records, committed=committed)
 
         self._write_staged_files(manifest)
         self._materialize(manifest)
@@ -652,7 +766,8 @@ class CanonicalStore:
             json.dumps(committed_manifest.to_json(), ensure_ascii=False, indent=2, sort_keys=True),
         )
         _fsync_path(committed_path)
-        self.rebuild_index()
+        if update_index:
+            self.rebuild_index()
         return CommitReceipt(
             transaction_id=manifest.transaction_id,
             committed_ids=tuple(entry.record_id for entry in manifest.entries),
@@ -660,7 +775,14 @@ class CanonicalStore:
             reused_commit=False,
         )
 
-    def _commit_locked(self, transaction_id: str, *, message: str | None) -> CommitReceipt:
+    def _commit_locked(
+        self,
+        transaction_id: str,
+        *,
+        message: str | None,
+        update_index: bool = True,
+        committed: Mapping[str, ManifestEntry] | None = None,
+    ) -> CommitReceipt:
         committed_path = self.committed_manifest_path(transaction_id)
         staged_path = self.staged_manifest_path(transaction_id)
         if committed_path.exists():
@@ -678,7 +800,12 @@ class CanonicalStore:
         manifest = self._load_manifest(staged_path)
         if manifest is None:
             raise CanonicalStoreError(f"staged manifest unreadable: {transaction_id}")
-        return self._publish_locked(manifest, message=message or f"cognitive transaction {transaction_id}")
+        return self._publish_locked(
+            manifest,
+            message=message or f"cognitive transaction {transaction_id}",
+            update_index=update_index,
+            committed=committed,
+        )
 
     def _write_atomic(self, path: Path, content: str) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)

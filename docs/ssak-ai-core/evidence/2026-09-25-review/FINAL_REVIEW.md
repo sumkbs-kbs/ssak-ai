@@ -1,8 +1,8 @@
 ---
 title: Cognitive Core current-tree integration review
 date: 2026-09-25
-status: full-snapshot-dry-run-complete-full-acceptance-open
-source_head: 6be0263d121c1e2a7ade92d3127af226c5e0581f
+status: post-fix-cognitive-and-snapshot-dry-run-pass-full-acceptance-open
+source_head: 0a9498e3846a48bbf158bf870957064cdc9bbb11
 ---
 
 # 판정 범위
@@ -48,6 +48,11 @@ canonical ACTIVE로 이행한 것은 아니다. 기존 read-only 상태 endpoint
 
 # 회귀와 증거 정합성
 
+- 독립 migration 수정 후 최신 실행: 전체 `tests/cognitive` **822 collected / 821 passed / 0 failed / 1 skipped / 1 warning**, exit0, 733.65초. [실행 JSON](pytest-cognitive-post-migration-review-2026-09-26.json) 및 [JUnit 원자료](pytest-cognitive-post-migration-review-2026-09-26.xml). 과거 600초 제한 두 번은 timeout이며 PASS로 세지 않고, 세 번째 완주 결과만 판정에 사용한다.
+- 같은 수정 후 트리에 대한 등록 snapshot 전체 read-only migration dry-run은 **56,961 events 전량 처리·검증, exit0, 170.47초**로 완료. [상세 원장](migration-real-post-independent-review-2026-09-26.json). import/mapping/canonical/index/digest/replay/rollback 각각 56,961, errors0, replay 및 rollback rehearsal PASS, source 불변, destructive=false. cognitive JUnit과 migration JSON은 서로 다른 gate 결과로 분리한다.
+- 대상은 등록 snapshot digest `7d69ed65667db079957a9277b59ebcfb232293582beb6d53f267a4f61e726836`; source DB 26,206,208 bytes, SHA-256 `6bc93092b6b476f25f6d4af402a95c4963b4d6d79a04afd2f9df12c8c4aa4fd5`로 전후 같음. snapshot counts: events 56,961, objectives 0, tasks 0. 검증은 observation 56,961건만 다루며 objective/task 실데이터 경로는 미관측이다.
+- migration dry-run 당시 HEAD `0a9498e3846a48bbf158bf870957064cdc9bbb11`; code/test/audit-driver SHA-256의 before/after 일치 여부와 개별 값은 위 JSON에 기록돼 있다. 해당 실행의 mapping digest는 `sha256:a77f7dd8de64a69dbad0d31747c7ef8e2cb7ffc6b53cd556eecd114c62c33d0c`. 문서 변경 이후에도 구현 파일을 수정하지 않았다.
+
 - 수정 전 baseline: 777 passed / 1 skipped.
 - 수정 중 전체 실행: 792 passed / 13 failed / 1 skipped. 실행 중 파일이 변경됐으므로 최종판 결과로 사용하지 않는다.
 - 그13개를 재현한 결과: 12 passed / release 관측 증가 equality1 failed. [재현 로그](qa-final-13-rerun.txt).
@@ -59,7 +64,11 @@ canonical ACTIVE로 이행한 것은 아니다. 기존 read-only 상태 endpoint
 - changed production scope basedpyright:0 errors / 69 warnings. Ruff 및 diff whitespace 검사 PASS.
 - architecture mapping/증거 검사 PASS. 이는 원칙24 중 covered15/partial9라는 **문서·구조 검사**이며 통합 인수 승인과 다르다.
 
-실제 변경 파일은 [final-source-manifest.json](final-source-manifest.json)에 결박한다. HEAD만으로 dirty tree를 대표하지 않는다.
+[final-source-manifest.json](final-source-manifest.json)은 이전 통합 체크포인트 HEAD `6be0263d121c1e2a7ade92d3127af226c5e0581f`의 일부 변경 범위를 기록한 역사 manifest이며 현재 dirty tree 전체를 나타내지 않는다. 최신 full cognitive 실행은 HEAD `0a9498e3846a48bbf158bf870957064cdc9bbb11`의 공유 dirty tree에서 수행됐고, 전체 aggregate hash는 별도 측정하지 않았다. 최신 migration 실행의 개별 source/test/driver hash는 [migration evidence](migration-real-post-independent-review-2026-09-26.json)에 실행 전후로 결박했다. HEAD만으로 dirty tree 전체를 대표한다고 보지 않는다.
+
+커밋 시 pre-commit의 Ruff 검사/포맷, whitespace·EOF·JSON·secret·conflict·case·line-ending 훅은 통과했다. 저장소 repo-wide mypy 훅은 `src/antigravity_k/engine/cognitive_surface_types.py:251`에서 `ActionIntent(operation=...)` 타입 오류로 실패했다. 이 파일은 공유 작업 트리의 이번 migration 커밋 범위 밖 변경이므로 손대거나 포함하지 않았다. 해당 mypy 실패를 기록하고 이 범위의 회귀 시험을 다시 확인한 뒤, 커밋 때 `mypy` 훅만 선택적으로 건너뛰고 나머지 훅은 유지했다. 이는 repo-wide mypy 통과나 전체 release gate를 뜻하지 않는다.
+
+최신 문서 gate 산출물은 [architecture-post-handoff-2026-09-26.json](architecture-post-handoff-2026-09-26.json)이다. 이 run은 16/16 PASS, 269 links, 329 citations, 822 collected 및 36 measured marker 일치를 기록한다. 앞서 언급한 `architecture-current.json`/`.txt`와 구분해 읽는다.
 
 # 독립 검토 상태
 
@@ -82,15 +91,17 @@ QA와 migration/pilot 조사 에이전트도 제한으로 중단됐다. root는 
 
 최적화 후 전체 dry-run 네 번을 새 증거로 보존했다: [첫 run](migration-real-optimized-results.json), [원장형 rerun](migration-real-optimized-results-rerun.json), 중간 감사판 [third run](migration-real-optimized-results-final.json), 최신 고정 스크립트의 [최종 run](migration-real-optimized-results-final-rerun.json). 기존 결과는 덮어쓰지 않았다. 네 실행 모두 같은 snapshot digest `7d69ed65667db079957a9277b59ebcfb232293582beb6d53f267a4f61e726836` 및 56,961 event를 대상으로 CLI exit0/full report PASS/errors0로 종료했다. 최종판은 강화된 전체 success criteria까지 검증한다.
 
-최종 고정 스크립트 run은 CLI exit0, wall 170.95초(보고된 total 170.60초), imported/mapping entries/canonical records/index entries/digests verified/replay 및 rollback 건수 모두 56,961, mapping digest `sha256:e4c99d0bc660e87442ede3cf536ce8854d745b1afb2cc0a8ba14dc781d7f4a75`, rollback rehearsal PASS, 원본 bytes/count 불변, destructive=false였다. 계측상 import48.37초, index0.35초, digest검증31.64초, replay34.57초, rollback55.16초다. 원본 DB는 26,206,208 bytes / SHA-256 `6bc93092b6b476f25f6d4af402a95c4963b4d6d79a04afd2f9df12c8c4aa4fd5`로 전후 같았다. `migration.py` SHA-256 `da604e23b6417cb506d2ee97d7a3a4bc721013928c3c0f859b7c89aa9edbb3e9`, `legacy_adapter.py` `4900a1b538241f7cb4bb17fe516263cc75309acb34e0f8a8af07c780b44cba04`, `store.py` `8c794de8ebba9ec0816a326a3bbda9623b35897e83af397f54aed3006babebce`; migration 시험 `a4e363fb683f629eeeb808260d0c59ac50da665ae6c37e53cd9b4e8876cac195`, 감사 driver SHA-256 `2e5e44ccf63e51a487ce74467a065c18b267733a4ead7c27d0da1736eaf48f12`. 전체 코드/시험/driver 전후 해시는 evidence에 기록돼 동일하다. 매 실행은 새 임시 target을 사용하므로 새 canonical ID가 발급되고 mapping digest가 달라지는 것은 source 변동이 아니다.
+최종 고정 스크립트 run은 CLI exit0, wall 170.95초(보고된 total 170.60초), imported/mapping entries/canonical records/index entries/digests verified/replay 및 rollback 건수 모두 56,961, mapping digest `sha256:e4c99d0bc660e87442ede3cf536ce8854d745b1afb2cc0a8ba14dc781d7f4a75`, rollback rehearsal PASS, 원본 bytes/count 불변, destructive=false였다. 계측상 import48.37초, index0.35초, digest검증31.64초, replay34.57초, rollback55.16초다. 원본 DB는 26,206,208 bytes / SHA-256 `6bc93092b6b476f25f6d4af402a95c4963b4d6d79a04afd2f9df12c8c4aa4fd5`로 전후 같았다. 당시 등록된 `migration.py` SHA-256 `da604e23b6417cb506d2ee97d7a3a4bc721013928c3c0f859b7c89aa9edbb3e9`, `legacy_adapter.py` `4900a1b538241f7cb4bb17fe516263cc75309acb34e0f8a8af07c780b44cba04`, `store.py` `8c794de8ebba9ec0816a326a3bbda9623b35897e83af397f54aed3006babebce`; migration 시험 `a4e363fb683f629eeeb808260d0c59ac50da665ae6c37e53cd9b4e8876cac195`, 감사 driver SHA-256 `2e5e44ccf63e51a487ce74467a065c18b267733a4ead7c27d0da1736eaf48f12`. 이는 그 full-run 당시 코드/시험/driver 해시이며, 아래 독립 검토에서 migration/adapter와 해당 시험이 바뀌었으므로 그 결과를 수정 후 트리의 dry-run 증거로 승격하지 않는다. 매 실행은 새 임시 target을 사용하므로 새 canonical ID 발급과 mapping digest 변화는 source 변동이 아니다.
 
-따라서 등록된 observation-only snapshot의 전체 migration dry-run은 현재 source hash 범위에서 PASS다. 최신 evidence의 `success_criteria_results` 전 항목 true, `overall_acceptance=true`다. 다만 이는 임시 target 검증이지 운영 cutover/destructive apply 인수가 아니다. objectives/tasks는 원본에 0건이라 미관측이다. 2026-09-26에 G2-B 이후 전체 cognitive 회귀 `.venv/bin/python -m pytest tests/cognitive -q`를 실행했다: 817 collected, 804 passed, 12 failed, 1 skipped, 1 warning, 754.92초, exit1. 상세 [회귀 evidence](pytest-cognitive-g2b-2026-09-26.json). 실패 12건은 architecture marker/digest artifact(4), digest drift 재확인·artifact(3), 이에 의존하는 evidence gate(5)에 집중됐다. Architecture review는 cognitive_tests 810≠817 및 digest artifact의 오래된 측정/4개 stale reverification을 보고했다. 실행 전후 source/test Python 573개 파일 aggregate SHA-256은 `205d6323bc62d5ab5e3f0b56ebd8c7d94763378df3dc8240e0fac7bc4f8e15a0`로 동일하며, 실패에 대응한 코드·시험 수정은 하지 않았다. migration/adapter/store targeted 재실행은 48 passed / exit0 (2.51초), migration audit driver Ruff PASS, basedpyright `--level error` 0 errors/warnings/notes / exit0이었다. 이전 809 passed/1 skipped는 G2-B 최적화 전이므로 현재 전체 회귀 실패 상태를 대체하지 않는다. 전체 cognitive suite는 아직 green이 아니다.
+독립 검토에서 두 결함을 합성 fixture로 재현하고 고쳤다. (1) `rollback-rehearsal` 고정 하위 경로를 재사용·재귀 삭제해 선행 사용자 파일을 지울 수 있어, target 안에 매 실행 새 `mkdtemp` scratch를 만들고 그 디렉터리만 정리한다. (2) objective/task mapping을 저장한 직후 canonical publish가 끊기면 재시도가 기존 mapping ID를 복구하지 못하던 문제를, 기존 ID로 record를 재작성하고 결정적 transaction ID를 사용해 staged transaction 재시도도 복구하도록 고쳤다. 증거: [추가 regression JUnit](pytest-migration-independent-review-2026-09-26.xml); migration/adapter/store/protection/sandbox 묶음 100 passed, exit0(4.64초), Ruff PASS, changed files basedpyright `--level error` 0 errors/warnings/notes. Scratch sentinel 보존과 단건 API 및 migration batch API의 commit 중단/재시도 경계를 시험한다.
+
+2026-09-26 최초 G2-B 이후 전체 회귀는 817 collected, 804 passed, 12 failed, 1 skipped, 754.92초, exit1이었다. 실패 원인은 architecture marker(810≠817), 오래된 digest 측정과 4개 stale reverification 및 그에 의존하는 evidence gate로 확인했다. 당시 관련 migration/adapter/store/protection 95 passed 뒤 T01b/T02/T12 10개 pin을 재확인했고, 이전 source hash에서 전체 cognitive run은 817 collected, **816 passed / 0 failed / 1 skipped / 1 warning**, 756.31초, exit0이었다. 이는 [과거 JSON/JUnit](pytest-cognitive-g2b-2026-09-26-final.json)을 그대로 보존한다. 이후 독립 검토가 source/test를 수정했고, 그 수정 후 최신 전체 cognitive 및 snapshot 결과는 위 「회귀와 증거 정합성」에 각각 별도 evidence로 기록했다. 수정 후 collect-only는 **822**건(exit0, 1.22초)이고 Architecture Review measured marker를 822로 맞췄다. 변경된 migration/adapter/store/protection/sandbox focused set은 100 passed/exit0, Ruff PASS, changed-module basedpyright `--level error` 0 errors/warnings/notes였다. 현재 pin은 match14/reverified36/drift0/stale0/missing0, digest gate exit0이다. collect-only 822건과 digest 재확인 36건을 architecture marker에 반영하고 handoff 문서를 정합화한 뒤 `architecture_review.py` 16 checks를 재실행해 전부 PASS했다(최근 실행은 아래 별도 JSON 기록; 링크·인용 수와 measured marker 일치를 포함). 기존 `architecture-current.json`/`.txt`는 810개 수집 및 234 links를 기록한 이전 시점 산출물이므로 최신 결과로 보지 않는다. 과거 full suite에서 기록한 Python aggregate SHA-256 `205d6323bc62d5ab5e3f0b56ebd8c7d94763378df3dc8240e0fac7bc4f8e15a0`은 이전 트리용 역사값이며 현재 실행 aggregate로 재사용하지 않는다. focused gate subset의 360초 timeout 및 앞선 두 cognitive 전체 실행 timeout은 결과 PASS가 아니며, 완주한 최신 cognitive run이 이를 대체한다. 과거 Ruff/basedpyright 및 migration dry-run 수치도 각 당시 hash 범위에서만 유효하다. G1의 809 passed/1 skipped는 최적화 전 기준선이다.
 
 프로젝트 지침상 `KGBinaryValidator.validate()`가 `OK=True`여야 하지만 현재 checkout에서 validator 구현을 찾지 못해 이 gate는 NOT_RUN이다. 이번 migration은 reward/score를 갱신하지 않아 reward decay/cap 적용 대상은 없었다. 다음 인수자는 validator 위치/실행 가능성을 확인해 OK 결과를 별도 기록해야 하며, 그 전까지 프로젝트 전체 KG 인수는 열어 둔다.
 
 # 후속 주요 작업
 
-1. G2-B: 구현 및 현재 snapshot 전체 dry-run PASS. 최적화 이후 전체 cognitive 회귀는 804/817 PASS·12 FAIL·1 SKIP으로 종료했다. 다음 인수자는 ownership이 확인된 뒤 architecture/digest artifact 및 측정 마커를 승인된 절차로 갱신하고 전체 suite를 다시 실행해야 한다. 이후 독립 코드/hash 재검토가 남으며, objectives/tasks 표본이 실제로 생기면 해당 경로를 별도 검증.
+1. G2-B: bounded batching 구현과 독립 수정 후 gate 둘 다 최신 작업 트리에서 완주했다. [전체 cognitive 회귀](pytest-cognitive-post-migration-review-2026-09-26.json)는 822 collected, 821 passed/0 failed/1 skipped, 733.65초, exit0; [56,961행 등록 snapshot full read-only dry-run](migration-real-post-independent-review-2026-09-26.json)은 exit0, 170.47초, 모든 record/index/digest/replay/rollback 건수 56,961, source 불변, destructive=false다. 두 결과는 서로 별도 범위다. destructive/운영 인수는 열려 있고 source에 objectives/tasks가 없어 해당 실제 데이터 분포는 미관측이다. KG validator도 별도 open.
 2. LP-A/B: actual trial ledger/예산/표본 검증과 실제 모델→제한 도구→관찰→검증된 정책 사슬 구현. provider는 존재하며 구현 부재가 병목이다.
 3. LP-C/D: 별도 smoke 뒤 사전 등록한 paired pilot과 독립 raw ledger/오염 검증. 기존 fixture 수치를 live로 재사용하지 않는다.
 4. G4: 신뢰하는 project/store/profile/executor composition 및 운영 rollout 검토. default OFF 유지.

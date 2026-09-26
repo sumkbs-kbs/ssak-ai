@@ -131,6 +131,72 @@ def test_objective_and_task_mapping(tmp_path: Path) -> None:
     assert adapter.origins(KIND_TASK)[0].canonical_id == action.id
 
 
+@pytest.mark.parametrize("kind", ["objective", "task"])
+@pytest.mark.parametrize("update_index", [False, True])
+def test_single_record_retry_repairs_saved_mapping_after_commit_interruption(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    kind: str,
+    update_index: bool,
+) -> None:
+    adapter, canonical, _, _ = make_adapter(tmp_path)
+    legacy_id = f"{kind}-interrupted"
+    objective = Objective(
+        objective_id=legacy_id,
+        project_id=LEGACY_PROJECT,
+        title="interrupted objective",
+        description="설명",
+        priority=1,
+        status=ObjectiveStatus.PENDING,
+        trajectory_id="traj-1",
+        created_at="2026-09-22T03:00:00+00:00",
+        updated_at="2026-09-22T03:00:00+00:00",
+    )
+
+    def fail_before_publish(*args: object, **kwargs: object) -> None:
+        raise RuntimeError("simulated commit interruption")
+
+    commit_method = "commit" if update_index else "_commit_locked"
+    with monkeypatch.context() as patch:
+        patch.setattr(canonical, commit_method, fail_before_publish)
+        with pytest.raises(RuntimeError, match="simulated"):
+            if kind == "objective":
+                adapter.import_objective(objective, update_index=update_index)
+            else:
+                adapter.import_task_submission(
+                    legacy_id,
+                    project_id=LEGACY_PROJECT,
+                    prompt_digest="sha256:" + "d" * 64,
+                    update_index=update_index,
+                )
+
+    mapping_kind = KIND_OBJECTIVE if kind == "objective" else KIND_TASK
+    canonical_id = adapter.map_legacy_id(mapping_kind, legacy_id)
+    assert canonical_id is not None
+    assert canonical.read(canonical_id) is None
+    staged_manifests = tuple(canonical.staging_dir.glob("*/manifest.json"))
+    assert len(staged_manifests) == 1
+    transaction_id = staged_manifests[0].parent.name
+
+    if kind == "objective":
+        repaired = adapter.import_objective(objective, update_index=update_index)
+    else:
+        repaired = adapter.import_task_submission(
+            legacy_id,
+            project_id=LEGACY_PROJECT,
+            prompt_digest="sha256:" + "d" * 64,
+            update_index=update_index,
+        )
+
+    assert repaired.id == canonical_id
+    assert canonical.read(canonical_id) == repaired
+    assert canonical.count_committed() == 1
+    committed = canonical.committed_manifests()
+    assert len(committed) == 1
+    assert committed[0].transaction_id == transaction_id
+    assert tuple(canonical.staging_dir.glob("*/manifest.json")) == staged_manifests
+
+
 def test_unknown_legacy_task_status_rejected(tmp_path: Path) -> None:
     adapter, _, _, _ = make_adapter(tmp_path)
     with pytest.raises(UnmappedLegacyValue):

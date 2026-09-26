@@ -1,0 +1,215 @@
+{
+  "head": "0a9498e3846a48bbf158bf870957064cdc9bbb11",
+  "code_sha256": {
+    "src/antigravity_k/engine/cognitive/migration.py": "194fc133c8d7539e81de7cce4b4818f3b14b5dcec3bf9d59f6170ab2f61e19d2",
+    "src/antigravity_k/engine/cognitive/legacy_adapter.py": "fc589554a8cdbdc0cf095265a5c232a886077754b67dfcede0e1089e24b06a69",
+    "src/antigravity_k/engine/cognitive/store.py": "8c794de8ebba9ec0816a326a3bbda9623b35897e83af397f54aed3006babebce",
+    "src/antigravity_k/engine/cognitive/protected_targets.py": "1223efbfbfdde20e4ba5dd067d6825d5a0bce53dd4f6890ac5d05c57c9b4eb8f",
+    "scripts/migrate_legacy_to_canonical.py": "23df5ed576da56a2bfa4b6c8aa1f53f06fa1846f0e6255addaa717a5c9d706cd"
+  },
+  "test_sha256": {
+    "tests/cognitive/test_migration.py": "99ca6089730d6f6c29cba56dfd9553b9e4c90e6be410a4254a64eb622c98edc2",
+    "tests/cognitive/test_legacy_adapter.py": "c4d995f3d789f206a21cc354ad6b1d11c32be445bf6092bea84506bede419a9c",
+    "tests/cognitive/test_store.py": "8ac3a12b244aae5315cac169e226c64a0b179284e36c989138c72828f7b9b1a9"
+  },
+  "audit_driver_sha256": "2e5e44ccf63e51a487ce74467a065c18b267733a4ead7c27d0da1736eaf48f12",
+  "source_before": [
+    [
+      "agency.db",
+      26206208,
+      "6bc93092b6b476f25f6d4af402a95c4963b4d6d79a04afd2f9df12c8c4aa4fd5"
+    ]
+  ],
+  "source_counts_before": [
+    [
+      "agency_events",
+      56961
+    ],
+    [
+      "agency_objectives",
+      0
+    ],
+    [
+      "agency_objective_tasks",
+      0
+    ]
+  ],
+  "source_open_mode": "ro; consistent sqlite backup; no checkpoint",
+  "scope": "full snapshot probe; no sample fallback in this optimized run",
+  "run_started_at": "2026-09-26T01:30:26.579707+00:00",
+  "probe_timeout_seconds": 240,
+  "command": [
+    ".venv/bin/python",
+    "scripts/migrate_legacy_to_canonical.py",
+    "--source",
+    "<temporary snapshot>",
+    "--target",
+    "<temporary target>",
+    "--output",
+    "<temporary report>"
+  ],
+  "expected_snapshot_digest": "7d69ed65667db079957a9277b59ebcfb232293582beb6d53f267a4f61e726836",
+  "output": "docs/ssak-ai-core/evidence/2026-09-25-review/migration-real-post-independent-review-2026-09-26.json",
+  "success_criteria": {
+    "full_exit_code": 0,
+    "full_report_passed": true,
+    "zero_errors": true,
+    "imported_matches_source_counts": true,
+    "mapping_entries_match_imported": true,
+    "record_index_digest_counts_match": true,
+    "idempotent_replay": true,
+    "rollback_rehearsed": true,
+    "rollback_record_count_matches": true,
+    "source_bytes_and_counts_unchanged": true,
+    "tracked_hashes_unchanged": true,
+    "destructive_apply_absent": true
+  },
+  "snapshot_digest": "7d69ed65667db079957a9277b59ebcfb232293582beb6d53f267a4f61e726836",
+  "snapshot_counts": [
+    [
+      "agency_events",
+      56961
+    ],
+    [
+      "agency_objectives",
+      0
+    ],
+    [
+      "agency_objective_tasks",
+      0
+    ]
+  ],
+  "expected_imported": {
+    "events": 56961,
+    "objectives": 0,
+    "tasks": 0
+  },
+  "event_types": [
+    [
+      "observation",
+      56961
+    ]
+  ],
+  "schema": [
+    [
+      "agency_controls",
+      "CREATE TABLE agency_controls (project_id TEXT PRIMARY KEY, paused INTEGER NOT NULL DEFAULT 0)"
+    ],
+    [
+      "agency_events",
+      "CREATE TABLE agency_events (event_id INTEGER PRIMARY KEY AUTOINCREMENT, project_id TEXT NOT NULL, trajectory_id TEXT NOT NULL, branch_id TEXT NOT NULL, parent_event_id INTEGER, event_type TEXT NOT NULL, payload_json TEXT NOT NULL, sensitivity TEXT NOT NULL, created_at TEXT NOT NULL)"
+    ],
+    [
+      "agency_objective_tasks",
+      "CREATE TABLE agency_objective_tasks (task_id TEXT PRIMARY KEY, objective_id TEXT NOT NULL, project_id TEXT NOT NULL, trajectory_id TEXT NOT NULL, created_at TEXT NOT NULL)"
+    ],
+    [
+      "agency_objectives",
+      "CREATE TABLE agency_objectives (objective_id TEXT PRIMARY KEY, project_id TEXT NOT NULL, title TEXT NOT NULL, description TEXT NOT NULL, priority INTEGER NOT NULL, status TEXT NOT NULL, trajectory_id TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)"
+    ],
+    [
+      "agency_task_results",
+      "CREATE TABLE agency_task_results (task_id TEXT PRIMARY KEY, status TEXT NOT NULL, created_at TEXT NOT NULL)"
+    ],
+    [
+      "sqlite_sequence",
+      "CREATE TABLE sqlite_sequence(name,seq)"
+    ]
+  ],
+  "unsupported_event_types": [],
+  "full_exit_code": 0,
+  "full_probe_status": "exit_0",
+  "full_probe_seconds": 170.4668734576553,
+  "full_probe_record_files": 56961,
+  "full_report": {
+    "imported": {
+      "events": 56961,
+      "objectives": 0,
+      "tasks": 0
+    },
+    "mapping_entries": 56961,
+    "mapping_digest": "sha256:a77f7dd8de64a69dbad0d31747c7ef8e2cb7ffc6b53cd556eecd114c62c33d0c",
+    "canonical_record_count": 56961,
+    "index_rebuilt": 56961,
+    "digests_verified": 56961,
+    "idempotent_replay": true,
+    "rollback_rehearsed": true,
+    "rollback_record_count": 56961,
+    "source_unchanged": true,
+    "source_counts_match_imports": true,
+    "destructive_executed": false,
+    "passed": true,
+    "complete": true,
+    "timings_seconds": {
+      "digest_verification": 31.37435575015843,
+      "idempotent_replay": 34.25552712474018,
+      "identity_and_mapping_summary": 0.4832276660017669,
+      "import": 48.486797666177154,
+      "index_rebuild": 0.36718595772981644,
+      "rollback_rehearsal": 55.07790379086509,
+      "source_snapshot_after": 0.010206833016127348,
+      "source_snapshot_before": 0.010469666682183743,
+      "total": 170.06567445537075
+    },
+    "errors": [],
+    "warnings": [
+      "mapping manifest를 새로 만들었다 — project canonical ID는 이 root에서 발급되며, root를 옮길 때는 mapping manifest를 함께 옮겨야 identity가 유지된다",
+      "legacy task가 0건이다 — task 경로는 이번 dry-run에서 관측되지 않았다"
+    ]
+  },
+  "full_error_count": 0,
+  "source_after": [
+    [
+      "agency.db",
+      26206208,
+      "6bc93092b6b476f25f6d4af402a95c4963b4d6d79a04afd2f9df12c8c4aa4fd5"
+    ]
+  ],
+  "source_counts_after": [
+    [
+      "agency_events",
+      56961
+    ],
+    [
+      "agency_objectives",
+      0
+    ],
+    [
+      "agency_objective_tasks",
+      0
+    ]
+  ],
+  "source_bytes_unchanged_including_wal": true,
+  "source_counts_unchanged": true,
+  "code_sha256_after": {
+    "src/antigravity_k/engine/cognitive/migration.py": "194fc133c8d7539e81de7cce4b4818f3b14b5dcec3bf9d59f6170ab2f61e19d2",
+    "src/antigravity_k/engine/cognitive/legacy_adapter.py": "fc589554a8cdbdc0cf095265a5c232a886077754b67dfcede0e1089e24b06a69",
+    "src/antigravity_k/engine/cognitive/store.py": "8c794de8ebba9ec0816a326a3bbda9623b35897e83af397f54aed3006babebce",
+    "src/antigravity_k/engine/cognitive/protected_targets.py": "1223efbfbfdde20e4ba5dd067d6825d5a0bce53dd4f6890ac5d05c57c9b4eb8f",
+    "scripts/migrate_legacy_to_canonical.py": "23df5ed576da56a2bfa4b6c8aa1f53f06fa1846f0e6255addaa717a5c9d706cd"
+  },
+  "test_sha256_after": {
+    "tests/cognitive/test_migration.py": "99ca6089730d6f6c29cba56dfd9553b9e4c90e6be410a4254a64eb622c98edc2",
+    "tests/cognitive/test_legacy_adapter.py": "c4d995f3d789f206a21cc354ad6b1d11c32be445bf6092bea84506bede419a9c",
+    "tests/cognitive/test_store.py": "8ac3a12b244aae5315cac169e226c64a0b179284e36c989138c72828f7b9b1a9"
+  },
+  "audit_driver_sha256_after": "2e5e44ccf63e51a487ce74467a065c18b267733a4ead7c27d0da1736eaf48f12",
+  "success_criteria_results": {
+    "full_exit_code": true,
+    "full_report_passed": true,
+    "zero_errors": true,
+    "imported_matches_source_counts": true,
+    "mapping_entries_match_imported": true,
+    "mapping_digest_present": true,
+    "record_index_digest_counts_match": true,
+    "idempotent_replay": true,
+    "rollback_rehearsed": true,
+    "rollback_record_count_matches": true,
+    "source_bytes_and_counts_unchanged": true,
+    "tracked_hashes_unchanged": true,
+    "destructive_apply_absent": true
+  },
+  "overall_acceptance": true,
+  "temporary_private_artifacts_removed": true,
+  "run_finished_at": "2026-09-26T01:33:20.887583+00:00"
+}

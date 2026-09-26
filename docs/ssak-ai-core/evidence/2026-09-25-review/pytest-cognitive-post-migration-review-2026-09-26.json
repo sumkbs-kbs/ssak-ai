@@ -1,0 +1,43 @@
+{
+  "date": "2026-09-26",
+  "branch": "codex/m1-task-events",
+  "head": "0a9498e3846a48bbf158bf870957064cdc9bbb11",
+  "working_tree": "shared dirty checkout; result applies to the tree exercised by this run",
+  "command": ".venv/bin/python -m pytest tests/cognitive -q --junitxml=docs/ssak-ai-core/evidence/2026-09-25-review/pytest-cognitive-post-migration-review-2026-09-26.xml",
+  "exit_code": 0,
+  "duration_seconds": 733.65,
+  "collected": 822,
+  "passed": 821,
+  "failed": 0,
+  "skipped": 1,
+  "warnings": 1,
+  "junit_xml": "pytest-cognitive-post-migration-review-2026-09-26.xml",
+  "separate_migration_evidence": "migration-real-post-independent-review-2026-09-26.json",
+  "timed_out_attempts": [
+    {
+      "command": ".venv/bin/python -m pytest tests/cognitive -q --junitxml=docs/ssak-ai-core/evidence/2026-09-25-review/pytest-cognitive-post-migration-review-2026-09-26.xml",
+      "timeout_seconds": 600,
+      "status": "tool_timeout",
+      "pass_claim": false
+    },
+    {
+      "command": ".venv/bin/python -m pytest tests/cognitive -q --junitxml=docs/ssak-ai-core/evidence/2026-09-25-review/pytest-cognitive-post-migration-review-2026-09-26.xml",
+      "timeout_seconds": 600,
+      "status": "tool_timeout",
+      "pass_claim": false
+    }
+  ],
+  "observations": [
+    "The completed full tests/cognitive run exercised the post-independent-review tree and passed; the first two tool-limited attempts are not counted as test results.",
+    "One cognitive test remains skipped.",
+    "The run emitted one Starlette/httpx TestClient deprecation warning.",
+    "The registered 56,961-event snapshot was separately verified by the linked post-fix read-only full migration dry-run; this test result does not merge the migration scope into pytest."
+  ],
+  "limits": [
+    "This is the full tests/cognitive scope, not the repository-wide tests/ suite.",
+    "This JSON records the full tests/cognitive test scope only. The registered snapshot migration dry-run is a separate successful result in migration-real-post-independent-review-2026-09-26.json.",
+    "No KGBinaryValidator.validate() -> OK=True result, destructive migration, live cutover, provider pilot, or operational release is claimed.",
+    "A pre/post aggregate source/test hash was not recorded for this run; the committed-code historical aggregate must not be reused as the current working-tree hash.",
+    "The migration dry-run code/test/driver hashes are bound in the separate migration evidence; this pytest run did not record a complete source/test aggregate hash."
+  ]
+}

@@ -21,6 +21,7 @@ from antigravity_k.engine.cognitive.store import (
     CanonicalStoreError,
     DuplicateRecordError,
     GitCommitError,
+    ManifestEntry,
     parse_record_markdown,
     record_relative_path,
     render_record_markdown,
@@ -76,6 +77,42 @@ def test_commit_publishes_and_reads_back(tmp_path: Path) -> None:
     assert [record.id for record in store.list_committed(project)] == sorted([evidence.id, judgment.id])
     assert store.verify_digests() == 2
     assert store.rebuild_index() == 2
+
+
+def test_bulk_reads_and_resolves_use_committed_manifest_snapshot(tmp_path: Path) -> None:
+    store = make_store(tmp_path)
+    project = project_id()
+    evidence = build_evidence(project)
+    judgment = build_judgment(project, evidence.id)
+    store.commit_records([evidence, judgment])
+
+    records = store.read_many([judgment.id, evidence.id, judgment.id, "missing:record"])
+    targets = store.resolve_many([evidence.id, judgment.id, "missing:record"])
+
+    assert tuple(records) == (judgment.id, evidence.id)
+    assert records[judgment.id] == judgment
+    assert targets[evidence.id].entity_type is EntityType.EVIDENCE
+    assert targets[judgment.id].project_id == project
+    assert "missing:record" not in targets
+    assert store.count_committed() == 2
+
+
+def test_batch_commit_can_defer_index_rebuild_until_migration_finishes(tmp_path: Path) -> None:
+    store = make_store(tmp_path)
+    goal = build_goal(project_id())
+    committed: dict[str, ManifestEntry] = {}
+
+    store._commit_records_batch(  # noqa: SLF001 - dedicated migration bulk-write path
+        [goal],
+        committed_snapshot=committed,
+        rebuild_index=False,
+    )
+
+    assert goal.id in committed
+    assert store.read(goal.id) == goal
+    assert not store.index_path.exists()
+    assert store.rebuild_index() == 1
+    assert store.index_path.exists()
 
 
 def test_record_files_are_markdown_with_frontmatter(tmp_path: Path) -> None:

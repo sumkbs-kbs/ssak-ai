@@ -21,7 +21,10 @@ import hashlib
 import json
 import shutil
 import sqlite3
-from collections.abc import Mapping, Sequence
+import tempfile
+import time
+from collections.abc import Iterator, Mapping, Sequence
+from contextlib import closing
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Final
@@ -153,25 +156,35 @@ class LegacySQLiteSource:
             counts=self.counts(),
         )
 
-    def events(self) -> tuple[LegacyEventRow, ...]:
+    def event_batches(self, batch_size: int = 2048) -> Iterator[tuple[LegacyEventRow, ...]]:
+        """source를 read-only cursor에서 일정 메모리 상한의 ordered batches로 읽는다."""
+
+        if batch_size <= 0:
+            raise ValueError("batch_size must be positive")
         if EVENTS_TABLE not in self.tables():
-            return ()
-        with self._connect() as connection:
-            rows = connection.execute(
+            return
+        with closing(self._connect()) as connection:
+            cursor = connection.execute(
                 f"SELECT event_id, project_id, trajectory_id, parent_event_id, event_type, payload_json"  # noqa: S608
                 f" FROM {EVENTS_TABLE} ORDER BY event_id"
-            ).fetchall()
-        return tuple(
-            LegacyEventRow(
-                event_id=int(row["event_id"]),
-                project_id=str(row["project_id"]),
-                trajectory_id=str(row["trajectory_id"]),
-                parent_event_id=(int(row["parent_event_id"]) if row["parent_event_id"] is not None else None),
-                event_type=str(row["event_type"]),
-                payload=_safe_json(row["payload_json"]),
             )
-            for row in rows
-        )
+            while rows := cursor.fetchmany(batch_size):
+                yield tuple(
+                    LegacyEventRow(
+                        event_id=int(row["event_id"]),
+                        project_id=str(row["project_id"]),
+                        trajectory_id=str(row["trajectory_id"]),
+                        parent_event_id=(int(row["parent_event_id"]) if row["parent_event_id"] is not None else None),
+                        event_type=str(row["event_type"]),
+                        payload=_safe_json(row["payload_json"]),
+                    )
+                    for row in rows
+                )
+
+    def events(self) -> tuple[LegacyEventRow, ...]:
+        """호환 단건 API. 대용량 migration은 ``event_batches``를 사용한다."""
+
+        return tuple(event for batch in self.event_batches() for event in batch)
 
     def objectives(self) -> tuple[LegacyObjectiveRow, ...]:
         if OBJECTIVES_TABLE not in self.tables():
@@ -248,16 +261,24 @@ class MigrationReport:
     digests_verified: int
     idempotent_replay: bool
     rollback_rehearsed: bool
+    rollback_record_count: int
     mapping_carried_over: bool
     source_unchanged: bool
     destructive_executed: bool
     destructive_reason: str
     errors: tuple[str, ...] = field(default_factory=tuple)
     warnings: tuple[str, ...] = field(default_factory=tuple)
+    timings_seconds: Mapping[str, float] = field(default_factory=dict)
+
+    @property
+    def source_counts_match_imports(self) -> bool:
+        return dict(self.imported) == {
+            name: self.plan.source.counts.get(name, 0) for name in ("events", "objectives", "tasks")
+        }
 
     @property
     def complete(self) -> bool:
-        return not self.errors
+        return not self.errors and self.source_counts_match_imports
 
     @property
     def passed(self) -> bool:
@@ -265,8 +286,11 @@ class MigrationReport:
             self.complete
             and self.source_unchanged
             and not self.destructive_executed
-            and self.index_rebuilt >= self.canonical_record_count
+            and self.index_rebuilt == self.canonical_record_count
             and self.digests_verified == self.canonical_record_count
+            and self.idempotent_replay
+            and self.rollback_rehearsed
+            and self.rollback_record_count == self.canonical_record_count
         )
 
     def as_mapping(self) -> Mapping[str, object]:
@@ -282,14 +306,17 @@ class MigrationReport:
             "digests_verified": self.digests_verified,
             "idempotent_replay": self.idempotent_replay,
             "rollback_rehearsed": self.rollback_rehearsed,
+            "rollback_record_count": self.rollback_record_count,
             "mapping_carried_over": self.mapping_carried_over,
             "source_unchanged": self.source_unchanged,
             "destructive_executed": self.destructive_executed,
             "destructive_reason": self.destructive_reason,
             "complete": self.complete,
+            "source_counts_match_imports": self.source_counts_match_imports,
             "passed": self.passed,
             "errors": list(self.errors),
             "warnings": list(self.warnings),
+            "timings_seconds": dict(self.timings_seconds),
         }
 
     def to_json(self) -> str:
@@ -298,6 +325,8 @@ class MigrationReport:
 
 class LegacyMigrationRunner:
     """legacy SQLite를 별도 root의 canonical store로 옮기는 **dry-run** runner."""
+
+    EVENT_BATCH_SIZE: Final[int] = 1024
 
     def __init__(
         self,
@@ -327,7 +356,10 @@ class LegacyMigrationRunner:
 
     # ── 실행 ────────────────────────────────────────────
     def run(self) -> MigrationReport:
+        timings: dict[str, float] = {}
+        started = time.perf_counter()
         before = self.source.snapshot()
+        timings["source_snapshot_before"] = time.perf_counter() - started
         # mapping manifest가 이미 있으면 identity를 이어받는다(project canonical ID 유지).
         mapping_carried_over = self.mapping_path.exists()
         errors: list[str] = []
@@ -335,16 +367,44 @@ class LegacyMigrationRunner:
         self.target_root.mkdir(parents=True, exist_ok=True)
         store = self._target_store()
         adapter = LegacyAgencyAdapter(store, mapping_path=self.mapping_path)
+        store_snapshot = store._committed_entries()  # noqa: SLF001 - mutable committed snapshot shared by batches
 
-        for row in self.source.events():
+        started = time.perf_counter()
+        for batch in self.source.event_batches(self.EVENT_BATCH_SIZE):
             try:
-                adapter.import_event(row)
-                imported["events"] += 1
-            except (LegacyAdapterError, ValueError) as exc:
-                errors.append(f"event {row.event_id} ({row.event_type}): {exc}")
+                records = adapter.import_events(
+                    batch,
+                    update_index=False,
+                    committed_snapshot=store_snapshot,
+                )
+                imported["events"] += len(records)
+            except (LegacyAdapterError, ValueError) as batch_error:
+                errors.append(f"event batch {batch[0].event_id}-{batch[-1].event_id}: {batch_error}")
+                # 유효하지 않은 row만 찾아 batch 원자성을 보존하고 조용한 부분 commit을 금지한다.
+                valid_rows: list[LegacyEventRow] = []
+                for row in batch:
+                    try:
+                        adapter.import_events(
+                            (row,),
+                            update_index=False,
+                            committed_snapshot=store_snapshot,
+                        )
+                    except (LegacyAdapterError, ValueError) as exc:
+                        errors.append(f"event {row.event_id} ({row.event_type}): {exc}")
+                    else:
+                        valid_rows.append(row)
+                if len(valid_rows) == len(batch):
+                    errors.append(
+                        f"event batch {batch[0].event_id}-{batch[-1].event_id} failed atomically: {batch_error}"
+                    )
+                imported["events"] += len(valid_rows)
         for objective in self.source.objectives():
             try:
-                adapter.import_objective(objective)
+                adapter.import_objective(
+                    objective,
+                    update_index=False,
+                    committed_snapshot=store_snapshot,
+                )
                 imported["objectives"] += 1
             except (LegacyAdapterError, ValueError) as exc:
                 errors.append(f"objective {objective.objective_id}: {exc}")
@@ -355,22 +415,38 @@ class LegacyMigrationRunner:
                     project_id=task.project_id,
                     prompt_digest=task.prompt_digest,
                     status=task.status,
+                    update_index=False,
+                    committed_snapshot=store_snapshot,
                 )
                 imported["tasks"] += 1
             except (LegacyAdapterError, ValueError) as exc:
                 errors.append(f"task {task.task_id}: {exc}")
+        timings["import"] = time.perf_counter() - started
 
+        started = time.perf_counter()
         index_rebuilt = store.rebuild_index()
+        timings["index_rebuild"] = time.perf_counter() - started
+        started = time.perf_counter()
         verified = store.verify_digests()
-        record_count = len(store.list_committed())
+        timings["digest_verification"] = time.perf_counter() - started
+        started = time.perf_counter()
+        record_count = store.count_committed()
         mapping_digest = _mapping_digest(adapter)
+        timings["identity_and_mapping_summary"] = time.perf_counter() - started
 
         # 재실행 idempotency: 같은 store에 다시 import해도 record·매핑이 늘지 않아야 한다.
+        started = time.perf_counter()
         replay_records = self._replay(store, adapter, record_count)
-        # 되돌림 rehearsal은 별도 scratch에서만 수행하고 dry-run 출력은 보존한다.
-        rollback_ok = self.rehearse_rollback()
+        timings["idempotent_replay"] = time.perf_counter() - started
+        # 되돌림 rehearsal은 별도 scratch에서만 수행하고 dry-run 출력을 보존한다.
+        started = time.perf_counter()
+        rollback_ok, rollback_record_count = self.rehearse_rollback()
+        timings["rollback_rehearsal"] = time.perf_counter() - started
 
+        started = time.perf_counter()
         after = self.source.snapshot()
+        timings["source_snapshot_after"] = time.perf_counter() - started
+        timings["total"] = sum(timings.values())
         return MigrationReport(
             plan=MigrationPlan(source=before, target_root=str(self.target_root), mode=self.mode),
             imported=imported,
@@ -381,12 +457,14 @@ class LegacyMigrationRunner:
             digests_verified=verified,
             idempotent_replay=replay_records == record_count,
             rollback_rehearsed=rollback_ok,
+            rollback_record_count=rollback_record_count,
             mapping_carried_over=mapping_carried_over,
             source_unchanged=before.digest == after.digest and before.counts == after.counts,
             destructive_executed=False,
             destructive_reason="dry-run 전용 — in-place 변환·삭제는 사람 결정으로 분리한다",
             errors=tuple(errors),
             warnings=tuple(_warnings(before, mapping_carried_over=mapping_carried_over)),
+            timings_seconds=timings,
         )
 
     def _target_store(self, *, scratch: Path | None = None) -> CanonicalStore:
@@ -403,14 +481,23 @@ class LegacyMigrationRunner:
     def _replay(self, store: CanonicalStore, adapter: LegacyAgencyAdapter, baseline: int) -> int:
         """같은 store·같은 mapping으로 다시 import해 record 수가 늘지 않는지 본다."""
 
-        for row in self.source.events():
+        store_snapshot = store._committed_entries()  # noqa: SLF001 - replay uses one mutable manifest snapshot
+        for batch in self.source.event_batches(self.EVENT_BATCH_SIZE):
             try:
-                adapter.import_event(row)
+                adapter.import_events(
+                    batch,
+                    update_index=False,
+                    committed_snapshot=store_snapshot,
+                )
             except (LegacyAdapterError, ValueError):
-                continue
+                for row in batch:
+                    try:
+                        adapter.import_events((row,), update_index=False, committed_snapshot=store_snapshot)
+                    except (LegacyAdapterError, ValueError):
+                        continue
         for objective in self.source.objectives():
             try:
-                adapter.import_objective(objective)
+                adapter.import_objective(objective, update_index=False, committed_snapshot=store_snapshot)
             except (LegacyAdapterError, ValueError):
                 continue
         for task in self.source.tasks():
@@ -420,37 +507,92 @@ class LegacyMigrationRunner:
                     project_id=task.project_id,
                     prompt_digest=task.prompt_digest,
                     status=task.status,
+                    update_index=False,
+                    committed_snapshot=store_snapshot,
                 )
             except (LegacyAdapterError, ValueError):
                 continue
         _ = baseline
-        return len(store.list_committed())
+        return store.count_committed()
 
     # 주의: canonical project ID는 최초 매핑 시 발급되는 random ID라서 **다른 root에서 새로 만들면 달라진다**.
     # identity를 유지하려면 mapping manifest를 함께 넘겨야 한다(mapping_path).
-    def rehearse_rollback(self) -> bool:
-        """migration 출력 root를 통째로 지워도 source가 그대로인지 확인한다.
+    def rehearse_rollback(self) -> tuple[bool, int]:
+        """임시 target을 삭제해도 기존 migration 산출물과 source가 그대로인지 확인한다.
 
-        실제 dry-run 출력은 건드리지 않고 전용 scratch root에 한 번 더 옮긴 뒤 삭제한다 —
-        "되돌릴 수 있는가"만 관찰하고 이미 만든 결과는 보존한다.
+        매 회차 새로 독점 생성한 scratch만 사용·정리한다. target 아래의 고정 경로를 재사용하면
+        선행 파일을 rehearsal 산출물로 오인해 지울 수 있으므로 `mkdtemp`로 경로를 격리한다.
         """
 
-        scratch = self.target_root / "rollback-rehearsal"
-        scratch.mkdir(parents=True, exist_ok=True)
+        before = self.source.snapshot()
+        self.target_root.mkdir(parents=True, exist_ok=True)
+        scratch = Path(tempfile.mkdtemp(prefix=".rollback-rehearsal-", dir=self.target_root))
+        try:
+            rehearsal_ok, discarded = self._populate_rollback_scratch(scratch)
+        finally:
+            shutil.rmtree(scratch, ignore_errors=True)
+        after = self.source.snapshot()
+        passed = (
+            rehearsal_ok and not scratch.exists() and before.digest == after.digest and after.counts == before.counts
+        )
+        return passed, discarded
+
+    def _populate_rollback_scratch(self, scratch: Path) -> tuple[bool, int]:
+        """독점 scratch에 source를 옮기고 지우기 전 검증한다."""
+
         store = self._target_store(scratch=scratch)
         adapter = LegacyAgencyAdapter(store, mapping_path=scratch / "legacy" / "agency_map.json")
-        for row in self.source.events():
+        store_snapshot = store._committed_entries()  # noqa: SLF001 - mutable rollback snapshot
+        imported_record_ids: set[str] = set()
+        errors: list[str] = []
+        for batch in self.source.event_batches(self.EVENT_BATCH_SIZE):
             try:
-                adapter.import_event(row)
-            except (LegacyAdapterError, ValueError):
-                continue
-        before = self.source.snapshot()
-        discarded = len(store.list_committed())
-        shutil.rmtree(scratch, ignore_errors=True)
-        after = self.source.snapshot()
-        return (
-            discarded >= 0 and not scratch.exists() and before.digest == after.digest and after.counts == before.counts
-        )
+                records = adapter.import_events(
+                    batch,
+                    update_index=False,
+                    committed_snapshot=store_snapshot,
+                )
+                imported_record_ids.update(record.id for record in records)
+            except (LegacyAdapterError, ValueError) as batch_error:
+                errors.append(f"event batch: {batch_error}")
+                for row in batch:
+                    try:
+                        record = adapter.import_events(
+                            (row,),
+                            update_index=False,
+                            committed_snapshot=store_snapshot,
+                        )[0]
+                        imported_record_ids.add(record.id)
+                    except (LegacyAdapterError, ValueError) as exc:
+                        errors.append(f"event {row.event_id}: {exc}")
+        for objective in self.source.objectives():
+            try:
+                imported_record_ids.add(
+                    adapter.import_objective(
+                        objective,
+                        update_index=False,
+                        committed_snapshot=store_snapshot,
+                    ).id
+                )
+            except (LegacyAdapterError, ValueError) as exc:
+                errors.append(f"objective {objective.objective_id}: {exc}")
+        for task in self.source.tasks():
+            try:
+                imported_record_ids.add(
+                    adapter.import_task_submission(
+                        task.task_id,
+                        project_id=task.project_id,
+                        prompt_digest=task.prompt_digest,
+                        status=task.status,
+                        update_index=False,
+                        committed_snapshot=store_snapshot,
+                    ).id
+                )
+            except (LegacyAdapterError, ValueError) as exc:
+                errors.append(f"task {task.task_id}: {exc}")
+        store.rebuild_index()
+        discarded = store.count_committed()
+        return not errors and discarded == len(imported_record_ids), discarded
 
 
 def _mapping_digest(adapter: LegacyAgencyAdapter) -> str:

@@ -19,6 +19,7 @@ from types import ModuleType
 
 import pytest
 
+from antigravity_k.engine.cognitive.legacy_adapter import LegacyAgencyAdapter
 from antigravity_k.engine.cognitive.migration import (
     APPLY,
     DestructiveMigrationRefused,
@@ -96,6 +97,101 @@ def test_dry_run_keeps_source_unchanged(tmp_path: Path) -> None:
     assert report.imported == {"events": 2, "objectives": 0, "tasks": 1}
     assert report.complete is True
     assert report.passed is True
+    assert report.rollback_record_count == report.canonical_record_count
+    assert report.source_counts_match_imports is True
+
+
+def test_incomplete_migration_fails_when_import_counts_do_not_match(tmp_path: Path) -> None:
+    db_path = make_legacy_db(tmp_path, bad_event_type=True)
+
+    report = LegacyMigrationRunner(LegacySQLiteSource(db_path), tmp_path / "target").run()
+
+    assert report.complete is False
+    assert report.source_counts_match_imports is False
+    assert report.passed is False
+    assert report.imported["events"] == 2
+
+
+def test_event_batches_are_ordered_bounded_and_validate_size(tmp_path: Path) -> None:
+    db_path = make_legacy_db(tmp_path)
+    source = LegacySQLiteSource(db_path)
+
+    batches = list(source.event_batches(batch_size=1))
+
+    assert [len(batch) for batch in batches] == [1, 1]
+    assert [row.event_id for batch in batches for row in batch] == [1, 2]
+    with pytest.raises(ValueError, match="positive"):
+        list(source.event_batches(batch_size=0))
+
+
+def test_migration_streams_events_across_bounded_batches(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    db_path = make_legacy_db(tmp_path, task_rows=0)
+    with sqlite3.connect(db_path) as connection:
+        for index in range(3, 9):
+            connection.execute(
+                "INSERT INTO agency_events"
+                " (project_id, trajectory_id, branch_id, parent_event_id, event_type, payload_json, sensitivity, created_at)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (LEGACY_PROJECT, "traj-1", "main", index - 1, "observation", json.dumps({"n": index}), "normal", "now"),
+            )
+    monkeypatch.setattr(LegacyMigrationRunner, "EVENT_BATCH_SIZE", 2)
+
+    report = LegacyMigrationRunner(LegacySQLiteSource(db_path), tmp_path / "target").run()
+
+    assert report.imported["events"] == 8
+    assert report.mapping_entries == 8  # legacy project alias is stored as a scalar, not an origin entry
+    assert report.canonical_record_count == report.index_rebuilt == report.digests_verified == 8
+    assert report.idempotent_replay is True
+    assert report.rollback_record_count == report.canonical_record_count
+    assert report.passed is True
+
+
+def test_event_batch_repairs_mapping_saved_before_failed_commit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    db_path = make_legacy_db(tmp_path, task_rows=0)
+    runner = LegacyMigrationRunner(LegacySQLiteSource(db_path), tmp_path / "target")
+    store = runner._target_store()  # noqa: SLF001 - durable-map crash boundary exercise
+    adapter = LegacyAgencyAdapter(store, mapping_path=runner.mapping_path)
+    rows = next(runner.source.event_batches())
+
+    def fail_before_publish(*args: object, **kwargs: object) -> None:
+        raise RuntimeError("simulated commit interruption")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(store, "_commit_locked", fail_before_publish)
+        with pytest.raises(RuntimeError, match="simulated"):
+            adapter.import_events(rows, update_index=False)
+
+    staged_manifests = tuple(store.staging_dir.glob("*/manifest.json"))
+    assert len(staged_manifests) == 1
+    transaction_id = staged_manifests[0].parent.name
+    repaired = adapter.import_events(rows, update_index=False)
+
+    assert len(repaired) == len(rows)
+    assert store.count_committed() == len(rows)
+    assert [record.id for record in repaired] == [origin.canonical_id for origin in adapter.origins("event")]
+    assert tuple(manifest.transaction_id for manifest in store.committed_manifests()) == (transaction_id,)
+    assert tuple(store.staging_dir.glob("*/manifest.json")) == staged_manifests
+
+
+def test_migration_rebuilds_index_once_per_output_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    db_path = make_legacy_db(tmp_path, task_rows=0)
+    calls = 0
+    original = CanonicalStore.rebuild_index
+
+    def count_rebuilds(store: CanonicalStore) -> int:
+        nonlocal calls
+        calls += 1
+        return original(store)
+
+    monkeypatch.setattr(CanonicalStore, "rebuild_index", count_rebuilds)
+    report = LegacyMigrationRunner(LegacySQLiteSource(db_path), tmp_path / "target").run()
+
+    assert report.passed is True
+    assert calls == 2, "main target와 rollback scratch에 각각 한 번만 index를 재구성해야 한다"
+    assert report.timings_seconds["import"] >= 0
+    assert report.timings_seconds["index_rebuild"] >= 0
 
 
 def test_source_connection_rejects_writes(tmp_path: Path) -> None:
@@ -207,6 +303,20 @@ def test_rollback_rehearsal_keeps_dry_run_output(tmp_path: Path) -> None:
     assert snapshot(db_path).digest == report.plan.source.digest
 
 
+def test_rollback_rehearsal_preserves_preexisting_scratch_path(tmp_path: Path) -> None:
+    db_path = make_legacy_db(tmp_path)
+    target = tmp_path / "target"
+    scratch = target / "rollback-rehearsal"
+    scratch.mkdir(parents=True)
+    sentinel = scratch / "user-data.txt"
+    sentinel.write_text("must be preserved", encoding="utf-8")
+
+    report = LegacyMigrationRunner(LegacySQLiteSource(db_path), target).run()
+
+    assert report.rollback_rehearsed is True
+    assert sentinel.read_text(encoding="utf-8") == "must be preserved"
+
+
 # ─── 보고의 정직성 ───────────────────────────────────────────────
 
 
@@ -215,6 +325,7 @@ def test_unmapped_legacy_event_is_reported_not_skipped(tmp_path: Path) -> None:
     report = LegacyMigrationRunner(LegacySQLiteSource(db_path), tmp_path / "target").run()
 
     assert report.complete is False
+    assert report.source_counts_match_imports is False
     assert report.passed is False
     assert any("no_such_type" in error for error in report.errors)
     # 옮길 수 있는 row는 그대로 옮겨진다.

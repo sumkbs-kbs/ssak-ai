@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import json
 import uuid
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Final, Protocol, cast, final
@@ -38,9 +38,10 @@ from antigravity_k.engine.cognitive.references import (
     REL_PROJECT,
     EntityType,
     Reference,
+    ResolvedTarget,
     new_id,
 )
-from antigravity_k.engine.cognitive.store import CanonicalStore, canonical_digest
+from antigravity_k.engine.cognitive.store import CanonicalStore, ManifestEntry, canonical_digest
 
 MAP_VERSION: Final[str] = "1.0"
 MAP_RELATIVE_PATH: Final[str] = ".cognitive/legacy/agency_map.json"
@@ -231,44 +232,197 @@ class LegacyAgencyAdapter:
         return record
 
     # ── import ──────────────────────────────────────────
-    def import_event(self, event: LegacyTrajectoryEvent, *, project_id: str | None = None) -> Record:
-        legacy_project = project_id if project_id is not None else event.project_id
-        legacy_key = f"{legacy_project}:{event.trajectory_id}:{event.event_id}"
+    def import_event(
+        self,
+        event: LegacyTrajectoryEvent,
+        *,
+        project_id: str | None = None,
+        update_index: bool = True,
+    ) -> Record:
+        """legacy event 한 건을 옮긴다. 대량 적재에서는 ``import_events``를 사용한다."""
+
+        if project_id is None:
+            return self.import_events((event,), update_index=update_index)[0]
+        return self.import_events((event,), project_id=project_id, update_index=update_index)[0]
+
+    def import_events(
+        self,
+        events: Sequence[LegacyTrajectoryEvent],
+        *,
+        project_id: str | None = None,
+        update_index: bool = True,
+        committed_snapshot: dict[str, ManifestEntry] | None = None,
+    ) -> tuple[Record, ...]:
+        """한 mapping snapshot과 하나의 canonical transaction으로 event 배치를 가져온다.
+
+        mapping manifest는 event마다 다시 읽고 쓰지 않는다. 호출자는 메모리 상한을 위해
+        입력 배치 크기를 제한한다. record identity와 append-only digest 검사는 단건 경로와 같다.
+        """
+
+        if not events:
+            return ()
+        committed_entries = (
+            committed_snapshot if committed_snapshot is not None else self.store._committed_entries()  # noqa: SLF001 - one stable migration snapshot per batch
+        )
+
+        pending_by_legacy_id: dict[str, Record] = {}
+        canonical_id_by_legacy_id: dict[str, str] = {}
+        new_records: list[Record] = []
+        existing_record_ids: set[str] = set()
+        mapped_rows: dict[str, tuple[LegacyTrajectoryEvent, str, str]] = {}
+        mapping_dirty = False
+
+        with self._file_lock:
+            data = self._load()
+            projects = self._bucket(data, KIND_PROJECT)
+            event_bucket = self._bucket(data, KIND_EVENT)
+            canonical_projects: dict[str, str] = {}
+
+            for event in events:
+                legacy_project = project_id if project_id is not None else event.project_id
+                canonical_project = canonical_projects.get(legacy_project)
+                if canonical_project is None:
+                    existing_project = projects.get(legacy_project)
+                    if isinstance(existing_project, str) and existing_project:
+                        canonical_project = existing_project
+                    else:
+                        canonical_project = new_id(EntityType.PROJECT)
+                        projects[legacy_project] = canonical_project
+                        mapping_dirty = True
+                    canonical_projects[legacy_project] = canonical_project
+
+                legacy_id = f"{legacy_project}:{event.trajectory_id}:{event.event_id}"
+                state = LEGACY_EVENT_STATE.get(str(event.event_type))
+                if state is None:
+                    raise UnmappedLegacyValue(f"unknown legacy event type: {event.event_type}")
+
+                digest_source = {
+                    "kind": KIND_EVENT,
+                    "legacy_key": legacy_id,
+                    "event_type": str(event.event_type),
+                    "payload": _stable(event.payload),
+                    "parent_event_id": event.parent_event_id,
+                }
+                digest = canonical_digest(digest_source)
+                existing = event_bucket.get(legacy_id)
+                if isinstance(existing, dict):
+                    entry = cast(Mapping[str, object], existing)
+                    if entry.get("digest") != digest:
+                        raise LegacyMappingConflict(
+                            f"legacy event {legacy_id} changed after mapping: {entry.get('digest')} -> {digest}"
+                        )
+                    canonical_id = str(entry.get("canonical_id"))
+                    canonical_id_by_legacy_id[legacy_id] = canonical_id
+                    if legacy_id not in pending_by_legacy_id:
+                        existing_record_ids.add(canonical_id)
+                        mapped_rows.setdefault(legacy_id, (event, canonical_project, canonical_id))
+                    continue
+
+                if legacy_id in pending_by_legacy_id:
+                    # Repeated identical source row in this batch reuses its pending identity.
+                    canonical_id_by_legacy_id[legacy_id] = pending_by_legacy_id[legacy_id].id
+                    continue
+
+                record_id = new_id(EntityType.EVENT)
+                record = self._build_event_record(event, canonical_project, record_id)
+                event_bucket[legacy_id] = {"canonical_id": record_id, "digest": digest}
+                pending_by_legacy_id[legacy_id] = record
+                canonical_id_by_legacy_id[legacy_id] = record_id
+                new_records.append(record)
+                mapping_dirty = True
+
+            if mapping_dirty:
+                self._save(data)
+
+        existing_records = self.store.read_many(existing_record_ids, committed_snapshot=committed_entries)
+        missing_ids = existing_record_ids.difference(existing_records)
+        # Mapping이 먼저 durable해진 뒤 commit이 실패했을 수 있다. 저장된 canonical ID를 유지해
+        # 같은 source row를 복구 commit하여 mapping/record 사이의 영구 불일치를 방지한다.
+        for event, canonical_project, canonical_id in mapped_rows.values():
+            if canonical_id in missing_ids:
+                new_records.append(self._build_event_record(event, canonical_project, canonical_id))
+
+        if new_records:
+            # Project references are optional in the legacy model. Resolve them once for the batch.
+            project_targets = self.store.resolve_many(canonical_projects.values(), committed_snapshot=committed_entries)
+            records_with_references: list[Record] = []
+            for record in new_records:
+                references = (
+                    self._project_reference_from_snapshot(record.project_id, project_targets)
+                    if record.project_id in project_targets
+                    else ()
+                )
+                records_with_references.append(record.model_copy(update={"references": references}))
+            new_records = records_with_references
+            # Persist canonical IDs before records, matching the single-record crash/replay contract.
+            transaction_digest = canonical_digest({"record_ids": sorted(record.id for record in new_records)})
+            transaction_id = f"legacy-event-batch-{transaction_digest.removeprefix('sha256:')}"
+            if update_index:
+                self.store.commit_records(new_records, transaction_id=transaction_id)
+            else:
+                self.store._commit_records_batch(  # noqa: SLF001 - isolated migration dry-run batch writer
+                    new_records,
+                    transaction_id=transaction_id,
+                    committed_snapshot=committed_entries,
+                    rebuild_index=False,
+                )
+
+        records_by_id = {record.id: record for record in (*existing_records.values(), *new_records)}
+
+        return tuple(
+            records_by_id[canonical_id_by_legacy_id[self._event_legacy_id(event, project_id)]] for event in events
+        )
+
+    def _build_event_record(self, event: LegacyTrajectoryEvent, canonical_project: str, record_id: str) -> Record:
         state = LEGACY_EVENT_STATE.get(str(event.event_type))
         if state is None:
             raise UnmappedLegacyValue(f"unknown legacy event type: {event.event_type}")
+        return Record.create(
+            entity_type=EntityType.EVENT,
+            project_id=canonical_project,
+            producer=self.producer,
+            payload=EventPayload(
+                sequence=event.event_id,
+                episode_id=f"agency:{event.trajectory_id}",
+                state=state,
+                caused_by=str(event.parent_event_id) if event.parent_event_id is not None else None,
+                state_revision=max(event.event_id, 1),
+            ),
+            record_id=record_id,
+        )
 
-        digest_payload = {
-            "kind": KIND_EVENT,
-            "legacy_key": legacy_key,
-            "event_type": str(event.event_type),
-            "payload": _stable(event.payload),
-            "parent_event_id": event.parent_event_id,
-        }
-        canonical_project = self.map_project(legacy_project)
-        return self._map_and_commit(
-            kind=KIND_EVENT,
-            legacy_id=legacy_key,
-            digest_source=digest_payload,
-            canonical_project=canonical_project,
-            expected_type=EntityType.EVENT,
-            build=lambda record_id: Record.create(
-                entity_type=EntityType.EVENT,
-                project_id=canonical_project,
-                producer=self.producer,
-                payload=EventPayload(
-                    sequence=event.event_id,
-                    episode_id=f"agency:{event.trajectory_id}",
-                    state=state,
-                    caused_by=str(event.parent_event_id) if event.parent_event_id is not None else None,
-                    state_revision=max(event.event_id, 1),
-                ),
-                references=self._project_reference(canonical_project, entity_type=EntityType.EVENT),
-                record_id=record_id,
+    @staticmethod
+    def _event_legacy_id(event: LegacyTrajectoryEvent, project_id: str | None) -> str:
+        legacy_project = project_id if project_id is not None else event.project_id
+        return f"{legacy_project}:{event.trajectory_id}:{event.event_id}"
+
+    @staticmethod
+    def _project_reference_from_snapshot(
+        canonical_project: str,
+        project_targets: Mapping[str, ResolvedTarget],
+    ) -> tuple[Reference, ...]:
+        """기존 ``_project_reference``를 batch resolver snapshot으로 재현한다."""
+
+        if canonical_project not in project_targets:
+            return ()
+        return (
+            Reference(
+                relation=REL_PROJECT,
+                target_id=canonical_project,
+                expected_type=EntityType.PROJECT,
             ),
         )
 
-    def import_objective(self, objective: LegacyObjective, *, project_id: str | None = None) -> Record:
+    def import_objective(
+        self,
+        objective: LegacyObjective,
+        *,
+        project_id: str | None = None,
+        update_index: bool = True,
+        committed_snapshot: dict[str, ManifestEntry] | None = None,
+    ) -> Record:
+        """legacy objective를 가져오고 필요 시 migration writer의 manifest snapshot을 재사용한다."""
+
         legacy_project = project_id if project_id is not None else objective.project_id
         digest_payload = {
             "kind": KIND_OBJECTIVE,
@@ -296,6 +450,8 @@ class LegacyAgencyAdapter:
                 references=self._project_reference(canonical_project, entity_type=EntityType.GOAL),
                 record_id=record_id,
             ),
+            update_index=update_index,
+            committed_snapshot=committed_snapshot,
         )
 
     def import_task_submission(
@@ -306,6 +462,8 @@ class LegacyAgencyAdapter:
         prompt_digest: str,
         status: str = "running",
         tool: str = "legacy_task_runner",
+        update_index: bool = True,
+        committed_snapshot: dict[str, ManifestEntry] | None = None,
     ) -> Record:
         """legacy background task 제출을 canonical Action으로 기록한다(제출 idempotency 분리)."""
 
@@ -340,9 +498,11 @@ class LegacyAgencyAdapter:
                 references=self._project_reference(canonical_project, entity_type=EntityType.ACTION),
                 record_id=record_id,
             ),
+            update_index=update_index,
+            committed_snapshot=committed_snapshot,
         )
 
-    # ── 내부 ────────────────────────────────────────────
+    # ── 내부 ──────────────────────────────────────────
     def _project_reference(self, canonical_project: str, *, entity_type: EntityType) -> tuple[Reference, ...]:
         if same_enum(entity_type, EntityType.PROJECT):
             return ()
@@ -359,9 +519,14 @@ class LegacyAgencyAdapter:
         canonical_project: str,
         expected_type: EntityType,
         build: Callable[[str], Record],
+        update_index: bool = True,
+        committed_snapshot: dict[str, ManifestEntry] | None = None,
     ) -> Record:
         digest = canonical_digest(digest_source)
+        if not update_index and committed_snapshot is None:
+            committed_snapshot = self.store._committed_entries()  # noqa: SLF001 - one migration snapshot per operation
 
+        needs_commit = False
         with self._file_lock:
             data = self._load()
             bucket = self._bucket(data, kind)
@@ -372,19 +537,41 @@ class LegacyAgencyAdapter:
                     raise LegacyMappingConflict(
                         f"legacy {kind} {legacy_id} changed after mapping: {entry.get('digest')} -> {digest}"
                     )
-                record = self.store.read(str(entry.get("canonical_id")))
+                record_id = str(entry.get("canonical_id"))
+                record = self.store.read(record_id)
                 if record is None:
-                    raise LegacyAdapterError(f"mapped record is not committed: {entry.get('canonical_id')}")
-                return record
+                    # mapping이 먼저 durable해진 뒤 commit이 중단됐을 수 있다. 같은 canonical ID로
+                    # 다시 만들어 commit해 mapping/record 사이의 영구 불일치를 복구한다.
+                    record = build(record_id)
+                    if record.project_id != canonical_project:
+                        raise LegacyAdapterError(f"record project mismatch: {record.project_id} != {canonical_project}")
+                    needs_commit = True
+                else:
+                    return record
+            else:
+                record_id = new_id(expected_type)
+                record = build(record_id)
+                if record.project_id != canonical_project:
+                    raise LegacyAdapterError(f"record project mismatch: {record.project_id} != {canonical_project}")
+                bucket[legacy_id] = {"canonical_id": record_id, "digest": digest}
+                self._save(data)
+                needs_commit = True
 
-            record_id = new_id(expected_type)
-            record = build(record_id)
-            if record.project_id != canonical_project:
-                raise LegacyAdapterError(f"record project mismatch: {record.project_id} != {canonical_project}")
-            bucket[legacy_id] = {"canonical_id": record_id, "digest": digest}
-            self._save(data)
+        if not needs_commit:
+            return record
 
-        self.store.commit_records([record], transaction_id=f"legacy-{kind}-{uuid.uuid4().hex}")
+        transaction_digest = canonical_digest({"canonical_id": record.id, "kind": kind})
+        transaction_id = f"legacy-{kind}-{transaction_digest.removeprefix('sha256:')}"
+        if update_index:
+            self.store.commit_records([record], transaction_id=transaction_id)
+        else:
+            assert committed_snapshot is not None
+            self.store._commit_records_batch(  # noqa: SLF001 - isolated migration dry-run batch writer
+                [record],
+                transaction_id=transaction_id,
+                committed_snapshot=committed_snapshot,
+                rebuild_index=False,
+            )
         return record
 
 
