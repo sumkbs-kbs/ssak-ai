@@ -39,7 +39,7 @@ dependencies = [
 [project.optional-dependencies]
 # Apple Silicon MLX 추론 (Mac 전용)
 mlx = [
-    "mlx>=0.32.0,<0.33.0; sys_platform == 'darwin'",
+    "mlx>=0.30.3,<0.33.0; sys_platform == 'darwin'",
     "mlx>=0.30.3,<0.32.0; sys_platform != 'darwin'",
     "mlx-lm>=0.31.0,<1.0",
     "mlx-vlm>=0.2.0,<0.3",
