@@ -1847,10 +1847,8 @@ class GrowthRunner:
                 policy_version=actual_policy,
                 limits=actual_limits,
             )
-            if (
-                policy_store.pin_of(episode_id) is None
-                or policy_store.pin_of(episode_id).policy_version != pinned.policy_version
-            ):
+            observed_pin = policy_store.pin_of(episode_id)
+            if observed_pin is None or observed_pin.policy_version != pinned.policy_version:
                 raise GrowthBenchmarkError("episode policy pin changed during selection observe")
             outcome_ref = new_id(EntityType.OUTCOME) if run.outcome.success else None
             trace = policy_store.record_behavior_change(

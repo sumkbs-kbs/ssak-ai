@@ -198,9 +198,9 @@ def extract_financial_numbers(text: str) -> list[FinancialNumber]:
                 matches.append(candidate)
 
     for match in _SCALED.finditer(text):
-        candidate = _scaled_match(match)
-        if candidate and not _overlaps(matches, candidate):
-            matches.append(candidate)
+        scaled_candidate = _scaled_match(match)
+        if scaled_candidate is not None and not _overlaps(matches, scaled_candidate):
+            matches.append(scaled_candidate)
 
     for pattern in (_CURRENCY_PREFIX, _CURRENCY_SUFFIX):
         for match in pattern.finditer(text):
