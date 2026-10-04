@@ -54,7 +54,7 @@ jobs:
 
       # CR-11(C11-05): 릴리스 wheel에 커밋된 낡은 UI가 들어가지 않게 다시 빌드한다.
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 11.3.0
           run_install: false

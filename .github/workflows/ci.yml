@@ -296,7 +296,7 @@ jobs:
       # CR-11(C11-05): 추적 중인 `dashboard_dist`가 낙아 있어도 그대로 포장하지 않는다.
       # 대시보드를 다시 빌드하고, 그 번들이 wheel에 들어갔는지 hash로 대조한다.
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 11.3.0
           run_install: false
@@ -402,7 +402,7 @@ jobs:
       # CR-11: pnpm@11.3.0의 engines.node는 `>=22.13`이다(package.json engines와 동일).
       # Node 20을 쓰면 pnpm이 node:sqlite builtin을 찾지 못해 설치 단계가 깨진다.
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 11.3.0
           run_install: false
@@ -485,7 +485,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 11.3.0
           run_install: false
@@ -652,7 +652,7 @@ jobs:
         run: uv sync --locked --no-editable --extra dev
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 11.3.0
           run_install: false
