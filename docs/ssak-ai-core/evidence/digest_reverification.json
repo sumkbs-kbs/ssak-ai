@@ -212,6 +212,13 @@
     },
     {
       "doc": "T11_surface.md",
+      "path": "src/antigravity_k/api/routes/__init__.py",
+      "verified_digest": "90cab572c83a3b75e9d014a62cfbdd21b639795bd7b28f9e8a0e363af7b5f117",
+      "verified_on": "2026-10-04",
+      "method": "Reviewed the current router registration diff (decision evaluation router addition); Python 3.12 locked non-editable export: 104 surface/feature-off/CLI/decision surface tests passed; real isolated HTTP health and authenticated cognitive status returned 200 with OFF/legacy semantics. This is scoped surface regression verification, not live-model quality certification. See docs/qa/2026-10-04-ci-repair/VALIDATION.md."
+    },
+    {
+      "doc": "T11_surface.md",
       "path": "src/antigravity_k/api/routes/cognitive_surface_api.py",
       "verified_digest": "bfcf54e35487a8d5c54f076757ecb4f86a0852148c1f683f3ff5b284c9ec96b9",
       "verified_on": "2026-10-01",
@@ -220,9 +227,9 @@
     {
       "doc": "T11_surface.md",
       "path": "src/antigravity_k/cli.py",
-      "verified_digest": "bebf434ba03a5763ca0288e374657cd4fdbf20dc3ba10f53598802ac151f2cd9",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "f88b31e943459ee3b1d8fde4cce5ce74e6fc996c6bcd641447ec8cbfc203b8af",
+      "verified_on": "2026-10-04",
+      "method": "Reviewed current CLI diff (decision-eval command registration); Python 3.12 locked non-editable export: 104 surface/feature-off/CLI/decision surface tests passed. Personally ran cognitive status --json (OFF/legacy), cognitive surface (static legacy 7/9, core 5/9), --help (exit 0), and invalid command (exit 2). Historical 2026-09-22 reach counts remain historical. No live model inference is claimed. See docs/qa/2026-10-04-ci-repair/VALIDATION.md."
     },
     {
       "doc": "T11_surface.md",
@@ -255,9 +262,9 @@
     {
       "doc": "T13_growth.md",
       "path": "src/antigravity_k/engine/cognitive/growth.py",
-      "verified_digest": "c472511c2dfe4436f79f80b7dbd1fa354cf024d3b72d32eb1756384ebe689816",
-      "verified_on": "2026-10-01",
-      "method": "ruff-format whitespace-only reformat by pre-commit hook on 2026-09-27; AST verified identical to the frozen bytes that passed integrated QA (1,125 passed) and the v8 live run; no semantic change"
+      "verified_digest": "e10ece4427945efaa40a052c62d84a1231bdbe37a43d422ca9fc044f2db66c5d",
+      "verified_on": "2026-10-04",
+      "method": "Reviewed the strict-optional repair: query policy pin once, preserve missing/changed-pin rejection. Related financial/growth tests passed 40 on Python 3.13; deterministic growth library driver produced validation true and two correctly pinned traces. Strict mypy src/ passed 573 files. This covers deterministic regression and the type repair, not renewal of historical live-model results. See docs/qa/2026-10-04-ci-repair/TYPES.md."
     },
     {
       "doc": "T13_growth.md",

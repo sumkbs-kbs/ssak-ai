@@ -1,5 +1,8 @@
 # C05 v1 — Durable action and observation publication
 
+> Publication note (2026-10-04): The raw artifacts marked "local-only archive" are retained in the original local QA workspace and are not included in this public repository. Historical results and hashes describe their recorded revisions. This published summary does not supply the raw evidence or certify today's source.
+
+
 Producer → consumer: **R09 → R10/R11/R16**. Contract version: 1.0, documented 2026-09-27 from current dirty tree over HEAD `8cc94cf51952e3bbb6cb3f627683ca6c9c2d0382`.
 
 Status: **scoped independent PASS for corrected observation publication/recovery at the review hashes**. Documentation reviewer: final_context (independent baseline provenance reviewer, now documentation reconciler). This authorship is not producer/consumer V approval. Baseline review found defects; later fixes and targeted implementer greens require current-hash final review. See [finalization review](../../finalization-2026-09-27/FINALIZATION_REVIEW.md). Historical evidence remains intact.
@@ -166,7 +169,7 @@ Acceptance requires matching source/test hashes, observed success and refusal pa
 
 ## Pin and compatibility policy
 
-Source and test SHA256 values are in [contract snapshot](contract-source-manifest.json), keyed by this contract ID. The original common specification digest is included there. Source freeze is bound to the final-source-manifest fingerprint below. Any later changed dependency invalidates this frozen snapshot until reviewed again. Consumers pin contract version plus that entry's source/test/spec digests; a breaking semantic change requires producer and consumer review together. Optional additive fields preserve old records; unsupported schema/ambiguous authority must not silently adapt. Frozen source fingerprint: `ed6c1e7176ace5d90952117cce865e4ca8bfe7f6a4cc7859f70409b8228631e2` over 1465 source/test/script/config files. This snapshot does not certify later dirty changes.
+Source and test SHA256 values are in contract snapshot (local-only archive: `contract-source-manifest.json`, unpublished), keyed by this contract ID. The original common specification digest is included there. Source freeze is bound to the final-source-manifest fingerprint below. Any later changed dependency invalidates this frozen snapshot until reviewed again. Consumers pin contract version plus that entry's source/test/spec digests; a breaking semantic change requires producer and consumer review together. Optional additive fields preserve old records; unsupported schema/ambiguous authority must not silently adapt. Frozen source fingerprint: `ed6c1e7176ace5d90952117cce865e4ca8bfe7f6a4cc7859f70409b8228631e2` over 1465 source/test/script/config files. This snapshot does not certify later dirty changes.
 
 ## Old-wire digest compatibility at final source freeze
 

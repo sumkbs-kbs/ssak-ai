@@ -3,10 +3,10 @@
     "python",
     "scripts/digest_drift.py"
   ],
-  "source_head": "8cc94cf5",
+  "source_head": "0b1aca2d",
   "counts": {
-    "match": 10,
-    "reverified": 40,
+    "match": 8,
+    "reverified": 42,
     "drift": 0,
     "stale_reverification": 0,
     "missing": 0
@@ -76,8 +76,8 @@
       "missing": 0
     },
     "T11_surface.md": {
-      "match": 5,
-      "reverified": 3,
+      "match": 3,
+      "reverified": 5,
       "drift": 0,
       "stale_reverification": 0,
       "missing": 0
@@ -381,9 +381,9 @@
       "doc": "T11_surface.md",
       "path": "src/antigravity_k/api/routes/__init__.py",
       "recorded": "0c2c63bf72948d6a",
-      "actual": "0c2c63bf72948d6a626cd3de52c5d7697b60d5bdd6383fe4f937a2ca8f73da27",
-      "status": "match",
-      "reverified_on": ""
+      "actual": "90cab572c83a3b75e9d014a62cfbdd21b639795bd7b28f9e8a0e363af7b5f117",
+      "status": "reverified",
+      "reverified_on": "2026-10-04"
     },
     {
       "doc": "T11_surface.md",
@@ -397,9 +397,9 @@
       "doc": "T11_surface.md",
       "path": "src/antigravity_k/cli.py",
       "recorded": "80b5da5ebd9a5a57",
-      "actual": "80b5da5ebd9a5a57503b91d1476250cf99e414bd79f99b4df4d4b3c7c12404fd",
-      "status": "match",
-      "reverified_on": ""
+      "actual": "f88b31e943459ee3b1d8fde4cce5ce74e6fc996c6bcd641447ec8cbfc203b8af",
+      "status": "reverified",
+      "reverified_on": "2026-10-04"
     },
     {
       "doc": "T11_surface.md",
@@ -461,9 +461,9 @@
       "doc": "T13_growth.md",
       "path": "src/antigravity_k/engine/cognitive/growth.py",
       "recorded": "f2a5dd011c622d9b",
-      "actual": "c472511c2dfe4436f79f80b7dbd1fa354cf024d3b72d32eb1756384ebe689816",
+      "actual": "e10ece4427945efaa40a052c62d84a1231bdbe37a43d422ca9fc044f2db66c5d",
       "status": "reverified",
-      "reverified_on": "2026-10-01"
+      "reverified_on": "2026-10-04"
     },
     {
       "doc": "T13_growth.md",

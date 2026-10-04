@@ -7,6 +7,9 @@ tags: [ssak-ai, handoff, verification]
 
 # 최신 작업 인수와 잔여 수정 계획
 
+> 공개 범위 안내(2026-10-04): 아래 로컬 보관·미게시 원자료는 원래 QA 작업 공간에 보존되어 있으며 공개 저장소에는 포함되지 않습니다. 역사적 결과와 해시는 기록된 당시 revision에만 적용됩니다. 이 공개 요약만으로 원자료를 재검토하거나 현재 소스의 인수를 확정할 수 없습니다.
+
+
 기준 HEAD: `8cc94cf51952e3bbb6cb3f627683ca6c9c2d0382` + 현재 staged/unstaged/untracked 작업. 사용자 변경은 보존한다. 헌법·기본 방침은 변경하지 않는다.
 
 ## 이번 작업의 범위
@@ -39,7 +42,7 @@ tags: [ssak-ai, handoff, verification]
 - [리더 최종 증거 게이트](../qa/2026-10-03-residual-close/leader-evidence-gate.md): `scripts/evidence_gate.py --tier fast` exit 0, 9/9 stages PASS. full tier의 release_artifacts·regression_ledger 2개는 이번 실행 범위 밖이며 통과로 세지 않는다.
 - [수정·회귀 보고서](../qa/2026-10-03-residual-close/VIEW_WORKER_REPORT.md): 68 passed(최신성 계약 13건 포함), 별도 기존 F2 계약 10 passed, Ruff·Basedpyright 통과. 최초 import 옵션으로 인한 실패 실행과 정상 재실행 결과를 구분했다.
 - [독립 검토·실제 별도 프로세스 검증](../qa/2026-10-03-residual-close/independent-review.md): 72회 교대 append의 최대 view 지연 7(<8), peer 삭제·최신 쓰기 보존, 재시도·읽기 시험 9 passed. 이 9건은 다른 suite와 겹치므로 합산하지 않는다.
-- [리더 직접 실행](../qa/2026-10-03-residual-close/leader-manual.txt): `uv run --no-sync python docs/qa/2026-10-03-residual-close/view_worker_driver.py` exit 0. 임시 저장소에서 append→peer append→stale flush 및 peer delete→stale flush를 확인했다.
+- 리더 직접 실행 (로컬 보관·미게시: `../qa/2026-10-03-residual-close/leader-manual.txt`): `uv run --no-sync python docs/qa/2026-10-03-residual-close/view_worker_driver.py` exit 0. 임시 저장소에서 append→peer append→stale flush 및 peer delete→stale flush를 확인했다.
 - [증거 정합화 보고서](../qa/2026-10-03-residual-close/evidence-reconciliation.md): 사용자 digest 변경 보존, 실제 재검증과 historical pins 구분.
 - 선행 scoped 검증 당시 Docker는 연결되지 않았다. 아래 최종 계속 작업에서 연결을 복구하고 실제 Docker·전체 통합 검증을 완료했다.
 - [최종 통합 인수](../qa/2026-10-03-residual-close/FINAL_INTEGRATION_REVIEW.md), [전담 QA](../qa/2026-10-03-residual-close/FINAL_WHOLE_QA.md), [독립 인수 감사](../qa/2026-10-03-residual-close/FINAL_ACCEPTANCE_AUDIT.md): 1,193 passed / 1 intentional skip / 0 failures·errors, full 게이트 11/11 PASS, 전후 소스·문서 일치.

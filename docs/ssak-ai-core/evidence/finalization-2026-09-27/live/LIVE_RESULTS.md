@@ -1,5 +1,8 @@
 # Live experiment terminal evidence — 2026-09-27
 
+> Publication note (2026-10-04): The raw artifacts marked "local-only archive" are retained in the original local QA workspace and are not included in this public repository. Historical results and hashes describe their recorded revisions. This published summary does not supply the raw evidence or certify today's source.
+
+
 Local loopback Ollama provider only; synthetic append corpus; not a general-intelligence or autonomous-learning claim.
 All numbers below are copied from the independent recomputation artifacts, not from harness self-report alone.
 
@@ -54,4 +57,4 @@ The prior operator session ended externally during FINAL trials (169 FINAL provi
 
 ## Files
 
-Copied artifacts and SHA-256 values are listed in [copied-sha256.json](copied-sha256.json). The three raw provider traces (>1 MB) are stored gzip-compressed (`*.jsonl.gz`) with both compressed and uncompressed digests recorded; `gunzip -k` restores the exact bytes the audit scripts consumed. Uncompressed originals remain in `work/finalize-2026-09-27/`. Main run source fingerprint (560 first-party files) matches the v7 freeze: `28f55eece8deaef32990db302edb899ded59f761128f2839e54443b372d6bd48` (source-hashes.json sha256).
+Copied artifacts and SHA-256 values are listed in copied-sha256.json (local-only archive: `copied-sha256.json`, unpublished). The three raw provider traces (>1 MB) are stored gzip-compressed (`*.jsonl.gz`) with both compressed and uncompressed digests recorded; `gunzip -k` restores the exact bytes the audit scripts consumed. Uncompressed originals remain in `work/finalize-2026-09-27/`. Main run source fingerprint (560 first-party files) matches the v7 freeze: `28f55eece8deaef32990db302edb899ded59f761128f2839e54443b372d6bd48` (source-hashes.json sha256).

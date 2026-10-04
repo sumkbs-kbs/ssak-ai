@@ -7,6 +7,9 @@ source_head: 0a9498e3846a48bbf158bf870957064cdc9bbb11
 
 # 판정 범위
 
+> 공개 범위 안내(2026-10-04): 아래 로컬 보관·미게시 원자료는 원래 QA 작업 공간에 보존되어 있으며 공개 저장소에는 포함되지 않습니다. 역사적 결과와 해시는 기록된 당시 revision에만 적용됩니다. 이 공개 요약만으로 원자료를 재검토하거나 현재 소스의 인수를 확정할 수 없습니다.
+
+
 기본 방침과 헌법 원문은 유지했다. 최신 working tree의 중요한 실행 결함을 수정하고 인증된 HTTP 경계의
 격리 통합을 검증했다. **프로젝트 전체 개발·운영 인수 완료를 선언하지 않는다.** 등록된 실제 snapshot의 전체
 migration dry-run은 PASS지만, 실제 provider 성장 pilot, 운영 migration/cutover, 운영 server composition,
@@ -35,7 +38,7 @@ PermissionGate의 shell 문자열 검사는 OS sandbox가 아니다. arbitrary i
 
 # 실제 실행 표면
 
-[manual-active-http.json](manual-active-http.json)은 별도 uvicorn 프로세스에 curl로 요청한 결과다.
+manual-active-http.json (로컬 보관·미게시: `manual-active-http.json`)은 별도 uvicorn 프로세스에 curl로 요청한 결과다.
 임시 JWT/작업 root에서 실제 ToolExecutor/WriteFileTool를 사용했다.
 
 - 무인증 요청401; 최초 승인 실행1회.
@@ -55,33 +58,33 @@ canonical ACTIVE로 이행한 것은 아니다. 기존 read-only 상태 endpoint
 
 - 수정 전 baseline: 777 passed / 1 skipped.
 - 수정 중 전체 실행: 792 passed / 13 failed / 1 skipped. 실행 중 파일이 변경됐으므로 최종판 결과로 사용하지 않는다.
-- 그13개를 재현한 결과: 12 passed / release 관측 증가 equality1 failed. [재현 로그](qa-final-13-rerun.txt).
+- 그13개를 재현한 결과: 12 passed / release 관측 증가 equality1 failed. 재현 로그 (로컬 보관·미게시: `qa-final-13-rerun.txt`).
 - release 판정은 증가를 보고만 하도록 설계됐는데 실물 시험이 증가도 실패로 처리했다. `record_problems == []`는 유지하고
   actual movement 출력과 기대값을 대조하도록 작은 시험 정정만 적용했다. 하한·허용폭·승인된 기준값은 바꾸지 않았다.
 - 관련 경계 묶음150 PASS, 세션 취소 추가 API3 PASS. 독립 code reviewer30 PASS; security report는41+39 PASS를 별도로 기록했다(합산하지 않는다).
 - 계획서에 적힌 신규 예정 파일을 실재 코드 인용과 구분하지 않아 새 full run에서 문서 검사가 실패했다. 예정 위치/파일명을 명확히 분리한 뒤 그 실행은111.50초에 중단하고 기록을 보존했다.
-- G1 당시 최종 source/test freeze (G2-B 최적화 이전) 후 전체 시험: **809 passed / 1 skipped / 1 warning**, 774.52초, exit0. [당시 로그](pytest-frozen.txt). 이는 아래 2026-09-26 G2-B 이후 전체 회귀 결과를 대체하지 않는다.
+- G1 당시 최종 source/test freeze (G2-B 최적화 이전) 후 전체 시험: **809 passed / 1 skipped / 1 warning**, 774.52초, exit0. 당시 로그 (로컬 보관·미게시: `pytest-frozen.txt`). 이는 아래 2026-09-26 G2-B 이후 전체 회귀 결과를 대체하지 않는다.
 - changed production scope basedpyright:0 errors / 69 warnings. Ruff 및 diff whitespace 검사 PASS.
 - architecture mapping/증거 검사 PASS. 이는 원칙24 중 covered15/partial9라는 **문서·구조 검사**이며 통합 인수 승인과 다르다.
 
-[final-source-manifest.json](final-source-manifest.json)은 이전 통합 체크포인트 HEAD `6be0263d121c1e2a7ade92d3127af226c5e0581f`의 일부 변경 범위를 기록한 역사 manifest이며 현재 dirty tree 전체를 나타내지 않는다. 최신 full cognitive 실행은 HEAD `0a9498e3846a48bbf158bf870957064cdc9bbb11`의 공유 dirty tree에서 수행됐고, 전체 aggregate hash는 별도 측정하지 않았다. 최신 migration 실행의 개별 source/test/driver hash는 [migration evidence](migration-real-post-independent-review-2026-09-26.json)에 실행 전후로 결박했다. HEAD만으로 dirty tree 전체를 대표한다고 보지 않는다.
+final-source-manifest.json (로컬 보관·미게시: `final-source-manifest.json`)은 이전 통합 체크포인트 HEAD `6be0263d121c1e2a7ade92d3127af226c5e0581f`의 일부 변경 범위를 기록한 역사 manifest이며 현재 dirty tree 전체를 나타내지 않는다. 최신 full cognitive 실행은 HEAD `0a9498e3846a48bbf158bf870957064cdc9bbb11`의 공유 dirty tree에서 수행됐고, 전체 aggregate hash는 별도 측정하지 않았다. 최신 migration 실행의 개별 source/test/driver hash는 [migration evidence](migration-real-post-independent-review-2026-09-26.json)에 실행 전후로 결박했다. HEAD만으로 dirty tree 전체를 대표한다고 보지 않는다.
 
 커밋 시 pre-commit의 Ruff 검사/포맷, whitespace·EOF·JSON·secret·conflict·case·line-ending 훅은 통과했다. 저장소 repo-wide mypy 훅은 `src/antigravity_k/engine/cognitive_surface_types.py:251`에서 `ActionIntent(operation=...)` 타입 오류로 실패했다. 이 파일은 공유 작업 트리의 이번 migration 커밋 범위 밖 변경이므로 손대거나 포함하지 않았다. 해당 mypy 실패를 기록하고 이 범위의 회귀 시험을 다시 확인한 뒤, 커밋 때 `mypy` 훅만 선택적으로 건너뛰고 나머지 훅은 유지했다. 이는 repo-wide mypy 통과나 전체 release gate를 뜻하지 않는다.
 
-최신 문서 gate 산출물은 [architecture-post-handoff-2026-09-26.json](architecture-post-handoff-2026-09-26.json)이다. 이 run은 16/16 PASS, 269 links, 329 citations, 822 collected 및 36 measured marker 일치를 기록한다. 앞서 언급한 `architecture-current.json`/`.txt`와 구분해 읽는다.
+최신 문서 gate 산출물은 architecture-post-handoff-2026-09-26.json (로컬 보관·미게시: `architecture-post-handoff-2026-09-26.json`)이다. 이 run은 16/16 PASS, 269 links, 329 citations, 822 collected 및 36 measured marker 일치를 기록한다. 앞서 언급한 `architecture-current.json`/`.txt`와 구분해 읽는다.
 
 # 독립 검토 상태
 
 [code-final.md](code-final.md)는 에이전트가 정상 완료한 bounded PASS다. root가19개 파일 hash를 다시 확인했다.
 [security-final.md](security-final.md)는 bounded PASS 보고서와 검증 기록을 남겼으나 에이전트 turn은 사용량 제한으로 종료됐다.
-따라서 report의 관찰은 보존하면서 레인 종료 상태는 INCONCLUSIVE로 [원장](review-ledger.jsonl)에 구분했다.
+따라서 report의 관찰은 보존하면서 레인 종료 상태는 INCONCLUSIVE로 원장 (로컬 보관·미게시: `review-ledger.jsonl`)에 구분했다.
 QA와 migration/pilot 조사 에이전트도 제한으로 중단됐다. root는 확보된 결과와 작은 통합 수정/실행 확인을 마무리했으며
 독립 에이전트의 정상 완료를 대신 주장하지 않는다. formal full review 인수는 보류다.
 
 # 실제 데이터 migration 관찰
 
 에이전트가 작성한 read-only audit driver를 root가 검토·실행했다. event-type 지원 목록은 실제 adapter 상수를 사용하게 했다.
-[집계 증거](migration-real-results.json)에는 payload 원문을 보관하지 않는다.
+집계 증거 (로컬 보관·미게시: `migration-real-results.json`)에는 payload 원문을 보관하지 않는다.
 
 - 원본 agency_events56,961건, objectives/tasks0건. 모두 observation이며 미지원 type0.
 - mode=ro로 원본을 열어 일관된 SQLite backup snapshot 생성. 원본 DB/WAL bytes와 count는 전후 동일.
@@ -89,13 +92,13 @@ QA와 migration/pilot 조사 에이전트도 제한으로 중단됐다. root는 
 - 실제 앞/중간/뒤 각10건 sample30건은30개 canonical record/index/digest, idempotent replay, rollback rehearsal을 통과했다. sample은 full의 대체 근거가 아니다.
 - sample error0, destructive_executed=false, 임시 private 데이터 정리. source code hash도 전후 동일.
 
-최적화 후 전체 dry-run 네 번을 새 증거로 보존했다: [첫 run](migration-real-optimized-results.json), [원장형 rerun](migration-real-optimized-results-rerun.json), 중간 감사판 [third run](migration-real-optimized-results-final.json), 최신 고정 스크립트의 [최종 run](migration-real-optimized-results-final-rerun.json). 기존 결과는 덮어쓰지 않았다. 네 실행 모두 같은 snapshot digest `7d69ed65667db079957a9277b59ebcfb232293582beb6d53f267a4f61e726836` 및 56,961 event를 대상으로 CLI exit0/full report PASS/errors0로 종료했다. 최종판은 강화된 전체 success criteria까지 검증한다.
+최적화 후 전체 dry-run 네 번을 새 증거로 보존했다: 첫 run (로컬 보관·미게시: `migration-real-optimized-results.json`), 원장형 rerun (로컬 보관·미게시: `migration-real-optimized-results-rerun.json`), 중간 감사판 third run (로컬 보관·미게시: `migration-real-optimized-results-final.json`), 최신 고정 스크립트의 최종 run (로컬 보관·미게시: `migration-real-optimized-results-final-rerun.json`). 기존 결과는 덮어쓰지 않았다. 네 실행 모두 같은 snapshot digest `7d69ed65667db079957a9277b59ebcfb232293582beb6d53f267a4f61e726836` 및 56,961 event를 대상으로 CLI exit0/full report PASS/errors0로 종료했다. 최종판은 강화된 전체 success criteria까지 검증한다.
 
 최종 고정 스크립트 run은 CLI exit0, wall 170.95초(보고된 total 170.60초), imported/mapping entries/canonical records/index entries/digests verified/replay 및 rollback 건수 모두 56,961, mapping digest `sha256:e4c99d0bc660e87442ede3cf536ce8854d745b1afb2cc0a8ba14dc781d7f4a75`, rollback rehearsal PASS, 원본 bytes/count 불변, destructive=false였다. 계측상 import48.37초, index0.35초, digest검증31.64초, replay34.57초, rollback55.16초다. 원본 DB는 26,206,208 bytes / SHA-256 `6bc93092b6b476f25f6d4af402a95c4963b4d6d79a04afd2f9df12c8c4aa4fd5`로 전후 같았다. 당시 등록된 `migration.py` SHA-256 `da604e23b6417cb506d2ee97d7a3a4bc721013928c3c0f859b7c89aa9edbb3e9`, `legacy_adapter.py` `4900a1b538241f7cb4bb17fe516263cc75309acb34e0f8a8af07c780b44cba04`, `store.py` `8c794de8ebba9ec0816a326a3bbda9623b35897e83af397f54aed3006babebce`; migration 시험 `a4e363fb683f629eeeb808260d0c59ac50da665ae6c37e53cd9b4e8876cac195`, 감사 driver SHA-256 `2e5e44ccf63e51a487ce74467a065c18b267733a4ead7c27d0da1736eaf48f12`. 이는 그 full-run 당시 코드/시험/driver 해시이며, 아래 독립 검토에서 migration/adapter와 해당 시험이 바뀌었으므로 그 결과를 수정 후 트리의 dry-run 증거로 승격하지 않는다. 매 실행은 새 임시 target을 사용하므로 새 canonical ID 발급과 mapping digest 변화는 source 변동이 아니다.
 
 독립 검토에서 두 결함을 합성 fixture로 재현하고 고쳤다. (1) `rollback-rehearsal` 고정 하위 경로를 재사용·재귀 삭제해 선행 사용자 파일을 지울 수 있어, target 안에 매 실행 새 `mkdtemp` scratch를 만들고 그 디렉터리만 정리한다. (2) objective/task mapping을 저장한 직후 canonical publish가 끊기면 재시도가 기존 mapping ID를 복구하지 못하던 문제를, 기존 ID로 record를 재작성하고 결정적 transaction ID를 사용해 staged transaction 재시도도 복구하도록 고쳤다. 증거: [추가 regression JUnit](pytest-migration-independent-review-2026-09-26.xml); migration/adapter/store/protection/sandbox 묶음 100 passed, exit0(4.64초), Ruff PASS, changed files basedpyright `--level error` 0 errors/warnings/notes. Scratch sentinel 보존과 단건 API 및 migration batch API의 commit 중단/재시도 경계를 시험한다.
 
-2026-09-26 최초 G2-B 이후 전체 회귀는 817 collected, 804 passed, 12 failed, 1 skipped, 754.92초, exit1이었다. 실패 원인은 architecture marker(810≠817), 오래된 digest 측정과 4개 stale reverification 및 그에 의존하는 evidence gate로 확인했다. 당시 관련 migration/adapter/store/protection 95 passed 뒤 T01b/T02/T12 10개 pin을 재확인했고, 이전 source hash에서 전체 cognitive run은 817 collected, **816 passed / 0 failed / 1 skipped / 1 warning**, 756.31초, exit0이었다. 이는 [과거 JSON/JUnit](pytest-cognitive-g2b-2026-09-26-final.json)을 그대로 보존한다. 이후 독립 검토가 source/test를 수정했고, 그 수정 후 최신 전체 cognitive 및 snapshot 결과는 위 「회귀와 증거 정합성」에 각각 별도 evidence로 기록했다. 수정 후 collect-only는 **822**건(exit0, 1.22초)이고 Architecture Review measured marker를 822로 맞췄다. 변경된 migration/adapter/store/protection/sandbox focused set은 100 passed/exit0, Ruff PASS, changed-module basedpyright `--level error` 0 errors/warnings/notes였다. 현재 pin은 match14/reverified36/drift0/stale0/missing0, digest gate exit0이다. collect-only 822건과 digest 재확인 36건을 architecture marker에 반영하고 handoff 문서를 정합화한 뒤 `architecture_review.py` 16 checks를 재실행해 전부 PASS했다(최근 실행은 아래 별도 JSON 기록; 링크·인용 수와 measured marker 일치를 포함). 기존 `architecture-current.json`/`.txt`는 810개 수집 및 234 links를 기록한 이전 시점 산출물이므로 최신 결과로 보지 않는다. 과거 full suite에서 기록한 Python aggregate SHA-256 `205d6323bc62d5ab5e3f0b56ebd8c7d94763378df3dc8240e0fac7bc4f8e15a0`은 이전 트리용 역사값이며 현재 실행 aggregate로 재사용하지 않는다. focused gate subset의 360초 timeout 및 앞선 두 cognitive 전체 실행 timeout은 결과 PASS가 아니며, 완주한 최신 cognitive run이 이를 대체한다. 과거 Ruff/basedpyright 및 migration dry-run 수치도 각 당시 hash 범위에서만 유효하다. G1의 809 passed/1 skipped는 최적화 전 기준선이다.
+2026-09-26 최초 G2-B 이후 전체 회귀는 817 collected, 804 passed, 12 failed, 1 skipped, 754.92초, exit1이었다. 실패 원인은 architecture marker(810≠817), 오래된 digest 측정과 4개 stale reverification 및 그에 의존하는 evidence gate로 확인했다. 당시 관련 migration/adapter/store/protection 95 passed 뒤 T01b/T02/T12 10개 pin을 재확인했고, 이전 source hash에서 전체 cognitive run은 817 collected, **816 passed / 0 failed / 1 skipped / 1 warning**, 756.31초, exit0이었다. 이는 과거 JSON/JUnit (로컬 보관·미게시: `pytest-cognitive-g2b-2026-09-26-final.json`)을 그대로 보존한다. 이후 독립 검토가 source/test를 수정했고, 그 수정 후 최신 전체 cognitive 및 snapshot 결과는 위 「회귀와 증거 정합성」에 각각 별도 evidence로 기록했다. 수정 후 collect-only는 **822**건(exit0, 1.22초)이고 Architecture Review measured marker를 822로 맞췄다. 변경된 migration/adapter/store/protection/sandbox focused set은 100 passed/exit0, Ruff PASS, changed-module basedpyright `--level error` 0 errors/warnings/notes였다. 현재 pin은 match14/reverified36/drift0/stale0/missing0, digest gate exit0이다. collect-only 822건과 digest 재확인 36건을 architecture marker에 반영하고 handoff 문서를 정합화한 뒤 `architecture_review.py` 16 checks를 재실행해 전부 PASS했다(최근 실행은 아래 별도 JSON 기록; 링크·인용 수와 measured marker 일치를 포함). 기존 `architecture-current.json`/`.txt`는 810개 수집 및 234 links를 기록한 이전 시점 산출물이므로 최신 결과로 보지 않는다. 과거 full suite에서 기록한 Python aggregate SHA-256 `205d6323bc62d5ab5e3f0b56ebd8c7d94763378df3dc8240e0fac7bc4f8e15a0`은 이전 트리용 역사값이며 현재 실행 aggregate로 재사용하지 않는다. focused gate subset의 360초 timeout 및 앞선 두 cognitive 전체 실행 timeout은 결과 PASS가 아니며, 완주한 최신 cognitive run이 이를 대체한다. 과거 Ruff/basedpyright 및 migration dry-run 수치도 각 당시 hash 범위에서만 유효하다. G1의 809 passed/1 skipped는 최적화 전 기준선이다.
 
 프로젝트 지침상 `KGBinaryValidator.validate()`가 `OK=True`여야 하지만 현재 checkout에서 validator 구현을 찾지 못해 이 gate는 NOT_RUN이다. 이번 migration은 reward/score를 갱신하지 않아 reward decay/cap 적용 대상은 없었다. 다음 인수자는 validator 위치/실행 가능성을 확인해 OK 결과를 별도 기록해야 하며, 그 전까지 프로젝트 전체 KG 인수는 열어 둔다.
 

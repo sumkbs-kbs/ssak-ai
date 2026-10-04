@@ -6,6 +6,9 @@ status: full-snapshot-dry-run-complete-followups-blocked
 
 # 작업 계획
 
+> 공개 범위 안내(2026-10-04): 아래 로컬 보관·미게시 원자료는 원래 QA 작업 공간에 보존되어 있으며 공개 저장소에는 포함되지 않습니다. 역사적 결과와 해시는 기록된 당시 revision에만 적용됩니다. 이 공개 요약만으로 원자료를 재검토하거나 현재 소스의 인수를 확정할 수 없습니다.
+
+
 최신 분업/인수 기준: [리더·실행 에이전트 계획](../../EXECUTION_PLAN_2026-09-25.md).
 사용자 지시에 따라 root는 방향·분배·검토를 맡고 주요 검증/후속 구현은 실행 에이전트에 위임한다.
 
@@ -31,7 +34,7 @@ status: full-snapshot-dry-run-complete-followups-blocked
 - code-final: 정확한 source pin에 결박된 PASS, root가 19개 hash 재확인 후 review-ledger 기록.
 - security-final: bounded HTTP 경계 PASS 보고서 작성됨. 에이전트 종료는 사용량 제한이므로 레인 전체는 INCONCLUSIVE로 분리 기록.
 - QA: 기존13 실패 재현에서12 PASS, release 관측 증가 equality1 실패. 지시한 계약 정정을 root가 작은 통합 수정으로 적용; source/test freeze 후 전체 시험809 passed / 1 skipped, exit0.
-- migration: 최초 audit driver에서 앞/중간/뒤30건 sample PASS와 60초 제한 full probe 미완을 확인했다. 이후 root가 bounded batch import/store snapshot/index 최적화를 구현하고 등록 snapshot 전체 56,961건 dry-run 네 차례를 각각 별도 JSON으로 보존했다. 최신 [집계 증거](migration-real-optimized-results-final-rerun.json)는 CLI exit0/full report PASS/errors0, imported/mapping/canonical/index/digest/replay/rollback 각 56,961건, mapping digest `sha256:e4c99d0bc660e87442ede3cf536ce8854d745b1afb2cc0a8ba14dc781d7f4a75`, wall 170.95초/report total 170.60초, source bytes/count 불변, destructive=false, 강화된 success criteria 13/13 true 및 `overall_acceptance=true`를 기록한다. 대상 snapshot digest는 `7d69ed65667db079957a9277b59ebcfb232293582beb6d53f267a4f61e726836`; audit driver SHA-256은 `2e5e44ccf63e51a487ce74467a065c18b267733a4ead7c27d0da1736eaf48f12`다. 최적화 전 전체 baseline은 없으므로 성능 개선율은 주장하지 않는다. 운영 migration/cutover, objectives/tasks 경로(원본0건), 독립 재검토와 G2-B 이후 전체 cognitive 회귀 인수(817 collected, 804 passed/12 failed/1 skipped, exit1)는 미완료. 상세 회귀 결과는 [full cognitive 증거](pytest-cognitive-g2b-2026-09-26.json).
+- migration: 최초 audit driver에서 앞/중간/뒤30건 sample PASS와 60초 제한 full probe 미완을 확인했다. 이후 root가 bounded batch import/store snapshot/index 최적화를 구현하고 등록 snapshot 전체 56,961건 dry-run 네 차례를 각각 별도 JSON으로 보존했다. 최신 집계 증거 (로컬 보관·미게시: `migration-real-optimized-results-final-rerun.json`)는 CLI exit0/full report PASS/errors0, imported/mapping/canonical/index/digest/replay/rollback 각 56,961건, mapping digest `sha256:e4c99d0bc660e87442ede3cf536ce8854d745b1afb2cc0a8ba14dc781d7f4a75`, wall 170.95초/report total 170.60초, source bytes/count 불변, destructive=false, 강화된 success criteria 13/13 true 및 `overall_acceptance=true`를 기록한다. 대상 snapshot digest는 `7d69ed65667db079957a9277b59ebcfb232293582beb6d53f267a4f61e726836`; audit driver SHA-256은 `2e5e44ccf63e51a487ce74467a065c18b267733a4ead7c27d0da1736eaf48f12`다. 최적화 전 전체 baseline은 없으므로 성능 개선율은 주장하지 않는다. 운영 migration/cutover, objectives/tasks 경로(원본0건), 독립 재검토와 G2-B 이후 전체 cognitive 회귀 인수(817 collected, 804 passed/12 failed/1 skipped, exit1)는 미완료. 상세 회귀 결과는 [full cognitive 증거](pytest-cognitive-g2b-2026-09-26.json).
 - KG validator gate: 현재 checkout에서 `KGBinaryValidator` 구현을 찾지 못해 `validate() -> OK=True`를 입증하지 못했다(NOT_RUN). 이어받는 담당자는 validator의 정식 위치·실행 명령을 찾아 별도 증거로 기록해야 한다. 이번 migration에서 reward/score 업데이트는 없었다.
 - pilot: live-pilot-plan 작성됨. 로컬 provider 확인, 실제 generation/pilot은 NOT_RUN. 후속 major 카드 LP-A/B/C/D 보존.
 

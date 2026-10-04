@@ -1,5 +1,8 @@
 # Current cross-card contracts
 
+> Publication note (2026-10-04): The raw artifacts marked "local-only archive" are retained in the original local QA workspace and are not included in this public repository. Historical results and hashes describe their recorded revisions. This published summary does not supply the raw evidence or certify today's source.
+
+
 All contracts are documented on the finalization dirty tree; independent producer and consumer acceptance remains tied to final verification. The old R06 delta note is historical.
 
 - [C01: Context and provider budget](context-v1.md) — R05/R06 → R07/R14/R15
@@ -12,6 +15,6 @@ All contracts are documented on the finalization dirty tree; independent produce
 - [C08: Registered live trial ledger](trial-ledger-v1.md) — R17 → R18/R19
 - [C09: Trusted ACTIVE composition and durable status](composition-v1.md) — R15/R16 → R22
 
-[Source/test/spec pins](contract-source-manifest.json). No live efficacy, rollout, or independent V PASS is implied.
+Source/test/spec pins (local-only archive: `contract-source-manifest.json`, unpublished). No live efficacy, rollout, or independent V PASS is implied.
 
 [Original common specification, preserved copy](implementation-contracts-source.md). Its historical relative links refer to the original review pack; the current nine documents above carry repository-local recipes.
