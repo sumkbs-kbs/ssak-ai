@@ -8,9 +8,13 @@ tags: [ssak-ai, cognitive-core, architecture]
 
 # SSAK-AI Cognitive Core 개발·인수 기준
 
+> **최신 인수 완료 (2026-10-03):** [실행계획·체크리스트](EXECUTION_PLAN_2026-10-03.md) → [현재 판정표](CURRENT_REMEDIATION_STATUS.md) → [최종 통합 보고서](../qa/2026-10-03-residual-close/FINAL_INTEGRATION_REVIEW.md). 지원 범위의 전체 통합 **1,193 passed / 의도된 skip 1 / 실패 0**, 실제 Docker·HTTP/재시작 검증 및 full 증거 게이트 **11/11 PASS**. 아래 9월 27일 결과는 당시 동결 소스의 근거다.
+
+> **현재 감사 진입점 (2026-09-27):** [현재 판정표](CURRENT_REMEDIATION_STATUS.md) → [최종 검증·근거](evidence/finalization-2026-09-27/FINALIZATION_REVIEW.md). 지원 범위의 구현·독립 검토와 통합 QA는 PASS(1,125 passed / 의도된 skip 1)이며, R19 실제 로컬 모델 v8·54-slot 조건부 ablation은 완료됐다(pilot 범위, 독립 재계산 일치). 아래 P00–P12/G01–G16 상태·gap·명령은 당시 계획과 조사 snapshot이다. 현재 미구현 목록이나 재실행 지시로 읽지 말고, 현재 판정표의 남은 작업부터 확인한다. 상위 원칙과 상세 인수 계약은 계속 적용된다.
+
 SSAK-AI는 교체 가능한 Neural Brain을 활용하는 Persistent Adaptive Cognitive System이며, Human Partner에게는 Persistent Adaptive Cognitive Partner다. Brain이 의미를 판단하고, SSAK-AI Body는 상태·Context·근거·권한·실행·경험의 연속성을 소유한다.
 
-이 문서는 Constitution을 변경하지 않고 개발계획과 인수 조건을 구체화한 v1.1이다. 문서 완성과 runtime 완성은 별개다. 원본 저장소의 파일을 덮어쓰지 않은 배포용 완성본이며, 함께 제공된 상위·참고 문서는 작성 시점의 읽기용 사본이다.
+이 문서는 Constitution을 변경하지 않고 개발계획과 인수 조건을 구체화한 v1.1이다. 문서 완성과 runtime 완성은 별개다. 현재 저장소에서 유지하는 개발·인수 문서이며, 과거 작성 시점의 조사와 후속 검증을 구분해 보존한다.
 
 ## 1. 문서 권위와 읽기 순서
 
@@ -61,7 +65,7 @@ v1은 Canonical Markdown + explicit references, Git persistence, rebuild 가능�
 
 ## 5. 현재 상태와 증거 사용법
 
-> **현재 remediation 진입점 (2026-09-26 R00):** [CURRENT_REMEDIATION_STATUS.md](CURRENT_REMEDIATION_STATUS.md).  
+> **현재 remediation 진입점 (2026-09-27):** [CURRENT_REMEDIATION_STATUS.md](CURRENT_REMEDIATION_STATUS.md).  
 > 과거 P00–P12 PASS는 날짜·module/fixture/isolated HTTP/production/live 구분을 유지한 HISTORICAL 기록이다. source digest가 바뀌면 자동 CURRENT_PASS가 되지 않는다. P10 fixture ≠ P10 live. P11 isolated ACTIVE ≠ production ACTIVE.
 
 아래는 기존 증거 문서의 보고 내용이다. 이번 v1.1 문서 편집에서 코드·시험을 재실행했다는 뜻이 아니다. source SHA뿐 아니라 dirty-file digest, 시험 범위, limitation을 대조해야 한다.
@@ -114,10 +118,8 @@ P01/P03/P06/P12는 주 담당자, P00/P08/P11은 통합 담당자가 책임진�
 
 [요구사항 추적표](REQUIREMENTS_TRACEABILITY.md), [기존 보완 분석](SUPPLEMENT_ANALYSIS.md), [기존 산출물 보고](IMPLEMENTATION_REPORT.md), [기존 문서 검증 결과](VALIDATION_REPORT.md)는 당시 기록이다. v1.1 신규 요구의 통과 증거로 자동 재사용하지 않는다.
 
-## Current remediation pack (2026-09-26)
+## Current remediation finalization (2026-09-27)
 
-R00–R23 defect remediation closed at **self-review** evidence level.  
-Architecture digest pin re-verification and independent R*-V remain open.  
-**Operational cutover / CR-14 GO: NO-GO** until Human authorization.  
-Live growth efficacy: **unproven** (R19 scripted only).  
-Details: [CURRENT_REMEDIATION_STATUS.md](CURRENT_REMEDIATION_STATUS.md), review pack `SSAK_AI_REVIEW_2026-09-26`.
+Independent baseline review found defects; corrected scopes and remaining verification are tracked in [CURRENT_REMEDIATION_STATUS.md](CURRENT_REMEDIATION_STATUS.md) and the [finalization review](evidence/finalization-2026-09-27/FINALIZATION_REVIEW.md). R01/R02 and R04/R09/R10 have scoped independent correction PASS at exact dirty hashes. Final goal review and integrated QA passed (1,125 passed, one intentional skip, zero failures); the registered v8 live run and 54-slot conditional ablation completed with independent raw-trace reconciliation (pilot scope; see the finalization review). The former “R00–R23 closed at self-review” statement is historical and does not establish current acceptance.
+
+[C01–C09 producer/consumer contracts](evidence/current-remediation/contracts/README.md) document the current interfaces and executable verification recipes. The unified 1,465-file source manifest is frozen at `ed6c1e7176ace5d90952117cce865e4ca8bfe7f6a4cc7859f70409b8228631e2`; final integrated QA passed; the v8 live run and registered conditional ablation are complete. V5/v6/v7 remain historical; the schema race found by v5 was repaired. Live growth efficacy is not established by scripted tests; R21 current read-only real-source rehearsal is complete at its recorded hashes. Global production ACTIVE, destructive cutover and CR-14 are separate operational decisions.

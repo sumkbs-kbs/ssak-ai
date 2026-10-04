@@ -1,5 +1,41 @@
 # Current remediation status (R-series)
 
+## 최신 인수 작업 — 2026-10-03
+
+**지원 범위의 잔여 개발·전체 통합 인수 완료 — PASS.** [최종 통합 인수 보고서](../qa/2026-10-03-residual-close/FINAL_INTEGRATION_REVIEW.md), [10월 3일 실행계획](EXECUTION_PLAN_2026-10-03.md)이 현재 진입점이다. 단일 combined run은 **1,193 passed / 1 intentional skip / 실패·오류 0**, full 증거 게이트는 **11/11 PASS**다. 실제 Docker 시험은 별도 smoke와 전체 XML에서 모두 PASS이며, 실제 HTTP 최초 실행·재시작 중복 방지도 확인했다.
+
+소스·설정 1,505개와 core 문서 380개는 시험 실행 중 전후 해시가 동일하다. 원래 1,126건 전체 범위와 conversation 68건을 포함한다. 최종 인수 문서 편집은 실행 종료 후 수행하며 별도 문서 게이트로 검증한다. 9월 27일 live/migration 결과는 당시 동결 소스의 증거로 유지한다.
+
+### 선행 scoped 검증과 후속 전체 검증의 관계
+
+현재 작업은 [10월 3일 실행계획](EXECUTION_PLAN_2026-10-03.md)을 따른다. 아래 9월 27일 PASS는 당시 동결 소스 범위다. 후속 `qa/committed-tree-full.xml`(10월 1일)은 1,126건 중 12 failures / 1 skip을 기록했다. 11건은 digest·marker 불일치 연쇄, 1건은 Docker daemon 연결 실패였다. 현재 사용자가 갱신한 digest 기록을 보존하여 검사했고, 변경된 계약·digest·architecture 회귀 **470 passed / 실패 0**을 확인했다. 소스 전후 해시 변경은 0건이다. 옛 통합 PASS를 현재 작업 트리 전체에 승계하지 않는다.
+
+실제 v8·ablation과 migration의 완료 증거는 유지한다. 이번 대화 view 저장 안전성 수정은 관련 회귀 **68 passed**(신규 최신성 계약 13건 포함), 기존 F2 계약 **10 passed**, 실제 별도 프로세스 검증과 독립 scoped PASS로 확인했다. 삭제 부활·최신 turn 덮어쓰기·실패 후 재시도 유실·읽기 수렴을 수정했다. 각 실행의 겹치는 시험 수는 합산하지 않는다. [수정 근거](../qa/2026-10-03-residual-close/VIEW_WORKER_REPORT.md), [독립 검토](../qa/2026-10-03-residual-close/independent-review.md), [계약 재검증](../qa/2026-10-03-residual-close/evidence-reconciliation.md).
+
+선행 scoped 검증 당시 Docker daemon은 연결되지 않았다. 이후 기존 Docker Desktop을 기동하여 연결을 복구했고 실제 보호 경계 시험과 전체 통합 재실행을 완료했다. 자동 활성화·운영 승인·확증 성능 주장은 추가하지 않았다.
+
+선행 리더 검증: [fast 증거 게이트](../qa/2026-10-03-residual-close/leader-evidence-gate.md) **9/9 PASS, exit 0**. 이후 [full 증거 게이트](../qa/2026-10-03-residual-close/final-full-gate.md)에서 전용 2개 stage를 포함한 **11/11 PASS**를 확인했다.
+
+## 9월 27일 동결 소스 판정
+
+기준: 2026-09-27 finalization · base HEAD `8cc94cf51952e3bbb6cb3f627683ca6c9c2d0382` + 미커밋 수정. **최종 통합 QA PASS — 실제 로컬 모델 v8 등록 실험·54-slot ablation 완료(독립 재계산 일치, pilot 범위).**
+
+현재 판정의 진입점은 [Finalization review](evidence/finalization-2026-09-27/FINALIZATION_REVIEW.md)다. 아래 과거 로그의 PASS/self-review/queue-empty 문구는 당시 범위에만 적용되며 현재 독립 V를 뜻하지 않는다. 최초 독립 검토는 실제 결함을 발견하여 FAIL/REQUEST CHANGES였고, 수정 후 해당 범위는 독립 PASS로 재검증되었고 최종 통합 QA도 통과했다.
+
+- R01/R02 보호·권한 수정: 독립 scoped PASS (17 tests + 원래 공격 재실행), 해당 보고서 dirty SHA256 한정.
+- R04/R09/R10 migration/recovery 수정: 독립 scoped PASS (10 tests + 원래 경쟁·실패·WAL 재현), 해당 보고서 범위 한정.
+- R05–R07/R11–R14 및 R08/R15/R16: 구현/통합 수정, 독립 goal 검토, 최종 통합 QA PASS.
+- R17–R19 live experiment: 동결 소스에서 실제 v8(108 slots, 192 calls, closure/issue 0)과 ablation(54 slots, 100 calls) 완료; 독립 재계산 verdict PASS(pilot-only). v7은 NOT_COMPLETE로 보존. 결과·한계: [LIVE_RESULTS](evidence/finalization-2026-09-27/live/LIVE_RESULTS.md).
+- R20: experimental storage metadata; task utility/authority/maturity 근거 아님. consumer 부재는 원래 카드가 허용한 분류다.
+- R21: 현재 코드로 실제 56,961건 read-only rehearsal 및 전량 payload mapping digest 검증 완료; source before=after. 실제 objective/task는0/0, synthetic와 구분. --apply 미실행.
+- R00/R22/R23: [C01–C09 contracts](evidence/current-remediation/contracts/README.md)와 현재 문서 정합화 작성; 최종 manifest 및 통합 QA PASS; live 증거 패키징 완료(파일별 SHA-256).
+
+각 current PASS는 전체 HEAD만이 아니라 해당 source/test/spec dirty digest와 실행 표면에 결박된다. v5 snapshot과1035pass/1fail/1skip 결과는 역사적 기록이며 실제 schema 경쟁 결함은 수정되었다. 통합1,465파일 source fingerprint `ed6c1e7176ace5d90952117cce865e4ca8bfe7f6a4cc7859f70409b8228631e2`로 계약을 재고정했고 최종 QA는 1,125 passed / 1 intentional skip / 0 failures이며 v8 등록 실행과 54-slot 조건부 ablation은 완료·재계산 일치다. 아래 과거 체크나 test count로 release를 선언하지 않는다. 운영 effect enable/cutover/CR-14는 별도이며, 일반 구현·read-only 검증·독립 검토를 Human-only 작업으로 이월하지 않는다. 지원하지 않는 multi-host/NFS나 global ACTIVE rollout을 일상 완료 조건으로 새로 요구하지 않는다.
+
+---
+
+# Historical remediation log (retained verbatim below)
+
 기준: 2026-09-27 05:45 KST · tip `5c8fcf55` — R02 grant-cache PARTIAL + R01 live Docker 3b RUN + prior R08/R10 multiproc PARTIAL; implementer secondary queue empty; Independent V still OPEN; residual-close pins unchanged · branch `codex/m1-task-events` (ahead; no push).
 
 이 표가 **현재 작업의 유일한 진입점**이다. 아래 HISTORICAL 행의 과거 PASS는 보존하되 CURRENT_PASS로 자동 승계하지 않는다.

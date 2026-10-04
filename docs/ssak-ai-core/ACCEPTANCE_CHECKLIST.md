@@ -8,6 +8,31 @@ tags: [ssak-ai, cognitive-core, architecture]
 
 # SSAK-AI 실행·인수 체크리스트
 
+## 최신 인수 (2026-10-03)
+
+[10월 3일 실행계획·완료 체크리스트](EXECUTION_PLAN_2026-10-03.md)와 [최종 통합 인수](../qa/2026-10-03-residual-close/FINAL_INTEGRATION_REVIEW.md)가 현재 진입점이다. 지원 범위의 잔여 개발·통합 인수는 완료됐다. 아래 finalization 체크는 9월 27일 동결 소스에 결박된다.
+
+- [x] Docker 연결 복구 및 실제 보호 쓰기 거절·허용 쓰기 성공. 전체 XML에서도 해당 node PASS, skip 아님.
+- [x] 기존 cognitive/runtime/CLI 1,126건과 conversation 68건을 단일 실행으로 검증: 1,193 passed / 1 intentional skip / 0 failures·errors.
+- [x] 실행 중 소스·설정 1,505개와 core 문서 380개 전후 해시 동일, 독립 대조 완료.
+- [x] full 증거 게이트 11/11 PASS, wheel/sdist 검증 포함.
+- [x] 실제 HTTP 인증·최초 dispatch 1·재시작 duplicate refusal/dispatch 0, canonical digest 검증.
+- [x] 기존 정책·헌법 보존 및 이전 live/migration 근거의 동결 소스 범위 유지.
+
+## 현재 finalization 인수 (2026-09-27)
+
+Base HEAD `8cc94cf51952e3bbb6cb3f627683ca6c9c2d0382` + dirty hashes. [현재 판정표](evidence/finalization-2026-09-27/FINALIZATION_REVIEW.md)가 아래 역사적 체크보다 우선한다. baseline 독립 검토 FAIL과 수정 후 scoped PASS를 구분한다.
+
+- [x] R01/R02: 원래 보호·ancestor 결함 수정에 대한 독립 scoped PASS와 exact hashes 기록.
+- [x] R04/R09/R10: 원래 snapshot/recovery 결함 수정에 대한 독립 scoped PASS와 exact hashes 기록.
+- [x] R21: 현 코드 read-only 실제 source 56,961건 rehearsal, source 보존 및 전량 payload mapping digest 비교 기록.
+- [x] C01–C09: 현 인터페이스·불변식·실패·test recipe·source/test/spec snapshot 문서 작성 (작성 자체는 producer/consumer PASS 아님).
+- [x] 최종 independent goal 검토와 consumer integration 확인; 통합 QA 1,125 passed / 1 intentional skip / 0 failures.
+- [x] R19 등록된 실제 provider v8(108 slots) 및 54-slot 조건부 ablation terminal ledger와 독립 재계산 완료; v7 NOT_COMPLETE 보존. pilot 범위, 확증 아님. [LIVE_RESULTS](evidence/finalization-2026-09-27/live/LIVE_RESULTS.md).
+- [x] R22 source freeze/manifest와 통합 QA 대조 완료; 실제 실험 결과·증거 인용 포함(architecture review 재실행 결과는 판정표 참조). 운영 enable/cutover/CR-14는 별도.
+
+아래 R/P/T 체크는 당시 evidence 범위를 보존한 역사적 기록이다. V가 implementer self-review였다면 독립 V 완료로 읽지 않는다. 운영 승인·분산 deployment는 별도 범위다.
+
 ## R00 현재 근거 고정 (2026-09-26 remediation)
 
 상세: review pack `tasks/R00.md` · 증거: [R00 report](evidence/current-remediation/R00/report.md). 상태 **PASS** (V: self-review limitation).
@@ -16,7 +41,7 @@ tags: [ssak-ai, cognitive-core, architecture]
 - [x] R00-A2: P11 isolated authenticated ACTIVE는 기존 증거로 남고 production 구성은 OPEN으로 별도 표시된다.
 - [x] R00-A3: P10 fixture 성장과 실제 live 성장의 상태가 서로 다르게 표시된다.
 - [x] R00-E: current source에 결박된 원시 실행 증거가 있다.
-- [x] R00-V: 검토 기록됨 (implementer self-review; independent human reviewer slot open).
+- [ ] R00-V: 과거 implementer self-review만 기록됨; 최종 provenance 독립 인수는 현재 판정표 참조.
 
 ---
 
@@ -24,7 +49,8 @@ tags: [ssak-ai, cognitive-core, architecture]
 
 상세: review `tasks/R01.md` · 증거: [R01 report](evidence/current-remediation/R01/report.md). 상태 **PASS**.
 
-- [x] R01-A1 … R01-V (see report). 2026-09-26 19:59 KST
+- [x] R01-A1 … R01-E: historical implementer evidence (see report), 2026-09-26 19:59 KST.
+- [ ] R01-V (historical blanket scope): 당시 self-review는 독립 V 아님; 2026-09-27 수정 범위 독립 PASS는 위 current 목록과 별도 보고서 참조.
 
 ---
 

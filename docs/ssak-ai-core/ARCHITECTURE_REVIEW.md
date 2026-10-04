@@ -8,11 +8,13 @@ tags: [ssak-ai, cognitive-core, architecture, review]
 
 # SSAK-AI 최종 Architecture Review (T14)
 
-최종 변경 트리의 판정과 실행 증거는 `evidence/2026-09-25-review/FINAL_REVIEW.md`에 기록한다. 이 문서의 과거 PASS는 그 판정을 대체하지 않는다.
+현재 변경 트리의 실행 범위와 판정은 [2026-10-03 실행계획](EXECUTION_PLAN_2026-10-03.md)과 [현재 판정표](CURRENT_REMEDIATION_STATUS.md)를 따른다. 이 문서의 과거 PASS는 현재 트리의 검증을 대체하지 않는다.
 
-## 2026-09-25 현재 판정 안내
+## 2026-10-03 현재 판정 안내
 
-이 문서는 날짜별 누적 관찰을 보존한다. §2~3의 partial 판정은 원래 검토 범위이고, 현재 잔여 조건은 후속 근거를 반영한 §5를 읽는다. [2026-09-25 작업 계획](evidence/2026-09-25-review/WORK_PLAN.md)에 따른 승인/보호·action 지속성·인증된 ACTIVE 통합 보완은 최종 검증 전이다. 과거 source의 module/harness PASS를 변경 중인 트리의 전체 인수로 사용하지 않는다. [문서 정합화 기록](evidence/2026-09-25-review/docs-sync.md)은 정정한 문장과 출처를 설명한다.
+지원 범위의 잔여 개발·통합 인수는 완료됐다. [최종 통합 보고서](../qa/2026-10-03-residual-close/FINAL_INTEGRATION_REVIEW.md): 전체 회귀 1,193 passed / 의도된 skip 1 / 실패 0, full 증거 게이트 11/11 PASS, 실제 Docker·HTTP/재시작 및 독립 소스 대응 확인. 이전 실험의 동결 소스 범위는 보존한다.
+
+이 문서는 날짜별 누적 관찰을 보존한다. §2~3의 partial 판정과 §5의 잔여 조건은 각 관찰 시점의 범위다. 승인/보호·action 지속성·인증된 ACTIVE 통합의 [2026-09-25 최종 검토](evidence/2026-09-25-review/FINAL_REVIEW.md), [2026-09-27 최종화 검토](evidence/finalization-2026-09-27/FINALIZATION_REVIEW.md), 후속 변경의 검증을 구분한다. 최신 작업은 위 2026-10-03 실행계획에서 확인한다. 과거 source의 module/harness PASS를 변경 중인 트리의 전체 인수로 사용하지 않는다. [문서 정합화 기록](evidence/2026-09-25-review/docs-sync.md)은 당시 정정한 문장과 출처를 설명한다.
 
 ## 0. 이 문서의 성격과 재현 방법
 
@@ -99,7 +101,7 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 | regression_drift | 0 | seed 를 바꾸면 달라지는 실패 |
 | regression_unowned | 0 | 소유자 없는 결정적 실패 |
 | digest_pinned | 50 | 증거 문서가 파일에 못 박은 sha256 수 |
-| digest_reverified | 41 | 그 뒤에 바뀌었지만 재확인 기록이 있고 그 뒤로 바뀌지 않은 pin(2026-09-26 migration/store 검토 기록 포함) |
+| digest_reverified | 40 | 그 뒤에 바뀌었지만 재확인 기록이 있고 그 뒤로 바뀌지 않은 pin(2026-10-03 현재 측정; 이전 검토 기록 보존) |
 | digest_drifted | 0 | 재확인 없이 지나간 revision 을 가리키는 pin |
 | digest_stale | 0 | 재확인 뒤에 파일이 또 바뀌어 무효가 된 재확인 |
 | digest_missing | 0 | 파일이 없는데 digest 를 못 박은 항목 |
@@ -129,14 +131,14 @@ T14의 산출물이다. 이 문서는 서술 문서이면서 동시에 **기계 
 <!-- measured:drift_questions=10 -->
 <!-- measured:drift_triggered=0 -->
 <!-- measured:evidence_docs=17 -->
-<!-- measured:cognitive_tests=901 -->
+<!-- measured:cognitive_tests=1061 -->
 <!-- measured:regression_scopes=9 -->
 <!-- measured:regression_runs=21 -->
 <!-- measured:regression_deterministic=11 -->
 <!-- measured:regression_drift=0 -->
 <!-- measured:regression_unowned=0 -->
 <!-- measured:digest_pinned=50 -->
-<!-- measured:digest_reverified=41 -->
+<!-- measured:digest_reverified=40 -->
 <!-- measured:digest_drifted=0 -->
 <!-- measured:digest_stale=0 -->
 <!-- measured:digest_missing=0 -->

@@ -1,0 +1,13 @@
+{
+  "model_id": "synthetic-manual-qa",
+  "dataset_id": "synthetic-six-cases",
+  "risk_budget": 0.05,
+  "cases": [
+    {"case_id": "correct", "status": "prediction", "options": ["yes", "no"], "probabilities": [0.9, 0.1], "expected_key": "yes", "tags": ["ko", "routing"]},
+    {"case_id": "wrong", "status": "prediction", "options": ["yes", "no"], "probabilities": [0.8, 0.2], "expected_key": "no", "tags": ["en", "routing"]},
+    {"case_id": "timeout", "status": "error", "error_code": "timeout", "tags": ["ko"]},
+    {"case_id": "unlabelled", "status": "prediction", "options": ["yes", "no"], "probabilities": [0.5, 0.5], "underdetermined": true, "tags": ["ko", "ambiguous"]},
+    {"case_id": "invalid", "status": "prediction", "options": ["yes", "no"], "probabilities": [0.1, 0.1], "expected_key": "yes", "tags": ["en"]},
+    {"case_id": "missing-label", "status": "prediction", "options": ["yes", "no"], "probabilities": [0.7, 0.3], "expected_key": "maybe", "tags": ["en"]}
+  ]
+}

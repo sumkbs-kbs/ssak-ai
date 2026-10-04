@@ -46,16 +46,16 @@
     }
   ],
   "coverage": {
-    "docs": 16,
-    "mentions": 6,
+    "docs": 17,
+    "mentions": 7,
     "min_mentions": 1
   },
   "floors": [
     {
       "label": "node 지목 산문",
-      "observed": 6,
+      "observed": 7,
       "minimum": 1,
-      "margin": 5,
+      "margin": 6,
       "why": "2026-09-23 기준 관측: 증거 문서 16개 중 node(test file::test name)를 산문에서 지목한 줄 6개. 하한을 1로 둔 것은 ‘얼마나 많이 보이나’ 가 아니라 ‘보는 능력이 0이 됐나’ 를 잡기 위해서다. 증거 문서가 정말로 시험을 지목하는 문장을 그만두면 이 값을 근거와 함께 내린다."
     },
     {

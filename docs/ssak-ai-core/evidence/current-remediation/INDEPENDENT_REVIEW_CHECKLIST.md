@@ -1,3 +1,11 @@
+# Independent review tracking — 2026-09-27 snapshot; reconciled 2026-10-03
+
+The preparation checklist below is historical. Independent baseline reviews at `8cc94cf51952e3bbb6cb3f627683ca6c9c2d0382` found defects (FAIL/REQUEST CHANGES). Corrected R01/R02 and R04/R09/R10 scopes have independent PASS at their recorded dirty hashes. Final goal review and integrated QA passed on the September 27 snapshot. Registered v8 and the 54-slot conditional ablation completed with independent raw-trace reconciliation; v7 remains preserved as NOT_COMPLETE. See the [September 27 finalization review](../finalization-2026-09-27/FINALIZATION_REVIEW.md) for reports and pilot limits, and [current remediation status](../../CURRENT_REMEDIATION_STATUS.md) for subsequent changes and verification. Do not execute an old pinned tip or transfer its PASS to changed source and call it current verification.
+
+Independent reviewers are separate from implementers; Human identity is not required for ordinary technical V. The September 27 unified source manifest records the repaired schema race and final QA result (1,125 passed, one intentional skip). These results remain bound to that snapshot; later source changes and follow-up failures require their own evidence. Completed v8 and ablation results establish only the documented pilot scope; v5/v6/v7 remain historical. Multi-host/NFS and global rollout are unclaimed deployment scope, not invented local completion prerequisites. Original attack notes and older pins remain below for history.
+
+---
+
 # Independent R*-V review checklist (prep only; not executed)
 
 Prepared: 2026-09-27 03:58 KST · tip bump 2026-09-27 04:18 KST

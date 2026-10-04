@@ -8,7 +8,13 @@ tags: [ssak-ai, cognitive-core, architecture]
 
 # Detailed Implementation Roadmap and Agent Handoff
 
-> **2026-09-26 후속:** 결함 수정 카드는 R00–R23 ([CURRENT_REMEDIATION_STATUS.md](CURRENT_REMEDIATION_STATUS.md), 감사 묶음 IMPLEMENTATION_ROADMAP). P00–P12를 처음부터 다시 만들지 않는다. R00 PASS.
+> **최신 실행 순서 (2026-10-03):** [리더 실행계획](EXECUTION_PLAN_2026-10-03.md)의 담당·인수 조건·체크리스트를 따른다. 기존 R/P 카드를 반복 구현하지 않는다. 현재 작업 트리의 잔여 수정과 재검증을 당시 동결 소스의 PASS와 구분한다.
+
+> **최종 인수:** 현재 지원 범위의 잔여 구현·통합 검증 큐는 닫혔다. 전체 통합 1,193 passed / 의도된 skip 1, 실제 Docker·HTTP/restart 및 full 게이트 11/11 PASS. [최종 근거](../qa/2026-10-03-residual-close/FINAL_INTEGRATION_REVIEW.md). 새 소스 변경이나 새 목표는 별도 영향 검증·카드로 시작한다.
+
+> **현재 감사 진입점 (2026-09-27):** [현재 판정표](CURRENT_REMEDIATION_STATUS.md) → [최종 검증·근거](evidence/finalization-2026-09-27/FINALIZATION_REVIEW.md). 지원 범위의 구현·독립 검토와 통합 QA는 PASS(1,125 passed / 의도된 skip 1)이며, R19 실제 로컬 모델 v8·54-slot 조건부 ablation은 완료됐다(pilot 범위, 독립 재계산 일치). 아래 P00–P12/G01–G16 상태·gap·명령은 당시 계획과 조사 snapshot이다. 현재 미구현 목록이나 재실행 지시로 읽지 말고, 현재 판정표의 남은 작업부터 확인한다. 상위 원칙과 상세 인수 계약은 계속 적용된다.
+
+> **과거 인계 기록 (2026-09-26):** 결함 수정 카드는 R00–R23으로 편성되었고 당시 R00은 self-review 범위에서 PASS로 기록되었다. 현재 독립 인수와 동일한 판정이 아니며, 후속 결과는 위 2026-09-27 진입점을 따른다. P00–P12를 처음부터 다시 만들지 않는다.
 
 ## 작업 범위와 완료 상태
 

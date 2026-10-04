@@ -8,6 +8,8 @@ tags: [ssak-ai, cognitive-core, architecture]
 
 # Current Working Tree Assessment and Gap Analysis
 
+> **현재 감사 진입점 (2026-09-27):** [현재 판정표](CURRENT_REMEDIATION_STATUS.md) → [최종 검증·근거](evidence/finalization-2026-09-27/FINALIZATION_REVIEW.md). 지원 범위의 구현·독립 검토와 통합 QA는 PASS(1,125 passed / 의도된 skip 1)이며, R19 실제 로컬 모델 v8·54-slot 조건부 ablation은 완료됐다(pilot 범위, 독립 재계산 일치). 아래 P00–P12/G01–G16 상태·gap·명령은 당시 계획과 조사 snapshot이다. 현재 미구현 목록이나 재실행 지시로 읽지 말고, 현재 판정표의 남은 작업부터 확인한다. 상위 원칙과 상세 인수 계약은 계속 적용된다.
+
 ## 분석 기준과 한계
 
 대상 저장소는 `/Users/mr.k/program/coding/ssak_comp/Ssak-Ai`다. 이 v1.1은 이전 코드 조사 기록과 최신 문서에 보고된 구현 증거를 구분하고, 철학 검토에서 발견한 실행 계약 누락을 보완한다. 이번 문서 편집에서 source graph·실제 코드·runtime 시험을 다시 감사한 것은 아니다.
@@ -16,7 +18,7 @@ tags: [ssak-ai, cognitive-core, architecture]
 
 Constitution → Architecture Invariants → 관련 Protocol이 목표 기준이다. 현재 구현이 편리하다는 이유로 목표를 줄이지 않으며, 문서에 목표가 있다는 이유로 구현 완료로 간주하지 않는다. 미확인은 부재나 위반의 확정이 아니다.
 
-### 최신 문서에 추가된 구현 보고
+### 당시 문서에 추가된 구현 보고 (historical)
 
 | 영역 | 보고된 진척 | 남은 확인 |
 |---|---|---|

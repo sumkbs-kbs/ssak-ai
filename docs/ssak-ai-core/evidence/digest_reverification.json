@@ -4,141 +4,141 @@
       "doc": "T01a_typed_model.md",
       "path": "docs/ssak-ai-core/contracts/record-entities.schema.json",
       "verified_digest": "90f526b5d71d2f3aee598cfebe5325b14c03878ebc11728920970fe8369b7343",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T01a_typed_model.md",
       "path": "src/antigravity_k/engine/cognitive/models.py",
-      "verified_digest": "f90ccc743f783115f1641644e43ff7d17fffd694e6ee697a9d0cf6df3855b815",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "afe99ffae7ebb74d29e34a82aab34da2a119317e437529ddcca53e89be204945",
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T01a_typed_model.md",
       "path": "src/antigravity_k/engine/cognitive/references.py",
       "verified_digest": "8887785ef432dba2ce98681a5b220dadb2577a3aa80fb12b3901e0aedb0e49d4",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T01a_typed_model.md",
       "path": "tests/cognitive/test_models.py",
       "verified_digest": "b0db21cd95dfd3c333727fd57a0a516fb2b9727b1ce6e74428b34805c638666c",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T01b_protection.md",
       "path": "src/antigravity_k/engine/cognitive/protected_targets.py",
-      "verified_digest": "23534e6ed6c2d921e08300157d9563ae17696de9f1718e54bce47c273d0957cc",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "d18548cfa59870667f5080b92bb218c6b7b7bb1ec310bc40a287f143bc9ceea8",
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T01b_protection.md",
       "path": "src/antigravity_k/engine/cognitive/store.py",
       "verified_digest": "58a02a89cd66fca9ab4430ce6db0f042156d758ba35a3b1a163f0303fa777b78",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T01b_protection.md",
       "path": "src/antigravity_k/tools/permission_gate.py",
-      "verified_digest": "b011f71dfc7f6981d9e855e8d9bfda28ec0f1abd685e84d17372f8eac941883d",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "5a1a118081f1b00f815e29804ea9d88f366a2e725d852057c0caf463d6f189f9",
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T01b_protection.md",
       "path": "tests/cognitive/test_protection.py",
       "verified_digest": "b3a4490a7d2cfa840553dfd343d157d7447807442fa06b5c687dc852d2254335",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T01b_protection.md",
       "path": "tests/test_tool_sandbox_coverage.py",
       "verified_digest": "6ec637ab70ed86de3a6586af565a0098f295c0efdea7a7fcdefda9d12165908a",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T02_canonical_store.md",
       "path": "src/antigravity_k/engine/cognitive/legacy_adapter.py",
       "verified_digest": "dba13d0f5102bb3ab7b30b703932f41df7895edeb6ebe9d4cd09705b627b5279",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T02_canonical_store.md",
       "path": "src/antigravity_k/engine/cognitive/store.py",
       "verified_digest": "58a02a89cd66fca9ab4430ce6db0f042156d758ba35a3b1a163f0303fa777b78",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T02_canonical_store.md",
       "path": "tests/cognitive/test_legacy_adapter.py",
       "verified_digest": "da55738b7603c5bb5cc3f747bfaa33a86801e73f79e61623b6a7ac63779ec5f3",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T02_canonical_store.md",
       "path": "tests/cognitive/test_store.py",
-      "verified_digest": "ae1715ab4831e0c08bc573f938836bfe483b92885dd792483041e4b372f65b45",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "fe9f11b1884f8d352a7bab1dd806e96f8d148a431b74c45efb4ade1e9eaff9a1",
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T03_T04_context_brain.md",
       "path": "src/antigravity_k/engine/cognitive/brain.py",
-      "verified_digest": "e6af5eb9b97e189b0d046fa19e48ec047187bc47124acee7ecd0abea0dc993cb",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "422cb28624be5c166c130f4a6705d81dc4b3c0a989da3d1f44578dc1fea2e393",
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T03_T04_context_brain.md",
       "path": "src/antigravity_k/engine/cognitive/context.py",
       "verified_digest": "28e234993067f8f8a64d0ee63a5a2b928b55ae1e75390eb1d2e755c7562fbb50",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T03_T04_context_brain.md",
       "path": "tests/cognitive/test_brain.py",
-      "verified_digest": "23ec6e966aa30ccb1ddfd2dd6d35bf653f3a4d483cb0fae9bee1b1f9b4e93cb7",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "544e3104813aa282dea796390b089cef0131db4c606535c088501713d16b6def",
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T03_T04_context_brain.md",
       "path": "tests/cognitive/test_context.py",
       "verified_digest": "976e665754b6c4d6b6056a5c24a607f3d421391aa72cb900e9c23b937da1d6d0",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T05_governance.md",
       "path": "src/antigravity_k/engine/cognitive/authority.py",
-      "verified_digest": "a31c59bf354fb5f3292aae5cf340b06c656cf3f78a36755841aebcd89a9953c8",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "7317a39d7c40f65cbce3232d33a3954a36d6f5f541b5fde032fd14b7a5a83ecb",
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T05_governance.md",
       "path": "src/antigravity_k/engine/cognitive/governance.py",
-      "verified_digest": "8bb870b5e734e21ac4f08d1172740d81794e290e7d3a82316a2b7b8bf268167e",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "4fd1aaf79d7c8303e219a774d589aa81c7d9543aedff5b6cf20ba2ac2874a250",
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T05_governance.md",
       "path": "tests/cognitive/test_governance.py",
-      "verified_digest": "605098022acf15f4a58942b5dfbce9ac6eb7a903b21f769df395b1d1cb050ec8",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "c1869c01d8f56cd1ffed057c86d675ab62638619b1ad8b97f92c9ed4d2517d3c",
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T06_commit.md",
@@ -157,65 +157,65 @@
     {
       "doc": "T07_actions.md",
       "path": "src/antigravity_k/engine/cognitive/actions.py",
-      "verified_digest": "d759b60a1564c3b83d7c2e7f4288dee3fe404681a8552090003306167589731f",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "6feda593081a7eead98630ebe7e726d4d184d7debde77358a2c66871864ed38a",
+      "verified_on": "2026-10-01",
+      "method": "ruff-format whitespace-only reformat by pre-commit hook on 2026-09-27; AST verified identical to the frozen bytes that passed integrated QA (1,125 passed) and the v8 live run; no semantic change"
     },
     {
       "doc": "T07_actions.md",
       "path": "tests/cognitive/test_actions.py",
       "verified_digest": "520372eaf6d6ecd7d9958640a7a52f2ae2a437faed16a9ce919bcf71c794d01c",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_on": "2026-10-01",
+      "method": "ruff-format whitespace-only reformat by pre-commit hook on 2026-09-27; AST verified identical to the frozen bytes that passed integrated QA (1,125 passed) and the v8 live run; no semantic change"
     },
     {
       "doc": "T08_T09_episode.md",
       "path": "src/antigravity_k/engine/cognitive/experience.py",
-      "verified_digest": "fa71de2177e96a411352a7c41ab1bea3bfff04097b855896bd0726d201e06f70",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "6649051f932ffb4b5ee1912a6e25c5d0cbe2441984b069f696d28957bb19991d",
+      "verified_on": "2026-09-27",
+      "method": "Final frozen1465file manifest ed6c1e7176ace5d90952117cce865e4ca8bfe7f6a4cc7859f70409b8228631e2: current-stage1.log651passed, post-v5 semantic delta v6-delta.log189passed4deselected33.45s, final schema/action regression v7-recovery.log58passed4.77s; all exit0. Exact commands/XML and source hashes under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. Frozen v5 whole suite had real schema race (1035pass1fail1skip), repaired and specifically retested; do not relabel it final. Final whole current suite pending, no empirical live growth claim. Scoped semantic regression evidence only, with historical proof retained."
     },
     {
       "doc": "T08_T09_episode.md",
       "path": "src/antigravity_k/engine/cognitive/runtime.py",
-      "verified_digest": "4d9bcd242cefa644d0aa50efc1a9ea5f6a3f5fbfc7d8fa520e04f8c690890f83",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "0ff93d8ee9e32b1f0b01dca53069c166baf2569a39545faca2674adfc4ee2683",
+      "verified_on": "2026-09-27",
+      "method": "Final frozen1465file manifest ed6c1e7176ace5d90952117cce865e4ca8bfe7f6a4cc7859f70409b8228631e2: current-stage1.log651passed, post-v5 semantic delta v6-delta.log189passed4deselected33.45s, final schema/action regression v7-recovery.log58passed4.77s; all exit0. Exact commands/XML and source hashes under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. Frozen v5 whole suite had real schema race (1035pass1fail1skip), repaired and specifically retested; do not relabel it final. Final whole current suite pending, no empirical live growth claim. Scoped semantic regression evidence only, with historical proof retained."
     },
     {
       "doc": "T08_T09_episode.md",
       "path": "tests/cognitive/test_episode.py",
-      "verified_digest": "3e0d24316ff61774a46a9e9e6772cda88f48a8771a9243def07b8817c2d4e056",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "71c4f7d7887bec8bfb2d74bb89df356118fc51c971fec103e996c9abb512b732",
+      "verified_on": "2026-09-27",
+      "method": "Final frozen1465file manifest ed6c1e7176ace5d90952117cce865e4ca8bfe7f6a4cc7859f70409b8228631e2: current-stage1.log651passed, post-v5 semantic delta v6-delta.log189passed4deselected33.45s, final schema/action regression v7-recovery.log58passed4.77s; all exit0. Exact commands/XML and source hashes under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. Frozen v5 whole suite had real schema race (1035pass1fail1skip), repaired and specifically retested; do not relabel it final. Final whole current suite pending, no empirical live growth claim. Scoped semantic regression evidence only, with historical proof retained."
     },
     {
       "doc": "T10_learning.md",
       "path": "src/antigravity_k/engine/cognitive/learning.py",
-      "verified_digest": "7190d690d3a336653aedc82b9463c632137422c99078c80301dd874acd94c55d",
-      "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_learning.py 29 passed(문서 주장 29와 일치) — 후보 검증·CAS·rollback 계약. learning.py 1221→1230 lines, policy_store.py 756→757 lines."
+      "verified_digest": "8b4b7b78ff36e8a5cceb606d2c3f52fbad8d753187bcc9d767f91e1e6f687d0b",
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T10_learning.md",
       "path": "src/antigravity_k/engine/cognitive/policy_store.py",
       "verified_digest": "9da4dd3323d4bbb828f18399ea98265198050654c9efacea561d664829b134a3",
-      "verified_on": "2026-09-23",
-      "method": "tests/cognitive/test_learning.py 29 passed(문서 주장 29와 일치) — 후보 검증·CAS·rollback 계약. learning.py 1221→1230 lines, policy_store.py 756→757 lines."
+      "verified_on": "2026-09-27",
+      "method": "Frozen current source regression verification: qa-stage1-current-files.txt selected46files; current-stage1.log/XML exit0 651passed (304.70s); final7path overlay current-overlay-focused.log/XML exit0 100passed,4deselected (16.58s), including updated policy ledger and Brain imports. Exact source bytes current-final-pre-hashes.txt. Artifacts under /Users/mr.k/Documents/Codex/2026-09-22/referenced-chatgpt-conversation-this-is-an/work/finalize-2026-09-27/qa-logs. This confirms scoped regression behavior, not live model growth or adversarial closure; R19 complete rerun retained in final full suite. Root authorized regeneration after actual checks."
     },
     {
       "doc": "T11_surface.md",
       "path": "scripts/measure_cognitive_surface.py",
       "verified_digest": "dd9137f71b928aec7871042b116aaea9787675ea404a0283e2c80cfca2e6c5c9",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_on": "2026-10-01",
+      "method": "ruff-format whitespace-only reformat by pre-commit hook on 2026-09-27; AST verified identical to the frozen bytes that passed integrated QA (1,125 passed) and the v8 live run; no semantic change"
     },
     {
       "doc": "T11_surface.md",
       "path": "src/antigravity_k/api/routes/cognitive_surface_api.py",
       "verified_digest": "bfcf54e35487a8d5c54f076757ecb4f86a0852148c1f683f3ff5b284c9ec96b9",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_on": "2026-10-01",
+      "method": "ruff-format whitespace-only reformat by pre-commit hook on 2026-09-27; AST verified identical to the frozen bytes that passed integrated QA (1,125 passed) and the v8 live run; no semantic change"
     },
     {
       "doc": "T11_surface.md",
@@ -227,65 +227,65 @@
     {
       "doc": "T11_surface.md",
       "path": "src/antigravity_k/engine/cognitive_surface.py",
-      "verified_digest": "56acd378c1be9a131cdff84bae131d435ce36195b041498a56c6af129fc87902",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "d1f9533cb1f2eecb49b770af2efd810e730afad3bea294c21e2b7e5600b54d79",
+      "verified_on": "2026-10-01",
+      "method": "ruff-format whitespace-only reformat by pre-commit hook on 2026-09-27; AST verified identical to the frozen bytes that passed integrated QA (1,125 passed) and the v8 live run; no semantic change"
     },
     {
       "doc": "T12_migration.md",
       "path": "src/antigravity_k/engine/cognitive/migration.py",
-      "verified_digest": "8333fc0e03ef33b249bb1934bc4bbe85d13e4771482836c5600e5e4b63868161",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "5ea53f88a9544baed6d58da672b9a63f595d766b4f5114d942ff7656908307a9",
+      "verified_on": "2026-10-01",
+      "method": "ruff-format whitespace-only reformat by pre-commit hook on 2026-09-27; AST verified identical to the frozen bytes that passed integrated QA (1,125 passed) and the v8 live run; no semantic change"
     },
     {
       "doc": "T12_migration.md",
       "path": "tests/cognitive/test_migration.py",
-      "verified_digest": "1d37d7474fe6545bc3cbe3ebd66733a77f9ae8022af6c643c3fcf9a4d562d4fd",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "067c335d195cfb0f686ee7d423abb028d873c6a88f1d9321e6938a3fec385820",
+      "verified_on": "2026-10-01",
+      "method": "ruff-format whitespace-only reformat by pre-commit hook on 2026-09-27; AST verified identical to the frozen bytes that passed integrated QA (1,125 passed) and the v8 live run; no semantic change"
     },
     {
       "doc": "T13_growth.md",
       "path": "scripts/benchmark_cognitive_growth.py",
-      "verified_digest": "51786ea7c3774239c468315b60c462f19a4ffdc35c900d619d59563a5de846b6",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "07b94e056b0289ade4e2ffcf62c685017167728bad5dc86d8c7acc4faf5d9f2f",
+      "verified_on": "2026-10-01",
+      "method": "ruff-format whitespace-only reformat by pre-commit hook on 2026-09-27; AST verified identical to the frozen bytes that passed integrated QA (1,125 passed) and the v8 live run; no semantic change"
     },
     {
       "doc": "T13_growth.md",
       "path": "src/antigravity_k/engine/cognitive/growth.py",
-      "verified_digest": "4a502bf478f5a0e024a76a2fca785b884212efd71b7c0200918765afc5299f3e",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "c472511c2dfe4436f79f80b7dbd1fa354cf024d3b72d32eb1756384ebe689816",
+      "verified_on": "2026-10-01",
+      "method": "ruff-format whitespace-only reformat by pre-commit hook on 2026-09-27; AST verified identical to the frozen bytes that passed integrated QA (1,125 passed) and the v8 live run; no semantic change"
     },
     {
       "doc": "T13_growth.md",
       "path": "tests/cognitive/test_growth.py",
       "verified_digest": "03156c1f3c8e119533bd170e4454966fc248b218e4e265278f3adda7f6036e0a",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_on": "2026-10-01",
+      "method": "ruff-format whitespace-only reformat by pre-commit hook on 2026-09-27; AST verified identical to the frozen bytes that passed integrated QA (1,125 passed) and the v8 live run; no semantic change"
     },
     {
       "doc": "T13_live_pilot.md",
       "path": "scripts/benchmark_cognitive_growth.py",
-      "verified_digest": "51786ea7c3774239c468315b60c462f19a4ffdc35c900d619d59563a5de846b6",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "07b94e056b0289ade4e2ffcf62c685017167728bad5dc86d8c7acc4faf5d9f2f",
+      "verified_on": "2026-10-01",
+      "method": "ruff-format whitespace-only reformat by pre-commit hook on 2026-09-27; AST verified identical to the frozen bytes that passed integrated QA (1,125 passed) and the v8 live run; no semantic change"
     },
     {
       "doc": "T13_live_pilot.md",
       "path": "src/antigravity_k/engine/cognitive/live_pilot.py",
-      "verified_digest": "08ec7fb4e9a091e0da4ef1a834d2a4aa1f2a11999f9c5b4cd5ad4df0992f1f44",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "a02433a607a6c07997d44ef1bea8dd957f796bc6fd353d4b8fef9da69e9fc8ab",
+      "verified_on": "2026-10-01",
+      "method": "ruff-format whitespace-only reformat by pre-commit hook on 2026-09-27; AST verified identical to the frozen bytes that passed integrated QA (1,125 passed) and the v8 live run; no semantic change"
     },
     {
       "doc": "T13_live_pilot.md",
       "path": "tests/cognitive/test_live_pilot.py",
-      "verified_digest": "ddce17d50abca1385e1ed59fab1e2313cfaaf3a1fa6c520e3f5e77709136fdb9",
-      "verified_on": "2026-09-26",
-      "method": "R00-R23 remediation tree landed at d3aee3d8; re-ran cognitive suites backing this evidence doc (363 passed batch incl. store/legacy/protection/context/brain/governance/actions/episode/surface/migration/growth/live_pilot) on 2026-09-26 KST"
+      "verified_digest": "452b68a4fef2fd434c4e92a6d27a642f557e79bc07e040efa3fe5d29389075e6",
+      "verified_on": "2026-10-01",
+      "method": "ruff-format whitespace-only reformat by pre-commit hook on 2026-09-27; AST verified identical to the frozen bytes that passed integrated QA (1,125 passed) and the v8 live run; no semantic change"
     }
   ],
   "command": [
