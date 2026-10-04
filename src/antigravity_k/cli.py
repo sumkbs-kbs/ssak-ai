@@ -14,6 +14,7 @@ from rich.table import Table
 
 from antigravity_k import __version__
 from antigravity_k.config import config
+from antigravity_k.decision_evaluation_cli import decision_eval
 from antigravity_k.engine.model_registry import ModelProfile, ModelRegistry
 from antigravity_k.engine.secure_key import (
     VALID_SERVICES,
@@ -31,6 +32,7 @@ from antigravity_k.engine.skill_market_registry import (
 )
 
 app = typer.Typer(help="Ssak-Ai command line interface", no_args_is_help=True)
+app.command(name="decision-eval")(decision_eval)
 key_app = typer.Typer(help="Manage encrypted API keys in vault")
 memory_app = typer.Typer(help="Manage project-scoped memory configuration")
 task_app = typer.Typer(help="Inspect and resume durable agent tasks")

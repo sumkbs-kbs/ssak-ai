@@ -18,6 +18,7 @@ from .code_api import router as code_router
 from .code_intel_api import router as code_intel_router
 from .cognitive_surface_api import router as cognitive_surface_router
 from .conversation_api import router as conversation_router
+from .decision_evaluation_api import router as decision_evaluation_router
 from .disclosure_api import router as disclosure_router
 from .events import router as events_router
 from .evolution_api import router as evolution_router
@@ -60,6 +61,7 @@ api_router.include_router(system_api_router, tags=["system"])
 api_router.include_router(search_router, tags=["search"])
 api_router.include_router(vault_privacy_router, tags=["memory"])
 api_router.include_router(task_api_router, tags=["tasks"])
+api_router.include_router(decision_evaluation_router, tags=["benchmarks"])
 api_router.include_router(artifact_api.router, tags=["artifacts"])
 api_router.include_router(job_api_router, tags=["jobs"])
 api_router.include_router(gateway_api_router, tags=["gateway"])
