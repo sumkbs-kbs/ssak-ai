@@ -1,7 +1,9 @@
 import ky, { HTTPError } from 'ky';
 
-import { createAccessPinHeaders } from '../../utils/accessPinCredential';
 import {
+  PROJECT_ID_HEADER,
+  PROJECT_REVISION_HEADER,
+  SESSION_ID_HEADER,
   createProjectIdentityHeaders,
   withProjectIdentityPayload,
 } from '../../api/projectIdentity';
@@ -18,6 +20,7 @@ import {
   type TaskId,
   type TaskSummary,
 } from './taskExecutionSchema';
+import type { TaskForkOperation, TaskSubmitOperation } from './taskOperation';
 
 export type SseFrame = Readonly<{
   id: string | null;
@@ -51,6 +54,23 @@ export class TaskEventStreamError extends Error {
 
 function accessHeaders(accept = 'application/json'): Headers {
   return createProjectIdentityHeaders({ Accept: accept });
+}
+
+function operationHeaders(
+  operation: TaskSubmitOperation | TaskForkOperation,
+  accept = 'application/json',
+): Headers {
+  const headers = new Headers({ Accept: accept });
+  const { authorizationHeader, identity } = operation.scope;
+  if (authorizationHeader !== null) headers.set('Authorization', authorizationHeader);
+  headers.set(SESSION_ID_HEADER, identity.sessionId);
+  if (identity.projectId !== null) headers.set(PROJECT_ID_HEADER, identity.projectId);
+  if (identity.projectRevision !== null) headers.set(PROJECT_REVISION_HEADER, String(identity.projectRevision));
+  return headers;
+}
+
+export function isTaskOperationRetryable(caught: unknown): boolean {
+  return !(caught instanceof HTTPError) || caught.response.status >= 500;
 }
 
 export function parseSseChunk(input: string): ParsedSseChunk {
@@ -89,20 +109,20 @@ export async function fetchTaskList(signal: AbortSignal): Promise<readonly TaskS
   return TaskListResponseSchema.parse(raw).data;
 }
 
-export async function submitTask(prompt: string): Promise<TaskId> {
+export async function submitTask(operation: TaskSubmitOperation): Promise<TaskId> {
   const raw: unknown = await ky.post('/api/tasks/submit', {
-    headers: accessHeaders(),
-    json: withProjectIdentityPayload({ prompt }),
+    headers: operationHeaders(operation),
+    json: withProjectIdentityPayload({ prompt: operation.draft.prompt, idempotency_key: operation.idempotencyKey }, operation.scope.identity),
     retry: 0,
     timeout: 10_000,
   }).json();
   return TaskSubmitResponseSchema.parse(raw).task_id;
 }
 
-export async function forkTask(taskId: TaskId): Promise<TaskId> {
-  const raw: unknown = await ky.post(`/api/tasks/${encodeURIComponent(taskId)}/fork`, {
-    headers: accessHeaders(),
-    json: {},
+export async function forkTask(operation: TaskForkOperation): Promise<TaskId> {
+  const raw: unknown = await ky.post(`/api/tasks/${encodeURIComponent(operation.sourceTaskId)}/fork`, {
+    headers: operationHeaders(operation),
+    json: { idempotency_key: operation.idempotencyKey },
     retry: 0,
     timeout: 10_000,
   }).json();

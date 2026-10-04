@@ -1,5 +1,5 @@
 import { describe, expect, it, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import ChatPage from '../ChatPage';
 import { useChatStore } from '../../../stores/chatStore';
@@ -12,7 +12,7 @@ function renderChatPage() {
   );
 }
 
-describe('ChatPage agent workspace layout (Unsloth hero)', () => {
+describe('ChatPage conversation workspace layout', () => {
   afterEach(() => {
     useChatStore.setState({
       messages: [],
@@ -21,26 +21,28 @@ describe('ChatPage agent workspace layout (Unsloth hero)', () => {
     });
   });
 
-  it('renders Unsloth hero, chip toolbar, and composer in the empty state', () => {
+  it('renders the starting prompt, tools, and composer in the empty state', () => {
     renderChatPage();
 
-    expect(screen.getByTestId('hero-headline')).toHaveTextContent('Ready when you are');
-    expect(screen.getByPlaceholderText(/Ask anything/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '무엇을 만들어 볼까요?' })).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: '메시지 입력' })).toBeInTheDocument();
     expect(screen.getByText('전체 액세스')).toBeInTheDocument();
-    expect(screen.getByText('Search')).toBeInTheDocument();
-    expect(screen.getByText('Code')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '검색' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '코드' })).toBeInTheDocument();
     expect(screen.getByText('MCP')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /모델 선택/i })).toBeInTheDocument();
     expect(screen.queryByText('5.6 Sol High')).toBeNull();
-    expect(screen.getByText(/orchestrator-swarm/i)).toBeInTheDocument();
-    expect(screen.getByLabelText('채팅 히스토리')).toBeInTheDocument();
-    expect(screen.getByLabelText('환경 패널 토글')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '코드 살펴보기' })).toBeInTheDocument();
+    expect(screen.getByLabelText('대화 기록 열기')).toBeInTheDocument();
+    expect(screen.getByLabelText('환경 패널 토글')).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('button', { name: '메시지 전송' })).toBeDisabled();
   });
 
   it('renders Ssak-Ai environment rail with agent monitoring sections', () => {
     renderChatPage();
-
-    expect(screen.getByLabelText('에이전트 모니터링 패널')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '환경 패널 토글' }));
+    expect(screen.getByLabelText('환경 패널 토글')).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('complementary', { name: '검사' })).toBeInTheDocument();
     expect(screen.getByText('에이전트 상태')).toBeInTheDocument();
     expect(screen.getByText('실시간 활동')).toBeInTheDocument();
     expect(screen.getByText('토큰 사용량')).toBeInTheDocument();
@@ -67,8 +69,8 @@ describe('ChatPage agent workspace layout (Unsloth hero)', () => {
     expect(screen.getByText('Continuing Previous Agent Work')).toBeInTheDocument();
     expect(screen.getByText('Ssak-Ai', { selector: '.crumb-project' })).toBeInTheDocument();
     expect(screen.getByText('로컬')).toBeInTheDocument();
-    // Branch now only appears in the docked context bar (moved from 환경 to 코드 tab)
-    expect(screen.getAllByText('codex/m1-task-events').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByLabelText('현재 작업 환경')).toHaveTextContent('로컬');
+    expect(screen.getByRole('region', { name: '대화 내용' })).toBeInTheDocument();
     expect(screen.queryByTestId('hero-headline')).not.toBeInTheDocument();
   });
 });

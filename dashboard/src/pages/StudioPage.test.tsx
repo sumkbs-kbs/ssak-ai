@@ -5,17 +5,24 @@ import ToastContainer from '../components/UI/ToastContainer';
 
 /** fetch 목 — URL별로 다른 응답 (Phase 59: 실제 잡 시작/폴링 검증). */
 const mockFetchByUrl = (routes: Record<string, unknown>) => {
+  const responses: Readonly<Record<string, unknown>> = {
+    '/v1/integrations/unsloth/capabilities': {
+      system: { memory: { total_bytes: 32 * 1024 ** 3, available_bytes: 12 * 1024 ** 3 } },
+      capabilities: [{ operation: 'training', provider: 'mlx', status: 'available', detail: 'fixture' }],
+    },
+    ...routes,
+  };
   vi.stubGlobal(
     'fetch',
     vi.fn().mockImplementation((input: RequestInfo | URL) => {
       const url = String(input);
       // 가장 구체적인(긴) 경로가 우선 — job 폴링이 시작 POST보다 우선
-      const match = Object.keys(routes)
+      const match = Object.keys(responses)
         .sort((a, b) => b.length - a.length)
         .find(k => url.includes(k));
       return Promise.resolve({
         ok: true,
-        json: () => Promise.resolve(match ? routes[match] : {}),
+        json: () => Promise.resolve(match ? responses[match] : {}),
       });
     }),
   );
@@ -98,6 +105,7 @@ describe('StudioPage', () => {
     fireEvent.click(screen.getByText('다음: 하이퍼파라미터 설정 →'));
     fireEvent.click(screen.getByText('다음: 모니터링 & 학습 시작 →'));
 
+    await waitFor(() => expect(screen.getByText('🚀 파인튜닝 시작 (Start Training)')).toBeEnabled());
     fireEvent.click(screen.getByText('🚀 파인튜닝 시작 (Start Training)'));
 
     // 실제 잡 폴링 결과가 반영된다 — 시뮬레이션과 달리 loss/progress가 백엔드 값
@@ -145,6 +153,7 @@ describe('StudioPage', () => {
     fireEvent.click(screen.getByText('다음: 데이터셋 로드 →'));
     fireEvent.click(screen.getByText('다음: 하이퍼파라미터 설정 →'));
     fireEvent.click(screen.getByText('다음: 모니터링 & 학습 시작 →'));
+    await waitFor(() => expect(screen.getByText('🚀 파인튜닝 시작 (Start Training)')).toBeEnabled());
     fireEvent.click(screen.getByText('🚀 파인튜닝 시작 (Start Training)'));
 
     await waitFor(() => {

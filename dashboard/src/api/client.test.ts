@@ -4,10 +4,12 @@ import {
   apiRequest,
   ApiHttpError,
   checkHealth,
+  compactConversation,
   ConversationRequestError,
   ConversationRevisionConflictError,
   fetchCacheStats,
   fetchConversationHistory,
+  forkConversation,
   fetchLogLevels,
   fetchModelOperations,
   fetchModels,
@@ -20,6 +22,7 @@ import {
   setLogLevel,
   streamChatCompletion,
 } from './client';
+import { useProjectStore } from '../stores/projectStore';
 
 function streamingResponse(chunks: readonly string[]): Response {
   const encoder = new TextEncoder();
@@ -560,5 +563,79 @@ describe('CR-01 conversation error mapping', () => {
 
     const error = await fetchConversationHistory('a.b', 'p').catch((err: unknown) => err);
     expect(error).toBeInstanceOf(ConversationRevisionConflictError);
+  });
+});
+
+describe('CTX-01 conversation fork request', () => {
+  const fetchMock = vi.fn<typeof fetch>();
+
+  beforeEach(() => {
+    fetchMock.mockReset();
+    vi.stubGlobal('fetch', fetchMock);
+    useProjectStore.setState({
+      activeProjectId: 'project-header',
+      projectRevision: 11,
+      switchEpoch: 4,
+    });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('sends only the fork schema fields in the body while retaining project identity headers', async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({
+      conversation_id: 'fork-1',
+      project_id: 'project-explicit',
+      revision: 0,
+      message_count: 2,
+    }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+    await expect(forkConversation({
+      conversation_id: 'source-1',
+      expected_revision: 3,
+      project_id: 'project-explicit',
+      new_conversation_id: 'fork-1',
+    })).resolves.toMatchObject({ conversation_id: 'fork-1', revision: 0 });
+
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe('/v1/conversations/fork');
+    expect(JSON.parse(String(init?.body))).toEqual({
+      conversation_id: 'source-1',
+      expected_revision: 3,
+      project_id: 'project-explicit',
+      new_conversation_id: 'fork-1',
+    });
+    const headers = new Headers(init?.headers);
+    expect(headers.get('X-AGK-Project-Id')).toBe('project-header');
+    expect(headers.get('X-AGK-Project-Revision')).toBe('11');
+  });
+
+  it('sends only the compact schema fields in the body while retaining project identity headers', async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({
+      conversation_id: 'source-1',
+      project_id: 'project-explicit',
+      revision: 4,
+      message_count: 1,
+    }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+    await expect(compactConversation({
+      conversation_id: 'source-1',
+      expected_revision: 3,
+      project_id: 'project-explicit',
+      retain_tail: 2,
+    })).resolves.toMatchObject({ conversation_id: 'source-1', revision: 4 });
+
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe('/v1/conversations/compact');
+    expect(JSON.parse(String(init?.body))).toEqual({
+      conversation_id: 'source-1',
+      expected_revision: 3,
+      project_id: 'project-explicit',
+      retain_tail: 2,
+    });
+    const headers = new Headers(init?.headers);
+    expect(headers.get('X-AGK-Project-Id')).toBe('project-header');
+    expect(headers.get('X-AGK-Project-Revision')).toBe('11');
   });
 });

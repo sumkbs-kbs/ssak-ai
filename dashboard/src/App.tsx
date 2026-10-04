@@ -28,6 +28,7 @@ import {
   readStoredAccessToken,
 } from './utils/accessPinCredential';
 import AppErrorBoundary from './components/UI/AppErrorBoundary';
+import { AppIcon } from './components/UI/AppIcon';
 
 /* ─── Sidebar loading skeleton ──────────────────────────── */
 const SidebarFallback: React.FC = () => (
@@ -336,15 +337,15 @@ const AppContent: React.FC = () => {
   }, []);
 
   return (
-    <div className="app-shell" style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>
+    <div className="app-shell workspace-shell">
       <Suspense fallback={null}>
         <SystemTelemetricsBar />
       </Suspense>
-      <div className="app-layout" style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+      <div className="app-layout">
         <Suspense fallback={<SidebarFallback />}>
           <Sidebar toggleTerminal={toggleTerminal} />
         </Suspense>
-        <div className="app-right-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div className="app-right-panel">
         <SessionDisclosureBanner />
         <main className="main-content">
           <h1 className="visually-hidden">Ssak-Ai Dashboard</h1>
@@ -394,39 +395,43 @@ const AppContent: React.FC = () => {
             display: terminalVisible ? 'flex' : 'none',
           }}>
             <button
+              type="button"
               className={`bottom-panel-tab ${bottomTab === 'terminal' ? 'active' : ''}`}
               onClick={() => setBottomTab('terminal')}
               aria-label="터미널 탭"
               role="tab"
               aria-selected={bottomTab === 'terminal'}
             >
-              💻 Terminal
+              <AppIcon name="terminal" size={16} /> 터미널
             </button>
             <button
+              type="button"
               className={`bottom-panel-tab ${bottomTab === 'output' ? 'active' : ''}`}
               onClick={() => setBottomTab('output')}
               aria-label="출력 탭"
               role="tab"
               aria-selected={bottomTab === 'output'}
             >
-              📋 Output
+              <AppIcon name="file" size={16} /> 출력
             </button>
             <div className="bottom-panel-spacer" />
             <button
+              type="button"
               className="bottom-panel-tab add-terminal-btn"
               onClick={() => addSession()}
-              title="New terminal"
+              title="새 터미널"
               aria-label="새 터미널 세션 추가"
             >
-              + New Term
+              <AppIcon name="plus" size={16} /> 새 터미널
             </button>
             <button
+              type="button"
               className="bottom-panel-tab close-btn"
               onClick={toggleTerminal}
-              title="Close"
+              title="닫기"
               aria-label="터미널 패널 닫기"
             >
-              ✕
+              <AppIcon name="close" size={16} />
             </button>
           </div>
           {terminalVisible && bottomTab === 'terminal' && (

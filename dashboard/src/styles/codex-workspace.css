@@ -1,0 +1,53 @@
+@import './workspace-shell.css';
+@import './workspace-chat.css';
+@import './workspace-response.css';
+@import './workspace-inspection.css';
+@import './workspace-history.css';
+@import './workspace-pages.css';
+
+html, body, #root { min-width: 0; }
+body { font-family: var(--font-sans); font-size: var(--text-base); }
+.app-shell { display: flex; flex-direction: column; height: 100dvh; min-height: 0; background: var(--bg-primary); }
+.workspace-shell > .app-layout { flex: 1; height: auto; }
+.app-layout, .app-right-panel, .main-content { min-width: 0; min-height: 0; }
+.workspace-shell .main-content { z-index: auto; }
+.app-layout::before, .page-header-hero::before { content: none; }
+.app-shell :where(button, input, select, textarea) { font-family: var(--font-sans); }
+.app-shell :where(button, a, input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--focus-ring); outline-offset: 3px;
+}
+.app-shell :where(button, a) { -webkit-tap-highlight-color: transparent; }
+.app-shell :where(button):disabled { cursor: not-allowed; opacity: .6; }
+.app-shell :where(svg) { flex-shrink: 0; vertical-align: middle; }
+.app-shell .glass-panel { background: var(--glass-bg); backdrop-filter: none; box-shadow: none; }
+.app-shell .glass-panel:hover { transform: none; box-shadow: none; border-color: var(--glass-border-strong); }
+.app-shell :where(.page-header-hero, .page-header) h2 {
+  font-family: var(--font-sans); font-size: var(--text-3xl); font-weight: 600;
+  font-style: normal; letter-spacing: normal;
+}
+.app-shell .editorial-accent { font-style: normal; }
+.app-shell .btn-primary { background: var(--action-bg); color: var(--action-text); box-shadow: none; }
+.app-shell .btn-primary:hover { background: var(--text-secondary); transform: none; }
+.app-shell .btn-secondary { color: var(--text-primary); background: var(--bg-tertiary); border-color: var(--glass-border); }
+.app-shell .page-header-hero { background: none; border-radius: 0; }
+.app-shell .section-index { font-family: var(--font-sans); color: var(--text-muted); }
+.app-shell .page-container { min-width: 0; padding: var(--space-6); animation: none; word-break: keep-all; overflow-wrap: break-word; }
+.app-shell :where(.page-header, .page-header-hero) p { color: var(--text-secondary); }
+.app-shell :where(input, select) { max-width: 100%; }
+.app-shell :where(.modal-overlay, .command-palette-overlay) { backdrop-filter: none; }
+
+@media (max-width: 639px) {
+  .app-shell .page-container { padding: var(--space-4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell *, .app-shell *::before, .app-shell *::after {
+    animation-duration: .01ms !important; transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.command-palette, .shortcuts-modal,
+.app-shell .settings-section, .app-shell .dex-card-enter {
+  animation: none;
+}

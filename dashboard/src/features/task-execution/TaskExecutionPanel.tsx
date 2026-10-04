@@ -13,6 +13,8 @@ export function TaskExecutionPanel() {
       connectionState={state.connectionState}
       error={state.error}
       pendingAction={state.pendingAction}
+      failedTaskOperation={state.failedTaskOperation}
+      completedSubmitDraft={state.completedSubmitDraft}
       approvals={approvals.approvals}
       alwaysAllowed={approvals.alwaysAllowed}
       pendingApprovalId={approvals.pendingRequestId}
@@ -22,6 +24,7 @@ export function TaskExecutionPanel() {
       onCancel={state.cancel}
       onResume={state.resume}
       onFork={state.fork}
+      onRetryTaskOperation={state.retryTaskOperation}
       onResolveApproval={approvals.resolve}
       onRevokeAlwaysAllowed={approvals.revokeAlwaysAllowed}
       onRetry={state.retry}

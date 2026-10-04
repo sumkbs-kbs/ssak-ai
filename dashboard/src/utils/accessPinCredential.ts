@@ -55,15 +55,42 @@ export function clearAccessCredential(): void {
 
 export const clearAccessPin = clearAccessCredential;
 
-export async function loginWithAccessPin(pin: string): Promise<string> {
-  const response = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ pin }),
-  });
-  if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+export class AccessPinLoginError extends Error {
+  readonly name = 'AccessPinLoginError';
 
-  const payload: unknown = await response.json();
+  constructor(readonly kind: 'invalid_pin' | 'locked' | 'rate_limited' | 'network' | 'service_unavailable' | 'invalid_response' | 'request_failed') {
+    super('PIN authentication failed.');
+  }
+}
+
+export async function loginWithAccessPin(pin: string): Promise<string> {
+  let response: Response;
+  try {
+    response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin }),
+    });
+  } catch (error) {
+    if (error instanceof TypeError || error instanceof DOMException) throw new AccessPinLoginError('network');
+    throw error;
+  }
+  if (!response.ok) {
+    switch (response.status) {
+      case 401: throw new AccessPinLoginError('invalid_pin');
+      case 403: throw new AccessPinLoginError('locked');
+      case 429: throw new AccessPinLoginError('rate_limited');
+      default: throw new AccessPinLoginError(response.status >= 500 && response.status < 600 ? 'service_unavailable' : 'request_failed');
+    }
+  }
+
+  let payload: unknown;
+  try {
+    payload = await response.json();
+  } catch (error) {
+    if (error instanceof Error) throw new AccessPinLoginError('invalid_response');
+    throw error;
+  }
   if (
     typeof payload !== 'object' ||
     payload === null ||
@@ -71,7 +98,7 @@ export async function loginWithAccessPin(pin: string): Promise<string> {
     typeof payload.access_token !== 'string' ||
     payload.access_token.trim().length === 0
   ) {
-    throw new Error('Authentication response did not include an access token.');
+    throw new AccessPinLoginError('invalid_response');
   }
 
   const token = payload.access_token.trim();

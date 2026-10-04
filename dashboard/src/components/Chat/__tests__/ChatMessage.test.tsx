@@ -40,15 +40,15 @@ describe('ChatMessage module', () => {
 /* ─── ChatMessage Rendering ────────────────────────────────── */
 
 describe('ChatMessage rendering', () => {
-  it('renders user message with avatar', () => {
+  it('labels the user message', () => {
     render(<ChatMessage message={createMessage({ role: 'user', content: 'How are you?' })} />);
-    expect(screen.getByText('👤')).toBeInTheDocument();
+    expect(screen.getByRole('article', { name: '내 메시지' })).toBeInTheDocument();
     expect(screen.getByText('How are you?')).toBeInTheDocument();
   });
 
-  it('renders assistant message with avatar', () => {
+  it('labels the assistant response', () => {
     render(<ChatMessage message={createMessage({ role: 'assistant', content: 'I am fine!' })} />);
-    expect(screen.getByText('🤖')).toBeInTheDocument();
+    expect(screen.getByRole('article', { name: 'SSAK-AI 응답' })).toBeInTheDocument();
     expect(screen.getByText('I am fine!')).toBeInTheDocument();
   });
 
@@ -68,12 +68,12 @@ describe('ChatMessage rendering', () => {
 
   it('renders assistant content with copy button', () => {
     render(<ChatMessage message={createMessage({ role: 'assistant', content: 'Some response' })} />);
-    expect(screen.getByText('📋 복사')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '응답 복사' })).toBeInTheDocument();
   });
 
   it('renders user content without copy button', () => {
     render(<ChatMessage message={createMessage({ role: 'user', content: 'Some question' })} />);
-    expect(screen.queryByText('📋 복사')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '응답 복사' })).not.toBeInTheDocument();
   });
 
   it('renders user message wrapped in user-message-text span', () => {
@@ -154,6 +154,19 @@ describe('ChatMessage rendering', () => {
 /* ─── chatMessageAreEqual Comparator ────────────────────────── */
 
 describe('chatMessageAreEqual comparator', () => {
+  it('updates disclosure when metadata arrives after the response', () => {
+    // Given
+    const message = createMessage({ content: 'Complete' });
+    const { rerender, container } = render(<ChatMessage message={message} />);
+
+    // When
+    rerender(<ChatMessage message={{ ...message, agentMeta: { steps: 7, passed: false } }} />);
+
+    // Then
+    expect(container.querySelector('.assistant-agent-meta')).toHaveTextContent('7단계');
+    expect(container.querySelector('.badge-fail')).toHaveTextContent('검증 실패');
+  });
+
   it('returns true for identical messages', () => {
     const msg = { id: 'msg-1', role: 'assistant' as const, content: 'Hello' };
     expect(chatMessageAreEqual(
@@ -173,8 +186,8 @@ describe('chatMessageAreEqual comparator', () => {
     const msg2 = createMessage({ id: 'msg-1', role: 'assistant', content: 'Hello' });
     const { container: c1 } = render(<ChatMessage message={msg1} />);
     const { container: c2 } = render(<ChatMessage message={msg2} />);
-    expect(c1.querySelector('.avatar')?.textContent).toBe('👤');
-    expect(c2.querySelector('.avatar')?.textContent).toBe('🤖');
+    expect(c1.querySelector('article')).toHaveAccessibleName('내 메시지');
+    expect(c2.querySelector('article')).toHaveAccessibleName('SSAK-AI 응답');
   });
 
   it('detects different content', () => {
@@ -240,7 +253,7 @@ describe('ChatMessage Mermaid diagram', () => {
       <ChatMessage message={createMessage({ role: 'assistant', content: mermaidContent() })} />,
     );
 
-    const copyBtns = await screen.findAllByText('📋 복사');
+    const copyBtns = await screen.findAllByRole('button', { name: /복사$/ });
     expect(copyBtns.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -307,7 +320,7 @@ describe('ChatMessage Carousel', () => {
     render(
       <ChatMessage message={createMessage({ role: 'assistant', content: carouselContent() })} />,
     );
-    const container = await screen.findByText(/◀ 이전/);
+    const container = await screen.findByRole('button', { name: '이전' });
     expect(container).toBeInTheDocument();
   });
 
@@ -324,10 +337,10 @@ describe('ChatMessage Carousel', () => {
       <ChatMessage message={createMessage({ role: 'assistant', content: carouselContent() })} />,
     );
 
-    const prevBtn = (await screen.findByText('◀ 이전')).closest('button')!;
+    const prevBtn = await screen.findByRole('button', { name: '이전' });
     expect(prevBtn).toBeDisabled();
 
-    const nextBtn = (await screen.findByText('다음 ▶')).closest('button')!;
+    const nextBtn = await screen.findByRole('button', { name: '다음' });
     expect(nextBtn).not.toBeDisabled();
   });
 
@@ -336,11 +349,11 @@ describe('ChatMessage Carousel', () => {
       <ChatMessage message={createMessage({ role: 'assistant', content: carouselContent() })} />,
     );
 
-    const nextBtn = (await screen.findByText('다음 ▶')).closest('button')!;
+    const nextBtn = await screen.findByRole('button', { name: '다음' });
     await act(async () => { fireEvent.click(nextBtn); });
 
     expect(nextBtn).toBeDisabled();
-    const prevBtn = (await screen.findByText('◀ 이전')).closest('button')!;
+    const prevBtn = await screen.findByRole('button', { name: '이전' });
     expect(prevBtn).not.toBeDisabled();
   });
 
@@ -392,6 +405,37 @@ describe('ChatMessage blockquote', () => {
 /* ─── Clipboard Copy ───────────────────────────────────────── */
 
 describe('ChatMessage clipboard copy', () => {
+  it('copies highlighted code without its trailing newline', async () => {
+    // Given
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    const originalClipboard = navigator.clipboard;
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+    render(<ChatMessage message={createMessage({ content: '```typescript\nconst x = 1;\n```' })} />);
+
+    // When
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: '코드 복사' })); });
+
+    // Then
+    expect(writeText).toHaveBeenCalledWith('const x = 1;');
+    Object.defineProperty(navigator, 'clipboard', { value: originalClipboard, configurable: true });
+  });
+
+  it('copies the final response while retaining original visible content', async () => {
+    // Given
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    const originalClipboard = navigator.clipboard;
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+    render(<ChatMessage message={createMessage({ content: '<think>private analysis</think>  Final response 🎉  ' })} />);
+
+    // When
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: '응답 복사' })); });
+
+    // Then
+    expect(writeText).toHaveBeenCalledWith('Final response 🎉');
+    expect(screen.getByText(/Final response 🎉/)).toBeInTheDocument();
+    Object.defineProperty(navigator, 'clipboard', { value: originalClipboard, configurable: true });
+  });
+
   it('renders copy buttons that can be clicked without error', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     const originalClipboard = navigator.clipboard;
@@ -407,7 +451,7 @@ describe('ChatMessage clipboard copy', () => {
       />,
     );
 
-    const copyBtns = screen.getAllByText('📋 복사');
+    const copyBtns = screen.getAllByRole('button', { name: /복사$/ });
     expect(copyBtns.length).toBeGreaterThanOrEqual(1);
 
     for (const btn of copyBtns) {
@@ -432,7 +476,7 @@ describe('ChatMessage code block', () => {
     const { container } = render(
       <ChatMessage message={createMessage({ role: 'assistant', content })} />,
     );
-    const copyBtns = await screen.findAllByText('📋 복사');
+    const copyBtns = await screen.findAllByRole('button', { name: /복사$/ });
     expect(copyBtns.length).toBeGreaterThanOrEqual(1);
     expect(container.textContent).toMatch(/typescript/i);
   });
@@ -442,8 +486,8 @@ describe('ChatMessage code block', () => {
     const { container } = render(
       <ChatMessage message={createMessage({ role: 'assistant', content })} />,
     );
-    await screen.findByText(/code/);
-    expect(container.textContent).toMatch(/code/);
+    expect(screen.getByText('code', { selector: '.code-block-lang span' })).toBeInTheDocument();
+    expect(container.querySelector('.code-block pre code')).toHaveTextContent('plain code block');
   });
 
   it('renders pre element via passthrough', async () => {
@@ -462,7 +506,7 @@ describe('ChatMessage code block', () => {
     const { container } = render(
       <ChatMessage message={createMessage({ role: 'assistant', content })} />,
     );
-    await screen.findAllByText('📋 복사');
+    await screen.findAllByRole('button', { name: /복사$/ });
 
     // 로컬로 가져온 하이라이트 테마가 색을 칠할 수 있도록 토큰 span을 유지한다.
     const keyword = container.querySelector('.code-block code .hljs-keyword');
@@ -526,12 +570,12 @@ describe('ChatMessage code block', () => {
     const { container } = render(<ChatMessage message={msg} />);
     const metaContainer = container.querySelector('.assistant-agent-meta');
     expect(metaContainer).toBeInTheDocument();
-    expect(metaContainer?.textContent).toContain('⚡ adaptive');
-    expect(metaContainer?.textContent).toContain('🌐 web');
-    expect(metaContainer?.textContent).toContain('🗺️ graphify');
-    expect(metaContainer?.textContent).toContain('✅ passed');
-    expect(metaContainer?.textContent).toContain('3 steps');
-    expect(metaContainer?.textContent).toContain('1.2s');
+    expect(metaContainer?.textContent).toContain('adaptive');
+    expect(metaContainer?.textContent).toContain('웹 검색');
+    expect(metaContainer?.textContent).toContain('코드 검색');
+    expect(metaContainer?.textContent).toContain('검증 통과');
+    expect(metaContainer?.textContent).toContain('3단계');
+    expect(metaContainer?.textContent).toContain('1.2초');
   });
 });
 

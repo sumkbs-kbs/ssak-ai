@@ -6,8 +6,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import './StudioPage.css';
 import { createAccessPinHeaders } from '../utils/accessPinCredential';
 import { useUiStore } from '../stores/uiStore';
+import { fetchStudioCapabilities, type StudioCapabilities } from './studioCapabilities';
 import {
   cancelTrainingJob,
   fetchTrainingJob,
@@ -83,16 +85,18 @@ export function validateBatchSize(bs: number): ValidationResult | null {
 export const StudioPage: React.FC = () => {
   const { addToast } = useUiStore();
   const [currentStep, setCurrentStep] = useState<number>(1);
+  const [capabilities, setCapabilities] = useState<StudioCapabilities | null>(null);
+  const [capabilityLoading, setCapabilityLoading] = useState(true);
+  const localTraining = capabilities?.capabilities.find(c => c.operation === 'training' && c.provider === 'mlx');
+  const canStartTraining = localTraining?.status === 'available';
+  const capabilityStatus = capabilityLoading ? 'loading' : localTraining?.status ?? 'unknown';
   const [selectedModel, setSelectedModel] = useState<string>(DEFAULT_MODELS[0].id);
-  const [trainingMethod, setTrainingMethod] = useState<'lora' | 'qlora' | 'dpo' | 'full'>('qlora');
 
   // Hyperparameters
   const [loraRank, setLoraRank] = useState<number>(16);
   const [loraAlpha, setLoraAlpha] = useState<number>(32);
   const [learningRate, setLearningRate] = useState<string>('2e-4');
   const [batchSize, setBatchSize] = useState<number>(4);
-  const [epochs, setEpochs] = useState<number>(3);
-  const [optimizer, setOptimizer] = useState<string>('adamw_8bit');
 
   // Recipe presets (Phase 24): 백엔드 카탈로그의 감사된 하이퍼파라미터
   const [recipes, setRecipes] = useState<TrainingRecipe[]>([]);
@@ -104,6 +108,15 @@ export const StudioPage: React.FC = () => {
       .catch(() => setRecipes([])); // 카탈로그 조회 실패 시 프리셋 없이 수동 입력만 허용
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    fetchStudioCapabilities()
+      .then(snapshot => { if (active) setCapabilities(snapshot); })
+      .catch(() => { if (active) setCapabilities(null); })
+      .finally(() => { if (active) setCapabilityLoading(false); });
+    return () => { active = false; };
+  }, []);
+
   const selectedRecipe = recipes.find(r => r.name === selectedRecipeName);
 
   const applyRecipePreset = (name: string) => {
@@ -111,14 +124,12 @@ export const StudioPage: React.FC = () => {
     const recipe = recipes.find(r => r.name === name);
     if (!recipe) return;
     const hp = recipe.hyperparameters;
-    // 감사된 오버라이드를 편집 가능한 필드에 채운다 (필드에 없는 키는 학습 시작 시 payload로 전달됨)
     if (typeof hp.learning_rate === 'string' || typeof hp.learning_rate === 'number') {
       setLearningRate(String(hp.learning_rate));
     }
     if (typeof hp.batch_size === 'number') setBatchSize(hp.batch_size);
     if (typeof hp.lora_rank === 'number') setLoraRank(hp.lora_rank);
     if (typeof hp.lora_alpha === 'number') setLoraAlpha(hp.lora_alpha);
-    if (typeof hp.num_train_epochs === 'number') setEpochs(hp.num_train_epochs);
     if (typeof hp.iterations === 'number' || typeof hp.iterations === 'string') {
       setIterations(Number(hp.iterations));
     }
@@ -144,16 +155,12 @@ export const StudioPage: React.FC = () => {
 
   // Dataset
   const [datasetName, setDatasetName] = useState<string>('sample_instruction_dataset.jsonl');
-  const [datasetTokens, setDatasetTokens] = useState<number>(42500);
-  const [trainSplit, setTrainSplit] = useState<number>(90);
 
   // Training status & Live Loss
   const [isTraining, setIsTraining] = useState<boolean>(false);
   const [trainingProgress, setTrainingProgress] = useState<number>(0);
-  const [currentLoss, setCurrentLoss] = useState<number>(2.45);
-  const [tokensPerSec, setTokensPerSec] = useState<number>(0);
-  const [lossHistory, setLossHistory] = useState<number[]>([2.8, 2.5, 2.1, 1.85, 1.62, 1.45, 1.32, 1.25]);
-  const [isExported, setIsExported] = useState<boolean>(false);
+  const [currentLoss, setCurrentLoss] = useState<number | null>(null);
+  const [lossHistory, setLossHistory] = useState<number[]>([]);
 
   // Phase 59: 시뮬레이션 타이머 제거 — 실제 백엔드 잡 폴링으로 대체 (activeJobId useEffect)
 
@@ -172,7 +179,6 @@ export const StudioPage: React.FC = () => {
 
   /** 마지막으로 시작한 실제 백엔드 학습 잡 (Phase 59). */
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
-  const [logTail, setLogTail] = useState<string[]>([]);
 
   /** 백엔드 잡 폴링 — progress/loss를 실제 값으로 갱신 (시뮬레이션 아님). */
   useEffect(() => {
@@ -184,14 +190,13 @@ export const StudioPage: React.FC = () => {
         if (stopped) return;
         setTrainingProgress(job.progress);
         if (typeof job.loss === 'number' && Number.isFinite(job.loss)) {
-          setCurrentLoss(job.loss);
-          setLossHistory(hist => [...hist.slice(-15), job.loss as number]);
+          const loss = job.loss;
+          setCurrentLoss(loss);
+          setLossHistory(hist => [...hist.slice(-15), loss]);
         }
-        setLogTail(job.log_tail.slice(-6));
         if (job.status === 'completed') {
           setActiveJobId(null);
           setIsTraining(false);
-          setIsExported(true);
           addToast(`🎉 학습 완료 — ${job.records}건 데이터셋, config: ${job.config_path}`, 'success');
         } else if (job.status === 'failed') {
           setActiveJobId(null);
@@ -211,9 +216,11 @@ export const StudioPage: React.FC = () => {
   }, [activeJobId, addToast]);
 
   const handleStartTraining = async () => {
+    if (!canStartTraining || lrValidation?.type === 'error' || batchValidation?.type === 'error') return;
     setIsTraining(true);
     setTrainingProgress(0);
-    setIsExported(false);
+    setCurrentLoss(null);
+    setLossHistory([]);
     addToast('Unsloth Studio: 백엔드 학습 잡을 시작합니다 (apply_recipe → mlx-lm).', 'info');
 
     try {
@@ -222,7 +229,6 @@ export const StudioPage: React.FC = () => {
         lora_alpha: loraAlpha,
         learning_rate: learningRate,
         batch_size: batchSize,
-        num_train_epochs: epochs,
         iterations,
       };
       const { job_id } = await startTrainingJob({
@@ -252,11 +258,6 @@ export const StudioPage: React.FC = () => {
     setIsTraining(false);
   };
 
-  const handleExport = (format: string) => {
-    setIsExported(true);
-    addToast(`Unsloth Studio: ${format} 형식으로 가중치가 안전하게 내보내졌습니다.`, 'success');
-  };
-
   return (
     <div className="unsloth-studio-container">
       {/* Studio Header */}
@@ -267,10 +268,10 @@ export const StudioPage: React.FC = () => {
             <div className="unsloth-badge-row">
               <h1 className="unsloth-studio-title">Unsloth Studio</h1>
               <span className="unsloth-tag-pro">FAST NO-CODE LLM FINE-TUNING</span>
-              <span className="unsloth-tag-accel">2x FASTER • 70% LESS VRAM</span>
+              <span className="unsloth-tag-accel">LOCAL MLX TRAINING</span>
             </div>
             <p className="unsloth-studio-subtitle">
-              로컬 하드웨어(Apple Silicon/GPU)에서 데이터셋 준비, LoRA/QLoRA 학습, 실시간 손실 곡선 모니터링 및 GGUF 배포를 원클릭으로 수행합니다.
+              로컬 MLX 학습 작업을 시작하고 백엔드가 보고한 진행률과 손실을 확인합니다. GGUF 내보내기와 모델 등록은 현재 연결되어 있지 않습니다.
             </p>
           </div>
         </div>
@@ -279,16 +280,18 @@ export const StudioPage: React.FC = () => {
         <div className="unsloth-telemetry-card">
           <div className="telemetry-item">
             <span className="telemetry-label">Backend</span>
-            <span className="telemetry-val highlight">MLX / llama.cpp</span>
+            <span className="telemetry-val highlight">{canStartTraining ? 'MLX' : '확인되지 않음'}</span>
           </div>
           <div className="telemetry-item">
-            <span className="telemetry-label">VRAM Usage</span>
-            <span className="telemetry-val">4.2 / 36.0 GB</span>
+            <span className="telemetry-label">System Memory (Available / Total)</span>
+            <span className="telemetry-val" data-testid="studio-memory">
+              {capabilities ? `${(capabilities.system.memory.available_bytes / 1024 ** 3).toFixed(1)} / ${(capabilities.system.memory.total_bytes / 1024 ** 3).toFixed(1)} GB` : '—'}
+            </span>
           </div>
           <div className="telemetry-item">
             <span className="telemetry-label">Status</span>
-            <span className={`telemetry-val status ${isTraining ? 'training' : 'ready'}`}>
-              <span className="dot" /> {isTraining ? 'Training Active' : 'Ready'}
+            <span className={`telemetry-val status ${isTraining ? 'training' : canStartTraining ? 'ready' : ''}`} data-capability-status={capabilityStatus} role="status">
+              <span className="dot" /> {isTraining ? 'Training Active' : capabilityLoading ? '확인 중' : canStartTraining ? 'MLX 사용 가능' : localTraining ? 'MLX 사용 불가' : '상태 확인 불가'}
             </span>
           </div>
         </div>
@@ -306,10 +309,11 @@ export const StudioPage: React.FC = () => {
           <button
             key={step.num}
             type="button"
-            className={`unsloth-step-btn ${currentStep === step.num ? 'active' : ''} ${currentStep > step.num ? 'completed' : ''}`}
+            className={`unsloth-step-btn ${currentStep === step.num ? 'active' : ''}`}
+            aria-current={currentStep === step.num ? 'step' : undefined}
             onClick={() => setCurrentStep(step.num)}
           >
-            <span className="step-num">{currentStep > step.num ? '✓' : step.num}</span>
+            <span className="step-num">{step.num}</span>
             <div className="step-text">
               <span className="step-title">{step.label}</span>
               <span className="step-desc">{step.desc}</span>
@@ -325,7 +329,7 @@ export const StudioPage: React.FC = () => {
           <section className="unsloth-card">
             <div className="card-header">
               <h2>1. 기본 모델 선택 (Select Base Model)</h2>
-              <p>학습할 파운데이션 모델을 선택하세요. 로컬 캐시 및 Hugging Face/Ollama 모델이 자동 탐색됩니다.</p>
+              <p>아래 모델은 선택 예시이며 설치·학습 호환성은 확인되지 않았습니다. 학습 시작 시 백엔드에서 모델과 소스를 검증합니다.</p>
             </div>
             <div className="unsloth-model-grid">
               {DEFAULT_MODELS.map(m => (
@@ -339,12 +343,12 @@ export const StudioPage: React.FC = () => {
                 >
                   <div className="model-card-header">
                     <span className="model-name">{m.name}</span>
-                    {m.recommended && <span className="chip-recommended">Recommended</span>}
+                    {m.recommended && <span className="chip-recommended">선택 예시</span>}
                   </div>
                   <div className="model-chips">
                     <span className="chip-pill">{m.architecture}</span>
                     <span className="chip-pill quant">{m.quant}</span>
-                    <span className="chip-pill vram">{m.vram}</span>
+                    <span className="chip-pill vram">예상 메모리 {m.vram}</span>
                   </div>
                   <div className="model-id">{m.id}</div>
                 </div>
@@ -363,7 +367,7 @@ export const StudioPage: React.FC = () => {
           <section className="unsloth-card">
             <div className="card-header">
               <h2>2. 학습 방법론 선택 (Training Method)</h2>
-              <p>Unsloth의 초경량 어댑터 기술을 통해 메모리를 최대 70% 절약하며 무손실 파인튜닝을 수행합니다.</p>
+              <p>이 화면은 로컬 MLX 레시피 학습을 사용합니다. 학습 방법 선택은 현재 시작 API에 연결되어 있지 않습니다.</p>
             </div>
             <div className="unsloth-method-grid">
               {[
@@ -374,15 +378,11 @@ export const StudioPage: React.FC = () => {
               ].map(m => (
                 <div
                   key={m.id}
-                  className={`unsloth-method-card ${trainingMethod === m.id ? 'selected' : ''}`}
-                  onClick={() => setTrainingMethod(m.id as any)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={e => { if (e.key === 'Enter') setTrainingMethod(m.id as any); }}
+                  className="unsloth-method-card"
                 >
                   <div className="method-header">
                     <span className="method-title">{m.title}</span>
-                    <span className="method-tag">{m.tag}</span>
+                    <span className="method-tag">선택 연결 안 됨</span>
                   </div>
                   <p className="method-desc">{m.desc}</p>
                 </div>
@@ -404,12 +404,12 @@ export const StudioPage: React.FC = () => {
           <section className="unsloth-card">
             <div className="card-header">
               <h2>3. 데이터셋 로드 &amp; 포맷 (Dataset &amp; Data Recipes)</h2>
-              <p>PDF, CSV, JSON, Markdown 등 다양한 원본 데이터를 드래그하여 지능형 프롬프트 쌍으로 변환합니다.</p>
+              <p>백엔드가 읽을 수 있는 데이터 파일 경로나 harvest 소스를 입력하세요. 파일 업로드는 현재 연결되어 있지 않습니다.</p>
             </div>
             <div className="unsloth-dropzone">
               <span className="drop-icon">📂</span>
-              <p className="drop-prompt"><strong>파일을 이곳으로 드래그</strong>하거나 클릭하여 업로드하세요</p>
-              <span className="drop-sub">지원 형식: .jsonl, .csv, .json, .parquet, .pdf, .md</span>
+              <p className="drop-prompt">파일 업로드 연결 안 됨</p>
+              <span className="drop-sub">아래 소스 경로 입력을 사용하세요.</span>
             </div>
 
             <div className="dataset-meta-row">
@@ -425,25 +425,25 @@ export const StudioPage: React.FC = () => {
                 />
               </div>
               <div className="meta-field">
-                <label htmlFor="ds-tokens">추정 토큰 수</label>
+                <label htmlFor="ds-tokens">추정 토큰 수 (확인·전달 안 됨)</label>
                 <input
                   id="ds-tokens"
                   type="number"
-                  value={datasetTokens}
-                  onChange={e => setDatasetTokens(Number(e.target.value))}
+                  value=""
                   className="unsloth-input"
+                  disabled
                 />
               </div>
               <div className="meta-field">
-                <label htmlFor="ds-split">Train / Validation 분할 ({trainSplit}% : {100 - trainSplit}%)</label>
+                <label htmlFor="ds-split">Train / Validation 분할 (설정 전달 안 됨)</label>
                 <input
                   id="ds-split"
                   type="range"
                   min="70"
                   max="95"
-                  value={trainSplit}
-                  onChange={e => setTrainSplit(Number(e.target.value))}
+                  value={90}
                   className="unsloth-range"
+                  disabled
                 />
               </div>
             </div>
@@ -485,7 +485,7 @@ export const StudioPage: React.FC = () => {
               </select>
               {selectedRecipe && (
                 <span className="recipe-preset-values">
-                  감사된 값: {Object.entries(selectedRecipe.hyperparameters).map(([k, v]) => `${k}=${v}`).join(' · ')}
+                  레시피 참고값 (활성 입력 항목만 전달): {Object.entries(selectedRecipe.hyperparameters).map(([k, v]) => `${k}=${v}`).join(' · ')}
                 </span>
               )}
             </div>
@@ -558,7 +558,8 @@ export const StudioPage: React.FC = () => {
 
               <div className="param-group">
                 <label htmlFor="p-epochs">Epochs</label>
-                <input id="p-epochs" type="number" value={epochs} onChange={e => setEpochs(Number(e.target.value))} className="unsloth-input" />
+                <input id="p-epochs" type="number" value="" className="unsloth-input" disabled aria-describedby="studio-epochs-unavailable" />
+                <span id="studio-epochs-unavailable" className="param-help">로컬 MLX는 Epochs를 지원하지 않습니다. Iterations를 사용하세요.</span>
                 <span className="param-help">전체 데이터셋 반복 학습 횟수.</span>
               </div>
 
@@ -570,12 +571,13 @@ export const StudioPage: React.FC = () => {
 
               <div className="param-group">
                 <label htmlFor="p-opt">Optimizer</label>
-                <select id="p-opt" value={optimizer} onChange={e => setOptimizer(e.target.value)} className="unsloth-select">
+                <select id="p-opt" value="" className="unsloth-select" disabled aria-describedby="studio-optimizer-unavailable">
+                  <option value="">연결 안 됨</option>
                   <option value="adamw_8bit">AdamW 8-bit (75% VRAM 절감)</option>
                   <option value="paged_adamw_8bit">Paged AdamW 8-bit (스파이크 방지)</option>
                   <option value="adamw_torch">Standard AdamW 16-bit</option>
                 </select>
-                <span className="param-help">Unsloth 최적화 커널을 통한 메모리 최적화.</span>
+                <span id="studio-optimizer-unavailable" className="param-help">Optimizer 선택은 현재 학습 시작 API에 연결되어 있지 않습니다.</span>
               </div>
             </div>
 
@@ -602,10 +604,10 @@ export const StudioPage: React.FC = () => {
               <div className="flex-between">
                 <div>
                   <h2>5. 실시간 학습 모니터링 &amp; 모델 내보내기 (Monitor &amp; Export)</h2>
-                  <p>실시간 손실율(Loss) 곡선과 하드웨어 스루풋을 시각화합니다.</p>
+                  <p>학습 작업이 보고한 손실과 진행률을 표시합니다. {localTraining?.detail ?? '로컬 학습 가능 여부를 확인해야 합니다.'}</p>
                 </div>
                 {!isTraining && trainingProgress < 100 && (
-                  <button type="button" className="unsloth-btn-launch" onClick={handleStartTraining}>
+                  <button type="button" className="unsloth-btn-launch" onClick={handleStartTraining} disabled={!canStartTraining || lrValidation?.type === 'error' || batchValidation?.type === 'error'}>
                     🚀 파인튜닝 시작 (Start Training)
                   </button>
                 )}
@@ -621,7 +623,7 @@ export const StudioPage: React.FC = () => {
             <div className="unsloth-hud-row">
               <div className="hud-metric">
                 <span className="hud-lbl">Current Loss</span>
-                <span className="hud-val loss">{currentLoss.toFixed(3)}</span>
+                <span className="hud-val loss">{currentLoss?.toFixed(3) ?? '—'}</span>
               </div>
               <div className="hud-metric">
                 <span className="hud-lbl">Progress</span>
@@ -629,7 +631,7 @@ export const StudioPage: React.FC = () => {
               </div>
               <div className="hud-metric">
                 <span className="hud-lbl">Speed</span>
-                <span className="hud-val speed">{isTraining ? `${tokensPerSec} tok/s` : '0 tok/s'}</span>
+                <span className="hud-val speed">—</span>
               </div>
               <div className="hud-metric">
                 <span className="hud-lbl">Target Model</span>
@@ -656,7 +658,7 @@ export const StudioPage: React.FC = () => {
                 <line x1="0" y1="130" x2="600" y2="130" stroke="rgba(255,255,255,0.06)" strokeDasharray="4" />
 
                 {/* Plot line & Area */}
-                {(() => {
+                {lossHistory.length > 0 && (() => {
                   const points = lossHistory.map((val, idx) => {
                     const x = (idx / (lossHistory.length - 1 || 1)) * 580 + 10;
                     const y = 160 - ((val - 0.4) / (3.0 - 0.4)) * 140;
@@ -692,38 +694,36 @@ export const StudioPage: React.FC = () => {
             <div className="unsloth-export-bar">
               <div className="export-info">
                 <h3>📦 원클릭 모델 배포 &amp; 내보내기 (Export &amp; Deploy)</h3>
-                <p>학습된 가중치를 단일 파일 GGUF, 16-bit LoRA 또는 로컬 Ollama 모델로 즉시 변환합니다.</p>
+                <p id="studio-export-unavailable" role="status">현재 백엔드에는 GGUF 파일 내보내기와 Ollama 등록 API가 연결되어 있지 않습니다. 학습 완료만으로 배포 파일이 생성되지는 않습니다.</p>
               </div>
               <div className="export-btns">
                 <button
                   type="button"
                   className="unsloth-btn-export"
-                  onClick={() => handleExport('GGUF (Q4_K_M)')}
+                  disabled
+                  aria-describedby="studio-export-unavailable"
                 >
                   GGUF Q4_K_M 내보내기
                 </button>
                 <button
                   type="button"
                   className="unsloth-btn-export"
-                  onClick={() => handleExport('GGUF (Q8_0)')}
+                  disabled
+                  aria-describedby="studio-export-unavailable"
                 >
                   GGUF Q8_0 (고정밀)
                 </button>
                 <button
                   type="button"
                   className="unsloth-btn-export highlight"
-                  onClick={() => handleExport('로컬 Ollama 등록')}
+                  disabled
+                  aria-describedby="studio-export-unavailable"
                 >
                   🦥 로컬 모델로 즉시 등록
                 </button>
               </div>
             </div>
 
-            {isExported && (
-              <div className="unsloth-success-box">
-                ✓ 내보내기가 완료되었습니다! 대시보드 <strong>AI 채팅</strong> 또는 <strong>모델 허브</strong>에서 방금 학습된 모델을 즉시 선택하여 실행할 수 있습니다.
-              </div>
-            )}
           </section>
         )}
       </div>

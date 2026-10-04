@@ -6,7 +6,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useWikiStore } from '../stores/wikiStore';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import WikiSidebar from './wiki/WikiSidebar';
 import ContentPanel from './wiki/ContentPanel';
 import VaultConfigModal from './wiki/VaultConfigModal';
@@ -14,17 +14,19 @@ import NewDocModal from './wiki/NewDocModal';
 
 const WikiPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const newDocRequested = searchParams.get('new') === '1';
   const {
     vaultPath, treeData, currentDoc, isEditing, editContent, searchQuery, searchResults,
     setIsEditing, setEditContent, setSearchQuery, searchDocuments,
-    initVault, loadDocument, saveDocument,
+    loadTree, loadDocument, saveDocument,
   } = useWikiStore();
 
   const [showVaultModal, setShowVaultModal] = useState(false);
   const [showNewModal, setShowNewModal] = useState(false);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => { initVault(); }, [initVault]);
+  useEffect(() => { loadTree(); }, [loadTree]);
 
   const handleSelect = useCallback((path: string) => loadDocument(path), [loadDocument]);
 
@@ -100,7 +102,10 @@ const WikiPage: React.FC = () => {
         />
       </div>
       <VaultConfigModal visible={showVaultModal} onClose={() => setShowVaultModal(false)} />
-      <NewDocModal visible={showNewModal} onClose={() => setShowNewModal(false)} />
+      <NewDocModal visible={showNewModal || newDocRequested} onClose={() => {
+        setShowNewModal(false);
+        if (newDocRequested) setSearchParams({}, { replace: true });
+      }} />
     </div>
   );
 };

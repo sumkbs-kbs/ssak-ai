@@ -16,8 +16,10 @@ vi.mock('ky', () => {
   return { default: { post: postMock }, HTTPError };
 });
 
-import { cancelTask, resumeTask } from './taskExecutionApi';
+import { useProjectStore } from '../../stores/projectStore';
+import { cancelTask, forkTask, isTaskOperationRetryable, resumeTask, submitTask } from './taskExecutionApi';
 import { TaskIdSchema } from './taskExecutionSchema';
+import { createTaskForkOperation, createTaskSubmitOperation } from './taskOperation';
 
 const taskId = TaskIdSchema.parse('task-owned-elsewhere');
 
@@ -42,6 +44,13 @@ function postResult(json: () => Promise<unknown>): { json: () => Promise<unknown
 
 beforeEach(() => {
   postMock.mockReset();
+  useProjectStore.setState({
+    activeProjectId: 'project-a',
+    activeProjectName: 'Project A',
+    activeProjectPath: '/tmp/project-a',
+    projectRevision: 7,
+    switchEpoch: 7,
+  });
 });
 
 describe('cancelTask failure reporting (F-35)', () => {
@@ -69,5 +78,54 @@ describe('cancelTask failure reporting (F-35)', () => {
     postMock.mockReturnValue(postResult(() => Promise.reject(new Error('network down'))));
 
     await expect(resumeTask(taskId)).rejects.toThrow('network down');
+  });
+
+  it('reuses an operation key and captured identity for a submit after the active project changes', async () => {
+    postMock.mockReturnValue(postResult(() => Promise.resolve({ status: 'submitted', task_id: taskId })));
+    window.sessionStorage.setItem('ag_access_token', 'owner-a-token');
+    const operation = await createTaskSubmitOperation({ prompt: 'retain this exact request', input: 'retain this exact request', generation: 1 });
+    window.sessionStorage.setItem('ag_access_token', 'owner-b-token');
+    useProjectStore.setState({
+      activeProjectId: 'project-b',
+      activeProjectName: 'Project B',
+      activeProjectPath: '/tmp/project-b',
+      projectRevision: 8,
+      switchEpoch: 8,
+    });
+
+    await expect(submitTask(operation)).resolves.toBe(taskId);
+
+    expect(postMock).toHaveBeenCalledWith('/api/tasks/submit', expect.objectContaining({
+      headers: expect.objectContaining({
+        get: expect.any(Function),
+      }),
+      json: expect.objectContaining({
+        prompt: 'retain this exact request',
+        idempotency_key: operation.idempotencyKey,
+        project_id: 'project-a',
+        project_revision: 7,
+      }),
+    }));
+    const options = postMock.mock.calls[0]?.[1];
+    expect(options?.headers.get('X-AGK-Project-Id')).toBe('project-a');
+    expect(options?.headers.get('X-AGK-Project-Revision')).toBe('7');
+    expect(options?.headers.get('Authorization')).toBe('Bearer owner-a-token');
+  });
+
+  it('sends the same fork key with its immutable source task', async () => {
+    postMock.mockReturnValue(postResult(() => Promise.resolve({ status: 'forked', task_id: taskId, source_task_id: taskId })));
+    const operation = await createTaskForkOperation(taskId);
+
+    await expect(forkTask(operation)).resolves.toBe(taskId);
+
+    expect(postMock).toHaveBeenCalledWith(`/api/tasks/${taskId}/fork`, expect.objectContaining({
+      json: { idempotency_key: operation.idempotencyKey },
+    }));
+  });
+
+  it('does not offer retry for a server-confirmed API failure', () => {
+    expect(isTaskOperationRetryable(httpFailure(422, { detail: 'invalid prompt' }))).toBe(false);
+    expect(isTaskOperationRetryable(httpFailure(503, { detail: 'temporary outage' }))).toBe(true);
+    expect(isTaskOperationRetryable(new TypeError('response lost'))).toBe(true);
   });
 });

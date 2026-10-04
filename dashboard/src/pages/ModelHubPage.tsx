@@ -59,7 +59,7 @@ interface HubDisplayModel {
   vramGb: number;
   diskPath: string;
   description: string;
-  status: 'running' | 'installed' | 'cached';
+  status: LocalModelItem['status'];
   isLocal: boolean;
 }
 
@@ -105,8 +105,8 @@ export const ModelHubPage: React.FC = () => {
       } else {
         addToast(`❌ 모델 로드 실패: ${res.message || '알 수 없는 오류'}`, 'error');
       }
-    } catch (err: any) {
-      addToast(`❌ 모델 로드 오류: ${err?.message || String(err)}`, 'error');
+    } catch (err) {
+      addToast(`❌ 모델 로드 오류: ${err instanceof Error ? err.message : String(err)}`, 'error');
     } finally {
       setLoadingModelId(null);
     }
@@ -139,7 +139,7 @@ export const ModelHubPage: React.FC = () => {
       vramGb: m.parameter_count_b > 0 ? Math.round(m.parameter_count_b * 0.7) : (m.disk_size_gb > 0 ? Math.round(m.disk_size_gb) : 0),
       diskPath: m.disk_path || '',
       description: m.description || `본 PC에 설치된 ${m.provider} 로컬 모델.`,
-      status: (m.status as any) || 'installed',
+      status: m.status,
       isLocal: true,
     };
   });
@@ -226,18 +226,18 @@ export const ModelHubPage: React.FC = () => {
           </div>
 
           <div className="hub-category-pills">
-            {[
+            {([
               { id: 'all', label: `전체 (${displayModels.length})` },
               { id: 'running', label: `🟢 실행 중 (${displayModels.filter((m) => m.status === 'running').length})` },
               { id: 'unsloth', label: `🦥 Unsloth GGUF (${displayModels.filter((m) => m.provider === 'UNSLOTH').length})` },
               { id: 'mlx', label: `Apple MLX (${displayModels.filter((m) => m.provider === 'MLX').length})` },
               { id: 'embedding', label: `Embedding (${displayModels.filter((m) => m.category === 'embedding').length})` },
-            ].map((cat) => (
+            ] satisfies ReadonlyArray<{ readonly id: HubDisplayModel['category']; readonly label: string }>).map((cat) => (
               <button
                 key={cat.id}
                 type="button"
                 className={`hub-cat-btn ${filterCategory === cat.id ? 'active' : ''}`}
-                onClick={() => setFilterCategory(cat.id as any)}
+                onClick={() => setFilterCategory(cat.id)}
               >
                 {cat.label}
               </button>
@@ -348,10 +348,10 @@ export const ModelHubPage: React.FC = () => {
                     </span>
                   ) : (
                     <span className="spec-badge" style={{ fontSize: '10px' }}>
-                      📦 로컬 캐시
+                      {model.status === 'installed' ? '설치됨' : model.status === 'cached' ? '로컬 캐시' : '실행 상태 미확인'}
                     </span>
                   )}
-                  {isActive && <span className="active-badge">● Active</span>}
+                  {isActive && <span className="active-badge">선택된 모델</span>}
                 </div>
 
                 <p className="model-desc-text">{model.description}</p>
@@ -383,7 +383,7 @@ export const ModelHubPage: React.FC = () => {
                 <div className="hub-card-footer">
                   <div className="card-status-info">
                     <span className="status-indicator local">
-                      ✓ 로컬 준비됨
+                      {model.status === 'running' ? '런타임 실행 확인됨' : model.status === 'installed' ? '로컬 설치 확인됨' : model.status === 'cached' ? '로컬 캐시 확인됨' : '실행 상태 미확인'}
                     </span>
                   </div>
                   <div className="card-actions">
@@ -395,7 +395,7 @@ export const ModelHubPage: React.FC = () => {
                     >
                       {loadingModelId === model.id
                         ? '⏳ 런타임 로딩 중...'
-                        : (isActive ? '현재 사용 중' : '⚡ 모델 활성화 (Load)')}
+                        : (isActive ? '선택된 모델' : '⚡ 모델 활성화 (Load)')}
                     </button>
                   </div>
                 </div>

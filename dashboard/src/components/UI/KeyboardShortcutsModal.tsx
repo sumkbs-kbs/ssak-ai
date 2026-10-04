@@ -7,6 +7,7 @@
  */
 
 import React, { useCallback, useEffect, useRef } from 'react';
+import { useModalDialog } from '../../hooks/useModalDialog';
 
 export interface ShortcutEntry {
   keys: string[];
@@ -74,7 +75,10 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ visible, onClose }) => {
-  const overlayRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useModalDialog({ active: visible, containerRef: dialogRef, initialFocusRef: closeButtonRef });
 
   // Close on Escape
   useEffect(() => {
@@ -100,17 +104,20 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ visible
   if (!visible) return null;
 
   return (
-    <div className="modal-overlay" ref={overlayRef} onClick={handleOverlayClick} role="presentation">
+    <div className="modal-overlay" onClick={handleOverlayClick} role="presentation">
       <div
+        ref={dialogRef}
         className="modal-content glass-panel shortcuts-modal"
         onClick={e => e.stopPropagation()}
         role="dialog"
+        aria-modal="true"
         aria-label="키보드 단축키"
+        tabIndex={-1}
       >
         {/* Header */}
         <div className="shortcuts-header">
           <h3>⌨️ 키보드 단축키</h3>
-          <button className="icon-btn" onClick={onClose} aria-label="키보드 단축키 대화상자 닫기" style={{ fontSize: 12, padding: '4px 8px', color: 'var(--text-secondary)' }}>✕</button>
+          <button ref={closeButtonRef} className="icon-btn" onClick={onClose} aria-label="키보드 단축키 대화상자 닫기" style={{ fontSize: 12, padding: '4px 8px', color: 'var(--text-secondary)' }}>✕</button>
         </div>
 
         <div className="shortcuts-body">

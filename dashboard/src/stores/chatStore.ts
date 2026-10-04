@@ -30,6 +30,13 @@ export interface ChatSession {
   conversationRevision: number;
 }
 
+export type ForkedConversationSession = Readonly<{
+  sourceConversationId: string;
+  conversationId: string;
+  revision: number;
+  messages: readonly ChatMessage[];
+}>;
+
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 8);
 }
@@ -88,6 +95,7 @@ export interface ChatState {
     retained_message_ids?: string[];
     messages?: ChatMessage[];
   }) => void;
+  adoptForkedSession: (fork: ForkedConversationSession) => boolean;
   setStreaming: (val: boolean) => void;
   setCurrentAssistantContent: (content: string) => void;
   appendToCurrentAssistantContent: (chunk: string) => void;
@@ -102,6 +110,7 @@ export interface ChatState {
 }
 
 const STORAGE_KEY_PREFIX = 'antigravity_chat_';
+const MODEL_PREFERENCE_KEY = 'agk_chat_selected_model';
 
 /**
  * 서버가 대화 id 없이 들어온 요청에 붙이는 **폴백** id(`project_binding` 계약).
@@ -329,19 +338,56 @@ export const useChatStore = create<ChatState>((set, get) => ({
     get().saveToStorage();
   },
 
+  adoptForkedSession: (fork) => {
+    const { sessions } = get();
+    const source = sessions.find((session) => session.id === fork.sourceConversationId);
+    if (!source || source.id === fork.conversationId || sessions.some((session) => session.id === fork.conversationId)) {
+      return false;
+    }
+    const revision = Number.isFinite(fork.revision) && fork.revision >= 0
+      ? Math.floor(fork.revision)
+      : 0;
+    const forkedSession: ChatSession = {
+      id: fork.conversationId,
+      title: `${source.title} · 분기`,
+      updatedAt: new Date().toISOString(),
+      messages: [...fork.messages],
+      conversationRevision: revision,
+    };
+    set({
+      sessions: [forkedSession, ...sessions],
+      activeSessionId: forkedSession.id,
+      activeSession: forkedSession,
+      messages: forkedSession.messages,
+      conversationRevision: forkedSession.conversationRevision,
+    });
+    get().saveToStorage();
+    return true;
+  },
+
   setStreaming: (val: boolean) => set({ isStreaming: val }),
   setCurrentAssistantContent: (content: string) => set({ currentAssistantContent: content }),
   appendToCurrentAssistantContent: (chunk: string) =>
     set(state => ({ currentAssistantContent: state.currentAssistantContent + chunk })),
 
   setModels: (models) => set({ models }),
-  setSelectedModel: (model) => set({ selectedModel: model }),
+  setSelectedModel: (model) => {
+    set({ selectedModel: model });
+    try {
+      localStorage.setItem(MODEL_PREFERENCE_KEY, model);
+    } catch (error) {
+      if (!(error instanceof DOMException)) throw error;
+      console.error('[ChatStore] Failed to save model preference:', error);
+    }
+  },
   setPlanMode: (val: boolean) => set({ isPlanMode: val }),
   setTddMode: (val: boolean) => set({ isTddMode: val }),
   setAdaptiveMode: (val: boolean) => set({ isAdaptiveMode: val }),
 
   loadFromStorage: () => {
     try {
+      const selectedModel = localStorage.getItem(MODEL_PREFERENCE_KEY);
+      if (selectedModel) set({ selectedModel });
       const project = useProjectStore.getState();
       const storageKey = project.activeProjectId
         || project.activeProjectPath

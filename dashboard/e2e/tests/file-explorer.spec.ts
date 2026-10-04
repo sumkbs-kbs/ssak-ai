@@ -9,7 +9,7 @@
  *
  * Scenario:
  *   1. Navigate to chat page
- *   2. Verify the environment rail renders (환경 tab default)
+ *   2. Open the inspection panel (환경 tab selected)
  *   3. Open the 코드 tab — git file activity (or empty-state) lives here after redesign
  *   4. Verify the editor mounts on 코드
  *   5. Open the 변경 tab and verify the change panel mounts
@@ -31,7 +31,9 @@ test.describe('Environment Rail — file browsing', () => {
     await dashboard.goToChat();
   });
 
-  test('should render the environment rail by default', async () => {
+  test('should keep the canvas clear until inspection is opened', async () => {
+    await expect(dashboard.page.locator('.agk-env-panel')).toHaveCount(0);
+    await dashboard.page.getByRole('button', { name: '환경 패널 토글' }).click();
     const rail = dashboard.page.locator('.agk-env-panel');
     await expect(rail).toBeVisible({ timeout: 5000 });
 
@@ -40,6 +42,7 @@ test.describe('Environment Rail — file browsing', () => {
   });
 
   test('should show file activity from git status', async () => {
+    await dashboard.page.getByRole('button', { name: '환경 패널 토글' }).click();
     const rail = dashboard.page.locator('.agk-env-panel');
     await expect(rail).toBeVisible({ timeout: 5000 });
 
@@ -56,6 +59,7 @@ test.describe('Environment Rail — file browsing', () => {
   });
 
   test('should mount the editor from the 코드 tab', async () => {
+    await dashboard.page.getByRole('button', { name: '환경 패널 토글' }).click();
     const rail = dashboard.page.locator('.agk-env-panel');
     await rail.locator('.env-tab').filter({ hasText: '코드' }).click();
 
@@ -64,6 +68,7 @@ test.describe('Environment Rail — file browsing', () => {
   });
 
   test('should mount the change panel from the 변경 tab', async () => {
+    await dashboard.page.getByRole('button', { name: '환경 패널 토글' }).click();
     const rail = dashboard.page.locator('.agk-env-panel');
     await rail.locator('.env-tab').filter({ hasText: '변경' }).click();
 
@@ -75,7 +80,10 @@ test.describe('Environment Rail — file browsing', () => {
     const toggle = dashboard.page.locator('[aria-label="환경 패널 토글"]');
     await expect(toggle).toBeVisible({ timeout: 5000 });
 
+    await expect(dashboard.page.locator('.agk-env-panel')).toHaveCount(0);
     await toggle.click();
+    await expect(dashboard.page.locator('.agk-env-panel')).toBeVisible();
+    await dashboard.page.getByRole('button', { name: '패널 닫기' }).click();
     await expect(dashboard.page.locator('.agk-env-panel')).toHaveCount(0);
 
     await toggle.click();

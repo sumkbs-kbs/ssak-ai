@@ -31,7 +31,7 @@ test('no-auth loopback bootstrap starts the dashboard without credentials', asyn
   }
 });
 
-test('invalid legacy PIN is rejected and leaves no credential behind', async ({ browser }, testInfo) => {
+test('unavailable legacy PIN authentication leaves no credential behind', async ({ browser }, testInfo) => {
   test.setTimeout(60_000);
   const server = await startNoAuthServer();
   try {
@@ -40,7 +40,7 @@ test('invalid legacy PIN is rejected and leaves no credential behind', async ({ 
     const dashboard = new DashboardPage(page);
     await dashboard.goto({ kind: 'legacyPin', value: '0000' });
     await dashboard.submitPin('0000');
-    await expect(page.getByRole('alert')).toContainText('PIN 번호가 올바르지 않습니다');
+    await expect(page.getByRole('alert')).toContainText('인증 서버를 사용할 수 없습니다');
     expect(await page.evaluate(() => sessionStorage.getItem('ag_access_token'))).toBeNull();
     expect(await page.evaluate(() => localStorage.getItem('ag_access_pin'))).toBeNull();
     await page.screenshot({ path: path.join(testInfo.outputDir, 'invalid-legacy-pin.png'), fullPage: true });

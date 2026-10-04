@@ -1,12 +1,11 @@
 import React from 'react';
-import { SearchResult } from './types';
+import type { SearchResult } from './types';
 import SearchResultCard from './SearchResultCard';
 
 interface SearchTabProps {
   results: SearchResult[];
   installedNames: string[];
-  onQueryChange: (q: string) => void;
-  onSearch: () => void;
+  onSearch: (query?: string) => void;
   onInstall: (pkgName: string) => void;
 }
 
@@ -15,7 +14,6 @@ const EXAMPLE_QUERIES = ['code review', 'testing', 'rag', 'deploy'];
 const SearchTab: React.FC<SearchTabProps> = ({
   results,
   installedNames,
-  onQueryChange,
   onSearch,
   onInstall,
 }) => {
@@ -32,7 +30,7 @@ const SearchTab: React.FC<SearchTabProps> = ({
             <button
               key={q}
               className="example-chip"
-              onClick={() => { onQueryChange(q); setTimeout(onSearch, 50); }}
+              onClick={() => onSearch(q)}
             >
               {q}
             </button>

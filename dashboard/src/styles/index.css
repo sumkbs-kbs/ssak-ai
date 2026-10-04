@@ -1,59 +1,58 @@
 /* ==========================================================================
    Ssak-Ai Dashboard — Design System & Global Styles
-   Inspired by TERMINAL-7 — Cold-blooded engineering for warm-blooded users
-   Brutalist Terminal Precision × Warm Editorial Serif Tension
+   Conversation-first workspace — contract: dashboard/DESIGN.md
    ========================================================================== */
 
 :root {
-  /* === Color Palette (TERMINAL-7 inspired) === */
-  /* Deep obsidian charcoal surfaces */
-  --bg-primary: #080908;
-  --bg-secondary: #0d0f0d;
-  --bg-tertiary: #131613;
-  --bg-elevated: #1a1e1a;
+  --bg-primary: #202020;
+  --bg-secondary: #181818;
+  --bg-tertiary: #292929;
+  --bg-elevated: #333333;
 
   /* Glass morphism & Hairline borders */
-  --glass-bg: rgba(13, 16, 13, 0.88);
-  --glass-bg-strong: rgba(19, 23, 19, 0.94);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-border-strong: rgba(229, 169, 59, 0.25);
-  --glass-blur: 16px;
+  --glass-bg: #252525;
+  --glass-bg-strong: #292929;
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-border-strong: rgba(255, 255, 255, 0.20);
+  --glass-blur: 0px;
 
   /* Terminal hairline border & dotted leaders */
-  --terminal-border: #1e241e;
-  --terminal-border-muted: #151a15;
-  --terminal-dotted: #2a332a;
+  --terminal-border: #393939;
+  --terminal-border-muted: #303030;
+  --terminal-dotted: #444444;
 
   /* Text hierarchy */
-  --text-primary: #eef0eb;
-  --text-secondary: #a6aca1;
-  --text-muted: #8b949e; /* WCAG AA on dark sidebar (≥4.5:1 vs #0d0f0d/#050605) */
-  --text-dim: #79816f; /* UI-01 (axe color-contrast): #080908 배경 위 4.9:1 — #41483e(2.1:1)에서 상향 */
+  --text-primary: #ececec;
+  --text-secondary: #b8b8b8;
+  --text-muted: #a0a0a0;
+  --text-dim: #929292;
 
-  /* Accent - Warm Amber / Gold (TERMINAL-7 signature) */
-  --accent-color: #e5a93b;
-  --accent-hover: #f59e0b;
-  --accent-light: #fde68a;
-  --accent-glow: rgba(229, 169, 59, 0.2);
-  --accent-glow-strong: rgba(229, 169, 59, 0.4);
+  --accent-color: #a8bfff;
+  --accent-hover: #c1d0ff;
+  --accent-light: #c1d0ff;
+  --accent-glow: rgba(168, 191, 255, 0.12);
+  --accent-glow-strong: rgba(168, 191, 255, 0.20);
+  --focus-ring: #a8bfff;
+  --action-bg: #ececec;
+  --action-text: #202020;
 
   /* Secondary accent - Terminal Radar Green (Telemetrics & Active Status) */
-  --terminal-green: #00ff66;
-  --terminal-green-dim: #10b981;
-  --terminal-green-glow: rgba(0, 255, 102, 0.25);
+  --terminal-green: #6ed6a0;
+  --terminal-green-dim: #6ed6a0;
+  --terminal-green-glow: transparent;
 
   /* Tech Cyan (Code parameters & link highlights) */
   --accent-cyan: #38bdf8;
   --accent-cyan-glow: rgba(56, 189, 248, 0.2);
 
   /* Status colors */
-  --success-color: #10b981;
+  --success-color: #6ed6a0;
   --success-glow: rgba(16, 185, 129, 0.2);
-  --warning-color: #e5a93b;
+  --warning-color: #edc476;
   --warning-glow: rgba(229, 169, 59, 0.2);
-  --error-color: #ef4444;
+  --error-color: #ff8b8b;
   --error-glow: rgba(239, 68, 68, 0.2);
-  --info-color: #38bdf8;
+  --info-color: #a8bfff;
   --info-glow: rgba(56, 189, 248, 0.2);
 
   /* === Typography === */
@@ -62,18 +61,18 @@
    * 앞쪽 패밀리는 사용자가 로컬에 설치했을 때만 쓰이고, 없으면 시스템 폰트로
    * 자연스럽게 내려간다(웹폰트 다운로드 없음 → 오프라인에서도 동일 레이아웃).
    */
-  --font-serif: 'Newsreader', 'Instrument Serif', ui-serif, Georgia, 'Times New Roman', serif;
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, 'SF Mono', monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  --font-serif: var(--font-sans);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  --text-xs: 11px;
-  --text-sm: 12px;
-  --text-base: 13px;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
   --text-md: 14px;
   --text-lg: 15px;
   --text-xl: 16px;
   --text-2xl: 18px;
-  --text-3xl: 22px;
+  --text-3xl: 24px;
   --text-4xl: 28px;
   --text-5xl: 36px;
 
@@ -101,13 +100,15 @@
   --space-20: 80px;
 
   /* === Sizing === */
-  --sidebar-width: 240px;
+  --sidebar-width: 248px;
   --sidebar-collapsed: 64px;
-  --header-height: 56px;
+  --header-height: 48px;
+  --chat-content-width: 760px;
+  --chat-font-size: 16px;
   --content-wide: 1200px;
   --border-radius: 8px;
   --border-radius-lg: 12px;
-  --border-radius-xl: 16px;
+  --border-radius-xl: 20px;
   --border-radius-full: 9999px;
 
   /* === Shadows === */
@@ -8460,6 +8461,15 @@ html, body {
   font-weight: var(--font-weight-semibold);
 }
 
+.task-operation-retry {
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.task-operation-retry > span {
+  flex: 1 1 18rem;
+}
+
 .task-submit-form > div {
   display: flex;
   gap: var(--space-2);
@@ -16246,52 +16256,7 @@ html, body {
   color: #5d6470;
 }
 
-/* ─── Mobile responsive rules for Codex Desktop Sidebar ────────── */
-@media (max-width: 768px) {
-  .codex-desktop-sidebar {
-    width: 52px !important;
-    min-width: 52px !important;
-  }
-  .codex-desktop-sidebar .menu-label,
-  .codex-desktop-sidebar .row-plus-badge,
-  .codex-desktop-sidebar .codex-section-container,
-  .codex-desktop-sidebar .codex-usage-card,
-  .codex-desktop-sidebar .brand-title,
-  .codex-desktop-sidebar .chevron-icon,
-  .codex-desktop-sidebar .brand-action-icons,
-  .codex-desktop-sidebar .window-nav-icons,
-  .codex-desktop-sidebar .user-display-name,
-  .codex-desktop-sidebar .voice-action-pill,
-  .codex-desktop-sidebar .help-icon-link {
-    display: none !important;
-  }
-  .codex-desktop-sidebar .codex-window-bar {
-    padding: 10px 4px 6px !important;
-    justify-content: center !important;
-  }
-  .codex-desktop-sidebar .codex-brand-row {
-    padding: 4px 0 8px !important;
-    justify-content: center !important;
-  }
-  .codex-desktop-sidebar .codex-menu-row {
-    justify-content: center !important;
-    padding: 10px 0 !important;
-  }
-  .codex-desktop-sidebar .menu-icon {
-    margin: 0 !important;
-    font-size: 18px !important;
-  }
-  .codex-desktop-sidebar .codex-user-bottom-bar {
-    padding: 10px 0 !important;
-    justify-content: center !important;
-  }
-}
-
 @media (max-width: 480px) {
-  .codex-desktop-sidebar {
-    width: 44px !important;
-    min-width: 44px !important;
-  }
   .task-execution-shell {
     padding: var(--space-2) !important;
   }

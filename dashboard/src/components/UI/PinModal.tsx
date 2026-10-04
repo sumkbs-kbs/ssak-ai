@@ -4,7 +4,17 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useUiStore } from '../../stores/uiStore';
-import { loginWithAccessPin } from '../../utils/accessPinCredential';
+import { AccessPinLoginError, loginWithAccessPin } from '../../utils/accessPinCredential';
+
+const loginFailureMessages: Record<AccessPinLoginError['kind'], string> = {
+  invalid_pin: 'PIN 번호가 올바르지 않습니다.',
+  locked: '인증 시도가 잠겼습니다. 잠시 후 다시 시도하세요.',
+  rate_limited: '인증 요청이 너무 많습니다. 잠시 후 다시 시도하세요.',
+  network: '서버에 연결할 수 없습니다. 서버 실행 상태와 네트워크를 확인하세요.',
+  service_unavailable: '인증 서버를 사용할 수 없습니다. 잠시 후 다시 시도하세요.',
+  invalid_response: '인증 응답을 확인할 수 없습니다. 잠시 후 다시 시도하세요.',
+  request_failed: '인증을 완료할 수 없습니다. 잠시 후 다시 시도하세요.',
+};
 
 const PinModal: React.FC = () => {
   const visible = useUiStore(state => state.pinModalVisible);
@@ -30,8 +40,8 @@ const PinModal: React.FC = () => {
       // 로그인에 성공하면 이유는 더 이상 유효하지 않다 — 다음 잠금이 낡은 문구를 물려받지 않게 지운다.
       setNotice('');
       setVisible(false);
-    } catch {
-      setError('PIN 번호가 올바르지 않습니다.');
+    } catch (error) {
+      setError(error instanceof AccessPinLoginError ? loginFailureMessages[error.kind] : loginFailureMessages.request_failed);
     }
   };
 

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { JobOperationsPage } from './JobOperationsPage';
@@ -67,6 +67,49 @@ describe('JobOperationsPage', () => {
       source_run_id: 'run-1',
       run: { ...failedRun, run_id: 'run-2', status: 'submitted' },
     });
+  });
+
+  it.each([true, false])('shows no measured success rate when no runs are completed and scheduler health is %s', async (healthy) => {
+    // Given: the API supplies its nominal rate with an empty completed-run window.
+    vi.mocked(fetchJobHealth).mockResolvedValue({
+      ...health,
+      completed_runs: 0,
+      succeeded_runs: 0,
+      failed_runs: 0,
+      open_runs: healthy ? 0 : 1,
+      stale_runs: healthy ? 0 : 1,
+      success_rate: 1,
+      healthy,
+      reasons: healthy ? [] : ['stale run exceeds policy'],
+    });
+    vi.mocked(fetchScheduledJobs).mockResolvedValue([]);
+
+    // When: the loaded snapshot is presented.
+    render(<JobOperationsPage />);
+    const summary = within(await screen.findByRole('region', { name: 'Job health summary' }));
+
+    // Then: the rate is unmeasured while the scheduler keeps its reported health.
+    expect(summary.getByText('—', { selector: 'strong' })).toBeInTheDocument();
+    expect(summary.getByText('No completed runs', { selector: 'small' })).toBeInTheDocument();
+    expect(summary.queryByText('100%')).not.toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent(healthy ? 'Healthy' : 'Needs attention');
+    if (!healthy) {
+      expect(screen.getByRole('alert')).toHaveTextContent('No completed runs');
+      expect(screen.getByRole('alert')).not.toHaveTextContent('100% success');
+    }
+  });
+
+  it.each([0, 0.75, 1])('shows the measured success rate %s when runs are completed', async (successRate) => {
+    // Given: the window contains completed runs, including the zero-success boundary.
+    vi.mocked(fetchJobHealth).mockResolvedValue({ ...health, success_rate: successRate });
+
+    // When: the loaded snapshot is presented.
+    render(<JobOperationsPage />);
+    const summary = within(await screen.findByRole('region', { name: 'Job health summary' }));
+
+    // Then: the actual rate and completed-run denominator remain visible.
+    expect(summary.getByText(`${Math.round(successRate * 100)}%`, { selector: 'strong' })).toBeInTheDocument();
+    expect(summary.getByText('4 completed runs')).toBeInTheDocument();
   });
 
   it('shows policy risk, selected job history, and retries failed runs', async () => {

@@ -1,135 +1,90 @@
-/**
- * ChatHistory — Sidebar modal showing conversation sessions
- */
-
-import React from 'react';
+import { useEffect, useId, useRef, useState, type FC } from 'react';
 import { useChatStore } from '../../stores/chatStore';
+import { useUiStore } from '../../stores/uiStore';
+import { useModalDialog } from '../../hooks/useModalDialog';
+import { isMonacoFocused } from '../../utils/domHelpers';
+import { AppIcon } from '../UI/AppIcon';
 
-interface Props {
-  visible: boolean;
-  onClose: () => void;
+interface ChatHistoryProps {
+  readonly visible: boolean;
+  readonly onClose: () => void;
 }
 
-const ChatHistory: React.FC<Props> = ({ visible, onClose }) => {
+const ChatHistory: FC<ChatHistoryProps> = ({ visible, onClose }) => {
   const { sessions, activeSessionId, switchSession, deleteSession, createNewSession, updateSessionTitle } = useChatStore();
-  const [editingId, setEditingId] = React.useState<string | null>(null);
-  const [editTitle, setEditTitle] = React.useState('');
+  const commandPaletteVisible = useUiStore(state => state.commandPaletteVisible);
+  const folderBrowserVisible = useUiStore(state => state.folderBrowserVisible);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const titleId = useId();
+  const modalHandoff = commandPaletteVisible || folderBrowserVisible;
+  const active = visible && !modalHandoff;
 
-  if (!visible) return null;
+  useModalDialog({ active, containerRef: overlayRef, initialFocusRef: closeRef });
+
+  useEffect(() => {
+    if (visible && modalHandoff) onClose();
+  }, [visible, modalHandoff, onClose]);
+
+  useEffect(() => {
+    if (!active) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const shortcutGuide = ((event.metaKey || event.ctrlKey) && event.key === '/') ||
+        (event.key === '?' && !event.metaKey && !event.ctrlKey && !event.altKey && !isMonacoFocused());
+      if (shortcutGuide) { onClose(); return; }
+      if (event.key === 'Escape' && !event.defaultPrevented) {
+        event.preventDefault();
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [active, onClose]);
+
+  if (!active) return null;
+
+  const saveTitle = (sessionId: string) => {
+    const title = editTitle.trim();
+    if (title) updateSessionTitle(sessionId, title);
+    setEditingId(null);
+  };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div
-        className="modal-content glass-panel"
-        style={{ width: 400, maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}
-        onClick={e => e.stopPropagation()}
-      >
-        <div style={{ padding: 16, borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ margin: 0, fontSize: 16 }}>Chat History</h3>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button className="icon-btn" onClick={createNewSession} title="New Chat" aria-label="새 채팅">➕</button>
-            <button className="icon-btn" onClick={onClose} title="Close" aria-label="닫기">✕</button>
-          </div>
-        </div>
-
-        <div style={{ flex: 1, overflowY: 'auto', padding: 0 }}>
+    <div ref={overlayRef} className="workspace-history-overlay">
+      <button type="button" className="workspace-history-backdrop" aria-hidden="true" tabIndex={-1} onClick={onClose} />
+      <aside className="workspace-history-drawer" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+        <header className="workspace-history-header">
+          <button ref={closeRef} type="button" className="workspace-icon-button" aria-label="대화 기록 닫기" title="대화 기록 닫기" onClick={onClose}><AppIcon name="close" /></button>
+          <div><h2 id={titleId}>대화 기록</h2><span className="workspace-history-count">대화 {sessions.length}개</span></div>
+          <div className="workspace-history-actions"><button type="button" className="workspace-icon-button" aria-label="새 채팅" title="새 채팅" onClick={() => { createNewSession(); onClose(); }}><AppIcon name="plus" /></button></div>
+        </header>
+        <div className="workspace-history-scroll" role="region" aria-label="저장된 대화" tabIndex={0}>
           {sessions.length === 0 ? (
-            <div style={{ padding: 16, textAlign: 'center', color: 'var(--text-secondary)' }}>
-              No chat history found.
-            </div>
+            <div className="workspace-history-empty"><AppIcon name="chat" size={28} /><h3>저장된 대화가 없습니다</h3><p>이 프로젝트의 대화 기록이 여기에 표시됩니다.</p><button type="button" className="workspace-nav-link" onClick={() => { createNewSession(); onClose(); }}><AppIcon name="plus" size={18} /><span>새 채팅 시작하기</span></button></div>
           ) : (
-            sessions.map(session => {
-              const isActive = session.id === activeSessionId;
-              const dateStr = new Date(session.updatedAt).toLocaleString();
-              return (
-                <div
-                  key={session.id}
-                  className={`history-item ${isActive ? 'active' : ''}`}
-                  onClick={() => { switchSession(session.id); onClose(); }}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); switchSession(session.id); onClose(); } }}
-                  style={{ display: 'flex', alignItems: 'center', padding: '10px 12px' }}
-                >
-                  <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
-                    {editingId === session.id ? (
-                      <input
-                        type="text"
-                        value={editTitle}
-                        autoFocus
-                        style={{
-                          width: '90%',
-                          background: '#0d1117',
-                          border: '1px solid var(--accent-color)',
-                          borderRadius: 4,
-                          color: '#f0f6fc',
-                          fontSize: 13,
-                          padding: '2px 6px',
-                          outline: 'none',
-                        }}
-                        onChange={e => setEditTitle(e.target.value)}
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') {
-                            if (editTitle.trim()) updateSessionTitle(session.id, editTitle.trim());
-                            setEditingId(null);
-                          } else if (e.key === 'Escape') {
-                            setEditingId(null);
-                          }
-                        }}
-                        onBlur={() => {
-                          if (editTitle.trim()) updateSessionTitle(session.id, editTitle.trim());
-                          setEditingId(null);
-                        }}
-                        onClick={e => e.stopPropagation()}
-                      />
-                    ) : (
-                      <div className="truncate" style={{ fontSize: 13, fontWeight: 500 }}>
-                        {session.title}
-                      </div>
-                    )}
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
-                      {dateStr}
-                    </div>
+            <ul className="workspace-history-list">
+              {sessions.map(session => (
+                <li key={session.id} className="workspace-history-item" data-active={session.id === activeSessionId}>
+                  {editingId === session.id ? (
+                    <input type="text" className="workspace-history-title-input" aria-label="대화 제목" value={editTitle} autoFocus onChange={event => setEditTitle(event.target.value)} onBlur={() => saveTitle(session.id)} onKeyDown={event => {
+                      if (event.key === 'Enter' && !event.nativeEvent.isComposing) { event.preventDefault(); saveTitle(session.id); }
+                      if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); setEditingId(null); }
+                    }} />
+                  ) : (
+                    <button type="button" className="workspace-history-select" aria-label={session.title || '새 대화'} aria-current={session.id === activeSessionId ? 'page' : undefined} onClick={() => { switchSession(session.id); onClose(); }}><span>{session.title || '새 대화'}</span><time dateTime={session.updatedAt}>{new Date(session.updatedAt).toLocaleString('ko-KR')}</time></button>
+                  )}
+                  <div className="workspace-history-item-actions">
+                    <button type="button" className="workspace-icon-button" aria-label={`${session.title || '대화'} 제목 수정`} title="대화 제목 수정" onClick={() => { setEditingId(session.id); setEditTitle(session.title || '새 대화'); }}><AppIcon name="edit" size={16} /></button>
+                    <button type="button" className="workspace-icon-button" aria-label={`${session.title || '대화'} 삭제`} title="대화 삭제" onClick={() => deleteSession(session.id)}><AppIcon name="trash" size={16} /></button>
                   </div>
-                  <div style={{ display: 'flex', gap: 4, marginLeft: 'auto', flexShrink: 0 }}>
-                    <button
-                      type="button"
-                      onClick={e => {
-                        e.stopPropagation();
-                        setEditingId(session.id);
-                        setEditTitle(session.title || '새 대화');
-                      }}
-                      title="Rename"
-                      aria-label={`${session.title} 채팅 이름 변경`}
-                      style={{
-                        background: 'transparent', border: 'none',
-                        color: 'var(--text-muted)', fontSize: 13, padding: '4px 6px',
-                        cursor: 'pointer', borderRadius: 6,
-                      }}
-                    >
-                      ✎
-                    </button>
-                    <button
-                      type="button"
-                      className="delete-session-btn"
-                      onClick={e => { e.stopPropagation(); deleteSession(session.id); }}
-                      title="Delete"
-                      aria-label={`${session.title} 채팅 삭제`}
-                      style={{
-                        background: 'transparent', border: 'none',
-                        color: 'var(--text-muted)', fontSize: 15, padding: '4px 6px',
-                        cursor: 'pointer', borderRadius: 6,
-                      }}
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </div>
-              );
-            })
+                </li>
+              ))}
+            </ul>
           )}
         </div>
-      </div>
+      </aside>
     </div>
   );
 };

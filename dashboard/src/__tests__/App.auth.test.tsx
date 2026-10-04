@@ -46,7 +46,10 @@ describe('dashboard access gate', () => {
     sessionStorage.clear();
     document.cookie = 'ag_access_pin=; path=/; max-age=0; SameSite=Strict';
     useUiStore.setState({ pinModalVisible: true });
-    unauthorizedFetch.mockClear();
+    unauthorizedFetch.mockReset().mockImplementation(async () => new Response(
+      JSON.stringify({ detail: 'Invalid or missing credentials', ok: false }),
+      { status: 401, headers: { 'Content-Type': 'application/json' } },
+    ));
     protectedSocketUrls.length = 0;
     vi.stubGlobal('fetch', unauthorizedFetch);
     vi.stubGlobal('WebSocket', RecordingWebSocket);
@@ -88,6 +91,30 @@ describe('dashboard access gate', () => {
     expect(localStorage.getItem('ag_access_pin')).toBeNull();
     expect(sessionStorage.getItem('ag_access_token')).toBeNull();
     expect(document.cookie).not.toContain('ag_access_pin=');
+    expect(protectedSocketUrls).toEqual([]);
+  });
+
+  it.each([
+    { name: 'a connection failure', response: () => Promise.reject(new TypeError('Failed to fetch')), message: '서버에 연결할 수 없습니다. 서버 실행 상태와 네트워크를 확인하세요.' },
+    { name: 'an unavailable authentication service', response: async () => new Response('', { status: 503 }), message: '인증 서버를 사용할 수 없습니다. 잠시 후 다시 시도하세요.' },
+    { name: 'a locked authentication attempt', response: async () => new Response('', { status: 403 }), message: '인증 시도가 잠겼습니다. 잠시 후 다시 시도하세요.' },
+    { name: 'too many authentication requests', response: async () => new Response('', { status: 429 }), message: '인증 요청이 너무 많습니다. 잠시 후 다시 시도하세요.' },
+    { name: 'a missing success token', response: async () => new Response('{}', { status: 200 }), message: '인증 응답을 확인할 수 없습니다. 잠시 후 다시 시도하세요.' },
+    { name: 'malformed success JSON', response: async () => new Response('not json', { status: 200 }), message: '인증 응답을 확인할 수 없습니다. 잠시 후 다시 시도하세요.' },
+    { name: 'another rejected request', response: async () => new Response('private backend detail', { status: 400 }), message: '인증을 완료할 수 없습니다. 잠시 후 다시 시도하세요.' },
+  ])('shows the specific failure when login encounters $name', async ({ response, message }) => {
+    // Given: a locked dashboard and the failing login boundary.
+    render(<App />);
+    fireEvent.change(await screen.findByLabelText('PIN 번호'), { target: { value: 'test-pin' } });
+    unauthorizedFetch.mockImplementation(response);
+
+    // When: the user submits the PIN.
+    fireEvent.click(screen.getByRole('button', { name: '잠금 해제' }));
+
+    // Then: the failure category is visible and authentication stays locked.
+    expect(await screen.findByRole('alert')).toHaveTextContent(message);
+    expect(screen.getByRole('dialog', { name: 'PIN 인증' })).toBeVisible();
+    expect(sessionStorage.getItem('ag_access_token')).toBeNull();
     expect(protectedSocketUrls).toEqual([]);
   });
 

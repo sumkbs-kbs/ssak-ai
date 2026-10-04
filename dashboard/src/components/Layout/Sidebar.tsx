@@ -1,56 +1,73 @@
-/**
- * Sidebar — Codex Desktop Exact Layout
- * =====================================
- * Pixel-perfect implementation of the user's uploaded screenshot:
- * - Top: Window traffic lights (🔴 🟡 🟢) + nav icons
- * - Brand: Codex ∨ + 🔍 (search) + 🔔 (notifications)
- * - Primary 5 items:
- *   1. 📝 새 채팅 (with + shortcut)
- *   2. 🔀 풀 리퀘스트
- *   3. ⏱️ 예약
- *   4. 🧩 플러그인
- *   5. ⋯ 탐색
- * - Section: 프로젝트
- *   - 📁 web search
- *   - 📁 New project
- *   - 📁 ssakfile_pro 1.0.0
- *   - 📁 Ssak-Ai (Selected active card with detailed tasks)
- * - Section: 최근 (Recent chat threads)
- * - Usage Quota Card:
- *   - 사용량 1% 남음 (1주, 1% remaining, reset date, 크레딧 추가, 업그레이드)
- * - User Profile:
- *   - BK (green circle) + Byungseok Ka... + ılı 음성 + ❓
- */
-
-import React, { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState, type FC } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useUiStore } from '../../stores/uiStore';
-import { useChatStore } from '../../stores/chatStore';
+import { useChatStore, type ChatSession } from '../../stores/chatStore';
 import { useFileStore } from '../../stores/fileStore';
 import { useProjectStore } from '../../stores/projectStore';
 import { useGitStore } from '../../stores/gitStore';
-import { type ProjectRecord } from '../../api/clientSchema';
+import type { ProjectRecord } from '../../api/clientSchema';
+import { useModalDialog } from '../../hooks/useModalDialog';
+import { isMonacoFocused } from '../../utils/domHelpers';
+import { AppIcon } from '../UI/AppIcon';
+import { WorkspaceNavigation } from './WorkspaceNavigation';
+import { WorkspaceProjects } from './WorkspaceProjects';
+import { WorkspaceThreads } from './WorkspaceThreads';
 
-export const Sidebar: React.FC<{ toggleTerminal?: () => void }> = () => {
-  const { setCommandPaletteVisible, setFolderBrowserVisible, addToast } = useUiStore();
-  const { sessions, activeSessionId, createNewSession, switchSession, deleteSession, updateSessionTitle } = useChatStore();
+export const Sidebar: FC<{ readonly toggleTerminal?: () => void }> = ({ toggleTerminal }) => {
+  const { commandPaletteVisible, folderBrowserVisible, setCommandPaletteVisible, setFolderBrowserVisible, addToast } = useUiStore();
+  const { sessions, activeSessionId, createNewSession, switchSession, deleteSession, updateSessionTitle, saveToStorage } = useChatStore();
   const { setWorkspacePath, refreshTree } = useFileStore();
-  const projects = useProjectStore((s) => s.projects);
-  const activeProjectId = useProjectStore((s) => s.activeProjectId);
-  const hydrateFromServer = useProjectStore((s) => s.hydrateFromServer);
-  const switchToProject = useProjectStore((s) => s.switchToProject);
-  const removeProject = useProjectStore((s) => s.removeProject);
-  const gitStatus = useGitStore(s => s.status);
-  const fetchGitStatus = useGitStore(s => s.fetchStatus);
+  const projects = useProjectStore(state => state.projects);
+  const activeProjectId = useProjectStore(state => state.activeProjectId);
+  const activeProjectPath = useProjectStore(state => state.activeProjectPath);
+  const hydrateFromServer = useProjectStore(state => state.hydrateFromServer);
+  const switchToProject = useProjectStore(state => state.switchToProject);
+  const removeProject = useProjectStore(state => state.removeProject);
+  const gitStatus = useGitStore(state => state.status);
+  const fetchGitStatus = useGitStore(state => state.fetchStatus);
   const location = useLocation();
   const navigate = useNavigate();
+  const [compact, setCompact] = useState(() => window.matchMedia('(max-width: 1023px)').matches);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [routeKey, setRouteKey] = useState(location.key);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
-  const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
-  const [editTitleText, setEditTitleText] = useState('');
+  if (routeKey !== location.key) {
+    setRouteKey(location.key);
+    setDrawerOpen(false);
+  }
+  if (drawerOpen && (commandPaletteVisible || folderBrowserVisible)) setDrawerOpen(false);
+
+  useModalDialog({ active: compact && drawerOpen, containerRef: overlayRef, initialFocusRef: closeRef });
 
   useEffect(() => {
-    fetchGitStatus();
-  }, [fetchGitStatus]);
+    const media = window.matchMedia('(max-width: 1023px)');
+    const handleChange = (event: MediaQueryListEvent) => {
+      setCompact(event.matches);
+      setDrawerOpen(false);
+    };
+    media.addEventListener('change', handleChange);
+    return () => media.removeEventListener('change', handleChange);
+  }, []);
+
+  useEffect(() => {
+    if (!compact || !drawerOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const shortcutGuide = ((event.metaKey || event.ctrlKey) && event.key === '/') ||
+        (event.key === '?' && !event.metaKey && !event.ctrlKey && !event.altKey && !isMonacoFocused());
+      if (shortcutGuide) { closeDrawer(); return; }
+      if (event.key === 'Escape' && !event.defaultPrevented) {
+        event.preventDefault();
+        closeDrawer();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [compact, drawerOpen, closeDrawer]);
+
+  useEffect(() => { void fetchGitStatus(); }, [fetchGitStatus]);
 
   useEffect(() => {
     void hydrateFromServer();
@@ -59,26 +76,34 @@ export const Sidebar: React.FC<{ toggleTerminal?: () => void }> = () => {
     return () => window.removeEventListener('agk:projects-changed', handleProjectsChanged);
   }, [hydrateFromServer]);
 
-  const handleSwitchProject = async (proj: ProjectRecord) => {
-    if (proj.id === activeProjectId) return;
-    const result = await switchToProject(proj);
+  useEffect(() => {
+    if (!activeProjectId || location.pathname === '/' || location.pathname === '/chat' || location.pathname === '/chat/') return;
+    const chat = useChatStore.getState();
+    if (
+      chat.sessions.length > 0 || chat.activeSessionId || chat.activeSession ||
+      chat.messages.length > 0 || chat.isStreaming
+    ) return;
+    chat.loadFromStorage();
+  }, [activeProjectId, activeProjectPath, location.pathname]);
+
+  const handleSwitchProject = async (project: ProjectRecord) => {
+    closeDrawer();
+    if (project.id === activeProjectId) return;
+    const result = await switchToProject(project);
     if (result.ok) {
-      setWorkspacePath(result.project?.path || proj.path);
-      addToast(`📂 '${proj.name}' 프로젝트로 전환되었습니다.`, 'success');
+      setWorkspacePath(result.project?.path || project.path);
+      addToast(`'${project.name}' 프로젝트로 전환되었습니다.`, 'success');
       refreshTree();
     } else {
       addToast(result.detail ? `프로젝트 전환 실패: ${result.detail}` : '프로젝트 전환에 실패했습니다.', 'error');
     }
   };
 
-  const handleDeleteProject = async (e: React.MouseEvent, proj: ProjectRecord) => {
-    e.stopPropagation();
-    if (!window.confirm(`'${proj.name}' 프로젝트를 목록에서 제외하시겠습니까?\n(실제 로컬 파일은 삭제되지 않습니다)`)) {
-      return;
-    }
-    const result = await removeProject(proj);
+  const handleDeleteProject = async (project: ProjectRecord) => {
+    if (!window.confirm(`'${project.name}' 프로젝트를 목록에서 제외하시겠습니까?\n(실제 로컬 파일은 삭제되지 않습니다)`)) return;
+    const result = await removeProject(project);
     if (result.ok) {
-      addToast(`'${proj.name}' 프로젝트가 목록에서 제외되었습니다.`, 'info');
+      addToast(`'${project.name}' 프로젝트가 목록에서 제외되었습니다.`, 'info');
       const next = useProjectStore.getState();
       if (next.activeProjectPath) {
         setWorkspacePath(next.activeProjectPath);
@@ -89,399 +114,56 @@ export const Sidebar: React.FC<{ toggleTerminal?: () => void }> = () => {
     }
   };
 
-  const handleStartRename = (e: React.MouseEvent, s: { id: string; title?: string }) => {
-    e.stopPropagation();
-    setEditingSessionId(s.id);
-    setEditTitleText(s.title || '새 대화');
+  const handleRename = (sessionId: string, title: string) => {
+    updateSessionTitle(sessionId, title);
+    addToast('대화 제목이 변경되었습니다.', 'info');
   };
 
-  const handleSaveRename = (sessionId: string) => {
-    const trimmed = editTitleText.trim();
-    if (trimmed) {
-      updateSessionTitle(sessionId, trimmed);
-      addToast('대화 제목이 변경되었습니다.', 'info');
-    }
-    setEditingSessionId(null);
-  };
-
-  const handleDeleteSession = (e: React.MouseEvent, s: { id: string; title?: string }) => {
-    e.stopPropagation();
-    const name = s.title || '대화';
-    if (window.confirm(`'${name}' 대화를 삭제하시겠습니까?`)) {
-      deleteSession(s.id);
+  const handleDeleteSession = (session: ChatSession) => {
+    if (window.confirm(`'${session.title || '대화'}' 대화를 삭제하시겠습니까?`)) {
+      deleteSession(session.id);
       addToast('대화가 삭제되었습니다.', 'info');
     }
   };
 
   const handleNewChat = () => {
+    closeDrawer();
     createNewSession();
     navigate('/chat');
   };
 
   const handleSelectSession = (sessionId: string) => {
+    closeDrawer();
     switchSession(sessionId);
+    saveToStorage();
     navigate('/chat');
   };
 
+  const handleSearch = () => { closeDrawer(); setCommandPaletteVisible(true); };
+  const handleOpenProject = () => { closeDrawer(); setFolderBrowserVisible(true); };
+
   return (
-    <aside className="codex-desktop-sidebar" aria-label="Codex Desktop Navigation">
-      {/* ── Brand Header: Ssak-Ai + Search + Bell ──────────────── */}
-      <div className="codex-brand-row">
-        <button type="button" className="codex-title-dropdown-btn">
-          <span className="brand-title">Ssak-Ai</span>
-          <span className="terminal-slash" style={{ marginLeft: 4 }}>// v0.8.0</span>
-          <span className="chevron-icon">∨</span>
-        </button>
-        <div className="brand-action-icons">
-          <button
-            type="button"
-            className="icon-action-btn"
-            onClick={() => setCommandPaletteVisible(true)}
-            title="검색 (Cmd+K)"
-            aria-label="검색"
-          >
-            🔍
-          </button>
-          <button
-            type="button"
-            className="icon-action-btn"
-            onClick={() => addToast('새로운 알림이 없습니다.', 'info')}
-            title="알림"
-            aria-label="알림"
-          >
-            🔔
-          </button>
-        </div>
+    <>
+      <button type="button" className="workspace-nav-toggle workspace-icon-button" hidden={!compact} aria-label="탐색 메뉴 열기" aria-expanded={drawerOpen} aria-controls="workspace-sidebar" onClick={() => setDrawerOpen(true)}><AppIcon name="panelLeft" /></button>
+      <div ref={overlayRef} className="workspace-nav-layer" data-open={drawerOpen} data-compact={compact} hidden={compact && !drawerOpen}>
+        {compact && drawerOpen && <button type="button" className="workspace-nav-backdrop" aria-hidden="true" tabIndex={-1} onClick={closeDrawer} />}
+        <aside id="workspace-sidebar" className="workspace-sidebar codex-desktop-sidebar" aria-label="SSAK-AI 탐색" role={compact ? 'dialog' : undefined} aria-modal={compact ? true : undefined}>
+          <header className="workspace-brand-row">
+            <span className="workspace-brand">SSAK-AI</span>
+            {compact && <button ref={closeRef} type="button" className="workspace-nav-close workspace-icon-button" aria-label="탐색 메뉴 닫기" title="탐색 메뉴 닫기" onClick={closeDrawer}><AppIcon name="close" /></button>}
+          </header>
+          <div className="workspace-nav-scroll codex-sidebar-scroll-area" role="region" aria-label="프로젝트와 대화 탐색" tabIndex={0}>
+            <WorkspaceNavigation onNewChat={handleNewChat} onSearch={handleSearch} onNavigate={closeDrawer} />
+            <WorkspaceProjects projects={projects} activeProjectId={activeProjectId} branch={gitStatus.branch} changedFiles={gitStatus.counts.total} sessionCount={sessions.length} onOpen={handleOpenProject} onSelect={project => { void handleSwitchProject(project); }} onRemove={project => { void handleDeleteProject(project); }} />
+            <WorkspaceThreads sessions={sessions} activeSessionId={activeSessionId} onNewChat={handleNewChat} onSelect={handleSelectSession} onRename={handleRename} onDelete={handleDeleteSession} />
+          </div>
+          <footer className="workspace-sidebar-footer">
+            <NavLink to="/settings" onClick={closeDrawer} className={({ isActive }) => `workspace-nav-link ${isActive ? 'active' : ''}`}><AppIcon name="settings" /><span>설정</span></NavLink>
+            {toggleTerminal && <button type="button" className="workspace-icon-button" aria-label="터미널 열기 또는 닫기" title="터미널 (⌘` / Ctrl+`)" onClick={() => { closeDrawer(); toggleTerminal(); }}><AppIcon name="terminal" /></button>}
+          </footer>
+        </aside>
       </div>
-
-      {/* ── Scrollable Body ───────────────────────────────────── */}
-      <div className="codex-sidebar-scroll-area">
-        {/* ── 5 Main Nav Items (TERMINAL-7 style) ───────────────── */}
-        <div className="codex-primary-menu">
-          <button
-            type="button"
-            className="codex-menu-row new-chat-row"
-            onClick={handleNewChat}
-          >
-            <span className="menu-icon">📝</span>
-            <span className="menu-label">// 01 · 새 채팅</span>
-            <span className="visually-hidden">AI 채팅</span>
-            <span className="row-plus-badge">+</span>
-          </button>
-
-          <NavLink
-            to="/git"
-            className={({ isActive }) => `codex-menu-row ${isActive ? 'active' : ''}`}
-          >
-            <span className="menu-icon">🔀</span>
-            <span className="menu-label">// 02 · 풀 리퀘스트</span>
-            <span className="visually-hidden">Git</span>
-          </NavLink>
-
-          <NavLink
-            to="/history"
-            className={({ isActive }) => `codex-menu-row ${isActive ? 'active' : ''}`}
-          >
-            <span className="menu-icon">⏱️</span>
-            <span className="menu-label">// 03 · 예약 / 실행</span>
-          </NavLink>
-
-          <NavLink
-            to="/plugins"
-            className={({ isActive }) => `codex-menu-row ${isActive ? 'active' : ''}`}
-          >
-            <span className="menu-icon">🧩</span>
-            <span className="menu-label">// 04 · 플러그인</span>
-          </NavLink>
-
-          <NavLink
-            to="/skills"
-            className={({ isActive }) => `codex-menu-row ${isActive ? 'active' : ''}`}
-          >
-            <span className="menu-icon">⋯</span>
-            <span className="menu-label">// 05 · 탐색 / 스킬</span>
-          </NavLink>
-        </div>
-
-        {/* ── Section: 프로젝트 ─────────────────────────────────── */}
-        <div className="codex-section-container">
-          <div className="codex-section-label-row">
-            <span className="codex-section-label">// PROJECTS</span>
-            <button
-              type="button"
-              className="project-add-btn"
-              title="새 프로젝트 폴더 열기/등록"
-              aria-label="새 프로젝트 추가"
-              onClick={() => setFolderBrowserVisible(true)}
-            >
-              +
-            </button>
-          </div>
-          <div className="codex-projects-list">
-            {projects.length === 0 ? (
-              <div
-                className="project-folder-box active-highlight selected"
-                onClick={() => setFolderBrowserVisible(true)}
-              >
-                <div className="folder-name-line">
-                  <span className="folder-icon">📁</span>
-                  <span className="folder-text bold">프로젝트 열기</span>
-                </div>
-                <div className="folder-sub-preview">
-                  클릭하여 로컬 폴더를 프로젝트로 등록하세요
-                </div>
-              </div>
-            ) : (
-              projects.map((proj) => (
-                <div
-                  key={proj.id}
-                  className={`project-folder-box ${(activeProjectId ? proj.id === activeProjectId : proj.is_active) ? 'active-highlight selected' : ''}`}
-                  onClick={() => handleSwitchProject(proj)}
-                  title={`${proj.name} (${proj.path})`}
-                >
-                  <div className="folder-name-line">
-                    <span className="folder-icon">📁</span>
-                    <span className={`folder-text ${(activeProjectId ? proj.id === activeProjectId : proj.is_active) ? 'bold' : ''}`}>{proj.name}</span>
-                    {(activeProjectId ? proj.id === activeProjectId : proj.is_active) && (
-                      <span
-                        className="project-git-pill"
-                        style={{
-                          marginLeft: 'auto',
-                          fontSize: '10px',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '3px',
-                          padding: '1px 6px',
-                          borderRadius: '10px',
-                          background: 'rgba(56, 189, 248, 0.12)',
-                          color: '#38bdf8',
-                          border: '1px solid rgba(56, 189, 248, 0.25)',
-                        }}
-                        title={`Git Branch: ${gitStatus.branch || 'main'}`}
-                      >
-                        ⎇ {gitStatus.branch || 'main'}
-                        {gitStatus.counts.total > 0 && (
-                          <span style={{ color: '#fbbf24' }}>●{gitStatus.counts.total}</span>
-                        )}
-                      </span>
-                    )}
-                    {projects.length > 1 && (
-                      <button
-                        type="button"
-                        className="project-remove-btn"
-                        title="프로젝트 목록에서 제외"
-                        aria-label={`${proj.name} 프로젝트 제거`}
-                        onClick={(e) => handleDeleteProject(e, proj)}
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
-                  <div className="folder-sub-preview">
-                    {proj.path}
-                  </div>
-                  {(activeProjectId ? proj.id === activeProjectId : proj.is_active) && (
-                    <div className="folder-task-list" onClick={(e) => e.stopPropagation()}>
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '3px 0',
-                          fontSize: '11px',
-                          color: '#8b949e',
-                        }}
-                      >
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
-                          // ACTIVE ({sessions.length})
-                        </span>
-                        <button
-                          type="button"
-                          onClick={handleNewChat}
-                          style={{
-                            background: 'transparent',
-                            border: 'none',
-                            color: 'var(--accent-color)',
-                            fontSize: '11px',
-                            fontFamily: 'var(--font-mono)',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            padding: '1px 4px',
-                          }}
-                          title="새 작업 추가"
-                        >
-                          + NEW
-                        </button>
-                      </div>
-                      {sessions.length === 0 ? (
-                        <div
-                          className="task-item"
-                          onClick={handleNewChat}
-                          style={{ color: 'var(--text-muted)', fontStyle: 'italic', padding: '2px 0' }}
-                        >
-                          // no active tasks
-                        </div>
-                      ) : (
-                        sessions.slice(0, 6).map((s) => (
-                          <div
-                            key={s.id}
-                            className={`task-item ${activeSessionId === s.id ? 'active' : ''}`}
-                            onClick={() => handleSelectSession(s.id)}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              gap: '6px',
-                              padding: '3px 6px',
-                              borderRadius: '2px',
-                              background: activeSessionId === s.id ? 'rgba(229, 169, 59, 0.12)' : 'transparent',
-                              borderLeft: activeSessionId === s.id ? '2px solid var(--accent-color)' : '2px solid transparent',
-                              color: activeSessionId === s.id ? 'var(--text-primary)' : 'var(--text-secondary)',
-                            }}
-                            title={s.title || '작업'}
-                          >
-                            {editingSessionId === s.id ? (
-                              <input
-                                type="text"
-                                className="session-title-edit-input"
-                                value={editTitleText}
-                                autoFocus
-                                onChange={(e) => setEditTitleText(e.target.value)}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') handleSaveRename(s.id);
-                                  else if (e.key === 'Escape') setEditingSessionId(null);
-                                }}
-                                onBlur={() => handleSaveRename(s.id)}
-                                onClick={(e) => e.stopPropagation()}
-                              />
-                            ) : (
-                              <>
-                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-                                  {activeSessionId === s.id ? '▶ ' : '• '}
-                                  {s.title || '새 대화'}
-                                </span>
-                                <div className="task-item-actions">
-                                  <button
-                                    type="button"
-                                    className="rename-sub-btn"
-                                    title="대화 제목 수정"
-                                    aria-label={`${s.title || '대화'} 제목 수정`}
-                                    onClick={(e) => handleStartRename(e, s)}
-                                  >
-                                    ✎
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className="delete-sub-btn"
-                                    title="대화 삭제"
-                                    aria-label={`${s.title || '대화'} 삭제`}
-                                    onClick={(e) => handleDeleteSession(e, s)}
-                                  >
-                                    ✕
-                                  </button>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* ── Section: 최근 ─────────────────────────────────────── */}
-        <div className="codex-section-container">
-          <div className="codex-section-label">// RECENTS</div>
-          <div className="codex-recents-list">
-            {sessions.length === 0 ? (
-              <div className="recent-link" onClick={handleNewChat}>
-                // no recent threads
-              </div>
-            ) : (
-              sessions.slice(0, 8).map(s => (
-                <div
-                  key={s.id}
-                  className={`recent-link ${activeSessionId === s.id ? 'active' : ''}`}
-                  onClick={() => handleSelectSession(s.id)}
-                >
-                  <span className="recent-status-dot" aria-hidden="true" style={{ background: activeSessionId === s.id ? 'var(--accent-color)' : 'var(--text-muted)' }} />
-                  {editingSessionId === s.id ? (
-                    <input
-                      type="text"
-                      className="session-title-edit-input"
-                      value={editTitleText}
-                      autoFocus
-                      onChange={(e) => setEditTitleText(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleSaveRename(s.id);
-                        else if (e.key === 'Escape') setEditingSessionId(null);
-                      }}
-                      onBlur={() => handleSaveRename(s.id)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  ) : (
-                    <>
-                      <span className="recent-title">{s.title || '대화'}</span>
-                      <div className="recent-link-actions">
-                        <button
-                          type="button"
-                          className="rename-sub-btn"
-                          title="대화 제목 수정"
-                          aria-label={`${s.title || '대화'} 제목 수정`}
-                          onClick={(e) => handleStartRename(e, s)}
-                        >
-                          ✎
-                        </button>
-                        <button
-                          type="button"
-                          className="delete-sub-btn"
-                          title="대화 삭제"
-                          aria-label={`${s.title || '대화'} 삭제`}
-                          onClick={(e) => handleDeleteSession(e, s)}
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Bottom User Profile Bar: Ssak-Ai Operator ──────────── */}
-      <div className="codex-user-bottom-bar" style={{ borderTop: '1px solid var(--terminal-border)', background: 'var(--bg-secondary)', padding: '10px 14px' }}>
-        <div className="user-profile-left">
-          <div className="avatar-initial-circle" style={{ background: 'var(--terminal-border)', border: '1px solid var(--terminal-green)', color: 'var(--terminal-green)', fontFamily: 'var(--font-mono)' }}>
-            MK
-          </div>
-          <span className="user-display-name" style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--text-secondary)' }}>
-            mr.k // OPERATOR
-          </span>
-        </div>
-        <div className="user-profile-right">
-          <button
-            type="button"
-            className="voice-action-pill"
-            onClick={() => addToast('음성 대화 모드가 준비되었습니다.', 'info')}
-            title="음성 대화"
-            style={{ fontFamily: 'var(--font-mono)', fontSize: '10.5px', border: '1px solid var(--terminal-border)', background: 'var(--bg-tertiary)', color: 'var(--accent-color)' }}
-          >
-            <span className="sound-wave-icon">ılı</span>
-            <span className="voice-text">VOICE</span>
-          </button>
-          <NavLink to="/settings" className="help-icon-link" title="도움말 및 설정" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-            [?]
-          </NavLink>
-        </div>
-      </div>
-    </aside>
+    </>
   );
 };
 

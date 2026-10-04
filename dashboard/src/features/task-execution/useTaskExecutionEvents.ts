@@ -5,6 +5,7 @@ import {
   fetchTaskEvents,
   fetchTaskList,
   forkTask,
+  isTaskOperationRetryable,
   resumeTask,
   streamTaskEvents,
   submitTask,
@@ -19,6 +20,13 @@ import {
   type TaskEventReplicaState,
 } from './taskEventReplica';
 import type { PendingTaskAction } from './TaskQueuePanel';
+import {
+  createTaskForkOperation,
+  createTaskSubmitOperation,
+  isTaskOperationScopeCurrent,
+  type TaskOperation,
+  type TaskSubmitDraft,
+} from './taskOperation';
 import type { TaskEvent, TaskId, TaskSummary } from './taskExecutionSchema';
 
 export type TaskConnectionState = 'idle' | 'loading' | 'connected' | 'reconnecting' | 'complete' | 'error';
@@ -30,11 +38,14 @@ export type TaskExecutionState = Readonly<{
   connectionState: TaskConnectionState;
   error: string | null;
   pendingAction: PendingTaskAction | null;
+  failedTaskOperation: TaskOperation | null;
+  completedSubmitDraft: TaskSubmitDraft | null;
   selectTask: (taskId: TaskId) => void;
-  submit: (prompt: string) => void;
+  submit: (draft: TaskSubmitDraft) => void;
   cancel: (taskId: TaskId) => void;
   resume: (taskId: TaskId) => void;
   fork: (taskId: TaskId) => void;
+  retryTaskOperation: () => void;
   retry: () => void;
 }>;
 
@@ -62,7 +73,10 @@ export function useTaskExecutionEvents(): TaskExecutionState {
   const [error, setError] = useState<string | null>(null);
   const [reloadVersion, setReloadVersion] = useState(0);
   const [pendingAction, setPendingAction] = useState<PendingTaskAction | null>(null);
+  const [failedTaskOperation, setFailedTaskOperation] = useState<TaskOperation | null>(null);
+  const [completedSubmitDraft, setCompletedSubmitDraft] = useState<TaskSubmitDraft | null>(null);
   const replicaRef = useRef<TaskEventReplicaState | null>(null);
+  const taskOperationPendingRef = useRef(false);
 
   /** 서버가 준 목록을 화면 상태로 옮기는 **한 곳** — 선택 유지 규칙도 여기가 소유한다. */
   const applyTaskList = useCallback((nextTasks: readonly TaskSummary[]): void => {
@@ -96,7 +110,7 @@ export function useTaskExecutionEvents(): TaskExecutionState {
     const controller = new AbortController();
     const resetTimer = window.setTimeout(() => {
       setConnectionState('loading');
-      setError(null);
+      if (!taskOperationPendingRef.current) setError(null);
     }, 0);
 
     void fetchTaskList(controller.signal)
@@ -236,20 +250,54 @@ export function useTaskExecutionEvents(): TaskExecutionState {
   const selectTask = useCallback((taskId: TaskId) => setSelectedTaskId(taskId), []);
   const retry = useCallback(() => setReloadVersion((current) => current + 1), []);
 
-  const submit = useCallback((prompt: string): void => {
-    setPendingAction({ kind: 'submit' });
-    setError(null);
-    void submitTask(prompt)
-      .then((taskId) => {
+  const executeTaskOperation = useCallback((operation: TaskOperation): void => {
+    const request = operation.kind === 'submit' ? submitTask(operation) : forkTask(operation);
+    void request
+      .then(async (taskId) => {
+        if (!(await isTaskOperationScopeCurrent(operation))) return;
+        setFailedTaskOperation(null);
+        if (operation.kind === 'submit') setCompletedSubmitDraft(operation.draft);
         setSelectedTaskId(taskId);
         setReloadVersion((current) => current + 1);
       })
       .catch((caught: unknown) => {
         if (!(caught instanceof Error)) throw caught;
         setError(caught.message);
+        setFailedTaskOperation(isTaskOperationRetryable(caught) ? operation : null);
       })
-      .finally(() => setPendingAction(null));
+      .finally(() => {
+        taskOperationPendingRef.current = false;
+        setPendingAction(null);
+      });
   }, []);
+
+  const startTaskOperation = useCallback((createOperation: () => Promise<TaskOperation>, action: PendingTaskAction): void => {
+    if (taskOperationPendingRef.current) return;
+    taskOperationPendingRef.current = true;
+    setPendingAction(action);
+    setError(null);
+    setFailedTaskOperation(null);
+    void createOperation()
+      .then(async (operation) => {
+        if (!(await isTaskOperationScopeCurrent(operation))) {
+          setError('프로젝트 또는 사용자 범위가 바뀌어 작업을 제출할 수 없습니다.');
+          taskOperationPendingRef.current = false;
+          setPendingAction(null);
+          return;
+        }
+        executeTaskOperation(operation);
+      })
+      .catch((caught: unknown) => {
+        if (!(caught instanceof Error)) throw caught;
+        setError(caught.message);
+        taskOperationPendingRef.current = false;
+        setPendingAction(null);
+      });
+  }, [executeTaskOperation]);
+
+  const submit = useCallback((draft: TaskSubmitDraft): void => {
+    startTaskOperation(() => createTaskSubmitOperation(draft), { kind: 'submit' });
+  }, [startTaskOperation]);
 
   const cancel = useCallback((taskId: TaskId): void => {
     setPendingAction({ kind: 'cancel', taskId });
@@ -276,19 +324,25 @@ export function useTaskExecutionEvents(): TaskExecutionState {
   }, []);
 
   const fork = useCallback((taskId: TaskId): void => {
-    setPendingAction({ kind: 'fork', taskId });
-    setError(null);
-    void forkTask(taskId)
-      .then((forkedTaskId) => {
-        setSelectedTaskId(forkedTaskId);
-        setReloadVersion((current) => current + 1);
-      })
-      .catch((caught: unknown) => {
-        if (!(caught instanceof Error)) throw caught;
-        setError(caught.message);
-      })
-      .finally(() => setPendingAction(null));
-  }, []);
+    startTaskOperation(() => createTaskForkOperation(taskId), { kind: 'fork', taskId });
+  }, [startTaskOperation]);
+
+  const retryTaskOperation = useCallback((): void => {
+    const operation = failedTaskOperation;
+    if (operation === null || taskOperationPendingRef.current) return;
+    taskOperationPendingRef.current = true;
+    void isTaskOperationScopeCurrent(operation).then((isCurrent) => {
+      if (!isCurrent) {
+        setFailedTaskOperation(null);
+        setError('프로젝트 또는 사용자 범위가 바뀌어 이전 작업을 다시 시도할 수 없습니다.');
+        taskOperationPendingRef.current = false;
+        return;
+      }
+      setPendingAction(operation.kind === 'submit' ? { kind: 'submit' } : { kind: 'fork', taskId: operation.sourceTaskId });
+      setError(null);
+      executeTaskOperation(operation);
+    });
+  }, [executeTaskOperation, failedTaskOperation]);
 
   return {
     tasks,
@@ -297,11 +351,14 @@ export function useTaskExecutionEvents(): TaskExecutionState {
     connectionState,
     error,
     pendingAction,
+    failedTaskOperation,
+    completedSubmitDraft,
     selectTask,
     submit,
     cancel,
     resume,
     fork,
+    retryTaskOperation,
     retry,
   };
 }

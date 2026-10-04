@@ -1,19 +1,3 @@
-/**
- * ChatPage — Agent Workspace (Ssak-Ai × Codex × Unsloth)
- * ==========================================================
- * Composition mirrors the three reference screenshots:
- * - Ssak-Ai: right-hand 환경 rail (변경 사항 / 로그 / branch /
- *   커밋·푸시 / 풀 리퀘스트 / 파일 액티브티 / 소스-MCP)
- * - Codex: activity feed (user prompt bubble, working indicator,
- *   file-edit cards, queued messages), breadcrumb top bar, Open IDE
- * - Unsloth: empty-state hero (mascot + "Ready when you are") with a
- *   large centered composer and chip toolbar (+, 전체 액세스, Search,
- *   Code, MCP, mic, round send)
- *
- * When a message is sent while the agent is streaming, the text is
- * queued and flushed automatically when the run finishes (Codex-style).
- */
-
 import React, { useEffect, useMemo, useRef, useCallback, useState } from 'react';
 import { useChatStore } from '../../stores/chatStore';
 import { useProjectStore } from '../../stores/projectStore';
@@ -34,7 +18,7 @@ import {
   type ModelInfo,
   type LocalModelItem,
 } from '../../api/client';
-import { QuantBadge } from '../shared';
+import { AppIcon } from '../UI/AppIcon';
 import {
   WorkspaceContextSchema,
   AccessModeResponseSchema,
@@ -42,10 +26,14 @@ import {
   type McpServerItem,
 } from '../../api/clientSchema';
 import { useEventWebSocket } from '../../hooks/useEventWebSocket';
+import { useConversationFork, type ConversationForkStatus } from '../../hooks/useConversationFork';
 import { detectChangesFromAssistantContent, registerFileModification } from '../../utils/changeDetector';
 import { firePluginHook } from '../../plugin/pluginRegistry';
 import ChatMessage from './ChatMessage';
 import ChatHistory from './ChatHistory';
+import { ChatComposer } from './ChatComposer';
+import { ChatComposerTools } from './ChatComposerTools';
+import { ChatModelSelector, formatModelAmount } from './ChatModelSelector';
 import ActivityTimeline from './ActivityTimeline';
 import CodeEditor from '../Editor/Editor';
 import ArtifactPreview from '../Editor/ArtifactPreview';
@@ -63,6 +51,13 @@ import {
   isIdentityCurrent,
   withProjectIdentitySearchParams,
 } from '../../api/projectIdentity';
+import {
+  createChatRunGate,
+  createQueuedChatTurn,
+  type ChatAttachment,
+  type ChatRunIdentity,
+  type QueuedChatTurn,
+} from './chatRunOwnership';
 
 /**
  * NX-09-F03 — 첨부는 **바이트를 함께 보낸다**.
@@ -73,13 +68,6 @@ import {
  */
 const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_MIME: readonly string[] = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
-
-interface PendingAttachment {
-  readonly name: string;
-  readonly mime_type: string;
-  readonly data_base64: string;
-  readonly bytes: number;
-}
 
 /** 파일을 base64 로 읽는다 — 전송 형식은 서버 계약과 같다. */
 function readAttachmentBase64(file: File): Promise<string> {
@@ -115,6 +103,7 @@ export const ChatPage: React.FC = () => {
   const switchEpoch = useProjectStore((s) => s.switchEpoch);
   const hydrateProjects = useProjectStore((s) => s.hydrateFromServer);
   const projectSwitchEpochRef = useRef(switchEpoch);
+  const initialHistoryRestoreEpochRef = useRef<number | null>(activeProjectId ? null : switchEpoch);
   const { previewVisible, openFile, clearForProjectSwitch: clearEditorForProjectSwitch } = useEditorStore();
   const { setPanelVisible: setChangePanelVisible, clearChanges } = useChangeStore();
   const pendingChangeCount = useChangeStore((s) => s.changes.filter((c) => c.status === 'pending').length);
@@ -122,8 +111,8 @@ export const ChatPage: React.FC = () => {
   /* ─── States ─────────────────────────────────────────────── */
   const [inputText, setInputText] = useState<string>('');
   // 다음 턴에 실제로 전송될 첨부(바이트 포함). 전송 시점에 비운다.
-  const [pendingAttachments, setPendingAttachments] = useState<PendingAttachment[]>([]);
-  const pendingAttachmentsRef = useRef<PendingAttachment[]>([]);
+  const [pendingAttachments, setPendingAttachments] = useState<ChatAttachment[]>([]);
+  const pendingAttachmentsRef = useRef<ChatAttachment[]>([]);
   const [queuedMessages, setQueuedMessages] = useState<string[]>([]);
   const [queueCollapsed, setQueueCollapsed] = useState<boolean>(false);
 
@@ -137,22 +126,52 @@ export const ChatPage: React.FC = () => {
   const [codeMode, setCodeMode] = useState<boolean>(false);
   const [accessMode, setAccessMode] = useState<'full_access' | 'restricted'>('full_access');
 
-  const [envPanelOpen, setEnvPanelOpen] = useState<boolean>(true);
+  const [envPanelOpen, setEnvPanelOpen] = useState<boolean>(false);
   const [isEditingTitle, setIsEditingTitle] = useState<boolean>(false);
   const [titleInput, setTitleInput] = useState<string>('');
   const [envTab, setEnvTab] = useState<EnvPanelTab>('env');
   const [historyVisible, setHistoryVisible] = useState<boolean>(false);
 
   const [streamError, setStreamError] = useState<string | null>(null);
+  const [streamStatus, setStreamStatus] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState<number>(0);
   const [isCompactingConversation, setIsCompactingConversation] = useState<boolean>(false);
   const [compactionStatus, setCompactionStatus] = useState<string | null>(null);
+  const [showLatestAction, setShowLatestAction] = useState<boolean>(false);
+
+  const handleForkStatus = useCallback((status: ConversationForkStatus) => {
+    switch (status.kind) {
+      case 'idle':
+        return;
+      case 'pending':
+        setCompactionStatus(status.message);
+        return;
+      case 'success':
+        setCompactionStatus(status.message);
+        addToast(status.message, 'success');
+        return;
+      case 'error':
+        setCompactionStatus(status.message);
+        addToast(status.message, 'error');
+        return;
+    }
+  }, [addToast]);
+  const { forkActiveConversation, isForking } = useConversationFork({
+    isCompacting: isCompactingConversation,
+    onStatus: handleForkStatus,
+  });
+
+  useEffect(() => {
+    const handleForkCommand = () => { void forkActiveConversation(); };
+    window.addEventListener('agk:conversation-fork', handleForkCommand);
+    return () => window.removeEventListener('agk:conversation-fork', handleForkCommand);
+  }, [forkActiveConversation]);
 
   const [workspaceContext, setWorkspaceContext] = useState({
-    project_name: 'Ssak-Ai',
+    project_name: activeProjectName || '',
     workspace_path: '.',
     target: '로컬',
-    branch: 'codex/m1-task-events',
+    branch: '',
   });
 
   const [availableModels, setAvailableModels] = useState<ModelInfo[]>([]);
@@ -196,17 +215,22 @@ export const ChatPage: React.FC = () => {
 
   /* ─── Refs ───────────────────────────────────────────────── */
   const abortRef = useRef<AbortController | null>(null);
+  const runGateRef = useRef(createChatRunGate());
+  const conversationTransitionRef = useRef(0);
+  const mountedRef = useRef(true);
   const feedRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const queueRef = useRef<string[]>([]);
+  const queueRef = useRef<QueuedChatTurn[]>([]);
+  const retryTurnRef = useRef<QueuedChatTurn | null>(null);
+  const shouldFollowOutputRef = useRef(true);
   const elapsedTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const selectedModelRef = useRef(selectedModel);
   const isPlanModeRef = useRef(isPlanMode);
   const isTddModeRef = useRef(isTddMode);
   const isAdaptiveModeRef = useRef(isAdaptiveMode);
-  const runRef = useRef<(text: string) => Promise<void>>(async () => {});
+  const runRef = useRef<(turn: QueuedChatTurn) => Promise<void>>(async () => {});
   // 로컬 모델 로더의 최신 버전을 가리키는 레퍼런스 — init effect가 마운트 시 1회만
   // 실행되도록 하면서 effect 본문의 동기 setState(react-hooks/set-state-in-effect)를 피한다.
   const loadLocalModelsRef = useRef<(refresh?: boolean) => Promise<void>>(async () => {});
@@ -242,11 +266,26 @@ export const ChatPage: React.FC = () => {
 
     const syncConversation = async () => {
       const chat = useChatStore.getState();
-      const projectId = useProjectStore.getState().activeProjectId;
+      const project = useProjectStore.getState();
+      const projectId = project.activeProjectId;
+      const requestEpoch = project.switchEpoch;
+      const requestTransition = conversationTransitionRef.current;
+      const requestRevision = chat.conversationRevision;
       const convId = chat.activeSessionId;
-      if (!convId || !projectId) return;
+      if (!convId || !projectId || chat.isStreaming) return;
       try {
         const history = await fetchConversationHistory(convId, projectId);
+        const currentChat = useChatStore.getState();
+        const currentProject = useProjectStore.getState();
+        if (
+          !mountedRef.current ||
+          conversationTransitionRef.current !== requestTransition ||
+          currentChat.activeSessionId !== convId ||
+          currentChat.isStreaming ||
+          currentChat.conversationRevision !== requestRevision ||
+          currentProject.activeProjectId !== projectId ||
+          currentProject.switchEpoch !== requestEpoch
+        ) return;
         useChatStore.getState().applyServerSnapshot({
           conversation_id: history.snapshot.conversation_id,
           revision: history.snapshot.revision,
@@ -259,6 +298,17 @@ export const ChatPage: React.FC = () => {
           })),
         });
       } catch (error: unknown) {
+        const currentChat = useChatStore.getState();
+        const currentProject = useProjectStore.getState();
+        if (
+          !mountedRef.current ||
+          conversationTransitionRef.current !== requestTransition ||
+          currentChat.activeSessionId !== convId ||
+          currentChat.isStreaming ||
+          currentChat.conversationRevision !== requestRevision ||
+          currentProject.activeProjectId !== projectId ||
+          currentProject.switchEpoch !== requestEpoch
+        ) return;
         if (error instanceof ConversationRequestError && error.code === 'conversation_not_found') {
           // CR-01: 새 로컬 대화는 아직 서버에 없다. 로컬 투영을 유지하되 다른
           // 대화로 자동 대체하지 않는다.
@@ -273,12 +323,25 @@ export const ChatPage: React.FC = () => {
     void syncConversation();
   }, [loadFromStorage, loadLocalModels, addToast]);
 
+  useEffect(() => {
+    if (!activeProjectId || initialHistoryRestoreEpochRef.current === null) return;
+    const initialEpoch = initialHistoryRestoreEpochRef.current;
+    initialHistoryRestoreEpochRef.current = null;
+    const chat = useChatStore.getState();
+    if (
+      initialEpoch !== switchEpoch || chat.activeSessionId || chat.activeSession ||
+      chat.sessions.length > 0 || chat.messages.length > 0 || chat.isStreaming ||
+      inputText.length > 0 || pendingAttachments.length > 0
+    ) return;
+    loadFromStorage();
+  }, [activeProjectId, switchEpoch, inputText, pendingAttachments.length, loadFromStorage]);
+
   // NX-09: 프로젝트 정체성이 (하이드레이션으로) 도착하면 서버 이력과 한 번 맞춘다.
   // init effect 는 이 값을 의존성으로 갖지 않으므로 여기서 다시 부른다.
   useEffect(() => {
     if (!activeProjectId) return;
     void syncConversationRef.current();
-  }, [activeProjectId]);
+  }, [activeProjectId, activeSessionId]);
 
   const reloadWorkspaceContext = useCallback(() => {
     const store = useProjectStore.getState();
@@ -350,24 +413,31 @@ export const ChatPage: React.FC = () => {
   }, [reloadWorkspaceContext]);
 
   useEffect(() => {
-    if (feedRef.current) {
-      feedRef.current.scrollTop = feedRef.current.scrollHeight;
-    }
+    const feed = feedRef.current;
+    if (!feed || !shouldFollowOutputRef.current) return;
+    feed.scrollTop = feed.scrollHeight;
+    setShowLatestAction(false);
   }, [messages]);
 
   const handleToggleAccessMode = async (mode: 'full_access' | 'restricted') => {
     try {
-      await fetch('/api/system/access-mode', {
+      const response = await fetch('/api/system/access-mode', {
         method: 'POST',
         headers: createProjectIdentityHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ mode }),
       });
+      if (!response.ok) {
+        setAccessDropdownOpen(false);
+        addToast(`실행 권한을 변경하지 못했습니다 (HTTP ${response.status}). 기존 모드를 유지합니다.`, 'error');
+        return;
+      }
       setAccessMode(mode);
       setAccessDropdownOpen(false);
       addToast(mode === 'full_access' ? '전체 액세스 모드 허용' : '읽기 전용 샌드박스로 전환', 'info');
-    } catch {
-      setAccessMode(mode);
+    } catch (error: unknown) {
       setAccessDropdownOpen(false);
+      const detail = error instanceof Error ? error.message : '서버와 연결할 수 없습니다.';
+      addToast(`실행 권한을 변경하지 못했습니다. 기존 모드를 유지합니다: ${detail}`, 'error');
     }
   };
 
@@ -451,6 +521,59 @@ export const ChatPage: React.FC = () => {
 
   useEffect(() => () => stopElapsedTimer(), [stopElapsedTimer]);
 
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      conversationTransitionRef.current += 1;
+      runGateRef.current.invalidate();
+      abortRef.current?.abort();
+      abortRef.current = null;
+    };
+  }, []);
+
+  const syncQueuedMessages = useCallback(() => {
+    setQueuedMessages(queueRef.current.map((turn) => turn.text));
+  }, []);
+
+  const invalidateCurrentRun = useCallback((clearQueue: boolean) => {
+    runGateRef.current.invalidate();
+    retryTurnRef.current = null;
+    setStreamStatus(null);
+    const controller = abortRef.current;
+    abortRef.current = null;
+    controller?.abort();
+    if (clearQueue) {
+      queueRef.current = [];
+      setQueuedMessages([]);
+    }
+    setStreaming(false);
+    setCurrentAssistantContent('');
+    stopElapsedTimer();
+    useActivityStore.getState().setSessionEnded();
+  }, [setCurrentAssistantContent, setStreaming, stopElapsedTimer]);
+
+  useEffect(() => {
+    let observedSessionId = useChatStore.getState().activeSessionId;
+    return useChatStore.subscribe((state) => {
+      if (state.activeSessionId === observedSessionId) return;
+      observedSessionId = state.activeSessionId;
+      conversationTransitionRef.current += 1;
+      retryTurnRef.current = null;
+      setStreamError(null);
+      setStreamStatus(null);
+      const hadPending = Boolean(abortRef.current) || queueRef.current.length > 0;
+      if (hadPending) {
+        invalidateCurrentRun(true);
+        addToast('대화를 전환해 이전 생성과 대기열을 취소했습니다.', 'info');
+      }
+      setIsCompactingConversation(false);
+      setCompactionStatus(null);
+      shouldFollowOutputRef.current = true;
+      setShowLatestAction(false);
+    });
+  }, [addToast, invalidateCurrentRun]);
+
   /* ─── WS-04: project switch → cancel pending + reload context ─ */
   useEffect(() => {
     const prevEpoch = projectSwitchEpochRef.current;
@@ -460,18 +583,9 @@ export const ChatPage: React.FC = () => {
     const hadPending = Boolean(abortRef.current)
       || useChatStore.getState().isStreaming
       || queueRef.current.length > 0;
-    if (abortRef.current) {
-      abortRef.current.abort();
-      abortRef.current = null;
-    }
-    queueRef.current = [];
-    setQueuedMessages([]);
-    setStreaming(false);
-    setCurrentAssistantContent('');
+    invalidateCurrentRun(true);
     setStreamError(null);
-    stopElapsedTimer();
     useActivityStore.getState().clear();
-    useActivityStore.getState().setSessionEnded();
 
     clearEditorForProjectSwitch();
     clearChanges();
@@ -494,11 +608,9 @@ export const ChatPage: React.FC = () => {
     clearEditorForProjectSwitch,
     clearChanges,
     loadFromStorage,
-    setStreaming,
-    setCurrentAssistantContent,
     reloadWorkspaceContext,
     addToast,
-    stopElapsedTimer,
+    invalidateCurrentRun,
   ]);
 
   /* ─── MCP allowlist (구성된 서버 기준 선택 집합) ─────────────── */
@@ -508,33 +620,45 @@ export const ChatPage: React.FC = () => {
   );
 
   /* ─── Send / queue / run loop ────────────────────────────── */
-  const runCompletion = useCallback(async (text: string) => {
+  const runCompletion = useCallback(async (turn: QueuedChatTurn) => {
+    const { text, attachments } = turn;
     const model = selectedModelRef.current;
     const planMode = isPlanModeRef.current;
     const tddMode = isTddModeRef.current;
     const adaptiveMode = isAdaptiveModeRef.current;
-    const requestEpoch = useProjectStore.getState().switchEpoch;
-    const requestProjectId = useProjectStore.getState().activeProjectId;
+    const currentProject = useProjectStore.getState();
+    const currentChat = useChatStore.getState();
+    if (
+      currentProject.switchEpoch !== turn.projectEpoch ||
+      currentProject.activeProjectId !== turn.projectId ||
+      (turn.sessionId !== null && currentChat.activeSessionId !== turn.sessionId)
+    ) return;
 
-    // NX-09-F03: 첨부는 **이 턴에** 실린다 — 전송을 결정한 순간 비운다(다음 턴으로 새지 않게).
-    const attachments = pendingAttachmentsRef.current;
-    if (attachments.length > 0 && adaptiveMode) {
-      // adaptive 경로는 첨부를 받지 않는다 — 조용히 버리지 않고 명시적으로 거부한다.
-      addToast('첨부는 일반 모드에서만 전송됩니다(Adaptive 모드에서는 지원하지 않음)', 'error');
-      abortRef.current = null;
-      return;
-    }
-    if (attachments.length > 0) {
-      pendingAttachmentsRef.current = [];
-      setPendingAttachments([]);
-    }
-
+    retryTurnRef.current = null;
     firePluginHook('chat:send', { text, model, planMode, tddMode, adaptiveMode });
     useActivityStore.getState().clear();
     useActivityStore.getState().setSessionStarted();
     addMessage({ role: 'user', content: text });
+    const requestSessionId = useChatStore.getState().activeSessionId;
+    if (!requestSessionId) return;
+    conversationTransitionRef.current += 1;
+    const runIdentity = runGateRef.current.begin({
+      sessionId: requestSessionId,
+      projectId: turn.projectId,
+      projectEpoch: turn.projectEpoch,
+    });
+    const ownsRun = (identity: ChatRunIdentity) => {
+      const chat = useChatStore.getState();
+      const project = useProjectStore.getState();
+      return runGateRef.current.owns(identity)
+        && chat.activeSessionId === identity.sessionId
+        && project.activeProjectId === identity.projectId
+        && project.switchEpoch === identity.projectEpoch;
+    };
     saveToStorage();
     setStreamError(null);
+    setStreamStatus(null);
+    setCurrentAssistantContent('');
 
     addMessage({ role: 'assistant', content: '' });
     setStreaming(true);
@@ -544,23 +668,20 @@ export const ChatPage: React.FC = () => {
     abortRef.current = abortController;
 
     if (adaptiveMode) {
+      let completedSuccessfully = false;
       try {
         const res = await askAgent({
           task: text,
           model: model === 'default' ? undefined : model,
           adaptive: true,
           use_web: webSearch,
-          project_id: requestProjectId ?? undefined,
+          project_id: turn.projectId ?? undefined,
         });
 
-        if (!isIdentityCurrent(requestEpoch)) {
-          if (abortRef.current === abortController) {
-            abortRef.current = null;
-          }
-          return;
-        }
+        if (!ownsRun(runIdentity)) return;
 
         if (res.ok) {
+          completedSuccessfully = true;
           updateLastAssistantMessage(res.answer, {
             used_web: res.used_web,
             used_graphify: res.used_graphify,
@@ -571,23 +692,37 @@ export const ChatPage: React.FC = () => {
           });
           detectChangesFromAssistantContent(res.answer).catch(() => {});
         } else {
+          retryTurnRef.current = { ...turn, sessionId: requestSessionId };
           const errText = res.error || 'Adaptive 에이전트 작업에 실패했습니다.';
           updateLastAssistantMessage(`⚠️ 오류 발생: ${errText}`);
           setStreamError(errText);
         }
       } catch (err: unknown) {
-        if (!isIdentityCurrent(requestEpoch)) return;
+        if (!ownsRun(runIdentity)) return;
+        retryTurnRef.current = { ...turn, sessionId: requestSessionId };
         const errText = err instanceof Error ? err.message : 'Adaptive 에이전트 요청 중 통신 오류가 발생했습니다.';
         updateLastAssistantMessage(`⚠️ 통신 오류: ${errText}`);
         setStreamError(errText);
       } finally {
+        if (!ownsRun(runIdentity)) return;
         saveToStorage();
         setStreaming(false);
+        setStreamStatus(null);
         stopElapsedTimer();
-        abortRef.current = null;
+        if (abortRef.current === abortController) abortRef.current = null;
         useActivityStore.getState().setSessionEnded();
+        if (!completedSuccessfully) {
+          if (queueRef.current.length > 0) {
+            syncQueuedMessages();
+            addToast(
+              '부모 실행이 실패해 후속 대기 메시지를 자동 전송하지 않았습니다. 대기열에서 편집하거나 다시 전송해 주세요.',
+              'info',
+            );
+          }
+          return;
+        }
         const next = queueRef.current.shift();
-        setQueuedMessages([...queueRef.current]);
+        syncQueuedMessages();
         if (next !== undefined) {
           void runRef.current(next);
         }
@@ -605,7 +740,7 @@ export const ChatPage: React.FC = () => {
     // declared string|null type at the read site below.
     let errorMessage: string | null = null as string | null;
     const expectedRevision = useChatStore.getState().conversationRevision ?? 0;
-    const conversationId = useChatStore.getState().activeSessionId ?? activeSessionId;
+    const conversationId = requestSessionId;
     await streamChatCompletion(
       {
         model,
@@ -627,16 +762,29 @@ export const ChatPage: React.FC = () => {
         code_mode: codeMode,
         mcp_servers: mcpAllowlist,
         // project_id / project_revision also injected by client.streamChatCompletion
-        project_id: requestProjectId ?? undefined,
+        project_id: turn.projectId ?? undefined,
       },
       {
         onChunk: (chunk: string) => {
-          if (!isIdentityCurrent(requestEpoch)) return;
+          if (!ownsRun(runIdentity)) return;
           assistantContent += chunk;
           appendToCurrentAssistantContent(chunk);
+          updateLastAssistantMessage(assistantContent);
+        },
+        onStatus: (status: string) => {
+          if (!ownsRun(runIdentity)) return;
+          setStreamStatus(status);
+        },
+        onFinalContent: (content: string) => {
+          if (!ownsRun(runIdentity)) return;
+          assistantContent = content;
+          setCurrentAssistantContent(content);
+          updateLastAssistantMessage(content);
+          setStreamStatus(null);
         },
         onDone: () => {},
         onError: (err: Error) => {
+          if (!ownsRun(runIdentity)) return;
           if (err.name === 'AbortError') return;
           if (err instanceof ConversationRevisionConflictError) {
             errorMessage = `stale_conversation_revision:${err.payload.current_revision}`;
@@ -645,7 +793,7 @@ export const ChatPage: React.FC = () => {
           errorMessage = err.message;
         },
         onConversationSnapshot: (snapshot) => {
-          if (!isIdentityCurrent(requestEpoch)) return;
+          if (!ownsRun(runIdentity)) return;
           applyServerSnapshot({
             conversation_id: snapshot.conversation_id,
             revision: snapshot.revision,
@@ -658,33 +806,19 @@ export const ChatPage: React.FC = () => {
     );
 
     // Stale responses from a previous project must not merge into the new UI/store.
-    if (!isIdentityCurrent(requestEpoch)) {
-      if (abortRef.current === abortController) {
-        abortRef.current = null;
-      }
-      return;
-    }
+    if (!ownsRun(runIdentity)) return;
 
     updateLastAssistantMessage(assistantContent);
     saveToStorage();
-    setStreaming(false);
-    stopElapsedTimer();
-    abortRef.current = null;
-
-    // Record session end + approximate token usage
-    useActivityStore.getState().setSessionEnded();
-    const approxPromptTokens = Math.ceil(text.length / 4);
-    const approxCompletionTokens = Math.ceil(assistantContent.length / 4);
-    useActivityStore.getState().recordTokenUsage(approxPromptTokens, approxCompletionTokens);
 
     if (errorMessage) {
+      retryTurnRef.current = { ...turn, sessionId: requestSessionId };
       if (errorMessage.includes('revision') || errorMessage.includes('409')) {
         // Best-effort: refresh authoritative projection on conflict.
         try {
-          const convId = useChatStore.getState().activeSessionId;
-          const projectId = useProjectStore.getState().activeProjectId;
-          if (convId) {
-            const history = await fetchConversationHistory(convId, projectId);
+          if (conversationId) {
+            const history = await fetchConversationHistory(conversationId, turn.projectId);
+            if (!ownsRun(runIdentity)) return;
             applyServerSnapshot({
               conversation_id: history.snapshot.conversation_id,
               revision: history.snapshot.revision,
@@ -702,7 +836,8 @@ export const ChatPage: React.FC = () => {
           } else {
             setStreamError(errorMessage);
           }
-        } catch {
+        } catch (error: unknown) {
+          if (!ownsRun(runIdentity)) return;
           setStreamError(errorMessage);
         }
       } else {
@@ -712,16 +847,38 @@ export const ChatPage: React.FC = () => {
       detectChangesFromAssistantContent(assistantContent).catch(() => {});
     }
 
+    if (!ownsRun(runIdentity)) return;
+    setStreaming(false);
+    setStreamStatus(null);
+    stopElapsedTimer();
+    if (abortRef.current === abortController) abortRef.current = null;
+    useActivityStore.getState().setSessionEnded();
+    const approxPromptTokens = Math.ceil(text.length / 4);
+    const approxCompletionTokens = Math.ceil(assistantContent.length / 4);
+    useActivityStore.getState().recordTokenUsage(approxPromptTokens, approxCompletionTokens);
+
+    if (errorMessage) {
+      if (queueRef.current.length > 0) {
+        syncQueuedMessages();
+        addToast(
+          '부모 실행이 실패해 후속 대기 메시지를 자동 전송하지 않았습니다. 대기열에서 편집하거나 다시 전송해 주세요.',
+          'info',
+        );
+      }
+      return;
+    }
+
     // Flush queued messages (Codex-style: sends after agent finishes)
     const next = queueRef.current.shift();
-    setQueuedMessages([...queueRef.current]);
+    syncQueuedMessages();
     if (next !== undefined) {
       void runRef.current(next);
     }
   }, [
     addMessage, saveToStorage, setStreaming, appendToCurrentAssistantContent,
     updateLastAssistantMessage, startElapsedTimer, stopElapsedTimer,
-    webSearch, codeMode, mcpAllowlist, activeSessionId, applyServerSnapshot,
+    webSearch, codeMode, mcpAllowlist, applyServerSnapshot, syncQueuedMessages,
+    setCurrentAssistantContent, addToast,
   ]);
 
   useEffect(() => {
@@ -729,12 +886,32 @@ export const ChatPage: React.FC = () => {
   }, [runCompletion]);
 
   const handleSend = useCallback(async (textToSend?: string) => {
+    if (isForking || isCompactingConversation) {
+      addToast('대화 분기 또는 압축이 끝난 뒤 전송할 수 있습니다.', 'info');
+      return;
+    }
     const text = textToSend ?? inputText;
     if (!text.trim()) return;
 
+    const attachments = pendingAttachmentsRef.current;
+    if (attachments.length > 0 && isAdaptiveModeRef.current) {
+      addToast('첨부는 일반 모드에서만 전송됩니다(Adaptive 모드에서는 지원하지 않음)', 'error');
+      return;
+    }
+    const project = useProjectStore.getState();
+    const turn = createQueuedChatTurn({
+      text: text.trim(),
+      attachments,
+      sessionId: useChatStore.getState().activeSessionId,
+      projectId: project.activeProjectId,
+      projectEpoch: project.switchEpoch,
+    });
+    pendingAttachmentsRef.current = [];
+    setPendingAttachments([]);
+
     if (useChatStore.getState().isStreaming) {
-      queueRef.current = [...queueRef.current, text.trim()];
-      setQueuedMessages([...queueRef.current]);
+      queueRef.current = [...queueRef.current, turn];
+      syncQueuedMessages();
       setInputText('');
       if (textareaRef.current) textareaRef.current.style.height = 'auto';
       addToast('에이전트 작업이 끝나면 자동으로 전송됩니다.', 'info');
@@ -746,35 +923,43 @@ export const ChatPage: React.FC = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
     }
-    await runCompletion(text.trim());
-  }, [inputText, runCompletion, addToast]);
+    await runCompletion(turn);
+  }, [inputText, runCompletion, addToast, syncQueuedMessages, isForking, isCompactingConversation]);
 
   const handleSendNow = useCallback((index: number) => {
+    if (isForking || isCompactingConversation) return;
     const item = queueRef.current[index];
     if (item === undefined) return;
     queueRef.current = queueRef.current.filter((_, i) => i !== index);
-    setQueuedMessages([...queueRef.current]);
+    syncQueuedMessages();
     if (!useChatStore.getState().isStreaming) {
       void runCompletion(item);
     } else {
       queueRef.current = [item, ...queueRef.current];
-      setQueuedMessages([...queueRef.current]);
+      syncQueuedMessages();
     }
-  }, [runCompletion]);
+  }, [runCompletion, syncQueuedMessages, isForking, isCompactingConversation]);
 
   const handleEditQueued = useCallback((index: number) => {
     const item = queueRef.current[index];
     if (item === undefined) return;
+    if (inputText.trim().length > 0 || pendingAttachmentsRef.current.length > 0) {
+      addToast('현재 작성 중인 초안을 비운 뒤 대기 메시지를 편집해 주세요.', 'info');
+      return;
+    }
     queueRef.current = queueRef.current.filter((_, i) => i !== index);
-    setQueuedMessages([...queueRef.current]);
-    setInputText(item);
+    syncQueuedMessages();
+    setInputText(item.text);
+    const attachments = item.attachments.map((attachment) => ({ ...attachment }));
+    pendingAttachmentsRef.current = attachments;
+    setPendingAttachments(attachments);
     textareaRef.current?.focus();
-  }, []);
+  }, [addToast, inputText, syncQueuedMessages]);
 
   const handleDeleteQueued = useCallback((index: number) => {
     queueRef.current = queueRef.current.filter((_, i) => i !== index);
-    setQueuedMessages([...queueRef.current]);
-  }, []);
+    syncQueuedMessages();
+  }, [syncQueuedMessages]);
 
   const handleClearAllQueued = useCallback(() => {
     queueRef.current = [];
@@ -788,8 +973,8 @@ export const ChatPage: React.FC = () => {
     items[index] = items[index - 1];
     items[index - 1] = temp;
     queueRef.current = items;
-    setQueuedMessages(items);
-  }, []);
+    syncQueuedMessages();
+  }, [syncQueuedMessages]);
 
   const handleMoveDownQueued = useCallback((index: number) => {
     if (index >= queueRef.current.length - 1) return;
@@ -798,31 +983,32 @@ export const ChatPage: React.FC = () => {
     items[index] = items[index + 1];
     items[index + 1] = temp;
     queueRef.current = items;
-    setQueuedMessages(items);
-  }, []);
+    syncQueuedMessages();
+  }, [syncQueuedMessages]);
 
   const handleReorderQueued = useCallback((fromIndex: number, toIndex: number) => {
     if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) return;
     const items = [...queueRef.current];
-    const [moved] = items.splice(fromIndex, 1);
+    const moved = items[fromIndex];
+    if (moved === undefined) return;
+    items.splice(fromIndex, 1);
     items.splice(toIndex, 0, moved);
     queueRef.current = items;
-    setQueuedMessages(items);
-  }, []);
+    syncQueuedMessages();
+  }, [syncQueuedMessages]);
 
   const handleStop = useCallback(() => {
-    if (abortRef.current) {
-      abortRef.current.abort();
-      abortRef.current = null;
-    }
-    setStreaming(false);
-    stopElapsedTimer();
-    useActivityStore.getState().setSessionEnded();
-    addToast('생성이 중단되었습니다.', 'info');
-  }, [setStreaming, addToast, stopElapsedTimer]);
+    const queuedCount = queueRef.current.length;
+    invalidateCurrentRun(true);
+    addToast(
+      queuedCount > 0 ? `생성과 대기 메시지 ${queuedCount}개를 취소했습니다.` : '생성이 중단되었습니다.',
+      'info',
+    );
+  }, [addToast, invalidateCurrentRun]);
 
   const handleCompactConversation = useCallback(async () => {
     const chat = useChatStore.getState();
+    if (chat.isStreaming || isForking || isCompactingConversation) return;
     const conversationId = chat.activeSessionId;
     const projectId = useProjectStore.getState().activeProjectId;
     if (!conversationId || !projectId) {
@@ -833,6 +1019,17 @@ export const ChatPage: React.FC = () => {
     }
 
     const requestEpoch = useProjectStore.getState().switchEpoch;
+    conversationTransitionRef.current += 1;
+    const requestTransition = conversationTransitionRef.current;
+    const ownsOperation = () => {
+      const currentChat = useChatStore.getState();
+      const currentProject = useProjectStore.getState();
+      return mountedRef.current
+        && conversationTransitionRef.current === requestTransition
+        && currentChat.activeSessionId === conversationId
+        && currentProject.activeProjectId === projectId
+        && currentProject.switchEpoch === requestEpoch;
+    };
     setIsCompactingConversation(true);
     setCompactionStatus('대화를 압축하고 최신 이력을 동기화하는 중입니다.');
     addToast('대화를 압축하는 중입니다.', 'info');
@@ -842,7 +1039,7 @@ export const ChatPage: React.FC = () => {
         expected_revision: chat.conversationRevision ?? 0,
         project_id: projectId,
       });
-      if (!isIdentityCurrent(requestEpoch)) return;
+      if (!ownsOperation()) return;
       applyServerSnapshot({
         conversation_id: snapshot.conversation_id,
         revision: snapshot.revision,
@@ -850,7 +1047,7 @@ export const ChatPage: React.FC = () => {
         retained_message_ids: snapshot.retained_message_ids,
       });
       const history = await fetchConversationHistory(conversationId, projectId);
-      if (!isIdentityCurrent(requestEpoch)) return;
+      if (!ownsOperation()) return;
       applyServerSnapshot({
         conversation_id: history.snapshot.conversation_id,
         revision: history.snapshot.revision,
@@ -866,11 +1063,11 @@ export const ChatPage: React.FC = () => {
       setCompactionStatus(message);
       addToast(message, 'success');
     } catch (error: unknown) {
-      if (!isIdentityCurrent(requestEpoch)) return;
+      if (!ownsOperation()) return;
       if (error instanceof ConversationRevisionConflictError) {
         try {
           const history = await fetchConversationHistory(conversationId, projectId);
-          if (!isIdentityCurrent(requestEpoch)) return;
+          if (!ownsOperation()) return;
           applyServerSnapshot({
             conversation_id: history.snapshot.conversation_id,
             revision: history.snapshot.revision,
@@ -886,6 +1083,7 @@ export const ChatPage: React.FC = () => {
           setCompactionStatus(message);
           addToast(message, 'info');
         } catch (refreshError: unknown) {
+          if (!ownsOperation()) return;
           const detail = refreshError instanceof Error ? refreshError.message : '최신 이력을 불러오지 못했습니다.';
           const message = `대화 리비전이 충돌했습니다 (서버 r${error.payload.current_revision}). ${detail}`;
           setCompactionStatus(message);
@@ -898,13 +1096,14 @@ export const ChatPage: React.FC = () => {
         addToast(message, 'error');
       }
     } finally {
-      if (isIdentityCurrent(requestEpoch)) {
+      if (ownsOperation()) {
         setIsCompactingConversation(false);
       }
     }
-  }, [addToast, applyServerSnapshot]);
+  }, [addToast, applyServerSnapshot, isForking, isCompactingConversation]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.nativeEvent.isComposing || e.nativeEvent.keyCode === 229) return;
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       void handleSend();
@@ -927,7 +1126,7 @@ export const ChatPage: React.FC = () => {
     }
     void readAttachmentBase64(file)
       .then((data_base64) => {
-        const attachment: PendingAttachment = {
+        const attachment: ChatAttachment = {
           name: file.name,
           mime_type: file.type,
           data_base64,
@@ -965,15 +1164,31 @@ export const ChatPage: React.FC = () => {
     return () => document.removeEventListener('click', handleDocumentClick);
   }, []);
 
+  const handleFeedScroll = useCallback(() => {
+    const feed = feedRef.current;
+    if (!feed) return;
+    const nearEnd = feed.scrollHeight - feed.scrollTop - feed.clientHeight <= 80;
+    shouldFollowOutputRef.current = nearEnd;
+    setShowLatestAction(!nearEnd);
+  }, []);
+
+  const handleShowLatestResponse = useCallback(() => {
+    const feed = feedRef.current;
+    if (!feed) return;
+    shouldFollowOutputRef.current = true;
+    feed.scrollTop = feed.scrollHeight;
+    setShowLatestAction(false);
+  }, []);
+
   const isHero = messages.length === 0;
-  const sessionTitle = activeSession?.title || 'New Conversation';
+  const sessionTitle = activeSession?.title || '새 대화';
   const modelLabel = useMemo(() => {
     const foundLocal = localModels.find(m => m.id === selectedModel);
     if (foundLocal) {
       const tag = foundLocal.parameter_count_b > 0
-        ? ` (${foundLocal.parameter_count_b}B)`
+        ? ` (${formatModelAmount(foundLocal.parameter_count_b)}B)`
         : foundLocal.disk_size_gb > 0
-          ? ` (${foundLocal.disk_size_gb}GB)`
+          ? ` (${formatModelAmount(foundLocal.disk_size_gb)}GB)`
           : '';
       return `${foundLocal.name || foundLocal.id}${tag}`;
     }
@@ -998,420 +1213,69 @@ export const ChatPage: React.FC = () => {
     />
   );
 
-  /* ─── Composer card (shared by hero & docked) ─────────────── */
   const composerCard = (
-    <div className="agk-composer-card">
-      {!isHero && (
-        <div className="codex-context-header-bar docked">
-          <div className="context-item">
-            <span className="item-icon">📁</span>
-            <span className="item-text">{workspaceContext.project_name}</span>
-          </div>
-          <div className="context-item">
-            <span className="item-icon">🖥️</span>
-            <span className="item-text">{workspaceContext.target}</span>
-          </div>
-          <div className="context-item">
-            <span className="item-icon">⑂</span>
-            <span className="item-text branch">{workspaceContext.branch}</span>
-          </div>
-        </div>
-      )}
-
-      <div className="agk-input-main-card">
-        {pendingAttachments.length > 0 && (
-          <div className="agk-attachment-chips" data-testid="chat-attachment-chips">
-            {pendingAttachments.map((attachment) => (
-              <span
-                key={`${attachment.name}:${attachment.bytes}`}
-                className="agk-attachment-chip"
-                data-testid="chat-attachment-chip"
-                data-attachment-name={attachment.name}
-                data-attachment-mime={attachment.mime_type}
-                data-attachment-bytes={attachment.bytes}
-              >
-                📎 {attachment.name} ({(attachment.bytes / 1024).toFixed(0)}KB)
-                <button
-                  type="button"
-                  aria-label={`${attachment.name} 첨부 제거`}
-                  onClick={() => removePendingAttachment(attachment.name, attachment.bytes)}
-                >
-                  ×
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
-        <textarea
-          ref={textareaRef}
-          id="chat-input"
-          className="codex-textarea"
-          style={{
-            color: 'var(--text-primary, #f0f6fc)',
-            caretColor: 'var(--accent-color, #e5a93b)',
+    <ChatComposer
+      inputText={inputText}
+      textareaRef={textareaRef}
+      attachments={pendingAttachments}
+      isStreaming={isStreaming}
+      isTransitioning={isForking || isCompactingConversation}
+      onChange={(event) => {
+        setInputText(event.target.value);
+        event.target.style.height = 'auto';
+        event.target.style.height = `${Math.min(220, event.target.scrollHeight)}px`;
+      }}
+      onKeyDown={handleKeyDown}
+      onRemoveAttachment={removePendingAttachment}
+      onSend={() => void handleSend()}
+      onStop={handleStop}
+      tools={(
+        <ChatComposerTools
+          actionMenuOpen={actionMenuOpen}
+          accessDropdownOpen={accessDropdownOpen}
+          mcpMenuOpen={mcpMenuOpen}
+          accessMode={accessMode}
+          webSearch={webSearch}
+          codeMode={codeMode}
+          mcpServers={mcpServerList}
+          mcpAllowlist={mcpAllowlist}
+          onToggleActionMenu={() => setActionMenuOpen((open) => !open)}
+          onAttach={() => { fileInputRef.current?.click(); setActionMenuOpen(false); }}
+          onToggleAccessMenu={() => setAccessDropdownOpen((open) => !open)}
+          onAccessChoice={(mode) => void handleToggleAccessMode(mode)}
+          onToggleSearch={() => setWebSearch((enabled) => !enabled)}
+          onToggleCode={() => setCodeMode((enabled) => !enabled)}
+          onToggleMcpMenu={() => setMcpMenuOpen((open) => !open)}
+          onToggleMcpServer={(name) => {
+            const isSelected = mcpAllowlist.includes(name);
+            setSelectedMcp((previous) => {
+              const base = previous ?? mcpServerList.map((server) => server.name);
+              return isSelected ? base.filter((item) => item !== name) : [...base, name];
+            });
           }}
-          placeholder="Ask anything, @ to mention, / for actions"
-          rows={1}
-          value={inputText}
-          onChange={(e) => {
-            setInputText(e.target.value);
-            e.target.style.height = 'auto';
-            e.target.style.height = `${Math.min(220, e.target.scrollHeight)}px`;
-          }}
-          onKeyDown={handleKeyDown}
-          aria-label="메시지 입력"
         />
-
-        {/* Chip toolbar row */}
-        <div className="agk-chip-toolbar">
-          <div className="agk-chip-group">
-            {/* + attach */}
-            <div className="codex-action-plus-wrap">
-              <button
-                type="button"
-                className={`plus-action-circle-btn ${actionMenuOpen ? 'open' : ''}`}
-                onClick={() => setActionMenuOpen(!actionMenuOpen)}
-                title="옵션 및 파일 첨부"
-                aria-label="옵션 및 파일 첨부"
-              >
-                +
-              </button>
-              {actionMenuOpen && (
-                <div className="plus-popover-dropdown">
-                  <button
-                    type="button"
-                    className="popover-row"
-                    onClick={() => { fileInputRef.current?.click(); setActionMenuOpen(false); }}
-                  >
-                    <span>📎</span>
-                    <span>파일 및 사진 첨부</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="popover-row"
-                    onClick={() => { addToast('전체 코드베이스 심층 RAG 분석 활성화', 'info'); setActionMenuOpen(false); }}
-                  >
-                    <span>🧠</span>
-                    <span>코드베이스 전체 탐색</span>
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* 전체 액세스 (Approve-for-me equivalent) */}
-            <div className="codex-access-pill-wrap">
-              <button
-                type="button"
-                className={`access-chip ${accessMode === 'full_access' ? 'amber' : 'safe'}`}
-                onClick={() => setAccessDropdownOpen(!accessDropdownOpen)}
-              >
-                <span className="chip-icon">{accessMode === 'full_access' ? '🛡️!' : '🔒'}</span>
-                <span className="chip-label">
-                  {accessMode === 'full_access' ? '전체 액세스' : '읽기 전용'}
-                </span>
-                <span className="chip-chevron">⌄</span>
-              </button>
-              {accessDropdownOpen && (
-                <div className="access-dropdown-menu">
-                  <div
-                    className={`access-opt ${accessMode === 'full_access' ? 'selected' : ''}`}
-                    onClick={() => handleToggleAccessMode('full_access')}
-                  >
-                    ✓ 전체 액세스 (Full Access)
-                  </div>
-                  <div
-                    className={`access-opt ${accessMode === 'restricted' ? 'selected' : ''}`}
-                    onClick={() => handleToggleAccessMode('restricted')}
-                  >
-                    🔒 읽기 전용 (Read Only)
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Search toggle */}
-            <button
-              type="button"
-              className={`tool-chip ${webSearch ? 'active' : ''}`}
-              onClick={() => setWebSearch((v) => !v)}
-              aria-pressed={webSearch}
-              title="웹 검색 도구 사용"
-            >
-              <span className="chip-icon">🌐</span>
-              <span className="chip-label">Search</span>
-            </button>
-
-            {/* Code toggle */}
-            <button
-              type="button"
-              className={`tool-chip ${codeMode ? 'active' : ''}`}
-              onClick={() => setCodeMode((v) => !v)}
-              aria-pressed={codeMode}
-              title="코드 인터프리터 사용"
-            >
-              <span className="chip-icon">‹/›</span>
-              <span className="chip-label">Code</span>
-            </button>
-
-            {/* MCP selector — 구성된 서버 실목록 기반 */}
-            <div className="agk-mcp-chip-wrap">
-              <button
-                type="button"
-                className={`tool-chip ${mcpAllowlist.length > 0 ? 'active' : ''}`}
-                onClick={() => setMcpMenuOpen((v) => !v)}
-                aria-pressed={mcpAllowlist.length > 0}
-                title="MCP 서버"
-              >
-                <span className="chip-icon">⊞</span>
-                <span className="chip-label">MCP</span>
-                <span className="chip-chevron">⌄</span>
-              </button>
-              {mcpMenuOpen && (
-                <div className="mcp-dropdown-menu">
-                  {mcpServerList.length === 0 ? (
-                    <div className="mcp-opt mcp-empty-row">
-                      <span>구성된 MCP 서버가 없습니다</span>
-                      <span className="mcp-opt-status">.mcp.json</span>
-                    </div>
-                  ) : (
-                    mcpServerList.map(server => {
-                      const isSelected = mcpAllowlist.includes(server.name);
-                      return (
-                        <button
-                          key={server.name}
-                          type="button"
-                          className={`mcp-opt ${isSelected ? 'selected' : ''}`}
-                          onClick={() => {
-                            setSelectedMcp(prev => {
-                              const base = prev ?? mcpServerList.map(s => s.name);
-                              return isSelected
-                                ? base.filter(n => n !== server.name)
-                                : [...base, server.name];
-                            });
-                          }}
-                        >
-                          <span>{isSelected ? '✓' : '○'} {server.name}</span>
-                          <span className="mcp-opt-status on">{server.transport}</span>
-                        </button>
-                      );
-                    })
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="agk-chip-group">
-            {/* Model selector pill */}
-            <div className="model-selector-wrap codex-model-selector-wrap">
-              <button
-                type="button"
-                className="model-pill-trigger model-select-trigger"
-                onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
-                aria-label="모델 선택"
-              >
-                <span className="model-name-text">{modelLabel}</span>
-                <span className="chevron-mini">⌄</span>
-              </button>
-
-              {modelDropdownOpen && (
-                <div className="model-selection-popover">
-                  <div className="model-dropdown-header-row">
-                    <span className="popover-sec-title">💻 본 PC 전체 로컬 모델 ({localModels.length}개)</span>
-                    <button
-                      type="button"
-                      className="model-refresh-btn"
-                      title="본 PC 로컬 모델 다시 검색"
-                      disabled={isScanningLocal}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        void loadLocalModels(true);
-                      }}
-                    >
-                      {isScanningLocal ? '스캔 중...' : '↻ 재검색'}
-                    </button>
-                  </div>
-
-                  {localModels.length === 0 ? (
-                    <div className="model-empty-notice">
-                      {isScanningLocal
-                        ? '본 PC의 로컬 모델을 스캔하고 있습니다...'
-                        : '본 PC에서 실행 중이거나 다운로드된 로컬 모델을 찾을 수 없습니다.'}
-                    </div>
-                  ) : (
-                    <>
-                      {/* 1. 실행 중 모델 (Ollama / Local APIs) */}
-                      {localModels.filter((m) => m.status === 'running').length > 0 && (
-                        <div className="model-group-section">
-                          <div className="model-group-title">🟢 실행 중 모델 (즉시 추론 가능)</div>
-                          {localModels
-                            .filter((m) => m.status === 'running')
-                            .map((m) => (
-                              <div
-                                key={m.id}
-                                className={`model-choice-row ${m.id === selectedModel ? 'selected' : ''}`}
-                                onClick={() => handleModelChoice(m.id)}
-                              >
-                                <div className="model-row-left">
-                                  <div className="model-row-title-line">
-                                    <span className="status-dot running" />
-                                    <span className="model-name-text">{m.name || m.id}</span>
-                                  </div>
-                                  <div className="model-chip-badges">
-                                    <span className="badge-provider">{m.provider}</span>
-                                    {m.parameter_count_b > 0 && (
-                                      <span className="badge-param">{m.parameter_count_b}B</span>
-                                    )}
-                                    {m.role && <span className="badge-role">{m.role}</span>}
-                                  </div>
-                                </div>
-                                {m.id === selectedModel && <span className="tag-recommended">현재 선택</span>}
-                              </div>
-                            ))}
-                        </div>
-                      )}
-
-                      {/* 2. 다운로드/캐시된 Unsloth 및 로컬 GGUF 모델 */}
-                      {localModels.filter((m) => m.status !== 'running' && m.provider === 'unsloth').length > 0 && (
-                        <div className="model-group-section">
-                          <div className="model-group-title">🦥 Unsloth 다운로드 모델 (GGUF)</div>
-                          {localModels
-                            .filter((m) => m.status !== 'running' && m.provider === 'unsloth')
-                            .map((m) => (
-                              <div
-                                key={m.id}
-                                className={`model-choice-row ${m.id === selectedModel ? 'selected' : ''}`}
-                                onClick={() => handleModelChoice(m.id)}
-                              >
-                                <div className="model-row-left">
-                                  <div className="model-row-title-line">
-                                    <span className="status-dot cached" />
-                                    <span className="model-name-text">{m.name || m.id}</span>
-                                  </div>
-                                  <div className="model-chip-badges">
-                                    <span className="badge-provider unsloth">UNSLOTH</span>
-                                    {m.disk_size_gb > 0 && (
-                                      <span className="badge-disk">{m.disk_size_gb} GB</span>
-                                    )}
-                                    {m.quantization && (
-                                      <QuantBadge quantization={m.quantization} variant="chip" />
-                                    )}
-                                    {m.role && <span className="badge-role">{m.role}</span>}
-                                  </div>
-                                </div>
-                                {m.id === selectedModel && <span className="tag-recommended">현재 선택</span>}
-                              </div>
-                            ))}
-                        </div>
-                      )}
-
-                      {/* 3. 기타 로컬/MLX/HuggingFace 모델 */}
-                      {localModels.filter((m) => m.status !== 'running' && m.provider !== 'unsloth').length > 0 && (
-                        <div className="model-group-section">
-                          <div className="model-group-title">📦 MLX / 로컬 캐시 모델</div>
-                          {localModels
-                            .filter((m) => m.status !== 'running' && m.provider !== 'unsloth')
-                            .map((m) => (
-                              <div
-                                key={m.id}
-                                className={`model-choice-row ${m.id === selectedModel ? 'selected' : ''}`}
-                                onClick={() => handleModelChoice(m.id)}
-                              >
-                                <div className="model-row-left">
-                                  <div className="model-row-title-line">
-                                    <span className="status-dot cached" />
-                                    <span className="model-name-text">{m.name || m.id}</span>
-                                  </div>
-                                  <div className="model-chip-badges">
-                                    <span className={`badge-provider ${m.provider}`}>{m.provider}</span>
-                                    {m.disk_size_gb > 0 && (
-                                      <span className="badge-disk">{m.disk_size_gb} GB</span>
-                                    )}
-                                    {m.quantization && (
-                                      <QuantBadge quantization={m.quantization} variant="chip" />
-                                    )}
-                                    {m.role && <span className="badge-role">{m.role}</span>}
-                                  </div>
-                                </div>
-                                {m.id === selectedModel && <span className="tag-recommended">현재 선택</span>}
-                              </div>
-                            ))}
-                        </div>
-                      )}
-                    </>
-                  )}
-
-                  {/* ── Optional Cloud / Fallback Models Section ── */}
-                  {availableModels.filter((m) => !m.is_local && !localModels.some((lm) => lm.id === m.id)).length > 0 && (
-                    <>
-                      <div className="model-dropdown-divider" />
-                      <div className="popover-sec-title subhead">☁️ 외부 / 클라우드 모델</div>
-                      {availableModels
-                        .filter((m) => !m.is_local && !localModels.some((lm) => lm.id === m.id))
-                        .slice(0, 8)
-                        .map((m) => (
-                          <div
-                            key={m.id}
-                            className={`model-choice-row ${m.id === selectedModel ? 'selected' : ''}`}
-                            onClick={() => {
-                              setSelectedModel(m.id);
-                              setModelDropdownOpen(false);
-                            }}
-                          >
-                            <span>{m.description || m.id}</span>
-                            {m.id === selectedModel && <span className="tag-recommended">현재 선택</span>}
-                          </div>
-                        ))}
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Mic */}
-            <button
-              type="button"
-              className="mic-action-btn"
-              onClick={() => addToast('음성 입력이 활성화되었습니다.', 'info')}
-              title="음성 입력"
-              aria-label="음성 입력"
-            >
-              🎙️
-            </button>
-
-            {/* Send / Stop */}
-            {isStreaming ? (
-              <button
-                type="button"
-                className="soundwave-circle-btn stop send-btn"
-                onClick={handleStop}
-                title="중단"
-                aria-label="생성 중단"
-              >
-                ⏹
-              </button>
-            ) : (
-              <button
-                type="button"
-                className={`soundwave-circle-btn ${inputText.trim() ? 'send-mode' : ''} send-btn`}
-                onClick={() => handleSend()}
-                title={inputText.trim() ? '전송' : '음성 대화 시작'}
-                aria-label={inputText.trim() ? '메시지 전송' : '음성 대화 시작'}
-              >
-                {inputText.trim() ? '↑' : 'ılı'}
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+      )}
+      modelSelector={(
+        <ChatModelSelector
+          label={modelLabel}
+          selectedModel={selectedModel}
+          open={modelDropdownOpen}
+          scanning={isScanningLocal}
+          localModels={localModels}
+          availableModels={availableModels}
+          onToggle={() => setModelDropdownOpen((open) => !open)}
+          onRefresh={() => void loadLocalModels(true)}
+          onLocalChoice={handleModelChoice}
+          onCloudChoice={(modelId) => { setSelectedModel(modelId); setModelDropdownOpen(false); }}
+        />
+      )}
+    />
   );
-
   return (
-    <div className={`agk-workspace ${isHero ? 'is-empty' : ''}`}>
+    <div className={`agk-workspace workspace-chat ${isHero ? 'is-empty' : ''}`}>
       {/* ── Main column: topbar + canvas + composer ──────────── */}
       <div className="agk-main-column">
-        <header className="agk-topbar">
+        <header className="agk-topbar workspace-chat-header">
           <div className="agk-breadcrumb">
             <span className="crumb-project" data-testid="active-project-label" data-project-id={activeProjectId ?? ''}>
               {activeProjectName || workspaceContext?.project_name || 'Ssak-Ai'}
@@ -1421,10 +1285,12 @@ export const ChatPage: React.FC = () => {
               <input
                 type="text"
                 className="crumb-title-input"
+                aria-label="대화 제목"
                 value={titleInput}
                 autoFocus
                 onChange={(e) => setTitleInput(e.target.value)}
                 onKeyDown={(e) => {
+                  if (e.nativeEvent.isComposing || e.nativeEvent.keyCode === 229) return;
                   if (e.key === 'Enter') {
                     if (titleInput.trim() && activeSessionId) {
                       updateSessionTitle(activeSessionId, titleInput.trim());
@@ -1443,20 +1309,34 @@ export const ChatPage: React.FC = () => {
                 }}
               />
             ) : (
-              <span
+              <button
+                type="button"
                 className="crumb-title editable"
-                title="클릭하여 대화 제목 수정"
+                title="대화 제목 수정"
+                aria-label={`대화 제목 수정: ${sessionTitle}`}
                 onClick={() => {
                   setIsEditingTitle(true);
                   setTitleInput(sessionTitle);
                 }}
               >
-                {sessionTitle}
-                <span className="crumb-edit-icon" aria-hidden="true">✎</span>
-              </span>
+                <span className="workspace-conversation-title">{sessionTitle}</span>
+                <AppIcon name="edit" size={14} />
+              </button>
             )}
           </div>
           <div className="agk-topbar-actions">
+            <button
+              type="button"
+              className={`topbar-tool-btn ${isForking ? 'active' : ''}`}
+              aria-label={`대화 분기: ${sessionTitle}`}
+              aria-describedby="conversation-compaction-status"
+              aria-busy={isForking}
+              title={isForking ? '대화 분기 및 동기화 중' : '원본을 보존하고 대화 분기'}
+              disabled={isForking || isCompactingConversation || isStreaming || !activeSessionId || !activeProjectId || messages.length === 0}
+              onClick={() => void forkActiveConversation()}
+            >
+              <AppIcon name={isForking ? 'refresh' : 'git'} size={18} />
+            </button>
             <button
               type="button"
               className={`topbar-tool-btn ${isCompactingConversation ? 'active' : ''}`}
@@ -1464,10 +1344,10 @@ export const ChatPage: React.FC = () => {
               aria-describedby="conversation-compaction-status"
               aria-busy={isCompactingConversation}
               title={isCompactingConversation ? '대화 압축 및 동기화 중' : '현재 대화 압축'}
-              disabled={isCompactingConversation || isStreaming || !activeSessionId || !activeProjectId}
+              disabled={isForking || isCompactingConversation || isStreaming || !activeSessionId || !activeProjectId}
               onClick={() => void handleCompactConversation()}
             >
-              {isCompactingConversation ? '…' : '⌗'}
+              <AppIcon name={isCompactingConversation ? 'refresh' : 'layers'} size={18} />
             </button>
             <button
               type="button"
@@ -1476,16 +1356,16 @@ export const ChatPage: React.FC = () => {
               title="명령 팔레트 (Cmd+K)"
               onClick={() => setCommandPaletteVisible(true)}
             >
-              ⌘
+              <AppIcon name="search" size={18} />
             </button>
             <button
               type="button"
               className="topbar-tool-btn"
-              aria-label="채팅 히스토리"
-              title="채팅 히스토리"
+              aria-label="대화 기록 열기"
+              title="대화 기록"
               onClick={() => setHistoryVisible(true)}
             >
-              🕓
+              <AppIcon name="history" size={18} />
             </button>
             <button
               type="button"
@@ -1493,8 +1373,9 @@ export const ChatPage: React.FC = () => {
               onClick={() => setEnvPanelOpen((v) => !v)}
               title="환경 패널 토글"
               aria-label="환경 패널 토글"
+              aria-expanded={envPanelOpen}
             >
-              ◫
+              <AppIcon name="panelLeft" size={18} />
             </button>
             <button
               type="button"
@@ -1509,27 +1390,33 @@ export const ChatPage: React.FC = () => {
               title="전체화면"
               aria-label="전체화면"
             >
-              □
+              <AppIcon name="monitor" size={18} />
             </button>
           </div>
         </header>
 
-        <div className="agk-canvas">
+        <div className="agk-canvas workspace-chat-canvas">
           {!isHero && (
-            <div className="agk-feed" ref={feedRef}>
+            <div
+              className="agk-feed"
+              ref={feedRef}
+              role="region"
+              aria-label="대화 내용"
+              tabIndex={0}
+              onScroll={handleFeedScroll}
+            >
               <div className="agk-feed-inner">
-                {messages.map(msg => (
-                  <ChatMessage key={msg.id ?? `${msg.role}:${msg.content}`} message={msg} />
+                {messages.map((msg, index) => (
+                  <ChatMessage key={msg.id ?? `local:${activeSessionId}:${index}`} message={msg} />
                 ))}
                 <ActivityTimeline />
-                {isStreaming && <WorkingIndicator elapsed={elapsed} />}
+                {isStreaming && <WorkingIndicator elapsed={elapsed} status={streamStatus} />}
                 {streamError && !isStreaming && (
                   <StreamErrorBanner
-                    message={`exceeded retry limit — ${streamError}`}
+                    message={streamError}
                     onRetry={() => {
-                      const lastUser = [...messages].reverse().find(m => m.role === 'user');
-                      setStreamError(null);
-                      if (lastUser) void runCompletion(lastUser.content);
+                      const turn = retryTurnRef.current;
+                      if (turn) void runCompletion(turn);
                     }}
                   />
                 )}
@@ -1544,21 +1431,28 @@ export const ChatPage: React.FC = () => {
                     }}
                   />
                 )}
+                {showLatestAction && (
+                  <button type="button" className="workspace-nav-link" onClick={handleShowLatestResponse}>
+                    <AppIcon name="chevronDown" size={16} /> 최신 응답 보기
+                  </button>
+                )}
               </div>
             </div>
           )}
 
           {isHero && (
-            <div className="unsloth-hero-head">
-              <span className="hero-mascot" aria-hidden="true">🦥</span>
-              <h1 className="hero-headline" data-testid="hero-headline">
-                <mark className="hero-mark">Ready</mark> when you are
-              </h1>
-              <p className="hero-subline">Ssak-Ai에서 무엇이든 물어보세요 — 코드 작성, 파일 편집, 웹 검색을 도와드립니다.</p>
+            <div className="agk-chat-empty-state">
+              <h1 className="hero-headline" data-testid="hero-headline">무엇을 만들어 볼까요?</h1>
+              <p className="hero-subline">코드를 살펴보거나, 해결할 문제를 알려 주세요.</p>
+              {(activeProjectName || workspaceContext.project_name) && (
+                <div className="agk-chat-project-context">
+                  <AppIcon name="folder" size={16} />
+                  <span>{activeProjectName || workspaceContext.project_name}</span>
+                </div>
+              )}
             </div>
           )}
-
-          {/* Composer zone: queued card + composer */}
+        </div>
           <div className={`agk-composer-zone ${isHero ? 'hero' : 'docked'}`}>
             <QueuedMessagesCard
               items={queuedMessages}
@@ -1574,26 +1468,54 @@ export const ChatPage: React.FC = () => {
             />
             {composerCard}
             {isHero && (
-              <div
-                className="codex-suggested-prompt-line hero-variant"
-                onClick={() => {
-                  setInputText('Make the two new orchestrator-swarm benchmarks prove real agent work');
+              <div className="agk-chat-quick-actions" aria-label="작업 시작 제안">
+                <button type="button" onClick={() => {
+                  setInputText('현재 프로젝트의 구조와 주요 흐름을 설명해 주세요.');
                   textareaRef.current?.focus();
-                }}
-              >
-                <span className="github-cat-icon">🐙</span>
-                <span className="prompt-line-text">
-                  Make the two new orchestrator-swarm benchmarks prove real agent work
-                </span>
+                }}>
+                  <AppIcon name="code" size={16} /> 코드 살펴보기
+                </button>
+                <button type="button" onClick={() => {
+                  setInputText('해결할 오류와 관련 코드를 확인해 주세요.\n\n');
+                  textareaRef.current?.focus();
+                }}>
+                  <AppIcon name="activity" size={16} /> 오류 해결하기
+                </button>
+                <button type="button" onClick={() => {
+                  setInputText('현재 프로젝트에서 테스트가 필요한 부분을 찾고 테스트를 작성해 주세요.');
+                  textareaRef.current?.focus();
+                }}>
+                  <AppIcon name="check" size={16} /> 테스트 추가하기
+                </button>
+              </div>
+            )}
+            {!isHero && (
+              <div className="codex-context-header-bar docked agk-composer-context" aria-label="현재 작업 환경">
+                {(activeProjectName || workspaceContext.project_name) && (
+                  <div className="context-item">
+                    <AppIcon name="folder" size={14} />
+                    <span className="item-text">{activeProjectName || workspaceContext.project_name}</span>
+                  </div>
+                )}
+                <div className="context-item">
+                  <AppIcon name="monitor" size={14} />
+                  <span className="item-text">{workspaceContext.target}</span>
+                </div>
+                {workspaceContext.branch && (
+                  <div className="context-item">
+                    <AppIcon name="git" size={14} />
+                    <span className="item-text branch" title={`실제 Git 브랜치: ${workspaceContext.branch}`}>{workspaceContext.branch.replace(/^codex\//, 'ssak-ai/')}</span>
+                  </div>
+                )}
               </div>
             )}
           </div>
-        </div>
 
         <input
           ref={fileInputRef}
           type="file"
-          style={{ display: 'none' }}
+          hidden
+          accept="image/png,image/jpeg,image/webp,image/gif"
           onChange={handleFileUpload}
         />
       </div>

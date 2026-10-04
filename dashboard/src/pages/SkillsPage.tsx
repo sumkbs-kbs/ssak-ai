@@ -1,269 +1,95 @@
-/**
- * SkillsPage — Skills Browser
- * =============================
- * Tab-based router for All Skills, Marketplace, Search npm, MCP Servers.
- * Each tab is extracted as a separate sub-component in ./skills/.
- */
-
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { useUiStore } from '../stores/uiStore';
-import { Skill, MarketplaceSkill, SearchResult, MCPServer } from './skills/types';
+import { useState } from 'react';
 import AllSkillsTab from './skills/AllSkillsTab';
 import MarketplaceTab from './skills/MarketplaceTab';
 import SearchTab from './skills/SearchTab';
 import MCPTab from './skills/MCPTab';
 import PublishTab from './skills/PublishTab';
+import { useSkillsCatalog } from './skills/useSkillsCatalog';
+import type { SkillsTab } from './skills/useSkillsCatalog';
 
-type Tab = 'all' | 'marketplace' | 'search' | 'mcp' | 'publish';
-type CountKey = 'all' | 'market' | 'mcp';
-type SkillsResponse = { skills?: Skill[] };
-type InstalledResponse = { installed?: MarketplaceSkill[] };
-type SearchResponse = { ok?: boolean; results?: SearchResult[] };
-type McpResponse = { servers?: MCPServer[] };
-type ActionResponse = { ok?: boolean };
+const TABS = [
+  { id: 'all', label: 'All Skills' },
+  { id: 'marketplace', label: 'Marketplace' },
+  { id: 'search', label: 'Search npm' },
+  { id: 'publish', label: 'Publish' },
+  { id: 'mcp', label: 'MCP Servers' },
+] as const;
 
-const TABS: ReadonlyArray<{ id: Tab; icon: string; label: string; countKey?: CountKey }> = [
-  { id: 'all', icon: '🧰', label: 'All Skills', countKey: 'all' },
-  { id: 'marketplace', icon: '🏪', label: 'Marketplace', countKey: 'market' },
-  { id: 'search', icon: '🔍', label: 'Search npm' },
-  { id: 'publish', icon: '📦', label: 'Publish' },
-  { id: 'mcp', icon: '🔌', label: 'MCP Servers', countKey: 'mcp' },
-];
-
-async function requestJson<T>(url: string, options?: RequestInit): Promise<T> {
-  const response = await globalThis.fetch(url, options);
-  if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
-  return await response.json() as T;
-}
-
-function fetchAllSkills(): Promise<SkillsResponse> {
-  return requestJson<SkillsResponse>('/api/system/skills');
-}
-
-const SkillsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<Tab>('all');
-  const [skills, setSkills] = useState<Skill[]>([]);
-  const [marketSkills, setMarketSkills] = useState<MarketplaceSkill[]>([]);
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [mcpServers, setMCPservers] = useState<MCPServer[]>([]);
+function SkillsPage() {
+  const [activeTab, setActiveTab] = useState<SkillsTab>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [silentLoading, setSilentLoading] = useState(false);
-  const skillsCountRef = useRef(0);
-
-  const counts: Record<CountKey, number> = {
-    all: skills.length,
-    market: marketSkills.length,
-    mcp: mcpServers.length,
-  };
-
-  const loadTab = useCallback(async (tab: Tab) => {
-    setLoading(true);
-    try {
-      switch (tab) {
-        case 'all': {
-          const data = await requestJson<SkillsResponse>('/api/system/skills');
-          setSkills(data.skills ?? []);
-          break;
-        }
-        case 'marketplace': {
-          const data = await requestJson<InstalledResponse>('/api/system/skills/installed');
-          setMarketSkills(data.installed ?? []);
-          if (!data.installed?.length) {
-            try {
-              const searchData = await requestJson<SearchResponse>('/api/system/skills/search?q=skill&limit=10');
-              if (searchData.ok === true) setSearchResults(searchData.results ?? []);
-            } catch { /* ignore */ }
-          }
-          break;
-        }
-        case 'mcp': {
-          const data = await requestJson<McpResponse>('/api/system/skills/mcp');
-          setMCPservers(data.servers ?? []);
-          break;
-        }
-      }
-    } catch (err) {
-      console.error('Skills load error:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => { void loadTab(activeTab); }, 0);
-    return () => window.clearTimeout(timer);
-  }, [activeTab, loadTab]);
-
-  // Auto-discovery polling: silently refresh 'all' tab every 20s
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      if (activeTab !== 'all') return;
-      setSilentLoading(true);
-      try {
-        const data = await fetchAllSkills();
-        const newSkills = data.skills ?? [];
-        if (skillsCountRef.current > 0 && newSkills.length !== skillsCountRef.current) {
-          setSkills(newSkills);
-          skillsCountRef.current = newSkills.length;
-          useUiStore.getState().addToast(`🔄 새 스킬 감지: ${newSkills.length}개`, 'info');
-          return;
-        }
-        skillsCountRef.current = newSkills.length;
-        setSkills(newSkills);
-      } catch { /* ignore */ }
-      finally { setSilentLoading(false); }
-    }, 20000);
-    return () => clearInterval(interval);
-  }, [activeTab]);
-
-  const handleSearch = useCallback(async () => {
-    if (!searchQuery.trim()) return;
+  const catalog = useSkillsCatalog(activeTab);
+  const counts = { all: catalog.skills?.length, marketplace: catalog.marketSkills?.length, mcp: catalog.mcpServers?.length };
+  const installedNames = (catalog.marketSkills ?? []).map(skill => skill.skill_name || skill.name);
+  const handleSearch = (query = searchQuery) => {
+    setSearchQuery(query);
     setActiveTab('search');
-    setLoading(true);
-    try {
-      const data = await requestJson<SearchResponse>(`/api/system/skills/search?q=${encodeURIComponent(searchQuery)}&limit=20`);
-      setSearchResults(data.results ?? []);
-    } catch {
-      setSearchResults([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [searchQuery]);
-
-  const doInstall = useCallback(async (pkgName: string) => {
-    try {
-      const data = await requestJson<ActionResponse>('/api/system/skills/install', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ package_name: pkgName }),
-      });
-      if (data.ok === true) {
-        useUiStore.getState().addToast(`✅ ${pkgName} installed`, 'success');
-        void loadTab('marketplace');
-      }
-    } catch { /* ignore */ }
-  }, [loadTab]);
-
-  const doRemove = useCallback(async (skillName: string) => {
-    if (!confirm(`"${skillName}" 스킬을 제거하시겠습니까?`)) return;
-    try {
-      const response = await fetch('/api/system/skills/remove', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ skill_name: skillName }),
-      });
-      if (response.ok) {
-        useUiStore.getState().addToast(`🗑️ ${skillName} removed`, 'success');
-        void loadTab('marketplace');
-      }
-    } catch { /* ignore */ }
-  }, [loadTab]);
-
-  const installedNames = marketSkills.map(s => s.skill_name || s.name);
+    void catalog.search(query);
+  };
+  const refresh = () => {
+    if (activeTab === 'search') handleSearch();
+    else void catalog.loadTab(activeTab);
+  };
+  const hasData = activeTab === 'all' ? catalog.skills !== null
+    : activeTab === 'marketplace' ? catalog.marketSkills !== null
+      : activeTab === 'mcp' ? catalog.mcpServers !== null : activeTab === 'search' ? catalog.searchResults.length > 0 : true;
 
   return (
-    <div className="page-container" style={{ maxWidth: 1100 }}>
-      {/* Header */}
-      <div className="page-header" style={{ marginBottom: 16 }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: 12,
-        }}>
+    <div className="page-container" style={{ maxWidth: 1100 }} aria-busy={catalog.status.loading}>
+      <div className="page-header" style={{ marginBottom: 'var(--space-4)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-3)' }}>
           <div className="page-header-hero">
             <div className="hero-eyebrow">SKILL MANAGEMENT</div>
             <h2>Skills Browser</h2>
-            <p className="page-subtitle">
-              로드된 스킬, 마켓플레이스 설치 현황, npm 검색, MCP 서버를 한눈에 확인합니다.
-            </p>
+            <p className="page-subtitle">로드된 스킬, 마켓플레이스 설치 현황, npm 검색, MCP 서버를 한눈에 확인합니다.</p>
           </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            {silentLoading && (
-              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>🔄 확인 중...</span>
-            )}
-            <button className="glass-btn primary" onClick={() => loadTab(activeTab)} style={{ gap: 6 }}>
-              <span>🔄</span> 새로고침
-            </button>
+          <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
+            {catalog.silentLoading && <span role="status" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>확인 중...</span>}
+            <button className="glass-btn primary" onClick={refresh} disabled={catalog.status.loading || activeTab === 'publish'}>새로고침</button>
           </div>
         </div>
       </div>
-
-      {/* Tabs */}
       <div className="skills-tabs">
         {TABS.map(tab => (
-          <button
-            key={tab.id}
-            className={`skills-tab ${activeTab === tab.id ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.icon} {tab.label}
-            {tab.countKey && <span className="skills-count">{counts[tab.countKey] || 0}</span>}
+          <button key={tab.id} className={`skills-tab ${activeTab === tab.id ? 'active' : ''}`} onClick={() => setActiveTab(tab.id)} aria-pressed={activeTab === tab.id}>
+            {tab.label}
+            {tab.id in counts && <span className="skills-count">{tab.id === 'all' ? counts.all ?? '미확인' : tab.id === 'marketplace' ? counts.marketplace ?? '미확인' : counts.mcp ?? '미확인'}</span>}
           </button>
         ))}
       </div>
-
-      {/* Search bar (visible on search tab) */}
       {activeTab === 'search' && (
-        <div className="skills-search-bar" style={{ marginBottom: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, maxWidth: 600 }}>
-            <input
-              type="text"
-              className="glass-input"
-              aria-label="npm 스킬 검색"
-              placeholder="npm에서 @ssak-ai/skill-* 패키지 검색..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSearch()}
-              style={{
-                flex: 1,
-                padding: '10px 14px',
-                fontSize: 14,
-                background: 'rgba(0,0,0,0.2)',
-                border: '1px solid var(--glass-border)',
-                color: '#fff',
-                borderRadius: 6,
-              }}
-            />
-            <button className="glass-btn primary" onClick={handleSearch} style={{ padding: '8px 16px' }}>
-              검색
-            </button>
+        <form className="skills-search-bar" style={{ marginBottom: 'var(--space-5)' }} onSubmit={event => { event.preventDefault(); handleSearch(); }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+            <input type="text" className="glass-input" aria-label="npm 스킬 검색" placeholder="npm 스킬 패키지 검색..." value={searchQuery} onChange={event => setSearchQuery(event.target.value)} style={{ flex: 1, minWidth: 0 }} />
+            <button type="submit" className="glass-btn primary" disabled={catalog.status.loading || !searchQuery.trim()}>검색</button>
           </div>
+        </form>
+      )}
+      {catalog.status.error && (
+        <div className="glass-panel" role="alert" style={{ padding: 'var(--space-4)', marginBottom: 'var(--space-4)', color: 'var(--error-color)' }}>
+          <p>{catalog.status.error}</p>
+          {hasData && <p style={{ color: 'var(--text-secondary)' }}>이전에 불러온 정보를 표시합니다.</p>}
+          <button className="glass-btn" onClick={refresh}>다시 시도</button>
         </div>
       )}
-
-      {/* Tab Content */}
-      {loading ? (
-        <div className="skills-loading">🔄 데이터를 불러오는 중...</div>
-      ) : (
+      {activeTab === 'marketplace' && catalog.recommendationStatus.loading && <p role="status">추천 스킬을 검색하는 중...</p>}
+      {activeTab === 'marketplace' && catalog.recommendationStatus.error && (
+        <div className="glass-panel" role="alert" style={{ padding: 'var(--space-4)', marginBottom: 'var(--space-4)', color: 'var(--error-color)' }}>
+          <p>추천 스킬 검색: {catalog.recommendationStatus.error}</p>
+          <button className="glass-btn" onClick={refresh}>추천 다시 시도</button>
+        </div>
+      )}
+      {catalog.status.loading ? <div className="skills-loading" role="status">데이터를 불러오는 중...</div> : (!catalog.status.error || hasData) && (
         <>
-          {activeTab === 'all' && <AllSkillsTab skills={skills} />}
-          {activeTab === 'marketplace' && (
-            <MarketplaceTab
-              skills={marketSkills}
-              recommended={searchResults}
-              installedNames={installedNames}
-              onRemove={doRemove}
-              onInstall={doInstall}
-            />
-          )}
-          {activeTab === 'search' && (
-            <SearchTab
-              results={searchResults}
-              installedNames={installedNames}
-              onQueryChange={setSearchQuery}
-              onSearch={handleSearch}
-              onInstall={doInstall}
-            />
-          )}
+          {activeTab === 'all' && catalog.skills !== null && <AllSkillsTab skills={catalog.skills} />}
+          {activeTab === 'marketplace' && catalog.marketSkills !== null && <MarketplaceTab skills={catalog.marketSkills} recommended={catalog.recommendations} installedNames={installedNames} onRemove={catalog.remove} onInstall={catalog.install} />}
+          {activeTab === 'search' && <SearchTab results={catalog.searchResults} installedNames={installedNames} onSearch={handleSearch} onInstall={catalog.install} />}
           {activeTab === 'publish' && <PublishTab />}
-          {activeTab === 'mcp' && <MCPTab servers={mcpServers} />}
+          {activeTab === 'mcp' && catalog.mcpServers !== null && <MCPTab servers={catalog.mcpServers} />}
         </>
       )}
     </div>
   );
-};
+}
 
 export default SkillsPage;

@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { loadHistory, saveHistory, buildEntry, HISTORY_KEY, MAX_HISTORY } from '../PublishTab';
 import type { PublishHistoryEntry, PublishResult } from '../types';
 
@@ -114,44 +114,41 @@ describe('PublishTab', () => {
 
   it('renders empty state when no skills returned', async () => {
     globalThis.fetch = vi.fn().mockResolvedValue({
-      ok: true, json: () => Promise.resolve({ skills: [] }),
+      ok: true, json: () => Promise.resolve({ ok: true, skills: [] }),
     });
 
     const PublishTab = (await import('../PublishTab')).default;
     render(<PublishTab />);
 
     // Wait for loading to complete
-    await act(async () => { await new Promise(r => setTimeout(r, 50)); });
-    expect(screen.getByText(/로컬 스킬이 없습니다/i)).toBeInTheDocument();
+    expect(await screen.findByText(/로컬 스킬이 없습니다/i)).toBeInTheDocument();
   });
 
   it('renders skill cards when skills returned', async () => {
     const skills = [
-      { name: 'test-skill', source: 'local', version: '1.0.0', tool_count: 3, warnings: [], valid: true },
+      { name: 'test-skill', path: '.agent/skills/test-skill', source: 'local', version: '1.0.0', tool_count: 3, warnings: [], valid: true, has_skill_md: true, has_readme: true },
     ];
     globalThis.fetch = vi.fn().mockResolvedValue({
-      ok: true, json: () => Promise.resolve({ skills }),
+      ok: true, json: () => Promise.resolve({ ok: true, skills }),
     });
 
     const PublishTab = (await import('../PublishTab')).default;
     render(<PublishTab />);
 
-    await act(async () => { await new Promise(r => setTimeout(r, 50)); });
-    expect(screen.getByText(/test-skill/i)).toBeInTheDocument();
+    expect(await screen.findByText(/test-skill/i)).toBeInTheDocument();
   });
 
   it('shows warning badges for skills with warnings', async () => {
     const skills = [
-      { name: 'warn-skill', source: 'local', version: '1.0.0', tool_count: 1, warnings: ['Missing description'], valid: false },
+      { name: 'warn-skill', path: '.agent/skills/warn-skill', source: 'local', version: '1.0.0', tool_count: 1, warnings: ['Missing description'], valid: false, has_skill_md: true, has_readme: true },
     ];
     globalThis.fetch = vi.fn().mockResolvedValue({
-      ok: true, json: () => Promise.resolve({ skills }),
+      ok: true, json: () => Promise.resolve({ ok: true, skills }),
     });
 
     const { default: PublishTab } = await import('../PublishTab');
     render(<PublishTab />);
 
-    await act(async () => { await new Promise(r => setTimeout(r, 50)); });
-    expect(screen.getByText(/Missing description/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Missing description/i)).toBeInTheDocument();
   });
 });

@@ -19,6 +19,8 @@ import { useChatStore } from '../../stores/chatStore';
 
 import { type McpServerItem } from '../../api/clientSchema';
 import { useProjectStore } from '../../stores/projectStore';
+import { AppIcon, type AppIconName } from '../UI/AppIcon';
+import { InspectionFrame } from './InspectionFrame';
 
 export type EnvPanelTab = 'env' | 'code' | 'changes';
 
@@ -77,12 +79,12 @@ function formatTokens(n: number): string {
 }
 
 /* ── Kind icons for activity items ─────────────────────────────── */
-const KIND_ICONS: Record<ActivityItem['kind'], string> = {
-  tool: '⚙',
-  file_read: '↺',
-  file_edit: '✏',
-  error: '⚠',
-  plan: '≡',
+const KIND_ICONS: Record<ActivityItem['kind'], AppIconName> = {
+  tool: 'terminal',
+  file_read: 'file',
+  file_edit: 'edit',
+  error: 'activity',
+  plan: 'layers',
 };
 
 const STATUS_CLASSES: Record<string, string> = {
@@ -144,7 +146,7 @@ const AgentMonitorTab: React.FC = () => {
       {/* ── ① Agent Status Card ────────────────────────────── */}
       <div className={`agent-status-card ${isRunning ? 'running' : 'idle'}`}>
         <div className="agent-status-header">
-          <span className="agent-status-icon">{isRunning ? '✦' : '◇'}</span>
+          <AppIcon name="activity" size={18} className="agent-status-icon" />
           <span className="agent-status-title">에이전트 상태</span>
           <span className={`agent-status-badge ${isRunning ? 'badge-running' : 'badge-idle'}`}>
             {isRunning ? '실행 중' : '대기 중'}
@@ -152,7 +154,7 @@ const AgentMonitorTab: React.FC = () => {
         </div>
         {isRunning && activeTool && (
           <div className="agent-active-tool">
-            <span className="active-tool-icon">⚡</span>
+            <AppIcon name="terminal" size={16} className="active-tool-icon" />
             <span className="active-tool-name">{activeTool.name}</span>
             <span className="active-tool-elapsed">
               {formatElapsed(now - activeTool.startedAt)}
@@ -187,10 +189,10 @@ const AgentMonitorTab: React.FC = () => {
           onClick={() => setActivityExpanded((v) => !v)}
           aria-expanded={activityExpanded}
         >
-          <span className="agent-section-icon">⚡</span>
+          <AppIcon name="activity" size={16} className="agent-section-icon" />
           <span className="agent-section-title">실시간 활동</span>
           <span className="agent-section-count">{items.length}개</span>
-          <span className={`env-chevron ${activityExpanded ? 'open' : ''}`}>⌄</span>
+          <AppIcon name={activityExpanded ? 'chevronUp' : 'chevronDown'} size={16} className="env-chevron" />
         </button>
         {activityExpanded && (
           <div className="agent-activity-feed">
@@ -202,7 +204,7 @@ const AgentMonitorTab: React.FC = () => {
                   key={item.id}
                   className={`agent-activity-item ${STATUS_CLASSES[item.status] ?? ''}`}
                 >
-                  <span className="activity-item-icon">{KIND_ICONS[item.kind]}</span>
+                  <AppIcon name={KIND_ICONS[item.kind]} size={16} className="activity-item-icon" />
                   <div className="activity-item-body">
                     <span className="activity-item-label">{item.label}</span>
                     {item.detail && (
@@ -225,11 +227,12 @@ const AgentMonitorTab: React.FC = () => {
       </div>
 
       {/* ── ③ Token Usage ─────────────────────────────────── */}
-      <div className="agent-section">
-        <div className="agent-section-header static">
-          <span className="agent-section-icon">📊</span>
+      <details className="agent-section token-usage-details">
+        <summary className="agent-section-header static" tabIndex={0}>
+          <AppIcon name="layers" size={16} className="agent-section-icon" />
           <span className="agent-section-title">토큰 사용량</span>
-        </div>
+          <span className="agent-section-count">{formatTokens(tokenUsage.totalTokens)}</span>
+        </summary>
         <div className="token-usage-card">
           <div className="token-row">
             <span className="token-label">입력 (Prompt)</span>
@@ -261,12 +264,12 @@ const AgentMonitorTab: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
+      </details>
 
       {/* ── ④ File Changes ────────────────────────────────── */}
       <div className="agent-section">
         <div className="agent-section-header static">
-          <span className="agent-section-icon">📝</span>
+          <AppIcon name="edit" size={16} className="agent-section-icon" />
           <span className="agent-section-title">파일 변경 추적</span>
           {fileEdits.length > 0 && (
             <span className="agent-section-count">{fileEdits.length}개</span>
@@ -278,7 +281,7 @@ const AgentMonitorTab: React.FC = () => {
           ) : (
             fileEdits.slice(-10).reverse().map((item) => (
               <div key={item.id} className="agent-file-item">
-                <span className="file-item-icon">✏</span>
+                <AppIcon name="edit" size={16} className="file-item-icon" />
                 <span className="file-item-name" title={item.detail}>
                   {shortFilePath(item.detail)}
                 </span>
@@ -297,21 +300,21 @@ const AgentMonitorTab: React.FC = () => {
           onClick={() => setErrorsExpanded((v) => !v)}
           aria-expanded={errorsExpanded}
         >
-          <span className="agent-section-icon">⚠</span>
+          <AppIcon name="activity" size={16} className="agent-section-icon" />
           <span className="agent-section-title">에러 / 경고</span>
           {errorCount > 0 && (
             <span className="agent-section-count error-count">{errorCount}개</span>
           )}
-          <span className={`env-chevron ${errorsExpanded ? 'open' : ''}`}>⌄</span>
+          <AppIcon name={errorsExpanded ? 'chevronUp' : 'chevronDown'} size={16} className="env-chevron" />
         </button>
         {errorsExpanded && (
           <div className="agent-error-log">
             {errors.length === 0 ? (
-              <div className="agent-empty success">✓ 에러 없음</div>
+              <div className="agent-empty success">에러 없음</div>
             ) : (
               errors.slice(-8).reverse().map((item) => (
                 <div key={item.id} className="agent-error-item">
-                  <span className="error-item-icon">⚠</span>
+                  <AppIcon name="activity" size={16} className="error-item-icon" />
                   <div className="error-item-body">
                     <span className="error-item-msg" title={item.detail}>
                       {item.detail.length > 80 ? `${item.detail.slice(0, 80)}…` : item.detail}
@@ -413,9 +416,9 @@ const CodeTabWithGit: React.FC<{
               onClick={() => setBranchOpen((v) => !v)}
               aria-expanded={branchOpen}
             >
-              <span className="env-row-icon">⑂</span>
+              <AppIcon name="git" size={16} className="env-row-icon" />
               <span className="env-row-label branch-name">{currentBranchName}</span>
-              <span className={`env-chevron ${branchOpen ? 'open' : ''}`}>⌄</span>
+              <AppIcon name={branchOpen ? 'chevronUp' : 'chevronDown'} size={16} className="env-chevron" />
             </button>
             {branchOpen && (
               <div className="env-sub-list">
@@ -447,9 +450,9 @@ const CodeTabWithGit: React.FC<{
               onClick={() => setLogOpen((v) => !v)}
               aria-expanded={logOpen}
             >
-              <span className="env-row-icon">▤</span>
+              <AppIcon name="history" size={16} className="env-row-icon" />
               <span className="env-row-label">커밋 로그</span>
-              <span className={`env-chevron ${logOpen ? 'open' : ''}`}>⌄</span>
+              <AppIcon name={logOpen ? 'chevronUp' : 'chevronDown'} size={16} className="env-chevron" />
             </button>
             {logOpen && (
               <div className="env-sub-list">
@@ -469,11 +472,11 @@ const CodeTabWithGit: React.FC<{
 
           {/* Action rows */}
           <button type="button" className="env-row" onClick={() => goGit('커밋·푸시는 Git 페이지에서 진행합니다.')}>
-            <span className="env-row-icon">⟳</span>
+            <AppIcon name="refresh" size={16} className="env-row-icon" />
             <span className="env-row-label">커밋 또는 푸시</span>
           </button>
           <button type="button" className="env-row" onClick={() => goGit('풀 리퀘스트는 Git 페이지에서 만들 수 있습니다.')}>
-            <span className="env-row-icon">⑆</span>
+            <AppIcon name="git" size={16} className="env-row-icon" />
             <span className="env-row-label">풀 리퀘스트 만들기</span>
           </button>
         </div>
@@ -520,7 +523,7 @@ const CodeTabWithGit: React.FC<{
           ) : (
             mcpServers.map((server) => (
               <div key={server.name} className="env-mcp-row">
-                <span className="env-mcp-icon">⊞</span>
+                <AppIcon name="puzzle" size={16} className="env-mcp-icon" />
                 <div className="env-mcp-text">
                   <span className="env-mcp-name">{server.name}</span>
                   <span className="env-mcp-status">{server.transport} · 구성됨</span>
@@ -551,39 +554,8 @@ export const EnvironmentPanel: React.FC<Props> = ({
 }) => {
   const changes = useChangeStore((s) => s.changes);
 
-  if (!open) return null;
-
   return (
-    <aside className="agk-env-panel" aria-label="에이전트 모니터링 패널">
-      {/* ── Tab bar: 환경 / 코드 / 변경 ─────────────────────── */}
-      <div className="env-tab-bar">
-        <button
-          type="button"
-          className={`env-tab ${tab === 'env' ? 'active' : ''}`}
-          onClick={() => onTabChange('env')}
-        >
-          환경
-        </button>
-        <button
-          type="button"
-          className={`env-tab ${tab === 'code' ? 'active' : ''}`}
-          onClick={() => onTabChange('code')}
-        >
-          코드
-        </button>
-        <button
-          type="button"
-          className={`env-tab ${tab === 'changes' ? 'active' : ''}`}
-          onClick={() => onTabChange('changes')}
-        >
-          변경 {changes.length > 0 && <span className="env-tab-count">{changes.length}</span>}
-        </button>
-        <div className="env-tab-spacer" />
-        <button type="button" className="env-close-btn" onClick={onClose} aria-label="패널 닫기">
-          ✕
-        </button>
-      </div>
-
+    <InspectionFrame open={open} tab={tab} onTabChange={onTabChange} onClose={onClose} changeCount={changes.length}>
       {tab === 'env' && <AgentMonitorTab />}
 
       {tab === 'code' && (
@@ -600,7 +572,7 @@ export const EnvironmentPanel: React.FC<Props> = ({
           {changesContent}
         </div>
       )}
-    </aside>
+    </InspectionFrame>
   );
 };
 

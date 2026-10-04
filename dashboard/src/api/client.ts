@@ -5,6 +5,7 @@
  */
 
 import { createAccessPinHeaders } from '../utils/accessPinCredential';
+import { ChatFinalContentFrameSchema, ChatStatusFrameSchema } from './chatStreamFrameSchema';
 import {
   createProjectIdentityHeaders,
   withProjectIdentityPayload,
@@ -192,6 +193,8 @@ export class ConversationRequestError extends Error {
 
 export type ChatStreamHandlers = Readonly<{
   onChunk: (text: string) => void;
+  onStatus?: (text: string) => void;
+  onFinalContent?: (text: string) => void;
   onDone: () => void;
   onError: (error: Error) => void;
   /** CTX-01: authoritative conversation snapshot from SSE trailer */
@@ -292,8 +295,7 @@ function parseSseData(input: string, flush: boolean): ParsedSseData {
 
 function emitChatFrame(
   frame: string,
-  onChunk: (text: string) => void,
-  onConversationSnapshot?: ChatStreamHandlers['onConversationSnapshot'],
+  handlers: ChatStreamHandlers,
 ): void {
   if (frame === '[DONE]') return;
 
@@ -301,6 +303,17 @@ function emitChatFrame(
   try {
     raw = JSON.parse(frame);
   } catch {
+    return;
+  }
+
+  if (raw && typeof raw === 'object' && 'agk_status' in raw) {
+    const status = ChatStatusFrameSchema.safeParse(raw);
+    if (status.success) handlers.onStatus?.(status.data.agk_status.text);
+    return;
+  }
+  if (raw && typeof raw === 'object' && 'agk_final_content' in raw) {
+    const final = ChatFinalContentFrameSchema.safeParse(raw);
+    if (final.success) handlers.onFinalContent?.(final.data.agk_final_content);
     return;
   }
 
@@ -343,14 +356,14 @@ function emitChatFrame(
       summary?: string | null;
       retained_message_ids?: string[];
     } }).agk_conversation;
-    onConversationSnapshot?.(snap);
+    handlers.onConversationSnapshot?.(snap);
     return;
   }
 
   const parsed = ChatCompletionChunkSchema.safeParse(raw);
   if (!parsed.success) return;
   const content = parsed.data.choices[0]?.delta.content;
-  if (content) onChunk(content);
+  if (content) handlers.onChunk(content);
 }
 
 function isAbortError(error: unknown): boolean {
@@ -440,14 +453,14 @@ export async function streamChatCompletion(
       const parsed = parseSseData(buffer, false);
       buffer = parsed.remainder;
       for (const frame of parsed.frames) {
-        emitChatFrame(frame, handlers.onChunk, handlers.onConversationSnapshot);
+        emitChatFrame(frame, handlers);
       }
     }
 
     buffer += decoder.decode();
     const final = parseSseData(buffer, true);
     for (const frame of final.frames) {
-      emitChatFrame(frame, handlers.onChunk, handlers.onConversationSnapshot);
+      emitChatFrame(frame, handlers);
     }
     handlers.onDone();
   } catch (err: unknown) {
@@ -912,7 +925,12 @@ export async function compactConversation(payload: {
   retain_tail?: number;
 }): Promise<ConversationSnapshotWire> {
   const headers = createProjectIdentityHeaders({ 'Content-Type': 'application/json' });
-  const body = withProjectIdentityPayload({ ...payload });
+  const body = {
+    conversation_id: payload.conversation_id,
+    expected_revision: payload.expected_revision,
+    ...(payload.project_id === undefined ? {} : { project_id: payload.project_id }),
+    ...(payload.retain_tail === undefined ? {} : { retain_tail: payload.retain_tail }),
+  };
   const response = await fetch('/v1/conversations/compact', {
     method: 'POST',
     headers,
@@ -947,7 +965,12 @@ export async function forkConversation(payload: {
   new_conversation_id?: string;
 }): Promise<ConversationSnapshotWire> {
   const headers = createProjectIdentityHeaders({ 'Content-Type': 'application/json' });
-  const body = withProjectIdentityPayload({ ...payload });
+  const body = {
+    conversation_id: payload.conversation_id,
+    ...(payload.expected_revision === undefined ? {} : { expected_revision: payload.expected_revision }),
+    ...(payload.project_id === undefined ? {} : { project_id: payload.project_id }),
+    ...(payload.new_conversation_id === undefined ? {} : { new_conversation_id: payload.new_conversation_id }),
+  };
   const response = await fetch('/v1/conversations/fork', {
     method: 'POST',
     headers,

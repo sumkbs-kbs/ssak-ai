@@ -4,6 +4,7 @@ import { ExecutionBlockRenderer } from './ExecutionBlockRenderer';
 import { projectTaskExecution } from './taskExecutionProjection';
 import { TaskQueuePanel, type PendingTaskAction } from './TaskQueuePanel';
 import type { TaskEvent, TaskId, TaskSummary } from './taskExecutionSchema';
+import type { TaskOperation, TaskSubmitDraft } from './taskOperation';
 import type { TaskConnectionState } from './useTaskExecutionEvents';
 
 const CONNECTION_LABELS = {
@@ -22,15 +23,18 @@ export type TaskExecutionViewProps = Readonly<{
   connectionState: TaskConnectionState;
   error: string | null;
   pendingAction: PendingTaskAction | null;
+  failedTaskOperation: TaskOperation | null;
+  completedSubmitDraft: TaskSubmitDraft | null;
   approvals: readonly ApprovalRequest[];
   alwaysAllowed: readonly AlwaysAllowGrant[];
   pendingApprovalId: string | null;
   approvalError: string | null;
   onSelectTask: (taskId: TaskId) => void;
-  onSubmit: (prompt: string) => void;
+  onSubmit: (draft: TaskSubmitDraft) => void;
   onCancel: (taskId: TaskId) => void;
   onResume: (taskId: TaskId) => void;
   onFork: (taskId: TaskId) => void;
+  onRetryTaskOperation: () => void;
   onResolveApproval: (requestId: string, decision: ApprovalDecision) => void;
   onRevokeAlwaysAllowed: () => void;
   onRetry: () => void;
@@ -43,6 +47,8 @@ export function TaskExecutionView({
   connectionState,
   error,
   pendingAction,
+  failedTaskOperation,
+  completedSubmitDraft,
   approvals,
   alwaysAllowed,
   pendingApprovalId,
@@ -52,6 +58,7 @@ export function TaskExecutionView({
   onCancel,
   onResume,
   onFork,
+  onRetryTaskOperation,
   onResolveApproval,
   onRevokeAlwaysAllowed,
   onRetry,
@@ -90,11 +97,14 @@ export function TaskExecutionView({
           tasks={tasks}
           selectedTaskId={selectedTaskId}
           pendingAction={pendingAction}
+          failedTaskOperation={failedTaskOperation}
+          completedSubmitDraft={completedSubmitDraft}
           onSelectTask={onSelectTask}
           onSubmit={onSubmit}
           onCancel={onCancel}
           onResume={onResume}
           onFork={onFork}
+          onRetryTaskOperation={onRetryTaskOperation}
         />
         <ApprovalQueue
           approvals={approvals}

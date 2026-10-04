@@ -1,0 +1,178 @@
+.workspace-chat .agk-feed .message.assistant .antigravity-markdown-body {
+  font-family: var(--font-sans);
+  font-size: var(--chat-font-size);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--leading-relaxed);
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.workspace-chat .agk-feed .message.assistant .antigravity-markdown-body p {
+  margin: 0 0 var(--space-4);
+  line-height: inherit;
+}
+
+.workspace-chat .agk-feed .message.assistant .antigravity-markdown-body p:not(:has(code)) {
+  text-wrap: pretty;
+}
+
+.workspace-chat .antigravity-markdown-body :is(strong, b) { font-weight: var(--font-weight-semibold); }
+
+.workspace-chat .agk-feed .message.assistant .antigravity-markdown-body :is(h1, h2, h3, h4, h5, h6) {
+  margin: var(--space-6) 0 var(--space-3);
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--chat-font-size);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-normal);
+  letter-spacing: normal;
+  color: var(--text-primary);
+  border: none;
+}
+
+.workspace-chat .agk-feed .message.assistant .antigravity-markdown-body :is(h1, h2) { font-size: var(--text-2xl); }
+
+.workspace-chat .agk-feed .message.assistant .antigravity-markdown-body :is(ul, ol) {
+  margin: 0 0 var(--space-4);
+  padding-left: var(--space-6);
+  gap: var(--space-2);
+}
+
+.workspace-chat .agk-feed .message.assistant .antigravity-markdown-body li {
+  line-height: inherit;
+  color: inherit;
+}
+
+.workspace-chat .agk-feed .message.assistant .antigravity-markdown-body li::marker { color: var(--text-secondary); }
+.workspace-chat .agk-feed .message.assistant .antigravity-markdown-body li :is(ul, ol) { margin: var(--space-2) 0 0; }
+.workspace-chat .agk-feed .message.assistant .antigravity-markdown-body li p:last-child { margin-bottom: 0; }
+
+.workspace-chat .antigravity-markdown-body .inline-code {
+  padding: 0 var(--space-1);
+  border-radius: var(--space-1);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.workspace-chat .antigravity-markdown-body .code-block {
+  min-width: 0;
+  max-width: 100%;
+  margin: var(--space-4) 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius);
+  box-shadow: none;
+}
+
+.workspace-chat .antigravity-markdown-body .code-block-header {
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-tertiary);
+  border-color: var(--glass-border);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+}
+
+.workspace-chat .antigravity-markdown-body .code-block-lang {
+  min-width: 0;
+  gap: var(--space-2);
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+
+.workspace-chat .antigravity-markdown-body .code-block-copy-btn {
+  min-width: var(--space-8);
+  min-height: var(--space-8);
+  padding: var(--space-1) var(--space-2);
+  gap: var(--space-2);
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--border-radius);
+  background: none;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.workspace-chat .antigravity-markdown-body .code-block-copy-btn:hover { background: var(--bg-elevated); color: var(--text-primary); }
+.workspace-chat .antigravity-markdown-body .code-block-copy-btn.copied { color: var(--success-color); }
+.workspace-chat .antigravity-markdown-body .code-block pre { margin: 0; padding: var(--space-4); background: none; }
+.workspace-chat .antigravity-markdown-body .code-block code {
+  padding: 0;
+  background: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--text-primary);
+  white-space: pre;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+.workspace-chat .antigravity-markdown-body blockquote:not(.github-alert) {
+  margin: var(--space-4) 0;
+  padding: 0 var(--space-4);
+  border: none;
+  border-left: 2px solid var(--terminal-border);
+  border-radius: 0;
+  background: none;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: inherit;
+}
+
+.workspace-chat .antigravity-markdown-body .agk-table-container {
+  min-width: 0;
+  max-width: 100%;
+  margin: var(--space-4) 0;
+  background: none;
+  border-color: var(--glass-border);
+  border-radius: var(--border-radius);
+  box-shadow: none;
+}
+
+.workspace-chat .antigravity-markdown-body .agk-markdown-table { font-family: var(--font-sans); font-size: var(--text-base); color: var(--text-primary); }
+.workspace-chat .antigravity-markdown-body .agk-markdown-table :is(th, td) {
+  padding: var(--space-3);
+  border-bottom-color: var(--glass-border);
+  font-size: inherit;
+  line-height: var(--leading-normal);
+}
+
+.workspace-chat .antigravity-markdown-body .agk-markdown-table th { background: var(--bg-tertiary); color: var(--text-primary); font-weight: var(--font-weight-semibold); }
+.workspace-chat .antigravity-markdown-body .agk-markdown-table tr:is(:nth-child(even), :hover) td { background: none; }
+.workspace-chat .antigravity-markdown-body .agk-markdown-link { color: var(--accent-color); text-decoration: underline; text-underline-offset: var(--space-1); border: none; }
+.workspace-chat .agk-feed .message.assistant .antigravity-markdown-body hr { margin: var(--space-6) 0; border: none; border-top: 1px solid var(--glass-border); }
+.workspace-chat .antigravity-markdown-body .tip-callout { margin: var(--space-4) 0; padding: var(--space-3) var(--space-4); background: var(--bg-tertiary); border-color: var(--glass-border); border-radius: var(--border-radius); color: var(--text-secondary); font-size: inherit; line-height: inherit; }
+.workspace-chat .antigravity-markdown-body .tip-callout-title { color: var(--text-primary); }
+.workspace-chat .agk-feed .message.assistant .antigravity-markdown-body > :first-child { margin-top: 0; }
+.workspace-chat .agk-feed .message.assistant .antigravity-markdown-body > :last-child { margin-bottom: 0; }
+
+.workspace-chat .message-footer { align-items: flex-start; padding-top: var(--space-2); }
+.workspace-chat .message-footer .message-actions { margin-top: 0; }
+.workspace-chat .message-details { min-width: 0; max-width: 100%; font-family: var(--font-sans); line-height: var(--leading-normal); }
+.workspace-chat .message-details[open] { flex: 1 0 100%; }
+.workspace-chat .message-details > summary { display: flex; align-items: center; width: fit-content; min-height: var(--space-8); gap: var(--space-2); padding: var(--space-2); border-radius: var(--border-radius); list-style: none; }
+.workspace-chat .message-details > summary::-webkit-details-marker { display: none; }
+.workspace-chat .message-details > summary:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+.workspace-chat .message-details[open] > summary svg { transform: rotate(180deg); }
+.workspace-chat .assistant-agent-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); padding: var(--space-2); color: var(--text-muted); }
+.workspace-chat .assistant-agent-meta .badge { font-family: var(--font-sans); font-size: var(--text-sm); }
+.workspace-chat .assistant-agent-meta :is(.badge-mode, .badge-web, .badge-graphify) { background: none; color: var(--text-secondary); }
+.workspace-chat .assistant-agent-meta .badge-pass { color: var(--success-color); }
+.workspace-chat .assistant-agent-meta .badge-fail { color: var(--error-color); }
+.workspace-chat .response-system-meta { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-2) var(--space-4); margin: 0; padding: var(--space-2); }
+.workspace-chat .response-system-meta dt { color: var(--text-muted); }
+.workspace-chat .response-system-meta dd { margin: 0; color: var(--text-secondary); overflow-wrap: anywhere; }
+.workspace-chat .response-original { margin: var(--space-2); }
+.workspace-chat .response-original summary { width: fit-content; color: var(--text-muted); }
+.workspace-chat .response-original pre { margin: var(--space-2) 0 0; max-height: 240px; padding: var(--space-3); border: 1px solid var(--glass-border); border-radius: var(--border-radius); background: var(--bg-secondary); color: var(--text-secondary); font-family: var(--font-mono); font-size: var(--text-sm); line-height: var(--leading-normal); white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; overflow: auto; }
+
+@media (max-width: 1023px) {
+  .workspace-chat .antigravity-markdown-body .code-block-copy-btn,
+  .workspace-chat .message-details > summary { min-width: 36px; min-height: 36px; }
+}

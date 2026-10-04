@@ -58,7 +58,7 @@ test.describe('Chat Interface', () => {
   });
 
   test('should render the chat history panel button', async () => {
-    const historyBtn = dashboard.page.locator('[aria-label="채팅 히스토리"]');
+    const historyBtn = dashboard.page.locator('[aria-label="대화 기록 열기"]');
     await expect(historyBtn).toBeVisible({ timeout: 5000 });
     await expect(historyBtn).toBeEnabled();
   });

@@ -1,0 +1,348 @@
+.app-shell :where(
+  .unsloth-studio-container,
+  .unsloth-start-container,
+  .unsloth-hub-container,
+  .settings-page
+) {
+  min-inline-size: 0;
+  inline-size: 100%;
+  font-family: var(--font-sans);
+}
+
+.app-shell :where(.unsloth-studio-header, .unsloth-start-header, .unsloth-hub-header),
+.app-shell :where(.unsloth-studio-title-block, .start-title-box, .hub-title-section),
+.app-shell :where(.unsloth-step-btn, .unsloth-card, .unsloth-model-card, .integration-card, .hub-card),
+.app-shell :where(.hub-model-identity, .endpoint-row, .telemetry-item, .settings-section) {
+  min-inline-size: 0;
+}
+
+.app-shell :where(.unsloth-studio-title-block, .start-title-box, .hub-title-section) > div:last-child {
+  min-inline-size: 0;
+}
+
+.app-shell :where(
+  .unsloth-studio-title,
+  .start-title,
+  .hub-title
+) {
+  font-family: var(--font-sans);
+  font-size: var(--text-3xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.3;
+  letter-spacing: normal;
+}
+
+.app-shell :where(
+  .unsloth-studio-subtitle,
+  .start-sub,
+  .hub-sub,
+  .item-description,
+  .model-desc-text,
+  .settings-desc
+) {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.app-shell :where(.unsloth-tag-pro, .unsloth-tag-accel, .hub-badge, .start-badge) {
+  max-inline-size: 100%;
+  font-family: var(--font-sans);
+  line-height: var(--leading-normal);
+  letter-spacing: normal;
+  white-space: normal;
+  word-break: keep-all;
+}
+
+.app-shell .unsloth-telemetry-card,
+.app-shell .endpoint-hud-card {
+  min-inline-size: 0;
+  inline-size: 100%;
+}
+
+.app-shell .unsloth-telemetry-card {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(144px, 100%), 1fr));
+}
+
+.app-shell .endpoint-hud-card {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+}
+
+.app-shell :where(.telemetry-val, .ep-code, .ep-model) {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.app-shell .unsloth-stepper-bar {
+  grid-template-columns: repeat(auto-fit, minmax(min(148px, 100%), 1fr));
+}
+
+.app-shell .unsloth-step-btn {
+  align-items: flex-start;
+  min-block-size: 72px;
+}
+
+.app-shell .step-text {
+  min-inline-size: 0;
+}
+
+.app-shell :where(.step-title, .step-desc) {
+  line-height: var(--leading-normal);
+  word-break: keep-all;
+}
+
+.app-shell :where(.unsloth-model-grid, .integrations-grid, .hub-models-grid) {
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+}
+
+.app-shell :where(.model-card-header, .card-top-row, .icon-title-cluster, .hub-card-top, .hub-card-footer) {
+  min-inline-size: 0;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.app-shell :where(.model-name, .model-display-name, .item-name) {
+  overflow-wrap: anywhere;
+}
+
+.app-shell .model-id {
+  overflow: visible;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.app-shell .unsloth-model-card:hover,
+.app-shell .hub-card:hover {
+  transform: none;
+}
+
+.app-shell .unsloth-hub-container {
+  gap: var(--space-5);
+}
+
+.app-shell .hub-search-box {
+  inline-size: min(320px, 100%);
+  min-inline-size: 0;
+}
+
+.app-shell .hub-search-input {
+  min-inline-size: 0;
+}
+
+.app-shell :where(.hub-category-pills, .hub-resource-filter, .hub-quant-tier-pills) {
+  inline-size: 100%;
+  min-inline-size: 0;
+  flex-wrap: wrap;
+}
+
+.app-shell .hub-cat-btn {
+  max-inline-size: 100%;
+  font-family: var(--font-sans);
+  line-height: var(--leading-normal);
+  white-space: normal;
+  word-break: keep-all;
+}
+
+.app-shell .hub-category-pills .hub-cat-btn,
+.app-shell .hub-quant-tier-pills .hub-cat-btn {
+  flex: 0 1 auto;
+  inline-size: fit-content;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--border-radius);
+}
+
+.app-shell .hub-min-gb-input {
+  max-inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.app-shell .hub-min-gb-input input {
+  min-inline-size: 0;
+}
+
+.app-shell .model-specs-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(132px, 100%), 1fr));
+}
+
+.app-shell .spec-badge {
+  min-inline-size: 0;
+}
+
+.app-shell :where(.spec-key, .spec-val, .quant-quality-wrap) {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.app-shell .spec-key {
+  font-family: var(--font-sans);
+  letter-spacing: normal;
+  text-transform: none;
+  word-break: keep-all;
+}
+
+.app-shell .unsloth-start-container {
+  gap: var(--space-5);
+}
+
+.app-shell :where(.cmd-box, .env-box, .tunnel-banner-card, .tunnel-info) {
+  min-inline-size: 0;
+}
+
+.app-shell .cmd-text {
+  max-inline-size: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow-x: auto;
+}
+
+.app-shell .env-line code {
+  overflow-wrap: anywhere;
+}
+
+.app-shell .tunnel-banner-card {
+  flex-wrap: wrap;
+}
+
+.app-shell :where(.settings-section h3, .settings-row, .settings-row-label, .settings-row-status) {
+  min-inline-size: 0;
+}
+
+.app-shell .settings-section h3 {
+  flex-wrap: wrap;
+  line-height: var(--leading-normal);
+}
+
+.app-shell :where(.settings-desc, .settings-row-hint) {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 1023px) {
+  .app-shell :where(.unsloth-studio-header, .unsloth-start-header) {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 767px) {
+  .app-shell :where(.unsloth-studio-container, .unsloth-start-container, .unsloth-hub-container) {
+    padding: var(--space-4);
+  }
+
+  .app-shell :where(.unsloth-studio-header, .unsloth-start-header) {
+    gap: var(--space-4);
+  }
+
+  .app-shell :where(.unsloth-studio-title-block, .start-title-box, .hub-title-section) {
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .app-shell .unsloth-badge-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .app-shell :where(.unsloth-logo-badge, .hub-icon, .start-icon) {
+    flex: 0 0 auto;
+  }
+
+  .app-shell .unsloth-stepper-bar {
+    gap: var(--space-2);
+  }
+
+  .app-shell :where(.unsloth-card, .integration-card, .hub-card) {
+    padding: var(--space-4);
+  }
+
+  .app-shell .dataset-meta-row,
+  .app-shell .unsloth-hud-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-shell :where(.step-actions, .export-btns, .tunnel-actions) {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .app-shell :where(.step-actions, .tunnel-actions) > button {
+    inline-size: 100%;
+  }
+
+  .app-shell .settings-page {
+    padding: var(--space-4) var(--space-4) var(--space-8);
+  }
+
+  .app-shell .settings-row-status[style] {
+    inline-size: auto !important;
+    text-align: start !important;
+  }
+}
+
+@media (max-width: 419px) {
+  .app-shell .unsloth-telemetry-card,
+  .app-shell .endpoint-hud-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-shell .model-specs-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-shell .hub-resource-filter {
+    align-items: stretch;
+  }
+
+  .app-shell .hub-sort-select {
+    inline-size: 100%;
+  }
+}
+
+.app-shell .settings-logger-row {
+  min-inline-size: 0; gap: var(--space-2); flex-wrap: wrap;
+  font-size: var(--text-xs) !important; line-height: var(--leading-normal);
+}
+.app-shell .settings-logger-row span { font-size: inherit !important; }
+.app-shell :where(.settings-logger-name, .settings-logger-level) { min-inline-size: 0; max-inline-size: 100%; overflow-wrap: anywhere; }
+.app-shell .settings-logger-name { flex: 1 1 160px; }
+.app-shell .settings-logger-level { flex: 0 1 auto; }
+
+.app-shell .dex-abtest-controls {
+  flex-wrap: wrap;
+  word-break: keep-all;
+}
+
+.app-shell .dex-abtest-controls > button {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.app-shell .not-found-page p {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.app-shell .not-found-page code {
+  overflow-wrap: anywhere;
+}
+
+.app-shell .dex-page {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.app-shell [aria-labelledby="mutation-source"] :where(dd, code) {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.app-shell [aria-labelledby="mutation-source"] code {
+  white-space: normal;
+}

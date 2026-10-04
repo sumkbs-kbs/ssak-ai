@@ -8,7 +8,9 @@
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useUiStore } from '../../stores/uiStore';
-import { LocalSkill, PublishResult, PublishHistoryEntry, esc } from './types';
+import type { LocalSkill, PublishResult, PublishHistoryEntry } from './types';
+import { esc } from './types';
+import { fetchPublishableSkills, publishRequestErrorMessage, submitSkillPublication } from './publishSkillsApi';
 import EmptyState from './EmptyState';
 
 type PublishMode = 'npm' | 'github';
@@ -61,6 +63,7 @@ const POLL_INTERVAL_MS = 15000;
 const PublishTab: React.FC = () => {
   const [localSkills, setLocalSkills] = useState<LocalSkill[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
   const [publishMode, setPublishMode] = useState<PublishMode>('npm');
   const [step, setStep] = useState<Step>('idle');
@@ -75,20 +78,20 @@ const PublishTab: React.FC = () => {
   const [newSkillsDetected, setNewSkillsDetected] = useState(false);
   const [silentLoading, setSilentLoading] = useState(false);
   const skillCountRef = useRef(0);
+  const localRequestRef = useRef(0);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const publishingRef = useRef(false);
 
   const loadLocalSkills = useCallback(async (silent = false) => {
+    const requestId = ++localRequestRef.current;
     if (silent) {
       setSilentLoading(true);
     } else {
       setLoading(true);
     }
     try {
-      const res = await fetch('/api/system/skills/local');
-      if (!res.ok) throw new Error(`Local skills request failed (${res.status})`);
-      const data = await res.json();
-      const skills: LocalSkill[] = data.skills || [];
+      const skills = await fetchPublishableSkills();
+      if (requestId !== localRequestRef.current) return;
 
       const prevCount = skillCountRef.current;
       if (silent && prevCount > 0 && skills.length !== prevCount) {
@@ -96,12 +99,15 @@ const PublishTab: React.FC = () => {
       }
 
       setLocalSkills(skills);
+      setLoadError(null);
       skillCountRef.current = skills.length;
-    } catch {
-      setLocalSkills([]);
+    } catch (error) {
+      if (requestId === localRequestRef.current) setLoadError(publishRequestErrorMessage(error));
     } finally {
-      setLoading(false);
-      setSilentLoading(false);
+      if (requestId === localRequestRef.current) {
+        setLoading(false);
+        setSilentLoading(false);
+      }
     }
   }, []);
 
@@ -116,6 +122,7 @@ const PublishTab: React.FC = () => {
       loadLocalSkills(true);
     }, POLL_INTERVAL_MS);
     return () => {
+      localRequestRef.current += 1;
       if (pollingRef.current) clearInterval(pollingRef.current);
     };
   }, [loadLocalSkills]);
@@ -127,66 +134,31 @@ const PublishTab: React.FC = () => {
     setResult(null);
 
     try {
-      const endpoint = publishMode === 'npm'
-        ? '/api/system/skills/publish-npm'
-        : '/api/system/skills/publish-github';
+      const publishResult = await submitSkillPublication(publishMode === 'npm'
+        ? { mode: 'npm', skill_name: selectedSkill, dry_run: dryRun, tag: npmTag }
+        : { mode: 'github', skill_name: selectedSkill, dry_run: dryRun, repo: ghRepo, draft: ghDraft });
+      setResult(publishResult);
+      setStep(publishResult.success ? 'done' : 'error');
 
-      const body: Record<string, string | boolean> = {
-        skill_name: selectedSkill,
-        dry_run: dryRun,
-      };
-      if (publishMode === 'npm') {
-        body.tag = npmTag;
-      } else {
-        body.repo = ghRepo;
-        body.draft = ghDraft;
-      }
-
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) throw new Error(`Publish request failed (${res.status})`);
-      const data = await res.json();
-
-      let publishResult: PublishResult;
-
-      if (data.publish_result) {
-        publishResult = data.publish_result;
-        setResult(publishResult);
-        setStep(publishResult.success ? 'done' : 'error');
-
-        if (publishResult.success) {
-          useUiStore.getState().addToast(
-            `✅ ${publishMode === 'npm' ? 'npm publish' : 'GitHub PR'} 성공: ${selectedSkill}`,
-            'success',
-          );
-        }
-      } else {
-        publishResult = {
-          success: false,
-          action: publishMode === 'npm' ? 'npm_publish' : 'github_pr',
-          skill_name: selectedSkill,
-          errors: [data.error || 'Unknown error'],
-          warnings: [],
-          summary: `❌ ${selectedSkill} publish 실패: ${data.error || 'Unknown error'}`,
-        };
-        setResult(publishResult);
-        setStep('error');
+      if (publishResult.success) {
+        useUiStore.getState().addToast(
+          `✅ ${publishMode === 'npm' ? 'npm publish' : 'GitHub PR'} 성공: ${selectedSkill}`,
+          'success',
+        );
       }
 
       // Save to history
       const entry = buildEntry(publishResult, dryRun);
       setHistory(prev => [entry, ...prev].slice(0, MAX_HISTORY));
     } catch (err) {
+      const message = publishRequestErrorMessage(err);
       const publishResult: PublishResult = {
         success: false,
         action: publishMode === 'npm' ? 'npm_publish' : 'github_pr',
         skill_name: selectedSkill,
-        errors: [String(err)],
+        errors: [message],
         warnings: [],
-        summary: `❌ ${selectedSkill} publish 실패: ${err}`,
+        summary: `${selectedSkill} publish 실패: ${message}`,
       };
       setResult(publishResult);
       setStep('error');
@@ -255,17 +227,25 @@ const PublishTab: React.FC = () => {
                 ✨ 새 스킬 발견! 새로고침
               </button>
             )}
-            <button className="glass-btn" onClick={() => loadLocalSkills()} style={{ gap: 6 }}>
+            <button className="glass-btn" onClick={() => loadLocalSkills()} disabled={loading || silentLoading} style={{ gap: 6 }}>
               <span>🔄</span> 새로고침
             </button>
           </div>
         </div>
       </div>
 
+      {loadError && (
+        <div role="alert" className="glass-panel" style={{ padding: 'var(--space-4)', marginBottom: 'var(--space-4)', color: 'var(--error-color)' }}>
+          <p style={{ margin: '0 0 var(--space-3)' }}>{loadError}</p>
+          {localSkills.length > 0 && <p style={{ margin: '0 0 var(--space-3)' }}>마지막으로 확인한 로컬 스킬 목록입니다.</p>}
+          <button className="glass-btn" onClick={() => loadLocalSkills()} disabled={loading || silentLoading}>로컬 스킬 다시 시도</button>
+        </div>
+      )}
+
       {/* Local Skills List */}
-      {loading ? (
+      {loading && localSkills.length === 0 ? (
         <div className="skills-loading">🔄 스킬 목록을 불러오는 중...</div>
-      ) : localSkills.length === 0 ? (
+      ) : localSkills.length === 0 && !loadError ? (
         <EmptyState
           icon="📦"
           title="Publish 가능한 로컬 스킬이 없습니다."
@@ -459,7 +439,7 @@ const PublishTab: React.FC = () => {
 
           {/* Result Display */}
           {result && (
-            <div style={{
+            <div role={result.success ? 'status' : 'alert'} style={{
               marginTop: 16,
               padding: 14,
               borderRadius: 8,

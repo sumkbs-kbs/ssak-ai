@@ -266,7 +266,7 @@ describe('App route recovery wiring · CR-07', () => {
 
     await waitFor(() => expect(screen.getByTestId('cr07-not-found')).toBeInTheDocument());
     // 셸은 그대로 남는다(로그인/사이드바가 fallback에 묻히지 않는다).
-    await waitFor(() => expect(screen.getByLabelText('Codex Desktop Navigation')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByLabelText('SSAK-AI 탐색')).toBeInTheDocument());
   });
 
   it('keeps the stored conversation when a not-found route is shown', async () => {
@@ -283,7 +283,7 @@ describe('App route recovery wiring · CR-07', () => {
     renderAppAt('/history');
 
     await waitFor(() => expect(screen.getByTestId('cr07-recovery')).toBeInTheDocument());
-    expect(screen.getByLabelText('Codex Desktop Navigation')).toBeInTheDocument();
+    expect(screen.getByLabelText('SSAK-AI 탐색')).toBeInTheDocument();
   });
 
   it('lets the user escape a broken page by navigating elsewhere', async () => {
@@ -295,6 +295,6 @@ describe('App route recovery wiring · CR-07', () => {
     window.dispatchEvent(new PopStateEvent('popstate'));
 
     await waitFor(() => expect(screen.queryByTestId('cr07-recovery')).not.toBeInTheDocument());
-    expect(screen.getByLabelText('Codex Desktop Navigation')).toBeInTheDocument();
+    expect(screen.getByLabelText('SSAK-AI 탐색')).toBeInTheDocument();
   });
 });

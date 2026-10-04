@@ -1156,6 +1156,7 @@ const LogLevelSection: React.FC = () => {
             {visibleLoggers.map(l => (
               <div
                 key={l.name}
+                className="settings-logger-row"
                 style={{
                   display: 'flex', justifyContent: 'space-between',
                   alignItems: 'center', padding: '4px 8px',
@@ -1167,7 +1168,7 @@ const LogLevelSection: React.FC = () => {
                               'transparent',
                 }}
               >
-                <span style={{ color: 'var(--text-secondary)' }}>
+                <span className="settings-logger-name" style={{ color: 'var(--text-secondary)' }}>
                   {l.name}
                   {l.handlers > 0 && (
                     <span style={{ fontSize: 10, color: 'var(--text-muted)', marginLeft: 6 }}>
@@ -1175,7 +1176,7 @@ const LogLevelSection: React.FC = () => {
                     </span>
                   )}
                 </span>
-                <span style={{
+                <span className="settings-logger-level" style={{
                   fontWeight: 600,
                   color: l.level_name === 'DEBUG' ? '#58a6ff' :
                          l.level_name === 'WARNING' ? '#d29922' :

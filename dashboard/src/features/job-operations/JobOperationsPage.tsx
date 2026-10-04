@@ -131,6 +131,8 @@ export function JobOperationsPage(): ReactElement {
     );
   }
 
+  const successRate = health.completed_runs === 0 ? null : `${Math.round(health.success_rate * 100)}%`;
+
   return (
     <section className="page-container job-operations-page" aria-label="Job operations">
       <header className="job-operations-header">
@@ -157,7 +159,7 @@ export function JobOperationsPage(): ReactElement {
             <h2 id="job-alert-title">Scheduled work needs attention</h2>
             <ul>{health.reasons.map(reason => <li key={reason}>{reason}</li>)}</ul>
           </div>
-          <span className="job-alert-rate">{Math.round(health.success_rate * 100)}% success</span>
+          <span className="job-alert-rate">{successRate === null ? 'No completed runs' : `${successRate} success`}</span>
         </section>
       )}
 
@@ -165,7 +167,7 @@ export function JobOperationsPage(): ReactElement {
       {notice !== null && <p className="job-operations-notice" role="status" aria-live="polite">{notice}</p>}
 
       <section className="job-health-grid" aria-label="Job health summary">
-        <article className="job-metric-tile"><span>Success rate</span><strong>{Math.round(health.success_rate * 100)}%</strong><small>{health.completed_runs} completed runs</small></article>
+        <article className="job-metric-tile"><span>Success rate</span><strong>{successRate ?? '—'}</strong><small>{health.completed_runs === 0 ? 'No completed runs' : `${health.completed_runs} completed runs`}</small></article>
         <article className="job-metric-tile"><span>Active jobs</span><strong>{health.active_jobs}</strong><small>{health.paused_jobs} paused</small></article>
         <article className="job-metric-tile"><span>Failed runs</span><strong className={health.failed_runs > 0 ? 'is-danger' : ''}>{health.failed_runs}</strong><small>{health.run_window} run window</small></article>
         <article className="job-metric-tile"><span>Open / stale</span><strong>{health.open_runs} / {health.stale_runs}</strong><small>{health.delivery_failed_runs} delivery failures</small></article>

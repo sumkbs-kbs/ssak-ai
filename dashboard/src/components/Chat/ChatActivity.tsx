@@ -21,10 +21,10 @@ export function formatElapsed(seconds: number): string {
   return `${m}m ${s.toString().padStart(2, '0')}s`;
 }
 
-export const WorkingIndicator: React.FC<{ elapsed: number }> = ({ elapsed }) => (
+export const WorkingIndicator: React.FC<Readonly<{ elapsed: number; status?: string | null }>> = ({ elapsed, status }) => (
   <div className="agk-working-row" role="status" aria-label="에이전트 작업 중">
     <span className="working-dots" aria-hidden="true"><i /><i /><i /></span>
-    <span className="working-label">Working…</span>
+    <span className="working-label" title={status ?? undefined}>{status ?? 'Working…'}</span>
     <span className="working-elapsed">{formatElapsed(elapsed)}</span>
   </div>
 );

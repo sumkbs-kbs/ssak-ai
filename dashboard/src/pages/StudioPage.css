@@ -1,0 +1,12 @@
+.unsloth-studio-container button:disabled,
+.unsloth-studio-container input:disabled,
+.unsloth-studio-container select:disabled,
+.unsloth-studio-container button:disabled:hover {
+  color: var(--text-dim);
+  background: var(--bg-tertiary);
+  border-color: var(--glass-border);
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 1;
+  transform: none;
+}

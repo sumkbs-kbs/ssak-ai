@@ -33,11 +33,9 @@ export type ThemeStore = ThemePrefs & {
 };
 
 const DEFAULTS: ThemePrefs = {
-  // UI-01 (axe color-contrast): 활성 내비게이션/강조 텍스트가 어두운 배경(#0d0f0d)에서
-  // 4.5:1 이상을 만족하도록 명도를 올렸다 (#7c6aef → #9b87f2, 6.54:1).
-  accentColor: '#9b87f2',
-  fontSize: 13,
-  sidebarWidth: 220,
+  accentColor: '#a8bfff',
+  fontSize: 14,
+  sidebarWidth: 248,
   showMinimap: false,
   showLineNumbers: true,
   wordWrap: 'on',

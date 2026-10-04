@@ -5,7 +5,10 @@
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { ExtractionData, MetricsData, ABTestReport } from './dex/types';
+import { ZodError } from 'zod';
+import { ApiHttpError, isAuthRequiredError } from '../api/client';
+import type { ExtractionData, MetricsData, ABTestReport } from './dex/types';
+import { ExtractionDataSchema, loadExtractionMetrics, searchExtraction, runExtractionABTest } from './dex/extractionApi';
 import MetricsBar from './dex/MetricsBar';
 import SearchHeader from './dex/SearchHeader';
 import ABTestSection from './dex/ABTestSection';
@@ -14,12 +17,11 @@ import StockPanel from './dex/StockPanel';
 import WeatherExchangePanel from './dex/WeatherExchangePanel';
 import BottomPanels from './dex/BottomPanels';
 
-type MetricsResponse = { ok?: boolean; metrics?: MetricsData };
-type ExtractionResponse = ExtractionData & { ok?: boolean };
-type ABTestResponse = { ok?: boolean; report?: ABTestReport };
-
 function describeError(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
+  if (isAuthRequiredError(error)) return '인증이 필요합니다. PIN 인증을 완료한 뒤 다시 시도하세요.';
+  if (error instanceof ApiHttpError) return `요청에 실패했습니다 (HTTP ${error.status}). 다시 시도하세요.`;
+  if (error instanceof ZodError) return '서버 응답을 읽을 수 없습니다. 다시 시도하세요.';
+  return error instanceof Error ? error.message : '요청에 실패했습니다. 다시 시도하세요.';
 }
 
 function readStoredResult(): ExtractionData | null {
@@ -27,7 +29,8 @@ function readStoredResult(): ExtractionData | null {
     const saved = sessionStorage.getItem('dex_last_result');
     if (!saved) return null;
     const parsed: unknown = JSON.parse(saved);
-    return parsed && typeof parsed === 'object' ? parsed as ExtractionData : null;
+    const result = ExtractionDataSchema.safeParse(parsed);
+    return result.success ? result.data : null;
   } catch {
     return null;
   }
@@ -38,17 +41,22 @@ const DataExtractionPage: React.FC = () => {
   const [searching, setSearching] = useState(false);
   const [result, setResult] = useState<ExtractionData | null>(readStoredResult);
   const [metrics, setMetrics] = useState<MetricsData | null>(null);
+  const [metricsLoading, setMetricsLoading] = useState(true);
+  const [metricsError, setMetricsError] = useState<string | null>(null);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const [abtestResults, setAbtestResults] = useState<ABTestReport | null>(null);
   const [abtestRunning, setAbtestRunning] = useState(false);
+  const [abtestError, setAbtestError] = useState<string | null>(null);
 
   const loadMetrics = useCallback(async () => {
+    setMetricsLoading(true);
+    setMetricsError(null);
     try {
-      const res = await fetch('/api/search/extraction-metrics');
-      if (!res.ok) throw new Error(`Metrics request failed with status ${res.status}`);
-      const data = await res.json() as MetricsResponse;
-      if (data.ok === true && data.metrics) setMetrics(data.metrics);
+      setMetrics(await loadExtractionMetrics());
     } catch (error) {
-      console.error('Metrics load failed:', describeError(error));
+      setMetricsError(describeError(error));
+    } finally {
+      setMetricsLoading(false);
     }
   }, []);
 
@@ -60,40 +68,29 @@ const DataExtractionPage: React.FC = () => {
   const handleSearch = useCallback(async () => {
     if (!query.trim() || searching) return;
     setSearching(true);
+    setSearchError(null);
     try {
-      const res = await fetch('/api/search/extract', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query }),
-      });
-      if (!res.ok) throw new Error(`Extraction request failed with status ${res.status}`);
-      const data = await res.json() as ExtractionResponse;
-      if (data.ok === true) {
-        setResult(data);
-        sessionStorage.setItem('dex_last_result', JSON.stringify(data));
-      }
+      const data = await searchExtraction(query);
+      setResult(data);
+      sessionStorage.setItem('dex_last_result', JSON.stringify(data));
     } catch (error: unknown) {
-      console.error('Search failed:', describeError(error));
+      setSearchError(describeError(error));
     } finally {
       setSearching(false);
     }
   }, [query, searching]);
 
   const handleABTest = async () => {
+    if (abtestRunning) return;
     setAbtestRunning(true);
+    setAbtestError(null);
     try {
-      const res = await fetch('/api/search/ab-test/run', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ version_label: 'dashboard' }),
-      });
-      if (!res.ok) throw new Error(`A/B test request failed with status ${res.status}`);
-      const data = await res.json() as ABTestResponse;
-      if (data.ok === true && data.report) setAbtestResults(data.report);
+      setAbtestResults(await runExtractionABTest());
     } catch (error) {
-      console.error('A/B test failed:', describeError(error));
+      setAbtestError(describeError(error));
+    } finally {
+      setAbtestRunning(false);
     }
-    setAbtestRunning(false);
   };
 
   const sp = result?.extracted?.stock_prices || [];
@@ -105,22 +102,32 @@ const DataExtractionPage: React.FC = () => {
       flex: 1, display: 'flex', flexDirection: 'column',
       overflowY: 'auto', paddingBottom: 60,
     }}>
-      <MetricsBar metrics={metrics} />
-      <SearchHeader
-        query={query}
-        searching={searching}
-        onQueryChange={setQuery}
-        onSearch={handleSearch}
-      />
-      <ABTestSection
-        results={abtestResults}
-        running={abtestRunning}
-        onRun={handleABTest}
-      />
+      <section aria-label="추출 메트릭" aria-busy={metricsLoading}>
+        {metricsError ? <FailureNotice title="메트릭" error={metricsError} onRetry={loadMetrics} />
+          : metricsLoading || metrics ? <MetricsBar metrics={metricsLoading ? null : metrics} />
+            : <p role="status" className="dex-metrics-bar">메트릭 데이터가 없습니다.</p>}
+      </section>
+      <section aria-label="데이터 추출 검색" aria-busy={searching}>
+        <SearchHeader
+          query={query}
+          searching={searching}
+          onQueryChange={setQuery}
+          onSearch={handleSearch}
+        />
+        {searchError && <FailureNotice title="데이터 추출" error={searchError} onRetry={handleSearch} />}
+      </section>
+      <section aria-label="추출 A/B 테스트" aria-busy={abtestRunning}>
+        <ABTestSection
+          results={abtestRunning || abtestError ? null : abtestResults}
+          running={abtestRunning}
+          onRun={handleABTest}
+        />
+        {abtestError && <FailureNotice title="A/B 테스트" error={abtestError} onRetry={handleABTest} />}
+      </section>
 
       {/* Main Content */}
       <div id="dex-content" style={{ flex: 1, padding: '24px 32px' }}>
-        {!result && !searching ? (
+        {!result && !searching && !searchError ? (
           <div className="empty-state-container">
             <span style={{ fontSize: 64, opacity: 0.3 }}>🔬</span>
             <h2 className="empty-state-title">데이터 추출 대시보드</h2>
@@ -166,6 +173,13 @@ const LoadingState: React.FC = () => (
       <div className="skeleton skeleton-card" style={{ height: 80 }} />
       <div className="skeleton skeleton-card" style={{ height: 60, width: '70%' }} />
     </div>
+  </div>
+);
+
+const FailureNotice: React.FC<{ readonly title: string; readonly error: string; readonly onRetry: () => void }> = ({ title, error, onRetry }) => (
+  <div role="alert" style={{ padding: 'var(--space-3) var(--space-6)', color: 'var(--error-color)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 'var(--space-3)' }}>
+    <span style={{ flex: 1, overflowWrap: 'anywhere' }}>{title}: {error}</span>
+    <button type="button" className="ghost-btn" aria-label={`${title} 다시 시도`} onClick={onRetry}>다시 시도</button>
   </div>
 );
 

@@ -27,6 +27,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { TaskSummarySchema } from './taskExecutionSchema';
+import { useProjectStore } from '../../stores/projectStore';
 
 const api = vi.hoisted(() => ({
   fetchTaskList: vi.fn(),
@@ -36,6 +37,7 @@ const api = vi.hoisted(() => ({
   cancelTask: vi.fn(),
   resumeTask: vi.fn(),
   forkTask: vi.fn(),
+  isTaskOperationRetryable: vi.fn(() => true),
 }));
 
 vi.mock('./taskExecutionApi', () => api);
@@ -61,10 +63,194 @@ const ORPHANED = summary('dead', true);
 
 beforeEach(() => {
   window.localStorage.clear();
+  window.sessionStorage.clear();
   api.fetchTaskList.mockReset();
   api.fetchTaskEvents.mockReset();
   api.streamTaskEvents.mockReset();
+  api.submitTask.mockReset();
+  api.cancelTask.mockReset();
+  api.resumeTask.mockReset();
+  api.forkTask.mockReset();
   api.fetchTaskEvents.mockResolvedValue({ events: [], lastSequence: 0 });
+  useProjectStore.setState({
+    activeProjectId: 'project-a',
+    activeProjectName: 'Project A',
+    activeProjectPath: '/tmp/project-a',
+    projectRevision: 1,
+    switchEpoch: 1,
+  });
+});
+
+describe('useTaskExecutionEvents — idempotent task operation retry', () => {
+  it('reuses the original submit operation after an ambiguous response loss and selects the server task', async () => {
+    // Given: the server might have committed the first POST, but its response never reaches the browser.
+    const committedTask = TaskSummarySchema.parse({
+      task_id: 'task-committed-once', prompt: 'compile the project', status: 'pending', error: null,
+      created_at: '2026-10-03T00:00:00Z', updated_at: '2026-10-03T00:00:00Z',
+    });
+    api.fetchTaskList.mockResolvedValueOnce([]).mockResolvedValueOnce([committedTask]);
+    api.submitTask
+      .mockRejectedValueOnce(new TypeError('network response lost'))
+      .mockResolvedValueOnce(committedTask.task_id);
+
+    const { result } = renderHook(() => useTaskExecutionEvents());
+
+    // When: the user submits, then explicitly retries the unresolved operation.
+    act(() => result.current.submit({ prompt: 'compile the project', input: 'compile the project', generation: 1 }));
+    await waitFor(() => expect(result.current.failedTaskOperation?.kind).toBe('submit'));
+    const original = api.submitTask.mock.calls[0]?.[0];
+    act(() => result.current.retryTaskOperation());
+
+    // Then: exactly the immutable first request is retried and its authoritative task is selected.
+    await waitFor(() => expect(result.current.selectedTaskId).toBe(committedTask.task_id));
+    expect(api.submitTask).toHaveBeenCalledTimes(2);
+    expect(api.submitTask.mock.calls[1]?.[0]).toBe(original);
+    expect(result.current.failedTaskOperation).toBeNull();
+    expect(result.current.completedSubmitDraft).toEqual({ prompt: 'compile the project', input: 'compile the project', generation: 1 });
+  });
+
+  it('uses a fresh key for a later submit, blocks duplicate pending clicks, and preserves the unresolved first operation', async () => {
+    // Given: the first operation has an ambiguous result, then a separate user action starts.
+    api.fetchTaskList.mockResolvedValue([]);
+    api.submitTask
+      .mockRejectedValueOnce(new TypeError('connection reset'))
+      .mockRejectedValueOnce(new TypeError('connection reset again'));
+    const { result } = renderHook(() => useTaskExecutionEvents());
+
+    // When: a duplicate click occurs while creation is pending, followed by a new prompt after failure.
+    act(() => {
+      result.current.submit({ prompt: 'first task', input: 'first task', generation: 1 });
+      result.current.submit({ prompt: 'first task', input: 'first task', generation: 1 });
+    });
+    await waitFor(() => expect(result.current.failedTaskOperation?.kind).toBe('submit'));
+    const first = api.submitTask.mock.calls[0]?.[0];
+    act(() => result.current.submit({ prompt: 'second task', input: 'second task', generation: 2 }));
+    await waitFor(() => expect(api.submitTask).toHaveBeenCalledTimes(2));
+    const second = api.submitTask.mock.calls[1]?.[0];
+
+    // Then: only one pending click posted, and the later intent has a distinct idempotency key.
+    expect(first).toBeDefined();
+    expect(second).toBeDefined();
+    expect(second.idempotencyKey).not.toBe(first.idempotencyKey);
+    expect(second.draft.prompt).toBe('second task');
+  });
+
+  it('reuses the original fork operation after an ambiguous response loss', async () => {
+    // Given: the fork endpoint committed before its first response was lost.
+    const forkedTask = TaskSummarySchema.parse({
+      task_id: 'task-forked-once', prompt: 'cr14-f39-unit-witness', status: 'pending', error: null,
+      created_at: '2026-10-03T00:00:00Z', updated_at: '2026-10-03T00:00:00Z',
+    });
+    api.fetchTaskList.mockResolvedValueOnce([LIVE]).mockResolvedValueOnce([LIVE, forkedTask]);
+    api.forkTask
+      .mockRejectedValueOnce(new TypeError('connection closed'))
+      .mockResolvedValueOnce(forkedTask.task_id);
+    const { result } = renderHook(() => useTaskExecutionEvents());
+
+    // When: the user forks and explicitly retries the unresolved operation.
+    act(() => result.current.fork(LIVE.task_id));
+    await waitFor(() => expect(result.current.failedTaskOperation?.kind).toBe('fork'));
+    const original = api.forkTask.mock.calls[0]?.[0];
+    act(() => result.current.retryTaskOperation());
+
+    // Then: the source and key remain identical, so the server returns the original fork.
+    await waitFor(() => expect(result.current.selectedTaskId).toBe(forkedTask.task_id));
+    expect(api.forkTask).toHaveBeenCalledTimes(2);
+    expect(api.forkTask.mock.calls[1]?.[0]).toBe(original);
+    expect(result.current.completedSubmitDraft).toBeNull();
+  });
+
+  it('discards an unresolved operation after a project switch instead of retrying it in the new scope', async () => {
+    // Given: a submit result is ambiguous in project A.
+    api.fetchTaskList.mockResolvedValue([]);
+    api.submitTask.mockRejectedValueOnce(new TypeError('network response lost'));
+    const { result } = renderHook(() => useTaskExecutionEvents());
+    act(() => result.current.submit({ prompt: 'project A task', input: 'project A task', generation: 1 }));
+    await waitFor(() => expect(result.current.failedTaskOperation).not.toBeNull());
+
+    // When: the active project changes before the user presses retry.
+    useProjectStore.setState({
+      activeProjectId: 'project-b', activeProjectName: 'Project B', activeProjectPath: '/tmp/project-b',
+      projectRevision: 1, switchEpoch: 2,
+    });
+    act(() => result.current.retryTaskOperation());
+
+    // Then: no retry crosses project scope, and the stale retry target is removed.
+    await waitFor(() => expect(result.current.failedTaskOperation).toBeNull());
+    expect(api.submitTask).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not post a newly created operation when the project changes during scope capture', async () => {
+    api.fetchTaskList.mockResolvedValue([]);
+    const { result } = renderHook(() => useTaskExecutionEvents());
+
+    act(() => {
+      result.current.submit({ prompt: 'project A task', input: 'project A task', generation: 1 });
+      useProjectStore.setState({
+        activeProjectId: 'project-b', activeProjectName: 'Project B', activeProjectPath: '/tmp/project-b',
+        projectRevision: 1, switchEpoch: 2,
+      });
+    });
+
+    await waitFor(() => expect(result.current.pendingAction).toBeNull());
+    expect(api.submitTask).not.toHaveBeenCalled();
+  });
+
+  it('does not post when identity changes while scope verification awaits the owner fingerprint', async () => {
+    api.fetchTaskList.mockResolvedValue([]);
+    const nativeDigest = crypto.subtle.digest.bind(crypto.subtle);
+    let digestCalls = 0;
+    let releaseFingerprint: (() => void) | null = null;
+    vi.spyOn(crypto.subtle, 'digest').mockImplementation((algorithm, data) => {
+      digestCalls += 1;
+      const digest = nativeDigest(algorithm, data);
+      if (digestCalls === 1) return digest;
+      return new Promise<ArrayBuffer>((resolve, reject) => {
+        releaseFingerprint = () => { void digest.then(resolve, reject); };
+      });
+    });
+    const { result } = renderHook(() => useTaskExecutionEvents());
+
+    act(() => result.current.submit({ prompt: 'project A task', input: 'project A task', generation: 1 }));
+    await waitFor(() => expect(releaseFingerprint).not.toBeNull());
+    act(() => {
+      useProjectStore.setState({
+        activeProjectId: 'project-b', activeProjectName: 'Project B', activeProjectPath: '/tmp/project-b',
+        projectRevision: 1, switchEpoch: 2,
+      });
+      releaseFingerprint?.();
+    });
+
+    await waitFor(() => expect(result.current.pendingAction).toBeNull());
+    expect(api.submitTask).not.toHaveBeenCalled();
+  });
+
+  it('does not post when the authenticated owner changes while scope verification awaits the owner fingerprint', async () => {
+    api.fetchTaskList.mockResolvedValue([]);
+    window.sessionStorage.setItem('ag_access_token', 'owner-a-token');
+    const nativeDigest = crypto.subtle.digest.bind(crypto.subtle);
+    let digestCalls = 0;
+    let releaseFingerprint: (() => void) | null = null;
+    vi.spyOn(crypto.subtle, 'digest').mockImplementation((algorithm, data) => {
+      digestCalls += 1;
+      const digest = nativeDigest(algorithm, data);
+      if (digestCalls === 1) return digest;
+      return new Promise<ArrayBuffer>((resolve, reject) => {
+        releaseFingerprint = () => { void digest.then(resolve, reject); };
+      });
+    });
+    const { result } = renderHook(() => useTaskExecutionEvents());
+
+    act(() => result.current.submit({ prompt: 'owner task', input: 'owner task', generation: 1 }));
+    await waitFor(() => expect(releaseFingerprint).not.toBeNull());
+    act(() => {
+      window.sessionStorage.setItem('ag_access_token', 'owner-b-token');
+      releaseFingerprint?.();
+    });
+
+    await waitFor(() => expect(result.current.pendingAction).toBeNull());
+    expect(api.submitTask).not.toHaveBeenCalled();
+  });
 });
 
 afterEach(() => {

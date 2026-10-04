@@ -18,7 +18,7 @@ const NotFoundPage: React.FC = () => {
 
   return (
     <div
-      className="page-container"
+      className="page-container not-found-page"
       data-testid="cr07-not-found"
       style={{ maxWidth: 640, margin: '0 auto', padding: '48px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}
     >

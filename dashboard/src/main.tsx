@@ -11,6 +11,7 @@ import './styles/index.css';
  * 빌드에 포함해 오프라인에서도 코드 블록이 색을 잃지 않는다.
  */
 import 'highlight.js/styles/tokyo-night-dark.css';
+import './styles/codex-workspace.css';
 
 class DashboardBootstrapError extends Error {
   constructor(message: string) {

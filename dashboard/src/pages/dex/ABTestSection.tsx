@@ -14,8 +14,8 @@ interface Props {
 
 const ABTestSection: React.FC<Props> = ({ results, running, onRun }) => {
   return (
-    <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--glass-border)', background: 'rgba(124,106,239,0.03)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+    <div className="dex-abtest" style={{ padding: '12px 24px', borderBottom: '1px solid var(--glass-border)', background: 'rgba(124,106,239,0.03)' }}>
+      <div className="dex-abtest-controls" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ fontSize: 16 }}>🧪</span>
         <span style={{ fontSize: 13, fontWeight: 600 }}>추출 정확도 A/B 테스트</span>
         <span id="dex-abtest-status" style={{ fontSize: 11, color: 'var(--text-muted)' }}>

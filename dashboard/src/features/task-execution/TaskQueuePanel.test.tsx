@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { TaskQueuePanel } from './TaskQueuePanel';
 import { TaskIdSchema, TaskSummarySchema } from './taskExecutionSchema';
+import { createTaskSubmitOperation } from './taskOperation';
 
 const runningTask = TaskSummarySchema.parse({
   task_id: 'task-running',
@@ -28,22 +29,44 @@ describe('TaskQueuePanel', () => {
     const onResume = vi.fn();
     const onFork = vi.fn();
 
-    render(
+    const { rerender } = render(
       <TaskQueuePanel
         tasks={[runningTask, failedTask]}
         selectedTaskId={TaskIdSchema.parse('task-running')}
         pendingAction={null}
+        failedTaskOperation={null}
+        completedSubmitDraft={null}
         onSelectTask={vi.fn()}
         onSubmit={onSubmit}
         onCancel={onCancel}
         onResume={onResume}
         onFork={onFork}
+        onRetryTaskOperation={vi.fn()}
       />,
     );
 
     fireEvent.change(screen.getByLabelText('새 작업 지시'), { target: { value: '  테스트를 실행해줘  ' } });
     fireEvent.click(screen.getByRole('button', { name: '작업 제출' }));
-    expect(onSubmit).toHaveBeenCalledWith('테스트를 실행해줘');
+    const submittedDraft = onSubmit.mock.calls[0]?.[0];
+    expect(submittedDraft).toEqual({ prompt: '테스트를 실행해줘', input: '  테스트를 실행해줘  ', generation: 1 });
+    expect(screen.getByLabelText('새 작업 지시')).toHaveValue('  테스트를 실행해줘  ');
+
+    rerender(
+      <TaskQueuePanel
+        tasks={[runningTask, failedTask]}
+        selectedTaskId={TaskIdSchema.parse('task-running')}
+        pendingAction={null}
+        failedTaskOperation={null}
+        completedSubmitDraft={submittedDraft}
+        onSelectTask={vi.fn()}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+        onResume={onResume}
+        onFork={onFork}
+        onRetryTaskOperation={vi.fn()}
+      />,
+    );
+    expect(screen.getByLabelText('새 작업 지시')).toHaveValue('');
 
     fireEvent.click(screen.getByRole('button', { name: '검증 작업 실행 취소' }));
     expect(onCancel).toHaveBeenCalledWith(TaskIdSchema.parse('task-running'));
@@ -78,11 +101,14 @@ describe('TaskQueuePanel', () => {
         tasks={[orphaned]}
         selectedTaskId={null}
         pendingAction={null}
+        failedTaskOperation={null}
+        completedSubmitDraft={null}
         onSelectTask={vi.fn()}
         onSubmit={vi.fn()}
         onCancel={onCancel}
         onResume={onResume}
         onFork={vi.fn()}
+        onRetryTaskOperation={vi.fn()}
       />,
     );
 
@@ -99,5 +125,115 @@ describe('TaskQueuePanel', () => {
       screen.getByRole('button', { name: '크래시 뒤 복구할 작업 취소' }),
     );
     expect(onCancel).toHaveBeenCalledWith(TaskIdSchema.parse('task-orphaned'));
+  });
+
+  it('offers a named retry for an unresolved submit without discarding its form input', async () => {
+    const onRetryTaskOperation = vi.fn();
+    const failedTaskOperation = await createTaskSubmitOperation({ prompt: 'retry this exact task', input: 'retry this exact task', generation: 1 });
+
+    render(
+      <TaskQueuePanel
+        tasks={[]}
+        selectedTaskId={null}
+        pendingAction={null}
+        failedTaskOperation={failedTaskOperation}
+        completedSubmitDraft={null}
+        onSelectTask={vi.fn()}
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+        onResume={vi.fn()}
+        onFork={vi.fn()}
+        onRetryTaskOperation={onRetryTaskOperation}
+      />,
+    );
+
+    expect(screen.getByRole('status')).toHaveTextContent('작업 제출 응답을 확인하지 못했습니다.');
+    fireEvent.click(screen.getByRole('button', { name: '같은 작업 다시 시도' }));
+    expect(onRetryTaskOperation).toHaveBeenCalledTimes(1);
+  });
+
+  it('clears a retry completion only when its submitted draft remains unchanged', () => {
+    const onSubmit = vi.fn();
+    const { rerender } = render(
+      <TaskQueuePanel
+        tasks={[]}
+        selectedTaskId={null}
+        pendingAction={null}
+        failedTaskOperation={null}
+        completedSubmitDraft={null}
+        onSelectTask={vi.fn()}
+        onSubmit={onSubmit}
+        onCancel={vi.fn()}
+        onResume={vi.fn()}
+        onFork={vi.fn()}
+        onRetryTaskOperation={vi.fn()}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText('새 작업 지시'), { target: { value: 'same task' } });
+    fireEvent.click(screen.getByRole('button', { name: '작업 제출' }));
+    const submittedDraft = onSubmit.mock.calls[0]?.[0];
+    fireEvent.change(screen.getByLabelText('새 작업 지시'), { target: { value: 'newer edit' } });
+    fireEvent.change(screen.getByLabelText('새 작업 지시'), { target: { value: 'same task' } });
+
+    rerender(
+      <TaskQueuePanel
+        tasks={[]}
+        selectedTaskId={null}
+        pendingAction={null}
+        failedTaskOperation={null}
+        completedSubmitDraft={submittedDraft}
+        onSelectTask={vi.fn()}
+        onSubmit={onSubmit}
+        onCancel={vi.fn()}
+        onResume={vi.fn()}
+        onFork={vi.fn()}
+        onRetryTaskOperation={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByLabelText('새 작업 지시')).toHaveValue('same task');
+  });
+
+  it('clears an unchanged draft after a retry completion', async () => {
+    const onRetryTaskOperation = vi.fn();
+    const completedSubmitDraft = { prompt: 'retry task', input: 'retry task', generation: 1 };
+    const failedTaskOperation = await createTaskSubmitOperation(completedSubmitDraft);
+    const { rerender } = render(
+      <TaskQueuePanel
+        tasks={[]}
+        selectedTaskId={null}
+        pendingAction={null}
+        failedTaskOperation={failedTaskOperation}
+        completedSubmitDraft={null}
+        onSelectTask={vi.fn()}
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+        onResume={vi.fn()}
+        onFork={vi.fn()}
+        onRetryTaskOperation={onRetryTaskOperation}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText('새 작업 지시'), { target: { value: 'retry task' } });
+    fireEvent.click(screen.getByRole('button', { name: '같은 작업 다시 시도' }));
+    rerender(
+      <TaskQueuePanel
+        tasks={[]}
+        selectedTaskId={null}
+        pendingAction={null}
+        failedTaskOperation={null}
+        completedSubmitDraft={completedSubmitDraft}
+        onSelectTask={vi.fn()}
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+        onResume={vi.fn()}
+        onFork={vi.fn()}
+        onRetryTaskOperation={onRetryTaskOperation}
+      />,
+    );
+
+    expect(onRetryTaskOperation).toHaveBeenCalledTimes(1);
+    expect(screen.getByLabelText('새 작업 지시')).toHaveValue('');
   });
 });

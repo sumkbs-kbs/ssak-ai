@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   clearAccessCredential,
@@ -51,5 +51,60 @@ describe('createAccessPinHeaders', () => {
     expect(window.sessionStorage.getItem('ag_access_pin')).toBeNull();
     clearAccessCredential();
     vi.unstubAllGlobals();
+  });
+});
+
+describe('loginWithAccessPin failure categories', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
+  afterEach(() => vi.unstubAllGlobals());
+
+  it.each([
+    { status: 401, kind: 'invalid_pin' },
+    { status: 403, kind: 'locked' },
+    { status: 429, kind: 'rate_limited' },
+    { status: 500, kind: 'service_unavailable' },
+    { status: 503, kind: 'service_unavailable' },
+    { status: 400, kind: 'request_failed' },
+  ])('preserves the $kind category when login returns HTTP $status', async ({ status, kind }) => {
+    // Given: the login boundary rejects the request.
+    vi.stubGlobal('fetch', vi.fn<typeof fetch>().mockResolvedValue(new Response(
+      'private backend detail', { status, statusText: 'private status detail' },
+    )));
+
+    // When: authentication is attempted.
+    const result = loginWithAccessPin('test-pin');
+
+    // Then: only a safe typed category crosses the boundary.
+    await expect(result).rejects.toMatchObject({ name: 'AccessPinLoginError', kind });
+    await expect(result).rejects.toHaveProperty('message', 'PIN authentication failed.');
+    expect(readStoredAccessToken()).toBeNull();
+  });
+
+  it('reports a network failure when the fetch boundary rejects', async () => {
+    // Given: the fetch transport cannot connect.
+    vi.stubGlobal('fetch', vi.fn<typeof fetch>().mockRejectedValue(new TypeError('private transport detail')));
+
+    // When: authentication is attempted.
+    const result = loginWithAccessPin('test-pin');
+
+    // Then: no transport detail is exposed as an invalid PIN.
+    await expect(result).rejects.toMatchObject({ name: 'AccessPinLoginError', kind: 'network' });
+    await expect(result).rejects.toHaveProperty('message', 'PIN authentication failed.');
+  });
+
+  it.each(['{}', 'not json'])('reports an invalid response when a success payload is %s', async body => {
+    // Given: transport succeeds with an unusable authentication response.
+    vi.stubGlobal('fetch', vi.fn<typeof fetch>().mockResolvedValue(new Response(body, { status: 200 })));
+
+    // When: authentication is attempted.
+    const result = loginWithAccessPin('test-pin');
+
+    // Then: response failures retain their distinction from connectivity failures.
+    await expect(result).rejects.toMatchObject({ name: 'AccessPinLoginError', kind: 'invalid_response' });
+    expect(readStoredAccessToken()).toBeNull();
   });
 });
