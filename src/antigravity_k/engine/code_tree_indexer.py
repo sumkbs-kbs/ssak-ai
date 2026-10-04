@@ -141,14 +141,15 @@ class CodeTreeIndexer:
         for root, dirs, files in os.walk(self.project_root):
             # 무시할 디렉토리 필터링
             dirs[:] = [d for d in dirs if d not in IGNORE_DIRS and not d.startswith(".")]
+            rel_root = os.path.relpath(root, self.project_root)
 
             for fname in files:
-                ext = Path(fname).suffix.lower()
+                ext = os.path.splitext(fname)[1].lower()
                 if ext not in INDEXABLE_EXTENSIONS:
                     continue
 
                 fpath = os.path.join(root, fname)
-                rel_path = os.path.relpath(fpath, self.project_root)
+                rel_path = fname if rel_root == "." else os.path.join(rel_root, fname)
 
                 try:
                     with open(fpath, encoding="utf-8", errors="ignore") as f:
