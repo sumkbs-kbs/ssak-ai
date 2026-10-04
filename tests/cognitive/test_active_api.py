@@ -339,7 +339,11 @@ def test_r10_http_observe_and_pending(tmp_path: Path, monkeypatch: pytest.Monkey
             "reason": "stale try",
         },
     )
-    assert stale.status_code == 409
+    # A transport retry of the identical observation is idempotent even with
+    # the original receipt token. Changed observations still require fresh CAS.
+    assert stale.status_code == 200
+    assert stale.json()["observation_record_id"] == body["observation_record_id"]
+    assert stale.json()["projection_revision"] == body["projection_revision"]
     # other project / unknown action
     missing = client.post(
         BASE + "/observe",

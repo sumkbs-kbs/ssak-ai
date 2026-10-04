@@ -285,19 +285,16 @@ def sandbox_protected_unlink_denies(
     path; seatbelt file-write* on the file alone does not stop that.
     """
 
-    project = os.path.realpath(str(project_root))
     parents: list[str] = []
     seen: set[str] = set()
     for root in default_protected_roots(project_root, store_roots=store_roots):
         parent = os.path.dirname(root.absolute_path)
         while parent and parent not in seen:
-            if parent == project or not parent.startswith(project + os.sep):
-                break
             seen.add(parent)
             parents.append(parent)
-            # 한 단계 부모만 기본 보호 (docs/ssak-ai-core). 더 윗조상(docs, .)은
-            # gate의 ancestor 정책이 담당하고, OS에서 project root unlink를 막지 않는다.
-            break
+            # Every ancestor can relocate protected bytes, including the workspace
+            # and writable temporary containers outside it. Deny only that entry.
+            parent = os.path.dirname(parent)
     return tuple(parents)
 
 

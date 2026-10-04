@@ -144,66 +144,9 @@ def main(argv: list[str] | None = None) -> int:
         print("live pilot는 이 CLI가 실행하지 않는다(NOT_RUN) — fixture 결과로 대체하지 않는다", file=sys.stderr)
         return EXIT_USAGE
     if args.mode == "registered-live":
-        # Frozen manifest + optional scripted contract run (SSAK_LIVE_SCRIPTED=1).
-        # Does not treat historical Ollama presence as current authority without a fresh probe.
-        import os
-        from tempfile import TemporaryDirectory
+        from antigravity_k.engine.registered_live_cli import run_local_registered
 
-        from antigravity_k.engine.cognitive.growth import MechanismSet, RunKind, default_corpus_tasks, default_spec
-        from antigravity_k.engine.cognitive.live_pilot import (
-            LivePilotHarness,
-            LivePilotPlan,
-            ProviderAttestation,
-            freeze_registered_manifest,
-            run_registered_live_experiment,
-        )
-
-        live_spec = default_spec(experiment_id="growth-live-pilot-v1", run_kind=RunKind.LIVE_PILOT)
-        plan = LivePilotPlan(trials_per_task=max(3, live_spec.live_pilot_min_trials))
-        tasks = default_corpus_tasks()
-        attestation = ProviderAttestation(
-            provider_id="cli-registered",
-            model_id=os.environ.get("SSAK_LIVE_MODEL", "unspecified"),
-            model_snapshot=os.environ.get("SSAK_LIVE_SNAPSHOT", ""),
-            decoding="cli",
-            hardware=os.environ.get("SSAK_LIVE_HARDWARE", "local"),
-            snapshot_pinned=bool(os.environ.get("SSAK_LIVE_SNAPSHOT")),
-            reproducibility_limits=(
-                () if os.environ.get("SSAK_LIVE_SNAPSHOT") else ("CLI registered-live without pinned snapshot",)
-            ),
-        )
-        frozen = freeze_registered_manifest(
-            spec=live_spec,
-            plan=plan,
-            tasks=tasks,
-            mechanisms=MechanismSet(),
-            attestation=attestation,
-        )
-        if os.environ.get("SSAK_LIVE_SCRIPTED") != "1":
-            payload = {
-                "run_kind": "LIVE_PILOT",
-                "status": "NOT_RUN",
-                "reason": (
-                    "registered-live requires SSAK_LIVE_SCRIPTED=1 for CI scripted port "
-                    "or an explicit LiveTrialPort wiring; fixture numbers are not live proof"
-                ),
-                "manifest": frozen.as_mapping(),
-                "mixed_with_fixture": False,
-            }
-            write_output(payload, args.output)
-            print(
-                "registered-live NOT_RUN — set SSAK_LIVE_SCRIPTED=1 to execute scripted contract run",
-                file=sys.stderr,
-            )
-            return EXIT_USAGE
-        from antigravity_k.engine.cognitive.live_trial_adapter import LiveTrialAdapter, ScriptedModelPort
-
-        with TemporaryDirectory(prefix="ssak-registered-live-") as tmp:
-            port = LiveTrialAdapter(workspace=Path(tmp), model=ScriptedModelPort(mode="correct"))
-            harness = LivePilotHarness(live_spec, plan, tasks=tasks)
-            result = run_registered_live_experiment(harness, port, attestation_for_freeze=attestation)
-            write_output(result.as_mapping(), args.output)
-            return EXIT_OK if not result.ledger_gaps else EXIT_USAGE
+        return run_local_registered(args.output, args.store_root)
 
     try:
         spec = load_spec(args.manifest, seed=args.seed)

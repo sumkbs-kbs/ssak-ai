@@ -25,7 +25,7 @@ import tempfile
 import time
 from collections.abc import Iterator, Mapping, Sequence
 from contextlib import closing
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Final
 
@@ -464,10 +464,32 @@ class LegacyMigrationRunner:
 
     # ── 실행 ────────────────────────────────────────────
     def run(self) -> MigrationReport:
-        timings: dict[str, float] = {}
         started = time.perf_counter()
-        before = self.source.snapshot()
-        timings["source_snapshot_before"] = time.perf_counter() - started
+        # SQLite backup includes committed WAL pages and provides one immutable
+        # lineage for the plan, import, replay, and rollback rehearsal.
+        bundle_digest = _sha256_sqlite_bundle(self.source.path)
+        size_bytes = self.source.path.stat().st_size
+        with tempfile.TemporaryDirectory(prefix="ssak-migration-source-") as directory:
+            snapshot_path = Path(directory) / "source.db"
+            with closing(self.source._connect()) as live, closing(sqlite3.connect(snapshot_path)) as backup:
+                live.backup(backup)
+            frozen = LegacySQLiteSource(snapshot_path)
+            before = replace(
+                frozen.snapshot(),
+                path=str(self.source.path),
+                file_bundle_digest=bundle_digest,
+                size_bytes=size_bytes,
+            )
+            return self._run_snapshot(frozen, before, time.perf_counter() - started)
+
+    def _run_snapshot(
+        self,
+        source: LegacySQLiteSource,
+        before: SourceSnapshot,
+        snapshot_seconds: float,
+    ) -> MigrationReport:
+        """Consume only the private backup; independently observe live source at the end."""
+        timings: dict[str, float] = {"source_snapshot_before": snapshot_seconds}
         # mapping manifest가 이미 있으면 identity를 이어받는다(project canonical ID 유지).
         mapping_carried_over = self.mapping_path.exists()
         errors: list[str] = []
@@ -478,7 +500,7 @@ class LegacyMigrationRunner:
         store_snapshot = store._committed_entries()  # noqa: SLF001 - mutable committed snapshot shared by batches
 
         started = time.perf_counter()
-        for batch in self.source.event_batches(self.EVENT_BATCH_SIZE):
+        for batch in source.event_batches(self.EVENT_BATCH_SIZE):
             try:
                 records = adapter.import_events(
                     batch,
@@ -506,7 +528,7 @@ class LegacyMigrationRunner:
                         f"event batch {batch[0].event_id}-{batch[-1].event_id} failed atomically: {batch_error}"
                     )
                 imported["events"] += len(valid_rows)
-        for objective in self.source.objectives():
+        for objective in source.objectives():
             try:
                 adapter.import_objective(
                     objective,
@@ -516,7 +538,7 @@ class LegacyMigrationRunner:
                 imported["objectives"] += 1
             except (LegacyAdapterError, TransactionConflictError, ValueError) as exc:
                 errors.append(f"objective {objective.objective_id}: {exc}")
-        for task in self.source.tasks():
+        for task in source.tasks():
             try:
                 adapter.import_task_submission(
                     task.task_id,
@@ -544,7 +566,7 @@ class LegacyMigrationRunner:
 
         # 재실행 idempotency: 같은 store에 다시 import해도 record·매핑이 늘지 않아야 한다.
         started = time.perf_counter()
-        replay_records = self._replay(store, adapter, record_count)
+        replay_records = self._replay(store, adapter, record_count, source=source)
         if replay_records < 0:
             errors.append("idempotent replay hit LegacyMappingConflict — mapping digest/content conflict")
             replay_records = store.count_committed()
@@ -554,7 +576,7 @@ class LegacyMigrationRunner:
         timings["idempotent_replay"] = time.perf_counter() - started
         # 되돌림 rehearsal은 별도 scratch에서만 수행하고 dry-run 출력을 보존한다.
         started = time.perf_counter()
-        rollback_ok, rollback_record_count = self.rehearse_rollback()
+        rollback_ok, rollback_record_count = self.rehearse_rollback(source=source)
         timings["rollback_rehearsal"] = time.perf_counter() - started
 
         started = time.perf_counter()
@@ -592,7 +614,14 @@ class LegacyMigrationRunner:
         store_dir = root / "canonical"
         return CanonicalStore(store_dir, git_enabled=False, write_guard=migration_guard(root))
 
-    def _replay(self, store: CanonicalStore, adapter: LegacyAgencyAdapter, baseline: int) -> int:
+    def _replay(
+        self,
+        store: CanonicalStore,
+        adapter: LegacyAgencyAdapter,
+        baseline: int,
+        *,
+        source: LegacySQLiteSource,
+    ) -> int:
         """같은 store·같은 mapping으로 다시 import해 record 수가 늘지 않는지 본다.
 
         동일 mapping의 재실행은 허용한다. content conflict는 삼키지 않고 -1을 반환해
@@ -601,7 +630,7 @@ class LegacyMigrationRunner:
 
         store_snapshot = store._committed_entries()  # noqa: SLF001 - replay uses one mutable manifest snapshot
         conflict = False
-        for batch in self.source.event_batches(self.EVENT_BATCH_SIZE):
+        for batch in source.event_batches(self.EVENT_BATCH_SIZE):
             try:
                 adapter.import_events(
                     batch,
@@ -623,7 +652,7 @@ class LegacyMigrationRunner:
                 if conflict:
                     break
         if not conflict:
-            for objective in self.source.objectives():
+            for objective in source.objectives():
                 try:
                     adapter.import_objective(objective, update_index=False, committed_snapshot=store_snapshot)
                 except LegacyMappingConflict:
@@ -632,7 +661,7 @@ class LegacyMigrationRunner:
                 except (LegacyAdapterError, TransactionConflictError, ValueError):
                     continue
         if not conflict:
-            for task in self.source.tasks():
+            for task in source.tasks():
                 try:
                     adapter.import_task_submission(
                         task.task_id,
@@ -654,27 +683,28 @@ class LegacyMigrationRunner:
 
     # 주의: canonical project ID는 최초 매핑 시 발급되는 random ID라서 **다른 root에서 새로 만들면 달라진다**.
     # identity를 유지하려면 mapping manifest를 함께 넘겨야 한다(mapping_path).
-    def rehearse_rollback(self) -> tuple[bool, int]:
+    def rehearse_rollback(self, *, source: LegacySQLiteSource | None = None) -> tuple[bool, int]:
         """임시 target을 삭제해도 기존 migration 산출물과 source가 그대로인지 확인한다.
 
         매 회차 새로 독점 생성한 scratch만 사용·정리한다. target 아래의 고정 경로를 재사용하면
         선행 파일을 rehearsal 산출물로 오인해 지울 수 있으므로 `mkdtemp`로 경로를 격리한다.
         """
 
-        before = self.source.snapshot()
+        source = source if source is not None else self.source
+        before = source.snapshot()
         self.target_root.mkdir(parents=True, exist_ok=True)
         scratch = Path(tempfile.mkdtemp(prefix=".rollback-rehearsal-", dir=self.target_root))
         try:
-            rehearsal_ok, discarded = self._populate_rollback_scratch(scratch)
+            rehearsal_ok, discarded = self._populate_rollback_scratch(scratch, source=source)
         finally:
             shutil.rmtree(scratch, ignore_errors=True)
-        after = self.source.snapshot()
+        after = source.snapshot()
         passed = (
             rehearsal_ok and not scratch.exists() and before.digest == after.digest and after.counts == before.counts
         )
         return passed, discarded
 
-    def _populate_rollback_scratch(self, scratch: Path) -> tuple[bool, int]:
+    def _populate_rollback_scratch(self, scratch: Path, *, source: LegacySQLiteSource) -> tuple[bool, int]:
         """독점 scratch에 source를 옮기고 지우기 전 검증한다."""
 
         store = self._target_store(scratch=scratch)
@@ -682,7 +712,7 @@ class LegacyMigrationRunner:
         store_snapshot = store._committed_entries()  # noqa: SLF001 - mutable rollback snapshot
         imported_record_ids: set[str] = set()
         errors: list[str] = []
-        for batch in self.source.event_batches(self.EVENT_BATCH_SIZE):
+        for batch in source.event_batches(self.EVENT_BATCH_SIZE):
             try:
                 records = adapter.import_events(
                     batch,
@@ -702,7 +732,7 @@ class LegacyMigrationRunner:
                         imported_record_ids.add(record.id)
                     except (LegacyAdapterError, TransactionConflictError, ValueError) as exc:
                         errors.append(f"event {row.event_id}: {exc}")
-        for objective in self.source.objectives():
+        for objective in source.objectives():
             try:
                 imported_record_ids.add(
                     adapter.import_objective(
@@ -713,7 +743,7 @@ class LegacyMigrationRunner:
                 )
             except (LegacyAdapterError, TransactionConflictError, ValueError) as exc:
                 errors.append(f"objective {objective.objective_id}: {exc}")
-        for task in self.source.tasks():
+        for task in source.tasks():
             try:
                 imported_record_ids.add(
                     adapter.import_task_submission(

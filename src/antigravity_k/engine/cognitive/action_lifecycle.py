@@ -28,6 +28,8 @@ def reconcile(
     project_id: str,
     producer: Producer,
     now: datetime | None = None,
+    persist: bool = True,
+    receipt_id: str | None = None,
 ) -> ActionRun:
     """UNKNOWN/DISPATCHED receipt를 관측으로 확정한다. 관측 없이는 성공이 없다."""
 
@@ -79,7 +81,7 @@ def reconcile(
         status = ActionExecutionStatus.UNKNOWN
 
     previous_id = receipt.receipt_id
-    updated = replace(updated, receipt_id=new_receipt_id())
+    updated = replace(updated, receipt_id=receipt_id or new_receipt_id())
     record = updated.to_record(
         project_id=project_id,
         producer=producer,
@@ -92,9 +94,10 @@ def reconcile(
             ),
         ),
     )
-    self._receipts[receipt.action_key] = updated
-    self._persist((record,))
-    if self.journal is not None:
+    if persist:
+        self._receipts[receipt.action_key] = updated
+        self._persist((record,))
+    if persist and self.journal is not None:
         journal_status = PENDING if same_enum(status, ActionExecutionStatus.UNKNOWN) else SETTLED
         self.journal.attach_receipt(project_id, receipt.action_key, updated.receipt_id, status=journal_status)
     return replace(

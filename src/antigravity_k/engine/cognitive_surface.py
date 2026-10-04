@@ -18,7 +18,6 @@
 
 from __future__ import annotations
 
-import uuid
 from collections.abc import Callable, Sequence
 from datetime import UTC, datetime
 
@@ -32,36 +31,27 @@ from antigravity_k.engine.cognitive.actions import (
     ReconciliationResult,
 )
 from antigravity_k.engine.cognitive.authority import AuthorityDecision
-from antigravity_k.engine.cognitive.brain import (
-    BrainAdapter,
-    BrainFailure,
-    BrainJudgment,
-    StructuredBrainClient,
-    render_context_for_brain,
-)
 from antigravity_k.engine.cognitive.experience import ExperienceLedger
 from antigravity_k.engine.cognitive.governance import GovernanceGate
 from antigravity_k.engine.cognitive.models import (
-    ContextPackagePayload,
-    IntegrityStatus,
     Producer,
     ProducerKind,
     Record,
     same_enum,
-    to_wire,
 )
 from antigravity_k.engine.cognitive.readiness import FreshnessBinding, ReadinessResult
-from antigravity_k.engine.cognitive.references import is_canonical_id
+from antigravity_k.engine.cognitive.references import EntityType, is_canonical_id
 from antigravity_k.engine.cognitive.runtime import (
     CognitiveRuntime,
     Episode,
     EpisodePlan,
     EpisodeRequest,
     RethinkPort,
-    ThinkOutcome,
 )
-from antigravity_k.engine.cognitive.store import CommitReceipt, canonical_digest
+from antigravity_k.engine.cognitive.store import CommitReceipt
 
+from .cognitive_surface_brain import StructuredSurfaceBrainPort as StructuredSurfaceBrainPort
+from .cognitive_surface_legacy_brain import SurfaceBrainPort as SurfaceBrainPort
 from .cognitive_surface_measurement import DurableSurfaceHistory as DurableSurfaceHistory
 from .cognitive_surface_measurement import DurableSurfaceHistoryStore as DurableSurfaceHistoryStore
 
@@ -88,142 +78,6 @@ from .cognitive_surface_types import DEFAULT_SURFACE_ENTRYPOINTS as DEFAULT_SURF
 from .cognitive_surface_types import LEGACY_HOOK_SITES as LEGACY_HOOK_SITES
 from .cognitive_surface_types import LEGACY_MODULE as LEGACY_MODULE
 from .cognitive_surface_types import CognitiveSurfaceError as CognitiveSurfaceError
-
-
-class _CountingBrainAdapter:
-    """Wraps a BrainAdapter to count respond() calls (R14 provider-call0 assertions)."""
-
-    def __init__(self, inner: BrainAdapter) -> None:
-        self._inner = inner
-        self.call_count = 0
-
-    @property
-    def name(self) -> str:
-        return self._inner.name
-
-    @property
-    def capabilities(self):
-        return self._inner.capabilities
-
-    def respond(self, context_wire, request_id: str, *, repair_of=None):
-        self.call_count += 1
-        return self._inner.respond(context_wire, request_id, repair_of=repair_of)
-
-
-class StructuredSurfaceBrainPort:
-    """Canonical ContextPackage → bounded wire → StructuredBrainClient.
-
-    Opaque ``context_ref`` alone is never sent to the provider. INCOMPLETE packages and
-    required omissions under a low context window fail closed with provider call count 0.
-    When ``legacy_observation`` is set and the ref cannot be loaded as a ContextPackage,
-    the legacy one-sentence observation path runs (still delta=None — not material THINK).
-    """
-
-    def __init__(
-        self,
-        adapter: BrainAdapter,
-        *,
-        project_id: str,
-        load_context_package: Callable[[str], Record | None],
-        load_record: Callable[[str], Record | None],
-        legacy_observation: Callable[[str], str] | None = None,
-    ) -> None:
-        self._inner_adapter = adapter
-        self._adapter = _CountingBrainAdapter(adapter)
-        self._project_id = project_id
-        self._load_package = load_context_package
-        self._load_record = load_record
-        self._legacy = legacy_observation
-        self._client = StructuredBrainClient(self._adapter, project_id=project_id)
-        self.provider_calls = 0
-
-    def think(self, *, context_ref: str, request_signature: str, attempt: int) -> ThinkOutcome:
-        package_record = self._load_package(context_ref)
-        if package_record is None:
-            if self._legacy is not None:
-                return SurfaceBrainPort(self._legacy).think(
-                    context_ref=context_ref, request_signature=request_signature, attempt=attempt
-                )
-            return ThinkOutcome(
-                judgment_ref="",
-                failed=True,
-                detail=f"CONTEXT_UNRESOLVED: {context_ref} is not a loadable ContextPackage",
-            )
-        payload = package_record.payload
-        if not isinstance(payload, ContextPackagePayload):
-            return ThinkOutcome(
-                judgment_ref="",
-                failed=True,
-                detail=f"CONTEXT_WRONG_TYPE: {context_ref} payload is not ContextPackage",
-            )
-        if same_enum(payload.integrity, IntegrityStatus.INCOMPLETE):
-            return ThinkOutcome(
-                judgment_ref="",
-                failed=True,
-                detail=("CONTEXT_INCOMPLETE: adapter blocked; missing_ids=" + ",".join(payload.missing_ids)),
-            )
-        digest = canonical_digest(to_wire(package_record))
-        rendered = render_context_for_brain(
-            payload,
-            project_id=self._project_id,
-            context_digest=digest,
-            load_record=self._load_record,
-            context_limit=int(self._adapter.capabilities.context_limit),
-        )
-        if not rendered.ready_for_provider:
-            return ThinkOutcome(
-                judgment_ref="",
-                failed=True,
-                detail=(
-                    "CONTEXT_OVERFLOW: required goal/state/evidence omitted under context_limit="
-                    f"{self._adapter.capabilities.context_limit}; omitted={list(rendered.omitted_required)}"
-                ),
-            )
-        # Count only actual adapter.respond invocations via wrapping — use a counter hook.
-        before = self._adapter.call_count
-        outcome = self._client.think(rendered.wire, request_signature or context_ref)
-        self.provider_calls += self._adapter.call_count - before
-        if isinstance(outcome, BrainFailure):
-            return ThinkOutcome(
-                judgment_ref="",
-                failed=True,
-                detail=f"brain failure {outcome.kind}: {outcome.detail}",
-            )
-        assert isinstance(outcome, BrainJudgment)
-        return ThinkOutcome(
-            judgment_ref=outcome.record.id,
-            delta=None,
-            detail=outcome.payload.current_judgment[:500],
-        )
-
-
-class SurfaceBrainPort:
-    """실제 모델을 Primary Brain port(think)로 결선하는 최소 어댑터.
-
-    shadow episode의 판단 주체다 — 모델 호출이 실패하면 failed think로 episode가
-    BRAIN_FAILED로 종료된다(legacy 경로와 무관하다). 모델 응답의 의미 해석은 여기서
-    하지 않고 detail로 실어 보낼 뿐이다(최종 통합은 Primary, Body는 전달).
-    """
-
-    def __init__(self, generate: Callable[[str], str]) -> None:
-        self._generate = generate
-
-    def think(self, *, context_ref: str, request_signature: str, attempt: int) -> ThinkOutcome:
-        prompt = (
-            "SSAK-AI shadow observation. context_ref={context_ref} request={request_signature} attempt={attempt}. "
-            "이 상호작용의 관찰 요약을 한 문장으로 제시하라."
-        ).format(context_ref=context_ref, request_signature=request_signature, attempt=attempt)
-        try:
-            detail = str(self._generate(prompt))
-        except Exception as exc:  # noqa: BLE001 — 모델 실패는 failed think로 끝난다
-            return ThinkOutcome(judgment_ref="", failed=True, detail=f"surface brain port: {exc}")
-        # 관찰 요약이 물질 판단을 주장하지 않는다 — delta를 비워 simple 경로로 끝나고,
-        # material 여부는 Primary가 다른 경로에서 주장할 일이다(Body가 대신 정하지 않는다).
-        return ThinkOutcome(
-            judgment_ref=f"judgment:{uuid.uuid4()}",
-            delta=None,
-            detail=detail[:500],
-        )
 
 
 class CognitiveSurfaceAdapter:
@@ -451,6 +305,11 @@ class CognitiveSurfaceAdapter:
             readiness=self._bound_readiness(request.intent),
             action=request.intent.to_intent() if request.intent is not None else None,
             expected_outcome=request.expected_outcome,
+            decision_ref=request.decision_ref,
+            governance_ref=request.governance_ref,
+            outcome_ref=request.outcome_ref,
+            observation_refs=request.observation_refs,
+            evidence_refs=request.evidence_refs,
         )
         return EpisodeRequest(
             episode_id=request.episode_id,
@@ -480,11 +339,12 @@ class CognitiveSurfaceAdapter:
         """Rebuild selected Experience cores from canonical records after restart (provider-neutral)."""
         count = 0
         for record in records:
-            try:
-                self._experience.ingest_core_record(record, episode_reference=episode_reference)
-                count += 1
-            except Exception:
+            if not same_enum(record.entity_type, EntityType.EXPERIENCE):
                 continue
+            if self.settings.project_id and record.project_id != self.settings.project_id:
+                raise SurfaceNotReadyError("Experience record belongs to another project")
+            self._experience.ingest_core_record(record, episode_reference=episode_reference)
+            count += 1
         return count
 
     @property
@@ -520,7 +380,7 @@ class CognitiveSurfaceAdapter:
             record_sink=self.record_sink,
             authority_resolver=self.authority_resolver,
         )
-        return dispatcher.submit_observation(
+        result = dispatcher.submit_observation(
             ObservationSubmission(
                 project_id=self.settings.project_id,
                 action_key=action_key,
@@ -536,6 +396,21 @@ class CognitiveSurfaceAdapter:
             load_record=load_record,
             now=now,
         )
+
+        from .cognitive_surface_recovery import record_recovery_experience
+
+        assert self.record_sink is not None
+        record_recovery_experience(
+            result,
+            project_id=self.settings.project_id,
+            producer=self.producer,
+            observed=observed,
+            succeeded=succeeded,
+            load_record=load_record,
+            record_sink=self.record_sink,
+            ledger=self._experience,
+        )
+        return result
 
     def _summarize(self, episode: Episode, dispatcher: ActionDispatcher, request: SurfaceEpisodeRequest) -> ShadowRun:
         action_run = episode.action_run

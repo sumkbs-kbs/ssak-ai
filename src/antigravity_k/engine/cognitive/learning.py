@@ -21,19 +21,20 @@ from __future__ import annotations
 import hashlib
 import json
 import uuid
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import StrEnum
 from typing import Final, Protocol, runtime_checkable
 
-from antigravity_k.engine.cognitive.experience import EpisodeEvaluations
+from antigravity_k.engine.cognitive.experience import EpisodeEvaluations, ExperienceCore
 from antigravity_k.engine.cognitive.models import (
     ApplicabilityLevel,
     ApplicabilityProfile,
     ConfidenceProfile,
     EvidenceKind,
     HypothesisPayload,
+    IntegrityStatus,
     KnowledgeLifecycle,
     MetricResult,
     OutcomeStatus,
@@ -282,6 +283,27 @@ class EpisodeObservation:
         )
 
 
+def _require_complete_experiences(
+    observations: Sequence[EpisodeObservation],
+    lookup: Callable[[str], ExperienceCore | None] | None,
+) -> None:
+    """Resolve claimed historical cores before they contribute to learning evidence."""
+    for observation in observations:
+        if observation.experience_id is None:
+            continue
+        if lookup is None:
+            raise InsufficientEvidenceError("Experience claims require an authoritative core lookup")
+        core = lookup(observation.experience_id)
+        if core is None or core.experience_id != observation.experience_id:
+            raise InsufficientEvidenceError(f"unresolved Experience: {observation.experience_id}")
+        if not same_enum(core.integrity, IntegrityStatus.COMPLETE) or core.missing_references:
+            raise InsufficientEvidenceError(f"incomplete Experience: {core.experience_id}")
+        if core.episode_reference != observation.episode_id:
+            raise InsufficientEvidenceError(f"Experience episode mismatch: {core.experience_id}")
+        if not set(observation.evidence_ids).issubset(core.evidence_refs):
+            raise InsufficientEvidenceError(f"Experience evidence mismatch: {core.experience_id}")
+
+
 @dataclass(frozen=True, slots=True)
 class EvidenceAnalysis:
     """candidate 근거를 기계적으로 센 결과. 결과 실패와 판단 실패를 합치지 않는다."""
@@ -374,7 +396,13 @@ class EvaluationSummary:
 class ExperienceEvaluator:
     """Evaluator 기본 구현. 기계 집계와 의미 해석 호출 경로를 분리한다."""
 
-    def __init__(self, *, interpreter: MeaningInterpreter | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        interpreter: MeaningInterpreter | None = None,
+        experience_lookup: Callable[[str], ExperienceCore | None] | None = None,
+    ) -> None:
+        self._experience_lookup = experience_lookup
         self._interpreter = interpreter
         self._interpret_calls = 0
         self._readings: list[SemanticReading] = []
@@ -390,6 +418,7 @@ class ExperienceEvaluator:
     def aggregate(self, observations: Sequence[EpisodeObservation]) -> EvaluationSummary:
         """세 평가를 기계적으로 집계한다. 모델·검색·의미 해석 호출이 없다."""
 
+        _require_complete_experiences(observations, self._experience_lookup)
         return EvaluationSummary(observations=tuple(observations), analysis=summarize(observations))
 
     def interpret(
@@ -562,7 +591,13 @@ class PatternBuilder(Protocol):
 class CandidateProposer:
     """PatternBuilder 기본 구현. 의미 해석을 만들지 않고 주어진 reading만 인용한다."""
 
-    def __init__(self, *, guard: ProtectedWriteGuard | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        guard: ProtectedWriteGuard | None = None,
+        experience_lookup: Callable[[str], ExperienceCore | None] | None = None,
+    ) -> None:
+        self._experience_lookup = experience_lookup
         self._guard = guard
 
     def propose(
@@ -574,6 +609,7 @@ class CandidateProposer:
         producer: Producer,
         created_at: datetime,
     ) -> LearningCandidate:
+        _require_complete_experiences(summary.observations, self._experience_lookup)
         if not summary.observations:
             raise InsufficientEvidenceError("관측 없는 후보는 만들지 않는다")
         if same_enum(request.kind, CandidateKind.POLICY) and request.target is None:
@@ -830,7 +866,13 @@ class Validator(Protocol):
 class HeldOutValidator:
     """held-out / broader split 검증기. 계약 위반은 예외로, 측정 실패는 report로 남긴다."""
 
-    def __init__(self, *, validator_id: str = "validator:held-out") -> None:
+    def __init__(
+        self,
+        *,
+        validator_id: str = "validator:held-out",
+        experience_lookup: Callable[[str], ExperienceCore | None] | None = None,
+    ) -> None:
+        self._experience_lookup = experience_lookup
         self._validator_id = validator_id
 
     @property
@@ -846,6 +888,7 @@ class HeldOutValidator:
         observations: Sequence[ValidationObservation],
         generated_at: datetime,
     ) -> ValidationReport:
+        _require_complete_experiences(candidate.summary.observations, self._experience_lookup)
         if same_enum(split.role, ValidationRole.LEARNING):
             raise ValidationBypassRefused("학습에 쓴 split으로 검증할 수 없다 — 별도 validation split이 필요하다")
         overlap = sorted(set(candidate.task_ids) & set(split.task_ids))

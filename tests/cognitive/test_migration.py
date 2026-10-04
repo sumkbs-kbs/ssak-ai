@@ -658,3 +658,34 @@ def test_r21_a1_a3_a4_source_hash_stable_across_rerun_and_rollback(tmp_path: Pat
     # source remains readable after rollback rehearsal
     snap = LegacySQLiteSource(db_path).snapshot()
     assert snap.counts["events"] == first.imported["events"]
+
+
+def test_run_imports_original_payload_when_wal_source_changes_and_returns(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Given WAL A, when live rows go A→B→A, all run phases consume A."""
+    db_path = make_legacy_db(tmp_path)
+    with sqlite3.connect(db_path) as writer:
+        writer.execute("PRAGMA journal_mode=WAL")
+        original = writer.execute("SELECT payload_json FROM agency_events WHERE event_id=1").fetchone()[0]
+    original_snapshot = LegacySQLiteSource(db_path).snapshot()
+    runner = LegacyMigrationRunner(LegacySQLiteSource(db_path), tmp_path / "target-aba")
+    target_store = runner._target_store
+
+    def mutate_at_phase(*, scratch: Path | None = None) -> CanonicalStore:
+        # Real WAL commits at phase boundaries; no source reader is mocked.
+        with sqlite3.connect(db_path) as writer:
+            writer.execute(
+                "UPDATE agency_events SET payload_json=? WHERE event_id=1",
+                (original if scratch is not None else '{"text":"INTERMEDIATE_MUTANT"}',),
+            )
+        return target_store(scratch=scratch)
+
+    monkeypatch.setattr(runner, "_target_store", mutate_at_phase)
+    report = runner.run()
+    replay = LegacyMigrationRunner(LegacySQLiteSource(db_path), tmp_path / "target-aba").run()
+    assert report.plan.source.content_digest == original_snapshot.content_digest
+    assert report.source_unchanged and report.passed
+    assert replay.passed, replay.errors
+    assert replay.mapping_digest == report.mapping_digest

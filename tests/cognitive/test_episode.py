@@ -79,6 +79,7 @@ from antigravity_k.engine.cognitive.runtime import (
     EpisodePlan,
     EpisodeRequest,
     EpisodeTermination,
+    RequestFeedback,
     ThinkOutcome,
     episode_records,
 )
@@ -220,11 +221,13 @@ class FakeRethink:
         feedback_refs: Sequence[str],
         affected_grounds: Sequence[str],
         round_index: int,
+        feedback: Sequence[RequestFeedback] = (),
     ) -> ThinkOutcome:
         self.calls.append(
             {
                 "previous": previous_judgment_ref,
                 "feedback_refs": tuple(feedback_refs),
+                "feedback": tuple(feedback),
                 "affected_grounds": tuple(affected_grounds),
                 "round": round_index,
             }
@@ -353,6 +356,7 @@ def test_denied_request_triggers_targeted_rethink_with_affected_grounds() -> Non
     assert rethink.calls[0]["affected_grounds"] == ("ground:1",)
     assert rethink.calls[0]["feedback_refs"] == ("request:1",)
     assert rethink.calls[0]["previous"] == "judgment:1"
+    assert rethink.calls[0]["feedback"] == episode.feedback
     assert LoopState.TARGETED_RETHINK in episode.states()
     assert episode.feedback[0].executed is False
     assert episode.termination is EpisodeTermination.COMPLETED
@@ -1001,6 +1005,7 @@ def test_r07_a2_deny_then_safe_alternative_runs_next_round() -> None:
             ThinkOutcome(
                 judgment_ref="judgment:2",
                 delta=EpisodeDelta(action=True, description="안전한 대안으로 교체"),
+                plan=replace(plan),
                 requests=(alternative,),
             )
         ]
@@ -1458,3 +1463,36 @@ def test_r12_a3_no_assessment_means_decision_unknown_despite_readiness() -> None
         "readiness" in episode.evaluations.decision.reason.lower()
         or "unevaluated" in episode.evaluations.decision.reason.lower()
     )
+
+
+@pytest.mark.parametrize("with_rethink", [False, True])
+def test_unintegrated_feedback_cannot_dispatch_final_action(with_rethink: bool) -> None:
+    calls: list[str] = []
+    plan, _ = plan_with_action()
+    envelope = CognitiveRequestEnvelope(
+        request_id="request:unintegrated",
+        request_type=CognitiveRequestType.TOOL,
+        purpose="inspect",
+        target="src/a.py",
+        expected_decision_impact="ground",
+        authority=AuthorityProfile(revision=1),
+    )
+    runtime = CognitiveRuntime(
+        think=FakeThink(ThinkOutcome(judgment_ref="judgment:1", requests=(envelope,))),
+        rethink=FakeRethink([]) if with_rethink else None,
+        budget=EpisodeBudget(expansion_rounds=0),
+        actions=ActionDispatcher(
+            port=CallablePort(lambda tool, args, action_id: (calls.append(action_id), "ok")[1]), clock=lambda: NOW
+        ),
+        clock=lambda: NOW,
+        project_id=PROJECT,
+        producer=BODY,
+    )
+    episode = runtime.run(
+        EpisodeRequest(
+            episode_id="episode:unintegrated", context_ref="context:1", goal_ref="goal:1", simple=False, plan=plan
+        )
+    )
+    assert calls == []
+    assert episode.termination in (EpisodeTermination.DEFERRED, EpisodeTermination.STOPPED_BUDGET)
+    assert episode.feedback

@@ -70,7 +70,7 @@ class ActiveExecutionView(BaseModel):
 
 class ObservePendingAction(BaseModel):
     action_key: Annotated[str, Field(min_length=1, max_length=200)]
-    expected_receipt_id: Annotated[str, Field(min_length=1, max_length=200)]
+    expected_receipt_id: Annotated[str, Field(max_length=200)]
     observed: bool
     succeeded: bool | None = None
     detail: Annotated[str, Field(default="", max_length=4000)]

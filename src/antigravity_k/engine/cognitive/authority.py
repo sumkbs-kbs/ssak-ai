@@ -223,6 +223,8 @@ class AuthorityProfile:
     ) -> AuthorityVerdict | None:
         """조상 체인이 유효하면 None, 아니면 EXPIRED/REVOKED/DELEGATION_NOT_SUBSET."""
 
+        if grant.issued_at > reference:
+            return AuthorityVerdict.NOT_GRANTED
         seen = set(trail or ())
         parent_subject = grant.granted_by
         if parent_subject in seen or parent_subject == grant.subject:
@@ -246,11 +248,28 @@ class AuthorityProfile:
         unexpired = [candidate for candidate in live if not _expired(candidate, reference)]
         if not unexpired:
             return AuthorityVerdict.EXPIRED
-        # 가장 넓은 활성 부모를 따라 계속 올라간다
-        parent = max(unexpired, key=lambda item: (len(item.resource_scope), item.revision))
-        if not scope_covers(parent.resource_scope, grant.resource_scope):
+        covering = [parent for parent in unexpired if scope_covers(parent.resource_scope, grant.resource_scope)]
+        if not covering:
             return AuthorityVerdict.SCOPE_OUT_OF_RANGE
-        return self._ancestor_failure(parent, reference, trail=frozenset(seen))
+        failures: list[AuthorityVerdict] = []
+        for parent in covering:
+            if (
+                (
+                    ANY_SCOPE not in parent.allowed_operations
+                    and not set(grant.allowed_operations).issubset(parent.allowed_operations)
+                )
+                or not set(parent.constraints).issubset(grant.constraints)
+                or (
+                    parent.expires_at is not None and (grant.expires_at is None or grant.expires_at > parent.expires_at)
+                )
+            ):
+                failures.append(AuthorityVerdict.DELEGATION_NOT_SUBSET)
+                continue
+            failure = self._ancestor_failure(parent, reference, trail=frozenset(seen))
+            if failure is None:
+                return None
+            failures.append(failure)
+        return failures[0]
 
     # ── 판정 ────────────────────────────────────────────
     def evaluate(self, query: AuthorityQuery, *, now: datetime | None = None) -> AuthorityDecision:
@@ -438,6 +457,7 @@ class AuthorityProfile:
             and same_enum(grant.dimension, request.dimension)
             and grant.revoked_at is None
             and not _expired(grant, reference)
+            and self._ancestor_failure(grant, reference) is None
         ]
         if not parents:
             return DelegationOutcome(
@@ -445,7 +465,18 @@ class AuthorityProfile:
                 verdict=AuthorityVerdict.DELEGATION_NOT_SUBSET,
                 reason=f"{request.parent_subject}에게 활성 {request.dimension} parent grant가 없다",
             )
-        parent = max(parents, key=lambda grant: (len(grant.resource_scope), grant.revision))
+        covering = [
+            parent
+            for parent in parents
+            if scope_covers(parent.resource_scope, request.resource_scope)
+            and (
+                ANY_SCOPE in parent.allowed_operations
+                or set(request.allowed_operations).issubset(parent.allowed_operations)
+            )
+            and set(parent.constraints).issubset(request.constraints)
+            and (request.expires_at is None or parent.expires_at is None or request.expires_at <= parent.expires_at)
+        ]
+        parent = max(covering or parents, key=lambda grant: (len(grant.resource_scope), grant.revision))
         if request.child_subject == request.parent_subject or request.child_subject == parent.granted_by:
             return DelegationOutcome(
                 ok=False,

@@ -17,8 +17,6 @@ COGNITIVE_OPERATING_LOOP.md와 IMPLEMENTATION_ROADMAP.md P07 계약을 구현한
 
 from __future__ import annotations
 
-import hashlib
-import json
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
@@ -32,6 +30,7 @@ from antigravity_k.engine.cognitive.action_lifecycle import (
     reconcile,
 )
 from antigravity_k.engine.cognitive.action_records import create_action_record
+from antigravity_k.engine.cognitive.action_recovery import submit_observation
 from antigravity_k.engine.cognitive.action_types import (
     ActionDispatchError,
     ActionIntent,
@@ -51,17 +50,12 @@ from antigravity_k.engine.cognitive.action_types import (
 from antigravity_k.engine.cognitive.authority import AuthorityDecision
 from antigravity_k.engine.cognitive.models import (
     ActionExecutionStatus,
-    ActionPayload,
-    ExecutionReceiptPayload,
-    ObservationPayload,
-    ObservationStatus,
     Producer,
     ReceiptStatus,
     Record,
     same_enum,
 )
 from antigravity_k.engine.cognitive.readiness import FreshnessBinding
-from antigravity_k.engine.cognitive.references import REL_ACTION, REL_RECEIPT, EntityType, Reference
 
 
 @dataclass(frozen=True, slots=True)
@@ -242,200 +236,7 @@ class ActionDispatcher:
         load_record: Callable[[str], Record | None],
         now: datetime | None = None,
     ) -> ReconciliationResult:
-        """Append observation onto a durable pending claim. Never redispatches."""
-
-        moment = now if now is not None else self._now()
-        if self.journal is None:
-            return ReconciliationResult(
-                accepted=False,
-                refusal=ActionRefusal.UNKNOWN_ACTION,
-                reason="durable journal is required for recovery observation",
-            )
-        claim = self.journal.get(submission.project_id, submission.action_key)
-        if claim is None:
-            return ReconciliationResult(
-                accepted=False,
-                refusal=ActionRefusal.UNKNOWN_ACTION,
-                reason="action claim not found for project",
-            )
-        if claim.project_id != submission.project_id:
-            return ReconciliationResult(
-                accepted=False,
-                refusal=ActionRefusal.PROJECT_MISMATCH,
-                reason="project mismatch",
-            )
-        if not claim.receipt_id:
-            return ReconciliationResult(
-                accepted=False,
-                refusal=ActionRefusal.STALE_RECEIPT_REVISION,
-                reason="claim has no durable receipt yet",
-            )
-        if claim.receipt_id != submission.expected_receipt_id:
-            return ReconciliationResult(
-                accepted=False,
-                refusal=ActionRefusal.STALE_RECEIPT_REVISION,
-                reason="expected receipt id does not match current projection",
-            )
-        digest = _observation_digest(submission.observation)
-        if claim.observation_digest == digest and claim.observation_record_id and claim.receipt_id:
-            return ReconciliationResult(
-                accepted=True,
-                receipt_id=claim.receipt_id,
-                observation_record_id=claim.observation_record_id,
-                projection_revision=claim.projection_revision,
-                records=(),
-                redispatched=False,
-                reason="idempotent observation replay",
-            )
-        # Settled projection must not be overwritten by a conflicting observation
-        # (late/alternate success↔fail cannot mutate projection; history row may append).
-        if claim.status == SETTLED:
-            receipt_record = load_record(claim.receipt_id)
-            action_record = load_record(claim.action_record_id) if claim.action_record_id else None
-            if receipt_record is None or action_record is None:
-                return ReconciliationResult(
-                    accepted=False,
-                    refusal=ActionRefusal.UNKNOWN_ACTION,
-                    reason="canonical action/receipt records missing",
-                )
-            if not same_enum(receipt_record.entity_type, EntityType.EXECUTION_RECEIPT):
-                return ReconciliationResult(
-                    accepted=False,
-                    refusal=ActionRefusal.MALFORMED_OBSERVATION,
-                    reason="receipt record type mismatch",
-                )
-            if action_record.project_id != submission.project_id:
-                return ReconciliationResult(
-                    accepted=False,
-                    refusal=ActionRefusal.PROJECT_MISMATCH,
-                    reason="action record project mismatch",
-                )
-            intent = _intent_from_action_record(action_record)
-            observed_at = submission.observed_at or moment
-            history_record = Record.create(
-                entity_type=EntityType.OBSERVATION,
-                project_id=submission.project_id,
-                producer=producer,
-                references=(
-                    Reference(relation=REL_ACTION, target_id=intent.action_id, expected_type=EntityType.ACTION),
-                    Reference(
-                        relation=REL_RECEIPT,
-                        target_id=claim.receipt_id,
-                        expected_type=EntityType.EXECUTION_RECEIPT,
-                    ),
-                ),
-                payload=ObservationPayload(
-                    raw_measurement_or_handle=digest,
-                    observed_at=observed_at,
-                    method="late_observation_history",
-                    source=f"received_at:{moment.isoformat()}",
-                    status=submission.observation.status
-                    if hasattr(submission.observation, "status")
-                    else ObservationStatus.COMPLETE,
-                ),
-                created_at=moment,
-            )
-            self._persist((history_record,))
-            return ReconciliationResult(
-                accepted=False,
-                refusal=ActionRefusal.PROJECTION_SETTLED,
-                reason=(
-                    "settled projection refuses conflicting observation "
-                    "(late history appended without projection mutate)"
-                ),
-                receipt_id=claim.receipt_id,
-                observation_record_id=history_record.id,
-                projection_revision=claim.projection_revision,
-                records=(history_record,),
-                redispatched=False,
-            )
-
-        receipt_record = load_record(claim.receipt_id)
-        action_record = load_record(claim.action_record_id) if claim.action_record_id else None
-        if receipt_record is None or action_record is None:
-            return ReconciliationResult(
-                accepted=False,
-                refusal=ActionRefusal.UNKNOWN_ACTION,
-                reason="canonical action/receipt records missing",
-            )
-        if not same_enum(receipt_record.entity_type, EntityType.EXECUTION_RECEIPT):
-            return ReconciliationResult(
-                accepted=False,
-                refusal=ActionRefusal.MALFORMED_OBSERVATION,
-                reason="receipt record type mismatch",
-            )
-        if action_record.project_id != submission.project_id:
-            return ReconciliationResult(
-                accepted=False,
-                refusal=ActionRefusal.PROJECT_MISMATCH,
-                reason="action record project mismatch",
-            )
-
-        receipt = _receipt_from_record(receipt_record)
-        intent = _intent_from_action_record(action_record)
-        run = ActionRun(
-            intent=intent,
-            status=ActionExecutionStatus.DISPATCHED
-            if same_enum(receipt.status, ReceiptStatus.DISPATCHED)
-            else ActionExecutionStatus.UNKNOWN,
-            receipt=receipt,
-            reconciliation_required=True,
-            records=(action_record, receipt_record),
-        )
-        observed_at = submission.observed_at or moment
-        # received_at is wall clock at recovery; recorded on observation payload method field
-        settled = self.reconcile(
-            run,
-            submission.observation,
-            project_id=submission.project_id,
-            producer=producer,
-            now=moment,
-        )
-        assert settled.receipt is not None
-        obs_record = Record.create(
-            entity_type=EntityType.OBSERVATION,
-            project_id=submission.project_id,
-            producer=producer,
-            references=(
-                Reference(relation=REL_ACTION, target_id=intent.action_id, expected_type=EntityType.ACTION),
-                Reference(
-                    relation=REL_RECEIPT,
-                    target_id=settled.receipt.receipt_id,
-                    expected_type=EntityType.EXECUTION_RECEIPT,
-                ),
-            ),
-            payload=ObservationPayload(
-                raw_measurement_or_handle=digest,
-                observed_at=observed_at,
-                method="recovery_observation",
-                source=f"received_at:{moment.isoformat()}",
-                status=submission.observation.status
-                if hasattr(submission.observation, "status")
-                else ObservationStatus.COMPLETE,
-            ),
-            created_at=moment,
-        )
-        self._persist((obs_record,))
-        revision = claim.projection_revision + 1
-        journal_status = PENDING if settled.reconciliation_required else SETTLED
-        # re-attach receipt (reconcile already did) then observation projection
-        self.journal.attach_observation(
-            submission.project_id,
-            submission.action_key,
-            observation_digest=digest,
-            observation_record_id=obs_record.id,
-            receipt_id=settled.receipt.receipt_id,
-            projection_revision=revision,
-            status=journal_status,
-        )
-        return ReconciliationResult(
-            accepted=True,
-            receipt_id=settled.receipt.receipt_id,
-            observation_record_id=obs_record.id,
-            projection_revision=revision,
-            records=(*settled.records, obs_record),
-            redispatched=False,
-        )
+        return submit_observation(self, submission, producer=producer, load_record=load_record, now=now)
 
     def pending_with_reasons(self, project_id: str) -> tuple:
         """Operator-visible pending claims; timeout never clears these rows."""
@@ -496,50 +297,6 @@ class ActionDispatcher:
         if self.record_sink is not None:
             self.record_sink(records)
         self._records.extend(records)
-
-
-def _observation_digest(observation: ActionObservation) -> str:
-    payload = {
-        "observed": observation.observed,
-        "succeeded": observation.succeeded,
-        "external_ref": observation.external_ref,
-        "detail": observation.detail,
-        "status": getattr(observation.status, "value", str(observation.status)),
-    }
-    raw = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
-    return "sha256:" + hashlib.sha256(raw).hexdigest()
-
-
-def _receipt_from_record(record: Record) -> ActionReceipt:
-    payload = record.payload
-    if not isinstance(payload, ExecutionReceiptPayload):
-        raise TypeError(f"expected ExecutionReceiptPayload, got {type(payload).__name__}")
-    return ActionReceipt(
-        receipt_id=record.id,
-        action_id=payload.action_id,
-        action_key=payload.idempotency_key,
-        submission_id=f"recover:{payload.idempotency_key}",
-        dispatch_attempt=int(payload.dispatch_attempt),
-        status=payload.status,
-        started_at=payload.started_at,
-        finished_at=payload.finished_at,
-        external_ref=payload.external_ref,
-        effects_observed=payload.effects_observed,
-        reconciliation=payload.reconciliation or "",
-    )
-
-
-def _intent_from_action_record(record: Record) -> ActionIntent:
-    payload = record.payload
-    assert isinstance(payload, ActionPayload)
-    return ActionIntent(
-        action_id=record.id,
-        submission_id=f"recover:{payload.idempotency_key}",
-        action_key=payload.idempotency_key,
-        tool=payload.tool,
-        scope=payload.scope,
-        risk=payload.risk_profile,
-    )
 
 
 __all__ = [

@@ -49,6 +49,7 @@ from antigravity_k.engine.cognitive.references import (
     REL_ACTION,
     REL_CONTEXT,
     REL_DECISION,
+    REL_EVIDENCE,
     REL_EXPERIENCE,
     REL_GOVERNANCE,
     REL_JUDGMENT,
@@ -280,6 +281,12 @@ class ExperienceCore:
     def digest(self) -> str:
         return "sha256:" + hashlib.sha256(_canonical(self.as_mapping()).encode("utf-8")).hexdigest()
 
+    def material_digest(self) -> str:
+        """Identify the same historical content independently of candidate ID allocation."""
+        material = dict(self.as_mapping())
+        del material["experience_id"]
+        return "sha256:" + hashlib.sha256(_canonical(material).encode("utf-8")).hexdigest()
+
     def to_record(self, *, project_id: str, producer: Producer, created_at: datetime) -> Record:
         references = [
             # 당시 Context 계보는 타입으로 가리킨다(문자열 historical_refs에만 두면 계보가 아니라 메모다).
@@ -290,19 +297,28 @@ class ExperienceCore:
             (REL_ACTION, self.action_ref, EntityType.ACTION),
             (REL_OUTCOME, self.outcome_ref, EntityType.OUTCOME),
         ]
-        refs = tuple(
-            Reference(relation=relation, target_id=target, expected_type=expected)
-            for relation, target, expected in references
-            if target is not None
-        ) + tuple(
-            Reference(relation=REL_OBSERVATION, target_id=target, expected_type=EntityType.OBSERVATION)
-            for target in self.observation_refs
+        refs = (
+            tuple(
+                Reference(relation=relation, target_id=target, expected_type=expected)
+                for relation, target, expected in references
+                if target is not None
+            )
+            + tuple(
+                Reference(relation=REL_OBSERVATION, target_id=target, expected_type=EntityType.OBSERVATION)
+                for target in self.observation_refs
+            )
+            + tuple(
+                Reference(relation=REL_EVIDENCE, target_id=target, expected_type=EntityType.EVIDENCE)
+                for target in self.evidence_refs
+            )
         )
         return Record.create(
             entity_type=EntityType.EXPERIENCE,
             project_id=project_id,
             producer=producer,
             payload=ExperiencePayload(
+                episode_reference=self.episode_reference,
+                evidence_refs=self.evidence_refs,
                 trigger=self.trigger,
                 historical_refs=tuple(
                     ref for ref in (self.context_ref, self.judgment_ref, self.decision_ref, self.action_ref) if ref
@@ -519,7 +535,7 @@ class ExperienceLedger:
         self._interpretations: dict[str, list[Interpretation]] = {}
         self._supplements: dict[str, list[ExperienceSupplement]] = {}
         self._records: list[Record] = []
-        self._sink_cursor: int = 0
+        self._sunk_record_ids: set[str] = set()
 
     # ── 조회 ────────────────────────────────────────────
     @property
@@ -535,12 +551,12 @@ class ExperienceLedger:
         return tuple(self._records)
 
     def pending_sink_records(self) -> tuple[Record, ...]:
-        return tuple(self._records[self._sink_cursor :])
+        return tuple(record for record in self._records if record.id not in self._sunk_record_ids)
 
     def mark_sunk(self, count: int) -> None:
         if count < 0:
             raise ExperienceContractError("sink count must be non-negative")
-        self._sink_cursor = min(len(self._records), self._sink_cursor + count)
+        self._sunk_record_ids.update(record.id for record in self.pending_sink_records()[:count])
 
     def core(self, experience_id: str) -> ExperienceCore | None:
         return self._cores.get(experience_id)
@@ -634,9 +650,8 @@ class ExperienceLedger:
         if core.episode_reference != selection.episode_reference:
             raise ExperienceContractError("Experience core가 선별된 episode와 다르다")
         digest = core.digest()
-        for existing_id, digests in self._core_digests.items():
-            existing = self._cores.get(existing_id)
-            if existing is not None and existing.episode_reference == core.episode_reference and digest in digests:
+        for existing in self._cores.values():
+            if existing.material_digest() == core.material_digest():
                 return existing
         if core.experience_id in self._cores:
             raise ExperienceContractError(f"duplicate experience: {core.experience_id}")
@@ -653,13 +668,17 @@ class ExperienceLedger:
         if not same_enum(record.entity_type, EntityType.EXPERIENCE):
             raise ExperienceContractError("not an Experience record")
         payload = record.payload
+        resolved_episode = getattr(payload, "episode_reference", None) or episode_reference
+        if episode_reference and resolved_episode != episode_reference:
+            raise ExperienceContractError("committed episode reference conflicts with supplied episode")
+        missing = tuple(getattr(payload, "missing_references", ()))
+        if not resolved_episode:
+            missing = tuple(dict.fromkeys((*missing, "episode_reference")))
         by_rel = {ref.relation: ref.target_id for ref in record.references}
         obs = tuple(ref.target_id for ref in record.references if ref.relation == REL_OBSERVATION)
         core = ExperienceCore(
             experience_id=record.id,
-            episode_reference=episode_reference
-            or next(iter(getattr(payload, "historical_refs", ()) or ()), "")
-            or record.id,
+            episode_reference=resolved_episode,
             trigger=str(getattr(payload, "trigger", "") or "ingested"),
             context_ref=by_rel.get(REL_CONTEXT),
             judgment_ref=by_rel.get(REL_JUDGMENT),
@@ -668,17 +687,25 @@ class ExperienceLedger:
             action_ref=by_rel.get(REL_ACTION),
             observation_refs=obs,
             outcome_ref=by_rel.get(REL_OUTCOME),
+            evidence_refs=tuple(getattr(payload, "evidence_refs", ())),
             remaining_unknowns=tuple(getattr(payload, "remaining_unknowns", ()) or ()),
             future_attention=tuple(getattr(payload, "future_attention", ()) or ()),
-            integrity=getattr(payload, "integrity", IntegrityStatus.COMPLETE),
-            missing_references=tuple(getattr(payload, "missing_references", ()) or ()),
+            integrity=IntegrityStatus.INCOMPLETE
+            if missing
+            else getattr(payload, "integrity", IntegrityStatus.COMPLETE),
+            missing_references=missing,
         )
         if core.experience_id in self._cores:
-            return self._cores[core.experience_id]
+            existing = self._cores[core.experience_id]
+            if existing != core:
+                raise ExperienceContractError(f"conflicting committed experience: {core.experience_id}")
+            self._sunk_record_ids.add(record.id)
+            return existing
         self._cores[core.experience_id] = core
         self._core_digests.setdefault(core.experience_id, []).append(core.digest())
         if record not in self._records:
             self._records.append(record)
+        self._sunk_record_ids.add(record.id)
         return core
 
     # ── 해석·보충 ───────────────────────────────────────

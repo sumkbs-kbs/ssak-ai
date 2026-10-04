@@ -103,10 +103,14 @@ class ToolExecutorPort:
         execute = getattr(self.executor, "execute")
         result = execute(tool, dict(arguments))
         failed = bool(self.failure_predicate(result))
+        detail = str(result)
+        if len(detail) > self.detail_limit:
+            marker = f" [TRUNCATED: full result has {len(detail)} characters]"
+            detail = detail[: max(0, self.detail_limit - len(marker))] + marker
         return DispatchOutcome(
             accepted=not failed,
             external_ref=f"tool_executor:{tool}",
-            detail=str(result)[: self.detail_limit],
+            detail=detail,
         )
 
 
@@ -276,6 +280,7 @@ class ActionReceipt:
                 status=self.status,
                 effects_observed=self.effects_observed,
                 reconciliation=self.reconciliation,
+                detail=self.detail,
             ),
             created_at=created_at,
         )

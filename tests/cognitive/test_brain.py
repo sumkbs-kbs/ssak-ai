@@ -45,6 +45,7 @@ CONTEXT_DIGEST = "sha256:" + "d" * 64
 CONTEXT_WIRE: dict[str, object] = {
     "schema_version": "1.0",
     "entity_type": "ContextPackage",
+    "context_digest": CONTEXT_DIGEST,
     "project_id": PROJECT,
     "payload": {"goal_id": new_id(EntityType.GOAL)},
 }
@@ -364,6 +365,7 @@ def test_brain_swap_keeps_records_and_does_not_force_previous_conclusion(tmp_pat
     wire: dict[str, object] = {
         "schema_version": "1.0",
         "entity_type": "ContextPackage",
+        "context_digest": CONTEXT_DIGEST,
         "project_id": project,
         "payload": {"goal_id": goal.id},
     }

@@ -21,6 +21,7 @@ from antigravity_k.engine.cognitive.live_pilot import (
     TrialOrder,
 )
 from antigravity_k.engine.cognitive.live_trial_adapter import LiveTrialAdapter, ScriptedModelPort
+from antigravity_k.engine.growth_fixture_tools import fixture_tool_port
 
 
 def live_spec() -> BenchmarkSpec:
@@ -33,7 +34,9 @@ def _final_task():
 
 def test_r18_a1_wrong_model_is_real_failure_not_canned(tmp_path: Path) -> None:
     task = _final_task()
-    adapter = LiveTrialAdapter(workspace=tmp_path / "ws", model=ScriptedModelPort(mode="wrong"))
+    adapter = LiveTrialAdapter(
+        executor_factory=fixture_tool_port, workspace=tmp_path / "ws", model=ScriptedModelPort(mode="wrong")
+    )
     req = LiveTrialRequest(
         task_id=task.task_id,
         split=SplitRole.FINAL.value,
@@ -45,7 +48,7 @@ def test_r18_a1_wrong_model_is_real_failure_not_canned(tmp_path: Path) -> None:
     )
     out = adapter.run_trial(req)
     assert out.success is False
-    target = tmp_path / "ws" / "fresh" / f"{task.task_id}.txt"
+    target = tmp_path / "ws" / "fresh" / "trials" / "FINAL" / task.task_id / "0" / f"{task.task_id}.txt"
     assert target.exists()
     assert target.read_text(encoding="utf-8") != task.append_content
     assert "WRONG:" in target.read_text(encoding="utf-8")
@@ -53,6 +56,7 @@ def test_r18_a1_wrong_model_is_real_failure_not_canned(tmp_path: Path) -> None:
 
 def test_r18_a2_failed_validation_not_applied_to_final_mature(tmp_path: Path) -> None:
     adapter = LiveTrialAdapter(
+        executor_factory=fixture_tool_port,
         workspace=tmp_path / "ws",
         model=ScriptedModelPort(mode="correct"),
     )
@@ -77,7 +81,9 @@ def test_r18_a2_failed_validation_not_applied_to_final_mature(tmp_path: Path) ->
 
 
 def test_r18_a3_fresh_and_mature_roots_independent(tmp_path: Path) -> None:
-    adapter = LiveTrialAdapter(workspace=tmp_path / "ws", model=ScriptedModelPort(mode="correct"))
+    adapter = LiveTrialAdapter(
+        executor_factory=fixture_tool_port, workspace=tmp_path / "ws", model=ScriptedModelPort(mode="correct")
+    )
     adapter.run_train_validation(force_validation_fail=False)
     if adapter.policy_gate.promoted_version is None:
         adapter.policy_gate.promoted_version = "forced-promoted-for-digest"
@@ -104,12 +110,19 @@ def test_r18_a3_fresh_and_mature_roots_independent(tmp_path: Path) -> None:
     adapter.run_trial(mature_req)
     assert adapter.root_digest(ArmRole.FRESH) != adapter.root_digest(ArmRole.MATURE)
     assert not (tmp_path / "ws" / "fresh" / "policy").exists()
-    assert (tmp_path / "ws" / "mature" / "policy").exists()
+    assert (
+        adapter.learning.policies.active_policy(
+            __import__("antigravity_k.engine.cognitive.models", fromlist=["PolicyTarget"]).PolicyTarget.CONTEXT_DEPTH
+        )
+        is not None
+    )
 
 
 def test_r18_a4_workspace_jail_and_timeout_partial_ledger(tmp_path: Path) -> None:
     task = _final_task()
-    outside = LiveTrialAdapter(workspace=tmp_path / "ws", model=ScriptedModelPort(mode="outside"))
+    outside = LiveTrialAdapter(
+        executor_factory=fixture_tool_port, workspace=tmp_path / "ws", model=ScriptedModelPort(mode="outside")
+    )
     req = LiveTrialRequest(
         task_id=task.task_id,
         split=SplitRole.FINAL.value,
@@ -126,6 +139,7 @@ def test_r18_a4_workspace_jail_and_timeout_partial_ledger(tmp_path: Path) -> Non
     assert not (tmp_path / "OUTSIDE_JAIL.txt").exists()
 
     timeout_adapter = LiveTrialAdapter(
+        executor_factory=fixture_tool_port,
         workspace=tmp_path / "ws2",
         model=ScriptedModelPort(mode="timeout"),
     )
@@ -138,3 +152,67 @@ def test_r18_a4_workspace_jail_and_timeout_partial_ledger(tmp_path: Path) -> Non
     assert report.status is LivePilotStatus.NOT_COMPLETE
     assert any(e.status == TrialEventStatus.TIMEOUT.value for e in report.ledger)
     assert any(e.status == TrialEventStatus.STARTED.value for e in report.ledger)
+
+
+def test_model_boundary_excludes_private_answer(tmp_path: Path) -> None:
+    # Given a model that inspects its actual input boundary.
+    from dataclasses import replace
+
+    from antigravity_k.engine.cognitive.live_trial_adapter import ModelChoice
+
+    class InspectingModel(ScriptedModelPort):
+        def choose(self, request, task, *, missing_refs, workspace):
+            assert not hasattr(task, "append_content")
+            assert not hasattr(task, "expected_outcome")
+            assert hasattr(task, "evidence")
+            return ModelChoice(append_content="model-output")
+
+    task = replace(_final_task(), append_content="private-oracle-value")
+    adapter = LiveTrialAdapter(
+        executor_factory=fixture_tool_port, workspace=tmp_path, model=InspectingModel(), tasks=(task,)
+    )
+    request = LiveTrialRequest(task.task_id, "FINAL", ArmRole.FRESH, 0, TrialOrder.FRESH_FIRST, None, ())
+    # When the trial passes input to the model.
+    result = adapter.run_trial(request)
+    # Then the private evaluator answer never crossed the model boundary.
+    assert not result.success
+
+
+def test_repeated_trials_have_independent_effect_files(tmp_path: Path) -> None:
+    # Given identical requests distinguished by trial index.
+    from dataclasses import replace
+
+    task = _final_task()
+    adapter = LiveTrialAdapter(executor_factory=fixture_tool_port, workspace=tmp_path, model=ScriptedModelPort())
+    request = LiveTrialRequest(task.task_id, "FINAL", ArmRole.FRESH, 0, TrialOrder.FRESH_FIRST, None, ())
+    adapter.run_trial(request)
+    # When a second trial executes.
+    result = adapter.run_trial(replace(request, trial_index=1))
+    # Then the previous append does not contaminate the measurement.
+    assert result.success
+
+
+def test_train_experience_has_real_canonical_lineage_and_active_policy(tmp_path: Path) -> None:
+    # Given a model port with explicit grounds and isolated real file tools.
+    from antigravity_k.engine.cognitive.models import PolicyTarget
+    from antigravity_k.engine.cognitive.store import CanonicalStore
+
+    adapter = LiveTrialAdapter(executor_factory=fixture_tool_port, workspace=tmp_path, model=ScriptedModelPort())
+    # When TRAIN and disjoint validation finish.
+    gate = adapter.run_train_validation()
+    # Then promotion is backed by complete, resolvable observed experience.
+    assert gate.promoted_version
+    store = CanonicalStore(tmp_path / "mature" / "store", git_enabled=False)
+    assert adapter.learning.policies.active_policy(PolicyTarget.CONTEXT_DEPTH)
+    for observation in adapter.learning.observations:
+        core = adapter.learning.ledger.core(observation.experience_id)
+        assert core and not core.missing_references
+        for ref in (
+            core.context_ref,
+            core.judgment_ref,
+            core.decision_ref,
+            core.action_ref,
+            core.outcome_ref,
+            *core.observation_refs,
+        ):
+            assert ref and store.read(ref)

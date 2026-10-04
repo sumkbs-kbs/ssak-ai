@@ -23,7 +23,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Final, Protocol, runtime_checkable
@@ -48,6 +48,7 @@ from antigravity_k.engine.cognitive.experience import (
     evaluate_decision,
     evaluate_execution,
     evaluate_outcome,
+    observation_record,
 )
 from antigravity_k.engine.cognitive.governance import (
     GovernanceGate,
@@ -61,6 +62,7 @@ from antigravity_k.engine.cognitive.models import (
     CognitiveRequestType,
     EventPayload,
     GovernanceDisposition,
+    IntegrityStatus,
     LoopState,
     Producer,
     ProducerKind,
@@ -139,6 +141,7 @@ class RethinkPort(Protocol):
         feedback_refs: Sequence[str],
         affected_grounds: Sequence[str],
         round_index: int,
+        feedback: Sequence[RequestFeedback] = (),
     ) -> ThinkOutcome: ...
 
 
@@ -255,6 +258,11 @@ class EpisodePlan:
     expected_outcome: str = ""
     observation: ActionObservation | None = None
     decision_assessment: DecisionAssessment | None = None
+    decision_ref: str | None = None
+    governance_ref: str | None = None
+    outcome_ref: str | None = None
+    observation_refs: tuple[str, ...] = ()
+    evidence_refs: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -362,10 +370,17 @@ class CognitiveRuntime:
             transition(LoopState.BRAIN_FAILED, "think", thought.detail)
             return self._episode(request, events, counters, EpisodeTermination.BRAIN_FAILED, note=thought.detail)
         judgment_ref = thought.judgment_ref
+        if thought.delta is not None and (thought.delta.risk or thought.delta.action) and thought.plan is None:
+            note = "Primary action/risk change requires an explicitly prepared plan"
+            transition(LoopState.DEFERRED, judgment_ref, note)
+            return self._episode(
+                request, events, counters, EpisodeTermination.DEFERRED, judgment_ref=judgment_ref, note=note
+            )
 
         # 3–4) GOVERN → EXECUTE → FEEDBACK → TARGETED_RETHINK* (simple이면 생략)
         # 성공 feedback도 Primary에 전달하고, rethink의 새 request는 같은 gate로 다음 round 실행한다.
         active_plan = thought.plan if thought.plan is not None else request.plan
+        request = replace(request, plan=active_plan)
         if not request.simple and thought.requests:
             governance = self.governance or GovernanceGate()
             pending: list[CognitiveRequestEnvelope] = list(thought.requests)
@@ -475,13 +490,27 @@ class CognitiveRuntime:
                     self.rethink is not None and bool(round_feedback) and rounds < self.budget.expansion_rounds
                 )
                 if not should_rethink:
-                    break
+                    termination = (
+                        EpisodeTermination.DEFERRED if self.rethink is None else EpisodeTermination.STOPPED_BUDGET
+                    )
+                    transition(LoopState.COMMIT, "stop-conditions", "feedback not integrated by Primary")
+                    return self._episode(
+                        request,
+                        events,
+                        counters,
+                        termination,
+                        note="feedback not integrated by Primary",
+                        feedback=tuple(feedback),
+                        judgment_ref=judgment_ref,
+                    )
                 rounds += 1
                 counters = _bump(counters, rethink_rounds=1, expansion_rounds=1)
                 transition(LoopState.TARGETED_RETHINK, judgment_ref, f"round={rounds}")
+                assert self.rethink is not None
                 rethought = self.rethink.rethink(
                     previous_judgment_ref=judgment_ref,
                     feedback_refs=tuple(item.request_id for item in round_feedback),
+                    feedback=tuple(round_feedback),
                     affected_grounds=request.affected_grounds,
                     round_index=rounds,
                 )
@@ -492,8 +521,26 @@ class CognitiveRuntime:
                         request, events, counters, EpisodeTermination.BRAIN_FAILED, note=rethought.detail
                     )
                 judgment_ref = rethought.judgment_ref
+                if (
+                    rethought.delta is not None
+                    and (rethought.delta.risk or rethought.delta.action)
+                    and rethought.plan is None
+                ):
+                    note = "Primary action/risk change requires an explicitly prepared plan"
+                    transition(LoopState.DEFERRED, judgment_ref, note)
+                    return self._episode(
+                        request,
+                        events,
+                        counters,
+                        EpisodeTermination.DEFERRED,
+                        feedback=tuple(feedback),
+                        judgment_ref=judgment_ref,
+                        note=note,
+                    )
+                # Ground-only updates retain the explicit prepared action; action/risk changes cannot.
                 if rethought.plan is not None:
                     active_plan = rethought.plan
+                    request = replace(request, plan=active_plan)
                 if rethought.delta is None or not rethought.delta.material:
                     transition(
                         LoopState.COMMIT,
@@ -602,6 +649,22 @@ class CognitiveRuntime:
             )
             return episode
         transition(LoopState.OBSERVE, "action", observed.detail or "observed")
+        if observed.observed and not active_plan.observation_refs and self.project_id:
+            record = observation_record(
+                project_id=self.project_id,
+                producer=self.producer,
+                raw=observed.detail,
+                method="action-observation",
+                source=observed.external_ref or action.action_id,
+                observed_at=self._now(),
+                status=observed.status,
+            )
+            if self.record_sink is not None:
+                self.record_sink((record,))
+            else:
+                self.experience._records.append(record)
+            active_plan = replace(active_plan, observation_refs=(record.id,))
+            request = replace(request, plan=active_plan)
         action_run = self.actions.reconcile(action_run, observed, project_id=self.project_id, producer=self.producer)
         comparison = _outcome_comparison(active_plan.expected_outcome, observed)
         evaluations = EpisodeEvaluations(
@@ -691,11 +754,14 @@ class CognitiveRuntime:
         context_ref: str | None = None,
         judgment_ref: str | None = None,
         decision_ref: str | None = None,
+        governance_ref: str | None = None,
+        outcome_ref: str | None = None,
         action_ref: str | None = None,
         observation_refs: Sequence[str] = (),
         evidence_refs: Sequence[str] = (),
         remaining_unknowns: Sequence[str] = (),
         future_attention: Sequence[str] = (),
+        missing_references: Sequence[str] = (),
     ) -> ExperienceCore:
         """선별을 통과한 episode만 Experience core가 된다. 지식 승격은 P09다."""
 
@@ -706,11 +772,15 @@ class CognitiveRuntime:
             context_ref=context_ref,
             judgment_ref=judgment_ref,
             decision_ref=decision_ref,
+            governance_ref=governance_ref,
+            outcome_ref=outcome_ref,
             action_ref=action_ref,
             observation_refs=tuple(observation_refs),
             evidence_refs=tuple(evidence_refs),
             remaining_unknowns=tuple(remaining_unknowns),
             future_attention=tuple(future_attention),
+            integrity=IntegrityStatus.INCOMPLETE if missing_references else IntegrityStatus.COMPLETE,
+            missing_references=tuple(missing_references),
         )
         return self.experience.form_experience(
             selection,
@@ -795,14 +865,37 @@ class CognitiveRuntime:
                 jref = judgment_ref or episode.judgment_ref
                 if jref is not None and not is_canonical_id(jref):
                     jref = None
-                # Historical core still forms when selection says EXPERIENCE; non-canonical
-                # shorthand refs stay out of Reference edges (remain in trigger/note only).
+                # Only phases actually reached create required historical links.
+                states = episode.states()
+                expected_references = (
+                    ("context_ref", ctx, LoopState.THINK in states),
+                    ("judgment_ref", jref, judgment_ref is not None),
+                    ("decision_ref", request.plan.decision_ref, readiness is not None),
+                    ("governance_ref", request.plan.governance_ref, LoopState.GOVERN in states),
+                    ("action_ref", action_ref, action_run is not None),
+                    (
+                        "observation_refs",
+                        request.plan.observation_refs,
+                        request.plan.observation is not None and request.plan.observation.observed,
+                    ),
+                    ("outcome_ref", request.plan.outcome_ref, outcome is not None),
+                    ("evidence_refs", request.plan.evidence_refs, bool(selection.evidence_refs)),
+                )
+                missing_references = tuple(
+                    name for name, value, required in expected_references if required and not value
+                )
                 self.form_experience_core(
                     selection,
                     trigger=episode.termination.value,
                     context_ref=ctx,
                     judgment_ref=jref,
                     action_ref=action_ref,
+                    decision_ref=request.plan.decision_ref,
+                    governance_ref=request.plan.governance_ref,
+                    outcome_ref=request.plan.outcome_ref,
+                    observation_refs=request.plan.observation_refs,
+                    evidence_refs=request.plan.evidence_refs,
+                    missing_references=missing_references,
                 )
         self._flush_experience_records()
         return episode

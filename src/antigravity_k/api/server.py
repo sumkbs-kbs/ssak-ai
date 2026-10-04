@@ -192,6 +192,9 @@ async def lifespan(app: FastAPI):
     except Exception:
         logger.exception("[Startup] Scheduled job loop init skipped")
 
+    from antigravity_k.api.dependencies import bootstrap_cognitive_active
+
+    bootstrap_cognitive_active(app)
     yield
 
     # Cancel cache cleanup

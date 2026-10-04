@@ -110,6 +110,7 @@ from antigravity_k.engine.cognitive.runtime import (
     EpisodePlan,
     EpisodeRequest,
     EpisodeTermination,
+    RequestFeedback,
     ThinkOutcome,
     episode_records,
 )
@@ -964,6 +965,7 @@ def plan_readiness(
     risk: RiskProfile,
     policy_version: str | None,
     limits: tuple[str, ...] = (),
+    state_revision: int = STATE_REVISION,
     tool: str = "fixture_write",
     dimension: AuthorityDimension = AuthorityDimension.TOOL_WRITE,
 ) -> ReadinessResult:
@@ -977,7 +979,7 @@ def plan_readiness(
             ),
             authorized_action_digest=action_digest,
             decision_revision=DECISION_REVISION,
-            state_revision=STATE_REVISION,
+            state_revision=state_revision,
             authority_revision=AUTHORITY_REVISION,
             policy_version=policy_version,
             grounds=task.required_refs,
@@ -1154,6 +1156,7 @@ class FixtureThink:
         risk: RiskProfile,
         reshape: tuple[ReshapeGuard, ...],
         guarded_first_request: bool,
+        prepared_plan: EpisodePlan,
         policy_version: str | None = None,
     ) -> None:
         self.task = task
@@ -1163,6 +1166,7 @@ class FixtureThink:
         self.reshape = reshape
         self.guarded_first_request = guarded_first_request
         self.policy_version = policy_version
+        self.prepared_plan = prepared_plan
         self.calls: list[str] = []
 
     def think(self, *, context_ref: str, request_signature: str, attempt: int) -> ThinkOutcome:
@@ -1184,6 +1188,7 @@ class FixtureThink:
             judgment_ref=f"judgment:{self.task.task_id}:{attempt}",
             requests=tuple(requests),
             delta=delta,
+            plan=self.prepared_plan,
         )
 
     def rethink(
@@ -1193,6 +1198,7 @@ class FixtureThink:
         feedback_refs: Sequence[str],
         affected_grounds: Sequence[str],
         round_index: int,
+        feedback: Sequence[RequestFeedback] = (),
     ) -> ThinkOutcome:
         """거부된 넓은 요청을 좁은 범위로 다시 판단한다(material delta를 남긴다)."""
 
@@ -1200,6 +1206,7 @@ class FixtureThink:
         return ThinkOutcome(
             judgment_ref=f"judgment:{self.task.task_id}:narrow:{round_index}",
             requests=(),
+            plan=replace(self.prepared_plan),
             delta=EpisodeDelta(
                 action=True,
                 risk=True,
@@ -1435,6 +1442,12 @@ class GrowthRunner:
             port=executor,
             clock=self._now,
         )
+        plan = EpisodePlan(
+            readiness=readiness,
+            action=intent,
+            expected_outcome=task.expected_outcome,
+            observation=ActionObservation(observed=True, succeeded=True, detail="fixture observed"),
+        )
         brain = FixtureThink(
             task=task,
             missing_refs=missing,
@@ -1442,6 +1455,7 @@ class GrowthRunner:
             risk=risk,
             reshape=guards,
             guarded_first_request=guarded,
+            prepared_plan=plan,
             policy_version=policy_version,
         )
         runtime = CognitiveRuntime(
@@ -1453,12 +1467,6 @@ class GrowthRunner:
             project_id=self.project_id,
             producer=self.producer,
             clock=self._now,
-        )
-        plan = EpisodePlan(
-            readiness=readiness,
-            action=intent,
-            expected_outcome=task.expected_outcome,
-            observation=ActionObservation(observed=True, succeeded=True, detail="fixture observed"),
         )
         episode = runtime.run(
             EpisodeRequest(

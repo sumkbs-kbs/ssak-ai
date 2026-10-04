@@ -9,6 +9,7 @@ over durable claim rows; canonical action/receipt bytes live in the record sink.
 from __future__ import annotations
 
 import sqlite3
+from collections.abc import Callable
 from contextlib import closing
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -39,6 +40,16 @@ class ActionClaimView:
     pending_reason: str = ""
 
 
+@dataclass(frozen=True, slots=True)
+class ObservationPublication:
+    """Canonical identities to publish after the append succeeds."""
+
+    digest: str
+    observation_record_id: str
+    receipt_id: str
+    status: str
+
+
 class ActionJournal(Protocol):
     """Atomically persist intent and expose pending/receipt recovery projections."""
 
@@ -55,15 +66,10 @@ class ActionJournal(Protocol):
 
     def attach_observation(
         self,
-        project_id: str,
-        action_key: str,
-        *,
-        observation_digest: str,
-        observation_record_id: str,
-        receipt_id: str,
-        projection_revision: int,
-        status: str = SETTLED,
-    ) -> None: ...
+        expected: ActionClaimView,
+        publication: ObservationPublication,
+        append_records: Callable[[], None],
+    ) -> bool: ...
 
     def get(self, project_id: str, action_key: str) -> ActionClaimView | None: ...
 
@@ -107,46 +113,56 @@ class SqliteActionJournal:
                 self._ensure_schema(connection)
                 updated = connection.execute(
                     "UPDATE action_claims SET receipt_id = ?, status = ?, updated_at = ? "
-                    "WHERE project_id = ? AND action_key = ?",
+                    "WHERE project_id = ? AND action_key = ? AND projection_revision = 0",
                     (receipt_id, status, now, project_id, action_key),
                 )
                 if updated.rowcount != 1:
-                    raise LookupError(f"action claim not found: {project_id}/{action_key}")
+                    raise LookupError(
+                        f"action claim missing or observation already published: {project_id}/{action_key}"
+                    )
 
     def attach_observation(
         self,
-        project_id: str,
-        action_key: str,
-        *,
-        observation_digest: str,
-        observation_record_id: str,
-        receipt_id: str,
-        projection_revision: int,
-        status: str = SETTLED,
-    ) -> None:
-        """Record an applied observation projection (idempotency key = observation_digest)."""
-        now = datetime.now(UTC).isoformat()
+        expected: ActionClaimView,
+        publication: ObservationPublication,
+        append_records: Callable[[], None],
+    ) -> bool:
+        """Serialize publication; canonical append precedes authoritative projection.
+
+        A failed append or process exit rolls back this transaction. Canonical rows
+        may already exist; the caller reuses their stable IDs on the next attempt.
+        """
         with closing(sqlite3.connect(self.path, timeout=30)) as connection:
             connection.execute("PRAGMA synchronous=FULL")
             with connection:
                 self._ensure_schema(connection)
-                updated = connection.execute(
+                connection.execute("BEGIN IMMEDIATE")
+                row = connection.execute(
+                    "SELECT receipt_id, projection_revision, status FROM action_claims "
+                    "WHERE project_id = ? AND action_key = ?",
+                    (expected.project_id, expected.action_key),
+                ).fetchone()
+                if row != (expected.receipt_id, expected.projection_revision, expected.status):
+                    return False
+                if expected.status == SETTLED:
+                    return False
+                append_records()
+                connection.execute(
                     "UPDATE action_claims SET receipt_id = ?, status = ?, updated_at = ?, "
                     "observation_digest = ?, observation_record_id = ?, projection_revision = ? "
                     "WHERE project_id = ? AND action_key = ?",
                     (
-                        receipt_id,
-                        status,
-                        now,
-                        observation_digest,
-                        observation_record_id,
-                        projection_revision,
-                        project_id,
-                        action_key,
+                        publication.receipt_id,
+                        publication.status,
+                        datetime.now(UTC).isoformat(),
+                        publication.digest,
+                        publication.observation_record_id,
+                        expected.projection_revision + 1,
+                        expected.project_id,
+                        expected.action_key,
                     ),
                 )
-                if updated.rowcount != 1:
-                    raise LookupError(f"action claim not found: {project_id}/{action_key}")
+                return True
 
     def get(self, project_id: str, action_key: str) -> ActionClaimView | None:
         with closing(sqlite3.connect(self.path, timeout=30)) as connection:
@@ -197,30 +213,34 @@ class SqliteActionJournal:
 
     @staticmethod
     def _ensure_schema(connection: sqlite3.Connection) -> None:
-        connection.execute(
-            "CREATE TABLE IF NOT EXISTS action_claims ("
-            "project_id TEXT NOT NULL, "
-            "action_key TEXT NOT NULL, "
-            "intent TEXT NOT NULL, "
-            "action_record_id TEXT NOT NULL DEFAULT '', "
-            "status TEXT NOT NULL DEFAULT 'claimed', "
-            "receipt_id TEXT, "
-            "updated_at TEXT NOT NULL DEFAULT '', "
-            "PRIMARY KEY(project_id, action_key))"
-        )
-        columns = {str(row[1]) for row in connection.execute("PRAGMA table_info(action_claims)")}
-        migrations = (
-            ("action_record_id", "TEXT NOT NULL DEFAULT ''"),
-            ("status", "TEXT NOT NULL DEFAULT 'claimed'"),
-            ("receipt_id", "TEXT"),
-            ("updated_at", "TEXT NOT NULL DEFAULT ''"),
-            ("observation_digest", "TEXT"),
-            ("observation_record_id", "TEXT"),
-            ("projection_revision", "INTEGER NOT NULL DEFAULT 0"),
-        )
-        for name, decl in migrations:
-            if name not in columns:
-                connection.execute(f"ALTER TABLE action_claims ADD COLUMN {name} {decl}")
+        # DDL does not implicitly start a sqlite3 transaction. Serialize schema
+        # inspection and migration so competing processes never act on stale columns.
+        with connection:
+            connection.execute("BEGIN IMMEDIATE")
+            connection.execute(
+                "CREATE TABLE IF NOT EXISTS action_claims ("
+                "project_id TEXT NOT NULL, "
+                "action_key TEXT NOT NULL, "
+                "intent TEXT NOT NULL, "
+                "action_record_id TEXT NOT NULL DEFAULT '', "
+                "status TEXT NOT NULL DEFAULT 'claimed', "
+                "receipt_id TEXT, "
+                "updated_at TEXT NOT NULL DEFAULT '', "
+                "PRIMARY KEY(project_id, action_key))"
+            )
+            columns = {str(row[1]) for row in connection.execute("PRAGMA table_info(action_claims)")}
+            migrations = (
+                ("action_record_id", "TEXT NOT NULL DEFAULT ''"),
+                ("status", "TEXT NOT NULL DEFAULT 'claimed'"),
+                ("receipt_id", "TEXT"),
+                ("updated_at", "TEXT NOT NULL DEFAULT ''"),
+                ("observation_digest", "TEXT"),
+                ("observation_record_id", "TEXT"),
+                ("projection_revision", "INTEGER NOT NULL DEFAULT 0"),
+            )
+            for name, decl in migrations:
+                if name not in columns:
+                    connection.execute(f"ALTER TABLE action_claims ADD COLUMN {name} {decl}")
 
 
 __all__ = [

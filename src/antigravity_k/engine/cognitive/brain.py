@@ -18,6 +18,7 @@ Primary에 전달될 뿐 최종 통합 권한이 없다 — Body가 다수결·m
 
 from __future__ import annotations
 
+import json
 import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
@@ -25,13 +26,19 @@ from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Final, Protocol, runtime_checkable
 
+from pydantic import ValidationError
+
+from antigravity_k.engine.cognitive.brain_context_render import (
+    BrainContextRender as BrainContextRender,
+)
+from antigravity_k.engine.cognitive.brain_context_render import (
+    render_context_for_brain as render_context_for_brain,
+)
 from antigravity_k.engine.cognitive.models import (
     AssumptionPayload,
     BrainJudgmentPayload,
-    ContextPackagePayload,
     EvidenceKind,
     EvidencePayload,
-    IntegrityStatus,
     Producer,
     ProducerKind,
     Provenance,
@@ -39,8 +46,6 @@ from antigravity_k.engine.cognitive.models import (
     UnknownCategory,
     UnknownMateriality,
     UnknownPayload,
-    same_enum,
-    to_wire,
 )
 from antigravity_k.engine.cognitive.references import (
     REL_GROUND,
@@ -238,19 +243,45 @@ class StructuredBrainClient:
                 detail=f"context project {context_project} != adapter project {self.project_id}",
             )
 
+        context_digest = context_wire.get("context_digest")
+        if not isinstance(context_digest, str) or not context_digest:
+            return BrainFailure(
+                request_id=request_id,
+                kind=BrainFailureKind.BRAIN_PROTOCOL_ERROR,
+                detail="context wire has no context_digest",
+            )
+        if supersedes is not None:
+            context_wire = {
+                **context_wire,
+                "rethink": {
+                    "previous_judgment_id": supersedes,
+                    "feedback_ids": list(feedback_ids),
+                    "affected_ground_ids": list(affected_ground_ids),
+                    "context_delta": context_delta,
+                },
+            }
+        if (
+            len(json.dumps(dict(context_wire), ensure_ascii=False).encode("utf-8"))
+            > self.adapter.capabilities.context_limit
+        ):
+            return BrainFailure(
+                request_id=request_id,
+                kind=BrainFailureKind.CONTEXT_OVERFLOW,
+                detail="complete provider context exceeds declared context_limit",
+            )
         started = self._timer()
         response = self.adapter.respond(context_wire, request_id)
         prompt_tokens = response.prompt_tokens
         completion_tokens = response.completion_tokens
         attempts = 0
-        rejection = self._validate(response, request_id)
+        rejection = self._validate(response, context_digest)
         if rejection is not None:
             attempts = 1
             repair_response = self.adapter.respond(context_wire, request_id, repair_of=dict(context_wire))
             # repair에도 모델·비용을 계상한다 — 원래 시도의 비용은 사라지지 않는다.
             prompt_tokens += repair_response.prompt_tokens
             completion_tokens += repair_response.completion_tokens
-            rejection = self._validate(repair_response, request_id)
+            rejection = self._validate(repair_response, context_digest)
             response = repair_response
         elapsed = self._timer() - started
         if rejection is not None:
@@ -307,7 +338,7 @@ class StructuredBrainClient:
             elapsed_seconds=elapsed,
         )
 
-    def _validate(self, response: BrainResponse, request_id: str) -> str | None:
+    def _validate(self, response: BrainResponse, expected_context_digest: str) -> str | None:
         if len(response.text) > self.max_response_chars:
             return f"response exceeds {self.max_response_chars} chars"
         if response.structured is None:
@@ -333,6 +364,12 @@ class StructuredBrainClient:
         context_digest = judgment.get("context_digest")
         if not isinstance(context_digest, str) or not context_digest:
             return "judgment has no context_digest"
+        if context_digest != expected_context_digest:
+            return "judgment context_digest does not match the supplied context"
+        try:
+            BrainJudgmentPayload.model_validate(judgment)
+        except ValidationError as exc:
+            return f"invalid judgment schema: {exc}"
         return None
 
     def _build_references(self, payload: BrainJudgmentPayload, *, supersedes: str | None) -> tuple[Reference, ...]:
@@ -524,134 +561,6 @@ class BrainDirector:
             evidence=evidence,
             judgment=outcome,
         )
-
-
-@dataclass(frozen=True, slots=True)
-class BrainContextRender:
-    """Bounded provider wire built from a canonical ContextPackage (not opaque IDs alone)."""
-
-    wire: Mapping[str, object]
-    omitted_required: tuple[str, ...] = ()
-    truncated: bool = False
-
-    @property
-    def ready_for_provider(self) -> bool:
-        return not self.omitted_required
-
-
-def _snippet_from_record(record: Record, *, max_chars: int) -> str:
-    payload = record.payload
-    for attr in ("statement", "content", "verbatim_text", "claim", "meaning", "title", "summary", "text"):
-        value = getattr(payload, attr, None)
-        if isinstance(value, str) and value.strip():
-            return value.strip()[:max_chars]
-    wire = to_wire(record)
-    text = str(wire.get("payload", wire))
-    return text[:max_chars]
-
-
-def render_context_for_brain(
-    package: ContextPackagePayload,
-    *,
-    project_id: str,
-    context_digest: str,
-    load_record: Callable[[str], Record | None],
-    context_limit: int,
-    snippet_chars: int = 400,
-) -> BrainContextRender:
-    """Expand ContextPackage items into provider wire with real goal/state/evidence text.
-
-    When ``context_limit`` cannot hold required goal/state/evidence snippets, those IDs are
-    listed in ``omitted_required`` — callers must not hide the omission or call the provider.
-    """
-
-    if context_limit < 1:
-        return BrainContextRender(
-            wire={
-                "schema_version": "1.0",
-                "entity_type": "ContextPackage",
-                "project_id": project_id,
-                "context_digest": context_digest,
-                "integrity": str(package.integrity),
-                "missing_ids": list(package.missing_ids),
-                "goal": None,
-                "state": [],
-                "evidence": [],
-                "omitted_required": ["goal", "state", "evidence"],
-                "context_limit": context_limit,
-            },
-            omitted_required=("goal", "state", "evidence"),
-            truncated=True,
-        )
-
-    omitted: list[str] = []
-    used = 0
-
-    def take(label: str, record_id: str, required: bool) -> dict[str, object] | None:
-        nonlocal used
-        record = load_record(record_id)
-        if record is None:
-            if required:
-                omitted.append(record_id)
-            return None
-        snippet = _snippet_from_record(record, max_chars=snippet_chars)
-        entry: dict[str, object] = {
-            "id": record_id,
-            "entity_type": str(record.entity_type),
-            "text": snippet,
-        }
-        cost = max(1, len(str(entry)) // 4)
-        if used + cost > context_limit:
-            if required:
-                omitted.append(record_id)
-            return None
-        used += cost
-        return entry
-
-    goal_entry = take("goal", package.goal_id, required=True)
-    state_entries: list[dict[str, object]] = []
-    for item in package.l1_state:
-        entry = take("state", item.record_id, required=True)
-        if entry is not None:
-            state_entries.append(entry)
-    evidence_entries: list[dict[str, object]] = []
-    for item in package.l3_evidence:
-        entry = take("evidence", item.record_id, required=True)
-        if entry is not None:
-            evidence_entries.append(entry)
-
-    # Required surface: at least goal text when package is COMPLETE.
-    if same_enum(package.integrity, IntegrityStatus.COMPLETE) and goal_entry is None:
-        if package.goal_id not in omitted:
-            omitted.append(package.goal_id)
-
-    wire: dict[str, object] = {
-        "schema_version": "1.0",
-        "entity_type": "ContextPackage",
-        "project_id": project_id,
-        "context_digest": context_digest,
-        "content_digest": context_digest,
-        "integrity": str(package.integrity),
-        "missing_ids": list(package.missing_ids),
-        "state_revision": package.state_revision,
-        "goal": goal_entry,
-        "state": state_entries,
-        "evidence": evidence_entries,
-        "evidence_ids": [e["id"] for e in evidence_entries],
-        "payload": {
-            "goal_id": package.goal_id,
-            "state_revision": package.state_revision,
-            "integrity": str(package.integrity),
-        },
-        "omitted_required": list(omitted),
-        "context_limit": context_limit,
-        "tokens_used_estimate": used,
-    }
-    return BrainContextRender(
-        wire=wire,
-        omitted_required=tuple(omitted),
-        truncated=bool(omitted),
-    )
 
 
 def assumption_record(

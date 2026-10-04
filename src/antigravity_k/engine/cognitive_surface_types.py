@@ -281,6 +281,11 @@ class SurfaceEpisodeRequest:
     simple: bool = True
     policy_version: str | None = None
     advisory_experience_ids: tuple[str, ...] = ()
+    decision_ref: str | None = None
+    governance_ref: str | None = None
+    outcome_ref: str | None = None
+    observation_refs: tuple[str, ...] = ()
+    evidence_refs: tuple[str, ...] = ()
 
 
 class ThinkLike(Protocol):

@@ -130,21 +130,16 @@ def preconditions(
 def _authoritative_freshness(self: ActionContext, intent: ActionIntent, now: datetime) -> FreshnessBinding:
     """Compare readiness against live heads, never intent.freshness vs itself.
 
-    ``freshness_resolver`` supplies trusted decision/state/policy/authority revisions.
-    Request body and intent fields are not authoritative for those axes.
-    ``action_digest`` always comes from this intent's normalized args.
+    ``freshness_resolver`` supplies the canonical authorized digest and live revisions.
+    The executed arguments must match that authorization independently of readiness.
     """
 
     resolver = self.freshness_resolver
     if resolver is not None:
         live = resolver(intent, now)
-        return FreshnessBinding(
-            decision_revision=live.decision_revision,
-            action_digest=intent.args_digest(),
-            state_revision=live.state_revision,
-            authority_revision=live.authority_revision,
-            policy_version=live.policy_version,
-        )
+        if live.action_digest != intent.args_digest():
+            raise StaleReadinessError("Canonical decision does not authorize the current action digest")
+        return live
     # Unit/legacy paths without a resolver: still recompute action_digest.
     # Decision/state/policy fall back to intent fields. ACTIVE must wire a resolver.
     base = intent.freshness()

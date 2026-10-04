@@ -36,6 +36,8 @@ from antigravity_k.tools.tool_registry import ToolRegistry
 logger = logging.getLogger("antigravity_k.api.dependencies")
 
 if TYPE_CHECKING:
+    from fastapi import FastAPI
+
     from antigravity_k.engine.mode_manager import ModeManager
 
 
@@ -915,3 +917,15 @@ def _attach_cognitive_surface(agent_runtime: AgentRuntime, model_manager: object
         return str(model_manager.generate(prompt=prompt, target=target, temperature=0.2, max_tokens=512))  # type: ignore[attr-defined]
 
     agent_runtime.attach_cognitive_surface(CognitiveSurfaceAdapter(settings, think=SurfaceBrainPort(generate)))
+
+
+def bootstrap_cognitive_active(app: "FastAPI") -> None:
+    """Boot an explicitly injected trusted project configuration, otherwise stay OFF."""
+    from antigravity_k.engine.cognitive_active_composition import (
+        ProjectActiveConfiguration,
+        install_cognitive_active,
+    )
+
+    configuration = getattr(app.state, "cognitive_active_configuration", None)
+    if isinstance(configuration, ProjectActiveConfiguration):
+        install_cognitive_active(app, configuration)

@@ -160,6 +160,8 @@ class LiveTrialOutcome:
     safety_violation: str = ""
     detail: str = ""
     error_category: str = ""
+    effective_policy_version: str | None = None
+    policy_version_reported: bool = False
 
     def as_mapping(self) -> Mapping[str, object]:
         return {
@@ -173,6 +175,8 @@ class LiveTrialOutcome:
             "safety_violation": self.safety_violation,
             "detail": self.detail,
             "error_category": self.error_category,
+            "effective_policy_version": self.effective_policy_version,
+            "policy_version_reported": self.policy_version_reported,
         }
 
 
@@ -459,6 +463,8 @@ class TrialLedgerEntry:
     error_category: str = ""
     policy_version: str | None = None
     mechanism_flags: Mapping[str, bool] = field(default_factory=dict)
+    requested_policy_version: str | None = None
+    policy_version_reported: bool = False
 
     def as_mapping(self) -> Mapping[str, object]:
         return {
@@ -474,6 +480,8 @@ class TrialLedgerEntry:
             "outcome": dict(self.outcome) if self.outcome else None,
             "error_category": self.error_category,
             "policy_version": self.policy_version,
+            "requested_policy_version": self.requested_policy_version,
+            "policy_version_reported": self.policy_version_reported,
             "mechanism_flags": dict(self.mechanism_flags),
         }
 
@@ -509,6 +517,10 @@ class RawTrialLedger:
                         duplicate_dispatch=bool(payload.get("duplicate_dispatch", False)),
                         safety_violation=str(payload.get("safety_violation", "")),
                         detail=str(payload.get("detail", "")),
+                        effective_policy_version=str(payload["effective_policy_version"])
+                        if payload.get("effective_policy_version") is not None
+                        else None,
+                        policy_version_reported=bool(payload.get("policy_version_reported", False)),
                         error_category=str(payload.get("error_category", "")),
                     ),
                 )
@@ -819,6 +831,7 @@ class LivePilotHarness:
                             finished_at=None,
                             outcome=None,
                             policy_version=request.policy_version,
+                            requested_policy_version=request.policy_version,
                             mechanism_flags=flags,
                         )
                     )
@@ -840,6 +853,7 @@ class LivePilotHarness:
                                 outcome=None,
                                 error_category="TIMEOUT",
                                 policy_version=request.policy_version,
+                                requested_policy_version=request.policy_version,
                                 mechanism_flags=flags,
                             )
                         )
@@ -860,6 +874,7 @@ class LivePilotHarness:
                                 outcome=None,
                                 error_category="BUDGET_EXHAUSTED",
                                 policy_version=request.policy_version,
+                                requested_policy_version=request.policy_version,
                                 mechanism_flags=flags,
                             )
                         )
@@ -880,6 +895,7 @@ class LivePilotHarness:
                                 outcome=None,
                                 error_category=type(exc).__name__,
                                 policy_version=request.policy_version,
+                                requested_policy_version=request.policy_version,
                                 mechanism_flags=flags,
                             )
                         )
@@ -901,7 +917,11 @@ class LivePilotHarness:
                                 finished_at=finished_at,
                                 outcome=outcome.as_mapping(),
                                 error_category="BUDGET_EXHAUSTED",
-                                policy_version=request.policy_version,
+                                policy_version=outcome.effective_policy_version
+                                if outcome.policy_version_reported
+                                else request.policy_version,
+                                requested_policy_version=request.policy_version,
+                                policy_version_reported=outcome.policy_version_reported,
                                 mechanism_flags=flags,
                             )
                         )
@@ -919,7 +939,11 @@ class LivePilotHarness:
                             started_at=started_at,
                             finished_at=finished_at,
                             outcome=outcome.as_mapping(),
-                            policy_version=request.policy_version,
+                            policy_version=outcome.effective_policy_version
+                            if outcome.policy_version_reported
+                            else request.policy_version,
+                            requested_policy_version=request.policy_version,
+                            policy_version_reported=outcome.policy_version_reported,
                             mechanism_flags=flags,
                         )
                     )
@@ -1057,6 +1081,10 @@ def aggregate_from_ledger(
                     error_category=str(item.get("error_category") or ""),
                     policy_version=item.get("policy_version"),  # type: ignore[arg-type]
                     mechanism_flags=_as_str_bool_map(item.get("mechanism_flags")),
+                    requested_policy_version=str(item["requested_policy_version"])
+                    if item.get("requested_policy_version") is not None
+                    else None,
+                    policy_version_reported=bool(item.get("policy_version_reported", False)),
                 )
             )
 
@@ -1089,6 +1117,10 @@ def aggregate_from_ledger(
             duplicate_dispatch=bool(payload.get("duplicate_dispatch", False)),
             safety_violation=str(payload.get("safety_violation", "")),
             detail=str(payload.get("detail", "")),
+            effective_policy_version=str(payload["effective_policy_version"])
+            if payload.get("effective_policy_version") is not None
+            else None,
+            policy_version_reported=bool(payload.get("policy_version_reported", False)),
             error_category=str(payload.get("error_category", "")),
         )
         collected[arm].append((request, outcome))
@@ -1235,7 +1267,7 @@ def run_registered_live_experiment(
     gaps = validate_ledger_trial_closure(report.ledger)
     tasks = independent_task_ids_from_ledger(report.ledger)
     recalc_verdict = None
-    if report.ledger and port is not None and report.status is LivePilotStatus.COMPLETED:
+    if report.ledger and port is not None and same_enum(report.status, LivePilotStatus.COMPLETED):
         _, recalc_verdict = aggregate_from_ledger(
             report.ledger,
             spec=harness.spec,
@@ -1253,7 +1285,7 @@ def run_registered_live_experiment(
         report.verdict is None
         or report.verdict.passed is False
         or any("개선 없음" in r or "safety" in r or "비열등" in r for r in report.verdict.reasons)
-        or report.status is LivePilotStatus.NOT_COMPLETE
+        or same_enum(report.status, LivePilotStatus.NOT_COMPLETE)
     )
     if not unfavorable:
         unfavorable_preserved = True  # N/A when result is favorable

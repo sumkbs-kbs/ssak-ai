@@ -50,6 +50,7 @@ from antigravity_k.engine.cognitive.live_pilot import (
     validate_ledger_trial_closure,
     validate_live_pilot_inputs,
 )
+from antigravity_k.engine.growth_fixture_tools import fixture_tool_port
 
 SCRIPT = Path(__file__).resolve().parents[2] / "scripts" / "benchmark_cognitive_growth.py"
 
@@ -448,7 +449,9 @@ def test_r19_a1_manifest_frozen_after_final_results(tmp_path: Path) -> None:
     spec = live_spec()
     plan = LivePilotPlan(trials_per_task=3)
     tasks = default_corpus_tasks()
-    port = LiveTrialAdapter(workspace=tmp_path / "ws", model=ScriptedModelPort(mode="correct"))
+    port = LiveTrialAdapter(
+        executor_factory=fixture_tool_port, workspace=tmp_path / "ws", model=ScriptedModelPort(mode="correct")
+    )
     frozen = freeze_registered_manifest(
         spec=spec, plan=plan, tasks=tasks, mechanisms=MechanismSet(), attestation=port.attestation
     )
@@ -464,7 +467,9 @@ def test_r19_a2_every_trial_id_has_start_and_terminal(tmp_path: Path) -> None:
     """R19-A2: each trial_uid maps to STARTED + terminal status."""
     from antigravity_k.engine.cognitive.live_trial_adapter import LiveTrialAdapter, ScriptedModelPort
 
-    port = LiveTrialAdapter(workspace=tmp_path / "ws", model=ScriptedModelPort(mode="correct"))
+    port = LiveTrialAdapter(
+        executor_factory=fixture_tool_port, workspace=tmp_path / "ws", model=ScriptedModelPort(mode="correct")
+    )
     harness = LivePilotHarness(live_spec(), LivePilotPlan(trials_per_task=3), tasks=default_corpus_tasks())
     result = run_registered_live_experiment(harness, port)
     assert result.ledger_gaps == ()
@@ -476,7 +481,9 @@ def test_r19_a3_arms_share_settings_state_differs(tmp_path: Path) -> None:
     from antigravity_k.engine.cognitive.growth import ArmRole
     from antigravity_k.engine.cognitive.live_trial_adapter import LiveTrialAdapter, ScriptedModelPort
 
-    port = LiveTrialAdapter(workspace=tmp_path / "ws", model=ScriptedModelPort(mode="correct"))
+    port = LiveTrialAdapter(
+        executor_factory=fixture_tool_port, workspace=tmp_path / "ws", model=ScriptedModelPort(mode="correct")
+    )
     port.policy_gate.promoted_version = "shared-settings-promoted"
     harness = LivePilotHarness(live_spec(), LivePilotPlan(trials_per_task=3), tasks=default_corpus_tasks())
     result = run_registered_live_experiment(harness, port)

@@ -17,7 +17,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from datetime import UTC, datetime
 from enum import Enum, StrEnum
-from typing import Annotated, Final, Literal
+from typing import Annotated, Final, Literal, assert_never
 
 from pydantic import AfterValidator, AwareDatetime, BaseModel, ConfigDict, Field, model_validator
 
@@ -603,9 +603,23 @@ class EvidencePayload(EntityPayloadModel):
     independence_group: str | None = None
 
 
+class MaterialCognitiveDelta(BaseModel):
+    """Primary-authored material change; Body only transports this assertion."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid", strict=True)
+    judgment: bool = False
+    ground: bool = False
+    alternative: bool = False
+    unknown: bool = False
+    risk: bool = False
+    action: bool = False
+    description: str = ""
+
+
 class BrainJudgmentPayload(EntityPayloadModel):
     entity_type: Literal["BrainJudgment"] = "BrainJudgment"
     current_judgment: str = Field(min_length=1)
+    delta: MaterialCognitiveDelta | None = None
     grounds: tuple[str, ...]
     assumptions: tuple[str, ...] = ()
     unknowns: tuple[str, ...] = ()
@@ -711,6 +725,8 @@ class OutcomePayload(EntityPayloadModel):
 
 class ExperiencePayload(EntityPayloadModel):
     entity_type: Literal["Experience"] = "Experience"
+    episode_reference: str | None = None
+    evidence_refs: tuple[str, ...] = ()
     trigger: str = Field(min_length=1)
     historical_refs: tuple[str, ...] = ()
     remaining_unknowns: tuple[str, ...] = ()
@@ -932,6 +948,7 @@ class ExecutionReceiptPayload(EntityPayloadModel):
     status: ReceiptStatus
     effects_observed: bool | None = None
     reconciliation: str = ""
+    detail: str = ""
 
 
 EntityPayload = Annotated[
@@ -1109,7 +1126,21 @@ def from_wire(data: Mapping[str, object]) -> Record:
     return Record.model_validate(dict(data))
 
 
-def to_wire(record: Record) -> dict[str, object]:
+def to_wire(record: Record | EntityPayload) -> dict[str, object]:
     """JSON 직렬화 가능한 dict로 변환한다. payload/enum은 손실 없이 왕복한다."""
 
-    return record.model_dump(mode="json")
+    # Preserve absence only for fields added to the existing immutable wire schema.
+    # Other historical defaults retain their established serialization behavior.
+    additive_fields = {
+        EntityType.EXPERIENCE: {"episode_reference", "evidence_refs"},
+        EntityType.BRAIN_JUDGMENT: {"delta"},
+        EntityType.EXECUTION_RECEIPT: {"detail"},
+    }
+    match record:
+        case Record(payload=payload):
+            absent = additive_fields.get(record.entity_type, set()) - payload.model_fields_set
+            return record.model_dump(mode="json", exclude={"payload": absent})
+        case EntityPayloadModel():
+            return record.model_dump(mode="json")
+        case unreachable:
+            assert_never(unreachable)
