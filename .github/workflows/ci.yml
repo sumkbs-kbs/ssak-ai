@@ -396,6 +396,9 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Install uv for bundle verification
+        uses: astral-sh/setup-uv@v5
+
       - name: Install provenance verifier
         run: python -m pip install "pydantic>=2.10.0,<3.0" "typer>=0.13.0,<1.0"
 
@@ -532,6 +535,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # ── 1. Secret scanning (gitleaks) ──────────────────────────
       - name: Secret Scan (gitleaks)
@@ -573,20 +578,16 @@ jobs:
 
       - name: SAST Scan (bandit)
         run: |
-          # Scan src/ for common security issues; fail on MEDIUM+ severity.
-          uv run --no-sync bandit -r src/antigravity_k -ll -ii -ii \
-            -x src/antigravity_k/engine/secret_scanner.py \
-            -f sarif -o bandit-results.sarif || true
-          # Re-run to get a pass/fail exit code for the gate (level MEDIUM+).
           uv run --no-sync bandit -r src/antigravity_k -ll \
-            -x src/antigravity_k/engine/secret_scanner.py
+            -x src/antigravity_k/engine/secret_scanner.py \
+            -f json -o bandit-results.json
 
-      - name: Upload Bandit SARIF
+      - name: Upload Bandit JSON
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: bandit-results
-          path: bandit-results.sarif
+          path: bandit-results.json
 
       # ── 4. Internal secret scanner (legacy, kept for coverage) ─
       # CR-11(C11-01): non-editable 잠금 설치를 쓴다 — `sys.path.insert('src')`로
@@ -596,6 +597,7 @@ jobs:
           uv run --no-sync python -c "
           from antigravity_k.engine.secret_scanner import scan_for_secrets, is_sensitive_file
           import os
+          import sys
 
           issues = []
           for root, dirs, files in os.walk('.'):
@@ -688,15 +690,24 @@ jobs:
           echo "Server PID: $SERVER_PID"
           echo "SERVER_PID=$SERVER_PID" >> "$GITHUB_ENV"
           # Wait for server to be ready
+          ready=false
           for i in $(seq 1 10); do
-            status=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/health 2>/dev/null)
-            if [ "$status" = "200" ]; then
+            if status=$(curl --connect-timeout 1 --max-time 2 -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/health) && [ "$status" = "200" ]; then
               echo "Backend server ready (HTTP $status)"
+              ready=true
               break
+            fi
+            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+              echo "Backend process exited before readiness" >&2
+              exit 1
             fi
             echo "Waiting for backend... attempt $i"
             sleep 2
           done
+          if [ "$ready" != true ]; then
+            echo "Backend did not become healthy within the readiness deadline" >&2
+            exit 1
+          fi
 
       - name: Run Python E2E Smoke Tests
         run: |
@@ -851,7 +862,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [test]
-    if: github.event_name == 'pull_request' && !cancelled()
+    if: github.event_name == 'pull_request' && needs.test.result == 'success'
 
     steps:
       - name: Checkout
