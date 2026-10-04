@@ -8,6 +8,8 @@ from typing import ClassVar
 
 from pydantic import BaseModel, ConfigDict, TypeAdapter
 
+from antigravity_k.knowledge.wiki_graph import delete_graph_rows, prepare_graph_deletion
+
 ConnectionFactory = Callable[[], sqlite3.Connection]
 
 
@@ -43,7 +45,7 @@ def delete_vault_sources(
         removed_by_id: dict[int, RemovedWikiRow] = {}
         for source_url in source_urls:
             raw_rows: list[sqlite3.Row] = connection.execute(
-                "SELECT id, title, category FROM wiki_entries WHERE source = 'vault' AND source_url = ?",
+                "SELECT id, title, category FROM wiki_entries WHERE source IN ('vault', 'obsidian') AND source_url = ?",
                 (source_url,),
             ).fetchall()
             rows = REMOVED_ROWS.validate_python(
@@ -54,6 +56,9 @@ def delete_vault_sources(
         if not removed:
             return 0
 
+        removed_ids = tuple(row.id for row in removed)
+        prepare_graph_deletion(connection, removed_ids)
+        delete_graph_rows(connection, removed_ids)
         for row in removed:
             _ = connection.execute("DELETE FROM wiki_access_log WHERE entry_id = ?", (row.id,))
             _ = connection.execute("DELETE FROM wiki_entries WHERE id = ?", (row.id,))

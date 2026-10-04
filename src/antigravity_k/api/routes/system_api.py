@@ -1531,12 +1531,23 @@ async def search_and_extract(request: Request):
                 weather: [...],
                 exchange_rates: [...],
                 dates_found: [...],
-                numeric_data: [...]
+                numeric_data: [{
+                    value: float | str,
+                    normalized_value: str,
+                    unit: str,
+                    display_unit: str,
+                    currency: str,
+                    source_index: int,
+                    raw_text: str
+                }]
             },
             extraction_log: str,  # format_for_llm() 출력
             search_length: int,   # 원시 검색 결과 길이
             has_top1_json: bool,  # TOP 1 JSON 발견 여부
         }
+
+    ``normalized_value`` is exact decimal text measured in ``unit``. ``display_unit``
+    keeps the scale or symbol present in the search source, such as ``억`` or ``%p``.
     """
     payload = await _parse_json_body(request, _SearchExtractRequest)
 
@@ -1564,6 +1575,9 @@ async def search_and_extract(request: Request):
         search_length = len(search_res)
         PipelineTimer.record("web_search", _d)
         pipeline_timings["web_search_ms"] = round(_d, 1)
+
+        if search_res.startswith(("Search Error:", "Error:")):
+            return {"ok": False, "error": "search_unavailable"}
 
         # 2. TOP 1 JSON 확인
         _t0 = _time.perf_counter()
@@ -1622,6 +1636,21 @@ async def search_and_extract(request: Request):
 
         dates_list = result.dates_found
 
+        numeric_data: list[JSONDict] = []
+        for numeric in result.numeric_data:
+            numeric_data.append(
+                {
+                    "label": numeric.label,
+                    "value": numeric.value,
+                    "unit": numeric.unit,
+                    "currency": numeric.currency,
+                    "normalized_value": numeric.normalized_value,
+                    "display_unit": numeric.display_unit,
+                    "source_index": numeric.source_index,
+                    "raw_text": numeric.raw_text,
+                },
+            )
+
         # 5. LLM 포맷 로그
         _t0 = _time.perf_counter()
         extraction_log = result.format_for_llm()
@@ -1639,6 +1668,7 @@ async def search_and_extract(request: Request):
                 "weather": weather_list,
                 "exchange_rates": exchange_list,
                 "dates_found": dates_list,
+                "numeric_data": numeric_data,
             },
             "extraction_log": extraction_log,
             "pipeline_timings": pipeline_timings,
@@ -2107,9 +2137,7 @@ async def get_settings() -> JSONDict:
     키 원문/부분값을 절대 싣지 않고 ``api_keys_configured`` 불리언 맵만 보낸다.
     config.yaml의 ``api_keys``·``security.access_pin`` 같은 비밀 경로도 제거한다.
     """
-    # __file__ = src/antigravity_k/api/routes/legacy.py → 5번 dirname = 프로젝트 루트
-    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-    config_file = os.path.join(project_root, "config.yaml")
+    config_file = config.config_path
     if not os.path.exists(config_file):
         return {"settings": {}}
     try:

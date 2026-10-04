@@ -173,10 +173,10 @@ def test_f2_unexpected_fit_error_does_not_call_stream_generate() -> None:
     assert orch.manager.stream_generate.call_count == 0
 
 
-def test_f3_after_fit_locals_updated_rebuild_does_not_reexpand_system() -> None:
-    """F3: after successful fit, system/tools/skills locals match fitted aux (no re-inflate)."""
+def test_f3_after_fit_locals_updated_rebuild_does_not_reexpand_skills() -> None:
     orch = _base_orch()
-    original_system = "Z" * 4018  # 1005 tokens
+    original_system = "SYSTEM_KEEP"
+    original_skills = "Z" * 4018
     message = "a" * 18  # 5 tokens
     # Serialized prompt over operator 1000 so fit path runs.
     serialized = _over_limit_prompt(tokens=2008)
@@ -184,21 +184,24 @@ def test_f3_after_fit_locals_updated_rebuild_does_not_reexpand_system() -> None:
         "qwen3.6:latest",
         original_system,
         "TOOLS_KEEP",
-        "SKILLS_KEEP",
+        original_skills,
         serialized,
         [{"role": "user", "content": message}],
     )
 
     seen_rebuild_systems: list[str] = []
+    seen_rebuild_tools: list[str] = []
+    seen_rebuild_skills: list[str] = []
 
-    def _rebuild(system: str, tools: str, skills: str, messages: object) -> str:
+    def _rebuild(system: str, tools: str, skills: str, messages: list[dict[str, str]]) -> str:
         seen_rebuild_systems.append(system)
-        return f"System: {system}\n{skills}\n{tools}\nAssistant: "
+        seen_rebuild_tools.append(tools)
+        seen_rebuild_skills.append(skills)
+        conversation = "".join(f"{record['role']}: {record['content']}\n" for record in messages)
+        return f"System: {system}\n{skills}\n{tools}\n{conversation}Assistant: "
 
     orch._rebuild_prompt.side_effect = _rebuild
 
-    # Force _maybe_compress_context to rebuild from locals on every step after the first
-    # by patching it to call rebuild with the (hopefully fitted) system_prompt.
     engine = ToolLoopEngine(cast(object, orch))
     captured: dict[str, str] = {}
 
@@ -225,9 +228,9 @@ def test_f3_after_fit_locals_updated_rebuild_does_not_reexpand_system() -> None:
         )
         fit = result[2]
         if fit is not None:
-            captured["fitted_system"] = str(getattr(fit, "system", ""))
-            captured["fitted_tools"] = str(getattr(fit, "tools", ""))
-            captured["fitted_skills"] = str(getattr(fit, "skills", ""))
+            captured.setdefault("fitted_system", str(getattr(fit, "system", "")))
+            captured.setdefault("fitted_tools", str(getattr(fit, "tools", "")))
+            captured.setdefault("fitted_skills", str(getattr(fit, "skills", "")))
         return result
 
     engine._enforce_final_prompt_budget = _enforce_and_capture  # type: ignore[method-assign]
@@ -243,7 +246,6 @@ def test_f3_after_fit_locals_updated_rebuild_does_not_reexpand_system() -> None:
     # Allow tool execution
     orch.ctx.tool_executor.execute_async = AsyncMock(return_value="ok")
 
-    # Make compress path rebuild using current locals (simulates multi-step rebuild risk).
     def _force_rebuild(
         self: ToolLoopEngine,
         shaped_messages: list[dict[str, str]],
@@ -269,24 +271,27 @@ def test_f3_after_fit_locals_updated_rebuild_does_not_reexpand_system() -> None:
             ),
         )
 
-    assert "fitted_system" in captured
-    fitted = captured["fitted_system"]
-    assert fitted != original_system
-    assert len(fitted) < len(original_system)
-    # After step-1 fit write-back, later rebuilds must use fitted system — never the original blob.
+    assert captured["fitted_system"] == original_system
+    assert captured["fitted_tools"] == "TOOLS_KEEP"
+    fitted = captured["fitted_skills"]
+    assert fitted != original_skills
+    assert len(fitted) < len(original_skills)
     assert seen_rebuild_systems, "expected at least one rebuild from compress path"
-    # First rebuild may happen before first enforce (step start); after fit, subsequent must be fitted.
-    assert any(system == fitted for system in seen_rebuild_systems)
-    assert original_system not in seen_rebuild_systems[1:] or seen_rebuild_systems[-1] == fitted
-    assert orch.manager.stream_generate.call_count >= 1
+    assert all(system == original_system for system in seen_rebuild_systems)
+    assert all(tools == "TOOLS_KEEP" for tools in seen_rebuild_tools)
+    assert fitted in seen_rebuild_skills[1:]
+    assert all(len(skills) <= len(fitted) for skills in seen_rebuild_skills[1:])
+    assert orch.manager.stream_generate.call_count >= 2
     assert any("Prompt Budget" in chunk or "done" in chunk or "ok" in chunk for chunk in chunks)
 
 
 def test_f3_enforce_fit_updates_component_fields() -> None:
-    """Direct enforce: compressed fit shrinks system under operator 1000."""
+    from antigravity_k.engine.context_budget_enforcer import FinalPromptFit
+
     orch = _base_orch()
     engine = ToolLoopEngine(cast(object, orch))
-    original_system = "Z" * 4018
+    original_system = "SYSTEM_KEEP"
+    original_skills = "Z" * 4018
     over = _over_limit_prompt(tokens=2008)
     prompt, messages, fit = engine._enforce_final_prompt_budget(
         over,
@@ -294,11 +299,13 @@ def test_f3_enforce_fit_updates_component_fields() -> None:
         "qwen3.6:latest",
         original_system,
         "TOOLS",
-        "SKILLS",
+        original_skills,
     )
-    assert fit is not None
+    assert isinstance(fit, FinalPromptFit)
     assert fit.compressed is True
-    assert fit.system != original_system
-    assert TokenEstimator.estimate_text(fit.system) < TokenEstimator.estimate_text(original_system)
+    assert fit.system == original_system
+    assert fit.tools == "TOOLS"
+    assert fit.skills != original_skills
+    assert TokenEstimator.estimate_text(fit.skills) < TokenEstimator.estimate_text(original_skills)
     assert TokenEstimator.estimate_text(prompt) <= 1_000
     assert messages

@@ -16,6 +16,7 @@ from pydantic import TypeAdapter, ValidationError
 
 from antigravity_k.engine.gbrain import global_gbrain
 from antigravity_k.engine.preference_memory import extract_explicit_preference_facts
+from antigravity_k.engine.tool_policy import request_allows_side_effects
 
 logger = logging.getLogger(__name__)
 
@@ -235,6 +236,8 @@ class UserIntentModeler:
         }
 
     def _save_profile(self) -> None:
+        if not request_allows_side_effects():
+            return
         try:
             os.makedirs(os.path.dirname(self._profile_path), exist_ok=True)
             self._profile["updated_at"] = datetime.now().astimezone().replace(tzinfo=None).isoformat()

@@ -4,16 +4,16 @@ from __future__ import annotations
 
 import json
 
+import pytest
 from pydantic import JsonValue
 
 from antigravity_k.engine.context_budget import (
-    OversizedPromptComponentError,
     PromptBudgetExceededError,
     build_prompt_component_ledger,
     prompt_selection_digest,
     resolve_hard_token_limit,
 )
-from antigravity_k.engine.context_budget_enforcer import fit_final_prompt, serialize_final_prompt
+from antigravity_k.engine.context_budget_enforcer import FinalPromptFit, fit_final_prompt, serialize_final_prompt
 from antigravity_k.engine.tokenizer import TokenEstimator
 
 
@@ -61,8 +61,7 @@ def test_ledger_counts_all_final_prompt_components() -> None:
     assert ledger.total_with_reserve == ledger.input_total + 128
 
 
-def test_five_token_message_with_1005_aux_fits_under_operator_limit() -> None:
-    """Reproduce 5-token message + ~1005-token aux under a 1000-token operator limit."""
+def test_five_token_message_with_1005_system_tokens_fails_under_operator_limit() -> None:
     hard = resolve_hard_token_limit(_config(operator=1_000), "qwen3.6:latest")
     assert hard.input_budget == 1_000
     assert hard.operator == 1_000
@@ -72,19 +71,19 @@ def test_five_token_message_with_1005_aux_fits_under_operator_limit() -> None:
     aux = "x" * 4018
     assert TokenEstimator.estimate_text(aux) == 1005
 
-    fit = fit_final_prompt(
-        system=aux,
-        tools="",
-        skills="",
-        memory="",
-        artifacts="",
-        messages=[{"role": "user", "content": message}],
-        hard_limit=hard,
-    )
-    assert fit.ledger.input_total <= hard.input_budget
-    assert TokenEstimator.estimate_text(fit.serialized) <= hard.input_budget
-    assert "a" * 4 in fit.messages[0]["content"]  # latest user constraint edges retained when possible
-    assert fit.compressed is True
+    with pytest.raises(PromptBudgetExceededError) as raised:
+        fit_final_prompt(
+            system=aux,
+            tools="",
+            skills="",
+            memory="",
+            artifacts="",
+            messages=[{"role": "user", "content": message}],
+            hard_limit=hard,
+        )
+    assert raised.value.hard_limit == hard
+    assert raised.value.ledger.system == 1005
+    assert raised.value.ledger.input_total > hard.input_budget
 
 
 def test_prompt_selection_digest_is_deterministic() -> None:
@@ -153,23 +152,23 @@ def test_structured_tool_evidence_survives_final_fit() -> None:
     assert fit.ledger.input_total <= hard.input_budget
 
 
-def test_oversized_single_component_is_bounded_or_typed_error() -> None:
+def test_oversized_essential_components_raise_typed_error_without_partial_policies() -> None:
     hard = resolve_hard_token_limit(_config(operator=80), "qwen3.6:latest")
     huge = "Z" * 50_000
-    fit = fit_final_prompt(
-        system=huge,
-        tools="",
-        skills="",
-        messages=[{"role": "user", "content": "hi"}],
-        hard_limit=hard,
-        allow_typed_error=True,
-    )
-    assert TokenEstimator.estimate_text(fit.system) <= hard.input_budget
-    assert fit.ledger.input_total <= hard.input_budget
+    with pytest.raises(PromptBudgetExceededError) as raised:
+        fit_final_prompt(
+            system=huge,
+            tools="",
+            skills="",
+            messages=[{"role": "user", "content": "hi"}],
+            hard_limit=hard,
+            allow_typed_error=True,
+        )
+    assert raised.value.ledger.system == TokenEstimator.estimate_text(huge)
+    assert raised.value.ledger.total_with_reserve > hard.effective
 
-    # Multiple oversized components must end bounded or as a typed error — never over budget.
-    try:
-        multi = fit_final_prompt(
+    with pytest.raises(PromptBudgetExceededError) as multi:
+        fit_final_prompt(
             system=huge,
             tools=huge,
             skills=huge,
@@ -179,9 +178,10 @@ def test_oversized_single_component_is_bounded_or_typed_error() -> None:
             hard_limit=hard,
             allow_typed_error=True,
         )
-    except (OversizedPromptComponentError, PromptBudgetExceededError):
-        return
-    assert TokenEstimator.estimate_text(multi.serialized) <= hard.input_budget
+    assert multi.value.ledger.system == TokenEstimator.estimate_text(huge)
+    assert multi.value.ledger.tools == TokenEstimator.estimate_text(huge)
+    assert multi.value.ledger.messages >= TokenEstimator.estimate_text(huge)
+    assert multi.value.ledger.total_with_reserve > hard.effective
 
 
 def test_hard_limit_is_min_of_declared_empirical_operator(tmp_path) -> None:
@@ -234,19 +234,22 @@ def test_hard_limit_is_min_of_declared_empirical_operator(tmp_path) -> None:
 
 def test_identical_inputs_yield_identical_fit_digest() -> None:
     hard = resolve_hard_token_limit(_config(operator=500), "qwen3.6:latest")
-    kwargs = dict(
-        system="sys " * 50,
-        tools="tool " * 40,
-        skills="skill " * 30,
-        memory="mem " * 80,
-        messages=[
-            {"role": "user", "content": "BEGIN " + ("detail " * 100) + " END"},
-            {"role": "assistant", "content": "ack " * 60},
-        ],
-        hard_limit=hard,
-    )
-    first = fit_final_prompt(**kwargs)
-    second = fit_final_prompt(**kwargs)
+
+    def fit_once() -> FinalPromptFit:
+        return fit_final_prompt(
+            system="sys " * 50,
+            tools="tool " * 40,
+            skills="skill " * 30,
+            memory="mem " * 80,
+            messages=[
+                {"role": "user", "content": "BEGIN " + ("detail " * 100) + " END"},
+                {"role": "assistant", "content": "ack " * 60},
+            ],
+            hard_limit=hard,
+        )
+
+    first = fit_once()
+    second = fit_once()
     assert first.digest == second.digest
     assert first.serialized == second.serialized
     assert first.ledger.as_dict() == second.ledger.as_dict()

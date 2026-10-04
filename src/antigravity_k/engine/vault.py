@@ -713,21 +713,13 @@ class VaultEngine:
             else:
                 tags = []
 
-            # 기존 동일 제목 항목이 있으면 업데이트, 없으면 신규
-            existing = wiki.search(title, limit=1)
-            if existing and existing[0].entry.title == title:
-                entry_id = existing[0].entry.id
-                if entry_id is not None:
-                    _ = wiki.update_entry(entry_id, content=content, tags=tags)
-            else:
-                _ = wiki.add_entry(
-                    title=title,
-                    content=content,
-                    category=category,
-                    tags=tags,
-                    source="vault",
-                    source_url=str(self.vault_path / relative_path),
-                )
+            _ = wiki.sync_vault_entry(
+                title=title,
+                content=content,
+                category=category,
+                tags=tags,
+                source_url=str(self.vault_path / relative_path),
+            )
         except Exception:
             logger.exception("LLM Wiki 동기화 실패 (Vault 기록은 정상)")
 

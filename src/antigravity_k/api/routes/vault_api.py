@@ -236,7 +236,7 @@ def search_notes(q: str, engine: VaultDependency):
 
     try:
         # 1. Semantic search via RAG (ChromaDB)
-        semantic_results = engine.vector_store.search(q, n_results=5)
+        semantic_results = engine.vector_store.search(q, n_results=5) if engine.sync_rag else []
 
         # 2. Keyword search via Vault text match
         keyword_results = engine.search_notes(q)

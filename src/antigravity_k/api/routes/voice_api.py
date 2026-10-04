@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from antigravity_k.api.dependencies import get_scheduled_job_service, get_voice_service
 from antigravity_k.engine.scheduled_job_models import JobCreate, JobSchedule, utc_now
+from antigravity_k.engine.voice_audio import MalformedWaveError, UnsupportedWaveEncodingError, validate_audio_for_suffix
 from antigravity_k.engine.voice_service import VoiceExecutionError, VoiceUnavailableError
 
 router = APIRouter(prefix="/api/voice")
@@ -40,11 +41,25 @@ class VoiceSpeakRequest(BaseModel):
 
 
 async def _audio_body(request: Request) -> bytes:
-    audio = await request.body()
+    chunks: list[bytes] = []
+    total_bytes = 0
+    async for chunk in request.stream():
+        total_bytes += len(chunk)
+        if total_bytes > _MAX_AUDIO_BYTES:
+            raise HTTPException(status_code=413, detail="Audio body exceeds 25 MiB")
+        if chunk:
+            chunks.append(chunk)
+    audio = b"".join(chunks)
     if not audio:
         raise HTTPException(status_code=422, detail="Audio body must not be empty")
-    if len(audio) > _MAX_AUDIO_BYTES:
-        raise HTTPException(status_code=413, detail="Audio body exceeds 25 MiB")
+    return audio
+
+
+def _validate_audio(audio: bytes, suffix: str) -> bytes:
+    try:
+        _ = validate_audio_for_suffix(audio, suffix)
+    except (MalformedWaveError, UnsupportedWaveEncodingError) as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
     return audio
 
 
@@ -62,7 +77,7 @@ async def transcribe_voice(
     request: Request,
     suffix: Annotated[str, Query(pattern=r"^\.[A-Za-z0-9]{1,8}$")] = ".wav",
 ) -> VoiceTranscript:
-    transcript = _transcribe(await _audio_body(request), suffix)
+    transcript = _transcribe(_validate_audio(await _audio_body(request), suffix), suffix)
     return VoiceTranscript(transcript=transcript)
 
 
@@ -72,7 +87,7 @@ async def submit_voice_command(
     suffix: Annotated[str, Query(pattern=r"^\.[A-Za-z0-9]{1,8}$")] = ".wav",
     model: Annotated[str, Query(max_length=200)] = "",
 ) -> VoiceCommandAccepted:
-    transcript = _transcribe(await _audio_body(request), suffix)
+    transcript = _transcribe(_validate_audio(await _audio_body(request), suffix), suffix)
     service = get_scheduled_job_service()
     now = utc_now()
     job = service.create_job(

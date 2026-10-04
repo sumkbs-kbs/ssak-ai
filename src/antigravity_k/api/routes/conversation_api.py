@@ -27,10 +27,7 @@ from antigravity_k.api.contracts.conversation import (
     ConversationHistoryResponse,
     ConversationOriginalHistoryResponse,
 )
-from antigravity_k.api.contracts.errors import (
-    ConversationNotFoundError,
-    MissingExecutionContextError,
-)
+from antigravity_k.api.contracts.errors import ConversationNotFoundError
 from antigravity_k.api.error_handler import ValidationError, correlation_id_var
 from antigravity_k.api.project_binding import (
     SESSION_ID_HEADER,
@@ -138,11 +135,8 @@ async def get_conversation(conversation_id: str, request: Request) -> dict[str, 
 
 
 @router.post("/v1/conversations/append")
-async def append_conversation(request: Request) -> dict[str, Any]:
-    body = await request.json()
-    if not isinstance(body, dict):
-        raise MissingExecutionContextError(detail="JSON object body required")
-    req = ConversationAppendRequest.model_validate(body)
+async def append_conversation(request: Request, req: ConversationAppendRequest) -> dict[str, Any]:
+    body = req.model_dump(mode="json", exclude_none=True)
     project_id = _resolve_project_id(request, body, req.project_id)
     # Validate project exists via execution context (no conversation require).
     _ = resolve_project_execution_context(
@@ -172,12 +166,9 @@ async def append_conversation(request: Request) -> dict[str, Any]:
 
 @router.post("/v1/conversations/compact")
 @router.post("/compact")
-async def compact_conversation(request: Request) -> dict[str, Any]:
+async def compact_conversation(request: Request, req: ConversationCompactRequest) -> dict[str, Any]:
     """CAS compact. Returns summary, retained_message_ids, and new revision."""
-    body = await request.json()
-    if not isinstance(body, dict):
-        raise MissingExecutionContextError(detail="JSON object body required")
-    req = ConversationCompactRequest.model_validate(body)
+    body = req.model_dump(mode="json", exclude_none=True)
     project_id = _resolve_project_id(request, body, req.project_id)
     _ = resolve_project_execution_context(
         payload={
@@ -212,11 +203,8 @@ async def compact_conversation(request: Request) -> dict[str, Any]:
 
 
 @router.post("/v1/conversations/fork")
-async def fork_conversation(request: Request) -> dict[str, Any]:
-    body = await request.json()
-    if not isinstance(body, dict):
-        raise MissingExecutionContextError(detail="JSON object body required")
-    req = ConversationForkRequest.model_validate(body)
+async def fork_conversation(request: Request, req: ConversationForkRequest) -> dict[str, Any]:
+    body = req.model_dump(mode="json", exclude_none=True)
     project_id = _resolve_project_id(request, body, req.project_id)
     _ = resolve_project_execution_context(
         payload={

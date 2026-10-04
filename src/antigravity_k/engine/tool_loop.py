@@ -6,15 +6,18 @@ import json
 import logging
 import re
 import time
-from collections.abc import Generator, Iterator, Mapping
+from collections.abc import Generator, Iterator, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
+from types import MappingProxyType
 from typing import Final, Protocol, TypeAlias, TypeGuard, final, runtime_checkable
+from urllib.parse import urlsplit
 
 from pydantic import JsonValue, TypeAdapter, ValidationError
 
 from antigravity_k.engine.benchmark_harness import TaskOutcome
 from antigravity_k.engine.capacity_flow import CapacityDecision
+from antigravity_k.engine.chat_stream_events import ProgressChunk
 from antigravity_k.engine.cognitive_loop import ReflectionResult
 from antigravity_k.engine.context_artifact_recall import ContextArtifactRecall
 from antigravity_k.engine.context_artifact_store import ContextArtifactStore
@@ -51,6 +54,7 @@ from antigravity_k.tools.search_quality_evaluator import (
     citation_sources_from_context,
     evaluate_citations,
 )
+from antigravity_k.tools.web_search_quality import canonicalize_url
 
 logger = logging.getLogger(__name__)
 
@@ -425,6 +429,7 @@ class ToolLoopEngine:
         # _last_agent_output 사이드채널에 기록되어 MAX 워커 등 병렬 실행에서
         # 서로의 출력을 덮어썼다. 인스턴스 속성으로 소유권을 분리한다.
         self.last_output: str = ""
+        self.approval_required: bool = False
         self.telemetry = LoopTelemetry()
         self._checkpoint_messages: list[dict[str, str]] = []
         self._checkpoint_target_model = ""
@@ -960,7 +965,6 @@ class ToolLoopEngine:
             )
             from antigravity_k.engine.context_budget_enforcer import (
                 FinalPromptFit,
-                compact_text_to_budget,
                 fit_final_prompt,
             )
             from antigravity_k.engine.tokenizer import TokenEstimator
@@ -1000,7 +1004,6 @@ class ToolLoopEngine:
             ) from estimate_error
 
         if direct_response:
-            # Direct path has no component split — bound the serialized blob itself.
             if serialized_tokens <= hard_limit.input_budget:
                 ledger = build_prompt_component_ledger(
                     messages=shaped_messages,
@@ -1023,27 +1026,18 @@ class ToolLoopEngine:
                     compressed=False,
                 )
                 return prompt_str, shaped_messages, fit
-            bounded = compact_text_to_budget(prompt_str, hard_limit.input_budget, estimate)
             ledger = build_prompt_component_ledger(
-                serialized_messages=bounded,
+                serialized_messages=prompt_str,
                 output_reserve=hard_limit.output_reserve,
                 estimate_tokens=estimate,
             )
-            fit = FinalPromptFit(
-                system="",
-                tools="",
-                skills="",
-                memory="",
-                artifacts="",
-                messages=shaped_messages,
-                serialized=bounded,
+            from antigravity_k.engine.context_budget import PromptBudgetExceededError
+
+            raise PromptBudgetExceededError(
+                f"complete direct prompt input {serialized_tokens} exceeds budget {hard_limit.input_budget}",
                 ledger=ledger,
-                digest=prompt_selection_digest(messages=shaped_messages, strategy="direct_bound"),
-                cache_prefix="",
-                strategy="direct_bound",
-                compressed=True,
+                hard_limit=hard_limit,
             )
-            return bounded, shaped_messages, fit
 
         pinned = self._cached_pinned_context()
         # Fast path: actual serialized prompt already within budget — record ledger only.
@@ -1177,6 +1171,7 @@ class ToolLoopEngine:
 
         """
         max_steps = max(1, min(int(max_steps), _MAX_TOOL_LOOP_STEPS))
+        self.approval_required = False
         started_at = time.monotonic()
         task_id = self._task_id()
         self._transition_task_state("running")
@@ -1351,7 +1346,9 @@ class ToolLoopEngine:
                     )
                     return
                 elif action == CapacityAction.WARN or action == CapacityAction.COMPRESS:
-                    yield "\n\n📉 **[Capacity Warning]** 시스템 리소스 압박으로 성능이 저하될 수 있습니다.\n"
+                    yield ProgressChunk(
+                        "\n\n📉 **[Capacity Warning]** 시스템 리소스 압박으로 성능이 저하될 수 있습니다.\n"
+                    )
 
             compress_attempt = None
             if not direct_response:
@@ -1492,11 +1489,11 @@ class ToolLoopEngine:
                     )
                     line = ui_status_line(record)
                     if line:
-                        yield line
+                        yield ProgressChunk(line)
                     if outcome_name == "success" and _fit_compressed and fit_ledger is not None:
                         _in = int(getattr(fit_ledger, "input_total", 0) or 0)
                         _res = int(getattr(fit_ledger, "output_reserve", 0) or 0)
-                        yield (
+                        yield ProgressChunk(
                             f"\n📐 **[Prompt Budget]** final input {_in}/{_res + _in} "
                             f"(digest `{(fit_digest or '')[:12]}`)\n\n"
                         )
@@ -1773,7 +1770,7 @@ class ToolLoopEngine:
                             pass
 
                 processed = stream_proc.process_flush_text("")
-                if processed and processed.strip():
+                if processed:
                     emissions.append(processed)
                 recovered_tool_call = self._qwen_scratchpad_tool_call(
                     full_response,
@@ -1864,7 +1861,7 @@ class ToolLoopEngine:
                         )
                         return
                     retry_count += 1
-                    yield "\n\n⚠️ **컨텍스트 초과 감지** — 자동 압축을 시도합니다...\n"
+                    yield ProgressChunk("\n\n⚠️ **컨텍스트 초과 감지** — 자동 압축을 시도합니다...\n")
                     if not direct_response and hasattr(self.orch, "context_shaper"):
                         # 실제 모델 컨텍스트 예산으로 압축한다 — budget 미지정 시
                         # shaper의 128k 기본값이 쓰여 실제 num_ctx(예: 32k)를
@@ -1901,7 +1898,7 @@ class ToolLoopEngine:
                     break
                 elif classified.retryable and step < max_steps - 1:
                     retry_count += 1
-                    yield f"\n\n⚠️ **일시적 오류** ({classified.reason.value}) — 재시도합니다...\n"
+                    yield ProgressChunk(f"\n\n⚠️ **일시적 오류** ({classified.reason.value}) — 재시도합니다...\n")
                     retry_step = True  # 스텝 루프로 복귀해 재시도
                     break
                 else:
@@ -1925,7 +1922,7 @@ class ToolLoopEngine:
                 continue
 
             if pending_tool_calls:
-                yield f"\n\n🚀 **[{len(pending_tool_calls)}개의 도구 비동기 병렬 실행 시작]**\n"
+                yield ProgressChunk(f"\n\n🚀 **[{len(pending_tool_calls)}개의 도구 비동기 병렬 실행 시작]**\n")
 
                 # Phase 2: Async Execution Batching
                 results_collected: list[ToolExecutionResult] = []
@@ -1963,7 +1960,7 @@ class ToolLoopEngine:
                 for tc, batch_pre_decision, batch_post_decision, tool_result, blocked in results_collected:
                     tool_name = tc.name
                     if blocked:
-                        yield (
+                        yield ProgressChunk(
                             f"\n> 🛡️ **[Tool Blocked]** "
                             f"{batch_pre_decision.message if batch_pre_decision else tool_result}\n"
                         )
@@ -2013,18 +2010,18 @@ class ToolLoopEngine:
                     )
 
                     # Yield Markdown formatted response instead of HTML details/summary
-                    yield f"\n> 🛠️ **{display_name}** (Step {step}/{max_steps}) {status_icon}\n"
+                    yield ProgressChunk(f"\n> 🛠️ **{display_name}** (Step {step}/{max_steps}) {status_icon}\n")
 
                     if batch_post_decision and batch_post_decision.action == "warn":
                         tool_result = append_guardrail_guidance(tool_result, batch_post_decision)
-                        yield f"> ⚠️ {batch_post_decision.message}\n"
+                        yield ProgressChunk(f"> ⚠️ {batch_post_decision.message}\n")
                     elif batch_post_decision and batch_post_decision.should_halt:
                         tool_result = append_guardrail_guidance(tool_result, batch_post_decision)
-                        yield f"\n> 🛡️ **[Tool Loop Guard]** {batch_post_decision.message}\n"
+                        yield ProgressChunk(f"\n> 🛡️ **[Tool Loop Guard]** {batch_post_decision.message}\n")
 
                     result_preview = tool_result[:1500] if len(tool_result) > 1500 else tool_result
 
-                    yield f"> ```\n> {result_preview}\n> ```\n\n"
+                    yield ProgressChunk(f"> ```\n> {result_preview}\n> ```\n\n")
 
                     parser.tool_responses.append(
                         self._format_tool_response(tc, str(tool_result), focus_terms),
@@ -2065,16 +2062,19 @@ class ToolLoopEngine:
                 self._refresh_checkpoint_context(shaped_messages)
 
                 if requires_approval_break:
+                    self.approval_required = True
+                    approval_message = "\n\n✋ **[APPROVAL REQUIRED]** 사용자의 승인을 대기합니다.\n"
+                    self.last_output = full_output + approval_message
                     self._checkpoint_task_state(
                         step,
                         delegate_to,
                         task_type,
                         used_tools,
-                        full_output,
+                        self.last_output,
                         "approval_required",
                         tool_evidence_context,
                     )
-                    yield "\n\n✋ **[APPROVAL REQUIRED]** 사용자의 승인을 대기합니다.\n"
+                    yield approval_message
                     completion_reason = "approval_required"
                     break
                 self._checkpoint_task_state(
@@ -2109,7 +2109,9 @@ class ToolLoopEngine:
             ):
                 parse_nudge_count += 1
                 self.telemetry.format_nudges += 1
-                yield "\n\n🔧 **[Format Repair]** 도구 호출 형식 오류 — 정확한 형식으로 재요청합니다...\n"
+                yield ProgressChunk(
+                    "\n\n🔧 **[Format Repair]** 도구 호출 형식 오류 — 정확한 형식으로 재요청합니다...\n"
+                )
                 prompt_str += (
                     full_response + "\n[SYSTEM] Your tool call above was malformed JSON and could not be executed. "
                     "Re-emit the tool call exactly in this format, with valid JSON only:\n"
@@ -2134,11 +2136,29 @@ class ToolLoopEngine:
             yield f"\n\n⚠️ **[Step Limit]** 최대 도구 호출 횟수({max_steps})에 도달했습니다.\n"
             completion_reason = "step_limit"
 
+        if self.approval_required:
+            self._record_task_outcome(
+                task_id,
+                delegate_model,
+                expected_tools,
+                used_tools,
+                retry_count,
+                started_at,
+                False,
+                "approval_required",
+                prompt=prompt_str,
+                output=self.last_output,
+            )
+            return
+
         missing_tools = tuple(tool for tool in expected_tools if tool not in used_tools)
         if missing_tools:
             success = False
             completion_reason = "required_tools_missing"
             error_text = f"required_tools_missing: {', '.join(missing_tools)}"
+            self.last_output = (
+                f"요청한 필수 도구를 실행하지 못해 결과를 확인할 수 없습니다: {', '.join(missing_tools)}."
+            )
             self._record_task_outcome(
                 task_id,
                 delegate_model,
@@ -2150,7 +2170,7 @@ class ToolLoopEngine:
                 completion_reason,
                 error_text,
                 prompt_str,
-                full_output,
+                self.last_output,
             )
             return
 
@@ -2471,6 +2491,7 @@ class ToolLoopEngine:
         messages from the quality gate.
         """
         final_quality: QualityScore | None = None
+        conversation_history = tuple(MappingProxyType(dict(message)) for message in messages)
         full_output = normalize_foreign_technical_terms(full_output)
         self.last_output = full_output
         try:
@@ -2488,8 +2509,12 @@ class ToolLoopEngine:
                     quality = quality_gate.evaluate(task_type, user_task, full_output)
                     if type(quality) is QualityScore:
                         final_quality = quality
-                    if quality.user_message:
-                        yield f"\n{quality.user_message}\n"
+                        quality_message = quality.user_message or (
+                            f"📊 *품질: {quality.grade.value} ({quality.score:.0%})*"
+                        )
+                        yield ProgressChunk(f"\n{quality_message}\n")
+                    elif quality.user_message:
+                        yield ProgressChunk(f"\n{quality.user_message}\n")
 
                     best_quality = quality
                     raw_best_score = getattr(quality, "score", None)
@@ -2514,6 +2539,7 @@ class ToolLoopEngine:
                             best_quality.feedback,
                             delegate_model,
                             evidence_context,
+                            conversation_history=conversation_history,
                         )
                         if not revised:
                             break
@@ -2531,7 +2557,9 @@ class ToolLoopEngine:
                             self.last_output = revised
                             if type(revised_quality) is QualityScore:
                                 final_quality = revised_quality
-                            yield "\n\n🔁 **[Quality Revision]** 피드백을 반영해 응답을 다시 생성했습니다.\n\n"
+                            yield ProgressChunk(
+                                "\n\n🔁 **[Quality Revision]** 피드백을 반영해 응답을 다시 생성했습니다.\n\n"
+                            )
                             yield revised
 
                     if (
@@ -2550,7 +2578,9 @@ class ToolLoopEngine:
                             full_output = decomposed
                             self.last_output = decomposed
                             final_quality = decomposed_quality
-                            yield "\n\n**[Task Decomposition Recovery]** 재생성이 실패해 단계 분해로 응답을 복구했습니다.\n\n"
+                            yield ProgressChunk(
+                                "\n\n**[Task Decomposition Recovery]** 재생성이 실패해 단계 분해로 응답을 복구했습니다.\n\n"
+                            )
                             yield decomposed
             except Exception as e:
                 logger.exception("Unhandled exception")
@@ -2568,7 +2598,9 @@ class ToolLoopEngine:
                         full_output = revised
                         citation_report = revised_report
                         self.last_output = revised
-                        yield "\n\n🔗 **[Citation Revision]** 웹 근거를 다시 검증해 응답을 수정했습니다.\n\n"
+                        yield ProgressChunk(
+                            "\n\n🔗 **[Citation Revision]** 웹 근거를 다시 검증해 응답을 수정했습니다.\n\n"
+                        )
                         yield revised
             if self._has_invalid_citations(citation_report):
                 recovered = self._supported_claim_fallback(citation_report)
@@ -2579,7 +2611,9 @@ class ToolLoopEngine:
                         citation_report = recovered_report
                         citation_recovery = "deterministic_claim_filter"
                         self.last_output = recovered
-                        yield "\n\n🔗 **[Citation Recovery]** 검증된 주장만 남겨 응답을 안전하게 복구했습니다.\n\n"
+                        yield ProgressChunk(
+                            "\n\n🔗 **[Citation Recovery]** 검증된 주장만 남겨 응답을 안전하게 복구했습니다.\n\n"
+                        )
                         yield recovered
             if self._has_invalid_citations(citation_report):
                 recovered = self._source_title_fallback(citation_sources)
@@ -2590,9 +2624,17 @@ class ToolLoopEngine:
                         citation_report = recovered_report
                         citation_recovery = "deterministic_source_titles"
                         self.last_output = recovered
-                        yield "\n\n🔗 **[Citation Recovery]** 검증 가능한 원본 출처만 남겨 응답을 안전하게 복구했습니다.\n\n"
+                        yield ProgressChunk(
+                            "\n\n🔗 **[Citation Recovery]** 검증 가능한 원본 출처만 남겨 응답을 안전하게 복구했습니다.\n\n"
+                        )
                         yield recovered
             self._citation_validation_failed = self._has_invalid_citations(citation_report)
+            if not self._citation_validation_failed:
+                source_links = self._citation_source_links(full_output, citation_sources)
+                if source_links:
+                    full_output += source_links
+                    self.last_output = full_output
+                    yield source_links
             analysis = getattr(getattr(self.orch, "ctx", None), "analysis", None)
             if isinstance(analysis, dict):
                 analysis["citation_evaluation"] = citation_report.to_dict()
@@ -2604,7 +2646,9 @@ class ToolLoopEngine:
                 if citation_recovery:
                     analysis["citation_recovery"] = citation_recovery
             if self._citation_validation_failed:
-                yield "\n\n🔗 **[근거 검증]** 출처로 뒷받침되지 않는 주장 또는 인용 충돌이 남아 있습니다.\n"
+                yield ProgressChunk(
+                    "\n\n🔗 **[근거 검증]** 출처로 뒷받침되지 않는 주장 또는 인용 충돌이 남아 있습니다.\n"
+                )
 
         try:
             decision_anchor = self.orch.ctx.decision_anchor
@@ -2668,6 +2712,22 @@ class ToolLoopEngine:
         )
 
     @staticmethod
+    def _citation_source_links(output: str, sources: tuple[CitationSource, ...]) -> str:
+        links: list[str] = []
+        seen_urls: set[str] = set()
+        for source in sources:
+            if f"[citation:{source.source_id}]" not in output:
+                continue
+            url = canonicalize_url(source.url)
+            if not url or url in seen_urls:
+                continue
+            seen_urls.add(url)
+            label = urlsplit(url).hostname or url
+            destination = url.replace("<", "%3C").replace(">", "%3E")
+            links.append(f"[{label}](<{destination}>)")
+        return "\n\n출처: " + ", ".join(links) if links else ""
+
+    @staticmethod
     def _supported_claim_fallback(report: CitationEvaluationReport) -> str:
         lines = [
             f"- {claim.claim} {' '.join(f'[citation:{source_id}]' for source_id in claim.supported_source_ids)}"
@@ -2724,6 +2784,8 @@ class ToolLoopEngine:
         feedback: str,
         delegate_model: str | None,
         evidence_context: str = "",
+        *,
+        conversation_history: Sequence[Mapping[str, str]] | None = None,
     ) -> str:
         if not delegate_model:
             return ""
@@ -2751,7 +2813,13 @@ class ToolLoopEngine:
             f"{tool_evidence}\n"
             "[수정된 최종 답변]\n"
         )
-        generation_kwargs: dict[str, ToolArgumentValue] = {"max_tokens": 4096, "temperature": 0.2}
+        generation_kwargs: dict[str, ToolGenerationValue] = {"max_tokens": 4096, "temperature": 0.2}
+        if conversation_history is not None:
+            raw_messages: list[dict[str, ToolArgumentValue]] = [
+                {key: value for key, value in message.items()} for message in conversation_history
+            ]
+            raw_messages.append({"role": "user", "content": prompt})
+            generation_kwargs["raw_messages"] = raw_messages
         if delegate_model and "qwen3" in delegate_model.lower():
             generation_kwargs.update({"temperature": 0.08, "repeat_penalty": 1.15, "min_p": 0.0})
         try:

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
+from antigravity_k.engine.chat_stream_events import FinalChunk, ProgressChunk
+
 _TECHNICAL_TERMS: tuple[tuple[str, str], ...] = (
     ("复杂度", "복잡도"),
     ("複雜度", "복잡도"),
@@ -27,6 +29,15 @@ def normalize_streaming_chunks(chunks: Iterator[str]) -> Iterator[str]:
     """Normalize terms without allowing a source term to split across chunks."""
     buffer = ""
     for chunk in chunks:
+        if isinstance(chunk, ProgressChunk):
+            yield chunk
+            continue
+        if isinstance(chunk, FinalChunk):
+            if buffer:
+                yield normalize_foreign_technical_terms(buffer)
+                buffer = ""
+            yield chunk
+            continue
         buffer += chunk
         safe_end = len(buffer)
         for source, _target in _TECHNICAL_TERMS:

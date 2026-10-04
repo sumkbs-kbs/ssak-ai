@@ -11,7 +11,8 @@ import re
 from collections.abc import Generator, Iterable, Iterator, Mapping
 from typing import Callable, Protocol, cast, runtime_checkable
 
-from antigravity_k.engine.state_graph import StateContext
+from antigravity_k.engine.chat_stream_events import FinalChunk, ProgressChunk, chat_stream_events_enabled
+from antigravity_k.engine.state_graph import AgentState, StateContext
 from antigravity_k.engine.task_context_snapshot import (
     ContextSnapshotStoreError,
     save_task_context_snapshot,
@@ -187,6 +188,8 @@ def _stream_direct_benchmark(
         output += text
         yield text
     _set_last_agent_output(orch, output)
+    if output and chat_stream_events_enabled():
+        yield FinalChunk(output)
 
 
 def _count_map(value: object) -> Mapping[str, int]:
@@ -304,7 +307,8 @@ def run_stream(
         from antigravity_k.engine.tool_loop import ToolLoopEngine
 
         user_text = _latest_user_text(orch, messages)
-        yield from ToolLoopEngine(orch).run_loop(
+        tool_loop = ToolLoopEngine(orch)
+        yield from tool_loop.run_loop(
             messages,
             "SELF",
             _expected_tool_task_type(benchmark_context, user_text),
@@ -312,12 +316,15 @@ def run_stream(
             target_model=target_model,
             direct_response=False,
         )
+        if tool_loop.last_output and chat_stream_events_enabled():
+            yield FinalChunk(tool_loop.last_output)
         return
     if _is_direct_response(benchmark_context):
         from antigravity_k.engine.tool_loop import ToolLoopEngine
 
         user_text = _latest_user_text(orch, messages)
-        yield from ToolLoopEngine(orch).run_loop(
+        tool_loop = ToolLoopEngine(orch)
+        yield from tool_loop.run_loop(
             messages,
             "SELF",
             _direct_response_task_type(user_text),
@@ -325,6 +332,8 @@ def run_stream(
             target_model=target_model,
             direct_response=True,
         )
+        if tool_loop.last_output and chat_stream_events_enabled():
+            yield FinalChunk(tool_loop.last_output)
         return
 
     # ─── Self-Capability Fast Path ───
@@ -337,6 +346,8 @@ def run_stream(
             response = _render_self_capability_response(orch)
             _set_last_agent_output(orch, response)
             yield response
+            if chat_stream_events_enabled():
+                yield FinalChunk(response)
             return
     except ImportError:
         logger.warning("예외 발생 (silent swallow 제거)", exc_info=True)
@@ -354,7 +365,8 @@ def run_stream(
             f"scope={authoritative_fact.scope}] {authoritative_fact.value}"
         )
         direct_messages = [{"role": "system", "content": recalled}, *messages]
-        yield from ToolLoopEngine(orch).run_loop(
+        tool_loop = ToolLoopEngine(orch)
+        yield from tool_loop.run_loop(
             direct_messages,
             "SELF",
             "chat",
@@ -362,6 +374,8 @@ def run_stream(
             target_model=target_model,
             direct_response=True,
         )
+        if tool_loop.last_output and chat_stream_events_enabled():
+            yield FinalChunk(tool_loop.last_output)
         return
 
     # ─── State Graph Fallback ───
@@ -394,9 +408,9 @@ def run_stream(
         _simple_patterns = ["안녕", "고마워", "누구", "뭐해", "hello", "hi ", "thanks"]
         _is_simple_chat = len(user_text) < 30 and any(p in user_text_lower for p in _simple_patterns)
         if not _is_simple_chat and profile == EngineProfile.FAST_PROTOTYPER:
-            yield "🚀 **[빠른 프로토타이핑 모드]**\n\n"
+            yield ProgressChunk("🚀 **[빠른 프로토타이핑 모드]**\n\n")
         elif not _is_simple_chat:
-            yield "🛡️ **[정밀 엔지니어링 모드]**\n\n"
+            yield ProgressChunk("🛡️ **[정밀 엔지니어링 모드]**\n\n")
         # -------------------------------------------
 
         recalled = orch.ctx.memory_manager.prefetch_all(user_text)
@@ -434,7 +448,7 @@ def run_stream(
             context_compacted = result.compressed_messages != messages
             messages = result.compressed_messages
             if result.user_message:
-                yield f"\n{result.user_message}\n\n"
+                yield ProgressChunk(f"\n{result.user_message}\n\n")
                 logger.info("[Orchestrator] %s", result.user_message)
     except (AttributeError, RuntimeError, TypeError, ValueError) as e:
         compress_degraded = True
@@ -453,7 +467,7 @@ def run_stream(
             failure_code=CompressFailureCode.COMPRESS_EXCEPTION.value,
             message=str(e),
         )
-        yield ui_status_line(record)
+        yield ProgressChunk(ui_status_line(record))
         _persist_stream_compress_event(orch, record)
 
     timer = ElapsedTimer()
@@ -490,7 +504,7 @@ def run_stream(
                     messages=sum(len(str(m.get("content", ""))) // 4 for m in messages),
                 ),
             )
-            yield ui_status_line(record)
+            yield ProgressChunk(ui_status_line(record))
             _persist_stream_compress_event(orch, record)
             logger.info(
                 "[Orchestrator] Context compressed: %.0f%% → %.0f%% strategy=%s",
@@ -516,7 +530,7 @@ def run_stream(
             failure_code=CompressFailureCode.ADAPTIVE_COMPRESS_ERROR.value,
             message=str(e),
         )
-        yield ui_status_line(record)
+        yield ProgressChunk(ui_status_line(record))
         _persist_stream_compress_event(orch, record)
 
     _ = compress_degraded  # surfaced via events; tool_loop re-checks hard limit
@@ -551,6 +565,7 @@ def run_stream(
     # ─── 에이전트 출력 동기화 ───
     if ctx.agent_output:
         _set_last_agent_output(orch, ctx.agent_output)
+    if ctx.agent_output and not ctx.approval_required:
         # Memory Sync: 턴 완료 후 모든 메모리 제공자에 동기화
         try:
             # 작업 5: 사용자 프로파일에서 학습된 선호도를 추출하여 metadata로 전달
@@ -569,6 +584,9 @@ def run_stream(
         len(ctx.state_history),
         ctx.get_duration_ms(),
     )
+    if ctx.agent_output and ctx.current_state is AgentState.COMPLETE and ctx.error is None:
+        if chat_stream_events_enabled():
+            yield FinalChunk(ctx.agent_output)
 
 
 def run_sync(

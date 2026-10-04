@@ -11,6 +11,9 @@ from typing import ClassVar, cast
 from urllib.parse import urlparse
 from urllib.request import Request
 
+from pydantic import ValidationError
+
+from antigravity_k.engine.ollama_process_snapshot import OllamaProcessSnapshot
 from antigravity_k.tools.egress_policy import safe_urlopen
 
 logger = logging.getLogger("antigravity_k.local_model_discovery")
@@ -135,6 +138,13 @@ class LocalModelDiscovery:
         raw_models = payload.get("models")
         if not isinstance(raw_models, list):
             return ()
+        running_names: frozenset[str] | None = None
+        process_payload = self._request_json(f"{base_url}/api/ps")
+        if process_payload is not None:
+            try:
+                running_names = OllamaProcessSnapshot.model_validate(process_payload).names
+            except ValidationError:
+                running_names = None
         models: list[DiscoveredLocalModel] = []
         for raw in _items(cast(object, raw_models)):
             item = _mapping(raw)
@@ -162,7 +172,9 @@ class LocalModelDiscovery:
                     quantization=_text(details.get("quantization_level")),
                     capabilities=capabilities,
                     source="ollama",
-                    status="running",
+                    status="unknown"
+                    if running_names is None
+                    else ("running" if name in running_names else "installed"),
                 ),
             )
         return tuple(models)

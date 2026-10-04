@@ -6,16 +6,14 @@ web_search.py에서 분리됨 (Phase 23 리팩토링).
 
 from __future__ import annotations
 
-import html
 import json
 import logging
 import os
-import re
 import time
 from collections.abc import Iterable, Sequence
 from datetime import UTC, datetime
 from typing import cast, final, override
-from urllib.parse import parse_qs, quote_plus, urljoin, urlsplit
+from urllib.parse import quote_plus, urljoin, urlsplit
 
 import anyio
 import httpcore
@@ -31,7 +29,10 @@ from .search_quality_evaluator import (
     citation_sources_from_results,
     evaluate_citations,
 )
+from .web_html import html_to_text as html_to_text
+from .web_reader import ReaderRejected, read_text_response, read_text_response_async
 from .web_search_cache import SearchCache, _generate_fallback_queries
+from .web_search_html import is_duckduckgo_challenge, parse_duckduckgo_results
 from .web_search_models import SearchResponse, SearchResult
 from .web_search_quality import (
     has_authoritative_query_result,
@@ -47,33 +48,6 @@ from .web_search_quality import (
 )
 
 logger = logging.getLogger("web_search")
-
-#: 본문 추출에서 **버리는** 태그. 남기면 답변 근거에 내비게이션·스크립트가 섞인다.
-_DROPPED_HTML_TAGS: tuple[str, ...] = ("script", "style", "nav", "footer", "header", "aside")
-
-
-def html_to_text(html_text: str, max_chars: int = 5000) -> str:
-    """HTML 한 장에서 사람이 읽는 본문만 남긴다(순수 함수 — 네트워크·정책 없음).
-
-    `PageScraper.extract_text` 가 가져온 HTML 에 적용하는 규칙이 여기 한 곳에 있다. 벤치마크가
-    **가져오기 없이** 같은 규칙을 잴 수 있도록 분리했다(task 24): 추출 품질(필요한 사실이 남는가 /
-    군더더기가 사라지는가)은 측정 가능한 계약이어야 한다.
-
-    Args:
-        html_text: 원본 HTML(또는 이미 텍스트인 본문).
-        max_chars: 반환 본문 상한.
-    """
-    cleaned = html_text
-    for tag in _DROPPED_HTML_TAGS:
-        cleaned = re.sub(
-            rf"<{tag}[^>]*>.*?</{tag}>",
-            "",
-            cleaned,
-            flags=re.DOTALL | re.IGNORECASE,
-        )
-    text = re.sub(r"<[^>]+>", " ", cleaned)
-    text = re.sub(r"\s+", " ", text).strip()
-    return text[:max_chars]
 
 
 def _json_object(value: object) -> dict[str, object]:
@@ -168,18 +142,7 @@ class WebSearchEngine:
 
     def _is_captcha_response(self, html: str) -> bool:
         """DuckDuckGo CAPTCHA/봇 탐지 페이지인지 확인."""
-        captcha_indicators = [
-            "anomaly-modal",
-            "anomaly-modal__title",
-            "Unfortunately, bots use DuckDuckGo",
-            "Please complete the following challenge",
-            "Select all squares containing",
-            "anomaly-modal__image",
-            "image-check_",
-            "captcha",
-        ]
-        html_lower = html.lower()
-        return any(indicator.lower() in html_lower for indicator in captcha_indicators)
+        return is_duckduckgo_challenge(html)
 
     async def _search_duckduckgo(self, query: str) -> list[SearchResult]:
         """DuckDuckGo HTML 검색 (API 키 불필요)."""
@@ -213,43 +176,17 @@ class WebSearchEngine:
 
             self._provider_succeeded("duckduckgo")
 
-            title_pattern = re.compile(
-                r'<a[^>]*class="result__a"[^>]*href="([^"]*)"[^>]*>(.*?)</a>',
-                re.DOTALL,
-            )
-            snippet_pattern = re.compile(
-                r'<a[^>]*class="result__snippet"[^>]*>(.*?)</a>',
-                re.DOTALL,
-            )
-
-            titles: list[tuple[str, str]] = title_pattern.findall(html)
-            snippets: list[str] = snippet_pattern.findall(html)
-
-            for i, (url_raw, title_html) in enumerate(titles[: self.fetch_results]):
-                title = re.sub(r"<[^>]+>", "", title_html).strip()
-                snippet = ""
-                if i < len(snippets):
-                    snippet = re.sub(r"<[^>]+>", "", snippets[i]).strip()
-
-                actual_url = url_raw
-                if "uddg=" in url_raw:
-                    match = re.search(r"uddg=([^&]+)", url_raw)
-                    if match:
-                        from urllib.parse import unquote
-
-                        actual_url = unquote(match.group(1))
-
-                if title and actual_url:
-                    results.append(
-                        SearchResult(
-                            title=title,
-                            url=actual_url,
-                            snippet=snippet,
-                            source="DuckDuckGo",
-                            timestamp=datetime.now(UTC).isoformat(),
-                            relevance_score=1.0 - (i * 0.1),
-                        ),
-                    )
+            for index, result in enumerate(parse_duckduckgo_results(html, self.fetch_results)):
+                results.append(
+                    SearchResult(
+                        title=result.title,
+                        url=result.url,
+                        snippet=result.snippet,
+                        source="DuckDuckGo",
+                        timestamp=datetime.now(UTC).isoformat(),
+                        relevance_score=1.0 - (index * 0.1),
+                    ),
+                )
             if not results:
                 return await self._search_duckduckgo_lite(query)
         except httpx.RequestError:
@@ -280,42 +217,18 @@ class WebSearchEngine:
                 logger.warning("DuckDuckGo Lite CAPTCHA 감지")
                 return []
 
-            anchor_pattern = re.compile(
-                r"<a(?P<tag>[^>]*class=['\"]result-link['\"][^>]*)>(?P<title>.*?)</a>",
-                re.IGNORECASE | re.DOTALL,
-            )
-            snippet_pattern = re.compile(
-                r"<td[^>]*class=['\"]result-snippet['\"][^>]*>(.*?)</td>",
-                re.IGNORECASE | re.DOTALL,
-            )
-            snippets = snippet_pattern.findall(response_text)
             results: list[SearchResult] = []
-            matches = list(anchor_pattern.finditer(response_text))[: self.fetch_results]
-            for index, match in enumerate(matches):
-                href_match = re.search(r"href=['\"]([^'\"]+)", match.group("tag"), re.IGNORECASE)
-                if href_match is None:
-                    continue
-                href = html.unescape(href_match.group(1))
-                if href.startswith("//"):
-                    href = f"https:{href}"
-                parsed = urlsplit(href)
-                actual_url = parse_qs(parsed.query).get("uddg", [href])[0]
-                title = re.sub(r"<[^>]+>", "", html.unescape(match.group("title")))
-                snippet = snippets[index] if index < len(snippets) else ""
-                snippet = re.sub(r"<[^>]+>", " ", html.unescape(snippet))
-                title = re.sub(r"\s+", " ", title).strip()
-                snippet = re.sub(r"\s+", " ", snippet).strip()
-                if title and actual_url:
-                    results.append(
-                        SearchResult(
-                            title=title,
-                            url=actual_url,
-                            snippet=snippet,
-                            source="DuckDuckGo Lite",
-                            timestamp=datetime.now(UTC).isoformat(),
-                            relevance_score=1.0 - (index * 0.08),
-                        ),
-                    )
+            for index, result in enumerate(parse_duckduckgo_results(response_text, self.fetch_results)):
+                results.append(
+                    SearchResult(
+                        title=result.title,
+                        url=result.url,
+                        snippet=result.snippet,
+                        source="DuckDuckGo Lite",
+                        timestamp=datetime.now(UTC).isoformat(),
+                        relevance_score=1.0 - (index * 0.08),
+                    ),
+                )
             self._provider_succeeded("duckduckgo_lite")
             return results
         except httpx.RequestError:
@@ -541,11 +454,14 @@ class WebSearchEngine:
                 follow_redirects=False,
                 event_hooks={"request": [validate_httpx_request]},
             ) as client:
-                resp = client.get(f"https://r.jina.ai/{url}", headers=headers)
-                if resp.status_code == 200:
-                    text = resp.text.strip()
-                    if len(text) > 50:
-                        return text[:max_chars]
+                with client.stream("GET", f"https://r.jina.ai/{url}", headers=headers) as resp:
+                    if resp.status_code == 200:
+                        text = read_text_response(resp).strip()
+                        if len(text) > 50:
+                            return text[: max(0, max_chars)]
+            return ""
+        except ReaderRejected as exc:
+            logger.warning("Jina Reader 본문 거부: %s", exc)
             return ""
         except httpx.RequestError:
             logger.warning("Jina Reader 오류", exc_info=True)
@@ -820,7 +736,7 @@ class _PinnedAsyncHTTPTransport(httpx.AsyncHTTPTransport):
 
 @final
 class PageScraper:
-    """검색 결과 URL의 본문을 추출합니다. (httpx + 정규식)"""
+    """검색 결과 URL의 본문을 추출합니다."""
 
     def __init__(self, legal_policy: LegalTermsPolicy | None = None) -> None:
         self._client: httpx.AsyncClient | None = None
@@ -867,20 +783,24 @@ class PageScraper:
             if not await self._crawl_policy.authorize(current_url, client):
                 return "[차단됨: robots.txt 정책 또는 rate limit]"
             try:
-                resp = await client.get(current_url, follow_redirects=False)
+                async with client.stream("GET", current_url, follow_redirects=False) as resp:
+                    if 300 <= resp.status_code < 400:
+                        location = resp.headers.get("location", "")
+                        if not location:
+                            return f"[HTTP {resp.status_code}]"
+                        current_url = urljoin(current_url, location)
+                        continue
+                    if resp.status_code != 200:
+                        return f"[HTTP {resp.status_code}]"
+                    text = await read_text_response_async(resp)
+                    media_type = resp.headers.get("content-type", "").partition(";")[0].strip().casefold()
+                    if media_type and media_type not in {"text/html", "application/xhtml+xml"}:
+                        return text.strip()[: max(0, max_chars)]
+                    return html_to_text(text, max_chars=max_chars)
+            except ReaderRejected as exc:
+                return f"[차단됨: 웹 본문 {exc}]"
             except (httpx.RequestError, UnicodeError) as e:
                 return f"[스크래핑 오류: {e}]"
-
-            if 300 <= resp.status_code < 400:
-                location = str(cast(object, resp.headers.get("location", "")))
-                if not location:
-                    return f"[HTTP {resp.status_code}]"
-                current_url = urljoin(current_url, location)
-                continue
-            if resp.status_code != 200:
-                return f"[HTTP {resp.status_code}]"
-
-            return html_to_text(resp.text, max_chars=max_chars)
         return "[차단됨: redirect limit 초과]"
 
     async def close(self):

@@ -11,7 +11,8 @@ Claude Code, Codex 등의 에이전트가 Ssak-Ai를 LLM 백엔드로 사용할 
 **Claude Code** (anthropic 프로토콜 — BASE_URL에 `/v1` 접미사 금지, CC가 직접 붙임):
 
     ANTHROPIC_BASE_URL=http://127.0.0.1:8000
-    ANTHROPIC_API_KEY=ssak-ai-local
+    unset ANTHROPIC_API_KEY
+    ANTHROPIC_AUTH_TOKEN="${SSAK_ACCESS_TOKEN:?set a token issued by /api/auth/login}"
     ANTHROPIC_MODEL=qwen3.8:latest
     CLAUDE_CODE_MAX_CONTEXT_TOKENS=262144      # 미등록 모델의 실제 컨텍스트 윈도.
         # 미설정 시 CC는 보수 기본 윈도로 자동 압축(claude.exe 내장 안내:
@@ -32,7 +33,8 @@ Claude Code, Codex 등의 에이전트가 Ssak-Ai를 LLM 백엔드로 사용할 
 
 **Codex** (openai 프로토콜 — env만으로 연결 불가, config 오버라이드 필수. Phase 35):
 
-    OPENAI_API_KEY=ssak-ai-local codex exec --sandbox read-only --skip-git-repo-check \
+    export OPENAI_API_KEY="${SSAK_ACCESS_TOKEN:?set a token issued by /api/auth/login}"
+    codex exec --sandbox read-only --skip-git-repo-check \
       -c model_provider=ssak \
       -c 'model_providers.ssak.base_url="http://127.0.0.1:8000/v1"' \
       -c 'model_providers.ssak.env_key="OPENAI_API_KEY"' \
@@ -47,13 +49,17 @@ Claude Code, Codex 등의 에이전트가 Ssak-Ai를 LLM 백엔드로 사용할 
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass, field
-from typing import Literal
+from shlex import quote
+from typing import Final, Literal
 
 BridgeProtocol = Literal["anthropic", "openai"]
 
 ANTHROPIC_ENDPOINT = "/v1/messages"
 OPENAI_ENDPOINT = "/v1/chat/completions"
+SIGNED_TOKEN_REFERENCE: Final[str] = "${SSAK_ACCESS_TOKEN:?set a token issued by /api/auth/login}"
+CREDENTIAL_ENV_KEYS: Final[frozenset[str]] = frozenset({"ANTHROPIC_AUTH_TOKEN", "OPENAI_API_KEY"})
 
 
 class UnknownAgentError(ValueError):
@@ -78,7 +84,7 @@ AGENT_BRIDGES: dict[str, AgentBridgeSpec] = {
         protocol="anthropic",
         env_vars=(
             ("ANTHROPIC_BASE_URL", "{api_base}"),
-            ("ANTHROPIC_API_KEY", "ssak-ai-local"),
+            ("ANTHROPIC_AUTH_TOKEN", "{access_token}"),
             ("ANTHROPIC_MODEL", "{model}"),
             # 미등록 모델 컨텍스트 윈도 등록 (보수 자동압축 방지) — {context_window}는
             # resolve_bridge가 ModelRegistry context_length로 채움 (모르면 200000).
@@ -94,7 +100,7 @@ AGENT_BRIDGES: dict[str, AgentBridgeSpec] = {
         protocol="openai",
         env_vars=(
             ("OPENAI_BASE_URL", "{api_base}"),
-            ("OPENAI_API_KEY", "ssak-ai-local"),
+            ("OPENAI_API_KEY", "{access_token}"),
             ("AGK_BRIDGE_MODEL", "{model}"),
         ),
     ),
@@ -104,7 +110,7 @@ AGENT_BRIDGES: dict[str, AgentBridgeSpec] = {
         protocol="openai",
         env_vars=(
             ("OPENAI_BASE_URL", "{api_base}"),
-            ("OPENAI_API_KEY", "ssak-ai-local"),
+            ("OPENAI_API_KEY", "{access_token}"),
             ("AGK_BRIDGE_MODEL", "{model}"),
         ),
     ),
@@ -114,7 +120,7 @@ AGENT_BRIDGES: dict[str, AgentBridgeSpec] = {
         protocol="anthropic",
         env_vars=(
             ("ANTHROPIC_BASE_URL", "{api_base}"),
-            ("ANTHROPIC_API_KEY", "ssak-ai-local"),
+            ("ANTHROPIC_AUTH_TOKEN", "{access_token}"),
             ("ANTHROPIC_MODEL", "{model}"),
         ),
     ),
@@ -124,7 +130,7 @@ AGENT_BRIDGES: dict[str, AgentBridgeSpec] = {
         protocol="openai",
         env_vars=(
             ("OPENAI_BASE_URL", "{api_base}"),
-            ("OPENAI_API_KEY", "ssak-ai-local"),
+            ("OPENAI_API_KEY", "{access_token}"),
             ("AGK_BRIDGE_MODEL", "{model}"),
         ),
     ),
@@ -174,7 +180,7 @@ def resolve_bridge(
     # - anthropic 계열(claude 등): 클라이언트가 스스로 /v1/messages를 붙이므로
     #   /v1 접미사가 있으면 /v1/v1/messages로 404. 접미사 없이 전달.
     needs_v1 = spec.protocol == "openai"
-    full_base = base if base.endswith("/v1") or not needs_v1 else f"{base}/v1"
+    full_base = (base if base.endswith("/v1") else f"{base}/v1") if needs_v1 else base.removesuffix("/v1")
 
     env: dict[str, str] = {}
     for key, template in spec.env_vars:
@@ -182,6 +188,7 @@ def resolve_bridge(
             api_base=full_base,
             model=resolved_model,
             context_window=str(context_window) if context_window > 0 else "200000",
+            access_token=SIGNED_TOKEN_REFERENCE,
         )
 
     return spec, env
@@ -190,18 +197,27 @@ def resolve_bridge(
 def format_bridge_plan(spec: AgentBridgeSpec, env: dict[str, str]) -> str:
     """브리지 연결 안내를 마크다운으로 렌더링."""
     endpoint = ANTHROPIC_ENDPOINT if spec.protocol == "anthropic" else OPENAI_ENDPOINT
+    if spec.name == "codex":
+        endpoint = "/v1/responses"
     lines = [
         f"# {spec.display_name} ↔ Ssak-Ai 브리지",
         "",
         f"- 프로토콜: {spec.protocol} 호환 (`{endpoint}`)",
         "- Ssak-Ai API 서버가 실행 중이어야 합니다: `uv run agk serve`",
+        "- 이 명령은 연결 계획만 출력합니다. 에이전트를 실행하거나 연결을 검증하지 않습니다.",
+        "- `/api/auth/login`에서 발급한 서명 토큰을 터미널의 `SSAK_ACCESS_TOKEN` 변수로 지정하세요.",
         "",
         "## 환경변수 설정",
         "",
         "```bash",
     ]
+    if spec.protocol == "anthropic":
+        lines.append("unset ANTHROPIC_API_KEY")
     for key, value in env.items():
-        lines.append(f"export {key}={value}")
+        if key == "ANTHROPIC_API_KEY":
+            continue
+        rendered = f'"{SIGNED_TOKEN_REFERENCE}"' if key in CREDENTIAL_ENV_KEYS else quote(value)
+        lines.append(f"export {key}={rendered}")
     lines.extend(["```", "", "설정 후 해당 에이전트를 실행하면 Ssak-Ai의 로컬 모델이 사용됩니다."])
     if spec.name == "claude":
         model_id = env.get("ANTHROPIC_MODEL", "")
@@ -213,9 +229,10 @@ def format_bridge_plan(spec: AgentBridgeSpec, env: dict[str, str]) -> str:
                 f"`{model_id}`가 CC 모델 카탈로그에 없으면 ~/.claude/settings.json에 매핑을 추가합니다:",
                 "",
                 "```json",
-                '{"modelPicker": {"options": [',
-                f'  {{"model": "{model_id}", "behavesAs": "claude-sonnet-4-6"}}',
-                "]}}",
+                json.dumps(
+                    {"modelPicker": {"options": [{"model": model_id, "behavesAs": "claude-sonnet-4-6"}]}},
+                    indent=2,
+                ),
                 "```",
                 "",
                 "- `behavesAs`는 CC 내장 모델 키를 사용합니다 (claude-sonnet-4-6 등).",
@@ -225,18 +242,22 @@ def format_bridge_plan(spec: AgentBridgeSpec, env: dict[str, str]) -> str:
         )
     if spec.name == "codex":
         model_id = env.get("AGK_BRIDGE_MODEL", "")
+        base_option = "model_providers.ssak.base_url=" + json.dumps(
+            env.get("OPENAI_BASE_URL", ""),
+            ensure_ascii=False,
+        )
         lines.extend(
             [
                 "",
                 "## Codex CLI 실연결 (config 오버라이드 — env만으로는 부족)",
                 "",
                 "```bash",
-                "OPENAI_API_KEY=ssak-ai-local codex exec --sandbox read-only --skip-git-repo-check \\",
+                "codex exec --sandbox read-only --skip-git-repo-check \\",
                 "  -c model_provider=ssak \\",
-                "  -c 'model_providers.ssak.base_url=\"<BASE_URL>\"' \\",
+                f"  -c {quote(base_option)} \\",
                 "  -c 'model_providers.ssak.env_key=\"OPENAI_API_KEY\"' \\",
                 "  -c 'model_providers.ssak.wire_api=\"responses\"' \\",
-                f'  -m {model_id} "<prompt>" < /dev/null',
+                f'  -m {quote(model_id)} "<prompt>" < /dev/null',
                 "```",
                 "",
                 '- Codex 0.150+는 Responses API만 지원합니다 (wire_api="chat" 제거됨).',

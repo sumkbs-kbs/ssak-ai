@@ -543,7 +543,10 @@ class TestToolLoopEnginePostLoopChecks:
 
         # Then: only an exact source title and its known ID are returned.
         assert cast(bool, getattr(engine, "_citation_validation_failed")) is False
-        assert cast(str, engine.last_output) == "- Python 3.13 release notes [citation:python-docs]"
+        assert cast(str, engine.last_output) == (
+            "- Python 3.13 release notes [citation:python-docs]\n\n"
+            "출처: [docs.python.org](<https://docs.python.org/3/whatsnew/3.13.html>)"
+        )
         analysis = cast(dict[str, object], _get_mock_attr(mock_orch, ("ctx", "analysis")))
         assert analysis["citation_recovery"] == "deterministic_source_titles"
         assert any("Citation Recovery" in output for output in outputs)
@@ -582,7 +585,8 @@ class TestToolLoopEnginePostLoopChecks:
         # Then: only the mechanically supported claim remains with its known citation.
         assert cast(bool, getattr(engine, "_citation_validation_failed")) is False
         assert cast(str, engine.last_output) == (
-            "- Python 3.13 introduces an experimental JIT compiler. [citation:python-docs]"
+            "- Python 3.13 introduces an experimental JIT compiler. [citation:python-docs]\n\n"
+            "출처: [docs.python.org](<https://docs.python.org/3/whatsnew/3.13.html>)"
         )
         analysis = cast(dict[str, object], _get_mock_attr(mock_orch, ("ctx", "analysis")))
         assert analysis["citation_recovery"] == "deterministic_claim_filter"
@@ -621,7 +625,10 @@ class TestToolLoopEnginePostLoopChecks:
 
         # Then: the corrected answer is grounded and replaces the original output.
         assert cast(bool, getattr(engine, "_citation_validation_failed")) is False
-        assert cast(str, engine.last_output).endswith("[citation:python-docs]")
+        assert cast(str, engine.last_output) == (
+            "Python 3.13 introduces an experimental JIT compiler. [citation:python-docs]\n\n"
+            "출처: [docs.python.org](<https://docs.python.org/3/whatsnew/3.13.html>)"
+        )
         assert any("Citation Revision" in output for output in outputs)
 
     def test_quality_gate_uses_orchestrator_context_without_direct_attribute(self):
@@ -1500,7 +1507,10 @@ class TestToolLoopEngineRunLoop:
         assert outcomes[0].success is True
         assert outcomes[0].completion_reason == "done"
         last_output = engine.last_output
-        assert str(last_output).endswith(f"[citation:{citation}]")
+        assert str(last_output) == (
+            f"Python 3.13 introduces an experimental JIT compiler. [citation:{citation}]\n\n"
+            f"출처: [docs.python.org](<{primary_url}>)"
+        )
         assert any("Citation Revision" in output for output in outputs)
 
     def test_reads_expected_tools_from_durable_execution_context(self, tmp_path: Path):

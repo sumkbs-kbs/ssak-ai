@@ -136,7 +136,7 @@ class StreamProcessor:
                 logger.warning("Repetition loop detected by StreamProcessor")
                 return output, True
 
-        return output if output.strip() else "", False
+        return output, False
 
     def _process_thought_blocks(self, text: str) -> str:
         """<thought>/<think> 블록을 사용자 출력에서 제거합니다."""
@@ -214,7 +214,7 @@ class StreamProcessor:
         # 확장 마크다운 지원 (GitHub Alerts, render_diffs)
         cleaned = self._format_markdown_extensions(cleaned)
 
-        return cleaned if cleaned.strip() else ""
+        return cleaned
 
     def _format_markdown_extensions(self, text: str) -> str:
         """GitHub Alerts 및 render_diffs() 등의 확장 마크다운을 처리합니다."""

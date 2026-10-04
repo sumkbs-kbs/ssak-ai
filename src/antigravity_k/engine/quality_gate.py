@@ -6,13 +6,19 @@ E-5: 에이전트 출력물의 품질을 자가 평가하고,
 """
 
 import ast
+import json
 import logging
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
+from typing import Never
 
 logger = logging.getLogger(__name__)
+
+
+def _reject_json_constant(value: str) -> Never:
+    raise json.JSONDecodeError("Non-finite numeric constant", value, 0)
 
 
 class QualityGrade(Enum):
@@ -93,10 +99,6 @@ class QualityGate:
             score *= s
             issues.extend(i)
 
-        s, i = self._check_completeness(user_request, agent_output, task_type)
-        score *= s
-        issues.extend(i)
-
         s, i = self._check_output_contract(user_request, agent_output, task_type, execution_mode)
         score *= s
         issues.extend(i)
@@ -152,7 +154,7 @@ class QualityGate:
         # ─── LLM 기반 자가 검증 (Semantic Self-Verification) ───
         # 정규식 기반 점수가 통과권(B 이상)일 때만 LLM 검증 실행하여 비용 절약
         verify_fn = self._verify_fn
-        if verify_fn and score >= 0.6 and len(agent_output) > 100:
+        if verify_fn and score >= 0.6:
             llm_score, llm_issues = self._llm_self_verify(user_request, agent_output, task_type)
             score *= llm_score
             issues.extend(llm_issues)
@@ -250,19 +252,6 @@ class QualityGate:
                 issues.append(f"코드블록{i + 1} 미완성")
         return score, issues
 
-    def _check_completeness(self, request: str, output: str, task_type: str) -> tuple[float, list[str]]:
-        score = 1.0
-        issues: list[str] = []
-        if task_type in ("coding", "complex", "reasoning") and len(output) < 100:
-            score *= 0.5
-            issues.append("응답이 너무 짧음")
-        req_words = set(re.findall(r"[가-힣a-zA-Z]{2,}", request.lower()))
-        out_words = set(re.findall(r"[가-힣a-zA-Z]{2,}", output.lower()))
-        if req_words and len(req_words & out_words) / len(req_words) < 0.15:
-            score *= 0.7
-            issues.append("요청과 관련성 낮음")
-        return score, issues
-
     def _check_output_contract(
         self, request: str, output: str, task_type: str, execution_mode: str | None = None
     ) -> tuple[float, list[str]]:
@@ -277,18 +266,60 @@ class QualityGate:
         """
         score = 1.0
         issues: list[str] = []
+        request_lower = request.lower()
+        code_only_requested = bool(re.search(r"(코드만|code\s+only|only\s+code)", request_lower))
+        source_requested = code_only_requested or bool(
+            re.search(
+                r"(?:^|[.!?\n]\s*|\b(?:and|then)\s+)(?:(?:please|can you|could you|would you)\s+)?"
+                + r"(?:write|implement|create|generate|build|make|provide|show|give(?:\s+me)?)\s+"
+                + r"(?:(?:a|an|the|some|new|complete|working|python|javascript|typescript)\s+){0,4}"
+                + r"(?:source(?:\s+code)?|code|implementation|(?:\w+\s+)?(?:function|algorithm|script|program))\b"
+                + r"(?!\s+(?:summary|description|explanation|purpose|result|output)\b|['’]s\b)|"
+                + r"(?:코드|함수|알고리즘|스크립트|프로그램)(?:를|을)?\s*(?:(?:새로|직접|다시)\s+)?"
+                + r"(?:작성(?:해|하)|구현(?:해|하)|만들(?:어|어줘)|짜(?:줘|라)|보여(?:줘|주)|제공(?:해|하))",
+                request_lower,
+            ),
+        )
+        json_only = bool(
+            re.search(
+                r"\bonly(?:\s+\w+){0,3}\s+json\b|\bjson\s+only\b|json(?:으로|\s*형식(?:으로)?)?\s*만",
+                request_lower,
+            )
+        )
+        number_only = bool(
+            re.search(
+                r"\bonly(?:\s+\w+){0,4}\s+(?:number|integer|decimal)\b|"
+                + r"\b(?:number|integer|decimal)\s+only\b|(?:숫자|정수|소수)\s*(?:하나|한\s*개|1\s*개)?\s*만",
+                request_lower,
+            )
+        )
+        if json_only and not source_requested:
+            try:
+                json.loads(output, parse_constant=_reject_json_constant)
+            except json.JSONDecodeError:
+                return 0.3, ["요청된 JSON 형식 위반"]
+            return score, issues
+        if number_only and not source_requested:
+            integer_only = bool(
+                re.search(
+                    r"\bonly(?:\s+\w+){0,4}\s+integer\b|\binteger\s+only\b|" + r"정수\s*(?:하나|한\s*개|1\s*개)?\s*만",
+                    request_lower,
+                )
+            )
+            number_pattern = r"[+-]?\d+" if integer_only else r"[+-]?(?:\d+(?:\.\d+)?|\.\d+)(?:[eE][+-]?\d+)?"
+            if not re.fullmatch(number_pattern, output.strip()):
+                return 0.3, ["요청된 단일 숫자 형식 위반"]
+            return score, issues
 
         # PLAN 모드: 코드 블록 체크 건너뜀 (Phase 1 D5)
         if execution_mode == "plan" or task_type == "search":
             return score, issues
 
-        request_lower = request.lower()
-
-        asks_for_code = task_type in ("coding", "complex", "complex_step") or bool(
-            re.search(
-                r"(구현|함수|알고리즘|python|javascript|typescript|function|implement|code)",
-                request_lower,
-            ),
+        explanation_requested = bool(
+            re.search(r"\b(?:explain|describe|what|why|how|purpose)\b|설명|목적|역할|반환값|무엇", request_lower)
+        )
+        asks_for_code = source_requested or (
+            task_type in ("code", "coding", "complex", "complex_step") and not explanation_requested
         )
         if not asks_for_code:
             return score, issues
@@ -296,7 +327,6 @@ class QualityGate:
         code_blocks = re.findall(r"```(?:\w+)?\s*.*?```", output, re.DOTALL)
         prose = re.sub(r"```(?:\w+)?\s*.*?```", "", output, flags=re.DOTALL).strip()
         has_korean_prose = bool(re.search(r"[가-힣]{2,}", prose))
-        code_only_requested = bool(re.search(r"(코드만|code\s+only|only\s+code)", request_lower))
 
         if not code_blocks:
             score *= 0.3
@@ -578,24 +608,23 @@ class QualityGate:
         return score, issues
 
     def _check_comparison_table(self, request: str, output: str) -> tuple[float, list[str]]:
-        """비교 요청 시 Markdown 테이블이 포함되지 않으면 감점.
-        Codex/Claude Code 수준의 구조화된 비교를 강제합니다.
-        """
         score = 1.0
         issues: list[str] = []
         request_lower = request.lower()
-        comparison_requested = bool(
+        table_requested = bool(
             re.search(
-                r"(비교|차이|장단점|compare|comparison|versus|vs\b|trade-?off)",
+                r"비교\s*표|(?<![가-힣])표(?:로|\s*(?:형식|형태))|테이블(?:로|\s*(?:형식|형태))|"
+                + r"\b(?:in|as)\s+(?:a\s+)?(?:markdown\s+)?table\b|"
+                + r"\b(?:comparison|markdown)\s+table\b|\btable\s+(?:format|comparing)\b",
                 request_lower,
             ),
         )
-        if not comparison_requested:
+        if not table_requested:
             return score, issues
 
         has_table = bool(re.search(r"^\s*\|.+\|.+\|\s*$", output, re.MULTILINE))
         if not has_table:
-            score *= 0.65
+            score *= 0.55
             issues.append("비교 요청에 Markdown 비교표(table) 누락")
         return score, issues
 

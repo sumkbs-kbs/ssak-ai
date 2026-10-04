@@ -58,19 +58,27 @@ def context_budget_for_context_length(
     return _budget_from_token_limit(token_limit)
 
 
-def _model_context_length(config: Mapping[str, JsonValue], model_name: str) -> int | None:
+def _model_profile(config: Mapping[str, JsonValue], model_name: str) -> Mapping[str, JsonValue] | None:
     models = config.get("models")
     if not isinstance(models, dict):
         return None
-
+    alias: Mapping[str, JsonValue] | None = None
     for profiles in models.values():
         if not isinstance(profiles, list):
             continue
         for profile in profiles:
-            if not isinstance(profile, dict) or profile.get("name") != model_name:
+            if not isinstance(profile, dict):
                 continue
-            return _positive_int(profile.get("context_length"))
-    return None
+            if profile.get("name") == model_name:
+                return profile
+            if alias is None and profile.get("repo") == model_name:
+                alias = profile
+    return alias
+
+
+def _model_context_length(config: Mapping[str, JsonValue], model_name: str) -> int | None:
+    profile = _model_profile(config, model_name)
+    return None if profile is None else _positive_int(profile.get("context_length"))
 
 
 def _configured_token_limit(config: Mapping[str, JsonValue]) -> int | None:
@@ -88,7 +96,23 @@ def _model_memory_budget(config: Mapping[str, JsonValue], model_name: str) -> Mo
     if not isinstance(raw_paths, list):
         return None
     paths = tuple(Path(raw_path) for raw_path in raw_paths if isinstance(raw_path, str))
-    return load_model_memory_budget(paths, model_name)
+    profile = _model_profile(config, model_name)
+    identifiers = {model_name}
+    if profile is not None:
+        identifiers.update(value for key in ("name", "repo") if isinstance(value := profile.get(key), str))
+    budgets = tuple(
+        budget
+        for identifier in sorted(identifiers)
+        if (budget := load_model_memory_budget(paths, identifier)) is not None
+    )
+    if not budgets:
+        return None
+    return ModelMemoryBudget(
+        model=model_name,
+        context_token_limit=min(budget.context_token_limit for budget in budgets),
+        kv_cache_byte_limit=min(budget.kv_cache_byte_limit for budget in budgets),
+        source_sha256=min(budget.source_sha256 for budget in budgets),
+    )
 
 
 def _input_limit_for_context(context_length: int) -> int:
@@ -225,9 +249,9 @@ def resolve_hard_token_limit(
     operator = _configured_token_limit(config)
     reserve = output_reserve_tokens(declared)
 
-    # Align with context_budget_for_model: declared is reduced by reserve;
-    # empirical/operator are treated as input ceilings.
-    candidates: list[int] = [MAX_CONTEXT_TOKEN_LIMIT]
+    # MAX_CONTEXT_TOKEN_LIMIT also caps the provider window. Completion reserve
+    # must fit inside that cap; empirical/operator ceilings still bind input.
+    candidates: list[int] = [MAX_CONTEXT_TOKEN_LIMIT - reserve]
     if declared is not None:
         candidates.append(_input_limit_for_context(declared))
     if empirical is not None:

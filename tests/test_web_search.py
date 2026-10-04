@@ -772,17 +772,21 @@ class TestWebSearchTool:
             nonlocal call_count
             call_count += 1
             if call_count > 1:
-                return [("F", "https://ex.com/fb", "Fallback")]
+                return [("test documentation", "https://ex.com/fb", "Fallback")]
             return []
 
         monkeypatch.setattr(tool, "_sync_search_self_hosted", mock_self_hosted)
         monkeypatch.setattr(tool, "_sync_search_searxng", _empty_search_no_kwargs)
+        monkeypatch.setattr(tool, "_sync_search_jina", _empty_search_no_kwargs)
         monkeypatch.setattr(tool, "_sync_search_duckduckgo", _empty_search_no_kwargs)
+        monkeypatch.setattr(tool.engine, "_extract_content_jina", lambda url, max_chars=2000: "")
 
-        result = tool.execute(query="test")
+        result = tool.execute(query="test documentation")
         assert isinstance(result, str)
-        # Should have some content — either original or fallback
-        assert len(result) > 0
+        assert "https://ex.com/fb" in result
+        assert "Fallback" in result
+        assert "[citation:" in result
+        assert call_count > 1
 
     def test_sync_search_searxng_results(self, monkeypatch: pytest.MonkeyPatch):
         """_sync_search_searxng — 정상 응답."""

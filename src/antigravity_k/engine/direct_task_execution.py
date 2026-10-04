@@ -8,10 +8,11 @@ from collections.abc import Callable, Iterator, Mapping, Sequence
 from contextlib import AbstractContextManager, nullcontext
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Protocol, final, runtime_checkable
+from typing import Final, Protocol, assert_never, final, runtime_checkable
 
 from antigravity_k.engine import multimodal
 from antigravity_k.engine.benchmark_harness import TaskOutcome
+from antigravity_k.engine.chat_stream_events import FinalChunk, ProgressChunk
 from antigravity_k.engine.language_normalizer import normalize_streaming_chunks
 from antigravity_k.engine.task_context_snapshot import save_task_context_snapshot
 from antigravity_k.engine.task_execution_context import TaskStateStoreProtocol
@@ -21,8 +22,33 @@ from antigravity_k.engine.task_state_store import (
     current_task_execution_context,
 )
 from antigravity_k.engine.task_state_types import InvalidTaskTransitionError, TaskTransitionConflictError
+from antigravity_k.engine.tool_policy import tool_policy_denial
 
 TaskOutcomeRecorder = Callable[[TaskOutcome], TaskOutcome | None]
+
+_QUOTED_SEARCH_MATERIAL: Final = re.compile(
+    r"```[\s\S]*?```|~~~[\s\S]*?~~~|`[^`\n]*`|\"[^\"]*\"|"
+    r"(?<!\w)'[^']*'(?!\w)|“[^”]*”|‘[^’]*’|(?m:^\s*>[^\n]*)",
+)
+_WEB_SEARCH_REQUEST: Final = re.compile(
+    r"웹\s*검색(?:으로|을\s*통해)\s*.*?(?:확인|검증|조사|찾)|"
+    r"웹\s*검색(?:해|하여|해서|하세요)|"
+    r"\bsearch\s+(?:the\s+)?web\b|\b(?:use|perform|run|do)\s+(?:a\s+)?web\s+search\b",
+)
+_WEB_SEARCH_NEGATION: Final = re.compile(
+    r"(?:웹\s*검색|web_search)(?:\s*도구)?(?:은|을|를|으로|로)?\s*"
+    r"(?:하지\s*(?:마|말)|사용하지\s*(?:마|말)|없이)|"
+    r"웹\s*검색(?:으로|을\s*통해|해서|하여).*?(?:확인|검증|조사)하지\s*(?:마|말)|"
+    r"웹\s*검색으로\s*확인할\s*필요(?:는|가)?\s*(?:없|없습니다)|"
+    r"\b(?:do\s+not(?:\s+need\s+to)?|don't(?:\s+need\s+to)?|must\s+not|should\s+not|"
+    r"never|without|avoid)\s+"
+    r"(?:search\s+(?:the\s+)?web|(?:use\s+(?:a\s+)?)?(?:web\s+search|web_search))\b",
+)
+_OPTIONAL_WEB_SEARCH: Final = re.compile(
+    r"필요(?:하면|할\s*때|할\s*경우|시)|가능하면|원하면|해도\s*(?:됩|된다|돼)|"
+    r"\bif\s+(?:needed|necessary|possible|you\s+need)\b|\bfeel\s+free\s+to\b|"
+    r"\byou\s+(?:may|might|can)\s+(?:search|use|perform)\b",
+)
 
 
 def _safe_task_transition(state_store: object, task_id: str, status: object, **kwargs: object) -> bool:
@@ -245,13 +271,27 @@ class DirectTaskExecution:
             return []
         tool_names = tool_registry.get_names()
         lowered_prompt = prompt.casefold()
+        search_clauses = re.split(
+            r"[.!?;\n]|\b(?:and|but)\b|하고|하되", _QUOTED_SEARCH_MATERIAL.sub(" ", lowered_prompt)
+        )
         contracted: list[str] = []
         for tool_name in tool_names:
             escaped = re.escape(tool_name.casefold())
             # "X tool" / "X 도구" form, and Korean instrumental/object particles
             # (X로/으로/을/를) that unambiguously name the tool as the means/object.
             pattern = rf"(?<!\w){escaped}(?!\w)\s*(?:tool|도구)|(?<!\w){escaped}(?:로|으로|을|를)"
-            if re.search(pattern, lowered_prompt):
+            if tool_name == "web_search":
+                if tool_policy_denial(tool_name, None) is not None:
+                    continue
+                requested = any(
+                    (re.search(pattern, clause) or _WEB_SEARCH_REQUEST.search(clause))
+                    and not _WEB_SEARCH_NEGATION.search(clause)
+                    and not _OPTIONAL_WEB_SEARCH.search(clause)
+                    for clause in search_clauses
+                )
+            else:
+                requested = re.search(pattern, lowered_prompt) is not None
+            if requested:
                 contracted.append(tool_name)
         return contracted
 
@@ -287,6 +327,7 @@ class DirectTaskExecution:
             json.dumps({"model": target_model}, sort_keys=True),
         )
         output_parts: list[str] = []
+        final_seen = False
         initial_agent_output = str(getattr(self._orchestrator, "_last_agent_output", "") or "")
         try:
             with self._execution_binding(execution_context):
@@ -298,7 +339,16 @@ class DirectTaskExecution:
                         ephemeral_message=ephemeral_message,
                     )
                 ):
-                    output_parts.append(chunk)
+                    match chunk:
+                        case ProgressChunk():
+                            pass
+                        case FinalChunk():
+                            output_parts = [str(chunk)]
+                            final_seen = True
+                        case str():
+                            output_parts.append(chunk)
+                        case unreachable:
+                            assert_never(unreachable)
                     yield chunk
         except Exception as exc:  # noqa: BLE001
             output = "".join(output_parts)
@@ -343,7 +393,7 @@ class DirectTaskExecution:
                 )
             else:
                 final_agent_output = str(getattr(self._orchestrator, "_last_agent_output", "") or "")
-                if final_agent_output and final_agent_output != initial_agent_output:
+                if not final_seen and final_agent_output and final_agent_output != initial_agent_output:
                     output = final_agent_output
                 cas_won = _safe_task_transition(state_store, execution_context.task_id, "done", output=output)
                 _append_terminal_domain_event(

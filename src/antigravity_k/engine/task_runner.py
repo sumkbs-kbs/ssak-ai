@@ -509,27 +509,43 @@ class BackgroundTaskRunner:
         target_model: str,
         initial_step: int = 0,
         initial_output: str = "",
+        claim_status: TaskStatusName = TaskStatus.PENDING,
     ):
         """백그라운드 스레드에서 실제 태스크 실행."""
         started_at = time.monotonic()
         if task.cancel_event.is_set():
+            try:
+                cancelled = self.state_store.transition(
+                    task.task_id,
+                    TaskStatus.CANCELLED,
+                    error="Task was cancelled before execution started.",
+                    expected_status=claim_status,
+                )
+            except TaskTransitionConflictError:
+                cancelled = False
+            except (sqlite3.Error, InvalidTaskStatusError, InvalidTaskTransitionError):
+                logger.exception("Task pre-start cancellation failed: %s", task.task_id)
+                cancelled = False
+            if not cancelled:
+                record = self.state_store.get_task(task.task_id)
+                if record is not None:
+                    task.status = parse_task_status(record["status"])
+                    task.error = record["error"]
+                return
             task.status = TaskStatus.CANCELLED
-            _ = self._update_db_status(
-                task.task_id,
-                TaskStatus.CANCELLED,
-                error="Task was cancelled before execution started.",
-            )
             self._record_task_outcome(task, target_model, started_at, "cancelled")
             return
 
-        task.status = TaskStatus.RUNNING
         task.output = initial_output
         task.progress = min(0.95, initial_step / 100)
         task.updated_at = datetime.now(UTC).isoformat()
-        if not self._update_db_status(task.task_id, TaskStatus.RUNNING):
-            task.status = TaskStatus.CANCELLED if task.cancel_event.is_set() else TaskStatus.FAILED
-            self._record_task_outcome(task, target_model, started_at, task.status)
+        if not self._claim_task_execution(task.task_id, claim_status):
+            record = self.state_store.get_task(task.task_id)
+            if record is not None:
+                task.status = parse_task_status(record["status"])
+                task.error = record["error"]
             return
+        task.status = TaskStatus.RUNNING
 
         # DAT-02: a worktree task executes against its own worktree, never the
         # server process cwd. Bind the execution context to the worktree root so
@@ -1248,7 +1264,7 @@ class BackgroundTaskRunner:
 
         thread = threading.Thread(
             target=self._run_task,
-            args=(task, orchestrator, target_model, checkpoint_step, checkpoint_output),
+            args=(task, orchestrator, target_model, checkpoint_step, checkpoint_output, TaskStatus.RESUMING),
             name=f"bg-resume-{task_id}",
             daemon=True,
         )
@@ -1257,6 +1273,20 @@ class BackgroundTaskRunner:
 
         logger.info("Task resumed from checkpoint: %s at step %s", task_id, checkpoint_step)
         return True
+
+    def _claim_task_execution(self, task_id: str, expected_status: TaskStatusName) -> bool:
+        try:
+            return self.state_store.transition(
+                task_id,
+                TaskStatus.RUNNING,
+                expected_status=expected_status,
+            )
+        except TaskTransitionConflictError:
+            logger.info("Task execution claim lost: %s", task_id)
+            return False
+        except (sqlite3.Error, InvalidTaskStatusError, InvalidTaskTransitionError):
+            logger.exception("Task execution claim failed: %s", task_id)
+            return False
 
     def _update_db_status(
         self,

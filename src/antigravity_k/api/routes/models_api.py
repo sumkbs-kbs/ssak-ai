@@ -225,7 +225,18 @@ def list_local_models(
             }
         )
 
-    # 추천 기본 모델 결정: running 상태인 reasoning/coding 모델 최우선, 없으면 cached 중 최우선
+    configured_default = model_registry.get_default("reasoning")
+    configured_local = next(
+        (
+            model
+            for model in discovered_models
+            if configured_default is not None
+            and model.role in ("reasoning", "coding", "general")
+            and model.parameter_count_b > 0
+            and model_registry.get_model(model.name) is configured_default
+        ),
+        None,
+    )
     recommended_default: str | None = None
     running_models = [m for m in local_models if m.get("status") == "running"]
     primary_running = [
@@ -233,7 +244,9 @@ def list_local_models(
         for m in running_models
         if m.get("role") in ("reasoning", "coding", "general") and cast(float, m.get("parameter_count_b", 0)) > 0
     ]
-    if primary_running:
+    if configured_local is not None:
+        recommended_default = configured_local.name
+    elif primary_running:
         primary_running.sort(key=lambda x: cast(float, x.get("parameter_count_b", 0)), reverse=True)
         recommended_default = cast(str, primary_running[0]["id"])
     elif running_models:

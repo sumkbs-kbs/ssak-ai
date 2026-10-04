@@ -288,6 +288,9 @@ class ConversationStore:
         # F1(flush 배치): flock 임계 구역 안에서 읽은 저널 꼬리의 한 칸짜리 기억.
         # 구역 **밖으로 새지 않는다** — 구역에 들어갈 때마다 비운다(`_cross_process_lock`).
         self._tail_memo: tuple[str, Any] | None = None
+        # F2(view 신선도): 밀린 view 재작성의 장부 — 값은 “아직 쓰지 않은 커밋 수”다.
+        # 판정은 시퀀스로 하고(계약 C-2), 따라잡기는 메모리 레코드로 한다(C-4).
+        self._view_lag: dict[tuple[str, str], int] = {}
 
     # ── CR-01 identity / migration state ────────────────────────────────
 
@@ -425,7 +428,9 @@ class ConversationStore:
                 context={"reason": type(exc).__name__},
             ) from exc
 
-    def _refresh_latest(self, project_id: str, conversation_id: str) -> ConversationRecord | None:
+    def _refresh_latest(
+        self, project_id: str, conversation_id: str, *, flush_deferred: bool = False
+    ) -> ConversationRecord | None:
         """FR-05/RP-05: 캐시를 디스크 진실 원천과 동기화한 뒤 반환한다.
 
         ``self._lock``과 ``_cross_process_lock``을 이미 보유한 상태에서만
@@ -439,13 +444,26 @@ class ConversationStore:
         journal 이 view 보다 나중에 쓰였으면(view 지연/미커밋 tail) 재생성한다.
         """
         key = (project_id, conversation_id)
-        disk_record = self._read_record(project_id, conversation_id)
         journal = self._journal(project_id, conversation_id)
+        if self.deletion_marker(project_id=project_id, conversation_id=conversation_id) is not None or (
+            journal.exists() and self._journal_tail(journal).deleted
+        ):
+            self._records.pop(key, None)
+            self._view_lag.pop(key, None)
+            return None
+        disk_record = self._read_record(project_id, conversation_id)
         if disk_record is None:
+            cached = self._records.get(key)
+            if journal.exists() and cached is not None and cached.journal_seq == self._journal_tail(journal).seq:
+                if flush_deferred:
+                    self._persist(cached)
+                    self._view_lag.pop(key, None)
+                return cached
             rebuilt = self._materialize_from_journal(project_id, conversation_id)
             if rebuilt is not None:
                 self._records[key] = rebuilt
                 self._persist(rebuilt)
+                self._view_lag.pop(key, None)
                 logger.warning(
                     "Conversation view was missing and rebuilt from the journal (%s/%s, seq=%s)",
                     project_id,
@@ -454,13 +472,24 @@ class ConversationStore:
                 )
                 return rebuilt
             self._records.pop(key, None)
+            self._view_lag.pop(key, None)
             return None
         if journal.exists():
             self._ensure_journal_base(disk_record)
             journal = self._journal(project_id, conversation_id)
-            if self._journal_is_newer(journal, self._path_for(project_id, conversation_id)):
-                disk_record = self._reconcile_view_with_journal(project_id, conversation_id, disk_record)
+            if self._view_is_behind(journal, disk_record):
+                cached = self._records.get(key)
+                if cached is not None and cached.journal_seq == self._journal_tail(journal).seq:
+                    # 계약 F2-C4: 밀린 것은 **view 파일**이지 기록이 아니다.
+                    # 여기서 `_reconcile_view_with_journal`(저널 전체 재생)로 가면 view 스로틸이
+                    # 이득이 아니라 회귀가 된다 — 실측: 3회에 1회로 미루면 재생이 1.17회/미룸 붙었다.
+                    disk_record = cached
+                else:
+                    disk_record = self._reconcile_view_with_journal(project_id, conversation_id, disk_record)
         self._records[key] = disk_record
+        if flush_deferred:
+            # 계약 F2-C7: 읽기는 밀린 view 를 수렴시킨다(지연 창은 읽기를 넘지 않는다).
+            self._flush_view(disk_record)
         return disk_record
 
     # ── NX-02: journal (originals) ──────────────────────────────────────
@@ -483,6 +512,42 @@ class ConversationStore:
         self._tail_memo = (str(journal.path), tail)
         return tail
 
+    def _view_refresh_policy(self) -> tuple[str, int]:
+        """계약 F2-C6: 기본은 `immediate` — 노브를 켠 실행만 view 재작성을 지연한다."""
+        raw = (os.environ.get("AGK_CONVERSATION_VIEW_REFRESH") or "immediate").strip().lower()
+        if raw != "coalesced":
+            return "immediate", 0
+        try:
+            max_lag = int((os.environ.get("AGK_CONVERSATION_VIEW_REFRESH_MAX_LAG") or "8").strip())
+        except ValueError:
+            max_lag = 8
+        return "coalesced", max(1, max_lag)
+
+    def _persist_view_or_defer(self, record: ConversationRecord) -> None:
+        """계약 F2-C3: view 는 캐시다 — 지연 창은 **유한**하고 기본은 지연 없음."""
+        key = (record.project_id, record.conversation_id)
+        mode, max_lag = self._view_refresh_policy()
+        lag = self._view_lag.get(key, 0) + 1
+        self._view_lag[key] = lag
+        if mode == "immediate" or lag >= max_lag:
+            self._persist(record)
+            self._view_lag.pop(key, None)
+
+    def _flush_view(self, record: ConversationRecord) -> None:
+        """계약 F2-C4/C7: 밀린 view 를 **저널 재생 없이** 메모리 레코드로 따라잡는다."""
+        key = (record.project_id, record.conversation_id)
+        if key in self._view_lag:
+            self._persist(record)
+            self._view_lag.pop(key, None)
+
+    def flush_views(self) -> None:
+        """계약 F2-C5: 밀린 view 는 프로세스 수명을 넘지 않는다(writer-only 프로세스의 수렴점)."""
+        with self._lock, self._cross_process_lock():
+            self._assert_storage_ready()
+            pending = sorted(self._view_lag)
+            for project_id, conversation_id in pending:
+                self._refresh_latest(project_id, conversation_id, flush_deferred=True)
+
     def _journal(self, project_id: str, conversation_id: str) -> ConversationJournal:
         return ConversationJournal(self.journal_path(project_id=project_id, conversation_id=conversation_id))
 
@@ -490,13 +555,19 @@ class ConversationStore:
         """Deletion marker for this id (``None`` when the id was never deleted)."""
         return read_deletion_marker(self._path_for(project_id, conversation_id))
 
-    @staticmethod
-    def _journal_is_newer(journal: ConversationJournal, view_path: Path) -> bool:
-        """Cheap stat-only probe: was the journal written after the view?"""
+    def _view_is_behind(self, journal: ConversationJournal, record: ConversationRecord) -> bool:
+        """계약 F2-C2: view 가 뒤처졌는지는 **시퀀스로** 판정한다(mtime 이 아니다).
+
+        종전 판정은 `journal mtime > view mtime` 이었다. 그 판정은 복원·동기화 도구가 옛 view 를
+        **새 mtime 으로** 놓는 순간 거짓이 된다 — 실측: 저널 tail seq 3 인데 view 를 seq 1 내용 +
+        새 mtime 으로 놓으면 읽기가 revision 1 을 돌려줬다(커밋된 턴 2개를 놓쳤다).
+        nx10/fsync2/probe-view-staleness-output.json.
+        """
         try:
-            return journal.path.stat().st_mtime_ns > view_path.stat().st_mtime_ns
+            tail = self._journal_tail(journal)
         except OSError:
             return True
+        return record.journal_seq != tail.seq
 
     def _materialize_from_journal(self, project_id: str, conversation_id: str) -> ConversationRecord | None:
         """Rebuild the bounded view from committed journal events (deterministic)."""
@@ -740,7 +811,8 @@ class ConversationStore:
         self._tail_memo = None
         record.journal_seq = event.seq
         record.history_incomplete = record.history_incomplete or event.history_incomplete
-        self._persist(record)
+        # 계약 F2-C3: 기본(immediate)에서는 종전과 똑같이 즉시 쓴다.
+        self._persist_view_or_defer(record)
         return event
 
     def _assert_id_reusable(self, project_id: str, conversation_id: str) -> None:
@@ -821,7 +893,7 @@ class ConversationStore:
         """Export payload for support/backup tooling (originals + provenance)."""
         with self._lock, self._cross_process_lock():
             self._assert_storage_ready()
-            self._refresh_latest(project_id, conversation_id)
+            self._refresh_latest(project_id, conversation_id, flush_deferred=True)
             journal = self._journal(project_id, conversation_id)
             state = self.history_state(project_id=project_id, conversation_id=conversation_id)
             messages = self.original_history(project_id=project_id, conversation_id=conversation_id)
@@ -893,6 +965,8 @@ class ConversationStore:
                 except FileNotFoundError:
                     pass
             self._records.pop((project_id, conversation_id), None)
+            # F2 계약 C-8: 삭제는 밀린 view 쓰기를 취소한다.
+            self._view_lag.pop((project_id, conversation_id), None)
             return True
 
     def _read_record(self, project_id: str, conversation_id: str) -> ConversationRecord | None:
@@ -945,7 +1019,7 @@ class ConversationStore:
     def get_revision(self, *, project_id: str, conversation_id: str) -> int | None:
         with self._lock, self._cross_process_lock():
             self._assert_storage_ready()
-            record = self._refresh_latest(project_id, conversation_id)
+            record = self._refresh_latest(project_id, conversation_id, flush_deferred=True)
             return None if record is None else record.revision
 
     def compare_and_set(
@@ -989,7 +1063,7 @@ class ConversationStore:
         # 상태로 갱신한다(다른 worker의 append/compact을 즉시 관찰).
         with self._lock, self._cross_process_lock():
             self._assert_storage_ready()
-            record = self._refresh_latest(project_id, conversation_id)
+            record = self._refresh_latest(project_id, conversation_id, flush_deferred=True)
             return None if record is None else deepcopy(record)
 
     def get_or_create(
@@ -1006,7 +1080,7 @@ class ConversationStore:
         """
         with self._lock, self._cross_process_lock():
             self._assert_storage_ready()
-            record = self._refresh_latest(project_id, conversation_id)
+            record = self._refresh_latest(project_id, conversation_id, flush_deferred=True)
             if record is not None:
                 if record.revision != expected_revision:
                     raise StaleConversationRevisionError(
@@ -1040,7 +1114,7 @@ class ConversationStore:
     def snapshot(self, *, project_id: str, conversation_id: str) -> ConversationSnapshot:
         with self._lock, self._cross_process_lock():
             self._assert_storage_ready()
-            record = self._refresh_latest(project_id, conversation_id)
+            record = self._refresh_latest(project_id, conversation_id, flush_deferred=True)
             if record is None:
                 raise ConversationNotFoundError(
                     detail=f"Conversation not found: {conversation_id}",
@@ -1492,7 +1566,11 @@ class ConversationStore:
         return self._load(project_id, conversation_id)
 
     def clear_memory(self) -> None:
-        """Test helper: drop in-memory cache (disk files remain)."""
+        """Test helper: drop in-memory cache (disk files remain).
+
+        F2 계약 C-5: 밀린 view 를 먼저 수렴시킨다 — write-behind 는 프로세스 수명을 넘지 않는다.
+        """
+        self.flush_views()
         with self._lock:
             self._records.clear()
 

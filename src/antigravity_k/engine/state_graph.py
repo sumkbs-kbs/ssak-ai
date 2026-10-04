@@ -38,6 +38,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import TypeAlias
 
+from antigravity_k.engine.chat_stream_events import ProgressChunk
 from antigravity_k.engine.task_state_store import TaskExecutionContext
 
 logger = logging.getLogger("antigravity_k.engine.state_graph")
@@ -101,6 +102,7 @@ class StateContext:
 
     # 실행 결과
     agent_output: str = ""
+    approval_required: bool = False
 
     # 상태 추적
     current_state: AgentState = AgentState.INIT
@@ -317,7 +319,16 @@ class AgentStateGraph:
                 gen = handler(ctx, orchestrator)
                 if gen is not None:
                     for chunk in gen:
-                        yield chunk
+                        if current in (
+                            AgentState.AGENT_EXECUTE,
+                            AgentState.PIPELINE_EXECUTE,
+                            AgentState.MAX_EXECUTE,
+                            AgentState.DEBATE_EXECUTE,
+                            AgentState.AGI_CORE,
+                        ):
+                            yield chunk
+                        else:
+                            yield ProgressChunk(chunk)
 
             except StopIteration:
                 logger.warning("예외 발생 (silent swallow 제거)", exc_info=True)

@@ -261,20 +261,14 @@ class SandboxRunner:
             os.path.realpath(os.path.abspath(p)) for p in read_allow_paths if p
         )
         if protected_write_deny_paths is None:
-            try:
-                from antigravity_k.engine.cognitive.protected_targets import (
-                    sandbox_protected_unlink_denies,
-                    sandbox_protected_write_denies,
-                )
+            from antigravity_k.engine.cognitive.protected_targets import (
+                sandbox_protected_unlink_denies,
+                sandbox_protected_write_denies,
+            )
 
-                self.protected_write_deny_paths: tuple[str, ...] = sandbox_protected_write_denies(self.project_root)
-                self.protected_unlink_deny_paths: tuple[str, ...] = sandbox_protected_unlink_denies(self.project_root)
-            except Exception as exc:
-                # Prefer empty deny only for unsandboxed compatibility; require_sandbox
-                # callers still fail closed when no Darwin/Docker boundary exists.
-                logger.warning("protected write deny list unavailable: %s", exc)
-                self.protected_write_deny_paths = ()
-                self.protected_unlink_deny_paths = ()
+            # Policy construction failures must never yield an unprotected runner.
+            self.protected_write_deny_paths: tuple[str, ...] = sandbox_protected_write_denies(self.project_root)
+            self.protected_unlink_deny_paths: tuple[str, ...] = sandbox_protected_unlink_denies(self.project_root)
         else:
             self.protected_write_deny_paths = tuple(
                 os.path.realpath(os.path.abspath(p)) for p in protected_write_deny_paths if p
@@ -412,23 +406,18 @@ class SandboxRunner:
     def _protected_write_deny_section(self) -> str:
         """seatbelt: allow(root) 뒤에 오는 보호 경로 write/unlink deny."""
         lines: list[str] = []
-        root = self.project_root
-
-        def _in_project(real: str) -> bool:
-            return real == root or real.startswith(root + os.sep)
-
+        ancestors = set(self.protected_unlink_deny_paths)
         for path in self.protected_write_deny_paths:
             real = os.path.realpath(path)
-            if not _in_project(real) or real == root:
-                continue
             lines.append(f'(deny file-write* (subpath "{real}"))')
             lines.append(f'(deny file-write* (literal "{real}"))')
-        for path in getattr(self, "protected_unlink_deny_paths", ()):
-            real = os.path.realpath(path)
-            if not _in_project(real) or real == root:
-                continue
-            lines.append(f'(deny file-write-unlink (subpath "{real}"))')
-            lines.append(f'(deny file-write-unlink (literal "{real}"))')
+            parent = os.path.dirname(real)
+            while parent and parent not in ancestors:
+                ancestors.add(parent)
+                parent = os.path.dirname(parent)
+        for ancestor in sorted(ancestors):
+            # Literal protects directory identity without preventing sibling edits.
+            lines.append(f'(deny file-write-unlink (literal "{ancestor}"))')
         return "\n".join(lines)
 
     def build_seatbelt_profile(self) -> str:

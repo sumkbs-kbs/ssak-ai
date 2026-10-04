@@ -14,7 +14,7 @@ import re
 import time
 from collections.abc import Mapping
 from typing import Callable, TypeAlias, cast, final, override
-from urllib.parse import quote_plus, unquote
+from urllib.parse import quote_plus
 
 import httpx
 
@@ -24,6 +24,7 @@ from .search_auth import SEARCH_TOKEN_ENV, search_auth_headers
 from .ssak_search_provider import search_with_bundled_provider, settings_snapshot
 from .web_search_cache import _generate_fallback_queries
 from .web_search_engine import WebSearchEngine
+from .web_search_html import parse_duckduckgo_results
 from .web_search_models import SearchResult
 from .web_search_quality import (
     canonicalize_url,
@@ -675,36 +676,9 @@ class WebSearchTool(BaseTool):
             if resp.status_code != 200:
                 return []
 
-            html = resp.text
-            title_pattern = re.compile(
-                r'<a[^>]*class="result__a"[^>]*href="([^"]*)"[^>]*>(.*?)</a>',
-                re.DOTALL,
-            )
-            snippet_pattern = re.compile(
-                r'<a[^>]*class="result__snippet"[^>]*>(.*?)</a>',
-                re.DOTALL,
-            )
-
-            titles = cast(list[tuple[str, str]], title_pattern.findall(html))
-            snippets = cast(list[str], snippet_pattern.findall(html))
-
-            results: SearchResults = []
-            for i, (url_raw, title_html) in enumerate(titles[:8]):
-                title = re.sub(r"<[^>]+>", "", title_html).strip()
-                snippet = ""
-                if i < len(snippets):
-                    snippet = re.sub(r"<[^>]+>", "", snippets[i]).strip()
-
-                actual_url = url_raw
-                if "uddg=" in url_raw:
-                    match = re.search(r"uddg=([^&]+)", url_raw)
-                    if match:
-                        actual_url = unquote(match.group(1))
-
-                if title and actual_url:
-                    results.append((title, actual_url, snippet[:300]))
-
-            return results
+            return [
+                (result.title, result.url, result.snippet[:300]) for result in parse_duckduckgo_results(resp.text, 8)
+            ]
 
 
 # ─── 유틸리티 함수 ──────────────────────────────────────────────

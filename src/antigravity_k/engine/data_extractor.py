@@ -120,13 +120,16 @@ class ExtractedExchangeRate:
 
 @dataclass
 class ExtractedNumericData:
-    """기타 숫자 데이터. 단위와 함께 저장."""
+    """정규화 값은 ``unit``으로 측정하고 원문 단위는 ``display_unit``에 보존합니다."""
 
     label: str = ""
-    value: float | None = None
+    value: float | str | None = None
     unit: str = ""
     source_index: int = 0
     raw_text: str = ""
+    currency: str = ""
+    normalized_value: str = ""
+    display_unit: str = ""
 
 
 @dataclass
@@ -244,7 +247,8 @@ class ExtractionResult:
             nums: list[str] = []
             for nd in self.numeric_data[:5]:
                 if nd.value is not None:
-                    nums.append(f"{nd.label}: {nd.value}{nd.unit}")
+                    value = nd.normalized_value or str(nd.value)
+                    nums.append(f"{nd.label}: {value}{nd.unit}")
             if nums:
                 _ = _safe_add(["📊 기타 데이터:"])
                 _ = _safe_add([f"   {n}" for n in nums])
@@ -1096,43 +1100,22 @@ class DataExtractor:
         return dates
 
     def extract_numeric_data(self, text: str, source_index: int = 0) -> list[ExtractedNumericData]:
-        """기타 숫자 데이터를 추출합니다 (퍼센트, 큰 숫자 등)."""
-        results: list[ExtractedNumericData] = []
-        seen: set[str] = set()
+        """명시된 금융 수치를 값·단위·원문 근거와 함께 추출합니다."""
+        from antigravity_k.engine.financial_numbers import extract_financial_numbers, json_compatible_value
 
-        # 한국어 숫자+단위 패턴
-        patterns = [
-            (r"(\d[\d,]*)\s*(조\s*\d+억|\d+억|조|억|만원|천원|%|달러|엔|위안|유로|p|P|bp|bps|%p)"),
-            (r"(금리|이자율|수익률|배당률)\s*[:：]?\s*(\d+\.?\d*)"),
-            (r"(GDP|성장률|물가상승률|실업률|인플레이션)\s*[:：]?\s*(\d+\.?\d*)"),
+        return [
+            ExtractedNumericData(
+                label=number.label,
+                value=json_compatible_value(number.value),
+                unit=number.unit,
+                source_index=source_index,
+                raw_text=number.raw_text,
+                currency=number.currency,
+                normalized_value=number.normalized_value,
+                display_unit=number.display_unit,
+            )
+            for number in extract_financial_numbers(text)
         ]
-
-        for pattern in patterns:
-            for match in re.finditer(pattern, text):
-                label = ""
-                try:
-                    if len(match.groups()) >= 2:
-                        label = match.group(0)[:40]
-                    else:
-                        label = match.group(0)[:40]
-                except IndexError:
-                    continue
-
-                # 중복 제거
-                norm = label.lower().strip()
-                if norm in seen:
-                    continue
-                seen.add(norm)
-
-                results.append(
-                    ExtractedNumericData(
-                        label=label,
-                        source_index=source_index,
-                        raw_text=text[:80],
-                    )
-                )
-
-        return results
 
     # ─── 통합 추출 ───────────────────────────────────────────────
 

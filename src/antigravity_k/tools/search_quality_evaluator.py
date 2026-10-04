@@ -17,6 +17,11 @@ from .web_search_quality import canonicalize_url, source_id_for_url
 
 _CITATION_PATTERN = re.compile(r"\[citation:([A-Za-z0-9][A-Za-z0-9_-]*)\]")
 _CLAIM_SPLIT_PATTERN = re.compile(r"(?<=[.!?。！？])\s+(?!\[citation:)|\n+")
+_TABLE_SEPARATOR_PATTERN: Final = re.compile(r"\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|?\s*")
+_SOURCE_LINK_FOOTER_PATTERN: Final = re.compile(
+    r"출처:\s*(?:\[[^\]]+\]\(<https?://[^>\s]+>\)(?:,\s*)?)+",
+)
+_SOURCE_LINK_PATTERN: Final = re.compile(r"\[([^\]]+)\]\(<(https?://[^>\s]+)>\)")
 _UNTRUSTED_BLOCK_PATTERN = re.compile(
     r"\[untrusted_web_content\]\s*(.*?)\s*\[/untrusted_web_content\]",
     re.DOTALL,
@@ -314,8 +319,9 @@ def citation_sources_from_context(context: str) -> tuple[CitationSource, ...]:
         title = _clean_context_fragment(title_match.group(1) if title_match else "")
         evidence_blocks = _UNTRUSTED_BLOCK_PATTERN.findall(block)
         evidence = evidence_blocks[1] if len(evidence_blocks) > 1 else (evidence_blocks[0] if evidence_blocks else "")
-        url_match = re.search(r"https?://[^\s)\]]+", block)
-        url = canonicalize_url(url_match.group(0).rstrip(".,")) if url_match else ""
+        metadata = _UNTRUSTED_BLOCK_PATTERN.sub("", block)
+        url_match = re.search(r"(?m)^\s*🔗\s+(https?://[^\s)\]]+)", metadata)
+        url = canonicalize_url(url_match.group(1).rstrip(".,")) if url_match else ""
         if title or evidence:
             sources.append(
                 CitationSource(
@@ -326,6 +332,25 @@ def citation_sources_from_context(context: str) -> tuple[CitationSource, ...]:
                 ),
             )
     return tuple(sources)
+
+
+def _citation_claim_content(response_text: str, sources: tuple[CitationSource, ...]) -> str:
+    lines = response_text.splitlines()
+    known_urls = {
+        canonicalize_url(source.url).replace("<", "%3C").replace(">", "%3E") for source in sources if source.url
+    }
+    claims: list[str] = []
+    for index, line in enumerate(lines):
+        is_table_header = (
+            "|" in line and index + 1 < len(lines) and _TABLE_SEPARATOR_PATTERN.fullmatch(lines[index + 1])
+        )
+        is_source_footer = _SOURCE_LINK_FOOTER_PATTERN.fullmatch(line) and all(
+            url in known_urls and label == urlsplit(url).hostname for label, url in _SOURCE_LINK_PATTERN.findall(line)
+        )
+        if is_table_header or _TABLE_SEPARATOR_PATTERN.fullmatch(line) or is_source_footer:
+            continue
+        claims.append(line)
+    return "\n".join(claims)
 
 
 def evaluate_citations(
@@ -346,7 +371,7 @@ def evaluate_citations(
     )
     claims: list[ClaimEvaluation] = []
     prior_claim_acknowledged_conflict = False
-    for raw_claim in _CLAIM_SPLIT_PATTERN.split(response_text):
+    for raw_claim in _CLAIM_SPLIT_PATTERN.split(_citation_claim_content(response_text, source_values)):
         citation_ids: list[str] = [match.group(1) for match in _CITATION_PATTERN.finditer(raw_claim)]
         cited_ids: tuple[str, ...] = tuple(dict.fromkeys(citation_ids))
         claim = _CITATION_PATTERN.sub("", raw_claim).strip(" \t-*•")

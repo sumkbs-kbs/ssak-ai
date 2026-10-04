@@ -40,6 +40,11 @@ def reset_tool_policy(token: contextvars.Token[ToolPolicy | None]) -> None:
     _tool_policy_var.reset(token)
 
 
+def request_allows_side_effects() -> bool:
+    policy = _tool_policy_var.get()
+    return policy is None or not policy.safe_only
+
+
 def _request_toggle_denial(policy: ToolPolicy, name: str, server_name: str) -> str | None:
     """사용자가 요청 단위로 끄는 두 스위치(도구 토글·MCP 서버 선택)를 판정한다.
 

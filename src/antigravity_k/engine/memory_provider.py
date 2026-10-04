@@ -32,7 +32,6 @@ from typing import ClassVar, Protocol, TypedDict, cast, override
 
 from antigravity_k.engine.memory_conflicts import (
     MemoryRecallFragment,
-    resolve_memory_conflicts,
     resolve_memory_fact_winners,
 )
 from antigravity_k.engine.memory_contracts import JsonValue, ProjectMemoryBindingError
@@ -49,7 +48,12 @@ from antigravity_k.engine.memory_contracts import (
     normalize_memory_scope as normalize_memory_scope,
 )
 from antigravity_k.engine.memory_importance import rank_facts
+from antigravity_k.engine.memory_recall_budget import (
+    MemoryRecallBudget,
+    compose_bounded_recall,
+)
 from antigravity_k.engine.project_memory import ProjectMemoryProvider
+from antigravity_k.engine.tool_policy import request_allows_side_effects
 
 logger = logging.getLogger("antigravity_k.engine.memory_provider")
 
@@ -299,11 +303,12 @@ class MemoryManager:
 
     MAX_EXTERNAL_PROVIDERS: ClassVar[int] = 1
 
-    def __init__(self, project_root: str | None = None) -> None:
+    def __init__(self, project_root: str | None = None, recall_budget: MemoryRecallBudget | None = None) -> None:
         """Initialize the MemoryManager."""
         self._providers: list[MemoryProvider] = []
         self._external_count: int = 0
         self._project_root: Path | None = Path(project_root).resolve() if project_root is not None else None
+        self._recall_budget = recall_budget if recall_budget is not None else MemoryRecallBudget()
 
     @property
     def project_root(self) -> Path | None:
@@ -404,7 +409,12 @@ class MemoryManager:
                 )
                 for fragment in fragments
             ]
-        resolution = resolve_memory_conflicts(resolution_query, tuple(fragments), tuple(facts))
+        resolution = compose_bounded_recall(
+            resolution_query,
+            tuple(facts),
+            tuple(fragments),
+            self._recall_budget,
+        )
         if resolution.conflicts:
             logger.info(
                 "Memory conflicts resolved: %s",
@@ -449,6 +459,8 @@ class MemoryManager:
         metadata: dict[str, JsonValue] | None = None,
     ) -> None:
         """모든 제공자에 턴 데이터를 동기화합니다."""
+        if not request_allows_side_effects():
+            return
         for provider in self._providers:
             try:
                 provider.sync_turn(user_message, assistant_response, metadata=metadata)

@@ -790,17 +790,23 @@ async def test_page_scraper_blocks_private_redirect(monkeypatch: pytest.MonkeyPa
         "antigravity_k.tools.web_search_engine.resolve_public_http_url",
         AsyncMock(side_effect=[("https://example.com/", ("93.184.216.34",)), None]),
     )
-    client = MagicMock(is_closed=False)
-    get_mock = AsyncMock(
-        return_value=MagicMock(status_code=302, headers={"location": "http://127.0.0.1:8000/health"}),
-    )
-    client.get = get_mock
+    requested: list[str] = []
+
+    def serve(request: httpx.Request) -> httpx.Response:
+        requested.append(str(request.url))
+        if request.url.path == "/robots.txt":
+            return httpx.Response(404, request=request)
+        return httpx.Response(302, headers={"location": "http://127.0.0.1:8000/health"}, request=request)
+
+    client = httpx.AsyncClient(transport=httpx.MockTransport(serve))
     setattr(scraper, "_client", client)
-
-    result = await scraper.extract_text("https://example.com")
-
+    try:
+        result = await scraper.extract_text("https://example.com")
+    finally:
+        await scraper.close()
     assert "차단" in result
-    get_mock.assert_awaited_once()
+    assert requested == ["https://example.com/robots.txt", "https://example.com/"]
+    assert client.is_closed
 
 
 @pytest.mark.asyncio

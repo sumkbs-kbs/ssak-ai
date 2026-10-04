@@ -442,6 +442,7 @@ async def chat_reconnect() -> StreamingResponse:
     import asyncio
 
     from antigravity_k.api.routes.session_state import get_active_session
+    from antigravity_k.engine.chat_stream_events import FinalChunk
 
     active_session = get_active_session()
 
@@ -450,19 +451,21 @@ async def chat_reconnect() -> StreamingResponse:
             yield "data: [DONE]\n\n"
             return
 
-        # Yield history first
-        for chunk in active_session.history:
-            data = {"choices": [{"delta": {"content": chunk}}]}
-            yield f"data: {json.dumps(data)}\n\n"
-
-        # Poll for new chunks
-        last_idx = len(active_session.history)
-        while active_session.is_active:
-            if len(active_session.history) > last_idx:
-                for chunk in active_session.history[last_idx:]:
-                    data = {"choices": [{"delta": {"content": chunk}}]}
-                    yield f"data: {json.dumps(data)}\n\n"
-                last_idx = len(active_session.history)
+        last_idx = 0
+        last_final: FinalChunk | None = None
+        while True:
+            still_active = active_session.is_active
+            history = tuple(active_session.history)
+            if history and isinstance(history[0], FinalChunk) and history[0] is not last_final:
+                last_final = history[0]
+                last_idx = 1
+                yield f"data: {json.dumps({'agk_final_content': str(last_final)}, ensure_ascii=False)}\n\n"
+            for chunk in history[last_idx:]:
+                data = {"choices": [{"delta": {"content": chunk}}]}
+                yield f"data: {json.dumps(data)}\n\n"
+            last_idx = len(history)
+            if not still_active:
+                break
             await asyncio.sleep(0.5)
 
         if active_session.error:
@@ -656,6 +659,9 @@ async def chat_completions(
     is_stream = _bool_value(body.get("stream"))
     is_agent_mode = _bool_value(body.get("agent_mode"), default=True)
     is_plan_mode = _bool_value(body.get("plan_mode"))
+    from antigravity_k.engine.access_mode import AccessMode, get_access_mode
+
+    request_access_mode = get_access_mode()
 
     # [AUTONOMY] 사용자의 TDD 모드 자동 판단 요구사항 반영
     is_tdd_mode = _bool_value(body.get("tdd_mode"))
@@ -752,6 +758,16 @@ async def chat_completions(
                 elif intent == "SEARCH":
                     logger_auto.info("Auto-Intent: LLM autonomously enabled FAST SEARCH mode for: %s", slash_text[:50])
                     is_fast_search = True
+
+    if request_access_mode is AccessMode.READ_ONLY or (
+        body.get("code_mode") is not None and not _bool_value(body.get("code_mode"))
+    ):
+        is_tdd_mode = False
+
+    if _uses_conversation_revision_protocol(body) or (
+        body.get("web_search") is not None and not _bool_value(body.get("web_search"))
+    ):
+        is_fast_search = False
 
     if is_fast_search:
         try:
@@ -1028,7 +1044,11 @@ async def chat_completions(
             target_file_path = os.path.join(_project_root, target_file_path)
 
         async def tdd_event_generator():
-            def yield_chunk(text: str) -> str:
+            def yield_chunk(text: str, *, status: bool = False) -> str:
+                if _conversation_snapshot is not None:
+                    channel = "agk_status" if status else "agk_final_content"
+                    payload: dict[str, str | dict[str, str]] = {channel: {"text": text}} if status else {channel: text}
+                    return f"data: {json.dumps(payload)}\n\n"
                 data: dict[str, object] = {
                     "id": "chatcmpl-stream",
                     "object": "chat.completion.chunk",
@@ -1038,8 +1058,15 @@ async def chat_completions(
                 return f"data: {json.dumps(data)}\n\n"
 
             try:
-                yield yield_chunk("🧪 **Omni-TDD Mode Activated**\n\nStarting multi-model racing engine...\n\n")
-                yield yield_chunk("⏳ Sandboxed generation and testing in progress... (This may take 1-2 minutes)\n\n")
+                accepted_frame = _conversation_revision_sse(_conversation_snapshot)
+                if accepted_frame:
+                    yield accepted_frame
+                yield yield_chunk(
+                    "🧪 **Omni-TDD Mode Activated**\n\nStarting multi-model racing engine...\n\n", status=True
+                )
+                yield yield_chunk(
+                    "⏳ Sandboxed generation and testing in progress... (This may take 1-2 minutes)\n\n", status=True
+                )
 
                 engine = OmniTDDEngine(model_manager=manager, coding_model=target_model)
                 report = await engine.run_tdd_loop(prompt, target_file_path=target_file_path)
@@ -1060,7 +1087,6 @@ async def chat_completions(
                     res = f"❌ **TDD Failed**\n\n- **Iterations:** {report.total_iterations}\n- **Error:** {report.error}\n"  # noqa: E501
 
                 yield yield_chunk(res)
-                yield "data: [DONE]\n\n"
 
                 # 세션에 기록 저장 (프로젝트 단위 컨텍스트 영속성)
                 user_msg = _latest_user_text(messages)
@@ -1070,8 +1096,22 @@ async def chat_completions(
                         {"role": "assistant", "content": res},
                     ]
                 )
+                final_snapshot = _persist_assistant_to_conversation_store(
+                    execution_context, _conversation_snapshot, res
+                )
+                request.state.conversation_snapshot = final_snapshot
+                revision_frame = _conversation_revision_sse(final_snapshot)
+                if revision_frame:
+                    yield revision_frame
+                yield "data: [DONE]\n\n"
 
             except Exception as e:
+                from antigravity_k.api.contracts.errors import StaleConversationRevisionError
+
+                if isinstance(e, StaleConversationRevisionError):
+                    yield _conversation_conflict_sse(e)
+                    yield "data: [DONE]\n\n"
+                    return
                 logger.error("TDD Stream error: %s", e, exc_info=True)
                 yield yield_chunk(f"\n\n[Error: {str(e)}]")
                 yield "data: [DONE]\n\n"
@@ -1145,7 +1185,6 @@ async def chat_completions(
     # body.code_mode, body.mcp_servers)과 실행 권한 모드(읽기 전용)를
     # ToolExecutor 정책으로 변환한다. 키가 없는 구형 클라이언트는
     # 도구 토글에 한해 제한 없이 동작한다(tri-state).
-    from antigravity_k.engine.access_mode import AccessMode, get_access_mode
     from antigravity_k.engine.tool_policy import (
         ToolPolicy,
         reset_tool_policy,
@@ -1166,11 +1205,18 @@ async def chat_completions(
     _tool_policy = ToolPolicy(
         denied_tools=frozenset(_policy_denied),
         allowed_mcp_servers=_allowed_mcp,
-        safe_only=get_access_mode() is AccessMode.READ_ONLY,
+        safe_only=request_access_mode is AccessMode.READ_ONLY,
     )
 
     if is_stream and is_agent_mode:
         from starlette.concurrency import run_in_threadpool
+
+        from antigravity_k.engine.chat_stream_events import (
+            FinalChunk,
+            ProgressChunk,
+            reset_chat_stream_events,
+            set_chat_stream_events,
+        )
 
         runtime = get_agent_runtime()
 
@@ -1184,7 +1230,11 @@ async def chat_completions(
             full_response = ""
             stream_aiter = None
             policy_token = set_tool_policy(_tool_policy)
+            event_token = set_chat_stream_events(True)
             try:
+                accepted_frame = _conversation_revision_sse(_conversation_snapshot)
+                if accepted_frame:
+                    yield accepted_frame
                 stream_iterator = runtime.stream(cast(Sequence[Mapping[str, str]], messages), target_model=target_model)
                 stream_context = contextvars.copy_context()
 
@@ -1204,6 +1254,14 @@ async def chat_completions(
 
                 stream_aiter = iterate_stream()
                 async for chunk in stream_aiter:
+                    if isinstance(chunk, ProgressChunk):
+                        yield f"data: {json.dumps({'agk_status': {'text': str(chunk)}}, ensure_ascii=False)}\n\n"
+                        continue
+                    if isinstance(chunk, FinalChunk):
+                        full_response = str(chunk)
+                        active_session.history[:] = [chunk]
+                        yield f"data: {json.dumps({'agk_final_content': full_response}, ensure_ascii=False)}\n\n"
+                        continue
                     full_response += chunk
                     active_session.history.append(chunk)
                     data = {
@@ -1284,6 +1342,7 @@ async def chat_completions(
                 yield f"data: {json.dumps(data)}\n\n"
                 yield "data: [DONE]\n\n"
             finally:
+                reset_chat_stream_events(event_token)
                 # 요청 단위 도구 정책 해제
                 reset_tool_policy(policy_token)
                 # 백그라운드 이터레이터 명시적 종료 (스레드 풀 작업 정리)

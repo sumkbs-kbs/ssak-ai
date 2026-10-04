@@ -19,6 +19,8 @@ import re
 from collections.abc import Callable, Generator, Iterator
 from typing import Protocol, cast
 
+from antigravity_k.engine.tool_policy import request_allows_side_effects
+
 logger = logging.getLogger(__name__)
 
 # 기억 기록 대상 태스크 유형
@@ -76,7 +78,7 @@ class MemoryRecorder:
 
     def should_record(self, task_type: str) -> bool:
         """이 태스크 유형이 기억 기록 대상인지 확인합니다."""
-        if not self.vault_engine:
+        if not request_allows_side_effects() or not self.vault_engine:
             return False
         if not self.vault_engine.sync_rag:
             return False
