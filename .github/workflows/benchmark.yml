@@ -291,7 +291,7 @@ jobs:
       # Step 7: Post or update PR comment
       - name: Post PR Comment
         if: steps.report.outputs.path != '' && github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -323,7 +323,7 @@ jobs:
       # Step 8: Fallback comment on failure
       - name: Fallback Comment on Failure
         if: (failure() || steps.head.outputs.exit_code != '0') && github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             await github.rest.issues.createComment({
