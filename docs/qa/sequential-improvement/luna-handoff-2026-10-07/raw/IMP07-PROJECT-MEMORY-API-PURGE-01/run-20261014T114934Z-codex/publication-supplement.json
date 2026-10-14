@@ -1,0 +1,51 @@
+{
+  "original_manifest_preserved": true,
+  "original_manifest_scope_correction": "Proposed public inventory contained gitignored logs/cache. Cache remains local; exact log bytes are published under transcript aliases. Use this mapping alongside original manifest.",
+  "aliases": [
+    {
+      "original": "after-01/stderr.log",
+      "published_alias": "public-transcripts/after-01-stderr.txt",
+      "bytes": 981,
+      "sha256": "439db8b9d5dbb780c527bf1f3f196fce50832d1bf8cf1c8d691fe1fb9db2e460"
+    },
+    {
+      "original": "after-01/stdout.log",
+      "published_alias": "public-transcripts/after-01-stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "before-01/stderr.log",
+      "published_alias": "public-transcripts/before-01-stderr.txt",
+      "bytes": 20339,
+      "sha256": "1df2c8382c54eb51c3615454c02c91d013763289a981a7386c92b8aa8915bf01"
+    },
+    {
+      "original": "before-01/stdout.log",
+      "published_alias": "public-transcripts/before-01-stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "gitignored_cache_local_only": [
+    ".ruff_cache/.gitignore",
+    ".ruff_cache/0.15.14/12797780315176319480",
+    ".ruff_cache/CACHEDIR.TAG",
+    "verification-final-fixture/.ruff_cache/.gitignore",
+    "verification-final-fixture/.ruff_cache/0.15.14/11550116079419252343",
+    "verification-final-fixture/.ruff_cache/0.15.14/551978140764415978",
+    "verification-final-fixture/.ruff_cache/0.15.14/9363307837852310958",
+    "verification-final-fixture/.ruff_cache/CACHEDIR.TAG",
+    "verification-root/.ruff_cache/.gitignore",
+    "verification-root/.ruff_cache/0.15.14/10123608654294220708",
+    "verification-root/.ruff_cache/0.15.14/2065995321541489056",
+    "verification-root/.ruff_cache/0.15.14/5149882749096086268",
+    "verification-root/.ruff_cache/CACHEDIR.TAG",
+    "verification-v1/.ruff_cache/.gitignore",
+    "verification-v1/.ruff_cache/0.15.14/10124888913096448238",
+    "verification-v1/.ruff_cache/0.15.14/11515474076977702121",
+    "verification-v1/.ruff_cache/0.15.14/15052436305994448911",
+    "verification-v1/.ruff_cache/CACHEDIR.TAG"
+  ],
+  "product_or_test_reexecution": 0
+}

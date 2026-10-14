@@ -1,0 +1,230 @@
+Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md
+Project RAG VectorStore init failed for /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/before-01/projects/A
+Traceback (most recent call last):
+  File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py", line 244, in _attach_project_rag_indexer
+    vector_store = VectorStore(str(rag_dir), collection_name="project_code")
+  File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/vector_store.py", line 159, in __init__
+    raise ProjectEmbeddingBindingError("An explicit embedding binding is required for this collection.")
+antigravity_k.engine.project_embedding_binding.ProjectEmbeddingBindingError: An explicit embedding binding is required for this collection.
+Unhandled exception [correlation_id=8c8502aa6093] on DELETE http://127.0.0.1/api/memory: ProjectEmbeddingBindingError
+  + Exception Group Traceback (most recent call last):
+  |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_utils.py", line 85, in create_collapsing_task_group
+  |     async with anyio.create_task_group() as tg:
+  |                ~~~~~~~~~~~~~~~~~~~~~~~^^
+  |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 799, in __aexit__
+  |     raise BaseExceptionGroup(
+  |         "unhandled errors in a TaskGroup", self._exceptions
+  |     ) from None
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    |     await self.app(scope, receive, _send)
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 193, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/server.py", line 696, in correlation_id_middleware
+    |     response = await call_next(request)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 168, in call_next
+    |     raise app_exc from app_exc.__cause__ or app_exc.__context__
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 144, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 193, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/server.py", line 519, in metrics_middleware
+    |     response = await call_next(request)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 168, in call_next
+    |     raise app_exc from app_exc.__cause__ or app_exc.__context__
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 144, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 193, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/server.py", line 494, in verify_access_token
+    |     return await call_next(request)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 168, in call_next
+    |     raise app_exc from app_exc.__cause__ or app_exc.__context__
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 144, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 193, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/sse_revocation.py", line 171, in dispatch
+    |     response = await call_next(request)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 168, in call_next
+    |     raise app_exc from app_exc.__cause__ or app_exc.__context__
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 144, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 193, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/server.py", line 389, in security_headers_middleware
+    |     response = await call_next(request)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 168, in call_next
+    |     raise app_exc from app_exc.__cause__ or app_exc.__context__
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 144, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/cors.py", line 88, in __call__
+    |     await self.app(scope, receive, send)
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     raise exc
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    |     await self.app(scope, receive, send)
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/routing.py", line 670, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/routing.py", line 690, in app
+    |     await route.handle(scope, receive, send)
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/routing.py", line 280, in handle
+    |     await self.app(scope, receive, send)
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 134, in app
+    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     raise exc
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 120, in app
+    |     response = await f(request)
+    |                ^^^^^^^^^^^^^^^^
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 674, in app
+    |     raw_response = await run_endpoint_function(
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |     ...<3 lines>...
+    |     )
+    |     ^
+    |   File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 328, in run_endpoint_function
+    |     return await dependant.call(**values)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/routes/system_api.py", line 431, in purge_memory
+    |     report = _get_memory_manager().clear(normalized_scope)
+    |   File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/memory_provider.py", line 494, in clear
+    |     return {provider.name: provider.clear(normalized_scope) for provider in self._providers}
+    |                            ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+    |   File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/durable_memory.py", line 57, in clear
+    |     return self._clear_all()
+    |            ~~~~~~~~~~~~~~~^^
+    |   File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py", line 162, in <lambda>
+    |     lambda: _clear_project_vector(project_root=root),
+    |             ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+    |   File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py", line 464, in _clear_project_vector
+    |     vector_store = VectorStore(str(vector_path), collection_name=collection_name)
+    |   File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/vector_store.py", line 159, in __init__
+    |     raise ProjectEmbeddingBindingError("An explicit embedding binding is required for this collection.")
+    | antigravity_k.engine.project_embedding_binding.ProjectEmbeddingBindingError: An explicit embedding binding is required for this collection.
+    +------------------------------------
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 193, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/server.py", line 696, in correlation_id_middleware
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 168, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 193, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/server.py", line 519, in metrics_middleware
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 168, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 193, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/server.py", line 494, in verify_access_token
+    return await call_next(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 168, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 193, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/sse_revocation.py", line 171, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 168, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 193, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/server.py", line 389, in security_headers_middleware
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 168, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/cors.py", line 88, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/routing.py", line 670, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/routing.py", line 690, in app
+    await route.handle(scope, receive, send)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/routing.py", line 280, in handle
+    await self.app(scope, receive, send)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 134, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 120, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 674, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 328, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/routes/system_api.py", line 431, in purge_memory
+    report = _get_memory_manager().clear(normalized_scope)
+  File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/memory_provider.py", line 494, in clear
+    return {provider.name: provider.clear(normalized_scope) for provider in self._providers}
+                           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/durable_memory.py", line 57, in clear
+    return self._clear_all()
+           ~~~~~~~~~~~~~~~^^
+  File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py", line 162, in <lambda>
+    lambda: _clear_project_vector(project_root=root),
+            ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py", line 464, in _clear_project_vector
+    vector_store = VectorStore(str(vector_path), collection_name=collection_name)
+  File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/vector_store.py", line 159, in __init__
+    raise ProjectEmbeddingBindingError("An explicit embedding binding is required for this collection.")
+antigravity_k.engine.project_embedding_binding.ProjectEmbeddingBindingError: An explicit embedding binding is required for this collection.
+

@@ -1,0 +1,8 @@
+Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md
+Project RAG VectorStore init failed for /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/after-01/projects/A
+Traceback (most recent call last):
+  File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py", line 244, in _attach_project_rag_indexer
+    vector_store = VectorStore(str(rag_dir), collection_name="project_code")
+  File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/vector_store.py", line 184, in __init__
+    raise ProjectEmbeddingBindingError("An explicit embedding binding is required for this collection.")
+antigravity_k.engine.project_embedding_binding.ProjectEmbeddingBindingError: An explicit embedding binding is required for this collection.
