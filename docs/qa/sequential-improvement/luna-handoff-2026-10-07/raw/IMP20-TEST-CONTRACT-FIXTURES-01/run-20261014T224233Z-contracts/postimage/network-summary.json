@@ -1,0 +1,5 @@
+{
+  "guard": "socket.socket.connect rejects AF_INET and AF_INET6; provider endpoint bound but not listening",
+  "blocked_connect_attempts": 0,
+  "pytest_entry_sha256": "15cc6b46ad4691d972e001bccf52176c5136d1613125c3cd0a6c98d8da193196"
+}

@@ -1,0 +1,10 @@
+{
+  "pathname": "/settings",
+  "routeName": "settings",
+  "viewport": "mobile",
+  "verifiedPathname": "/settings",
+  "routeMarkerFound": true,
+  "passes": 47,
+  "violations": [],
+  "criticalSerious": []
+}

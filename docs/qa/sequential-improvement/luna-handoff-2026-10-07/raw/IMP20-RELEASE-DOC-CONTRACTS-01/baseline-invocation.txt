@@ -1,0 +1,3 @@
+cwd=/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai
+AGK_EVIDENCE_DIR=.omo/evidence/raw/IMP20-RELEASE-DOC-CONTRACTS-01/before PYTHONPATH=src:. .venv/bin/python -m pytest -q tests/test_nx07_doc_consistency.py tests/test_cr14_fence_movement_detection.py tests/test_cr14_fingerprint_scope_contract.py tests/test_docs_toolchain_contract.py tests/test_qwen_repo_prompt_budget.py --junitxml=.omo/evidence/raw/IMP20-RELEASE-DOC-CONTRACTS-01/before/junit.xml > .omo/evidence/raw/IMP20-RELEASE-DOC-CONTRACTS-01/before/pytest.log 2>&1
+Artifacts subsequently copied unchanged into initial-capture/before/. Initial before capture did not set the later owned path environment.

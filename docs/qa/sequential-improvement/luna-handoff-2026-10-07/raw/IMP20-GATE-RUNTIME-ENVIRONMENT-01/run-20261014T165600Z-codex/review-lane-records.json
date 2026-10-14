@@ -1,0 +1,6 @@
+{
+  "candidate_sha": "b91fa86cebff0bdfd7af1b1f0d9681c8f6392e5f",
+  "main_runtime_qa": {"verdict": "PASS_SCOPED", "artifacts": ["candidate-junit.xml", "no-wait-final-junit.xml", "fixture-proof-v2/junit.xml", "api-e2e-proof/junit.xml"]},
+  "independent_delta_review": {"verdict": "APPROVE_SCOPED", "reviewer": "/root/gate_environment_delta_review_b91", "artifact": "independent-approval.md", "runtime_rerun": false},
+  "full_release": "NOT_APPROVED"
+}

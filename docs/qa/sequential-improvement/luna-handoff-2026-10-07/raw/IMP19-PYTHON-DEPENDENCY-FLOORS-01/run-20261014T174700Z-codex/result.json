@@ -1,0 +1,155 @@
+{
+  "status": "COMPLETE_SCOPED",
+  "candidate": "481a634195bd3924ed601f1b881958c75e5e6892",
+  "independent_review": "PENDING",
+  "formal_release": "NOT_APPROVED",
+  "audit_unresolved_before": 24,
+  "audit_unresolved_after": 0,
+  "existing_chromadb_excepted_records": 5,
+  "regression_retained": 214,
+  "affected_selector_passed": 20,
+  "initial_selector": {
+    "passed": 232,
+    "failed": 1,
+    "warnings": 35
+  },
+  "distinct_scope_coverage": 234,
+  "single_clean_full_suite": false,
+  "patch_reconstruction": "BYTE_IDENTICAL_3",
+  "checks1": [
+    {
+      "name": "lockcheck",
+      "command": [
+        "uv",
+        "lock",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.1486809253692627,
+      "source_binding": "source-binding.json"
+    },
+    {
+      "name": "audit",
+      "command": [
+        "bash",
+        "scripts/audit_python_dependencies.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 12.180396795272827,
+      "source_binding": "source-binding.json"
+    },
+    {
+      "name": "versions",
+      "command": [
+        "uv",
+        "run",
+        "--isolated",
+        "--frozen",
+        "--extra",
+        "dev",
+        "--extra",
+        "rag",
+        "--extra",
+        "documents",
+        "python",
+        "-B",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-PYTHON-DEPENDENCY-FLOORS-01/run-20261014T174700Z-codex/version_probe.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 11.35196590423584,
+      "source_binding": "source-binding.json"
+    },
+    {
+      "name": "regression",
+      "command": [
+        "uv",
+        "run",
+        "--isolated",
+        "--frozen",
+        "--extra",
+        "dev",
+        "--extra",
+        "rag",
+        "--extra",
+        "documents",
+        "pytest",
+        "-q",
+        "tests/test_auth.py",
+        "tests/test_auth_policy_truth_table.py",
+        "tests/test_mcp_oauth.py",
+        "tests/test_nx05_auth_epoch_revocation.py",
+        "tests/test_nx05_sse_live_revocation.py",
+        "tests/test_embeddings.py",
+        "tests/test_embeddings_model_contract.py",
+        "tests/test_ollama_embedding_routing.py",
+        "tests/test_project_rag_embedding_identity_contract.py",
+        "tests/test_messages_streaming.py",
+        "tests/test_rel03_supply_chain_audit.py",
+        "tests/test_cr11_release_bootstrap.py",
+        "--basetemp",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-PYTHON-DEPENDENCY-FLOORS-01/run-20261014T174700Z-codex/checks-attempt-1/runtime/pytest",
+        "--junitxml",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-PYTHON-DEPENDENCY-FLOORS-01/run-20261014T174700Z-codex/checks-attempt-1/junit.xml"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 53.47510313987732,
+      "source_binding": "source-binding.json"
+    }
+  ],
+  "checks2": [
+    {
+      "name": "ruff",
+      "command": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "tests/test_cr11_release_bootstrap.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.09103107452392578,
+      "source_binding": "source-binding.json"
+    },
+    {
+      "name": "format",
+      "command": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "tests/test_cr11_release_bootstrap.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.04222416877746582,
+      "source_binding": "source-binding.json"
+    },
+    {
+      "name": "regression",
+      "command": [
+        "uv",
+        "run",
+        "--isolated",
+        "--frozen",
+        "--extra",
+        "dev",
+        "--extra",
+        "rag",
+        "--extra",
+        "documents",
+        "pytest",
+        "-q",
+        "tests/test_cr11_release_bootstrap.py",
+        "--basetemp",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-PYTHON-DEPENDENCY-FLOORS-01/run-20261014T174700Z-codex/checks-attempt-2/runtime/pytest",
+        "--junitxml",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-PYTHON-DEPENDENCY-FLOORS-01/run-20261014T174700Z-codex/checks-attempt-2/junit.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 22.297341108322144,
+      "source_binding": "source-binding.json"
+    }
+  ],
+  "record_correction": "evidence-correction.md",
+  "lsp_limit": "Existing untouched dict variance diagnostic in bootstrap test; formal basedpyright scope is src/scripts, no suppression added"
+}

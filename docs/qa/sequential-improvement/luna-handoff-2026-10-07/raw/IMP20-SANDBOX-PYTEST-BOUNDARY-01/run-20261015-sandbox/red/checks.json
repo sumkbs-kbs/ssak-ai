@@ -1,0 +1,23 @@
+[
+  {
+    "name": "contract",
+    "command": [
+      "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_cr03_sandbox_read_boundary.py::TestWorkspaceStillRuns",
+      "tests/test_cr03_sandbox_read_boundary.py::TestCanonicalAndChildBoundary::test_alias_path_to_same_sentinel_is_denied",
+      "tests/test_fr01_agent_execution_isolation.py::TestAgentTestSuiteExecution",
+      "tests/test_best_of_n_verifier.py::TestAnswerPatchVerifier",
+      "--basetemp",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-PYTEST-BOUNDARY-01/run-20261015-sandbox/red/runtime/pytest",
+      "--junitxml",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-PYTEST-BOUNDARY-01/run-20261015-sandbox/red/junit.xml"
+    ],
+    "exit_code": 1,
+    "elapsed_seconds": 2.3919520378112793,
+    "source_binding": "source-binding.json"
+  }
+]

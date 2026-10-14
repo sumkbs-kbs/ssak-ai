@@ -1,0 +1,10 @@
+{
+  "pathname": "/git",
+  "routeName": "git",
+  "viewport": "desktop",
+  "verifiedPathname": "/git",
+  "routeMarkerFound": true,
+  "passes": 40,
+  "violations": [],
+  "criticalSerious": []
+}

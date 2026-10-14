@@ -1,0 +1,64 @@
+diff --git a/README.md b/README.md
+index cb2d7fe1..931f3bac 100644
+--- a/README.md
++++ b/README.md
+@@ -14,6 +14,10 @@ The core separates **Brain** planning and reasoning from **Body** execution. It
+ 
+ For release and support status, see the [status document](docs/20_CURRENT_STATUS.md). Dated improvements and their verification limits are recorded in the [core execution plan](docs/ssak-ai-core/EXECUTION_PLAN_2026-10-03.md), [full feature live-validation plan](docs/ssak-ai-core/FULL_FUNCTION_LIVE_PLAN_2026-10-04.md), and [decision-diagnostics results](docs/qa/2026-10-04-oh-my-jev-followup/RESULT.md). Test results apply to the source and scope recorded in each report.
+ 
++RP-01 through RP-14 and GA-100 33/33 are implementation history, not release approval. CR-01 ~ CR-14 remains **REVIEW**: the candidate is committed (커밋됨); **GA 승인 없음**. The candidate SHA and code fingerprint are owned by the [CR-14 verdict](docs/ga/CR14_FINAL_CANDIDATE_VERDICT.md); third-party independent review remains unassigned, and the assigned release owner recorded **NO-GO**. Technical TODOs remain in the [current status](docs/20_CURRENT_STATUS.md); 사람 축도 이 후보의 별도 차단 사유이며, 기술 TODO 역시 남아 있다. GA-100 33/33 is **구현 이력**, not an approval or release verdict.
++
++These statements describe the documented CR candidate and do not certify the current working tree or a new candidate.
++
+ ## What you can use
+ 
+ - **Local inference:** a shared model registry, local model discovery, provider adapters, and explicit model selection.
+diff --git a/docs/ga/CR14_EX_EXECUTION_LEDGER.md b/docs/ga/CR14_EX_EXECUTION_LEDGER.md
+index 7f8b95d5..c004f150 100644
+--- a/docs/ga/CR14_EX_EXECUTION_LEDGER.md
++++ b/docs/ga/CR14_EX_EXECUTION_LEDGER.md
+@@ -37,7 +37,7 @@ VAL-02 계승 (`scripts/val02_staging.py`):
+ | EX-02 | 모델/라이선스/개인정보·지원 승인 | **PARTIAL** | [CR14_EX02_APPROVAL_RECORD.md](./CR14_EX02_APPROVAL_RECORD.md) — PRODUCT_SELF_APPROVAL(범위 문구) 완료; `BLOCKED_EXTERNAL` legal 미해제 · Experimental→Supported 없음 · GA GO 아님 |
+ | EX-03 | 이전 출시 artifact | **DONE** | **NOT_AVAILABLE** — 태그 0 · gh release 401 · dist는 현재 후보만 · `ex03_summary.md` |
+ | EX-04 | 지원 OS sandbox 실측 | **DONE** | macOS 26.6.2 arm64 · seatbelt/`sandbox-exec` · pytest 46 passed · `ex04_summary.md` (행렬 미승격) |
+-| EX-05 | 8h soak | **PASS** (resoake Decision A) | prior FAIL retained · resoake `run28800e` · `all_pass: true` · SC-1..6 PASS · SC-6 rss_growth_mb=**48.7** (<64) · messages_bounded · duration≈28801s · JSON `…/val02_soak_28800_resoake.json` (~2026-09-15 23:08 KST) · watch routine deleted |
++| EX-05 | 8h soak | **INCONCLUSIVE — DONE 아님** (JSON 지표 PASS, 종료·귀속 미확정) | prior FAIL retained · resoake `run28800e` · `all_pass: true` · SC-1..6 PASS · SC-6 rss_growth_mb=**48.7** (<64) · messages_bounded · duration≈28801s · JSON `…/val02_soak_28800_resoake.json` (~2026-09-15 23:08 KST) · wrapper `finished exit:141` (original command unavailable) · `run_sha_binding: UNVERIFIED` · watch routine deleted |
+ | EX-06 | 범위 축소 여부 | **DONE** | 축소 없음 (`EX-06-NO-SHRINK-2026-09-15`) |
+ 
+ ## 진행 노트
+diff --git a/tests/test_nx07_doc_consistency.py b/tests/test_nx07_doc_consistency.py
+index 95ac00ca..4c568ba0 100644
+--- a/tests/test_nx07_doc_consistency.py
++++ b/tests/test_nx07_doc_consistency.py
+@@ -62,9 +62,9 @@ SUPPORT_LEVELS = ("**Supported**", "**Experimental**", "**Unsupported**", "**Not
+ SOAK_MARKERS = ("SC-6 FAIL", "1654.9", "all_pass", "UNVERIFIED", "exit:141")
+ 
+ _LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
+-_ENV_ROW_RE = re.compile(r"^\|\s*`AGK_SERVER_PORT`\s*\|\s*`(\d+)`", re.M)
++_ENV_ROW_RE = re.compile(r"^\|[^|]*`AGK_SERVER_PORT`[^|]*\|[^|\n]*`(\d+)`", re.M)
+ _SERVE_PORT_RE = re.compile(r"--port\s+(\d+)")
+-_DOC_URL_RE = re.compile(r"\*\*(?:Swagger UI|ReDoc|OpenAPI JSON)\*\*:\s*https?://[^:]+:(\d+)")
++_DOC_URL_RE = re.compile(r"https?://(?:localhost|127\.0\.0\.1):(\d+)/(?:docs|redoc|openapi\.json)(?=[)\s`#]|$)")
+ _OPEN_CARD_RE = re.compile(r"^\|\s*(NX-\d+(?:-F\d+)?)\s*\|([^|]*)\|", re.M)
+ _DMG_ROW_MARKER = "Ssak-Ai-0.1.0.dmg"
+ 
+@@ -333,12 +333,16 @@ def test_teeth_readme_port_drift_is_detected() -> None:
+     healthy = _read(README)
+     port = code_default_port()
+     cases = {
+-        "serve 예시를 레거시로 되돌림": healthy.replace(f"--port {port}", "--port 8400"),
+-        "문서 주소만 남겨 둠": healthy.replace(f"localhost:{port}/docs", "localhost:8400/docs"),
+-        "환경변수 기본값만 어긋남": healthy.replace(f"| `{port}` |", "| `8400` |"),
++        "serve 포트 불일치": healthy.replace(f"--port {port}", "--port 9999"),
++        "Swagger 포트 불일치": healthy.replace(f":{port}/docs", ":9999/docs"),
++        "OpenAPI 포트 불일치": healthy.replace(f":{port}/openapi.json", ":9999/openapi.json"),
++        "환경변수 기본값 불일치": healthy.replace(f"`{port}`", "`9999`"),
++        "문서 주소 누락": _DOC_URL_RE.sub("", healthy),
++        "환경변수 기본값 누락": _ENV_ROW_RE.sub("", healthy),
+     }
+     assert not readme_port_violations(healthy, port, dev_ui_port()), "기준 README 가 이미 어긋난다"
+     for label, text in cases.items():
++        assert text != healthy, f"변이 적용 실패 — {label}"
+         assert readme_port_violations(text, port, dev_ui_port()), f"이빨 없음 — {label}"
+ 
+ 

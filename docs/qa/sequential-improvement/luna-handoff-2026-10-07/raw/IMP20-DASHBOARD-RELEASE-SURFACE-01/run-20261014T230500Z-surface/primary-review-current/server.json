@@ -1,0 +1,5 @@
+{
+  "pid": 29401,
+  "base_url": "http://127.0.0.1:56066",
+  "model_base_reserved_not_listening": "http://127.0.0.1:56065/v1"
+}

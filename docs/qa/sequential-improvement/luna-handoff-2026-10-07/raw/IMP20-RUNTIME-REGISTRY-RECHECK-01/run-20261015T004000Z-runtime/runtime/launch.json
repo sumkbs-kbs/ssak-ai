@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_cli_smoke.py",
+    "tests/test_project_registry_atomic.py",
+    "tests/test_secure_key.py::TestCliKeyRotateE2E::test_kdf_migration_v1_to_v2_via_cli",
+    "tests/test_model_registry.py::test_bundled_default_config_matches_repository_default",
+    "tests/test_model_manager_lifecycle.py::TestTargetResolution",
+    "tests/test_local_model_discovery.py",
+    "--basetemp",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/runtime/private-runtime/pytest",
+    "--junitxml",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/runtime/junit.xml"
+  ],
+  "cwd": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+  "discovery_enabled": true,
+  "provider_endpoint_non_listening": "http://127.0.0.1:53124",
+  "private_runtime_excluded_from_publication": true
+}

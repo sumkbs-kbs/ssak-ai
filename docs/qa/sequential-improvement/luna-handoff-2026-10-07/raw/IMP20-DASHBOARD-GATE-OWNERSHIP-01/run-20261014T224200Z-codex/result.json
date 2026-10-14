@@ -1,0 +1,101 @@
+{
+  "status": "GATE_OWNERSHIP_STATIC_VERIFIED_PRODUCT_FAILURES_REMAIN",
+  "review": "PENDING",
+  "baseline": "481a634195bd3924ed601f1b881958c75e5e6892",
+  "owned_paths": [
+    "scripts/run_dashboard_e2e_ambient.py",
+    "scripts/commercial_ga_gates.json",
+    "tests/test_cr14_ambient_backend_gate_contract.py"
+  ],
+  "required_gate_count": 23,
+  "static_contract_passed": 24,
+  "static_checks": [
+    {
+      "name": "contract",
+      "command": [
+        "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_cr14_ambient_backend_gate_contract.py",
+        "tests/test_cr14_browser_witness_gate_contract.py",
+        "tests/test_cr14_f47_leftover_inventory_contract.py",
+        "--basetemp",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-2-static/runtime/pytest",
+        "--junitxml",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-2-static/junit.xml"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+      "exit_code": 0,
+      "timed_out": false,
+      "process_reaped": true,
+      "elapsed_seconds": 0.6709868907928467,
+      "source_binding": "source-binding.json"
+    },
+    {
+      "name": "ruff",
+      "command": [
+        "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/ruff",
+        "check",
+        "scripts/run_dashboard_e2e_ambient.py",
+        "tests/test_cr14_ambient_backend_gate_contract.py"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+      "exit_code": 0,
+      "timed_out": false,
+      "process_reaped": true,
+      "elapsed_seconds": 0.020512104034423828,
+      "source_binding": "source-binding.json"
+    },
+    {
+      "name": "format",
+      "command": [
+        "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/ruff",
+        "format",
+        "--check",
+        "scripts/run_dashboard_e2e_ambient.py",
+        "tests/test_cr14_ambient_backend_gate_contract.py"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+      "exit_code": 0,
+      "timed_out": false,
+      "process_reaped": true,
+      "elapsed_seconds": 0.020722389221191406,
+      "source_binding": "source-binding.json"
+    },
+    {
+      "name": "type",
+      "command": [
+        "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/basedpyright",
+        "--level",
+        "error",
+        "scripts/run_dashboard_e2e_ambient.py"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+      "exit_code": 0,
+      "timed_out": false,
+      "process_reaped": true,
+      "elapsed_seconds": 0.3943917751312256,
+      "source_binding": "source-binding.json"
+    }
+  ],
+  "prior_browser_gates": {
+    "accessibility": {
+      "passed": 33,
+      "failed": 2
+    },
+    "witnesses": {
+      "passed": 18,
+      "failed": 12
+    },
+    "ambient": {
+      "passed": 11,
+      "failed": 5
+    }
+  },
+  "prior_browser_source_binding": "checks-attempt-1/source-binding.json",
+  "followup": "IMP20-DASHBOARD-RELEASE-SURFACE-01",
+  "formal_23_gate_verdict": "NOT_RUN_ON_NEW_CANDIDATE",
+  "live_model_inference": "NOT_CLAIMED_CLOSED_PROVIDER_ENDPOINTS"
+}

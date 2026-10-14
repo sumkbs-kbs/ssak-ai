@@ -1,6 +1,6 @@
 {
   "current_snapshot": {
-    "as_of_utc": "2026-10-14T14:14:00Z",
+    "as_of_utc": "2026-10-14T23:32:47Z",
     "scope": "Listed IMP-09 scoped evidence and active priority queue only; other parent acceptance not re-audited",
     "authority": "This current_snapshot and STATUS.md current section take precedence for listed rows; original recorded_at/summary/tasks/subtasks below remain historical",
     "parent_status": {
@@ -406,13 +406,64 @@
       {
         "priority": 7,
         "id": "INTEGRATED_RELEASE_ACCEPTANCE",
-        "status": "IN_PROGRESS_PORTABLE_RUNNER_AND_CANDIDATE_FREEZE",
+        "status": "IN_PROGRESS_FRESH_FULL_GATE_PREPARATION",
         "scope": "IMP-01/02 integration, IMP-19 packaging, IMP-20 newcandidate8hsoak; release distinct",
         "preconditions": [
-          "Soak runner uses hardcoded main checkout; fix candidate/output/interpreter path contract before run",
-          "Docker daemon started; docker info29.8.1 observed at current preflight",
-          "Freeze generated dashboard/SBOM before full23gate and new8hsoak; older evidence not reused as current"
-        ]
+          "Portable output/candidate/interpreter passed7 and pushed",
+          "Historical d868 full23 diagnostic15PASS8FAIL; Python interrupted, not PASS",
+          "Git boundary1c872d6d, gate runtimeb91fa86c and Bandit367863ce independently approved and pushed",
+        "Dependency audit unresolved24 to0 with existing5 exceptions retained; 481a634 approved and pushed",
+          "Prerequisite range481a634..f3a42e6f and followup f3a42..a7c1dc2f independently approved and pushed",
+        "Fresh same-candidate full23 and new8hsoak NOT_PASSED"
+        ],
+        "candidate_commit": "a7c1dc2f8fe4959dbc6a6df47bb2a628d35c449c",
+        "completed_subtasks": [
+          {
+            "id": "IMP-20-SOAK-CANDIDATE-PATH-CONTRACT-01",
+            "status": "DONE_SCOPED7_TESTS_AND_PUSHED",
+            "feature_commit": "c472d4fcd7c52a045f9bd0a0c07bba582ff51b54"
+          },
+          {
+            "id": "IMP-19-RELEASE-CANDIDATE-FREEZE-01",
+            "status": "DONE_BUNDLE_SBOM_PUBLISHED",
+            "commit": "f6f3f4eb0e37328429aab774348762e2cc94ffe9"
+          },
+          {
+            "id": "IMP19-FULL-TYPE-GATE-CLOSURE-01",
+            "status": "DONE_SCOPED_MAIN_REVIEW_AND_PUSHED",
+            "feature_commit": "d868ec502b6c0f5c16c4598d590a0468928bfe87",
+            "result": "raw/IMP19-FULL-TYPE-GATE-CLOSURE-01/run-20261014T143900Z-codex/result.json"
+          },
+          {
+            "id": "IMP19-OWNED-GIT-READ-BOUNDARY-01",
+            "status": "DONE_SCOPED_REVIEWED_AND_PUSHED",
+            "feature_commit": "1c872d6d47adff3785ea8164be5283b254559f1d"
+          },
+          {
+            "id": "IMP20-GATE-RUNTIME-ENVIRONMENT-01",
+            "status": "DONE_SCOPED_REVIEWED_AND_PUSHED",
+            "feature_commit": "b91fa86cebff0bdfd7af1b1f0d9681c8f6392e5f"
+          },
+          {
+            "id": "IMP19-BANDIT-GATE-CLOSURE-01",
+            "status": "DONE_SCOPED_REVIEWED_AND_PUSHED",
+            "feature_commit": "367863ce56774ea022e6ae75e255dca41f53fc18"
+        },
+        {
+          "id": "IMP19-PYTHON-DEPENDENCY-FLOORS-01",
+          "status": "DONE_SCOPED_REVIEWED_AND_PUSHED",
+          "feature_commit": "481a634195bd3924ed601f1b881958c75e5e6892",
+          "limits": "Audit unresolved0, existing5 exceptions retained; affected214 prior successes plus repaired bootstrap20 separately recorded"
+        },
+        {
+          "id": "IMP20-GATE-PREREQUISITES-PUBLICATION-01",
+          "status": "DONE_SCOPED_REVIEWED_AND_PUSHED",
+          "feature_commit": "f3a42e6f08ecdc112d8e651862fe99b2b02e2afe",
+          "review": "raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/independent-review.md",
+          "limits": "Fixtures, sandbox, disabled config, owned accessibility server and archived documentation; initial product browser gates still failed. ROOT independent fixture edits preserved"
+          }
+        ],
+        "remaining": "Fresh same-candidate full23, remaining failures including performance if reproduced, new8hsoak and release approval; reviewed dashboard/path/SBOM fixes pushed through a7c1dc2f"
       }
     ],
     "optional_not_automatically_selected": [
@@ -431,7 +482,7 @@
       "status_commit": "8ed827654cb608c55b22fe75b295abf3365114f4",
       "direct_transport_feature_commit": "8b22847730f5419307dda66f5ca6ab57fc1b023f",
       "direct_transport_qa_commit": "50437f0ccbb0dd512204ce38b640bd5c238eb97a",
-      "latest_remote_sha_verified": "c12830506c50d887606aebfd5d54351133101463",
+      "latest_remote_sha_verified": "a7c1dc2f8fe4959dbc6a6df47bb2a628d35c449c",
       "native_stream_feature_commit": "97f898661195623ba87eb826e94b03538aecb38f",
       "native_stream_qa_commit": "d2aed8c1f7237f08f7b497e6760b792754c61b1e",
       "compatible_transport_feature_commit": "bad768d9bf07a805446edac98861d0a2f596b124",
@@ -452,13 +503,13 @@
       "rag_keyword_qa_commit": "7802aa1b3043d66a80f6f891c6cf3db039b393a0",
       "startup_storage_feature_commit": "7482ebb8b76c7c686e729e68c48f7258e2cc7e66",
       "lifespan_agency_feature_commit": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1",
-      "current_followup_qa": "PURGE_PUBLISHED_A09_BROWSER_LAZY_CURSOR_MAIN_REVIEW_LOCAL_QA_PUBLICATION",
+      "current_followup_qa": "HISTORICAL_DIAGNOSTIC15_PASS8_FAIL_PREREQUISITES_AND_SURFACE_REVIEWED_PUSHED_FRESH_FULL23_NOT_RUN",
       "search_startup_qa_commit": "04ba85924fd79bde9d92052b86b2925506e15f03",
       "project_memory_purge_feature_commit": "6f0bd05d84506ab9435bbc4866f2acf2cb49585b",
       "agent_lazy_feature_commit": "0e49b627db4351c5aaf51abaa6465da3fcfdc8f5",
       "task_global_cursor_feature_commit": "c12830506c50d887606aebfd5d54351133101463"
     },
-    "next_task": "IMP-20-SOAK-CANDIDATE-PATH-CONTRACT-01",
+    "next_task": "IMP20-FRESH-FULL-GATES-01",
     "do_not_repeat": "Use saved successful receipts unless source, environment or a new failure hypothesis changes; do not replay old inference or reconstruct lost ledgers"
   },
   "recorded_at": "2026-10-07T13:16:06.378463+00:00",

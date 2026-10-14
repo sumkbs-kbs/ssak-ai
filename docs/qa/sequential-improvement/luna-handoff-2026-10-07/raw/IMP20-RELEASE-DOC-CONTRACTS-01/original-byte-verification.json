@@ -1,0 +1,10 @@
+{
+  "result": "PASS",
+  "files": 14,
+  "checks_per_file": [
+    "ROOT original size/SHA256",
+    "candidate size/SHA256",
+    "evidence archive size/SHA256"
+  ],
+  "historical_execution": "NOT_VERIFIED"
+}

@@ -1,0 +1,3 @@
+# Packaging scope correction
+
+The first inventory contained 41,367 entries, including 41,314 dependency-cache files under `cache/`. No runtime/auth directory was included. The original inventory is retained as `artifact-manifest-initial-cache-overscope.json`; it is diagnostic metadata and is excluded from publication. The corrected final inventory contains only the owned public source/preimages, logs, receipts, patch and reports. No product/browser tests were rerun for this correction. Patch replay emitted executable-mode warnings because replay preimages used default file permissions; all three resulting file bytes matched the candidate, and no claim about replay permission equality was made.

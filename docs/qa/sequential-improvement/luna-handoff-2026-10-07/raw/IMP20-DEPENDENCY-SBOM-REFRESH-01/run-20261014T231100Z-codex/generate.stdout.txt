@@ -1,0 +1,1 @@
+{"dashboard_components": 241, "python_components": 69, "release_root": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/release", "status": "generated"}

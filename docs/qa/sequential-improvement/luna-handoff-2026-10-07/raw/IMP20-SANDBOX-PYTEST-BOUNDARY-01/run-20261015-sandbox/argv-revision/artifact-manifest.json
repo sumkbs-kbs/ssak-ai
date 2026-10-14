@@ -1,0 +1,172 @@
+[
+  {
+    "path": "argv-revision/checks.json",
+    "bytes": 1004,
+    "sha256": "4b8a04111c284c38d9d5e3c1bbf4deb4bf2d2a7a52c0b31529f234a4fb08aed8"
+  },
+  {
+    "path": "argv-revision/diff.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "argv-revision/diff.stdout.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "argv-revision/finalize.py",
+    "bytes": 2504,
+    "sha256": "26bd1bfa4a00d3f969554efd53da858f617e77b1a8e606eed484cc6c849c9171"
+  },
+  {
+    "path": "argv-revision/format.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "argv-revision/format.stdout.txt",
+    "bytes": 26,
+    "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938"
+  },
+  {
+    "path": "argv-revision/handoff-ko.md",
+    "bytes": 1889,
+    "sha256": "f9a1da98e3594630750c3e0fb99912ec0cc4d1a138ad967c714f2f78bd2d210d"
+  },
+  {
+    "path": "argv-revision/patch-reconstruction.json",
+    "bytes": 102,
+    "sha256": "08b8eba1942008e4bd2c78610a8b4d3a04ddbe95dda5f2430c820ef0402c62f1"
+  },
+  {
+    "path": "argv-revision/ruff.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "argv-revision/ruff.stdout.txt",
+    "bytes": 19,
+    "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+  },
+  {
+    "path": "argv-revision/task-only.patch",
+    "bytes": 7851,
+    "sha256": "4b8df90574c2d2b0e3ced72b4fde13e322bb7e8b87752441dbd5d98dfbf84461"
+  },
+  {
+    "path": "argv-revision/types.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "argv-revision/types.stdout.txt",
+    "bytes": 30,
+    "sha256": "56882e01cb80173ef053c4096e4ee43e3123a15f5c0a06715f96988d48fbd91c"
+  },
+  {
+    "path": "argv-red/checks.json",
+    "bytes": 960,
+    "sha256": "84473b7a2627d49ff41f39cce23800f8f998e60c90251ac81650d41cbbae0c37"
+  },
+  {
+    "path": "argv-red/contract.stderr.txt",
+    "bytes": 487,
+    "sha256": "e7672b2b51c57a108d8279d3646ee659ea650db44553bc57d896b4f4e5508633"
+  },
+  {
+    "path": "argv-red/contract.stdout.txt",
+    "bytes": 23,
+    "sha256": "5c3555a4fec3de3fa4e0a557c8d255b87cda986621b9e8e575650052f8b0b533"
+  },
+  {
+    "path": "argv-red/junit.xml",
+    "bytes": 248,
+    "sha256": "ae88f1e7b161797d544d03765ad21141c87c67a29c163e98a6814cc77ec7e7c4"
+  },
+  {
+    "path": "argv-red/source/src/antigravity_k/engine/sandbox.py",
+    "bytes": 28441,
+    "sha256": "3b3364714c8c2b354c527656b59d5416dc5ea35bda64e3fc8c1cfef018393f93"
+  },
+  {
+    "path": "argv-red/source/tests/test_cr03_sandbox_read_boundary.py",
+    "bytes": 18181,
+    "sha256": "8138b4b3e1bde1f59bcffd91c6e2f2472b2a1f28ef79d3a90ac0d7ad13e585e4"
+  },
+  {
+    "path": "argv-red/source-binding.json",
+    "bytes": 290,
+    "sha256": "c095561d7699834eea530b986fa0bffcc24339d955d00a8e92f37782fc980ccb"
+  },
+  {
+    "path": "argv-red-2/checks.json",
+    "bytes": 964,
+    "sha256": "bf0138eddfec79a12f81389c2eef49c89c2494e2e74e95736014b7e988d4a518"
+  },
+  {
+    "path": "argv-red-2/contract.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "argv-red-2/contract.stdout.txt",
+    "bytes": 5971,
+    "sha256": "cdd9725fcb2e3fac6b884dbe19f3bd417d1fd82009c4b724e0e7f82bdb4e026c"
+  },
+  {
+    "path": "argv-red-2/junit.xml",
+    "bytes": 8369,
+    "sha256": "4f171a64921a2b9975bc0ebb8fdc209dd267f1dcc18447a1326c8abd13714bfa"
+  },
+  {
+    "path": "argv-red-2/source/src/antigravity_k/engine/sandbox.py",
+    "bytes": 29791,
+    "sha256": "8e65e315d451aecb62fae2ce746935694416c4ee685fafe5b3531788a4e094b2"
+  },
+  {
+    "path": "argv-red-2/source/tests/test_cr03_sandbox_read_boundary.py",
+    "bytes": 21269,
+    "sha256": "bb4692543635e34ce5bd4e12cc1b2d701250057158aa128abe65a3f911251843"
+  },
+  {
+    "path": "argv-red-2/source-binding.json",
+    "bytes": 290,
+    "sha256": "63fc11086173cbf11ddf0f4bbecbade3d811d13f7e46fc144838a92d7a2b3ce2"
+  },
+  {
+    "path": "argv-green/checks.json",
+    "bytes": 963,
+    "sha256": "fdda42e764f4fbda685e66e58b82dfa8c0b9e442cc3990fd36f495153269b6b4"
+  },
+  {
+    "path": "argv-green/contract.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "argv-green/contract.stdout.txt",
+    "bytes": 98,
+    "sha256": "2fe879bc0eba6b00d42db627ee5661e57fb1a87ee5031e83258c5bb23a7fc368"
+  },
+  {
+    "path": "argv-green/junit.xml",
+    "bytes": 1375,
+    "sha256": "85c76fe0b4f4b5bc4584d5beedda0dd8b1df767445738e367b50e1d4df1c7741"
+  },
+  {
+    "path": "argv-green/source/src/antigravity_k/engine/sandbox.py",
+    "bytes": 30102,
+    "sha256": "003ae0fd87360d068d669460566b298f4e913c9fc0bff3da87a12976130dcc16"
+  },
+  {
+    "path": "argv-green/source/tests/test_cr03_sandbox_read_boundary.py",
+    "bytes": 21317,
+    "sha256": "5ead664dc5ba77de358343054f646abc920c465cc7d887ffb0e5b23cce77e7b9"
+  },
+  {
+    "path": "argv-green/source-binding.json",
+    "bytes": 290,
+    "sha256": "220f52ac640e8819fdf2d8c475134ce8bc79c7f28cefc900b8113040a617449f"
+  }
+]

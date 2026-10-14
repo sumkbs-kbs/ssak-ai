@@ -1,0 +1,4 @@
+{"event": "python-start", "pid": 17678, "executable": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python", "prefix": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv"}
+{"event": "socket-connect", "pid": 17678, "host": "127.0.0.1", "port": 53124, "allowed": false}
+{"event": "socket-connect", "pid": 17678, "host": "127.0.0.1", "port": 53124, "allowed": false}
+{"event": "socket-connect", "pid": 17678, "host": "127.0.0.1", "port": 53124, "allowed": false}

@@ -1,0 +1,30 @@
+[
+  {
+    "name": "python-sync",
+    "command": [
+      "uv",
+      "sync",
+      "--frozen",
+      "--extra",
+      "dev",
+      "--extra",
+      "rag",
+      "--extra",
+      "documents"
+    ],
+    "exit_code": 0,
+    "seconds": 8.7189781665802
+  },
+  {
+    "name": "dashboard-install",
+    "command": [
+      "pnpm",
+      "--dir",
+      "dashboard",
+      "install",
+      "--frozen-lockfile"
+    ],
+    "exit_code": 0,
+    "seconds": 2.72845721244812
+  }
+]

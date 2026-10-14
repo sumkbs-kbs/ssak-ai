@@ -1,0 +1,16 @@
+[
+  {
+    "name": "browser",
+    "command": [
+      "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+      "scripts/run_dashboard_e2e_ambient.py",
+      "--spec",
+      "e2e/tests/cr10-telemetry.spec.ts:163"
+    ],
+    "cwd": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+    "exit_code": 0,
+    "timed_out": false,
+    "reaped": true,
+    "elapsed_seconds": 37.34997916221619
+  }
+]

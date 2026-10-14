@@ -1,0 +1,122 @@
+{
+  "status": "COMPLETE_SCOPED",
+  "candidate": "367863ce56774ea022e6ae75e255dca41f53fc18",
+  "independent_review": "PENDING",
+  "formal_release": "NOT_APPROVED",
+  "historical_bandit": {
+    "medium": 32,
+    "high": 1
+  },
+  "current_bandit": {
+    "medium": 0,
+    "high": 0,
+    "low": 336
+  },
+  "regression_passed": 141,
+  "warnings": 1,
+  "patch_reconstruction": "BYTE_IDENTICAL_6",
+  "sqlite_version": "3.52.0",
+  "sqlite_json_each": true,
+  "checks": [
+    {
+      "name": "ruff",
+      "command": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "src/antigravity_k/tools/browser_observation.py",
+        "src/antigravity_k/tools/browser_task_memory.py",
+        "src/antigravity_k/tools/browser_task_memory_store.py",
+        "src/antigravity_k/knowledge/wiki_graph.py",
+        "src/antigravity_k/knowledge/wiki.py",
+        "src/antigravity_k/engine/cognitive/migration.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.04922795295715332,
+      "source_binding": "source-binding.json"
+    },
+    {
+      "name": "format",
+      "command": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "src/antigravity_k/tools/browser_observation.py",
+        "src/antigravity_k/tools/browser_task_memory.py",
+        "src/antigravity_k/tools/browser_task_memory_store.py",
+        "src/antigravity_k/knowledge/wiki_graph.py",
+        "src/antigravity_k/knowledge/wiki.py",
+        "src/antigravity_k/engine/cognitive/migration.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.04806685447692871,
+      "source_binding": "source-binding.json"
+    },
+    {
+      "name": "types",
+      "command": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-m",
+        "basedpyright",
+        "--level",
+        "error",
+        "--pythonpath",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "src/antigravity_k/tools/browser_observation.py",
+        "src/antigravity_k/tools/browser_task_memory.py",
+        "src/antigravity_k/tools/browser_task_memory_store.py",
+        "src/antigravity_k/knowledge/wiki_graph.py",
+        "src/antigravity_k/knowledge/wiki.py",
+        "src/antigravity_k/engine/cognitive/migration.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.337419033050537,
+      "source_binding": "source-binding.json"
+    },
+    {
+      "name": "bandit",
+      "command": [
+        "uv",
+        "run",
+        "--isolated",
+        "--frozen",
+        "--extra",
+        "dev",
+        "bandit",
+        "-r",
+        "src/antigravity_k",
+        "-ll",
+        "-x",
+        "src/antigravity_k/engine/secret_scanner.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 12.385057926177979,
+      "source_binding": "source-binding.json"
+    },
+    {
+      "name": "regression",
+      "command": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/cognitive/test_migration.py",
+        "tests/cognitive/test_migration_snapshot_lineage.py",
+        "tests/test_wiki_obsidian_links.py",
+        "tests/test_ssak_browser_memory.py",
+        "tests/test_ssak_browser_actions.py",
+        "--basetemp",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-BANDIT-GATE-CLOSURE-01/run-20261014T173200Z-codex/checks-attempt-1/runtime/pytest",
+        "--junitxml",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-BANDIT-GATE-CLOSURE-01/run-20261014T173200Z-codex/checks-attempt-1/junit.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 27.313827991485596,
+      "source_binding": "source-binding.json"
+    }
+  ]
+}

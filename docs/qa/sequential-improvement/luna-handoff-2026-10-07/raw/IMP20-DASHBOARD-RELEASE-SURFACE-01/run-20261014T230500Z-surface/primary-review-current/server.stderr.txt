@@ -1,0 +1,147 @@
+INFO:     Started server process [29401]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:56066 (Press CTRL+C to quit)
+모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-RELEASE-SURFACE-01/run-20261014T230500Z-surface/primary-review-current/runtime/data/benchmarks/local-model-stable-simple.json
+모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-RELEASE-SURFACE-01/run-20261014T230500Z-surface/primary-review-current/runtime/data/benchmarks/local-model-frontier.json
+Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md
+INFO:     127.0.0.1:56100 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56102 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56107 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56109 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56112 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56116 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+[llama3.2-vision:11b] 라우팅 정책에 의해 제외(local_parameter_floor_not_met) — 콤보 폴백 체인에서 제거됨
+INFO:     127.0.0.1:56117 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56118 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56121 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56128 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56133 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56135 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56138 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56140 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56141 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56148 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56197 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56222 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56224 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56225 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56232 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56235 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56239 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56241 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56245 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56250 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56251 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56252 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56254 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56255 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56259 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56260 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56262 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56263 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56264 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56268 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56269 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56270 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56271 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56276 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56283 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56286 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56299 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56307 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:56311 - "WebSocket /v1/ws/events" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [29401]

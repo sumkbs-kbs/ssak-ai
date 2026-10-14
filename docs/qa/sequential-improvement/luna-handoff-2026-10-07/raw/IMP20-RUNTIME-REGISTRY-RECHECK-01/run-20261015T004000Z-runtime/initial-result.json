@@ -1,0 +1,119 @@
+{
+  "status": "SCOPED_RUNTIME_RECHECK_PASS",
+  "review": "PENDING",
+  "base_commit": "481a634195bd3924ed601f1b881958c75e5e6892",
+  "owned_paths": [
+    "config.yaml",
+    "tests/test_cli_smoke.py"
+  ],
+  "phases": {
+    "runtime": {
+      "tests": 42,
+      "failures": 2,
+      "errors": 0,
+      "skips": 0,
+      "receipt": {
+        "exit_code": 1,
+        "duration_seconds": 11.8556927919999,
+        "source_unchanged": true
+      },
+      "python_runtime_starts": 27,
+      "python_interpreters": [
+        "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python"
+      ],
+      "connection_attempts": 18,
+      "allowed_owned_connections": 0,
+      "blocked_connections": 18,
+      "owned_listens": 0
+    },
+    "api": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 9,
+      "skips": 0,
+      "receipt": {
+        "exit_code": 1,
+        "duration_seconds": 33.33142441700011,
+        "source_unchanged": true
+      },
+      "python_runtime_starts": 3,
+      "python_interpreters": [
+        "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python"
+      ],
+      "connection_attempts": 30,
+      "allowed_owned_connections": 0,
+      "blocked_connections": 30,
+      "owned_listens": 0
+    },
+    "repaired": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "receipt": {
+        "exit_code": 0,
+        "duration_seconds": 0.7272856250001496,
+        "source_unchanged": true
+      },
+      "python_runtime_starts": 1,
+      "python_interpreters": [
+        "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python"
+      ],
+      "connection_attempts": 0,
+      "allowed_owned_connections": 0,
+      "blocked_connections": 0,
+      "owned_listens": 0
+    },
+    "precedence": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "receipt": {
+        "exit_code": 0,
+        "duration_seconds": 0.6151449589997355,
+        "source_unchanged": true
+      },
+      "python_runtime_starts": 1,
+      "python_interpreters": [
+        "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python"
+      ],
+      "connection_attempts": 0,
+      "allowed_owned_connections": 0,
+      "blocked_connections": 0,
+      "owned_listens": 0
+    },
+    "api-corrected-guard": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "receipt": {
+        "exit_code": 0,
+        "duration_seconds": 19.03468170899987,
+        "source_unchanged": true
+      },
+      "python_runtime_starts": 3,
+      "python_interpreters": [
+        "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python"
+      ],
+      "connection_attempts": 40,
+      "allowed_owned_connections": 14,
+      "blocked_connections": 26,
+      "owned_listens": 1
+    }
+  },
+  "static_checks_pass": true,
+  "patch_reconstruction": {
+    "config.yaml": false,
+    "tests/test_cli_smoke.py": false
+  },
+  "limits": [
+    "Retained 40 passing runtime cases from original invocation; two repaired cases and four precedence cases have fresh proof. Not one monolithic clean selector.",
+    "First API run failed because the guard did not observe uvloop native listen; final API proof explicitly selects asyncio loop. No uvloop runtime claim.",
+    "API health/auth boundary only; no inference or live provider validation.",
+    "No full Python suite or overall GA pass. Other agents edit disjoint files in the candidate.",
+    "private-runtime directories contain test credentials/storage and must not be published.",
+    "In-process discovered-model CLI fixture is transport-mocked; other CLI subprocess smoke remains real."
+  ]
+}

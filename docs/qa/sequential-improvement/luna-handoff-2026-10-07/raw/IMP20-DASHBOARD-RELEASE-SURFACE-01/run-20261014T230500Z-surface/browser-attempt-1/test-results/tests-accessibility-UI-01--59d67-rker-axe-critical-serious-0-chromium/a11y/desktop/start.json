@@ -1,0 +1,10 @@
+{
+  "pathname": "/start",
+  "routeName": "start",
+  "viewport": "desktop",
+  "verifiedPathname": "/start",
+  "routeMarkerFound": true,
+  "passes": 39,
+  "violations": [],
+  "criticalSerious": []
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "path": "scripts/run_dashboard_e2e_ambient.py",
+    "byte_identical": true
+  },
+  {
+    "path": "scripts/commercial_ga_gates.json",
+    "byte_identical": true
+  },
+  {
+    "path": "tests/test_cr14_ambient_backend_gate_contract.py",
+    "byte_identical": true
+  }
+]

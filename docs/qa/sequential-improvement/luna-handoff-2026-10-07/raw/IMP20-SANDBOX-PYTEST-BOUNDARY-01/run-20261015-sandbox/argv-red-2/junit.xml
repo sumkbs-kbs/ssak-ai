@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="7" time="1.632" timestamp="2026-10-15T07:59:10.107706+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_cr03_sandbox_read_boundary.TestWorkspaceStillRuns" name="test_script_pytest_arguments_are_preserved[script]" time="0.194"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-PYTEST-BOUNDARY-01/run-20261015-sandbox/argv-red-2/runtime/pytest/test_script_pytest_arguments_a0/app.py&quot;, line 2, in &lt;module&gt;&#10;      assert sys.argv[1:] == ['-m', 'pytest']&#10;             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;  AssertionError&#10;  &#10;assert False is True&#10; +  where False = SandboxResult(success=False, stdout='', stderr='Traceback (most recent call last):\n  File &quot;/Users/mr.k/program/coding...^^^^^^^^^^^^^^^^^\nAssertionError\n', return_code=1, timed_out=False, sandboxed=True, output_truncated=False, error='').success">self = &lt;tests.test_cr03_sandbox_read_boundary.TestWorkspaceStillRuns object at 0x1059b51d0&gt;
+workdir = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-PYTEST-BOUNDARY-01/run-20261015-sandbox/argv-red-2/runtime/pytest/test_script_pytest_arguments_a0')
+launcher = 'script'
+
+    @pytest.mark.parametrize("launcher", ["script", "command", "delimiter"])
+    def test_script_pytest_arguments_are_preserved(self, workdir: Path, launcher: str) -&gt; None:
+        source = "import sys\nassert sys.argv[1:] == ['-m', 'pytest']\nprint('ARGS_OK')\n"
+        (workdir / "app.py").write_text(source, encoding="utf-8")
+        launchers = {"script": ["app.py"], "command": ["-c", source], "delimiter": ["--", "app.py"]}
+    
+        result = run_sandboxed_argv(
+            [sys.executable, *launchers[launcher], "-m", "pytest"],
+            cwd=str(workdir), timeout=60, env=_sandbox_env(str(workdir)),
+        )
+    
+&gt;       assert result.success is True, result.stdout + result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-PYTEST-BOUNDARY-01/run-20261015-sandbox/argv-red-2/runtime/pytest/test_script_pytest_arguments_a0/app.py", line 2, in &lt;module&gt;
+E             assert sys.argv[1:] == ['-m', 'pytest']
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         AssertionError
+E         
+E       assert False is True
+E        +  where False = SandboxResult(success=False, stdout='', stderr='Traceback (most recent call last):\n  File "/Users/mr.k/program/coding...^^^^^^^^^^^^^^^^^\nAssertionError\n', return_code=1, timed_out=False, sandboxed=True, output_truncated=False, error='').success
+
+tests/test_cr03_sandbox_read_boundary.py:92: AssertionError</failure></testcase><testcase classname="tests.test_cr03_sandbox_read_boundary.TestWorkspaceStillRuns" name="test_script_pytest_arguments_are_preserved[command]" time="0.057"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;&lt;string&gt;&quot;, line 2, in &lt;module&gt;&#10;      assert sys.argv[1:] == ['-m', 'pytest']&#10;             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;  AssertionError&#10;  &#10;assert False is True&#10; +  where False = SandboxResult(success=False, stdout='', stderr='Traceback (most recent call last):\n  File &quot;&lt;string&gt;&quot;, line 2, in &lt;mod...^^^^^^^^^^^^^^^^^\nAssertionError\n', return_code=1, timed_out=False, sandboxed=True, output_truncated=False, error='').success">self = &lt;tests.test_cr03_sandbox_read_boundary.TestWorkspaceStillRuns object at 0x1059b5450&gt;
+workdir = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-PYTEST-BOUNDARY-01/run-20261015-sandbox/argv-red-2/runtime/pytest/test_script_pytest_arguments_a1')
+launcher = 'command'
+
+    @pytest.mark.parametrize("launcher", ["script", "command", "delimiter"])
+    def test_script_pytest_arguments_are_preserved(self, workdir: Path, launcher: str) -&gt; None:
+        source = "import sys\nassert sys.argv[1:] == ['-m', 'pytest']\nprint('ARGS_OK')\n"
+        (workdir / "app.py").write_text(source, encoding="utf-8")
+        launchers = {"script": ["app.py"], "command": ["-c", source], "delimiter": ["--", "app.py"]}
+    
+        result = run_sandboxed_argv(
+            [sys.executable, *launchers[launcher], "-m", "pytest"],
+            cwd=str(workdir), timeout=60, env=_sandbox_env(str(workdir)),
+        )
+    
+&gt;       assert result.success is True, result.stdout + result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "&lt;string&gt;", line 2, in &lt;module&gt;
+E             assert sys.argv[1:] == ['-m', 'pytest']
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         AssertionError
+E         
+E       assert False is True
+E        +  where False = SandboxResult(success=False, stdout='', stderr='Traceback (most recent call last):\n  File "&lt;string&gt;", line 2, in &lt;mod...^^^^^^^^^^^^^^^^^\nAssertionError\n', return_code=1, timed_out=False, sandboxed=True, output_truncated=False, error='').success
+
+tests/test_cr03_sandbox_read_boundary.py:92: AssertionError</failure></testcase><testcase classname="tests.test_cr03_sandbox_read_boundary.TestWorkspaceStillRuns" name="test_script_pytest_arguments_are_preserved[delimiter]" time="0.056"><failure message="AssertionError:   File &quot;&lt;string&gt;&quot;, line 1&#10;      /dev/null&#10;      ^&#10;  SyntaxError: invalid syntax&#10;  &#10;assert False is True&#10; +  where False = SandboxResult(success=False, stdout='', stderr='  File &quot;&lt;string&gt;&quot;, line 1\n    /dev/null\n    ^\nSyntaxError: invalid syntax\n', return_code=1, timed_out=False, sandboxed=True, output_truncated=False, error='').success">self = &lt;tests.test_cr03_sandbox_read_boundary.TestWorkspaceStillRuns object at 0x103ef3bb0&gt;
+workdir = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-PYTEST-BOUNDARY-01/run-20261015-sandbox/argv-red-2/runtime/pytest/test_script_pytest_arguments_a2')
+launcher = 'delimiter'
+
+    @pytest.mark.parametrize("launcher", ["script", "command", "delimiter"])
+    def test_script_pytest_arguments_are_preserved(self, workdir: Path, launcher: str) -&gt; None:
+        source = "import sys\nassert sys.argv[1:] == ['-m', 'pytest']\nprint('ARGS_OK')\n"
+        (workdir / "app.py").write_text(source, encoding="utf-8")
+        launchers = {"script": ["app.py"], "command": ["-c", source], "delimiter": ["--", "app.py"]}
+    
+        result = run_sandboxed_argv(
+            [sys.executable, *launchers[launcher], "-m", "pytest"],
+            cwd=str(workdir), timeout=60, env=_sandbox_env(str(workdir)),
+        )
+    
+&gt;       assert result.success is True, result.stdout + result.stderr
+E       AssertionError:   File "&lt;string&gt;", line 1
+E             /dev/null
+E             ^
+E         SyntaxError: invalid syntax
+E         
+E       assert False is True
+E        +  where False = SandboxResult(success=False, stdout='', stderr='  File "&lt;string&gt;", line 1\n    /dev/null\n    ^\nSyntaxError: invalid syntax\n', return_code=1, timed_out=False, sandboxed=True, output_truncated=False, error='').success
+
+tests/test_cr03_sandbox_read_boundary.py:92: AssertionError</failure></testcase><testcase classname="tests.test_cr03_sandbox_read_boundary.TestWorkspaceStillRuns" name="test_pytest_launchers_keep_workspace_boundary[bytecode]" time="0.198" /><testcase classname="tests.test_cr03_sandbox_read_boundary.TestWorkspaceStillRuns" name="test_pytest_launchers_keep_workspace_boundary[isolated]" time="0.196" /><testcase classname="tests.test_cr03_sandbox_read_boundary.TestWorkspaceStillRuns" name="test_pytest_launchers_keep_workspace_boundary[warning]" time="0.193" /><testcase classname="tests.test_cr03_sandbox_read_boundary.TestWorkspaceStillRuns" name="test_pytest_launchers_keep_workspace_boundary[standalone]" time="0.521" /></testsuite></testsuites>

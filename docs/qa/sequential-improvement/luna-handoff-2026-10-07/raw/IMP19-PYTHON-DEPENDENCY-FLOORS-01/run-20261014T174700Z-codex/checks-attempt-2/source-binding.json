@@ -1,0 +1,14 @@
+[
+  {
+    "path": "pyproject.toml",
+    "sha256": "1c55da4a70651de2fe08ff3e2f82dc87f9e3e26058c522f1d537865f2aee6db3"
+  },
+  {
+    "path": "uv.lock",
+    "sha256": "82390dd4dd4f350fd2411f79fa6492f6d9ef8082dd100a0047170740e11c2380"
+  },
+  {
+    "path": "tests/test_cr11_release_bootstrap.py",
+    "sha256": "7fcc2a6be14944ab9567a42d902b5f0eeea50d0f6a451a8dffc9e391c03088e3"
+  }
+]

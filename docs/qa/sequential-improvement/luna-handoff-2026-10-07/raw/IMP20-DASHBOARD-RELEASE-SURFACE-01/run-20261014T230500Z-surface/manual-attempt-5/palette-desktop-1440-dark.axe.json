@@ -1,0 +1,135 @@
+{
+  "violations": [],
+  "layout": {
+    "width": 1440,
+    "documentWidth": 1440,
+    "theme": null,
+    "mobile": false,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+    "sidebarWidthToken": "248px",
+    "sidebarWidth": 248,
+    "textMuted": "#a0a0a0",
+    "labels": [
+      {
+        "text": "대기 중",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "API Uptime",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Tokens",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "RAM",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "CPU",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "ESC",
+        "color": "rgb(184, 184, 184)",
+        "background": "rgba(255, 255, 255, 0.1)"
+      },
+      {
+        "text": "Knowledge",
+        "color": "rgb(236, 236, 236)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Knowledge",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Workspace",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "원본을 보존하고 새 대화로 이어가기",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Agent",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Agent",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Agent",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Agent",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Agent",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Agent",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Evaluation",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Operations",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Workspace",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Repository",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "대시보드 실행 화면 미지원",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "TDD 모드에서 입력 후 직접 전송",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Plugin",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Plugin",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      }
+    ]
+  }
+}

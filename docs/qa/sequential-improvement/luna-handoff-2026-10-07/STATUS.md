@@ -1,6 +1,6 @@
 # IMP-09 순차 개선 핸드오프 상태
 
-## 현재 기준 — 2026-10-14
+## 현재 기준 — 2026-10-15 KST
 
 최신 상태는 이 절과 tasks.json의 `current_snapshot`입니다. 아래 10월7일 본문과 기존 JSON 필드는 역사 스냅샷으로 보존했으며 과거 집계를 현재 완료율로 사용하지 않습니다. 전체 IMP-09는 **PARTIAL**, 역사 원장은 **NOT_RECOVERED**입니다.
 
@@ -31,11 +31,11 @@
 구조화 실관측 원본의 `format=omitted` 표기는 별도정정 기록으로 보존했습니다. 후속 writer 수정은 새 사본에서만 수행했고 원본144개는 불변입니다. 모의 writer회귀의 `INCONCLUSIVE_CLEANUP_NOT_CONFIRMED`는 OS cleanup PASS로 승격하지 않습니다. 과거 format생략 vision FAIL도 유지합니다.
 
 
-**현재 순서:** 1 기록생성기·2 상태통합·3 기능 게시·4 provider/agent 실패 경계·5 실제 검색과 인증 관리 API purge는 검증한 범위에서 완료했습니다. **6 실제 인증/lifespan ON 및 PIN·chat503 오류·작업 failed 표시를 검증한 범위에서 완료했습니다.** 7 이식 가능한 soak 경로와 후보 동결부터 진행합니다. 전체 게이트·패키징·새8시간 soak의 완료는 아직 아닙니다. 옵션 IMP-16/18은 자동착수하지 않습니다.
+**현재 순서:** 1 기록생성기·2 상태통합·3 기능 게시·4 provider/agent 실패 경계·5 실제 검색과 인증 관리 API purge는 검증한 범위에서 완료했습니다. **6 실제 인증/lifespan ON 및 PIN·chat503 오류·작업 failed 표시를 검증한 범위에서 완료했습니다.** 7 게이트 선행 수리를 게시했고 같은 새 후보의 전량23개 검증으로 진행합니다. 전체 게이트·패키징·새8시간 soak의 완료는 아직 아닙니다. 옵션 IMP-16/18은 자동착수하지 않습니다.
 
 [기본 모델 준비](raw/IMP06-DEFAULT-AGENT-LAZY-MODEL-01/run-20261014T131255Z-codex/handoff-ko.md)는 신규7개 통과이며 원본 영향 selector104통과/경로 fixture2실패와 별도 경로 사본2통과를 구분합니다. [작업 글로벌 커서](raw/IMP06-TASK-GLOBAL-CURSOR-01/run-20261014T135632Z-codex/handoff-ko.md)는 clean/root 각각 UI60·Python24 통과 및 기존 task 연속번호/충돌/종료 커서 검사를 유지합니다. [실제 브라우저](raw/IMP06-BROWSER-FAILURE-SURFACES-01/run-20261014T121206Z-codex/handoff-ko.md)는 v3 chat503 오류·입력 복구, v4 작업 제출1회→provider503 1회→failed/스트림 완료를 확인했고 backend/driver 종료0·guard0·물리 NN0입니다. 기존 v1/v2/v3 실패는 보존합니다. ROOT 기존 UI 수정38개가 포함된 검증이며 해당 수정 전체의 게시·GA 검증은 아닙니다. 별도 독립 검수는 NOT_RUN입니다.
 
-**NEXT_TASK=IMP-20-SOAK-CANDIDATE-PATH-CONTRACT-01.** 실제 의미검색은 clean 후보 `7802aa1b`에 묶인 단회 관측입니다. 30A/2B 문서와 초기20질의, 추가 변경·격리질의를 포함해 embedding27회/입력57개와 신규metadata3회를 확인했습니다. 필수10개는 모두1위, 탐색9/10이며 한국어Q16 미적중은 그대로 남겼습니다. A 수정·삭제·재개방과 VectorStore.clear 잔여0, B벡터 hash·내용·외부 sentinel, 8클라이언트 두주기를 통과했습니다. 비교 baseline·기본hybrid품질·B graph·관리API purge는 이 관측의 범위 밖입니다. 설정차원0/UNKNOWN·weights revision UNVERIFIED도 유지합니다.
+실제 의미검색은 clean 후보 `7802aa1b`에 묶인 단회 관측입니다. 30A/2B 문서와 초기20질의, 추가 변경·격리질의를 포함해 embedding27회/입력57개와 신규metadata3회를 확인했습니다. 필수10개는 모두1위, 탐색9/10이며 한국어Q16 미적중은 그대로 남겼습니다. A 수정·삭제·재개방과 VectorStore.clear 잔여0, B벡터 hash·내용·외부 sentinel, 8클라이언트 두주기를 통과했습니다. 비교 baseline·기본hybrid품질·B graph·관리API purge는 이 관측의 범위 밖입니다. 설정차원0/UNKNOWN·weights revision UNVERIFIED도 유지합니다.
 
 기동 경로 수정 `7482ebb8`과 agency caller 수정 `e3ef8354`는 커밋·푸시하고 ROOT에 최소 차이로 반영했습니다. ROOT의 기존 Chroma lifecycle lock/close와 staged97은 보존했습니다. ROOT agency fixture의 최초 직접3FAIL/2PASS는 기존 RAG/IDE 구성과 clean fixture의 차이로 남겼고, 명시된 인접 fixture overlay의5PASS를 전체 ROOT suite 성공으로 부르지 않습니다. 역사 source-overlay symlink가 현재 소스를 가리켜 바뀐 dereferenced hash도 별도로 기록했습니다.
 
@@ -44,6 +44,16 @@
 원장복구는 정확한 백업이 필요한 별도항목이며 과거 실행/변경 JSONL을 재구성하지 않습니다. 전체 IMP-09는 PARTIAL, 역사 원장은 NOT_RECOVERED, 원래 IMP-07 전체도 미완료입니다. 과거 집계를 현재 완료율로 사용하지 않습니다. [기존STATUS preimage](raw/IMP09C-STATUS-RECONCILIATION-2026-10-14/run-20261014T043024Z-codex-86e22b4940/source-preimage/STATUS.md), [기존tasks preimage](raw/IMP09C-STATUS-RECONCILIATION-2026-10-14/run-20261014T043024Z-codex-86e22b4940/source-preimage/tasks.json).
 
 관리API purge는 기능 `6f0bd05d`로 수정·푸시했습니다. 실제 인증 ASGI 요청은 전후 각3회이며 auth purge는 각각1회입니다. 전500/부분 삭제는 유지하고 후200에서 A graph·graph-vector·project-vector0, B graph/vector/파일 및 outside/globalGBrain 보존을 확인했습니다. 별도 새 process에서도 A0과 B2/1/2를 확인했습니다. Clean 신규9/인접47, 최종fixture9, ROOT56 및 정적4가 통과했고 ROOT의 기존 lifecycle lock과 staged97/독립src-tests1250개를 보존했습니다. ASGI/lifespanOFF·3D 삭제 fixture이며 concurrent session선택·모델품질·cross-provider atomic 삭제를 증명하지 않습니다. 주세션 검수 완료, 독립 검수 미실행입니다. 다음 브라우저 검증은 ROOT의 기존 frontend38개 변경을 인지하고 현재 소스의 소유 빌드 사본을 사용합니다.
+
+최신 우선순위7은 **선행 수리 검수·게시 완료 후 새 전량 게이트 준비 중**이며 **NEXT_TASK=IMP20-FRESH-FULL-GATES-01**입니다. 이식 가능한 soak 경로 7개 회귀와 앞선 후보 빌드·SBOM 동결은 완료했습니다. 타입 오류64건과 기존 runtime 선행 변경을 `d868ec50`에 게시한 뒤, 독립 검수에서 발견한 원본 Git 읽기 경계 결함을 `1c872d6d`로 수정·승인·푸시했습니다. 기존 broad343통과/8실패/1skip 및 원본 검수 거절은 보존합니다.
+
+동일 `d868ec50`의 전량23개 진단은 **15 PASS / 8 FAIL**로 종료했습니다. 전체 Python 실행은 7117통과/136실패/127오류로 중단돼 PASS가 아닙니다. 빈 설정과 자식 인터프리터 선택, soak selftest 출력 경로 간섭을 확인했습니다. `b91fa86c`는 자식 실행 환경·selftest·no-wait 경계를 수정해 독립 승인·푸시했고, 패키지 기본 설정의 영향81개와 실제 isolated Uvicorn API9개 회귀가 통과했습니다.
+
+[Bandit 수정](raw/IMP19-BANDIT-GATE-CLOSURE-01/run-20261014T173200Z-codex/handoff-ko.md) `367863ce`는 공식 검사 Medium/High 33→0, 관련141개 회귀·린트·포맷·타입 통과, 독립 범위 승인 후 푸시했습니다. 기존 Low336·Starlette 경고1은 기록했습니다. [의존성 수정](raw/IMP19-PYTHON-DEPENDENCY-FLOORS-01/run-20261014T174700Z-codex/handoff-ko.md) `481a6341`은 실제 감사 미해결24→0, 기존 예외5개 유지, 독립 승인·푸시를 완료했습니다.
+
+2026-10-14T23:12:46Z 기준 [선행 수리 검수](raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/independent-review.md)는 `481a634..f3a42e6f`를 범위 승인했고 원격 HEAD도 `f3a42e6f`입니다. 요청 보존·실제 저장소 purge fixture, pytest 탐색 경계, 비활성 기본값·CLI discovery, 접근성 게이트 서버 소유권, 역사 판정/문서 계약을 게시했습니다. 문서101통과/기존 역사 보고서1skip, 서버 소유권 정적24통과, 실제 asyncio API9통과는 각각의 범위입니다. ROOT의 별도 변경 fixture3개는 보존했으므로 그 사본까지 후보와 같다고 주장하지 않습니다.
+
+실제 브라우저 첫 진단은 접근성33통과/2실패, witnesses18통과/12실패, ambient11통과/5실패였습니다. 후속 관련57건은56통과/uptime1실패였고, uptime 수정 후 해당 브라우저1건과 단위12건이 통과했습니다. 이들을 새57건 전량 성공으로 합산하지 않습니다. 최종 번들106개 파일은 표준 재빌드와 바이트가 같았습니다. 경로/API fixture4실패→4통과 및 새 의존성 SBOM 회귀27통과와 함께 [후속 검수](raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/independent-review-a7.md)에서 범위 승인됐고 `a7c1dc2f`까지 푸시했습니다. 주세션은 최종 후보 화면에서 상태 표시·검색 포커스/닫기·대화 화면 진입을 확인했습니다. WebSocket 재접속 흔적은 별도 미평가 한계로 남겼습니다. ROOT의 독립 수정 UI·번들은 보존했고 같은 후보라고 주장하지 않습니다. 다음은 새 후보의 전량23개 검증이며 신규8시간 soak는 NOT_RUN, 전체 GA·출시 승인은 미완료입니다. 사용자의 staged97개와 역사 원장은 보존합니다.
 
 ## 역사 스냅샷 — 2026-10-07 원문 보존
 

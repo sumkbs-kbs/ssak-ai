@@ -1,0 +1,22 @@
+[
+  {
+    "path": "tests/test_git_api_boundary.py",
+    "sha256": "2d6a76f09339f900a1db7fbb3b449138bb14d0e15eeee4b28769a9274a7d4d49"
+  },
+  {
+    "path": "tests/test_git_api_endpoints.py",
+    "sha256": "933854fa7cf3c941b5aa10031c46e975b70301e20dc3b2f96e4bcf7c35c8c0a2"
+  },
+  {
+    "path": "tests/test_path_security.py",
+    "sha256": "1f641d72b9a335820afe0caa68fdccee9231ce0138c644e4031a1f6f0c7f8dbe"
+  },
+  {
+    "path": "src/antigravity_k/api/path_security.py",
+    "sha256": "123436e5707f956d39ef90a362ab881b59c3dda8bee42ea3d3b647ad2fb40d85"
+  },
+  {
+    "path": "src/antigravity_k/api/routes/git_api.py",
+    "sha256": "5d7420599c28bf46a80943340316896b991f7684a07a31f2ba1e1b1a3c787600"
+  }
+]

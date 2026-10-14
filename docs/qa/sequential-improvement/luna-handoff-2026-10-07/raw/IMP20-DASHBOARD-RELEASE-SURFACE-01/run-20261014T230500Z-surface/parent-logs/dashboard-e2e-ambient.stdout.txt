@@ -1,0 +1,175 @@
+[dashboard-e2e-ambient] main base_url=http://127.0.0.1:53539 specs=5
+
+Running 16 tests using 9 workers
+
+  ✓   8 [chromium] › e2e/tests/task-execution.spec.ts:144:3 › renders the execution trace at 375px (1.8s)
+  ✓   9 [chromium] › e2e/tests/task-execution.spec.ts:144:3 › renders the execution trace at 768px (1.9s)
+  ✓  10 [chromium] › e2e/tests/task-execution.spec.ts:144:3 › renders the execution trace at 1280px (1.0s)
+  ✓  11 [chromium] › e2e/tests/task-execution.spec.ts:206:1 › shows a recoverable replay error (1.1s)
+  ✓   2 [chromium] › e2e/tests/capture-desktop-layout.spec.ts:3:1 › capture desktop layout screenshot (3.0s)
+  ✓  13 [chromium] › e2e/tests/task-execution.spec.ts:316:1 › repairs a live stream gap with authoritative replay before completing (548ms)
+  ✓  14 [chromium] › e2e/tests/task-execution.spec.ts:352:1 › compacts a large event stream behind a snapshot boundary without losing the latest events (459ms)
+  ✓   4 [chromium] › e2e/tests/capture-model-selection.spec.ts:3:1 › capture model selection popover with real local models (3.6s)
+  ✓  15 [chromium] › e2e/tests/task-execution.spec.ts:394:1 › does not mark an incomplete terminal replay as complete (465ms)
+  ✓  12 [chromium] › e2e/tests/task-execution.spec.ts:214:1 › runs submit, approval, cancel, resume, and reconnect without sequence duplication (2.7s)
+  ✘   1 [chromium] › e2e/tests/file-explorer.spec.ts:61:3 › Environment Rail — file browsing › should mount the editor from the 코드 tab (5.7s)
+  ✘   7 [chromium] › e2e/tests/file-explorer.spec.ts:34:3 › Environment Rail — file browsing › should keep the canvas clear until inspection is opened (5.7s)
+  ✘   6 [chromium] › e2e/tests/file-explorer.spec.ts:70:3 › Environment Rail — file browsing › should mount the change panel from the 변경 tab (5.7s)
+  ✘   5 [chromium] › e2e/tests/file-explorer.spec.ts:44:3 › Environment Rail — file browsing › should show file activity from git status (5.7s)
+  ✘   3 [chromium] › e2e/tests/file-explorer.spec.ts:79:3 › Environment Rail — file browsing › should toggle the environment rail closed and open (5.7s)
+WS_CONTRACT_LATENCY=[{"index":1,"kind":"end","attempts":1,"fileWriteMs":2,"wsDeliveryMs":301,"e2eMs":306,"reactRenderMs":5},{"index":2,"kind":"start","attempts":1,"fileWriteMs":1,"wsDeliveryMs":197,"e2eMs":299,"reactRenderMs":102},{"index":3,"kind":"end","attempts":1,"fileWriteMs":0,"wsDeliveryMs":103,"e2eMs":205,"reactRenderMs":102},{"index":4,"kind":"start","attempts":1,"fileWriteMs":1,"wsDeliveryMs":99,"e2eMs":190,"reactRenderMs":91},{"index":5,"kind":"end","attempts":1,"fileWriteMs":1,"wsDeliveryMs":117,"e2eMs":202,"reactRenderMs":85},{"index":6,"kind":"start","attempts":1,"fileWriteMs":1,"wsDeliveryMs":122,"e2eMs":201,"reactRenderMs":79},{"index":7,"kind":"end","attempts":1,"fileWriteMs":1,"wsDeliveryMs":124,"e2eMs":203,"reactRenderMs":79},{"index":8,"kind":"start","attempts":1,"fileWriteMs":1,"wsDeliveryMs":122,"e2eMs":190,"reactRenderMs":68},{"index":9,"kind":"end","attempts":1,"fileWriteMs":1,"wsDeliveryMs":134,"e2eMs":202,"reactRenderMs":68},{"index":10,"kind":"start","attempts":1,"fileWriteMs":0,"wsDeliveryMs":134,"e2eMs":207,"reactRenderMs":73}]
+  ✓  16 [chromium] › e2e/tests/ws-contract-e2e.spec.ts:68:1 › WS contract: bridged + API events reach the dashboard with exact payloads (25.6s)
+
+
+  1) [chromium] › e2e/tests/file-explorer.spec.ts:34:3 › Environment Rail — file browsing › should keep the canvas clear until inspection is opened 
+
+    TimeoutError: locator.waitFor: Timeout 5000ms exceeded.
+    Call log:
+      - waiting for locator('a, button').filter({ hasText: /AI 채팅|Chat/ }).first() to be visible
+
+
+       at pages/DashboardPage.ts:170
+
+      168 |   async goToChat(): Promise<void> {
+      169 |     const target = this.navChat.first();
+    > 170 |     await target.waitFor({ state: 'visible', timeout: 5000 });
+          |                  ^
+      171 |     await target.click({ force: true });
+      172 |     await this.page.waitForTimeout(800);
+      173 |   }
+        at DashboardPage.goToChat (/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/pages/DashboardPage.ts:170:18)
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/file-explorer.spec.ts:31:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-file-explorer-Enviro-22df6--until-inspection-is-opened-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/tests-file-explorer-Enviro-22df6--until-inspection-is-opened-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-file-explorer-Enviro-22df6--until-inspection-is-opened-chromium/error-context.md
+
+  2) [chromium] › e2e/tests/file-explorer.spec.ts:44:3 › Environment Rail — file browsing › should show file activity from git status 
+
+    TimeoutError: locator.waitFor: Timeout 5000ms exceeded.
+    Call log:
+      - waiting for locator('a, button').filter({ hasText: /AI 채팅|Chat/ }).first() to be visible
+
+
+       at pages/DashboardPage.ts:170
+
+      168 |   async goToChat(): Promise<void> {
+      169 |     const target = this.navChat.first();
+    > 170 |     await target.waitFor({ state: 'visible', timeout: 5000 });
+          |                  ^
+      171 |     await target.click({ force: true });
+      172 |     await this.page.waitForTimeout(800);
+      173 |   }
+        at DashboardPage.goToChat (/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/pages/DashboardPage.ts:170:18)
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/file-explorer.spec.ts:31:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-file-explorer-Enviro-81e3a-le-activity-from-git-status-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/tests-file-explorer-Enviro-81e3a-le-activity-from-git-status-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-file-explorer-Enviro-81e3a-le-activity-from-git-status-chromium/error-context.md
+
+  3) [chromium] › e2e/tests/file-explorer.spec.ts:61:3 › Environment Rail — file browsing › should mount the editor from the 코드 tab 
+
+    TimeoutError: locator.waitFor: Timeout 5000ms exceeded.
+    Call log:
+      - waiting for locator('a, button').filter({ hasText: /AI 채팅|Chat/ }).first() to be visible
+
+
+       at pages/DashboardPage.ts:170
+
+      168 |   async goToChat(): Promise<void> {
+      169 |     const target = this.navChat.first();
+    > 170 |     await target.waitFor({ state: 'visible', timeout: 5000 });
+          |                  ^
+      171 |     await target.click({ force: true });
+      172 |     await this.page.waitForTimeout(800);
+      173 |   }
+        at DashboardPage.goToChat (/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/pages/DashboardPage.ts:170:18)
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/file-explorer.spec.ts:31:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-file-explorer-Enviro-00bc3--the-editor-from-the-코드-tab-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/tests-file-explorer-Enviro-00bc3--the-editor-from-the-코드-tab-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-file-explorer-Enviro-00bc3--the-editor-from-the-코드-tab-chromium/error-context.md
+
+  4) [chromium] › e2e/tests/file-explorer.spec.ts:70:3 › Environment Rail — file browsing › should mount the change panel from the 변경 tab 
+
+    TimeoutError: locator.waitFor: Timeout 5000ms exceeded.
+    Call log:
+      - waiting for locator('a, button').filter({ hasText: /AI 채팅|Chat/ }).first() to be visible
+
+
+       at pages/DashboardPage.ts:170
+
+      168 |   async goToChat(): Promise<void> {
+      169 |     const target = this.navChat.first();
+    > 170 |     await target.waitFor({ state: 'visible', timeout: 5000 });
+          |                  ^
+      171 |     await target.click({ force: true });
+      172 |     await this.page.waitForTimeout(800);
+      173 |   }
+        at DashboardPage.goToChat (/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/pages/DashboardPage.ts:170:18)
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/file-explorer.spec.ts:31:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-file-explorer-Enviro-ff254-hange-panel-from-the-변경-tab-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/tests-file-explorer-Enviro-ff254-hange-panel-from-the-변경-tab-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-file-explorer-Enviro-ff254-hange-panel-from-the-변경-tab-chromium/error-context.md
+
+  5) [chromium] › e2e/tests/file-explorer.spec.ts:79:3 › Environment Rail — file browsing › should toggle the environment rail closed and open 
+
+    TimeoutError: locator.waitFor: Timeout 5000ms exceeded.
+    Call log:
+      - waiting for locator('a, button').filter({ hasText: /AI 채팅|Chat/ }).first() to be visible
+
+
+       at pages/DashboardPage.ts:170
+
+      168 |   async goToChat(): Promise<void> {
+      169 |     const target = this.navChat.first();
+    > 170 |     await target.waitFor({ state: 'visible', timeout: 5000 });
+          |                  ^
+      171 |     await target.click({ force: true });
+      172 |     await this.page.waitForTimeout(800);
+      173 |   }
+        at DashboardPage.goToChat (/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/pages/DashboardPage.ts:170:18)
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/file-explorer.spec.ts:31:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-file-explorer-Enviro-d6705-onment-rail-closed-and-open-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/tests-file-explorer-Enviro-d6705-onment-rail-closed-and-open-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-file-explorer-Enviro-d6705-onment-rail-closed-and-open-chromium/error-context.md
+
+  5 failed
+    [chromium] › e2e/tests/file-explorer.spec.ts:34:3 › Environment Rail — file browsing › should keep the canvas clear until inspection is opened 
+    [chromium] › e2e/tests/file-explorer.spec.ts:44:3 › Environment Rail — file browsing › should show file activity from git status 
+    [chromium] › e2e/tests/file-explorer.spec.ts:61:3 › Environment Rail — file browsing › should mount the editor from the 코드 tab 
+    [chromium] › e2e/tests/file-explorer.spec.ts:70:3 › Environment Rail — file browsing › should mount the change panel from the 변경 tab 
+    [chromium] › e2e/tests/file-explorer.spec.ts:79:3 › Environment Rail — file browsing › should toggle the environment rail closed and open 
+  11 passed (29.8s)

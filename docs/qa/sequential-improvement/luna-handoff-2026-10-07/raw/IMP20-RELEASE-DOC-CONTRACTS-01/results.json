@@ -1,0 +1,16 @@
+{
+  "result": "SCOPED_CONTRACTS_PASS",
+  "ga": "NOT_APPROVED",
+  "tests": 102,
+  "passed": 101,
+  "failed": [],
+  "skipped": [
+    "test_gate_report_for_the_declared_fingerprint_measured_this_tree"
+  ],
+  "scope": "six explicit contract/regression files; no broad suite/providers/inference/soak",
+  "restored_originals": 14,
+  "production_scan": 1164,
+  "lint_exit": 0,
+  "format_exit": 0,
+  "diff_check_exit": 0
+}

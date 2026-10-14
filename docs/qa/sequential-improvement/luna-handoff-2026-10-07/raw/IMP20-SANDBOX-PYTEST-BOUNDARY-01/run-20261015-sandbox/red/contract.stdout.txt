@@ -1,0 +1,195 @@
+.F.FFF..FFF..                                                            [100%]
+=================================== FAILURES ===================================
+___________ TestWorkspaceStillRuns.test_pytest_runs_inside_workspace ___________
+
+self = <tests.test_cr03_sandbox_read_boundary.TestWorkspaceStillRuns object at 0x107f0f110>
+workdir = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-PYTEST-BOUNDARY-01/run-20261015-sandbox/red/runtime/pytest/test_pytest_runs_inside_worksp0')
+
+    def test_pytest_runs_inside_workspace(self, workdir: Path) -> None:
+        (workdir / "test_sample.py").write_text("def test_ok():\n    assert 1 + 1 == 2\n", encoding="utf-8")
+    
+        result = run_sandboxed_argv(
+            [sys.executable, "-m", "pytest", "-q", "--no-header", "-p", "no:cacheprovider", "test_sample.py"],
+            cwd=str(workdir),
+            timeout=120,
+            env=_sandbox_env(str(workdir)),
+        )
+    
+>       assert result.success is True, result.error or result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/pytest/__main__.py", line 9, in <module>
+E             raise SystemExit(_console_main())
+E                              ~~~~~~~~~~~~~^^
+E           File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py", line 253, in _console_main
+E             code = _main(prog=_get_prog_name(sys.argv))
+E           File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py", line 223, in _main
+E             config = _prepareconfig(new_args, plugins, prog=prog)
+E           File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py", line 410, in _prepareconfig
+E             config: Config = pluginmanager.hook.pytest_cmdline_parse(
+E                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+E                 pluginmanager=pluginmanager, args=args
+E                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E             )
+E             ^
+E           File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/pluggy/_hooks.py", line 512, in __call__
+E             return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+E                    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/pluggy/_manager.py", line 120, in _hookexec
+E             return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+E                    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/pluggy/_callers.py", line 167, in _multicall
+E             raise exception
+E           File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/pluggy/_callers.py", line 139, in _multicall
+E             teardown.throw(exception)
+E             ~~~~~~~~~~~~~~^^^^^^^^^^^
+E           File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/_pytest/helpconfig.py", line 124, in pytest_cmdline_parse
+E             config = yield
+E                      ^^^^^
+E           File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/pluggy/_callers.py", line 121, in _multicall
+E             res = hook_impl.function(*args)
+E           File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py", line 1232, in pytest_cmdline_parse
+E             self.parse(args)
+E             ~~~~~~~~~~^^^^^^
+E           File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py", line 1533, in parse
+E             rootpath, inipath, inicfg, ignored_config_files = determine_setup(
+E                                                               ~~~~~~~~~~~~~~~^
+E                 inifile=ns.inifilename,
+E                 ^^^^^^^^^^^^^^^^^^^^^^^
+E             ...<3 lines>...
+E                 invocation_dir=self.invocation_params.dir,
+E                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E             )
+E             ^
+E           File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/_pytest/config/findpaths.py", line 314, in determine_setup
+E             rootdir, inipath, inicfg, ignored_config_files = locate_config(
+E                                                              ~~~~~~~~~~~~~^
+E                 invocation_dir, [ancestor]
+E                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E             )
+E             ^
+E           File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/_pytest/config/findpaths.py", line 186, in locate_config
+E             if p.is_file():
+E                ~~~~~~~~~^^
+E           File "/Users/mr.k/miniforge3/lib/python3.13/pathlib/_abc.py", line 482, in is_file
+E             return S_ISREG(self.stat(follow_symlinks=follow_symlinks).st_mode)
+E                            ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/Users/mr.k/miniforge3/lib/python3.13/pathlib/_local.py", line 515, in stat
+E             return os.stat(self, follow_symlinks=follow_symlinks)
+E                    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         PermissionError: [Errno 1] Operation not permitted: '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/pyproject.toml'
+E         
+E       assert False is True
+E        +  where False = SandboxResult(success=False, stdout='', stderr='Traceback (most recent call last):\n  File "<frozen runpy>", line 198,...sak_comp/Ssak-Ai/pyproject.toml\'\n', return_code=1, timed_out=False, sandboxed=True, output_truncated=False, error='').success
+
+tests/test_cr03_sandbox_read_boundary.py:98: AssertionError
+___ TestCanonicalAndChildBoundary.test_alias_path_to_same_sentinel_is_denied ___
+
+self = <tests.test_cr03_sandbox_read_boundary.TestCanonicalAndChildBoundary object at 0x107f0d450>
+workdir = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-PYTEST-BOUNDARY-01/run-20261015-sandbox/red/runtime/pytest/test_alias_path_to_same_sentin0')
+
+    def test_alias_path_to_same_sentinel_is_denied(self, workdir: Path) -> None:
+        """/var/folders(비-canonical)로 접근해도 canonical deny가 적용된다."""
+        outside = _outside_dir("cr03-alias-")
+        sentinel = outside / "other-process-secret.txt"
+        sentinel.write_text(SENTINEL, encoding="utf-8")
+    
+        result = _run_probe(workdir, _read_probe(str(sentinel)))
+    
+>       assert os.path.realpath(sentinel).startswith("/private/var/folders")
+E       AssertionError: assert False
+E        +  where False = <built-in method startswith of str object at 0x11168cad0>('/private/var/folders')
+E        +    where <built-in method startswith of str object at 0x11168cad0> = '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-PYTEST-BOUNDARY-01/run-20261015-sandbox/red/runtime/tmp/cr03-alias-myblml0z/other-process-secret.txt'.startswith
+E        +      where '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-PYTEST-BOUNDARY-01/run-20261015-sandbox/red/runtime/tmp/cr03-alias-myblml0z/other-process-secret.txt' = <function realpath at 0x104cffe20>(PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-PYTEST-BOUNDARY-01/run-20261015-sandbox/red/runtime/tmp/cr03-alias-myblml0z/other-process-secret.txt'))
+E        +        where <function realpath at 0x104cffe20> = <module 'posixpath' (frozen)>.realpath
+E        +          where <module 'posixpath' (frozen)> = os.path
+
+tests/test_cr03_sandbox_read_boundary.py:205: AssertionError
+___________ TestAgentTestSuiteExecution.test_passing_solution_passes ___________
+
+self = <tests.test_fr01_agent_execution_isolation.TestAgentTestSuiteExecution object at 0x107f0f890>
+workdir = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-PYTEST-BOUNDARY-01/run-20261015-sandbox/red/runtime/pytest/test_passing_solution_passes0')
+
+    @pytest.mark.skipif(not IS_MACOS, reason="seatbelt backend required")
+    def test_passing_solution_passes(self, workdir: Path) -> None:
+        (workdir / "solution.py").write_text(_GOOD_CODE, encoding="utf-8")
+        (workdir / "test_solution.py").write_text(_GOOD_TEST, encoding="utf-8")
+        passed, feedback = _agent()._run_test_suite(workdir)
+>       assert passed is True
+E       assert False is True
+
+tests/test_fr01_agent_execution_isolation.py:64: AssertionError
+______ TestAgentTestSuiteExecution.test_failing_solution_reports_failure _______
+
+self = <tests.test_fr01_agent_execution_isolation.TestAgentTestSuiteExecution object at 0x107f0fb10>
+workdir = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-PYTEST-BOUNDARY-01/run-20261015-sandbox/red/runtime/pytest/test_failing_solution_reports_0')
+
+    @pytest.mark.skipif(not IS_MACOS, reason="seatbelt backend required")
+    def test_failing_solution_reports_failure(self, workdir: Path) -> None:
+        (workdir / "solution.py").write_text(_BAD_CODE, encoding="utf-8")
+        (workdir / "test_solution.py").write_text(_GOOD_TEST, encoding="utf-8")
+        passed, feedback = _agent()._run_test_suite(workdir)
+        assert passed is False
+>       assert "assert" in feedback
+E       assert 'assert' in '^^^\n  File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/pluggy/_c...nPermissionError: [Errno 1] Operation not permitted: \'/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/pyproject.toml\'\n'
+
+tests/test_fr01_agent_execution_isolation.py:73: AssertionError
+____ TestAgentTestSuiteExecution.test_single_path_uses_sandbox_and_reports _____
+
+self = <tests.test_fr01_agent_execution_isolation.TestAgentTestSuiteExecution object at 0x1101b7890>
+
+    @pytest.mark.skipif(not IS_MACOS, reason="seatbelt backend required")
+    def test_single_path_uses_sandbox_and_reports(self) -> None:
+        agent = _agent()
+        with patch.object(agent, "_graphify_context", return_value=""):
+            outcome = agent._run_code("Write add", _GOOD_TEST, max_repairs=0)
+>       assert outcome.passed is True
+E       AssertionError: assert False is True
+E        +  where False = AgentOutcome(task='Write add', answer='def add(a, b):\n    return a + b', steps=[AgentStep(action='code+repair(0)', detail='failed, retrying', tokens_in=0)], used_web=False, used_graphify=False, total_seconds=0.0, passed=False).passed
+
+tests/test_fr01_agent_execution_isolation.py:119: AssertionError
+__ TestAgentTestSuiteExecution.test_consistency_path_uses_sandbox_and_reports __
+
+self = <tests.test_fr01_agent_execution_isolation.TestAgentTestSuiteExecution object at 0x107ef7790>
+
+    @pytest.mark.skipif(not IS_MACOS, reason="seatbelt backend required")
+    def test_consistency_path_uses_sandbox_and_reports(self) -> None:
+        agent = _agent()
+        with patch.object(agent, "_graphify_context", return_value=""):
+            outcome = agent._run_code("Write add", _GOOD_TEST, max_repairs=0, consistency_samples=2)
+>       assert outcome.passed is True
+E       AssertionError: assert False is True
+E        +  where False = AgentOutcome(task='Write add', answer='', steps=[AgentStep(action='consistency(0)', detail='no pass', tokens_in=0), Ag...consistency(1)', detail='no pass', tokens_in=0)], used_web=False, used_graphify=False, total_seconds=0.0, passed=False).passed
+
+tests/test_fr01_agent_execution_isolation.py:126: AssertionError
+_____________ TestAnswerPatchVerifier.test_passing_patch_detected ______________
+
+self = <tests.test_best_of_n_verifier.TestAnswerPatchVerifier object at 0x107f0fc50>
+tmp_path = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-PYTEST-BOUNDARY-01/run-20261015-sandbox/red/runtime/pytest/test_passing_patch_detected0')
+
+    def test_passing_patch_detected(self, tmp_path: Path):
+        import sys as _sys
+    
+        from antigravity_k.engine.best_of_n_verifier import make_answer_patch_verifier
+    
+        repo = self._tiny_git_repo(tmp_path)
+        verifier = make_answer_patch_verifier(
+            repo, [_sys.executable, "-m", "pytest", "-q", "test_value.py"], timeout_sec=60
+        )
+        answer = "수정안:\n```python config_value.py\nVALUE = 2\n```"
+        outcome = verifier(answer)
+>       assert outcome.passed is True
+E       assert False is True
+E        +  where False = VerificationOutcome(passed=False, score=0.0, detail="PermissionError: [Errno 1] Operation not permitted: '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/pyproject.toml'").passed
+
+tests/test_best_of_n_verifier.py:382: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_cr03_sandbox_read_boundary.py::TestWorkspaceStillRuns::test_pytest_runs_inside_workspace
+FAILED tests/test_cr03_sandbox_read_boundary.py::TestCanonicalAndChildBoundary::test_alias_path_to_same_sentinel_is_denied
+FAILED tests/test_fr01_agent_execution_isolation.py::TestAgentTestSuiteExecution::test_passing_solution_passes
+FAILED tests/test_fr01_agent_execution_isolation.py::TestAgentTestSuiteExecution::test_failing_solution_reports_failure
+FAILED tests/test_fr01_agent_execution_isolation.py::TestAgentTestSuiteExecution::test_single_path_uses_sandbox_and_reports
+FAILED tests/test_fr01_agent_execution_isolation.py::TestAgentTestSuiteExecution::test_consistency_path_uses_sandbox_and_reports
+FAILED tests/test_best_of_n_verifier.py::TestAnswerPatchVerifier::test_passing_patch_detected
+7 failed, 6 passed in 2.18s

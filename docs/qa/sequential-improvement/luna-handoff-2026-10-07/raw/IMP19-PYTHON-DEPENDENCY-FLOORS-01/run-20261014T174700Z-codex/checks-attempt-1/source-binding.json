@@ -1,0 +1,10 @@
+[
+  {
+    "path": "pyproject.toml",
+    "sha256": "1c55da4a70651de2fe08ff3e2f82dc87f9e3e26058c522f1d537865f2aee6db3"
+  },
+  {
+    "path": "uv.lock",
+    "sha256": "82390dd4dd4f350fd2411f79fa6492f6d9ef8082dd100a0047170740e11c2380"
+  }
+]

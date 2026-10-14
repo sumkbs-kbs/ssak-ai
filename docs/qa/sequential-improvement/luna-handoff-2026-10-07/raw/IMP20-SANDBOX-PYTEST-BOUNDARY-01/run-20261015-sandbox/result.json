@@ -1,0 +1,15 @@
+{
+  "status": "COMPLETE_SCOPED",
+  "review": "PENDING",
+  "red": {"passed": 6, "failed": 7, "junit": "red/junit.xml"},
+  "final_focused": {"passed": 16, "failed": 0, "junit": "green-2/junit.xml"},
+  "boundary_regression": {"passed": 15, "failed": 0, "deselected": 1, "junit": "boundaries/junit.xml"},
+  "static_checks": "boundaries/checks.json",
+  "patch_reconstruction": "patch-reconstruction.json",
+  "changed_files": ["src/antigravity_k/engine/sandbox.py", "tests/test_cr03_sandbox_read_boundary.py"],
+  "whole_project_gate": "NOT_RUN",
+  "real_model_inference": "NOT_RUN",
+  "network_syscall_count": "NOT_INSTRUMENTED",
+  "orchestration_reserved_loopback_binds": 4,
+  "commit_push": "NOT_RUN"
+}

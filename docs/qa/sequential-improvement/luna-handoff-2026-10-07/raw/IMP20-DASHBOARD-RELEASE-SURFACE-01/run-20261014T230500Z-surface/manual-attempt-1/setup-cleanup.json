@@ -1,0 +1,9 @@
+{
+  "verified_owned_environment": true,
+  "pids": {
+    "22845": 1,
+    "22847": 1
+  },
+  "signal": "SIGTERM",
+  "helper_sha256": "b4b45a329227cfa62995b0b5214606958433a1864ed11f796c88180636eae40a"
+}

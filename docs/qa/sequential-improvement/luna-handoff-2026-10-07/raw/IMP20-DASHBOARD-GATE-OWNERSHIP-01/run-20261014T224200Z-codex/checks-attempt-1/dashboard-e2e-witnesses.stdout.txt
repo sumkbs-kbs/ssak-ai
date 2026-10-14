@@ -1,0 +1,411 @@
+
+Running 30 tests using 9 workers
+
+  ✓   1 [chromium] › e2e/tests/cr06-settings-errors.spec.ts:48:1 › initial load failure shows an error state instead of a saveable default form (21.3s)
+  ✓   9 [chromium] › e2e/tests/cr06-settings-errors.spec.ts:169:1 › a server-reported zero cost is shown and preserved, not replaced by a default (21.5s)
+  ✓   8 [chromium] › e2e/tests/cr05-settings-secrets.spec.ts:163:1 › legacy browser-stored API key is purged on load while preferences survive (22.0s)
+  ✓   3 [chromium] › e2e/tests/cr06-settings-errors.spec.ts:214:1 › the success path uses the real server and shows its enforced cost limits (22.1s)
+  ✓   5 [chromium] › e2e/tests/cr06-settings-errors.spec.ts:105:1 › a failed save keeps non-secret input and never claims success (22.1s)
+  ✓   2 [chromium] › e2e/tests/cr06-settings-errors.spec.ts:71:1 › a load timeout is surfaced and the retry recovers against the real server (22.2s)
+  ✓   7 [chromium] › e2e/tests/cr05-settings-secrets.spec.ts:103:1 › typed API key never persists in the browser and is cleared after save/reload (22.7s)
+  ✓   4 [chromium] › e2e/tests/cr06-settings-errors.spec.ts:133:1 › three rapid clicks produce exactly one save request (23.3s)
+  ✘   6 [chromium] › e2e/tests/cr07-route-recovery.spec.ts:37:1 › a blocked page chunk shows a reload recovery screen and recovers after reload (31.2s)
+  ✓  12 [chromium] › e2e/tests/cr07-route-recovery.spec.ts:132:1 › a crash and recovery keep stored conversations and local history (19.1s)
+  ✓  13 [chromium] › e2e/tests/cr08-keyboard-accessibility.spec.ts:64:1 › C08-01 · provider 비밀 입력이 각각 고유한 접근성 이름을 갖는다 (19.0s)
+  ✓  15 [chromium] › e2e/tests/cr08-keyboard-accessibility.spec.ts:145:1 › C08-03 · 검색/Enter 실행과 IME 조합 Enter를 구분한다 (19.2s)
+  ✘  16 [chromium] › e2e/tests/cr08-keyboard-accessibility.spec.ts:185:3 › C08-04 · desktop — 팔레트·404·복구 화면 확인과 axe 심각·치명 0 (19.2s)
+  ✘  17 [chromium] › e2e/tests/cr08-keyboard-accessibility.spec.ts:185:3 › C08-04 · narrow — 팔레트·404·복구 화면 확인과 axe 심각·치명 0 (19.2s)
+  ✘  10 [chromium] › e2e/tests/cr07-route-recovery.spec.ts:70:1 › a page that throws while rendering keeps the shell and offers retry (28.8s)
+  ✘  11 [chromium] › e2e/tests/cr07-route-recovery.spec.ts:106:1 › an unknown deep link shows a not-found screen with home and back (28.8s)
+  ✘  14 [chromium] › e2e/tests/cr08-keyboard-accessibility.spec.ts:90:1 › C08-02 · 팔레트가 modal 의미·focus 순환·복귀·배경 inert를 지킨다 (29.0s)
+  ✘  18 [chromium] › e2e/tests/cr09-offline-assets.spec.ts:220:1 › C09-01/02 · cold cache + 외부 차단에서 Chat/Markdown/코드/Mermaid가 로컬 자산으로 렌더된다 (23.5s)
+[C09-EVIDENCE] {"blockedExternal":[],"consoleMessages":[],"failedResponses":[],"fontFaces":{"families":[],"externalSources":[]},"highlightApplied":null}
+  ✓  19 [chromium] › e2e/tests/cr09-offline-assets.spec.ts:262:1 › C09-01 · 설정 화면도 외부 요청 없이 cold cache에서 로드된다 (19.0s)
+[C09-EVIDENCE] {"blockedExternal":[],"consoleMessages":[],"failedResponses":[],"fontFaces":{"families":[],"externalSources":[]},"highlightApplied":null}
+  ✓  20 [chromium] › e2e/tests/cr09-offline-assets.spec.ts:285:1 › C09-01/02 · 승인 큐 Monaco diff도 외부 요청 없이 로컬 번들/워커로 렌더된다 (19.6s)
+  ✘  22 [chromium] › e2e/tests/cr10-telemetry.spec.ts:67:1 › C10-01/02/04/05 · 화면 지표가 실제 API 값과 일치한다 (19.1s)
+  ✘  23 [chromium] › e2e/tests/cr10-telemetry.spec.ts:158:1 › C10-04 · 화면 지표가 API 응답을 그대로 옮긴다(고정 payload 대조) (18.6s)
+  ✘  21 [chromium] › e2e/tests/cr09-offline-assets.spec.ts:316:1 › C09-03 · 악성 다이어그램 라벨이 실행되지 않고 주입되지도 않는다 (23.7s)
+  ✘  25 [chromium] › e2e/tests/cr10-telemetry.spec.ts:249:1 › C10-03 · API가 끊기면 UNKNOWN/OFFLINE이고 healthy를 주장하지 않는다 (19.4s)
+[before] surface={"label":"running","cancel":true,"resume":false,"connection":"연결됨","retryOffered":false}
+[before] server=[{"task_id":"task_9c107b9c","prompt":"cr14-f39-crash-restart-witness","status":"running","progress":0,"output_length":0,"error":null,"created_at":"2026-10-14T22:56:12.216189+00:00","updated_at":"2026-10-14T22:56:12.217589+00:00","checkpoint_count":0,"execution_owner":"live","resumable":false}]
+[crash] SIGKILL pid=17507 — 첫 서버가 답하지 않는다
+[fail-first A] POST /v1/auth/ws-ticket → 401 ticketLen=0
+[fail-first B] ticket 없는 WS close={"code":4401,"reason":"Unauthorized"}
+[login] projectKnown=true
+[ticket] hits=[{"path":"/api/auth/ws-ticket","status":200,"ticketLen":233}]
+[ws] urls=["ws://127.0.0.1:53049/v1/ws/events?ticket=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNzkyMDE4NTc2LCJleHAiOjE3OTIwMTg2MDYuMTgyMjA5LCJqdGkiOiJWSjhvUk9XMjd6RmhnclRFZ3M5ckJnIiwidHlwIjoid3MtdGlja2V0IiwiZXBvY2giOjF9.Xo6QAdPP-zR8Z4Htp0V4mASL35P083DYqjd1tTYdNC4"]
+[ws] stayedOpen=true closed=false
+[session] bearer length=188
+[canonical] POST /api/auth/ws-ticket → 200 ticketLen=233
+[결과] OK
+  ✓  27 [chromium] › e2e/tests/cr14-pin-ws-ticket.spec.ts:102:1 › PIN 보호 서버에서 ticket 이 ?ticket= 으로 실려 이벤트 WS 가 연결된다 (C33-6) (20.4s)
+[submit-1] 제출 status=202
+[before] surface={"label":"running","cancel":true,"resume":false,"connection":"연결됨","retryOffered":false}
+[crash-1] SIGKILL pid=17611 — 포트 53094 가 닫힌다
+[projects] {"ok":true,"workspace":"/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/runtime/tmp/agk-f37-xwkV4t","current_project":{"id":"default","name":"agk-e2e-opened","path":"/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/runtime/tmp/agk-f37-xwkV4t","is_active":true,"last_accessed_at":"2026-01-05T09:00:00.000000","tasks":[]},"projects":[{
+[sent] {"projectHeader":"default","body":{"prompt":"cr14-f37-submit-witness","idempotency_key":"dashboard-task-3d9b7957-8b38-4d38-a275-ea755f357b7d","project_id":"default"}}
+[submit] status=202 body={"status":"submitted","task_id":"task_1d329e6c"}
+[surface] {"label":"running","cancel":true,"resume":false,"connection":"연결됨","retryOffered":false}
+[api] rows=[{"task_id":"task_1d329e6c","prompt":"cr14-f37-submit-witness","status":"running","progress":0,"output_length":0,"error":null,"created_at":"2026-10-14T22:56:21.857756+00:00","updated_at":"2026-10-14T22:56:21.859253+00:00","checkpoint_count":0,"execution_owner":"live","resumable":false}]
+[결과] OK
+  ✓  29 [chromium] › e2e/tests/cr14-task-submit-contract.spec.ts:56:1 › 작업 제출이 서버에 도착하고 목록에 나타난다 (F-37) (20.2s)
+[down-1] 연결 라벨 이력=["연결됨","재연결 중","연결 오류"] · 현재=연결 오류 · 탈출구=true
+[down-1] 메시지="Request failed due to a network error: GET http://127.0.0.1:53094/api/tasks/task_b8d899ba/events?after_sequence=1&limit=500"
+[projects] {"ok":true,"workspace":"/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/runtime/tmp/agk-f38-2X7NkQ","current_project":{"id":"default","name":"agk-f38-2X7NkQ","path":"/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/runtime/tmp/agk-f38-2X7NkQ","is_active":true,"last_accessed_at":null,"tasks":[]},"projects":[{"id":"default","name":"a
+[sent] {"projectHeader":"default","body":{"prompt":"cr14-f37-submit-witness","idempotency_key":"dashboard-task-b68a4e8f-1f51-4e7e-80c0-8c4d6892ba1c","project_id":"default"}}
+[submit] status=202 body={"status":"submitted","task_id":"task_4f18d740"}
+[결과] OK
+  ✓  30 [chromium] › e2e/tests/cr14-task-submit-contract.spec.ts:120:1 › 처음 설치한 기계에서도 화면이 자기 프로젝트를 얻고 제출한다 (F-38) (20.2s)
+[hopeless-retry] surface={"label":"running","cancel":true,"resume":false,"connection":"연결 오류","retryOffered":true}
+  ✘  24 [chromium] › e2e/tests/cr10-telemetry.spec.ts:210:1 › C10-02 · 서버 재시작 후 UPTIME이 0에서 다시 시작한다 (38.1s)
+[restart] 같은 포트 53027 · 17945ms · pid 17792
+[M1] 재기동 뒤 기존 토큰으로 GET /api/tasks → 200
+[restart-1] 같은 포트 53094 로 재기동 · 17854ms · pid 17985
+[server-1] 서버 행=[{"task_id":"task_b8d899ba","prompt":"cr14-f41-retry-escape-hatch-witness","status":"running","error":null,"created_at":"2026-10-14T22:56:21.061147+00:00","updated_at":"2026-10-14T22:56:21.066535+00:00","version":1,"execution_owner":"dead","resumable":true}]
+[M3-1] 탈출구 누르기 전 surface={"label":"running","cancel":true,"resume":false,"connection":"연결 오류","retryOffered":true}
+[M3-1] 연결 라벨 이력=["연결 오류","연결됨"] · 정착=연결됨
+[M3-1] surface={"label":"실행 중단(소유 프로세스 종료) — 재개 가능","cancel":true,"resume":true,"connection":"연결됨","retryOffered":false}
+[M3-1] expected={"label":"실행 중단(소유 프로세스 종료) — 재개 가능","resume":true,"cancel":true}
+[M3-1] 낡은 스냅샷이었는가=true
+[submit-2] 제출 status=202
+[before-2] surface={"label":"running","cancel":true,"resume":false,"connection":"연결됨","retryOffered":false}
+[crash-2] SIGKILL pid=17985 — 포트 53094 가 닫힌다
+[down-2] 연결 라벨 이력=["연결됨","재연결 중","연결 오류"] · 현재=연결 오류 · 탈출구=true
+[down-2] 메시지="Request failed due to a network error: GET http://127.0.0.1:53094/api/tasks/task_cb9e2ca7/events?after_sequence=2&limit=500"
+[M2] 연결 라벨 이력=["연결 오류"] · 현재=연결 오류
+[M2] surface={"label":"running","cancel":true,"resume":false,"connection":"연결 오류","retryOffered":true}
+[M2] server=[{"task_id":"task_9c107b9c","prompt":"cr14-f39-crash-restart-witness","status":"running","error":null,"created_at":"2026-10-14T22:56:12.215229+00:00","updated_at":"2026-10-14T22:56:12.217892+00:00","version":1,"execution_owner":"dead","resumable":true}]
+[M3] 화면이 제공한 "다시 연결"을 누른다
+[M3] 다시 연결 뒤 학습=true surface={"label":"실행 중단(소유 프로세스 종료) — 재개 가능","cancel":true,"resume":true,"connection":"연결됨","retryOffered":false}
+[결과] OK
+  ✓  26 [chromium] › e2e/tests/cr14-crash-restart-surface.spec.ts:60:1 › 크래시·재기동 뒤 열려 있는 화면이 새 사실을 배우는가 (F-39) (1.1m)
+[restart-2] 같은 포트 53094 로 재기동 · 17885ms · pid 18173
+[server-2] 서버 행=[{"task_id":"task_cb9e2ca7","prompt":"cr14-f41-retry-escape-hatch-witness-2","status":"running","error":null,"created_at":"2026-10-14T22:56:41.405165+00:00","updated_at":"2026-10-14T22:56:41.408188+00:00","version":1,"execution_owner":"dead","resumable":true}]
+[M3-2] 탈출구 누르기 전 surface={"label":"running","cancel":true,"resume":false,"connection":"연결 오류","retryOffered":true}
+[M3-2] 연결 라벨 이력=["연결 오류","연결됨"] · 정착=연결됨
+[M3-2] surface={"label":"실행 중단(소유 프로세스 종료) — 재개 가능","cancel":true,"resume":true,"connection":"연결됨","retryOffered":false}
+[M3-2] expected={"label":"실행 중단(소유 프로세스 종료) — 재개 가능","resume":true,"cancel":true}
+[M3-2] 낡은 스냅샷이었는가=true
+[결과] OK
+  ✓  28 [chromium] › e2e/tests/cr14-retry-escape-hatch.spec.ts:184:1 › 연결을 포기한 화면의 "다시 연결"이 새 사실을 배우는가 (F-41) (1.0m)
+
+
+  1) [chromium] › e2e/tests/cr07-route-recovery.spec.ts:37:1 › a blocked page chunk shows a reload recovery screen and recovers after reload 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('[aria-label="Codex Desktop Navigation"]')
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 10000ms
+      - waiting for locator('[aria-label="Codex Desktop Navigation"]')
+
+
+      51 |     await expect(page.locator(RELOAD)).toBeVisible();
+      52 |     // 셸(사이드바)은 살아 있다.
+    > 53 |     await expect(page.locator(SHELL)).toBeVisible();
+         |                                       ^
+      54 |     // 원문 오류/스택이 화면에 없다.
+      55 |     await expect(page.locator('body')).not.toContainText('HistoryPage-');
+      56 |     await expect(page.locator(ERROR_ID)).toContainText(/E-[0-9A-F]{8}/);
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/cr07-route-recovery.spec.ts:53:39
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-cr07-route-recovery--f0f37-n-and-recovers-after-reload-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-cr07-route-recovery--f0f37-n-and-recovers-after-reload-chromium/error-context.md
+
+  2) [chromium] › e2e/tests/cr07-route-recovery.spec.ts:70:1 › a page that throws while rendering keeps the shell and offers retry 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('[aria-label="Codex Desktop Navigation"]')
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 10000ms
+      - waiting for locator('[aria-label="Codex Desktop Navigation"]')
+
+
+      87 |     await expect(page.locator(RECOVERY)).toHaveAttribute('data-error-kind', 'render');
+      88 |     // 셸은 남고, 원문 예외 메시지는 화면에 없다.
+    > 89 |     await expect(page.locator(SHELL)).toBeVisible();
+         |                                       ^
+      90 |     await expect(page.locator('body')).not.toContainText(RENDER_FIXTURE);
+      91 |
+      92 |     await page.locator(RETRY).click();
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/cr07-route-recovery.spec.ts:89:39
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-cr07-route-recovery--e40fb--the-shell-and-offers-retry-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-cr07-route-recovery--e40fb--the-shell-and-offers-retry-chromium/error-context.md
+
+  3) [chromium] › e2e/tests/cr07-route-recovery.spec.ts:106:1 › an unknown deep link shows a not-found screen with home and back 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('[aria-label="Codex Desktop Navigation"]')
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 10000ms
+      - waiting for locator('[aria-label="Codex Desktop Navigation"]')
+
+
+      114 |     await expect(page.locator(NOT_FOUND)).toBeVisible({ timeout: 20_000 });
+      115 |     await expect(page.getByTestId('cr07-not-found-path')).toContainText('/definitely-not-a-route');
+    > 116 |     await expect(page.locator(SHELL)).toBeVisible();
+          |                                       ^
+      117 |
+      118 |     await page.getByTestId('cr07-not-found-home').click();
+      119 |     await expect(page.locator(NOT_FOUND)).toHaveCount(0, { timeout: 20_000 });
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/cr07-route-recovery.spec.ts:116:39
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-cr07-route-recovery--dcbed-d-screen-with-home-and-back-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-cr07-route-recovery--dcbed-d-screen-with-home-and-back-chromium/error-context.md
+
+  4) [chromium] › e2e/tests/cr08-keyboard-accessibility.spec.ts:90:1 › C08-02 · 팔레트가 modal 의미·focus 순환·복귀·배경 inert를 지킨다 
+
+    Error: expect(locator).toHaveAttribute() failed
+
+    Locator:  locator('aside').first()
+    Expected: have attribute
+    Received: attribute not present
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 10000ms
+      - waiting for locator('aside').first()
+        24 × locator resolved to <aside id="workspace-sidebar" aria-label="SSAK-AI 탐색" class="workspace-sidebar codex-desktop-sidebar">…</aside>
+           - unexpected value "attribute not present"
+
+
+      111 |      * 같은 레벨의 사이드바·본문과 상위 레벨의 형제가 모두 비활성이어야 한다.
+      112 |      */
+    > 113 |     await expect(page.locator('aside').first()).toHaveAttribute('inert');
+          |                                                 ^
+      114 |     await expect(page.locator(SHELL_LAYOUT).locator('.app-right-panel')).toHaveAttribute('inert');
+      115 |     expect(await page.evaluate(() => document.querySelectorAll('[inert]').length)).toBeGreaterThan(0);
+      116 |
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/cr08-keyboard-accessibility.spec.ts:113:49
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-cr08-keyboard-access-785ab-미·focus-순환·복귀·배경-inert를-지킨다-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-cr08-keyboard-access-785ab-미·focus-순환·복귀·배경-inert를-지킨다-chromium/error-context.md
+
+  5) [chromium] › e2e/tests/cr08-keyboard-accessibility.spec.ts:185:3 › C08-04 · desktop — 팔레트·404·복구 화면 확인과 axe 심각·치명 0 
+
+    Error: 팔레트 axe 위반: [serious] color-contrast: Elements must meet minimum color contrast ratio thresholds (1)
+
+    expect(received).toHaveLength(expected)
+
+    Expected length: 0
+    Received length: 1
+    Received array:  ["[serious] color-contrast: Elements must meet minimum color contrast ratio thresholds (1)"]
+
+      206 |       await waitForPaletteSettled(page);
+      207 |       const paletteViolations = await criticalSeriousViolations(page);
+    > 208 |       expect(paletteViolations, `팔레트 axe 위반: ${paletteViolations.join(', ')}`).toHaveLength(0);
+          |                                                                                ^
+      209 |
+      210 |       await page.keyboard.press('Escape');
+      211 |       await expect(page.locator(PALETTE_DIALOG)).toHaveCount(0, { timeout: 10_000 });
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/cr08-keyboard-accessibility.spec.ts:208:80
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-cr08-keyboard-access-e01f8-트·404·복구-화면-확인과-axe-심각·치명-0-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-cr08-keyboard-access-e01f8-트·404·복구-화면-확인과-axe-심각·치명-0-chromium/error-context.md
+
+  6) [chromium] › e2e/tests/cr08-keyboard-accessibility.spec.ts:185:3 › C08-04 · narrow — 팔레트·404·복구 화면 확인과 axe 심각·치명 0 
+
+    Error: 팔레트 axe 위반: [serious] color-contrast: Elements must meet minimum color contrast ratio thresholds (1)
+
+    expect(received).toHaveLength(expected)
+
+    Expected length: 0
+    Received length: 1
+    Received array:  ["[serious] color-contrast: Elements must meet minimum color contrast ratio thresholds (1)"]
+
+      206 |       await waitForPaletteSettled(page);
+      207 |       const paletteViolations = await criticalSeriousViolations(page);
+    > 208 |       expect(paletteViolations, `팔레트 axe 위반: ${paletteViolations.join(', ')}`).toHaveLength(0);
+          |                                                                                ^
+      209 |
+      210 |       await page.keyboard.press('Escape');
+      211 |       await expect(page.locator(PALETTE_DIALOG)).toHaveCount(0, { timeout: 10_000 });
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/cr08-keyboard-accessibility.spec.ts:208:80
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-cr08-keyboard-access-6df0f-트·404·복구-화면-확인과-axe-심각·치명-0-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-cr08-keyboard-access-6df0f-트·404·복구-화면-확인과-axe-심각·치명-0-chromium/error-context.md
+
+  7) [chromium] › e2e/tests/cr09-offline-assets.spec.ts:220:1 › C09-01/02 · cold cache + 외부 차단에서 Chat/Markdown/코드/Mermaid가 로컬 자산으로 렌더된다 
+
+    TimeoutError: locator.waitFor: Timeout 5000ms exceeded.
+    Call log:
+      - waiting for locator('a, button').filter({ hasText: /AI 채팅|Chat/ }).first() to be visible
+
+
+       at pages/DashboardPage.ts:170
+
+      168 |   async goToChat(): Promise<void> {
+      169 |     const target = this.navChat.first();
+    > 170 |     await target.waitFor({ state: 'visible', timeout: 5000 });
+          |                  ^
+      171 |     await target.click({ force: true });
+      172 |     await this.page.waitForTimeout(800);
+      173 |   }
+        at DashboardPage.goToChat (/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/pages/DashboardPage.ts:170:18)
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/cr09-offline-assets.spec.ts:231:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-cr09-offline-assets--abd59-wn-코드-Mermaid가-로컬-자산으로-렌더된다-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-cr09-offline-assets--abd59-wn-코드-Mermaid가-로컬-자산으로-렌더된다-chromium/error-context.md
+
+  8) [chromium] › e2e/tests/cr09-offline-assets.spec.ts:316:1 › C09-03 · 악성 다이어그램 라벨이 실행되지 않고 주입되지도 않는다 
+
+    TimeoutError: locator.waitFor: Timeout 5000ms exceeded.
+    Call log:
+      - waiting for locator('a, button').filter({ hasText: /AI 채팅|Chat/ }).first() to be visible
+
+
+       at pages/DashboardPage.ts:170
+
+      168 |   async goToChat(): Promise<void> {
+      169 |     const target = this.navChat.first();
+    > 170 |     await target.waitFor({ state: 'visible', timeout: 5000 });
+          |                  ^
+      171 |     await target.click({ force: true });
+      172 |     await this.page.waitForTimeout(800);
+      173 |   }
+        at DashboardPage.goToChat (/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/pages/DashboardPage.ts:170:18)
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/cr09-offline-assets.spec.ts:327:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-cr09-offline-assets--3d19d-다이어그램-라벨이-실행되지-않고-주입되지도-않는다-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-cr09-offline-assets--3d19d-다이어그램-라벨이-실행되지-않고-주입되지도-않는다-chromium/error-context.md
+
+  9) [chromium] › e2e/tests/cr10-telemetry.spec.ts:67:1 › C10-01/02/04/05 · 화면 지표가 실제 API 값과 일치한다 ──
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "v0.1.0"
+    Received string:    ""
+
+      86 |     // C10-01: BUILD는 실행 중인 서버 버전이다.
+      87 |     const build = await text(page, 'telemetrics-build');
+    > 88 |     expect(build).toContain(`v${api.version}`);
+         |                   ^
+      89 |     expect(api.build.version).toBe(api.version);
+      90 |
+      91 |     // C10-04: 값이 API와 결합되어 있다(CPU/MEM은 매 호출마다 새 표본이므로 형식·범위를 본다.
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/cr10-telemetry.spec.ts:88:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-cr10-telemetry-C10-01-02-04-05-·-화면-지표가-실제-API-값과-일치한다-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-cr10-telemetry-C10-01-02-04-05-·-화면-지표가-실제-API-값과-일치한다-chromium/error-context.md
+
+  10) [chromium] › e2e/tests/cr10-telemetry.spec.ts:158:1 › C10-04 · 화면 지표가 API 응답을 그대로 옮긴다(고정 payload 대조) 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "v9.9.9 · stubbeef (ui v0.1.0)"
+    Received: ""
+
+      190 |
+      191 |     // 서버 버전과 번들 버전(0.1.0)이 다르므로 둘 다 구분되어 보여야 한다(C10-05).
+    > 192 |     expect(await text(page, 'telemetrics-build')).toBe('v9.9.9 · stubbeef (ui v0.1.0)');
+          |                                                   ^
+      193 |     expect(await text(page, 'telemetrics-node')).toBe('PID-4242 · NOMINAL');
+      194 |     expect(await text(page, 'telemetrics-cpu')).toBe('12.3%');
+      195 |     expect(await text(page, 'telemetrics-mem')).toBe('41.5%');
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/cr10-telemetry.spec.ts:192:51
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-cr10-telemetry-C10-0-597f3--응답을-그대로-옮긴다-고정-payload-대조--chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-cr10-telemetry-C10-0-597f3--응답을-그대로-옮긴다-고정-payload-대조--chromium/error-context.md
+
+  11) [chromium] › e2e/tests/cr10-telemetry.spec.ts:210:1 › C10-02 · 서버 재시작 후 UPTIME이 0에서 다시 시작한다 ──
+
+    Error: UPTIME 형식을 해석할 수 없다: ""
+
+      55 |   const match = /^(?:(\d+)D )?(?:(\d+)H )?(?:(\d+)M )?(\d+)S$/.exec(label.trim());
+      56 |   if (!match) {
+    > 57 |     throw new Error(`UPTIME 형식을 해석할 수 없다: ${JSON.stringify(label)}`);
+         |           ^
+      58 |   }
+      59 |   const [, days = '0', hours = '0', minutes = '0', seconds = '0'] = match;
+      60 |   return Number(days) * 86400 + Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds);
+        at parseUptime (/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/cr10-telemetry.spec.ts:57:11)
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/cr10-telemetry.spec.ts:235:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-cr10-telemetry-C10-02-·-서버-재시작-후-UPTIME이-0에서-다시-시작한다-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-cr10-telemetry-C10-02-·-서버-재시작-후-UPTIME이-0에서-다시-시작한다-chromium/error-context.md
+
+  12) [chromium] › e2e/tests/cr10-telemetry.spec.ts:249:1 › C10-03 · API가 끊기면 UNKNOWN/OFFLINE이고 healthy를 주장하지 않는다 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "UNKNOWN"
+    Received: ""
+
+      269 |
+      270 |     // 값이 없으면 0이 아니라 UNKNOWN이고, healthy를 주장하지 않는다.
+    > 271 |     expect(await text(page, 'telemetrics-uptime')).toBe('UNKNOWN');
+          |                                                    ^
+      272 |     expect(await text(page, 'telemetrics-build')).toBe('UNKNOWN');
+      273 |     expect(await text(page, 'telemetrics-cpu')).toBe('UNKNOWN');
+      274 |     expect(await text(page, 'telemetrics-mem')).toBe('UNKNOWN');
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/cr10-telemetry.spec.ts:271:52
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-cr10-telemetry-C10-0-06d15-OFFLINE이고-healthy를-주장하지-않는다-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-cr10-telemetry-C10-0-06d15-OFFLINE이고-healthy를-주장하지-않는다-chromium/error-context.md
+
+  12 failed
+    [chromium] › e2e/tests/cr07-route-recovery.spec.ts:37:1 › a blocked page chunk shows a reload recovery screen and recovers after reload 
+    [chromium] › e2e/tests/cr07-route-recovery.spec.ts:70:1 › a page that throws while rendering keeps the shell and offers retry 
+    [chromium] › e2e/tests/cr07-route-recovery.spec.ts:106:1 › an unknown deep link shows a not-found screen with home and back 
+    [chromium] › e2e/tests/cr08-keyboard-accessibility.spec.ts:90:1 › C08-02 · 팔레트가 modal 의미·focus 순환·복귀·배경 inert를 지킨다 
+    [chromium] › e2e/tests/cr08-keyboard-accessibility.spec.ts:185:3 › C08-04 · desktop — 팔레트·404·복구 화면 확인과 axe 심각·치명 0 
+    [chromium] › e2e/tests/cr08-keyboard-accessibility.spec.ts:185:3 › C08-04 · narrow — 팔레트·404·복구 화면 확인과 axe 심각·치명 0 
+    [chromium] › e2e/tests/cr09-offline-assets.spec.ts:220:1 › C09-01/02 · cold cache + 외부 차단에서 Chat/Markdown/코드/Mermaid가 로컬 자산으로 렌더된다 
+    [chromium] › e2e/tests/cr09-offline-assets.spec.ts:316:1 › C09-03 · 악성 다이어그램 라벨이 실행되지 않고 주입되지도 않는다 
+    [chromium] › e2e/tests/cr10-telemetry.spec.ts:67:1 › C10-01/02/04/05 · 화면 지표가 실제 API 값과 일치한다 ───
+    [chromium] › e2e/tests/cr10-telemetry.spec.ts:158:1 › C10-04 · 화면 지표가 API 응답을 그대로 옮긴다(고정 payload 대조) 
+    [chromium] › e2e/tests/cr10-telemetry.spec.ts:210:1 › C10-02 · 서버 재시작 후 UPTIME이 0에서 다시 시작한다 ────
+    [chromium] › e2e/tests/cr10-telemetry.spec.ts:249:1 › C10-03 · API가 끊기면 UNKNOWN/OFFLINE이고 healthy를 주장하지 않는다 
+  18 passed (2.0m)

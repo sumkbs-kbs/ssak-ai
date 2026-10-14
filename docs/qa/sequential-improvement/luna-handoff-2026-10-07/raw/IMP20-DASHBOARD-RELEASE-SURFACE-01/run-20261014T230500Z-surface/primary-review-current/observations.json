@@ -1,0 +1,20 @@
+{
+  "reviewer": "primary_agent",
+  "candidate": "a7c1dc2f",
+  "browser": "Codex in-app browser; owned temporary tab closed after review",
+  "backend_pid": 29401,
+  "base_url": "http://127.0.0.1:56066",
+  "source_binding": "source-binding.json",
+  "observed": {
+    "agent_page": "Visible idle label and metric text; initial UNKNOWN becomes actual LIVE after async sample",
+    "system_disclosure": "Opened visibly: server v0.1.0, uptime 1M03S, PID29401 NOMINAL; no blank telemetry fields",
+    "palette": "Search button opens named dialog, combobox focused, background ancestor inert true",
+    "escape": "Palette closed, inert elements0; prior active system disclosure focus restored",
+    "navigation": "Actual conversation link navigates to chat; message input visible and send disabled with empty input"
+  },
+  "limitations": [
+    "Primary desktop manual observation only; no axe injection or mobile assertion added",
+    "Persistent Agency Unavailable in the isolated probe; no agency functionality claim",
+    "No message submission, provider inference or credential read"
+  ]
+}

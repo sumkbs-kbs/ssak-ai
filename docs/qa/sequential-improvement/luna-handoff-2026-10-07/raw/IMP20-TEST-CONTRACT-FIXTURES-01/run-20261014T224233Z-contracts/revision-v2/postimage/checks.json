@@ -1,0 +1,58 @@
+[
+  {
+    "name": "pytest",
+    "command": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+      "-B",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/pytest_entry.py",
+      "-q",
+      "tests/test_execution_request_preservation.py",
+      "tests/test_turn_tool_constraints.py::test_no_files_prevents_artifact_write_and_unsolicited_approval",
+      "-k",
+      "initial_execution_retains_original_request or retry_keeps_feedback or no_auxiliary_context or no_files_prevents_artifact_write",
+      "--basetemp",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/postimage/runtime/pytest",
+      "--junitxml",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/postimage/junit.xml",
+      "-o",
+      "cache_dir=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/postimage/runtime/pytest-cache"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.321789026260376
+  },
+  {
+    "name": "ruff",
+    "command": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+      "-m",
+      "ruff",
+      "check",
+      "tests/test_execution_request_preservation.py"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.04028010368347168
+  },
+  {
+    "name": "skill-audit",
+    "command": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+      "/Users/mr.k/.codex/plugins/cache/sisyphuslabs/omo/5.1.33/skills/programming/scripts/python/check-no-excuse-rules.py",
+      "tests/test_execution_request_preservation.py"
+    ],
+    "exit_code": 1,
+    "elapsed_seconds": 0.03896188735961914
+  },
+  {
+    "name": "format",
+    "command": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+      "-m",
+      "ruff",
+      "format",
+      "--check",
+      "tests/test_execution_request_preservation.py"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.04014396667480469
+  }
+]

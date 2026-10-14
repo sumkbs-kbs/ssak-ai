@@ -1,0 +1,56 @@
+diff --git a/tests/test_execution_request_preservation.py b/tests/test_execution_request_preservation.py
+index 5418855d..219687c0 100644
+--- a/tests/test_execution_request_preservation.py
++++ b/tests/test_execution_request_preservation.py
+@@ -68,6 +68,16 @@ class _MaxBoundary:
+         return self.run(task_spec)
+ 
+ 
++def _prepared_conversation(orch: _CapturingOrchestrator) -> list[dict[str, str]]:
++    messages = orch.prepared[0]
++    # The current request's guard is appended separately from conversation history.
++    assert messages[-1]["role"] == "system"
++    assert messages[-1]["content"].startswith("[CURRENT USER TOOL CONSTRAINT]\n")
++    assert sum(message["content"].startswith("[CURRENT USER TOOL CONSTRAINT]") for message in messages) == 1
++    assert messages[-1]["content"] in orch.manager.prompts[0]
++    return messages[:-1]
++
++
+ def _context(*, retry: bool = False, delegate: str = "SELF") -> StateContext:
+     request = 'read_file("absent-qa-42.txt"); do not create files; report absence without invented contents'
+     messages = [
+@@ -115,7 +125,8 @@ def test_initial_execution_retains_original_request_after_misleading_refinement(
+         monkeypatch.setattr(orch, "max_engine", _MaxBoundary(fail=True))
+     _execute(ctx, orch, mode)
+ 
+-    submitted = orch.prepared[0][-1]
++    conversation = _prepared_conversation(orch)
++    submitted = conversation[-1]
+     content = submitted["content"]
+     assert content.endswith(ctx.user_message)
+     assert ctx.refined_prompt in content and ctx.rag_context in content
+@@ -124,7 +135,7 @@ def test_initial_execution_retains_original_request_after_misleading_refinement(
+     assert submitted["role"] == "user"
+     assert submitted["images"] == original_messages[-1]["images"]
+     assert submitted["image_mimes"] == original_messages[-1]["image_mimes"]
+-    assert orch.prepared[0][:-1] == original_messages[:-1]
++    assert conversation[:-1] == original_messages[:-1]
+     assert content in orch.manager.prompts[0]
+ 
+ 
+@@ -148,7 +159,8 @@ def test_retry_keeps_feedback_and_original_conversation(tmp_path: Path, mode: Li
+     orch = _CapturingOrchestrator(tmp_path)
+     _execute(ctx, orch, mode)
+ 
+-    assert orch.prepared[0] == original_messages
++    conversation = _prepared_conversation(orch) if mode == "agent" else orch.prepared[0]
++    assert conversation == original_messages
+     assert original_messages[-1]["content"] in orch.manager.prompts[0]
+     assert ctx.user_message in orch.manager.prompts[0]
+ 
+@@ -189,4 +201,4 @@ def test_no_auxiliary_context_keeps_original_message_unchanged(tmp_path: Path) -
+ 
+     _execute(ctx, orch, "agent")
+ 
+-    assert orch.prepared[0] == original
++    assert _prepared_conversation(orch) == original

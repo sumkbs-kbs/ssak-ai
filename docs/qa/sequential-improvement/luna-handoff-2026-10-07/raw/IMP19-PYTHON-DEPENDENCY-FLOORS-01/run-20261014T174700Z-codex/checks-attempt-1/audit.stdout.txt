@@ -1,0 +1,9 @@
+AUDIT-INPUTS: {"schema":"agk-python-audit-inputs/1","shipped_extras":["rag"],"audit_record_file":"uv.lock","targets":{"base":{"packages":74,"sha256_16":"3a33726031790ba4"},"extras":{"rag":{"packages":150,"sha256_16":"d12dc3281fd29a79"}},"union":{"packages":150,"sha256_16":"67172475616343e9"}}}
+AUDIT-SUMMARY: audited=128 vulnerable_packages=1 findings=5
+  chromadb==1.5.9  PYSEC-2026-311  (severity: high)
+  chromadb==1.5.9  PYSEC-2026-311  (severity: high)
+  chromadb==1.5.9  PYSEC-2026-3814  (severity: high)
+  chromadb==1.5.9  PYSEC-2026-3815  (severity: high)
+  chromadb==1.5.9  PYSEC-2026-3813  (severity: high)
+AUDIT-VERDICT: {"excepted":[{"id":"PYSEC-2026-311","package":"chromadb","owner":"rel-03-maintainer","expires":"2026-12-08"},{"id":"PYSEC-2026-311","package":"chromadb","owner":"rel-03-maintainer","expires":"2026-12-08"},{"id":"PYSEC-2026-3814","package":"chromadb","owner":"rel-03-maintainer","expires":"2026-12-08"},{"id":"PYSEC-2026-3815","package":"chromadb","owner":"rel-03-maintainer","expires":"2026-12-08"},{"id":"PYSEC-2026-3813","package":"chromadb","owner":"rel-03-maintainer","expires":"2026-12-08"}],"unresolved":[],"expired":[]}
+AUDIT-STATUS: PASS — high/critical 미해결 0건 (예외 적용 5건, 위 목록에 근거·만료일 기록)

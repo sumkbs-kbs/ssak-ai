@@ -1,0 +1,10 @@
+{
+  "pathname": "/history",
+  "routeName": "history",
+  "viewport": "mobile",
+  "verifiedPathname": "/history",
+  "routeMarkerFound": true,
+  "passes": 35,
+  "violations": [],
+  "criticalSerious": []
+}

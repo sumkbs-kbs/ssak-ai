@@ -1,0 +1,45 @@
+{
+  "recorded_utc": "2026-10-14T22:55:28.954689+00:00",
+  "candidate": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+  "head": "481a634195bd3924ed601f1b881958c75e5e6892",
+  "source_stability": "SOURCE_STABLE",
+  "owned_sources": [
+    {
+      "path": "README.md",
+      "bytes": 11288,
+      "sha256": "7ce617a4f844626df7fcd3d4aa8e63bac8735f3fefb911bd450ea2ac7df14c82"
+    },
+    {
+      "path": "docs/ga/CR14_EX_EXECUTION_LEDGER.md",
+      "bytes": 9075,
+      "sha256": "ee4a10442a318c1796bd296c29b17ccf6b57fe8d3676651b4463316f7228b69e"
+    },
+    {
+      "path": "docs/ga/CR14_FINAL_CANDIDATE_VERDICT.md",
+      "bytes": 366276,
+      "sha256": "977da4e664e3769af5d4fbe8f991a609b588bb39ecc5ca8d7326e06abab7f064"
+    },
+    {
+      "path": "tests/test_nx07_doc_consistency.py",
+      "bytes": 20094,
+      "sha256": "4c128c7dc15e54b63244bcb4838eefe029cc7cfcd96fc0f07d5416f52d0d3c14"
+    },
+    {
+      "path": "tests/test_cr14_fence_movement_detection.py",
+      "bytes": 28435,
+      "sha256": "2e40bc5852ae80282f7b3d93eb9c8ba836aa022e00c1ef300f63424187033a5d"
+    },
+    {
+      "path": "tests/test_cr14_fingerprint_scope_contract.py",
+      "bytes": 13117,
+      "sha256": "e99e7d525630f497d67f6434ec67933b93e208dfe805f71920e7a41235b19f3c"
+    },
+    {
+      "path": "tests/test_docs_toolchain_contract.py",
+      "bytes": 12766,
+      "sha256": "6d2444e5ca5f9115cb2cbc1785f7a1b46ce9ea2b6a9b352e0dac0580709f359b"
+    }
+  ],
+  "restored_artifacts": "restored-files.json",
+  "binding_scope": "30 paths in bound-paths.txt; pre/post invocation hashes in after-02-source-bound; no claim of full immutable release candidate or GA approval"
+}

@@ -1,0 +1,3 @@
+error: Cannot find module 'axe-core/axe.min.js' from '/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/node_modules/@axe-core/playwright/package.json'
+
+Bun v1.4.0 (macOS arm64)

@@ -1,0 +1,113 @@
+[dashboard-e2e-ambient] selected base_url=http://127.0.0.1:52151 specs=1
+
+Running 35 tests using 9 workers
+
+  ✓   9 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /wiki · desktop — marker + axe critical/serious 0 (2.4s)
+  ✓   2 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /start · desktop — marker + axe critical/serious 0 (2.4s)
+  ✓   4 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /studio · desktop — marker + axe critical/serious 0 (2.5s)
+  ✘   7 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /agent · desktop — marker + axe critical/serious 0 (2.5s)
+  ✓   8 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /models · desktop — marker + axe critical/serious 0 (2.6s)
+  ✓   6 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] / · desktop — marker + axe critical/serious 0 (3.0s)
+  ✓   3 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /chat · desktop — marker + axe critical/serious 0 (3.0s)
+  ✓   5 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /settings · desktop — marker + axe critical/serious 0 (3.2s)
+  ✓   1 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /skills · desktop — marker + axe critical/serious 0 (3.4s)
+  ✓  12 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /history · desktop — marker + axe critical/serious 0 (2.5s)
+  ✓  10 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /data-extraction · desktop — marker + axe critical/serious 0 (2.6s)
+  ✓  18 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] / · mobile — marker + axe critical/serious 0 (1.8s)
+  ✓  17 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /cr08-unknown-route · desktop — marker + axe critical/serious 0 (2.0s)
+  ✓  15 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /plugins/hello-world · desktop — marker + axe critical/serious 0 (2.3s)
+  ✓  14 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /plugins · desktop — marker + axe critical/serious 0 (2.3s)
+  ✓  13 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /plugins/job-operations · desktop — marker + axe critical/serious 0 (2.6s)
+  ✓  16 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /mutation · desktop — marker + axe critical/serious 0 (2.3s)
+  ✓  20 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /studio · mobile — marker + axe critical/serious 0 (1.8s)
+  ✓  19 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /chat · mobile — marker + axe critical/serious 0 (1.9s)
+  ✓  23 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /wiki · mobile — marker + axe critical/serious 0 (2.1s)
+  ✓  22 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /start · mobile — marker + axe critical/serious 0 (2.2s)
+  ✓  21 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /models · mobile — marker + axe critical/serious 0 (2.3s)
+  ✘  24 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /agent · mobile — marker + axe critical/serious 0 (2.3s)
+  ✓  25 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /settings · mobile — marker + axe critical/serious 0 (2.5s)
+  ✓  26 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /skills · mobile — marker + axe critical/serious 0 (2.9s)
+  ✓  27 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /data-extraction · mobile — marker + axe critical/serious 0 (1.7s)
+  ✓  35 [chromium] › e2e/tests/accessibility.spec.ts:188:1 › [UI-01] gate 스펙 — 17 route × 2 viewport 매트릭스 고정 (5ms)
+  ✓  29 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /history · mobile — marker + axe critical/serious 0 (1.8s)
+  ✓  30 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /plugins · mobile — marker + axe critical/serious 0 (1.8s)
+  ✓  31 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /plugins/job-operations · mobile — marker + axe critical/serious 0 (1.8s)
+  ✓  32 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /mutation · mobile — marker + axe critical/serious 0 (1.7s)
+  ✓  33 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /plugins/hello-world · mobile — marker + axe critical/serious 0 (1.6s)
+  ✓  34 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /cr08-unknown-route · mobile — marker + axe critical/serious 0 (1.5s)
+  ✓  11 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /git · desktop — marker + axe critical/serious 0 (15.9s)
+  ✓  28 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /git · mobile — marker + axe critical/serious 0 (14.5s)
+
+
+  1) [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /agent · desktop — marker + axe critical/serious 0 
+
+    Error: [desktop] /agent critical/serious 위반 1건:
+      [serious] color-contrast: Elements must meet minimum color contrast ratio thresholds (5 nodes)
+
+    expect(received).toHaveLength(expected)
+
+    Expected length: 0
+    Received length: 1
+    Received array:  [{"help": "Elements must meet minimum color contrast ratio thresholds", "id": "color-contrast", "impact": "serious", "nodes": 5, "targets": [".agent-status-label", ".metric-item:nth-child(1) > .metric-label", ".metric-item:nth-child(2) > .metric-label", ".metric-item:nth-child(3) > .metric-label", ".metric-item:nth-child(4) > .metric-label"]}]
+
+      178 |               criticalSerious.map(v => `  [${v.impact}] ${v.id}: ${v.help} (${v.nodes} nodes)`).join('\n'),
+      179 |           )
+    > 180 |           .toHaveLength(0);
+          |            ^
+      181 |       });
+      182 |     }
+      183 |   });
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/accessibility.spec.ts:180:12
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-accessibility-UI-01--dad4b-rker-axe-critical-serious-0-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/tests-accessibility-UI-01--dad4b-rker-axe-critical-serious-0-chromium/video-1.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/tests-accessibility-UI-01--dad4b-rker-axe-critical-serious-0-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-accessibility-UI-01--dad4b-rker-axe-critical-serious-0-chromium/error-context.md
+
+  2) [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /agent · mobile — marker + axe critical/serious 0 
+
+    Error: [mobile] /agent critical/serious 위반 1건:
+      [serious] color-contrast: Elements must meet minimum color contrast ratio thresholds (1 nodes)
+
+    expect(received).toHaveLength(expected)
+
+    Expected length: 0
+    Received length: 1
+    Received array:  [{"help": "Elements must meet minimum color contrast ratio thresholds", "id": "color-contrast", "impact": "serious", "nodes": 1, "targets": [".agent-status-label"]}]
+
+      178 |               criticalSerious.map(v => `  [${v.impact}] ${v.id}: ${v.help} (${v.nodes} nodes)`).join('\n'),
+      179 |           )
+    > 180 |           .toHaveLength(0);
+          |            ^
+      181 |       });
+      182 |     }
+      183 |   });
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/accessibility.spec.ts:180:12
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-accessibility-UI-01--6490c-rker-axe-critical-serious-0-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/tests-accessibility-UI-01--6490c-rker-axe-critical-serious-0-chromium/video-1.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/tests-accessibility-UI-01--6490c-rker-axe-critical-serious-0-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-accessibility-UI-01--6490c-rker-axe-critical-serious-0-chromium/error-context.md
+
+  2 failed
+    [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /agent · desktop — marker + axe critical/serious 0 
+    [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /agent · mobile — marker + axe critical/serious 0 
+  33 passed (22.1s)

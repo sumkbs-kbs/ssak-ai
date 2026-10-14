@@ -1,0 +1,32 @@
+[
+  {
+    "path": "src/antigravity_k/tools/browser_observation.py",
+    "sha256": "7a5526f57ae3166e72f9b6a893c2a7c8700122aef1634fbc5c39ac29bfe6d3e1",
+    "bytes": 76909
+  },
+  {
+    "path": "src/antigravity_k/tools/browser_task_memory.py",
+    "sha256": "9734ec68f087a63810e37b7deb25996b21e2ee55ec3eb36dbb6f46b6469106fd",
+    "bytes": 50949
+  },
+  {
+    "path": "src/antigravity_k/tools/browser_task_memory_store.py",
+    "sha256": "f7d562b44611c1d93ba3055602b932d44fd6f0e072c73395b2dc28f24a9383ff",
+    "bytes": 5376
+  },
+  {
+    "path": "src/antigravity_k/knowledge/wiki_graph.py",
+    "sha256": "a06d407464b786f7534705b5d669948ca53b9fac35b2bc3ede5181712909d57d",
+    "bytes": 13219
+  },
+  {
+    "path": "src/antigravity_k/knowledge/wiki.py",
+    "sha256": "5f27f19507d2e28c40974f8b0c40160b4babb04c3d755d576d8523774305902c",
+    "bytes": 51489
+  },
+  {
+    "path": "src/antigravity_k/engine/cognitive/migration.py",
+    "sha256": "5ea53f88a9544baed6d58da672b9a63f595d766b4f5114d942ff7656908307a9",
+    "bytes": 34871
+  }
+]

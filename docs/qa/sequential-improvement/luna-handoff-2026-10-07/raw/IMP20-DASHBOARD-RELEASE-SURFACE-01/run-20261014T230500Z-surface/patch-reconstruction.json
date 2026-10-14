@@ -1,0 +1,65 @@
+{
+  "exit_code": 0,
+  "files": [
+    {
+      "path": "dashboard/src/components/Agent/AgentMonitorPanel.tsx",
+      "bytes": 12166,
+      "sha256": "72b4032aa348f3775c8ca53ff339b6a4ec8c129a7ee43802e327d42687ab64e2",
+      "reconstructed_identical": true
+    },
+    {
+      "path": "dashboard/src/styles/index.css",
+      "bytes": 356395,
+      "sha256": "afc4ee5398bc3abc072433f3c835493ebbaae2cf380937d08e9611af1d27ac7d",
+      "reconstructed_identical": true
+    },
+    {
+      "path": "dashboard/e2e/pages/DashboardPage.ts",
+      "bytes": 16619,
+      "sha256": "48e10d57268e45a8f9277903d22ce93eecc2bb11c73d9ef132720546d93b22a3",
+      "reconstructed_identical": true
+    },
+    {
+      "path": "dashboard/e2e/tests/cr07-route-recovery.spec.ts",
+      "bytes": 7777,
+      "sha256": "8a62b4d7e6104a8a2e9322ac3bcee6728c8d93393fe24def13dae45e4d42152c",
+      "reconstructed_identical": true
+    },
+    {
+      "path": "dashboard/e2e/tests/cr08-keyboard-accessibility.spec.ts",
+      "bytes": 11196,
+      "sha256": "b4676573ec28c0b36b2a97c5ab42812fe03e87ea6f88f5ccb9ffd0f2a9761b3d",
+      "reconstructed_identical": true
+    },
+    {
+      "path": "dashboard/e2e/tests/cr10-telemetry.spec.ts",
+      "bytes": 12085,
+      "sha256": "8871037fe0cd8fea5644f30a3509c8b16b79ff3df7fdecb56de7ffa680f454da",
+      "reconstructed_identical": true
+    },
+    {
+      "path": "dashboard/build-provenance.json",
+      "bytes": 77,
+      "sha256": "2d09a6acb37dd164854d8e902fb87d13f3baabaf19fdd891303532b255d3857b",
+      "reconstructed_identical": true
+    },
+    {
+      "path": "tests/test_planning_and_rendering_quality.py",
+      "bytes": 8043,
+      "sha256": "f6f166846839d63ef02f1ca660eec5f912b41631e19d81e3c8657c15dd3937da",
+      "reconstructed_identical": true
+    },
+    {
+      "path": "dashboard/src/components/Layout/SystemTelemetricsBar.tsx",
+      "bytes": 5970,
+      "sha256": "b23746ad573ef3e87c03068041532b4be32a81ebe907eb9247ab5148ba140a10",
+      "reconstructed_identical": true
+    },
+    {
+      "path": "dashboard/src/components/Layout/__tests__/SystemTelemetricsBar.cr10.test.tsx",
+      "bytes": 9027,
+      "sha256": "95810b7fb17743239cc07064829e868d04a880e41f892eebf8e751200788254d",
+      "reconstructed_identical": true
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "candidate_worktree": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+  "observed_head_now": "481a634195bd3924ed601f1b881958c75e5e6892",
+  "baseline_basis": "Initial assigned HEAD 481a634 and unchanged owned paths on initial status; baseline hashes reconstructed directly from git objects, not a pre-run content capture.",
+  "sources": [
+    {
+      "path": "README.md",
+      "baseline_commit": "481a634",
+      "baseline_committed_sha256": "0135eeb1a0b82a22ad3513c39bec7da61e1953efa0195b2388719c2de301fd18",
+      "current_sha256": "27a3aaf26a7682b40d66418c0fb496d5f7b717a2f2ed22a95562a38d8cd34db0"
+    },
+    {
+      "path": "docs/ga/CR14_EX_EXECUTION_LEDGER.md",
+      "baseline_commit": "481a634",
+      "baseline_committed_sha256": "bc498ea23855499a9fd83e2dcaa35e71af7ae72b3f043817a2bd73f14f3cf5ef",
+      "current_sha256": "ee4a10442a318c1796bd296c29b17ccf6b57fe8d3676651b4463316f7228b69e"
+    },
+    {
+      "path": "docs/ga/CR14_FINAL_CANDIDATE_VERDICT.md",
+      "baseline_commit": "481a634",
+      "baseline_committed_sha256": "e492d9245e7ae9ed456ecc2a27ce7319258f629687c43e7afb615526b8fa7c90",
+      "current_sha256": "977da4e664e3769af5d4fbe8f991a609b588bb39ecc5ca8d7326e06abab7f064"
+    },
+    {
+      "path": "tests/test_nx07_doc_consistency.py",
+      "baseline_commit": "481a634",
+      "baseline_committed_sha256": "d9b44561d716153381ccc06fd285d167003b4bf134b82feb344dc36db34b11ff",
+      "current_sha256": "4c128c7dc15e54b63244bcb4838eefe029cc7cfcd96fc0f07d5416f52d0d3c14"
+    },
+    {
+      "path": "tests/test_cr14_fence_movement_detection.py",
+      "baseline_commit": "481a634",
+      "baseline_committed_sha256": "06c9ba90e8b9fedd055e97fa0f1b8aaef0cbc619f813ccf7e73e04ffb5254acd",
+      "current_sha256": "91ee4400c60f03bc1e4e8d9eb4ab6d4a5d3a5e42fff7b9b5605d9ac977c488ad"
+    },
+    {
+      "path": "tests/test_cr14_fingerprint_scope_contract.py",
+      "baseline_commit": "481a634",
+      "baseline_committed_sha256": "cb3121d22b301a2649d25907faf16b786e160040275fc3664184362d84cba2e3",
+      "current_sha256": "e99e7d525630f497d67f6434ec67933b93e208dfe805f71920e7a41235b19f3c"
+    },
+    {
+      "path": "tests/test_docs_toolchain_contract.py",
+      "baseline_commit": "481a634",
+      "baseline_committed_sha256": "8c34a5b1bff90d1f6bab4332ba19516a7b8b73be9857dd80810176a9f470b390",
+      "current_sha256": "8c34a5b1bff90d1f6bab4332ba19516a7b8b73be9857dd80810176a9f470b390"
+    }
+  ]
+}

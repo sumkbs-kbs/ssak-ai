@@ -1,0 +1,431 @@
+diff --git a/src/antigravity_k/engine/cognitive/migration.py b/src/antigravity_k/engine/cognitive/migration.py
+index 6d16acfb..a76bc5a7 100644
+--- a/src/antigravity_k/engine/cognitive/migration.py
++++ b/src/antigravity_k/engine/cognitive/migration.py
+@@ -167,9 +167,15 @@ class LegacySQLiteSource:
+         return tuple(str(row["name"]) for row in rows)
+ 
+     def _count_on(self, connection: sqlite3.Connection, table: str, known_tables: set[str]) -> int:
+-        if table not in known_tables:
++        queries = {
++            EVENTS_TABLE: "SELECT COUNT(*) AS total FROM agency_events",
++            OBJECTIVES_TABLE: "SELECT COUNT(*) AS total FROM agency_objectives",
++            OBJECTIVE_TASKS_TABLE: "SELECT COUNT(*) AS total FROM agency_objective_tasks",
++        }
++        query = queries.get(table)
++        if table not in known_tables or query is None:
+             return 0
+-        row = connection.execute(f"SELECT COUNT(*) AS total FROM {table}").fetchone()  # noqa: S608 - table 화이트리스트
++        row = connection.execute(query).fetchone()
+         return int(row["total"]) if row is not None else 0
+ 
+     def _count(self, table: str) -> int:
+@@ -193,17 +199,26 @@ class LegacySQLiteSource:
+         """
+ 
+         digest = hashlib.sha256()
+-        for table, columns in (
+-            (EVENTS_TABLE, "event_id, project_id, trajectory_id, parent_event_id, event_type, payload_json"),
+-            (OBJECTIVES_TABLE, "objective_id, project_id, title, description, trajectory_id"),
+-            (OBJECTIVE_TASKS_TABLE, "task_id, objective_id, project_id, trajectory_id, created_at"),
++        for table, query in (
++            (
++                EVENTS_TABLE,
++                "SELECT event_id, project_id, trajectory_id, parent_event_id, event_type, payload_json FROM agency_events ORDER BY 1",
++            ),
++            (
++                OBJECTIVES_TABLE,
++                "SELECT objective_id, project_id, title, description, trajectory_id FROM agency_objectives ORDER BY 1",
++            ),
++            (
++                OBJECTIVE_TASKS_TABLE,
++                "SELECT task_id, objective_id, project_id, trajectory_id, created_at FROM agency_objective_tasks ORDER BY 1",
++            ),
+         ):
+             digest.update(table.encode("utf-8"))
+             digest.update(b"\0")
+             if table not in known_tables:
+                 digest.update(b"<missing>\0")
+             else:
+-                rows = connection.execute(f"SELECT {columns} FROM {table} ORDER BY 1").fetchall()  # noqa: S608
++                rows = connection.execute(query).fetchall()
+                 for row in rows:
+                     digest.update(repr(tuple(row)).encode("utf-8"))
+                     digest.update(b"\0")
+@@ -250,8 +265,8 @@ class LegacySQLiteSource:
+             return
+         with closing(self._connect()) as connection:
+             cursor = connection.execute(
+-                f"SELECT event_id, project_id, trajectory_id, parent_event_id, event_type, payload_json"  # noqa: S608
+-                f" FROM {EVENTS_TABLE} ORDER BY event_id"
++                "SELECT event_id, project_id, trajectory_id, parent_event_id, event_type, payload_json"
++                " FROM agency_events ORDER BY event_id"
+             )
+             while rows := cursor.fetchmany(batch_size):
+                 yield tuple(
+@@ -277,7 +292,7 @@ class LegacySQLiteSource:
+         with self._connect() as connection:
+             rows = connection.execute(
+                 "SELECT objective_id, project_id, title, description, trajectory_id"
+-                f" FROM {OBJECTIVES_TABLE} ORDER BY objective_id"
++                " FROM agency_objectives ORDER BY objective_id"
+             ).fetchall()
+         return tuple(
+             LegacyObjectiveRow(
+@@ -295,8 +310,7 @@ class LegacySQLiteSource:
+             return ()
+         with self._connect() as connection:
+             rows = connection.execute(
+-                f"SELECT task_id, objective_id, project_id FROM {OBJECTIVE_TASKS_TABLE}"  # noqa: S608
+-                " ORDER BY task_id"
++                "SELECT task_id, objective_id, project_id FROM agency_objective_tasks ORDER BY task_id"
+             ).fetchall()
+         return tuple(
+             LegacyTaskRow(
+diff --git a/src/antigravity_k/knowledge/wiki.py b/src/antigravity_k/knowledge/wiki.py
+index d5b63d01..30494aa4 100644
+--- a/src/antigravity_k/knowledge/wiki.py
++++ b/src/antigravity_k/knowledge/wiki.py
+@@ -587,32 +587,21 @@ class LLMWiki:
+             seed_ids = [hit.entry.id for hit in direct_results if hit.entry.id is not None]
+             if seed_ids and len(seed_ids) < limit:
+                 relation_pairs_set: set[tuple[int, int]] = set()
+-                category_clause = (
+-                    " AND source_entry.category = ? AND target_entry.category = ?" if category is not None else ""
+-                )
+                 for offset in range(0, len(seed_ids), 400):
+                     seed_chunk = seed_ids[offset : offset + 400]
+-                    placeholders = ",".join("?" for _ in seed_chunk)
+-                    if link_direction == "outbound":
+-                        direction_clause = f"link.from_id IN ({placeholders})"
+-                        relation_params: tuple[object, ...] = tuple(seed_chunk)
+-                    elif link_direction == "backlinks":
+-                        direction_clause = f"link.to_id IN ({placeholders})"
+-                        relation_params = tuple(seed_chunk)
+-                    else:
+-                        direction_clause = f"(link.from_id IN ({placeholders}) OR link.to_id IN ({placeholders}))"
+-                        relation_params = (*seed_chunk, *seed_chunk)
+-                    if category is not None:
+-                        relation_params = (*relation_params, category, category)
++                    seed_payload = json.dumps(seed_chunk)
+                     link_rows = cast(
+                         list[sqlite3.Row],
+                         conn.execute(
+-                            f"""SELECT link.from_id, link.to_id FROM wiki_links AS link
++                            """SELECT link.from_id, link.to_id FROM wiki_links AS link
+                                 JOIN wiki_entries AS source_entry ON source_entry.id = link.from_id
+                                 JOIN wiki_entries AS target_entry ON target_entry.id = link.to_id
+-                                WHERE {direction_clause} AND link.relation = 'obsidian'{category_clause}
++                                WHERE ((? != 'backlinks' AND link.from_id IN (SELECT value FROM json_each(?)))
++                                    OR (? != 'outbound' AND link.to_id IN (SELECT value FROM json_each(?))))
++                                AND link.relation = 'obsidian'
++                                AND (? IS NULL OR (source_entry.category = ? AND target_entry.category = ?))
+                                 ORDER BY link.from_id, link.to_id""",
+-                            relation_params,
++                            (link_direction, seed_payload, link_direction, seed_payload, category, category, category),
+                         ).fetchall(),
+                     )
+                     relation_pairs_set.update((int(row[0]), int(row[1])) for row in link_rows)
+diff --git a/src/antigravity_k/knowledge/wiki_graph.py b/src/antigravity_k/knowledge/wiki_graph.py
+index 18f73579..a5437a54 100644
+--- a/src/antigravity_k/knowledge/wiki_graph.py
++++ b/src/antigravity_k/knowledge/wiki_graph.py
+@@ -2,6 +2,7 @@
+ 
+ from __future__ import annotations
+ 
++import json
+ import math
+ import sqlite3
+ from collections import defaultdict
+@@ -53,10 +54,9 @@ def advance_reward_ticks(connection: sqlite3.Connection, events: Iterable[GraphR
+     node_ids = tuple(sorted(node_positions))
+     for offset in range(0, len(node_ids), 400):
+         node_chunk = node_ids[offset : offset + 400]
+-        placeholders = ",".join("?" for _ in node_chunk)
+         rows = connection.execute(
+-            f"SELECT entry_id, score FROM wiki_node_rewards WHERE entry_id IN ({placeholders})",
+-            node_chunk,
++            "SELECT entry_id, score FROM wiki_node_rewards WHERE entry_id IN (SELECT value FROM json_each(?))",
++            (json.dumps(node_chunk),),
+         ).fetchall()
+         old_node_scores.update({int(row[0]): float(row[1]) for row in rows})
+ 
+@@ -64,20 +64,30 @@ def advance_reward_ticks(connection: sqlite3.Connection, events: Iterable[GraphR
+     link_pairs = tuple(sorted(link_positions))
+     for offset in range(0, len(link_pairs), 300):
+         link_chunk = link_pairs[offset : offset + 300]
+-        where_clause = " OR ".join("(from_id = ? AND to_id = ?)" for _pair in link_chunk)
+-        parameters = tuple(value for pair in link_chunk for value in pair)
+         rows = connection.execute(
+-            f"SELECT from_id, to_id, score FROM wiki_link_rewards WHERE {where_clause}",
+-            parameters,
++            "SELECT from_id, to_id, score FROM wiki_link_rewards WHERE (from_id, to_id) IN"
++            " (SELECT json_extract(value, '$[0]'), json_extract(value, '$[1]') FROM json_each(?))",
++            (json.dumps(link_chunk),),
+         ).fetchall()
+         old_link_scores.update({(int(row[0]), int(row[1])): float(row[2]) for row in rows})
+ 
+-    for table in ("wiki_node_rewards", "wiki_link_rewards"):
++    for clear_query, decay_query, prune_query in (
++        (
++            "DELETE FROM wiki_node_rewards",
++            "UPDATE wiki_node_rewards SET score = score * ?",
++            "DELETE FROM wiki_node_rewards WHERE score <= 0",
++        ),
++        (
++            "DELETE FROM wiki_link_rewards",
++            "UPDATE wiki_link_rewards SET score = score * ?",
++            "DELETE FROM wiki_link_rewards WHERE score <= 0",
++        ),
++    ):
+         if decay_factor == 0:
+-            _ = connection.execute(f"DELETE FROM {table}")
++            _ = connection.execute(clear_query)
+         else:
+-            _ = connection.execute(f"UPDATE {table} SET score = score * ?", (decay_factor,))
+-            _ = connection.execute(f"DELETE FROM {table} WHERE score <= 0")
++            _ = connection.execute(decay_query, (decay_factor,))
++            _ = connection.execute(prune_query)
+ 
+     for node_id in node_ids:
+         score = _reward_score_after_events(old_node_scores.get(node_id, 0.0), node_positions[node_id], total_ticks)
+@@ -140,11 +150,11 @@ def graph_deletion_events(
+     incident_pairs: set[tuple[int, int]] = set()
+     for offset in range(0, len(unique_ids), 400):
+         chunk = unique_ids[offset : offset + 400]
+-        placeholders = ",".join("?" for _ in chunk)
++        parameters = (json.dumps(chunk), json.dumps(chunk))
+         rows = connection.execute(
+-            f"SELECT from_id, to_id FROM wiki_links WHERE from_id IN ({placeholders}) "
+-            f"OR to_id IN ({placeholders}) ORDER BY from_id, to_id",
+-            (*chunk, *chunk),
++            "SELECT from_id, to_id FROM wiki_links WHERE from_id IN (SELECT value FROM json_each(?)) "
++            "OR to_id IN (SELECT value FROM json_each(?)) ORDER BY from_id, to_id",
++            parameters,
+         ).fetchall()
+         incident_pairs.update((int(row[0]), int(row[1])) for row in rows)
+ 
+@@ -163,38 +173,38 @@ def delete_graph_rows(connection: sqlite3.Connection, entry_ids: tuple[int, ...]
+     unique_ids = tuple(sorted(set(entry_ids)))
+     chunks = tuple(unique_ids[offset : offset + 400] for offset in range(0, len(unique_ids), 400))
+     for chunk in chunks:
+-        placeholders = ",".join("?" for _ in chunk)
++        parameters = (json.dumps(chunk),)
+         _ = connection.execute(
+-            f"DELETE FROM wiki_link_rewards WHERE from_id IN ({placeholders})",
+-            chunk,
++            "DELETE FROM wiki_link_rewards WHERE from_id IN (SELECT value FROM json_each(?))",
++            parameters,
+         )
+         _ = connection.execute(
+-            f"DELETE FROM wiki_links WHERE from_id IN ({placeholders})",
+-            chunk,
++            "DELETE FROM wiki_links WHERE from_id IN (SELECT value FROM json_each(?))",
++            parameters,
+         )
+     for chunk in chunks:
+-        placeholders = ",".join("?" for _ in chunk)
++        parameters = (json.dumps(chunk),)
+         _ = connection.execute(
+-            f"DELETE FROM wiki_link_rewards WHERE to_id IN ({placeholders})",
+-            chunk,
++            "DELETE FROM wiki_link_rewards WHERE to_id IN (SELECT value FROM json_each(?))",
++            parameters,
+         )
+         _ = connection.execute(
+-            f"DELETE FROM wiki_links WHERE to_id IN ({placeholders})",
+-            chunk,
++            "DELETE FROM wiki_links WHERE to_id IN (SELECT value FROM json_each(?))",
++            parameters,
+         )
+         _ = connection.execute(
+-            f"DELETE FROM wiki_node_rewards WHERE entry_id IN ({placeholders})",
+-            chunk,
++            "DELETE FROM wiki_node_rewards WHERE entry_id IN (SELECT value FROM json_each(?))",
++            parameters,
+         )
+ 
+ 
+ def validate_reward_rows(connection: sqlite3.Connection) -> bool:
+     """Reject non-finite, zero, negative, or over-cap reward scores."""
+-    for table, columns in (
+-        ("wiki_node_rewards", "entry_id, score"),
+-        ("wiki_link_rewards", "from_id, to_id, score"),
++    for query in (
++        "SELECT entry_id, score FROM wiki_node_rewards",
++        "SELECT from_id, to_id, score FROM wiki_link_rewards",
+     ):
+-        for row in connection.execute(f"SELECT {columns} FROM {table}").fetchall():
++        for row in connection.execute(query).fetchall():
+             score = float(row[-1])
+             if not math.isfinite(score) or score <= 0 or score > REWARD_CAP:
+                 return False
+diff --git a/src/antigravity_k/tools/browser_observation.py b/src/antigravity_k/tools/browser_observation.py
+index 7015f65a..c0851528 100644
+--- a/src/antigravity_k/tools/browser_observation.py
++++ b/src/antigravity_k/tools/browser_observation.py
+@@ -989,7 +989,7 @@ class BrowserObserver:
+         return hashlib.sha256(encoded.encode("utf-8")).hexdigest()[:16]
+ 
+     def _token(self, snapshot_id: str, frame_label: str, raw_ref: str) -> str:
+-        slug = hashlib.sha1(frame_label.encode("utf-8")).hexdigest()[:4]  # noqa: S324 - 식별용, 보안용 아님
++        slug = hashlib.sha1(frame_label.encode("utf-8"), usedforsecurity=False).hexdigest()[:4]
+         return f"{self.session_tag}-{snapshot_id}-{slug}-e{raw_ref}"
+ 
+     async def _popups(self, page: object) -> tuple[PopupInfo, ...]:
+diff --git a/src/antigravity_k/tools/browser_task_memory.py b/src/antigravity_k/tools/browser_task_memory.py
+index 411eeb0b..bea588c2 100644
+--- a/src/antigravity_k/tools/browser_task_memory.py
++++ b/src/antigravity_k/tools/browser_task_memory.py
+@@ -569,19 +569,21 @@ class BrowserTaskMemory:
+         dedupe_key = _dedupe_key(owner_value, site, kind_value, goal_value)
+         with self._connect() as conn:
+             existing = conn.execute(
+-                f"SELECT id, created_at, entry_id FROM {TABLE} WHERE dedupe_key = ?", (dedupe_key,)
++                "SELECT id, created_at, entry_id FROM browser_task_memory WHERE dedupe_key = ?", (dedupe_key,)
+             ).fetchone()
+             if existing is None:
+                 # id 는 중복 키의 앞부분이다. 같은 사이트·같은 목표를 **다시** 확인해도 앞선 철회 기록과
+                 # 충돌하지 않게, 이미 쓰인 접두사면 번호를 붙인다(첫 기억은 번호 없는 id 를 갖는다).
+                 base_id = f"btm_{dedupe_key[:16]}"
+-                taken = conn.execute(f"SELECT COUNT(*) FROM {TABLE} WHERE entry_id GLOB ?", (base_id + "*",)).fetchone()
++                taken = conn.execute(
++                    "SELECT COUNT(*) FROM browser_task_memory WHERE entry_id GLOB ?", (base_id + "*",)
++                ).fetchone()
+                 seen = int(taken[0]) if taken is not None else 0
+                 entry_id = base_id if seen == 0 else f"{base_id}_{seen + 1}"
+                 cursor = conn.execute(
+-                    f"INSERT INTO {TABLE} (entry_id, dedupe_key, kind, owner, origin, origin_url, goal, body, steps,"
+-                    f" evidence, consent, minimized, source_task, created_at, updated_at, expires_at, revoked_at,"
+-                    f" revoke_reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', '')",
++                    "INSERT INTO browser_task_memory (entry_id, dedupe_key, kind, owner, origin, origin_url, goal, body, steps,"
++                    " evidence, consent, minimized, source_task, created_at, updated_at, expires_at, revoked_at,"
++                    " revoke_reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', '')",
+                     (
+                         entry_id,
+                         dedupe_key,
+@@ -609,8 +611,8 @@ class BrowserTaskMemory:
+                 entry_id = str(existing["entry_id"])  # 덮어쓰기는 **같은 기억**이다(id 를 바꾸지 않는다)
+                 # 같은 절차를 다시 확인했다 = **덮어쓰기**다(무한히 쌓지 않는다). 색인도 같은 id 로 덮어쓴다.
+                 _ = conn.execute(
+-                    f"UPDATE {TABLE} SET origin_url = ?, body = ?, steps = ?, evidence = ?, consent = ?, minimized = ?,"
+-                    f" source_task = ?, updated_at = ?, expires_at = ? WHERE dedupe_key = ?",
++                    "UPDATE browser_task_memory SET origin_url = ?, body = ?, steps = ?, evidence = ?, consent = ?, minimized = ?,"
++                    " source_task = ?, updated_at = ?, expires_at = ? WHERE dedupe_key = ?",
+                     (
+                         scrub_url(origin_url),
+                         body,
+@@ -806,20 +808,13 @@ class BrowserTaskMemory:
+ 
+     def _load_rows(self, *, owner: str, origin: str, kind: MemoryKind | None) -> list[tuple[int, TaskMemoryEntry]]:
+         """행 id 와 항목을 함께 준다(색인에서 빼려면 숫자 id 가 필요하다)."""
+-        clauses = []
+-        params: list[object] = []
+-        if owner:
+-            clauses.append("owner = ?")
+-            params.append(owner)
+-        if origin:
+-            clauses.append("origin = ?")
+-            params.append(origin)
+-        if kind is not None:
+-            clauses.append("kind = ?")
+-            params.append(kind.value)
+-        where = f" WHERE {' AND '.join(clauses)}" if clauses else ""
++        kind_value = kind.value if kind is not None else None
+         with self._connect() as conn:
+-            rows = conn.execute(f"SELECT * FROM {TABLE}{where} ORDER BY updated_at DESC", params).fetchall()
++            rows = conn.execute(
++                "SELECT * FROM browser_task_memory WHERE (? = '' OR owner = ?)"
++                " AND (? = '' OR origin = ?) AND (? IS NULL OR kind = ?) ORDER BY updated_at DESC",
++                (owner, owner, origin, origin, kind_value, kind_value),
++            ).fetchall()
+         return [(int(row["id"]), _entry_from_row(row)) for row in rows]
+ 
+     def _load(self, *, owner: str, origin: str, kind: MemoryKind | None) -> list[TaskMemoryEntry]:
+@@ -827,7 +822,7 @@ class BrowserTaskMemory:
+ 
+     def _row_id(self, entry_id: str) -> int:
+         with self._connect() as conn:
+-            row = conn.execute(f"SELECT id FROM {TABLE} WHERE entry_id = ?", (entry_id,)).fetchone()
++            row = conn.execute("SELECT id FROM browser_task_memory WHERE entry_id = ?", (entry_id,)).fetchone()
+         return int(row["id"]) if row is not None else 0
+ 
+     def _rank(
+@@ -878,8 +873,8 @@ class BrowserTaskMemory:
+         stamp = utc_stamp(self._now(now))
+         with self._connect() as conn:
+             _ = conn.execute(
+-                f"UPDATE {TABLE} SET revoked_at = ?, revoke_reason = ?, dedupe_key = dedupe_key || '#revoked'"
+-                f" WHERE entry_id = ?",
++                "UPDATE browser_task_memory SET revoked_at = ?, revoke_reason = ?, dedupe_key = dedupe_key || '#revoked'"
++                " WHERE entry_id = ?",
+                 (stamp, clip(reason, 200), entry_id),
+             )
+             conn.commit()
+@@ -914,7 +909,7 @@ class BrowserTaskMemory:
+         stamp = utc_stamp(self._now(now))
+         with self._connect() as conn:
+             _ = conn.execute(
+-                f"UPDATE {TABLE} SET body = ?, evidence = ?, steps = ?, updated_at = ? WHERE entry_id = ?",
++                "UPDATE browser_task_memory SET body = ?, evidence = ?, steps = ?, updated_at = ? WHERE entry_id = ?",
+                 (
+                     body,
+                     json.dumps(list(evidence_lines), ensure_ascii=False),
+@@ -952,7 +947,7 @@ class BrowserTaskMemory:
+         for row_id, entry in self._load_rows(owner="", origin="", kind=None):
+             if entry.expired_or_revoked(moment):
+                 with self._connect() as conn:
+-                    _ = conn.execute(f"DELETE FROM {TABLE} WHERE entry_id = ?", (entry.entry_id,))
++                    _ = conn.execute("DELETE FROM browser_task_memory WHERE entry_id = ?", (entry.entry_id,))
+                     conn.commit()
+                 _ = self._unembed(row_id)
+                 removed += 1
+@@ -962,14 +957,14 @@ class BrowserTaskMemory:
+ 
+     def _entry_by_id(self, entry_id: str) -> TaskMemoryEntry:
+         with self._connect() as conn:
+-            row = conn.execute(f"SELECT * FROM {TABLE} WHERE entry_id = ?", (entry_id,)).fetchone()
++            row = conn.execute("SELECT * FROM browser_task_memory WHERE entry_id = ?", (entry_id,)).fetchone()
+         if row is None:
+             raise MemoryRefusal(NOT_FOUND, f"그런 기억이 없다: {entry_id}")
+         return _entry_from_row(row)
+ 
+     def _require_entry(self, entry_id: str, *, owner: str) -> int:
+         with self._connect() as conn:
+-            row = conn.execute(f"SELECT id, owner FROM {TABLE} WHERE entry_id = ?", (entry_id,)).fetchone()
++            row = conn.execute("SELECT id, owner FROM browser_task_memory WHERE entry_id = ?", (entry_id,)).fetchone()
+         if row is None:
+             raise MemoryRefusal(NOT_FOUND, f"그런 기억이 없다: {entry_id}")
+         if str(row["owner"]) != str(owner or ""):
+diff --git a/src/antigravity_k/tools/browser_task_memory_store.py b/src/antigravity_k/tools/browser_task_memory_store.py
+index d712c286..65404890 100644
+--- a/src/antigravity_k/tools/browser_task_memory_store.py
++++ b/src/antigravity_k/tools/browser_task_memory_store.py
+@@ -94,7 +94,7 @@ def integration_purge(
+         conn.row_factory = sqlite3.Row
+         try:
+             rows = conn.execute(
+-                f"SELECT id, entry_id, body, expires_at, updated_at, revoked_at FROM {TABLE}"
++                "SELECT id, entry_id, body, expires_at, updated_at, revoked_at FROM browser_task_memory"
+             ).fetchall()
+         except sqlite3.OperationalError:
+             return 0  # 아직 표가 없다 = 기억을 쓴 적이 없다
+@@ -105,7 +105,7 @@ def integration_purge(
+                 body = str(row["body"])
+                 redacted = redact_full(body)
+                 if redacted != body:
+-                    _ = conn.execute(f"UPDATE {TABLE} SET body = ? WHERE entry_id = ?", (redacted, entry_id))
++                    _ = conn.execute("UPDATE browser_task_memory SET body = ? WHERE entry_id = ?", (redacted, entry_id))
+                     changed += 1
+                 continue
+             # `all` = 설정과 무관한 전부 삭제, `expired` = 만료됐거나 마지막 확인이 보관 기간을 넘긴 항목.
+@@ -114,7 +114,7 @@ def integration_purge(
+                 age_limit = moment - max_age_days * 86400
+                 stale = stale or parse_epoch(str(row["updated_at"])) <= age_limit
+             if stale or str(row["revoked_at"] or ""):
+-                _ = conn.execute(f"DELETE FROM {TABLE} WHERE entry_id = ?", (entry_id,))
++                _ = conn.execute("DELETE FROM browser_task_memory WHERE entry_id = ?", (entry_id,))
+                 if callable(drop):
+                     try:
+                         _ = drop(VECTOR_TABLE, row_id)

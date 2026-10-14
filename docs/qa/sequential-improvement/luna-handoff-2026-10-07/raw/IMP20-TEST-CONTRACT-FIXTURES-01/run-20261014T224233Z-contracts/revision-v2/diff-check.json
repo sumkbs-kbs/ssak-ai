@@ -1,0 +1,12 @@
+{
+  "command": [
+    "git",
+    "diff",
+    "--check",
+    "--",
+    "tests/test_execution_request_preservation.py"
+  ],
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "path": "dashboard/src/components/Agent/AgentMonitorPanel.tsx",
+    "bytes": 12112,
+    "sha256": "acbf1076ad860eb751e2944a1b29d5dc4d16700aca266263337d369d5ee2bc1a"
+  },
+  {
+    "path": "dashboard/src/styles/index.css",
+    "bytes": 356531,
+    "sha256": "31f5422999717cae1e4b2601ee6b8c22085fce3191994e8ab69c146ccda0681a"
+  },
+  {
+    "path": "dashboard/e2e/pages/DashboardPage.ts",
+    "bytes": 16350,
+    "sha256": "bcb25f57e8bfade0561e3677984dc6abfd336ba56973a7aa6d28cf59dde54a8f"
+  },
+  {
+    "path": "dashboard/e2e/tests/cr07-route-recovery.spec.ts",
+    "bytes": 7782,
+    "sha256": "f812b95ec8cee27fe6ea97ac4666eccf32be1760929a3b68de4399ce9f451d7d"
+  },
+  {
+    "path": "dashboard/e2e/tests/cr08-keyboard-accessibility.spec.ts",
+    "bytes": 11070,
+    "sha256": "60ccb44e1e2b538e9e271b80742cafea12e98dd906bc5a94f27129c2039d369a"
+  },
+  {
+    "path": "dashboard/e2e/tests/cr10-telemetry.spec.ts",
+    "bytes": 11792,
+    "sha256": "a647e9b3ccf8b17107b16193d58689ceb1fc1d102dff57c57d9bfe5b923d572b"
+  },
+  {
+    "path": "dashboard/build-provenance.json",
+    "bytes": 423,
+    "sha256": "4333c60c13ec09796cb2440d6de012e65abc1701fa144d8a1a212357b78b5264"
+  }
+]

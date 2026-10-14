@@ -1,0 +1,561 @@
+{
+  "schema_version": 1,
+  "dependency_locks": [
+    "uv.lock",
+    "dashboard/pnpm-lock.yaml",
+    "dashboard/package-lock.json"
+  ],
+  "gates": [
+    {
+      "id": "python-ruff",
+      "category": "python_backend",
+      "command": [
+        "uv",
+        "run",
+        "--isolated",
+        "--frozen",
+        "--extra",
+        "dev",
+        "--extra",
+        "rag",
+        "--extra",
+        "documents",
+        "ruff",
+        "check",
+        "src/",
+        "tests/",
+        "scripts/"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 600,
+      "required": true,
+      "finding_ids": [
+        "master E2E/Ruff/format"
+      ],
+      "task_ids": [
+        "QLT-01"
+      ]
+    },
+    {
+      "id": "python-format",
+      "category": "python_backend",
+      "command": [
+        "uv",
+        "run",
+        "--isolated",
+        "--frozen",
+        "--extra",
+        "dev",
+        "--extra",
+        "rag",
+        "--extra",
+        "documents",
+        "ruff",
+        "format",
+        "--check",
+        "src/",
+        "tests/",
+        "scripts/"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 600,
+      "required": true,
+      "finding_ids": [
+        "master E2E/Ruff/format"
+      ],
+      "task_ids": [
+        "QLT-01"
+      ]
+    },
+    {
+      "id": "python-mypy",
+      "category": "python_backend",
+      "command": [
+        "uv",
+        "run",
+        "--isolated",
+        "--frozen",
+        "--extra",
+        "dev",
+        "--extra",
+        "rag",
+        "--extra",
+        "documents",
+        "mypy",
+        "src/"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 900,
+      "required": true,
+      "finding_ids": [
+        "master E2E/Ruff/format"
+      ],
+      "task_ids": [
+        "QLT-01"
+      ]
+    },
+    {
+      "id": "python-basedpyright",
+      "category": "python_backend",
+      "command": [
+        "uv",
+        "run",
+        "--isolated",
+        "--frozen",
+        "--extra",
+        "dev",
+        "--extra",
+        "rag",
+        "--extra",
+        "documents",
+        "basedpyright",
+        "src/",
+        "scripts/",
+        "--level",
+        "error"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 900,
+      "required": true,
+      "finding_ids": [
+        "master E2E/Ruff/format"
+      ],
+      "task_ids": [
+        "QLT-01"
+      ]
+    },
+    {
+      "id": "python-tests",
+      "category": "python_backend",
+      "command": [
+        "uv",
+        "run",
+        "--isolated",
+        "--frozen",
+        "--extra",
+        "dev",
+        "--extra",
+        "rag",
+        "--extra",
+        "documents",
+        "pytest",
+        "tests/",
+        "-m",
+        "not benchmark",
+        "-v",
+        "--tb=short"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 7200,
+      "required": true,
+      "finding_ids": [
+        "master E2E/Ruff/format"
+      ],
+      "task_ids": [
+        "QLT-01"
+      ]
+    },
+    {
+      "id": "python-benchmark",
+      "category": "python_backend",
+      "command": [
+        "uv",
+        "run",
+        "--isolated",
+        "--frozen",
+        "--extra",
+        "dev",
+        "--extra",
+        "rag",
+        "--extra",
+        "documents",
+        "pytest",
+        "tests/",
+        "-m",
+        "benchmark",
+        "-v",
+        "--tb=short"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 1800,
+      "required": true,
+      "finding_ids": [
+        "CR-14 F-21"
+      ],
+      "task_ids": [
+        "QLT-01"
+      ]
+    },
+    {
+      "id": "dashboard-install",
+      "category": "dashboard",
+      "command": [
+        "pnpm",
+        "install",
+        "--frozen-lockfile"
+      ],
+      "cwd": "dashboard",
+      "timeout_seconds": 1200,
+      "required": true,
+      "finding_ids": [
+        "OPS-02"
+      ],
+      "task_ids": [
+        "REL-02"
+      ]
+    },
+    {
+      "id": "dashboard-lint",
+      "category": "dashboard",
+      "command": [
+        "pnpm",
+        "run",
+        "lint"
+      ],
+      "cwd": "dashboard",
+      "timeout_seconds": 600,
+      "required": true,
+      "finding_ids": [
+        "master E2E/Ruff/format"
+      ],
+      "task_ids": [
+        "QLT-01"
+      ]
+    },
+    {
+      "id": "dashboard-typecheck",
+      "category": "dashboard",
+      "command": [
+        "pnpm",
+        "run",
+        "typecheck"
+      ],
+      "cwd": "dashboard",
+      "timeout_seconds": 600,
+      "required": true,
+      "finding_ids": [
+        "master E2E/Ruff/format"
+      ],
+      "task_ids": [
+        "QLT-01"
+      ]
+    },
+    {
+      "id": "dashboard-test",
+      "category": "dashboard",
+      "command": [
+        "pnpm",
+        "run",
+        "test",
+        "--",
+        "--reporter=verbose"
+      ],
+      "cwd": "dashboard",
+      "timeout_seconds": 1200,
+      "required": true,
+      "finding_ids": [
+        "master E2E/Ruff/format"
+      ],
+      "task_ids": [
+        "QLT-01"
+      ]
+    },
+    {
+      "id": "dashboard-build",
+      "category": "dashboard",
+      "command": [
+        "pnpm",
+        "run",
+        "build"
+      ],
+      "cwd": "dashboard",
+      "timeout_seconds": 1200,
+      "required": true,
+      "finding_ids": [
+        "OPS-03"
+      ],
+      "task_ids": [
+        "REL-02"
+      ]
+    },
+    {
+      "id": "package-build",
+      "category": "package",
+      "command": [
+        "uv",
+        "build",
+        "--no-sources"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 1200,
+      "required": true,
+      "finding_ids": [
+        "OPS-01"
+      ],
+      "task_ids": [
+        "REL-01"
+      ]
+    },
+    {
+      "id": "docker-build",
+      "category": "docker",
+      "command": [
+        "docker",
+        "build",
+        "--tag",
+        "antigravity-k:ga-gate",
+        "."
+      ],
+      "cwd": ".",
+      "timeout_seconds": 2400,
+      "required": true,
+      "finding_ids": [
+        "OPS-03",
+        "OPS-04"
+      ],
+      "task_ids": [
+        "REL-02"
+      ]
+    },
+    {
+      "id": "sbom-generate",
+      "category": "supply_chain",
+      "command": [
+        "uv",
+        "run",
+        "--isolated",
+        "--frozen",
+        "python",
+        "-m",
+        "antigravity_k.engine.release_sbom",
+        "generate",
+        "--project-root",
+        ".",
+        "--release-root",
+        "src/antigravity_k/release"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 1200,
+      "required": true,
+      "finding_ids": [
+        "OPS-01"
+      ],
+      "task_ids": [
+        "REL-01"
+      ]
+    },
+    {
+      "id": "dependency-audit-python",
+      "category": "supply_chain",
+      "command": [
+        "bash",
+        "scripts/audit_python_dependencies.sh"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 1200,
+      "required": true,
+      "finding_ids": [
+        "OPS-05"
+      ],
+      "task_ids": [
+        "REL-03"
+      ]
+    },
+    {
+      "id": "dependency-audit-dashboard",
+      "category": "supply_chain",
+      "command": [
+        "pnpm",
+        "audit",
+        "--prod",
+        "--audit-level",
+        "high"
+      ],
+      "cwd": "dashboard",
+      "timeout_seconds": 1200,
+      "required": true,
+      "finding_ids": [
+        "OPS-05"
+      ],
+      "task_ids": [
+        "REL-03"
+      ]
+    },
+    {
+      "id": "security-bandit",
+      "category": "security",
+      "command": [
+        "uv",
+        "run",
+        "--isolated",
+        "--frozen",
+        "--extra",
+        "dev",
+        "bandit",
+        "-r",
+        "src/antigravity_k",
+        "-ll",
+        "-x",
+        "src/antigravity_k/engine/secret_scanner.py"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 1200,
+      "required": true,
+      "finding_ids": [
+        "SEC-01",
+        "SEC-02",
+        "SEC-03"
+      ],
+      "task_ids": [
+        "SEC-01",
+        "SEC-02",
+        "SEC-03"
+      ]
+    },
+    {
+      "id": "master-e2e",
+      "category": "runtime",
+      "command": [
+        "uv",
+        "run",
+        "--isolated",
+        "--frozen",
+        "python",
+        "scripts/run_full_system_e2e_test.py"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 1800,
+      "required": true,
+      "finding_ids": [
+        "master E2E/Ruff/format"
+      ],
+      "task_ids": [
+        "QLT-01"
+      ]
+    },
+    {
+      "id": "api-e2e",
+      "category": "runtime",
+      "command": [
+        "uv",
+        "run",
+        "--isolated",
+        "--frozen",
+        "--extra",
+        "dev",
+        "--extra",
+        "rag",
+        "pytest",
+        "tests/test_e2e_smoke.py",
+        "-q",
+        "-rs",
+        "--tb=short"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 1800,
+      "required": true,
+      "finding_ids": [
+        "CTX-01",
+        "WS-01"
+      ],
+      "task_ids": [
+        "CTX-01",
+        "WS-01"
+      ]
+    },
+    {
+      "id": "accessibility-e2e",
+      "category": "accessibility",
+      "command": [
+        "pnpm",
+        "exec",
+        "playwright",
+        "test",
+        "e2e/tests/accessibility.spec.ts"
+      ],
+      "cwd": "dashboard",
+      "timeout_seconds": 2400,
+      "required": true,
+      "finding_ids": [
+        "UI-01",
+        "UI-02"
+      ],
+      "task_ids": [
+        "UI-01",
+        "UI-02"
+      ]
+    },
+    {
+      "id": "dashboard-e2e-witnesses",
+      "category": "runtime",
+      "command": [
+        "pnpm",
+        "exec",
+        "playwright",
+        "test",
+        "e2e/tests/cr\\d+-",
+        "--project=chromium",
+        "--reporter=list"
+      ],
+      "cwd": "dashboard",
+      "timeout_seconds": 2400,
+      "required": true,
+      "finding_ids": [
+        "CR-14 F-42"
+      ],
+      "task_ids": [
+        "C14-03"
+      ]
+    },
+    {
+      "id": "dashboard-e2e-ambient",
+      "category": "runtime",
+      "command": [
+        "uv",
+        "run",
+        "--isolated",
+        "--frozen",
+        "--extra",
+        "dev",
+        "--extra",
+        "rag",
+        "--extra",
+        "documents",
+        "python",
+        "scripts/run_dashboard_e2e_ambient.py"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 2400,
+      "required": true,
+      "finding_ids": [
+        "CR-14 F-46",
+        "CR-14 F-45",
+        "CR-14 F-47"
+      ],
+      "task_ids": [
+        "C14-03"
+      ]
+    },
+    {
+      "id": "clean-machine-runtime",
+      "category": "runtime",
+      "command": [
+        "bash",
+        "scripts/verify_clean_machine.sh"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 7200,
+      "required": true,
+      "finding_ids": [
+        "OPS-01",
+        "OPS-02",
+        "OPS-03",
+        "OPS-04"
+      ],
+      "task_ids": [
+        "REL-01",
+        "REL-02"
+      ]
+    }
+  ]
+}

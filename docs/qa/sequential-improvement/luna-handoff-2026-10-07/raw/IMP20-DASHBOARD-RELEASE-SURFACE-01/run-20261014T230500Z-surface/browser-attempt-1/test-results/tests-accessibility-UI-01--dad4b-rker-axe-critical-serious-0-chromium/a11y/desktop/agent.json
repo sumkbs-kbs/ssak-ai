@@ -1,0 +1,10 @@
+{
+  "pathname": "/agent",
+  "routeName": "agent",
+  "viewport": "desktop",
+  "verifiedPathname": "/agent",
+  "routeMarkerFound": true,
+  "passes": 42,
+  "violations": [],
+  "criticalSerious": []
+}

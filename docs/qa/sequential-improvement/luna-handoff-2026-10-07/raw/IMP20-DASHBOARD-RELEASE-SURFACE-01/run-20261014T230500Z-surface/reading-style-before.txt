@@ -1,0 +1,14 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________ test_dashboard_chat_output_uses_codex_like_reading_style ___________
+
+    def test_dashboard_chat_output_uses_codex_like_reading_style() -> None:
+        source = Path("dashboard/src/styles/index.css").read_text(encoding="utf-8")
+    
+>       assert "--sidebar-width: 240px;" in source
+E       AssertionError: assert '--sidebar-width: 240px;' in '/* ==========================================================================\n   Ssak-Ai Dashboard — Design System &... {\n  background: rgba(248, 113, 113, 0.1);\n  border-bottom-color: rgba(248, 113, 113, 0.35);\n  color: #f87171;\n}\n'
+
+tests/test_planning_and_rendering_quality.py:158: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_planning_and_rendering_quality.py::test_dashboard_chat_output_uses_codex_like_reading_style
+1 failed in 1.35s

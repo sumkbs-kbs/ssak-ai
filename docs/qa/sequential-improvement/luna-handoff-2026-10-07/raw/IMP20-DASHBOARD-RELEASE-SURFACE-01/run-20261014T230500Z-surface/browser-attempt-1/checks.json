@@ -1,0 +1,26 @@
+[
+  {
+    "name": "browser",
+    "command": [
+      "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+      "scripts/run_dashboard_e2e_ambient.py",
+      "--spec",
+      "e2e/tests/accessibility.spec.ts",
+      "--spec",
+      "e2e/tests/cr07-route-recovery.spec.ts",
+      "--spec",
+      "e2e/tests/cr08-keyboard-accessibility.spec.ts",
+      "--spec",
+      "e2e/tests/cr09-offline-assets.spec.ts",
+      "--spec",
+      "e2e/tests/cr10-telemetry.spec.ts",
+      "--spec",
+      "e2e/tests/file-explorer.spec.ts"
+    ],
+    "cwd": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+    "exit_code": 1,
+    "timed_out": false,
+    "reaped": true,
+    "elapsed_seconds": 84.59678602218628
+  }
+]

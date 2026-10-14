@@ -1,0 +1,8 @@
+{
+  "result": "PASS",
+  "source_commit": "481a634",
+  "path": "docs/ga/CR14_FINAL_CANDIDATE_VERDICT.md",
+  "baseline_sha256": "e492d9245e7ae9ed456ecc2a27ce7319258f629687c43e7afb615526b8fa7c90",
+  "current_sha256": "977da4e664e3769af5d4fbe8f991a609b588bb39ecc5ca8d7326e06abab7f064",
+  "observable": "Current verdict ends with exact original body after original first heading; only archive/current-status header block inserted"
+}

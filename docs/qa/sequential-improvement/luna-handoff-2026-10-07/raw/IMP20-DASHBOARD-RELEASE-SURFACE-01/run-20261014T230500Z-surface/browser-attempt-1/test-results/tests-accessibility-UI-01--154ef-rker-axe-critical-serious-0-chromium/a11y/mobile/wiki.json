@@ -1,0 +1,10 @@
+{
+  "pathname": "/wiki",
+  "routeName": "wiki",
+  "viewport": "mobile",
+  "verifiedPathname": "/wiki",
+  "routeMarkerFound": true,
+  "passes": 38,
+  "violations": [],
+  "criticalSerious": []
+}

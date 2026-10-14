@@ -1,0 +1,26 @@
+[
+  {
+    "path": "src/antigravity_k/tools/browser_observation.py",
+    "sha256": "779fff996f1c17804543c02ecd1388cb9da640004ff93be3b9a3fd5aee656e24"
+  },
+  {
+    "path": "src/antigravity_k/tools/browser_task_memory.py",
+    "sha256": "e31ba38871f02821f1d00b4032110dfe805e6054955d521f0861f8a23d87dcc5"
+  },
+  {
+    "path": "src/antigravity_k/tools/browser_task_memory_store.py",
+    "sha256": "644bddfb1cd315f36f823a5bd20bf68b3f0a6a2e837081e4dca8bdc5c056d6df"
+  },
+  {
+    "path": "src/antigravity_k/knowledge/wiki_graph.py",
+    "sha256": "8a98d1602e1afee571dcfe8839a18033a5780df5898a4bf19be74df7f1c89e69"
+  },
+  {
+    "path": "src/antigravity_k/knowledge/wiki.py",
+    "sha256": "3c9ec72bd7e386a28048536dc30b88363dea90348fdbd9f18345f4c97ca42ec7"
+  },
+  {
+    "path": "src/antigravity_k/engine/cognitive/migration.py",
+    "sha256": "75339cd046e0b0d7525c7b255670eba45bcc47dc8bcf1441caeff3535205137a"
+  }
+]

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="0.360" timestamp="2026-10-15T07:47:48.217725+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_cr14_ambient_backend_gate_contract" name="test_the_ambient_gate_is_required_and_starts_a_server[dashboard-e2e-ambient]" time="0.301" /><testcase classname="tests.test_cr14_ambient_backend_gate_contract" name="test_the_ambient_gate_is_required_and_starts_a_server[accessibility-e2e]" time="0.001"><failure message="AssertionError: 서버 기동 스크립트가 명령에 없다: ['pnpm', 'exec', 'playwright', 'test', 'e2e/tests/accessibility.spec.ts']&#10;assert ('scripts/run_dashboard_e2e_ambient.py' in 'pnpm exec playwright test e2e/tests/accessibility.spec.ts' or False)&#10; +  where 'pnpm exec playwright test e2e/tests/accessibility.spec.ts' = &lt;built-in method join of str object at 0x1029ad978&gt;(['pnpm', 'exec', 'playwright', 'test', 'e2e/tests/accessibility.spec.ts'])&#10; +    where &lt;built-in method join of str object at 0x1029ad978&gt; = ' '.join&#10; +  and   False = any(&lt;generator object test_the_ambient_gate_is_required_and_starts_a_server.&lt;locals&gt;.&lt;genexpr&gt; at 0x11065f2a0&gt;)">gate_id = 'accessibility-e2e'
+
+    @pytest.mark.parametrize("gate_id", [AMBIENT_GATE_ID, "accessibility-e2e"])
+    def test_the_ambient_gate_is_required_and_starts_a_server(gate_id: str) -&gt; None:
+        """게이트는 required 이고, 명령이 서버를 세우는 스크립트를 부른다."""
+        gate = next(row for row in _manifest()["gates"] if row["id"] == gate_id)
+        assert gate["required"] is True
+        command = [str(token) for token in gate["command"]]
+&gt;       assert "scripts/run_dashboard_e2e_ambient.py" in " ".join(command) or any(
+            "run_dashboard_e2e_ambient.py" in token for token in command
+        ), f"서버 기동 스크립트가 명령에 없다: {command}"
+E       AssertionError: 서버 기동 스크립트가 명령에 없다: ['pnpm', 'exec', 'playwright', 'test', 'e2e/tests/accessibility.spec.ts']
+E       assert ('scripts/run_dashboard_e2e_ambient.py' in 'pnpm exec playwright test e2e/tests/accessibility.spec.ts' or False)
+E        +  where 'pnpm exec playwright test e2e/tests/accessibility.spec.ts' = &lt;built-in method join of str object at 0x1029ad978&gt;(['pnpm', 'exec', 'playwright', 'test', 'e2e/tests/accessibility.spec.ts'])
+E        +    where &lt;built-in method join of str object at 0x1029ad978&gt; = ' '.join
+E        +  and   False = any(&lt;generator object test_the_ambient_gate_is_required_and_starts_a_server.&lt;locals&gt;.&lt;genexpr&gt; at 0x11065f2a0&gt;)
+
+tests/test_cr14_ambient_backend_gate_contract.py:87: AssertionError</failure></testcase></testsuite></testsuites>

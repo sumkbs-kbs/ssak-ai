@@ -1,0 +1,10 @@
+{
+  "pathname": "/data-extraction",
+  "routeName": "data-extraction",
+  "viewport": "desktop",
+  "verifiedPathname": "/data-extraction",
+  "routeMarkerFound": true,
+  "passes": 42,
+  "violations": [],
+  "criticalSerious": []
+}

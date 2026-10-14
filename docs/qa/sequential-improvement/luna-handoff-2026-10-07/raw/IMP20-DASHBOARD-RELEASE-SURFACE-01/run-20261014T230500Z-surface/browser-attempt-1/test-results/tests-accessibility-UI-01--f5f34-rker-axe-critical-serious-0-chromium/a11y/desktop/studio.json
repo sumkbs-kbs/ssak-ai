@@ -1,0 +1,10 @@
+{
+  "pathname": "/studio",
+  "routeName": "studio",
+  "viewport": "desktop",
+  "verifiedPathname": "/studio",
+  "routeMarkerFound": true,
+  "passes": 39,
+  "violations": [],
+  "criticalSerious": []
+}

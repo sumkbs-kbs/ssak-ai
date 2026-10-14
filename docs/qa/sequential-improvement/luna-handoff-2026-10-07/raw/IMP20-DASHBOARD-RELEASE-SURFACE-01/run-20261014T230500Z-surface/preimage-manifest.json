@@ -1,0 +1,877 @@
+{
+  "files": [
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/AgentPage-Ci9GmcEL.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/AgentPage-Ci9GmcEL.js",
+      "bytes": 61285,
+      "sha256": "ca96bcc31542d892d0672ca45f706d50aecf9f9cb54950755e2825f723410d38"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/AgentStartPage-65Ly_es4.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/AgentStartPage-65Ly_es4.js",
+      "bytes": 6180,
+      "sha256": "11abee0f6dd83b1681425129f77dbcb0e31d16b56658404476cd6dcb92e11f85"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/ChatPage-CG9JUpZ3.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/ChatPage-CG9JUpZ3.js",
+      "bytes": 127111,
+      "sha256": "4bcf9be8fee522db33bc3bc537e6a87c19ff998b18915e19dc2ca9f6cefa6cbf"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/CommandPalette-5FOhfFW2.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/CommandPalette-5FOhfFW2.js",
+      "bytes": 10441,
+      "sha256": "66df553807a9ff646d7c386bace92ffe75421d1f97562d66153750e3d3d4a37b"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/DataExtractionPage-Bk6fMHjw.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/DataExtractionPage-Bk6fMHjw.js",
+      "bytes": 21689,
+      "sha256": "e088468394f05a3edf8d548d8f2a60ead5a369f3f154691391eef852d7a12d74"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/DiffViewer-BtVXBs9P.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/DiffViewer-BtVXBs9P.js",
+      "bytes": 9394,
+      "sha256": "c32af0a50e39029aa1dd1bdae383183146644b8f8017248213f8a96dd9c19869"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/FolderBrowser-n3kQstrd.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/FolderBrowser-n3kQstrd.js",
+      "bytes": 12863,
+      "sha256": "7656ed962d862884815193e9cff735b85d76c9eb6daeaac29b7d19897e785fd6"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/GitPage-ecoqFPMo.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/GitPage-ecoqFPMo.js",
+      "bytes": 19379,
+      "sha256": "6fc1ba562fdc3fd018727e944636cbcb90ad68a066ba604c27cf33ce9f1f8ef1"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/GlassPanel-DLeiStl6.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/GlassPanel-DLeiStl6.js",
+      "bytes": 893,
+      "sha256": "ce4e25086c14489eb9f206bacadda2b1fa99df31efc3534a7e650692abf46cae"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/HistoryPage-BF5KKbRL.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/HistoryPage-BF5KKbRL.js",
+      "bytes": 13613,
+      "sha256": "c9b02ca362da190e434696a106ee51516bba1edd1623ae4fc2141efaa4ae15cd"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/JobOperationsPage-Bi23QGks.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/JobOperationsPage-Bi23QGks.js",
+      "bytes": 9363,
+      "sha256": "85fce33d8aa2bd00689034f4df8a73067cb34638bfbfe90c667ed2b74ac1f056"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/KeyboardShortcutsModal-CB7vshO9.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/KeyboardShortcutsModal-CB7vshO9.js",
+      "bytes": 4508,
+      "sha256": "bf6d1e65662b962186e8e0a7dc469e3dadf2a18332dee15fe778804fb93787e8"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/ModelHubPage-Bzz15CV1.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/ModelHubPage-Bzz15CV1.js",
+      "bytes": 9774,
+      "sha256": "a3da3d9d4cb56e84cf6866d8857e09800fddc5362b07ff3f2bb4e015822f4359"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/MonacoEditorWrapper-CwCzx_Jb.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/MonacoEditorWrapper-CwCzx_Jb.js",
+      "bytes": 4824,
+      "sha256": "611cd67cf06f79087ff20ae25af19b96045aa5bcd39d18ac6dcb3e1eab125603"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/MultiTerminalPanel-DgvU0DgW.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/MultiTerminalPanel-DgvU0DgW.js",
+      "bytes": 4705,
+      "sha256": "1abd2f28245eded3e13429ab1b9f9ff0d0125f2bd0c6e0e911ca9702adb1b0bd"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/MutationDashboardPage-BU86GQCB.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/MutationDashboardPage-BU86GQCB.js",
+      "bytes": 8307,
+      "sha256": "f24597bc3799ddcbc0c6f4650a2f54834a7c76b01d263bf6373595b7a49f8762"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/NotFoundPage-4U7ANElA.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/NotFoundPage-4U7ANElA.js",
+      "bytes": 1288,
+      "sha256": "a22af4364585ca42c5f6caf6f63e9fab34bfacd30306ee6ec8f2c5e4baba8988"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/OutputPanel-BOPnoW3o.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/OutputPanel-BOPnoW3o.js",
+      "bytes": 3185,
+      "sha256": "8dade15e52de9f062180a24b4dbec16c5b2e4687f1ac463b93e5189a2ffbba64"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/PinModal-D1jz8a6H.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/PinModal-D1jz8a6H.js",
+      "bytes": 2790,
+      "sha256": "dfb7e5d4f3e0258d692fbbc8aa9d546aef3cf25aa70b6b49fec40d60a0b6f4ce"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/PluginPage-BeCfL6vt.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/PluginPage-BeCfL6vt.js",
+      "bytes": 3753,
+      "sha256": "4cfc88bf9dd9aa8854cdb01cc141e7cfddb1144764ad2b23fe23edfb03c42351"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/PluginPanelRoutes-DLKNKL4m.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/PluginPanelRoutes-DLKNKL4m.js",
+      "bytes": 911,
+      "sha256": "91794d735349bd4131b145bb1a46b02609910b15f4788e58436e3f030ab266d6"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/QuantBadge-DAYoQoyd.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/QuantBadge-DAYoQoyd.js",
+      "bytes": 1148,
+      "sha256": "665392604b8f555b16e5c99e3cc7d936c8d28c5ca62fc5a79e49de0fed6d58aa"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/SettingsPage-nUK_S-Vx.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/SettingsPage-nUK_S-Vx.js",
+      "bytes": 68552,
+      "sha256": "29c697e265996042248a490484140e37bbe17b066d3185c9a11bc3f250f6f435"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/Sidebar-D5M55vTJ.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/Sidebar-D5M55vTJ.js",
+      "bytes": 11271,
+      "sha256": "6aab2e52954675e1c0520cea11225951cd6f9a61e69c6e345e433557cdc9256a"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/SkillsPage-GrX23PPv.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/SkillsPage-GrX23PPv.js",
+      "bytes": 34075,
+      "sha256": "cc4a98c8b2426a268d5cf0f2f1f76a1b36447f94f85c59c416125fec887a4c5d"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/StudioPage-BOMokbYs.css",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/StudioPage-BOMokbYs.css",
+      "bytes": 319,
+      "sha256": "40c912631a6d26cf983ee267ad188fc7d47be66ff6eed4fe3688a8177585404e"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/StudioPage-BYMmpnTP.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/StudioPage-BYMmpnTP.js",
+      "bytes": 21460,
+      "sha256": "c79052bee3973994a150ba76f1550cdc697e692659d1e1ae89a49e2fe9e9baa5"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/SystemTelemetricsBar-BewGMyjn.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/SystemTelemetricsBar-BewGMyjn.js",
+      "bytes": 4031,
+      "sha256": "c850b8c24ca11f282b5e497bb63f7e92890079bf4e4618141a24110c52b3b0eb"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/Tableau10-B-NsZVaP.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/Tableau10-B-NsZVaP.js",
+      "bytes": 188,
+      "sha256": "789bdf81c6591a32bc2691ac2cd7f61a1f3c1d83b34472a7afa06b80aa9d0cba"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/WikiPage-Dln9KoNM.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/WikiPage-Dln9KoNM.js",
+      "bytes": 14124,
+      "sha256": "6fe1e3e7595bc08414da9a569cd99fafdd73905ea8a23b012ad7a4f843f08600"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/api-client-CqP3qBtM.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/api-client-CqP3qBtM.js",
+      "bytes": 130497,
+      "sha256": "308fd8148748929b20a3584001e834250016f04a467f57e5a489bbf5e433064f"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/arc-C8dPcu4c.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/arc-C8dPcu4c.js",
+      "bytes": 3471,
+      "sha256": "3e6851fcf440b64f28d33c24fec84fe9504b29121da8947a28675a872980f9c0"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/array-BKyUJesY.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/array-BKyUJesY.js",
+      "bytes": 86,
+      "sha256": "4b0137b5e1d78460b77626e45f00e109e2fef0381c21cf2533a54ab0ad397406"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/blockDiagram-868be97b-BgXtciM5.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/blockDiagram-868be97b-BgXtciM5.js",
+      "bytes": 37855,
+      "sha256": "3a99d549a985714026f5a4838f5597ca2935b5e0922467231e25b34308b10716"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/c4Diagram-3f4bdde3-qahwP9M-.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/c4Diagram-3f4bdde3-qahwP9M-.js",
+      "bytes": 68516,
+      "sha256": "dccd5920f7db554f38888e4d51415c529c52dba0bb93a5f59700e5003686e796"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/channel-Bfilth_T.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/channel-Bfilth_T.js",
+      "bytes": 115,
+      "sha256": "25b63ff29af2afa93509469dee9e309af68d2816674cea9ac4cdce3336ad03b4"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/classDiagram-f62afe4f-snpionSh.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/classDiagram-f62afe4f-snpionSh.js",
+      "bytes": 9340,
+      "sha256": "9c5f102d24ee238d186ff238b8ba2f0c2dca5b9f751f25c90c03a82aa5921870"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/classDiagram-v2-604399ef-CYSXKgaK.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/classDiagram-v2-604399ef-CYSXKgaK.js",
+      "bytes": 5132,
+      "sha256": "94a577224a3efc3657336dd6ce995eb5598b91f7b00eaf055ceba18e3c8f3172"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/clone-DT63R8Fc.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/clone-DT63R8Fc.js",
+      "bytes": 92,
+      "sha256": "b320094a9652e0073cff45fb2e427f6e45af07745348a53f83ca9af5a0147eee"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/codicon-Brq4_Ui5.ttf",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/codicon-Brq4_Ui5.ttf",
+      "bytes": 140956,
+      "sha256": "cc2472e239e17062e7760af87f8f5997720cc0d94aa014a615c418baaf6333a8"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/createText-aed3d8b3-DFPdCfpD.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/createText-aed3d8b3-DFPdCfpD.js",
+      "bytes": 4082,
+      "sha256": "9955321251088cf35d5119e9c9aba26f2033394c0e4f8cd4fc629b58f0a2d2f3"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/css.worker-CqwWTjeG.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/css.worker-CqwWTjeG.js",
+      "bytes": 1053319,
+      "sha256": "2b0dfe00af737873cfc0b0233ac59b60b758245b970f2e0ab426b1c58dfb99c5"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/diffParser-CCnX8YVz.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/diffParser-CCnX8YVz.js",
+      "bytes": 1650,
+      "sha256": "75ea26b3ce7edbcca5745de7dceeb2d4bd7c25989e630fa3fafdebf5f0ad14ee"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/dompurify-5AjVNlXF.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/dompurify-5AjVNlXF.js",
+      "bytes": 28924,
+      "sha256": "20d66bc790456706deb2fe1de8a5a4ee29a71b5d06ebe341b3a4702c841d64d0"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/edges-b2856ca0-H66WSLbJ.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/edges-b2856ca0-H66WSLbJ.js",
+      "bytes": 34399,
+      "sha256": "3ceb8ffbc97ee456ea7030378b1a8f0fb81c030a365e068c73bc766d9718314a"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/editor.worker-DCKwvLbM.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/editor.worker-DCKwvLbM.js",
+      "bytes": 274128,
+      "sha256": "1f8a8ab693bd0451e0b06f03d1d711e701f054c6fdd867565de1661034b89e9d"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/erDiagram-5d81789a-h8ri88va.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/erDiagram-5d81789a-h8ri88va.js",
+      "bytes": 30775,
+      "sha256": "da61a5aa062c3f107d27d0f58ee83a15fd1501a220dc01ab715a75863423138b"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/fileStore-CnJhCUP-.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/fileStore-CnJhCUP-.js",
+      "bytes": 3372,
+      "sha256": "456dc3ac607582ae3217f73fb7856e7dcd090a4654e37c06fd5ed6289cac00da"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/flowDb-185abca5-CEyJcBgl.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/flowDb-185abca5-CEyJcBgl.js",
+      "bytes": 46778,
+      "sha256": "448894e4c46f472296d654d7c0d8cbd81aa7f87cafbb1274427d7c047ef8d883"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/flowDiagram-1629c991-DgVEz7Ie.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/flowDiagram-1629c991-DgVEz7Ie.js",
+      "bytes": 22230,
+      "sha256": "bf7c74b27db1d9b690ac48ebe8b1b0e605b7a0cfdc6d866263a6f6b88853c93c"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/flowDiagram-v2-1d953310-DGYAAKLR.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/flowDiagram-v2-1d953310-DGYAAKLR.js",
+      "bytes": 871,
+      "sha256": "c14f337c556d133fc23d69fc66c2acb3d225dec28b3fd3add3c37c2efb2ba102"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/flowchart-elk-definition-6df44142-BJz_Mlzq.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/flowchart-elk-definition-6df44142-BJz_Mlzq.js",
+      "bytes": 1452055,
+      "sha256": "18472c88117ca17748a7e4905b513adef7a153f520c948ffe7e1d03ae73c501b"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/ganttDiagram-3b0b3873-Bb-iehay.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/ganttDiagram-3b0b3873-Bb-iehay.js",
+      "bytes": 60566,
+      "sha256": "8ecbe61b641e36d15b71a95b6734ef6ce5afd95a0929fa996f994b3a66c51482"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/gitApi-C1re3z8B.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/gitApi-C1re3z8B.js",
+      "bytes": 2865,
+      "sha256": "5643f3cc6613825977d6fffebc872765cd6fd3c520b9ea0532fd60e6470b0d74"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/gitGraphDiagram-f01e8bc2-Bv2PRGYh.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/gitGraphDiagram-f01e8bc2-Bv2PRGYh.js",
+      "bytes": 38835,
+      "sha256": "2e84ff43048752d35c637d49b664174b98f858ba1b66ecaeae929bc39bdd182e"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/gitStore-pAmMERZy.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/gitStore-pAmMERZy.js",
+      "bytes": 3387,
+      "sha256": "b90a292b5caacdeded1100614db5b5640749207a2bc6a334d36ed889c1cf8193"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/graph-B67kwa0Q.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/graph-B67kwa0Q.js",
+      "bytes": 17597,
+      "sha256": "cb3c054bc724f921c6b35fb28d276abfa4110a8dbcba77311720b6afce45e1fd"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/html.worker-DhJ4VZMp.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/html.worker-DhJ4VZMp.js",
+      "bytes": 715949,
+      "sha256": "d68967e3fdcb1e6a9e3222a1f7dbc249427313d41e118a94779afbeea1d4468f"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/index-9bae90f3-DD7rad39.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/index-9bae90f3-DD7rad39.js",
+      "bytes": 11992,
+      "sha256": "3a9fc385acd6ef4a97cdfa66d00e67601610f48b3a044b7780cd67e7a1f994ed"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/index-BIT0NJTp.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/index-BIT0NJTp.js",
+      "bytes": 44024,
+      "sha256": "24d6dde8aea36ffb6d16869488c02b577297ce3f8b1dad0701e9df588b15bae1"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/index-dZFopfPW.css",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/index-dZFopfPW.css",
+      "bytes": 308189,
+      "sha256": "bd01f0e5a9c0f176c30f51755a31363530cf81ee9c639c2c67d51e7a082fb176"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/infoDiagram-a29d40f1-BSGGrzHL.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/infoDiagram-a29d40f1-BSGGrzHL.js",
+      "bytes": 8692,
+      "sha256": "feebf7112dc6b52bf2be26c7dbce21b0e04b9b31eace6edbd963c13d4b01d83d"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/init-Gi6I4Gst.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/init-Gi6I4Gst.js",
+      "bytes": 147,
+      "sha256": "379fa880c14ad48f43b0c23ff56b30b2b808e8460fd9f9cad8bf7cb278c5b814"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/journeyDiagram-95396277-yKh3iXFM.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/journeyDiagram-95396277-yKh3iXFM.js",
+      "bytes": 21753,
+      "sha256": "b52149d979234bfb73b748d5c545591764823851fc714f3d29cdfca10114a74f"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/json.worker-BF9eV5mS.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/json.worker-BF9eV5mS.js",
+      "bytes": 406181,
+      "sha256": "177b13c24bcca6fecd8741e31ffe1c6a17d324bad90c3341800961721080d7bf"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/katex-C5jXJg4s.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/katex-C5jXJg4s.js",
+      "bytes": 261329,
+      "sha256": "9e8127e147ae576d0129e22677e6949eff48f7a5f4313e2629967938126dcd16"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/layout-BVxO7_Vk.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/layout-BVxO7_Vk.js",
+      "bytes": 29638,
+      "sha256": "7f0195572f5e12002d9f2616b3c6d237807cae71c81ddd6216c833f1c639fa76"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/line-IlFWQMpK.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/line-IlFWQMpK.js",
+      "bytes": 952,
+      "sha256": "4507602b50d11bde9b2ceeae87e163d125405a1d6cd0f54f240f1dddfc56a150"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/linear-CDzq8NoY.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/linear-CDzq8NoY.js",
+      "bytes": 10319,
+      "sha256": "af124e278fa7a52e888c99fb6a699c12b1aa2ef159ee4999606f7f8324ca4031"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/markdown-core-By2QBcMA.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/markdown-core-By2QBcMA.js",
+      "bytes": 394905,
+      "sha256": "d5078f09b1a9e77a2e86a1f3d1c5817b78becab6afb6f0eabdd8c894ffb9f473"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/markdown-highlight-BJzv_rz9.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/markdown-highlight-BJzv_rz9.js",
+      "bytes": 174337,
+      "sha256": "b8a153b813b68b18b71a9df86ac57ae1ff8d6da467416e908e4d4e3784ac410f"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/markdown-highlight-BOrLfbqO.css",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/markdown-highlight-BOrLfbqO.css",
+      "bytes": 1268,
+      "sha256": "f9656fc42e3da8ba635ea3958f65d71ec9a4cab5b697ec7037ee77977aafc22d"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/mermaid.core-BFN3ANe0.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/mermaid.core-BFN3ANe0.js",
+      "bytes": 237704,
+      "sha256": "f8d647bfb305c5f07faddfa332bab49a0587585f22bbb32257ebb57c157367d4"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/mindmap-definition-e4c1d938--OSUWvgW.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/mindmap-definition-e4c1d938--OSUWvgW.js",
+      "bytes": 544125,
+      "sha256": "5d3ade2aec7a1d406f2d8e5133a93475f85429f59d469847d14f1dec936d7260"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/monaco-BFTLt2th.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/monaco-BFTLt2th.js",
+      "bytes": 4504933,
+      "sha256": "fe10b9fa4781fc89ab1d793660c8cff994f5bf51c8250776d41a251c922a5425"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/monaco-CB2SckMT.css",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/monaco-CB2SckMT.css",
+      "bytes": 162389,
+      "sha256": "a6b24d2af5586778c5495ab84d56247ca1a5c64e30d3fb7fee1bf5ab85092510"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/monacoRuntime-Abf8-6rg.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/monacoRuntime-Abf8-6rg.js",
+      "bytes": 526,
+      "sha256": "40988903ccdcc130439bb6cee3411a103ce69db0e597e3bc0be1b5effdd40020"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/ordinal-Cboi1Yqb.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/ordinal-Cboi1Yqb.js",
+      "bytes": 1189,
+      "sha256": "71be569ce2355b7f256a834b3a4c11668fe80a880b3587c1b3b14e9e5dedf478"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/path-CbwjOpE9.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/path-CbwjOpE9.js",
+      "bytes": 2282,
+      "sha256": "227d2b37409670fcfbb47bf612c8399568ea123e056a572ece1890de59ba8dcb"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/pieDiagram-c941bede-tvg4DWT0.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/pieDiagram-c941bede-tvg4DWT0.js",
+      "bytes": 15109,
+      "sha256": "044e26d25591cfe93af46896ee9719f6a9beb1a74ba69975679e601bd3773369"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/quadrantDiagram-cf8b8fe0-DACcchmR.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/quadrantDiagram-cf8b8fe0-DACcchmR.js",
+      "bytes": 29516,
+      "sha256": "6c766e5d23057bc99a057eaccd49012770649de7fc3c9c00094834985ba1103b"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/query-A7IZoX4L.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/query-A7IZoX4L.js",
+      "bytes": 28619,
+      "sha256": "38037622789190665f73607a637efe37a0ccc57be6b5e16a521c6e14122f53b6"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/requirementDiagram-53bda41b-BXn0_k8M.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/requirementDiagram-53bda41b-BXn0_k8M.js",
+      "bytes": 24724,
+      "sha256": "e862ca2f2a2da4488e653436497b9bc7d64577024fad7e11e420c8d33a037447"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/sankeyDiagram-c3ef121a-BB_RnnOe.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/sankeyDiagram-c3ef121a-BB_RnnOe.js",
+      "bytes": 21315,
+      "sha256": "37e014a7702e75e2c9c3287926bee3f5bda3cc64f6bf0648b5ab220dfba5a499"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/sequenceDiagram-82a5b84f-DAZoTj08.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/sequenceDiagram-82a5b84f-DAZoTj08.js",
+      "bytes": 84217,
+      "sha256": "1f2f36103c711ca7aa756402e90e5b10b59419307a0c2a73b45c7adaf199e883"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/stateDiagram-43e79a5f-CH5chVyI.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/stateDiagram-43e79a5f-CH5chVyI.js",
+      "bytes": 10223,
+      "sha256": "8b5ba7b3c3c13d828ef48029375c053df326a34a605c9ff31697f8815c9b6919"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/stateDiagram-v2-2041ed4f-BxiQ_Deu.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/stateDiagram-v2-2041ed4f-BxiQ_Deu.js",
+      "bytes": 4996,
+      "sha256": "41939e85715d0909904eaa89a295e8dee47de7eb01baf386ae5c0e0af6e69a12"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/styles-455b33cd-DpI_LorN.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/styles-455b33cd-DpI_LorN.js",
+      "bytes": 26443,
+      "sha256": "1983e2edecaeebd2ca4b04b344836e478b1724492c052ba28aa54d76d4427679"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/styles-f932cba9-CEnp8PW2.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/styles-f932cba9-CEnp8PW2.js",
+      "bytes": 10068,
+      "sha256": "2331079e59881c7eed4c7c8a1da950632e80c291797939e0012c116b64e2e418"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/styles-fcc2142b-C3otSGLU.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/styles-fcc2142b-C3otSGLU.js",
+      "bytes": 37867,
+      "sha256": "5047cc115bcffd01a099596114f5f02ef5e4ebce0f2f393004def8b37285fb43"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/svgDrawCommon-148a3cd9-DrobqgJR.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/svgDrawCommon-148a3cd9-DrobqgJR.js",
+      "bytes": 1345,
+      "sha256": "9e8d72d621cbcf766714803da14a50e5ac2770e16e8a04860a48c3883a59b879"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/terminal-Beg8tuEN.css",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/terminal-Beg8tuEN.css",
+      "bytes": 3971,
+      "sha256": "ff373be61fa5dee53be19236a4c33225047ff4ec0fd5d4fe56063d81c19033c0"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/terminal-DZLKAyTX.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/terminal-DZLKAyTX.js",
+      "bytes": 284453,
+      "sha256": "dc2141bbd5097de69b9486e266a483b884ec56113b1fa2a32a66e0ed4e9f7d73"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/timeline-definition-7545f45a-Bpq4yEV6.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/timeline-definition-7545f45a-Bpq4yEV6.js",
+      "bytes": 22713,
+      "sha256": "9b7b3addded8b9c50b60baf2b4e0b3b24b9a36e6d13fd81656c20c295110b037"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/ts.worker-DTZAwq0V.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/ts.worker-DTZAwq0V.js",
+      "bytes": 7043070,
+      "sha256": "061267351f7f5aa65df4f991ecd66d131668e1312fd66973c97983431074ce28"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/useModalDialog-BDPTTdGe.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/useModalDialog-BDPTTdGe.js",
+      "bytes": 1565,
+      "sha256": "5e082c3b4d4b056d8bec470b2b50a475f0c27bb283aa3ec8faf574937d117a12"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/utils-SELG1YgQ.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/utils-SELG1YgQ.js",
+      "bytes": 3472,
+      "sha256": "47a992ca04102c8ffc0fb27b51435072f961dc3f5b8637c2dd4896bec91c7b12"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/vendor-DGepVjUc.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/vendor-DGepVjUc.js",
+      "bytes": 232914,
+      "sha256": "84b86ef179e945c4ee78e2320c4254c5a649cee996f6c7b2fab940324e340022"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/wikiStore-CYkxOvnt.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/wikiStore-CYkxOvnt.js",
+      "bytes": 4119,
+      "sha256": "20633fd0e432465205551273ad6e09e0e8cd067584c728827317d295b6a1d771"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/wsTicket-DM6Fs73A.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/wsTicket-DM6Fs73A.js",
+      "bytes": 317,
+      "sha256": "95b581807a2d6923a1d697b0924d9fe0b1e7fbabe7888ab89c2eedd6983ac883"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/assets/xychartDiagram-3f383b91-Dn1JLppU.js",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/assets/xychartDiagram-3f383b91-Dn1JLppU.js",
+      "bytes": 37416,
+      "sha256": "0cda6cde95b4b7448bca8aedbbdff544398b7cc0c46885d23624bbb6a2bee69b"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/icon-180.png",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/icon-180.png",
+      "bytes": 3953,
+      "sha256": "7398e838634436a9634e4358171bca13dd1863cefa113653fcb80264fb006714"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/icon-192.png",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/icon-192.png",
+      "bytes": 4288,
+      "sha256": "dc88d2aaf32b12e0d516db2f76ac82718431b15b8ee2bdb1e6e35ca88d43ccc4"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/icon-512.png",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/icon-512.png",
+      "bytes": 12215,
+      "sha256": "85f02cd8244db97ee6e73f62575c5ee2f8451a4effb85be78f9b3b218a1fdccc"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/index.html",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/index.html",
+      "bytes": 2313,
+      "sha256": "fd12c9b1006c2f5765d3fd19cb289784db50f159832094440817acd63bf3fa9e"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/dashboard_dist/manifest.json",
+      "artifact": "preimage/src/antigravity_k/dashboard_dist/manifest.json",
+      "bytes": 663,
+      "sha256": "71421ff8d7d06d7a3e83a6c50ffab8ca20731cd6f555fdb1517d46b636af010e"
+    },
+    {
+      "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/accessibility-e2e.stderr.txt",
+      "artifact": "parent-logs/accessibility-e2e.stderr.txt",
+      "bytes": 1488,
+      "sha256": "3a4abeee91754778e0562c44ed6b4a9f7a139c0a94b67a46e0ab50ce13b99889"
+    },
+    {
+      "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/accessibility-e2e.stdout.txt",
+      "artifact": "parent-logs/accessibility-e2e.stdout.txt",
+      "bytes": 12478,
+      "sha256": "03febee7aee6e5d1d85edcd1af4c308ed2a2bd50dd30fba7e8cba74ac26102f7"
+    },
+    {
+      "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/contract.stderr.txt",
+      "artifact": "parent-logs/contract.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/contract.stdout.txt",
+      "artifact": "parent-logs/contract.stdout.txt",
+      "bytes": 99,
+      "sha256": "f07760095346d2eee786d2e37e4bebf497824ff0051e0cf555b395c79de200d2"
+    },
+    {
+      "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/dashboard-e2e-ambient.stderr.txt",
+      "artifact": "parent-logs/dashboard-e2e-ambient.stderr.txt",
+      "bytes": 32,
+      "sha256": "09f9a13868964ebf97d18dfed88d0be9c7a1801d193fbba24057089c17b5db1c"
+    },
+    {
+      "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/dashboard-e2e-ambient.stdout.txt",
+      "artifact": "parent-logs/dashboard-e2e-ambient.stdout.txt",
+      "bytes": 15766,
+      "sha256": "0c7b9c05ee8ba9d3e6a3fa5bf23d3c3466a7304462bed985de98a7b4c83c7b4d"
+    },
+    {
+      "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/dashboard-e2e-witnesses.stderr.txt",
+      "artifact": "parent-logs/dashboard-e2e-witnesses.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/dashboard-e2e-witnesses.stdout.txt",
+      "artifact": "parent-logs/dashboard-e2e-witnesses.stdout.txt",
+      "bytes": 35519,
+      "sha256": "0b29a49a73feeb653f87a7017e18be3df86bd215f531329179a8df1f9588642b"
+    },
+    {
+      "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/format.stderr.txt",
+      "artifact": "parent-logs/format.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/format.stdout.txt",
+      "artifact": "parent-logs/format.stdout.txt",
+      "bytes": 107,
+      "sha256": "677144648f724e9f79b356934606019ad2b3b0a7a56c9d40207720a4495b0bd3"
+    },
+    {
+      "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/ruff.stderr.txt",
+      "artifact": "parent-logs/ruff.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/ruff.stdout.txt",
+      "artifact": "parent-logs/ruff.stdout.txt",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/type.stderr.txt",
+      "artifact": "parent-logs/type.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-GATE-OWNERSHIP-01/run-20261014T224200Z-codex/checks-attempt-1/type.stdout.txt",
+      "artifact": "parent-logs/type.stdout.txt",
+      "bytes": 30,
+      "sha256": "56882e01cb80173ef053c4096e4ee43e3123a15f5c0a06715f96988d48fbd91c"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/.last-run.json",
+      "artifact": "available-test-results/.last-run.json",
+      "bytes": 292,
+      "sha256": "2ed37b3bece6bfe66e231645266d780ae6ed866ef3cabcbd02c75b88799abd02"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/task-execution-visual/desktop-1280.png",
+      "artifact": "available-test-results/task-execution-visual/desktop-1280.png",
+      "bytes": 78953,
+      "sha256": "46e014be9d7cf086838f95988712db494af47d07f2bebb7a181ce84f54cd8c3a"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/task-execution-visual/mobile-375.png",
+      "artifact": "available-test-results/task-execution-visual/mobile-375.png",
+      "bytes": 53130,
+      "sha256": "093629c64acece388e04d066211d14c1cf1863a8b90b8bc550a6ebc8a4bdc479"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/task-execution-visual/tablet-768.png",
+      "artifact": "available-test-results/task-execution-visual/tablet-768.png",
+      "bytes": 82009,
+      "sha256": "d4c3c6111b2b32d6dd66790b0322a82b77c38483d3cef9b7cdf096a7a53938d0"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/tests-file-explorer-Enviro-00bc3--the-editor-from-the-\ucf54\ub4dc-tab-chromium/error-context.md",
+      "artifact": "available-test-results/tests-file-explorer-Enviro-00bc3--the-editor-from-the-\ucf54\ub4dc-tab-chromium/error-context.md",
+      "bytes": 15842,
+      "sha256": "20b643053f6cc8e8e7ae7e85503b2d0b5fde5ae7bdcac861914d3d7c7d826912"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/tests-file-explorer-Enviro-00bc3--the-editor-from-the-\ucf54\ub4dc-tab-chromium/test-failed-1.png",
+      "artifact": "available-test-results/tests-file-explorer-Enviro-00bc3--the-editor-from-the-\ucf54\ub4dc-tab-chromium/test-failed-1.png",
+      "bytes": 55095,
+      "sha256": "f3cfebb9c7f6cd7ef42bd42650790fc611546646dbb1285311b71912537b7574"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/tests-file-explorer-Enviro-00bc3--the-editor-from-the-\ucf54\ub4dc-tab-chromium/video.webm",
+      "artifact": "available-test-results/tests-file-explorer-Enviro-00bc3--the-editor-from-the-\ucf54\ub4dc-tab-chromium/video.webm",
+      "bytes": 116499,
+      "sha256": "9d23b00855c77d658d6db1eb1764ee9c91813c8c656b2aea2e232968b28157df"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/tests-file-explorer-Enviro-22df6--until-inspection-is-opened-chromium/error-context.md",
+      "artifact": "available-test-results/tests-file-explorer-Enviro-22df6--until-inspection-is-opened-chromium/error-context.md",
+      "bytes": 15854,
+      "sha256": "28d6596d7c1cb6f47d9dd6a22340022a4dae7833141bfb898b7c05a3731a34cf"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/tests-file-explorer-Enviro-22df6--until-inspection-is-opened-chromium/test-failed-1.png",
+      "artifact": "available-test-results/tests-file-explorer-Enviro-22df6--until-inspection-is-opened-chromium/test-failed-1.png",
+      "bytes": 55095,
+      "sha256": "f3cfebb9c7f6cd7ef42bd42650790fc611546646dbb1285311b71912537b7574"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/tests-file-explorer-Enviro-22df6--until-inspection-is-opened-chromium/video.webm",
+      "artifact": "available-test-results/tests-file-explorer-Enviro-22df6--until-inspection-is-opened-chromium/video.webm",
+      "bytes": 111292,
+      "sha256": "0fae92b84a3c4ed52c4c3404c9701d95868e925d9e16a26b088387ecfe4c5a01"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/tests-file-explorer-Enviro-81e3a-le-activity-from-git-status-chromium/error-context.md",
+      "artifact": "available-test-results/tests-file-explorer-Enviro-81e3a-le-activity-from-git-status-chromium/error-context.md",
+      "bytes": 15840,
+      "sha256": "c5cb959e2760df5f7d01c0218f48b39e3c8aa584a6a5556a61954ce38415946d"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/tests-file-explorer-Enviro-81e3a-le-activity-from-git-status-chromium/test-failed-1.png",
+      "artifact": "available-test-results/tests-file-explorer-Enviro-81e3a-le-activity-from-git-status-chromium/test-failed-1.png",
+      "bytes": 55095,
+      "sha256": "f3cfebb9c7f6cd7ef42bd42650790fc611546646dbb1285311b71912537b7574"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/tests-file-explorer-Enviro-81e3a-le-activity-from-git-status-chromium/video.webm",
+      "artifact": "available-test-results/tests-file-explorer-Enviro-81e3a-le-activity-from-git-status-chromium/video.webm",
+      "bytes": 110790,
+      "sha256": "e301da73878808894564f195ab2518368d90bdf08f5bc90a5299280b86f4b552"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/tests-file-explorer-Enviro-d6705-onment-rail-closed-and-open-chromium/error-context.md",
+      "artifact": "available-test-results/tests-file-explorer-Enviro-d6705-onment-rail-closed-and-open-chromium/error-context.md",
+      "bytes": 15849,
+      "sha256": "2d174be6626200df5fa0c919abb312f202ff6e39be8cc3cbea5407fc0b2bf3a6"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/tests-file-explorer-Enviro-d6705-onment-rail-closed-and-open-chromium/test-failed-1.png",
+      "artifact": "available-test-results/tests-file-explorer-Enviro-d6705-onment-rail-closed-and-open-chromium/test-failed-1.png",
+      "bytes": 55095,
+      "sha256": "f3cfebb9c7f6cd7ef42bd42650790fc611546646dbb1285311b71912537b7574"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/tests-file-explorer-Enviro-d6705-onment-rail-closed-and-open-chromium/video.webm",
+      "artifact": "available-test-results/tests-file-explorer-Enviro-d6705-onment-rail-closed-and-open-chromium/video.webm",
+      "bytes": 111753,
+      "sha256": "388f51d94911283dd4f840ff748ad4097d719fc730ff4584bee605f88e3fe3b4"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/tests-file-explorer-Enviro-ff254-hange-panel-from-the-\ubcc0\uacbd-tab-chromium/error-context.md",
+      "artifact": "available-test-results/tests-file-explorer-Enviro-ff254-hange-panel-from-the-\ubcc0\uacbd-tab-chromium/error-context.md",
+      "bytes": 15848,
+      "sha256": "ff79c2d9f6702d9b5f7ca069e315f88313a5c462b6412db809cc16e5b658d84d"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/tests-file-explorer-Enviro-ff254-hange-panel-from-the-\ubcc0\uacbd-tab-chromium/test-failed-1.png",
+      "artifact": "available-test-results/tests-file-explorer-Enviro-ff254-hange-panel-from-the-\ubcc0\uacbd-tab-chromium/test-failed-1.png",
+      "bytes": 55095,
+      "sha256": "f3cfebb9c7f6cd7ef42bd42650790fc611546646dbb1285311b71912537b7574"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/tests-file-explorer-Enviro-ff254-hange-panel-from-the-\ubcc0\uacbd-tab-chromium/video.webm",
+      "artifact": "available-test-results/tests-file-explorer-Enviro-ff254-hange-panel-from-the-\ubcc0\uacbd-tab-chromium/video.webm",
+      "bytes": 112112,
+      "sha256": "44c4f06de1da15ccefae266df5a0525a0ba06dd6dfba89518a2a633867c1bf8b"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/test-results/tests-ws-contract-e2e-WS-c-ff5d2-shboard-with-exact-payloads-chromium/ws-contract-latency.json",
+      "artifact": "available-test-results/tests-ws-contract-e2e-WS-c-ff5d2-shboard-with-exact-payloads-chromium/ws-contract-latency.json",
+      "bytes": 1935,
+      "sha256": "845322858730b6936041e9d2f9215d26a49677dc9786d845fe657ea5e22f4b60"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/src/styles/index.css",
+      "artifact": "preimage/dashboard/src/styles/index.css",
+      "bytes": 356531,
+      "sha256": "31f5422999717cae1e4b2601ee6b8c22085fce3191994e8ab69c146ccda0681a"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/src/components/Agent/AgentMonitorPanel.tsx",
+      "artifact": "preimage/dashboard/src/components/Agent/AgentMonitorPanel.tsx",
+      "bytes": 12112,
+      "sha256": "acbf1076ad860eb751e2944a1b29d5dc4d16700aca266263337d369d5ee2bc1a"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/DESIGN.md",
+      "artifact": "preimage/dashboard/DESIGN.md",
+      "bytes": 28136,
+      "sha256": "48fd421ac5aceeed8d1eedce842f057971f1080812288b7ccbf2a65b570460f8"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/package.json",
+      "artifact": "preimage/dashboard/package.json",
+      "bytes": 2579,
+      "sha256": "c73988cb07baeecc13343902975ca7561ec0ffb750400df6be1664f1bdf808d7"
+    },
+    {
+      "source": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/build-provenance.json",
+      "artifact": "preimage/dashboard/build-provenance.json",
+      "bytes": 423,
+      "sha256": "4333c60c13ec09796cb2440d6de012e65abc1701fa144d8a1a212357b78b5264"
+    }
+  ],
+  "witness_attachments": "NOT_AVAILABLE: later ambient runner replaced test-results before capture",
+  "root_diff_sha256": "b3e95bcd8b97b00ed0b2e3365d5d2e66d77bb2bbff8e2fa2968a0b6b55333bf2",
+  "root_diff_bytes": 65726
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "name": "contract",
+    "command": [
+      "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_git_api_boundary.py::test_git_helper_rejects_working_directory_outside_project",
+      "tests/test_git_api_endpoints.py::TestHelpers::test_git_command_failure_maps_to_400",
+      "tests/test_path_security.py::test_resolve_allowed_path_rejects_absolute_escape",
+      "tests/test_path_security.py::test_resolve_allowed_path_rejects_symlink_escape",
+      "--basetemp",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-PATH-API-BOUNDARY-RECHECK-01/run-20261015-path/green/runtime/pytest",
+      "--junitxml",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-PATH-API-BOUNDARY-RECHECK-01/run-20261015-path/green/junit.xml"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 2.0392560958862305,
+    "source_binding": "source-binding.json"
+  }
+]

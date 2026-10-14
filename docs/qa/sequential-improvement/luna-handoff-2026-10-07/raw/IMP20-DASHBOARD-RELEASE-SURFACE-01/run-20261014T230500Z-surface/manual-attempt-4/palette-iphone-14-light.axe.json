@@ -1,0 +1,193 @@
+{
+  "violations": [
+    {
+      "id": "color-contrast",
+      "impact": "serious",
+      "tags": [
+        "cat.color",
+        "wcag2aa",
+        "wcag143",
+        "TTv5",
+        "TT13.c",
+        "EN-301-549",
+        "EN-9.1.4.3",
+        "ACT",
+        "RGAAv4",
+        "RGAA-3.2.1"
+      ],
+      "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+      "help": "Elements must meet minimum color contrast ratio thresholds",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#b8b8b8",
+                "bgColor": "#434a5d",
+                "contrastRatio": 4.45,
+                "fontSize": "8.3pt (11px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<button id=\"cmd-option-search\" type=\"button\" class=\"cmd-item selected\" role=\"option\" aria-selected=\"true\">",
+                  "target": [
+                    "#cmd-option-search"
+                  ]
+                },
+                {
+                  "html": "<div class=\"command-palette\" role=\"dialog\" aria-modal=\"true\" aria-label=\"명령 팔레트\">",
+                  "target": [
+                    ".command-palette"
+                  ]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 4.45 (foreground color: #b8b8b8, background color: #434a5d, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span class=\"cmd-item-subtitle\">Knowledge</span>",
+          "target": [
+            "#cmd-option-search > .cmd-item-subtitle"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.45 (foreground color: #b8b8b8, background color: #434a5d, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+        }
+      ]
+    }
+  ],
+  "layout": {
+    "width": 1440,
+    "documentWidth": 1440,
+    "theme": null,
+    "textMuted": "#a0a0a0",
+    "labels": [
+      {
+        "text": "대기 중",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "API Uptime",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Tokens",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "RAM",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "CPU",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "ESC",
+        "color": "rgb(184, 184, 184)",
+        "background": "rgba(255, 255, 255, 0.1)"
+      },
+      {
+        "text": "Knowledge",
+        "color": "rgb(184, 184, 184)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Knowledge",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Workspace",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "원본을 보존하고 새 대화로 이어가기",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Agent",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Agent",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Agent",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Agent",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Agent",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Agent",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Evaluation",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Operations",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Workspace",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Repository",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "대시보드 실행 화면 미지원",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "TDD 모드에서 입력 후 직접 전송",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Plugin",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Plugin",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      }
+    ]
+  }
+}

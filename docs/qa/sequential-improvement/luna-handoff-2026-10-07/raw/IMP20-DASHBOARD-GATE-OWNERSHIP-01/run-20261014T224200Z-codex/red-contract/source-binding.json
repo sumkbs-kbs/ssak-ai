@@ -1,0 +1,14 @@
+[
+  {
+    "path": "scripts/run_dashboard_e2e_ambient.py",
+    "sha256": "f64b99b6df9a4eef7189bb2ec9498e2f2bbd0a998bf0cf2c39a1865d271e9f4c"
+  },
+  {
+    "path": "scripts/commercial_ga_gates.json",
+    "sha256": "a40867c743a9df5ba5854548476fcc53913e5364968a01e30e00c3e03b2eadb7"
+  },
+  {
+    "path": "tests/test_cr14_ambient_backend_gate_contract.py",
+    "sha256": "e791a47cc08191a2abdc14a473fd07b0bf602184d4ebb5ea009bd404825ab173"
+  }
+]

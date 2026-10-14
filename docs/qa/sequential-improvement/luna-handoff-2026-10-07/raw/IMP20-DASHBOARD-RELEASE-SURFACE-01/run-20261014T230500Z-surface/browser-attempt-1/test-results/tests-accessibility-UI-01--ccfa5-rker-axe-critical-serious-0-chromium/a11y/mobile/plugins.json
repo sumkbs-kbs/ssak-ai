@@ -1,0 +1,10 @@
+{
+  "pathname": "/plugins",
+  "routeName": "plugins",
+  "viewport": "mobile",
+  "verifiedPathname": "/plugins",
+  "routeMarkerFound": true,
+  "passes": 33,
+  "violations": [],
+  "criticalSerious": []
+}

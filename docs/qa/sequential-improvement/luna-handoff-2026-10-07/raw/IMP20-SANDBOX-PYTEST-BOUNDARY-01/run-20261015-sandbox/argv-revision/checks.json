@@ -1,0 +1,45 @@
+[
+  {
+    "name": "ruff",
+    "argv": [
+      "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/ruff",
+      "check",
+      "src/antigravity_k/engine/sandbox.py",
+      "tests/test_cr03_sandbox_read_boundary.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "format",
+    "argv": [
+      "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/ruff",
+      "format",
+      "--check",
+      "src/antigravity_k/engine/sandbox.py",
+      "tests/test_cr03_sandbox_read_boundary.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "types",
+    "argv": [
+      "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/basedpyright",
+      "--level",
+      "error",
+      "src/antigravity_k/engine/sandbox.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "diff",
+    "argv": [
+      "git",
+      "diff",
+      "--check",
+      "--",
+      "src/antigravity_k/engine/sandbox.py",
+      "tests/test_cr03_sandbox_read_boundary.py"
+    ],
+    "exit_code": 0
+  }
+]

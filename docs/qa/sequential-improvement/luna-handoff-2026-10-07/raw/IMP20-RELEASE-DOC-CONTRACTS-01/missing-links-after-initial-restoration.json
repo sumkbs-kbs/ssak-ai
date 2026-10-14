@@ -1,0 +1,27 @@
+{
+  "docs/qa/2026-09-16-followup/nx10/fsync2/VIEW_FRESHNESS_CONTRACT.md": [
+    "docs/qa/2026-09-16-followup/nx10/CLOSURE_RUNBOOK.md",
+    "docs/qa/2026-09-16-followup/nx10/CLOSURE_RUNBOOK.md",
+    "docs/qa/2026-09-16-followup/nx10/PROMOTION_PLAN.md",
+    "docs/qa/2026-09-16-followup/nx10/CLOSURE_RUNBOOK.md",
+    "docs/qa/2026-09-16-followup/nx10/CLOSURE_RUNBOOK.md",
+    "docs/qa/2026-09-16-followup/nx10/GATE_LEDGER.md",
+    "docs/qa/2026-09-16-followup/nx10/PROMOTION_PLAN.md",
+    "docs/qa/2026-09-16-followup/nx10/fsync/FLUSH_BATCH_DESIGN.md",
+    "docs/qa/2026-09-16-followup/nx10/fsync/FLUSH_BATCH_DESIGN.md",
+    "docs/qa/2026-09-16-followup/nx10/handoff.md"
+  ],
+  "docs/qa/2026-09-16-followup/tests.log": [
+    "docs/qa/2026-09-16-followup/BASELINE.md",
+    "docs/qa/2026-09-16-followup/REPORT.md",
+    "docs/qa/2026-09-16-followup/REPORT.md"
+  ],
+  "docs/qa/2026-09-16-followup/nx10/SC6_CRITERION_REVIEW.md": [
+    "docs/qa/2026-09-16-followup/nx10/GATE_LEDGER.md",
+    "docs/qa/2026-09-16-followup/nx10/handoff.md"
+  ],
+  "docs/qa/2026-09-16-followup/nx10/fsync3/probe-durability-output.json": [
+    "docs/qa/2026-09-16-followup/nx10/GATE_LEDGER.md",
+    "docs/qa/2026-09-16-followup/nx10/handoff.md"
+  ]
+}

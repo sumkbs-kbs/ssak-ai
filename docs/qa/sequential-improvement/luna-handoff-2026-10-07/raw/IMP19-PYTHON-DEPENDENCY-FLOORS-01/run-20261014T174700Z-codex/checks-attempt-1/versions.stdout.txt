@@ -1,0 +1,12 @@
+{
+  "anyio": "4.15.1",
+  "pyjwt": "2.15.1",
+  "fsspec": "2026.6.0",
+  "multidict": "6.9.1",
+  "oauthlib": "4.0.0",
+  "sentence-transformers": "5.7.0",
+  "urllib3": "2.8.0",
+  "chromadb": "1.5.9",
+  "requests-oauthlib": "2.0.0",
+  "typing-extensions": "4.16.0"
+}

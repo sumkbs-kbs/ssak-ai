@@ -1,0 +1,8 @@
+[dashboard-e2e-ambient] selected base_url=http://127.0.0.1:55715 specs=1
+
+Running 1 test using 1 worker
+
+[C10-EVIDENCE-stub] {"build":"v9.9.9 · stubbeef (ui v0.1.0)","uptime":"15M 00S"}
+  ✓  1 [chromium] › e2e/tests/cr10-telemetry.spec.ts:163:1 › C10-04 · 화면 지표가 API 응답을 그대로 옮긴다(고정 payload 대조) (17.9s)
+
+  1 passed (18.3s)

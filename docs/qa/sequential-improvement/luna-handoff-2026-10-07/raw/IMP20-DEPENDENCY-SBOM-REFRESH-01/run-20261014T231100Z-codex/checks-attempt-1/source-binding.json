@@ -1,0 +1,14 @@
+[
+  {
+    "path": "src/antigravity_k/release/python.cdx.json",
+    "sha256": "71c318920056b819085767c1559c52a6468a0e286335ce1a36a832446fccc9dc"
+  },
+  {
+    "path": "src/antigravity_k/release/THIRD_PARTY_NOTICES.txt",
+    "sha256": "70d20bfd7cc37bf3176c321f5a75f01eeb28f8139901569260fdba727b12f190"
+  },
+  {
+    "path": "uv.lock",
+    "sha256": "82390dd4dd4f350fd2411f79fa6492f6d9ef8082dd100a0047170740e11c2380"
+  }
+]

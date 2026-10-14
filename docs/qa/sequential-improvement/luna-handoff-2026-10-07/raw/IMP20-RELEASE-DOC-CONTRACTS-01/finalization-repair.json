@@ -1,0 +1,5 @@
+{
+  "failure": "Evidence metadata writer invoked host python3 lacking datetime.UTC; AttributeError before source-binding/results write",
+  "repair": "Reran complete metadata/byte-verification step under candidate .venv/bin/python",
+  "product_or_test_source_changed": false
+}

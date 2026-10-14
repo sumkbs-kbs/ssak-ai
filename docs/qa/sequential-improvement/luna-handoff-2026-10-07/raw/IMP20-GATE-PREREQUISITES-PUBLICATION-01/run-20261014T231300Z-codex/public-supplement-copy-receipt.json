@@ -1,0 +1,149 @@
+{
+  "files": 36,
+  "inventory": {
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/README.md": {
+      "bytes": 802,
+      "sha256": "b67507b84ea4ce976bdad876ba4eaf00cc2a519fd9e926de75ac466f09724e28"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/followup-a7.md": {
+      "bytes": 1505,
+      "sha256": "b11a8d821487b1cba5e1480d29a35731c849986795492a091540b6d286a20eb7"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/independent-review.md": {
+      "bytes": 8185,
+      "sha256": "d46ca977b5406634e6090c6f5a42a699466932f5a145af3f3f4cbbd551159c34"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/independent-review-a7.md": {
+      "bytes": 7307,
+      "sha256": "ffd08bb5817e583e67d8ec3cb35a3ca61e061d724ff15249d0b8a4fb13044fa1"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/integrate_owned.py": {
+      "bytes": 3435,
+      "sha256": "05f15967649e234839be164e0498e779ad1e5fb7e83e893a0fcdf7a6a918dcd5"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/integrate_surface.py": {
+      "bytes": 3680,
+      "sha256": "be0773d07c70c417f86a74b03c791ba01bf7a0779e6856008c9ed4f40409a2d3"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/integration-receipt.json": {
+      "bytes": 558,
+      "sha256": "6ee0dcccfae682165dae4a27cb3ca832790568968e28734fa014dd57354ebe4a"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/integration-receipt-a7.json": {
+      "bytes": 558,
+      "sha256": "a7c9e45e0ba100743244458075ed6aad2d67dc06e6b49b563424292fd3a8977a"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/copy_public_evidence.py": {
+      "bytes": 6178,
+      "sha256": "2f416ead85f5da5e43b7421b53dd81dc9c066ec62c67011752de772ac538bef8"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/copy_ui_evidence.py": {
+      "bytes": 2661,
+      "sha256": "d5e7c0b03fc94b7a2158b88b3d70653a1bbe1d4761f7292f4039c0236419afc7"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/copy_supplement.py": {
+      "bytes": 3412,
+      "sha256": "4dcf6b32d16109d568de481a7fd134ed8db83664cb5486b30ad8845babbb5f97"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/public-copy-receipt.json": {
+      "bytes": 126461,
+      "sha256": "08ca6ba52b5ee4340de852bd269caedcb4297836c9d586c12c0ef5b4a7e3880a"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/public-ui-copy-receipt.json": {
+      "bytes": 113899,
+      "sha256": "e70ed2bdb64a23c7460b8666947999792710e5b6f3b82d0aafb1ae0e7073ea73"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/public-copy-path-correction.md": {
+      "bytes": 737,
+      "sha256": "61bf90e25ac4f0ae3f43efc65ead2775d4d1e683a8d9659bf9b185e458ff762d"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-RELEASE-SURFACE-01/run-20261014T230500Z-surface/primary-review-current/source-binding.json": {
+      "bytes": 74897,
+      "sha256": "b6b871cc845bba5e630964295946f1884104ff0f92b8a4fffa51b5a12f98493c"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-RELEASE-SURFACE-01/run-20261014T230500Z-surface/primary-review-current/server.json": {
+      "bytes": 126,
+      "sha256": "648000702a665ab1ddb2f8236ddf928cc547b8f545f5bce68f02fcb0ac3f162d"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-RELEASE-SURFACE-01/run-20261014T230500Z-surface/primary-review-current/server.stdout.txt": {
+      "bytes": 19419,
+      "sha256": "d5b3af965ba5a82441e0d35904f36766882ebedf1d81e086f16bfe8c50f7eda2"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-RELEASE-SURFACE-01/run-20261014T230500Z-surface/primary-review-current/server.stderr.txt": {
+      "bytes": 6543,
+      "sha256": "10975194a6d02ea1ee553ab7d5117ac738a4f68778d43ffb3d03516f1f8b1cbc"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-RELEASE-SURFACE-01/run-20261014T230500Z-surface/primary-review-current/cleanup.json": {
+      "bytes": 34,
+      "sha256": "1a173056950ce5d1e57c2fdd0895f97810657a7ba1a9f25e1c2355158a65ffc0"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-RELEASE-SURFACE-01/run-20261014T230500Z-surface/primary-review-current/observations.json": {
+      "bytes": 1086,
+      "sha256": "15599c630e6b3db3f015a3263387b441397dc43d31b45f5e388efe55361b950b"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-RELEASE-SURFACE-01/run-20261014T230500Z-surface/primary-review-current/websocket-limitation.md": {
+      "bytes": 584,
+      "sha256": "232f78928b1e506ce217ce5e1646cea830e94ef5aafd9826c14f2dc07242024c"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-RUNTIME-ENVIRONMENT-01/run-20261014T165600Z-codex/historical-selftest-correction/README.md": {
+      "bytes": 465,
+      "sha256": "c38740609fd9095c80bc967518bc5981af0f535b1e16eec8455c4ad22a4da16b"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-RUNTIME-ENVIRONMENT-01/run-20261014T165600Z-codex/historical-selftest-correction/diagnostic-soak-exit-with-selftest-append.txt": {
+      "bytes": 34010,
+      "sha256": "f4446318573f682763fca928c9e1d40d7df016a577ef265b70a1db827b436378"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-BANDIT-GATE-CLOSURE-01/run-20261014T173200Z-codex/review-lane-records.json": {
+      "bytes": 313,
+      "sha256": "f7d04430efbca7d6c0f76ccd3dea70b8b13e3887be134e024b2329f7e3243f76"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-BANDIT-GATE-CLOSURE-01/run-20261014T173200Z-codex/integrate_owned.py": {
+      "bytes": 3437,
+      "sha256": "f95b36cb5254995f22551e530410081e136571d658196cf18d4a5c80dd5392cf"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-BANDIT-GATE-CLOSURE-01/run-20261014T173200Z-codex/integration-receipt.json": {
+      "bytes": 557,
+      "sha256": "157beb932570f7ce02f4d675214bbb4077a71383557b4bd62adb83e7c0795837"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-PYTHON-DEPENDENCY-FLOORS-01/run-20261014T174700Z-codex/review-lane-records.json": {
+      "bytes": 394,
+      "sha256": "75f2a57bac27b7584e4e47bf7a3964f908eaf69713df6ea3d2c213a8da398de5"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-PYTHON-DEPENDENCY-FLOORS-01/run-20261014T174700Z-codex/integrate_owned.py": {
+      "bytes": 3438,
+      "sha256": "c1bcb92e9be123f889a9cba9b91f82293be59f6d463280a5c7abf15d2aeb9733"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-PYTHON-DEPENDENCY-FLOORS-01/run-20261014T174700Z-codex/integration-receipt.json": {
+      "bytes": 557,
+      "sha256": "4ca8633ea381b783707ce78cdb999b3b8c86edab2bf31dc7000bbcee30cdc1a5"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-RUNTIME-ENVIRONMENT-01/run-20261014T165600Z-codex/review-lane-records.json": {
+      "bytes": 450,
+      "sha256": "2471165dcb00dd38c84480f729009802d575f249b8d0d2e9e0599bcdaae84826"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-RUNTIME-ENVIRONMENT-01/run-20261014T165600Z-codex/integrate_owned.py": {
+      "bytes": 3436,
+      "sha256": "9ac535d6f8aa30a692b24484a5ab20eb0231d419cdd45ae25775cdc6e05a3870"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-RUNTIME-ENVIRONMENT-01/run-20261014T165600Z-codex/integration-receipt.json": {
+      "bytes": 557,
+      "sha256": "4fd534dbecc2147b57b305c8531f75b30c8974c69716d70f035e223fa24eb63e"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-RUNTIME-ENVIRONMENT-01/run-20261014T165600Z-codex/independent-approval.md": {
+      "bytes": 1069,
+      "sha256": "bf16fadc28ab6f9501eb67caa800739b1849310e30eff2db2e540f294046fce9"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-PYTHON-DEPENDENCY-FLOORS-01/run-20261014T174700Z-codex/orchestration-path-correction.md": {
+      "bytes": 524,
+      "sha256": "90421fdb24c37cc616c2850b08c81e12de8cbd1a4c9fcf9814be81a700063291"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/STATUS.md": {
+      "bytes": 22664,
+      "sha256": "ab24a3c9003323c47adc5b329901e4f688c9d8f59af57217ec0cb9d4b1c1e3fe"
+    },
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/tasks.json": {
+      "bytes": 66919,
+      "sha256": "ae5fd7549e9f4e8d4c652e6700fe8fb3cad7428d05936bb0c423cdecb2df6d65"
+    }
+  }
+}

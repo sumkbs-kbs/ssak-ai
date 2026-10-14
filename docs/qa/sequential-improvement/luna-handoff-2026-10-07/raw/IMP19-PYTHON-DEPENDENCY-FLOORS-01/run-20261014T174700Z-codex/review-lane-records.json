@@ -1,0 +1,6 @@
+{
+  "candidate": "481a634195bd3924ed601f1b881958c75e5e6892",
+  "manual_qa": {"verdict": "PASS_SCOPED", "source": "result.json", "scope": "Real audit unresolved0; retained214 and affected20, not a single full-suite pass"},
+  "independent_gate": {"verdict": "APPROVE_SCOPED", "source": ".omo/evidence/IMP19-PYTHON-DEPENDENCY-FLOORS-01-gate-review.md"},
+  "full_ga_soak_release": "NOT_APPROVED"
+}

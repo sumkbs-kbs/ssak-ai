@@ -1,0 +1,63 @@
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +740
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 740, reused 740, downloaded 0, added 494
+Progress: resolved 740, reused 740, downloaded 0, added 738
+Progress: resolved 740, reused 740, downloaded 0, added 740, done
+
+dependencies:
++ @monaco-editor/react 4.7.0
++ @tanstack/react-query 5.102.1
++ @types/diff 7.0.2
++ diff 9.0.0
++ dompurify 3.4.14
++ highlight.js 11.11.2
++ ky 2.0.2
++ mermaid 10.9.8
++ monaco-editor 0.56.0
++ react 19.2.8
++ react-dom 19.2.8
++ react-markdown 9.1.0
++ react-router-dom 7.18.2
++ rehype-highlight 7.0.2
++ rehype-raw 7.0.0
++ rehype-sanitize 6.0.0
++ remark-breaks 4.0.0
++ remark-gfm 4.0.1
++ remark-parse 11.0.0
++ split.js 1.6.5
++ unified 11.0.5
++ xterm 5.3.0
++ xterm-addon-fit 0.8.0
++ zod 4.4.3
++ zustand 5.0.15
+
+devDependencies:
++ @axe-core/playwright 4.13.0
++ @eslint/js 9.39.5
++ @playwright/test 1.62.1
++ @stryker-mutator/core 9.6.1
++ @stryker-mutator/vitest-runner 9.6.1
++ @testing-library/jest-dom 6.10.0
++ @testing-library/react 16.3.2
++ @types/dompurify 3.2.0
++ @types/node 24.13.3
++ @types/react 19.2.18
++ @types/react-dom 19.2.4
++ @types/split.js 1.6.0
++ @vitejs/plugin-react 4.7.0
++ @vitest/coverage-v8 4.1.11
++ eslint 9.39.5
++ eslint-plugin-react-hooks 7.1.1
++ globals 17.11.0
++ jsdom 29.1.1
++ react-doctor 0.9.12
++ react-grab 0.2.0
++ react-scan 0.5.7
++ typescript 5.9.3
++ typescript-eslint 8.67.0
++ vite 6.4.3
++ vitest 4.1.11
+
+Done in 2.6s using pnpm v11.3.0

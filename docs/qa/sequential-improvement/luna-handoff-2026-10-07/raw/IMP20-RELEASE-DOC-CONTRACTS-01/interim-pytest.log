@@ -1,0 +1,33 @@
+.................................s...........................F.......... [ 72%]
+............................                                             [100%]
+=================================== FAILURES ===================================
+______________________ test_local_relative_links_resolve _______________________
+
+    def test_local_relative_links_resolve() -> None:
+        """문서의 로컬 상대 링크가 실재하는 파일을 가리킨다(깨진 `../` 깊이를 잡는다)."""
+        docs = [REPO / rel for rel in TOOL.DOCS]  # type: ignore[attr-defined]
+        docs += sorted((REPO / "docs" / "qa" / "2026-09-16-followup").rglob("*.md"))
+        broken: list[str] = []
+        checked = 0
+        for doc in docs:
+            if not doc.is_file():
+                continue
+            text = doc.read_text(encoding="utf-8", errors="replace")
+            for target in re.findall(r"\]\(([^)]+)\)", text):
+                bare = target.split("#")[0].split(" ")[0]
+                if not bare or target.startswith(("http://", "https://", "mailto:", "/", "#")):
+                    continue
+                if re.match(r"^[\w./-]+:\d+$", target):
+                    continue
+                checked += 1
+                if not (doc.parent / bare).resolve().exists():
+                    broken.append(f"{doc.relative_to(REPO)} → {target}")
+        assert checked > 0, "검사한 링크가 0개다 — 문서 집합이 비었거나 파서가 깨졌다"
+>       assert not broken, "깨진 로컬 상대 링크: " + " | ".join(broken[:8])
+E       AssertionError: 깨진 로컬 상대 링크: docs/qa/2026-09-16-followup/nx10/CLOSURE_RUNBOOK.md → ./fsync2/VIEW_FRESHNESS_CONTRACT.md | docs/qa/2026-09-16-followup/nx10/CLOSURE_RUNBOOK.md → ./fsync2/VIEW_FRESHNESS_CONTRACT.md | docs/qa/2026-09-16-followup/nx10/PROMOTION_PLAN.md → ./fsync2/VIEW_FRESHNESS_CONTRACT.md | docs/qa/2026-09-16-followup/BASELINE.md → tests.log | docs/qa/2026-09-16-followup/REPORT.md → tests.log | docs/qa/2026-09-16-followup/REPORT.md → tests.log | docs/qa/2026-09-16-followup/nx10/CLOSURE_RUNBOOK.md → ./fsync2/VIEW_FRESHNESS_CONTRACT.md | docs/qa/2026-09-16-followup/nx10/CLOSURE_RUNBOOK.md → ./fsync2/VIEW_FRESHNESS_CONTRACT.md
+E       assert not ['docs/qa/2026-09-16-followup/nx10/CLOSURE_RUNBOOK.md → ./fsync2/VIEW_FRESHNESS_CONTRACT.md', 'docs/qa/2026-09-16-foll...ts.log', 'docs/qa/2026-09-16-followup/REPORT.md → tests.log', 'docs/qa/2026-09-16-followup/REPORT.md → tests.log', ...]
+
+tests/test_docs_toolchain_contract.py:145: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_docs_toolchain_contract.py::test_local_relative_links_resolve
+1 failed, 98 passed, 1 skipped in 3.59s

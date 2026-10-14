@@ -1,0 +1,10 @@
+{
+  "pathname": "/mutation",
+  "routeName": "mutation",
+  "viewport": "mobile",
+  "verifiedPathname": "/mutation",
+  "routeMarkerFound": true,
+  "passes": 38,
+  "violations": [],
+  "criticalSerious": []
+}

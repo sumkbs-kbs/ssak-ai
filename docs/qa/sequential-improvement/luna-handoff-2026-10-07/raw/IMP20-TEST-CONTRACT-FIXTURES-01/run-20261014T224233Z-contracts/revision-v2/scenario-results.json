@@ -1,0 +1,52 @@
+[
+  {
+    "scenario": "tests.test_execution_request_preservation::test_initial_execution_retains_original_request_after_misleading_refinement[agent]",
+    "result": "PASS",
+    "artifact": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/postimage/junit.xml"
+  },
+  {
+    "scenario": "tests.test_execution_request_preservation::test_initial_execution_retains_original_request_after_misleading_refinement[max_fallback]",
+    "result": "PASS",
+    "artifact": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/postimage/junit.xml"
+  },
+  {
+    "scenario": "tests.test_execution_request_preservation::test_initial_execution_retains_original_request_after_misleading_refinement[max_error_fallback]",
+    "result": "PASS",
+    "artifact": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/postimage/junit.xml"
+  },
+  {
+    "scenario": "tests.test_execution_request_preservation::test_retry_keeps_feedback_and_original_conversation[agent]",
+    "result": "PASS",
+    "artifact": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/postimage/junit.xml"
+  },
+  {
+    "scenario": "tests.test_execution_request_preservation::test_retry_keeps_feedback_and_original_conversation[max_fallback]",
+    "result": "PASS",
+    "artifact": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/postimage/junit.xml"
+  },
+  {
+    "scenario": "tests.test_execution_request_preservation::test_no_auxiliary_context_keeps_original_message_unchanged",
+    "result": "PASS",
+    "artifact": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/postimage/junit.xml"
+  },
+  {
+    "scenario": "tests.test_turn_tool_constraints::test_no_files_prevents_artifact_write_and_unsolicited_approval[\\ubc29\\uae08 \\ud45c\\uc758 \\ucf54\\ub4dc \\uc140\\uc5d0\\uc11c HTML <br> \\ubb38\\uc790\\ub97c \\ube7c\\uace0 \\uac01 \\ud589\\uc5d0 \\ub2e8\\uc77c Python \\ud560\\ub2f9\\ubb38 \\ud558\\ub098\\ub9cc \\uc368\\uc8fc\\uc138\\uc694. \\ucd94\\uac00 \\uac80\\uc0c9\\uacfc \\ud30c\\uc77c \\ubcc0\\uacbd\\uc740 \\ud558\\uc9c0 \\ub9c8\\uc138\\uc694.-False]",
+    "result": "PASS",
+    "artifact": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/postimage/junit.xml"
+  },
+  {
+    "scenario": "tests.test_turn_tool_constraints::test_no_files_prevents_artifact_write_and_unsolicited_approval[\\ubc29\\uae08 \\ud45c\\uc758 \\ucf54\\ub4dc \\uc140\\uc5d0\\uc11c HTML <br> \\ubb38\\uc790\\ub97c \\ube7c\\uace0 \\uac01 \\ud589\\uc5d0 \\ub2e8\\uc77c Python \\ud560\\ub2f9\\ubb38 \\ud558\\ub098\\ub9cc \\uc368\\uc8fc\\uc138\\uc694. \\ucd94\\uac00 \\uac80\\uc0c9\\uacfc \\ud30c\\uc77c \\ubcc0\\uacbd\\uc740 \\ud558\\uc9c0 \\ub9c8\\uc138\\uc694.-True]",
+    "result": "PASS",
+    "artifact": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/postimage/junit.xml"
+  },
+  {
+    "scenario": "tests.test_turn_tool_constraints::test_no_files_prevents_artifact_write_and_unsolicited_approval[Do not modify any files. Do not search. Reply in chat.-False]",
+    "result": "PASS",
+    "artifact": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/postimage/junit.xml"
+  },
+  {
+    "scenario": "tests.test_turn_tool_constraints::test_no_files_prevents_artifact_write_and_unsolicited_approval[Do not modify any files. Do not search. Reply in chat.-True]",
+    "result": "PASS",
+    "artifact": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/postimage/junit.xml"
+  }
+]

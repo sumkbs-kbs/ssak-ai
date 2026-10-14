@@ -1,0 +1,47 @@
+[
+  {
+    "command": [
+      "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/ruff",
+      "check",
+      "tests/test_cli_smoke.py"
+    ],
+    "exit_code": 0,
+    "stdout": "static-0.stdout.txt",
+    "stderr": "static-0.stderr.txt"
+  },
+  {
+    "command": [
+      "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/ruff",
+      "format",
+      "--check",
+      "tests/test_cli_smoke.py"
+    ],
+    "exit_code": 0,
+    "stdout": "static-1.stdout.txt",
+    "stderr": "static-1.stderr.txt"
+  },
+  {
+    "command": [
+      "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+      "-B",
+      "-c",
+      "from pathlib import Path; compile(Path('tests/test_cli_smoke.py').read_bytes(), 'tests/test_cli_smoke.py', 'exec')"
+    ],
+    "exit_code": 0,
+    "stdout": "static-2.stdout.txt",
+    "stderr": "static-2.stderr.txt"
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "--",
+      "config.yaml",
+      "tests/test_cli_smoke.py"
+    ],
+    "exit_code": 0,
+    "stdout": "static-3.stdout.txt",
+    "stderr": "static-3.stderr.txt"
+  }
+]

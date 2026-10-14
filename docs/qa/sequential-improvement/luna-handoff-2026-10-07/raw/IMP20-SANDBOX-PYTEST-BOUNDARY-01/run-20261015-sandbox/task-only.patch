@@ -1,0 +1,117 @@
+diff --git a/src/antigravity_k/engine/sandbox.py b/src/antigravity_k/engine/sandbox.py
+index 48a879f2..565df2cf 100644
+--- a/src/antigravity_k/engine/sandbox.py
++++ b/src/antigravity_k/engine/sandbox.py
+@@ -29,6 +29,7 @@ import sys
+ import tempfile
+ from collections.abc import Mapping, Sequence
+ from dataclasses import dataclass
++from pathlib import Path
+ from typing import Final
+ 
+ from antigravity_k.engine.limited_process_runner import LimitedProcessRunner
+@@ -160,13 +161,41 @@ def run_sandboxed_argv(
+         read_allow_paths=read_paths,
+     )
+     return runner.execute(
+-        shlex.join(args),
++        shlex.join(_workspace_pytest_argv(args, workspace, effective_env.get("PYTEST_ADDOPTS", ""))),
+         timeout=effective_timeout,
+         env=effective_env,
+         cwd=workspace,
+     )
+ 
+ 
++def _workspace_pytest_argv(args: list[str], workspace: str, addopts: str) -> list[str]:
++    """Bound implicit pytest discovery without replacing explicit caller options."""
++    executable = Path(args[0]).name
++    module_pytest = any(args[index : index + 2] == ["-m", "pytest"] for index in range(1, len(args) - 1))
++    if executable not in {"pytest", "py.test"} and not (executable.startswith("python") and module_pytest):
++        return args
++    boundary = args.index("--") if "--" in args else len(args)
++    supplied_options = [*shlex.split(addopts), *args[1:boundary]]
++    options: list[str] = []
++    config_names = (
++        "pytest.toml",
++        ".pytest.toml",
++        "pytest.ini",
++        ".pytest.ini",
++        "pyproject.toml",
++        "tox.ini",
++        "setup.cfg",
++    )
++    if not any(arg.startswith(("-c", "--config-file")) for arg in supplied_options) and not any(
++        Path(workspace, name).is_file() for name in config_names
++    ):
++        options.extend(["-c", os.devnull])
++    for option in ("--rootdir", "--confcutdir"):
++        if not any(arg == option or arg.startswith(f"{option}=") for arg in supplied_options):
++            options.extend([option, workspace])
++    return [*args[:boundary], *options, *args[boundary:]]
++
++
+ def _python_runtime_read_paths() -> list[str]:
+     """Return interpreter locations a sandboxed Python needs to boot.
+ 
+diff --git a/tests/test_cr03_sandbox_read_boundary.py b/tests/test_cr03_sandbox_read_boundary.py
+index 57563112..c8ce8273 100644
+--- a/tests/test_cr03_sandbox_read_boundary.py
++++ b/tests/test_cr03_sandbox_read_boundary.py
+@@ -110,6 +110,30 @@ class TestWorkspaceStillRuns:
+         assert result.success is True, result.error or result.stderr
+         assert "READ INSIDE-OK" in result.stdout
+ 
++    @pytest.mark.parametrize("config_mode", ["local", "explicit", "environment"])
++    def test_pytest_preserves_workspace_configuration(self, workdir: Path, config_mode: str) -> None:
++        config = workdir / ("pytest.ini" if config_mode == "local" else "custom.ini")
++        config.write_text(
++            "[pytest]\naddopts = --strict-markers\nmarkers = configured: local marker\n", encoding="utf-8"
++        )
++        (workdir / "test_config.py").write_text(
++            "import pytest\n@pytest.mark.configured\ndef test_config(pytestconfig):\n"
++            "    assert pytestconfig.getoption('strict_markers')\n",
++            encoding="utf-8",
++        )
++        argv = [sys.executable, "-m", "pytest", "-q"]
++        env = _sandbox_env(str(workdir))
++        if config_mode == "explicit":
++            argv.extend(["-c", str(config), "--rootdir", str(workdir), "--confcutdir", str(workdir)])
++        if config_mode == "environment":
++            env["PYTEST_ADDOPTS"] = f"-c {config}"
++        argv.extend(["--", "test_config.py"])
++
++        result = run_sandboxed_argv(argv, cwd=str(workdir), timeout=120, env=env)
++
++        assert result.success is True, result.stdout + result.stderr
++        assert "1 passed" in result.stdout
++
+ 
+ # ── C03-02: 외부 sentinel 거부 ────────────────────────────────────────────
+ 
+@@ -195,16 +219,18 @@ class TestCanonicalAndChildBoundary:
+         assert "READ_BLOCKED" in result.stdout
+ 
+     def test_alias_path_to_same_sentinel_is_denied(self, workdir: Path) -> None:
+-        """/var/folders(비-canonical)로 접근해도 canonical deny가 적용된다."""
+-        outside = _outside_dir("cr03-alias-")
+-        sentinel = outside / "other-process-secret.txt"
+-        sentinel.write_text(SENTINEL, encoding="utf-8")
++        """/tmp alias로 접근해도 /private/tmp canonical deny가 적용된다."""
++        with tempfile.TemporaryDirectory(prefix="cr03-alias-", dir="/tmp") as outside:
++            sentinel = Path(outside) / "other-process-secret.txt"
++            sentinel.write_text(SENTINEL, encoding="utf-8")
++            assert str(sentinel) != os.path.realpath(sentinel)
++            assert Path(sentinel).samefile(Path(os.path.realpath(sentinel)))
+ 
+-        result = _run_probe(workdir, _read_probe(str(sentinel)))
++            result = _run_probe(workdir, _read_probe(str(sentinel)))
+ 
+-        assert os.path.realpath(sentinel).startswith("/private/var/folders")
+-        assert SENTINEL not in result.stdout
+-        assert "READ_BLOCKED" in result.stdout
++            assert result.success is True, result.error or result.stderr
++            assert SENTINEL not in result.stdout
++            assert "READ_BLOCKED PermissionError" in result.stdout
+ 
+     def test_child_process_inherits_boundary(self, workdir: Path) -> None:
+         outside = _outside_dir("cr03-child-")

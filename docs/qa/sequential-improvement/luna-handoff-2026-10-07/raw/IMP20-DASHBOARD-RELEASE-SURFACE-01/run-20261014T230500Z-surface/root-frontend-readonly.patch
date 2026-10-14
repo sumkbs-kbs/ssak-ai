@@ -1,0 +1,1391 @@
+diff --git a/dashboard/build-provenance.json b/dashboard/build-provenance.json
+index 5b5bc5d4..687df871 100644
+--- a/dashboard/build-provenance.json
++++ b/dashboard/build-provenance.json
+@@ -1,5 +1,5 @@
+ {
+   "_comment": "이 번들을 만든 소스 리비전(CR-14 F-12). 이 파일이 있는 한 로컬·CI·Docker 빌드가 같은 바이트를 낸다 — 커밋된 번들의 BUILD 라벨이 매 커밋마다 흔들리지 않는다. 소스가 바뀌면 `pnpm run build` 로 번들을 갱신한 뒤 이 값을 그 시점 리비전으로 다시 기록한다.",
+-  "buildId": "c472d4fcd7c5",
+-  "builtAt": "2026-10-14T14:28:09Z"
++  "buildId": "5a717c4a",
++  "builtAt": null
+ }
+diff --git a/dashboard/e2e/tests/accessibility-hard-gate.spec.ts b/dashboard/e2e/tests/accessibility-hard-gate.spec.ts
+index 71188f1d..1be5c7d2 100644
+--- a/dashboard/e2e/tests/accessibility-hard-gate.spec.ts
++++ b/dashboard/e2e/tests/accessibility-hard-gate.spec.ts
+@@ -61,8 +61,6 @@ const VIEWPORTS = [
+   { name: 'mobile', width: 390, height: 844 },
+ ] as const;
+ 
+-type ViewportName = (typeof VIEWPORTS)[number]['name'];
+-
+ async function scanAxe(page: Page): Promise<number> {
+   const results = await new AxeBuilder({ page })
+     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'])
+diff --git a/dashboard/e2e/tests/accessibility-inventory.spec.ts b/dashboard/e2e/tests/accessibility-inventory.spec.ts
+index 0c0e8353..daae51c5 100644
+--- a/dashboard/e2e/tests/accessibility-inventory.spec.ts
++++ b/dashboard/e2e/tests/accessibility-inventory.spec.ts
+@@ -9,7 +9,7 @@
+ import { mkdir, writeFile } from 'node:fs/promises';
+ import path from 'node:path';
+ 
+-import { test, expect, type Page } from '@playwright/test';
++import { test, expect } from '@playwright/test';
+ import AxeBuilder from '@axe-core/playwright';
+ 
+ const OUT = path.resolve(process.cwd(), '.tmp/ui02-inventory');
+@@ -40,7 +40,7 @@ for (const viewport of [
+     test.use({ viewport: { width: viewport.width, height: viewport.height } });
+ 
+     for (const route of ROUTES) {
+-      test(`${route.pathname} · ${viewport.name}`, async ({ page }, testInfo) => {
++      test(`${route.pathname} · ${viewport.name}`, async ({ page }) => {
+         test.setTimeout(60_000);
+         await page.goto(route.pathname);
+         await page.waitForLoadState('domcontentloaded');
+diff --git a/dashboard/e2e/tests/auth-bootstrap.spec.ts b/dashboard/e2e/tests/auth-bootstrap.spec.ts
+index 3ad330e6..0af7f889 100644
+--- a/dashboard/e2e/tests/auth-bootstrap.spec.ts
++++ b/dashboard/e2e/tests/auth-bootstrap.spec.ts
+@@ -1,14 +1,14 @@
+ import { mkdir } from 'node:fs/promises';
+ import path from 'node:path';
+ 
+-import { expect, test } from '@playwright/test';
++import { expect, test, type TestInfo } from '@playwright/test';
+ import { z } from 'zod';
+ import { DashboardPage } from '../pages/DashboardPage';
+ import { authPin, startAuthServer, startNoAuthServer } from '../helpers/hermeticBackend';
+ 
+ const TokenSchema = z.object({ access_token: z.string().min(1) });
+ 
+-test.beforeEach(async ({}, testInfo) => {
++test.beforeEach(async (_fixtures, testInfo: TestInfo) => {
+   await mkdir(testInfo.outputDir, { recursive: true });
+ });
+ 
+diff --git a/dashboard/e2e/tests/capture-desktop-layout.spec.ts b/dashboard/e2e/tests/capture-desktop-layout.spec.ts
+index e4778e75..f79d61a2 100644
+--- a/dashboard/e2e/tests/capture-desktop-layout.spec.ts
++++ b/dashboard/e2e/tests/capture-desktop-layout.spec.ts
+@@ -1,4 +1,4 @@
+-import { test, expect } from '@playwright/test';
++import { test } from '@playwright/test';
+ 
+ test('capture desktop layout screenshot', async ({ page }) => {
+   await page.setViewportSize({ width: 1440, height: 900 });
+diff --git a/dashboard/e2e/tests/keyboard-workflows.spec.ts b/dashboard/e2e/tests/keyboard-workflows.spec.ts
+index 027554f9..f6083748 100644
+--- a/dashboard/e2e/tests/keyboard-workflows.spec.ts
++++ b/dashboard/e2e/tests/keyboard-workflows.spec.ts
+@@ -62,7 +62,14 @@ test.describe('UI-02 keyboard workflows', () => {
+     const sidebar = page.locator('aside').first();
+     await expect(sidebar).toBeVisible({ timeout: 20_000 });
+ 
+-    const gitLink = sidebar.locator('a[href="/git"]').first();
++    const moreNavigation = sidebar.locator('details.workspace-more-nav');
++    await expect(moreNavigation.locator('summary')).toBeVisible();
++    if (!(await moreNavigation.evaluate(element => (element as HTMLDetailsElement).open))) {
++      await moreNavigation.locator('summary').focus();
++      await page.keyboard.press('Enter');
++    }
++
++    const gitLink = moreNavigation.locator('a[href="/git"]').first();
+     await gitLink.waitFor({ state: 'visible', timeout: 20_000 });
+     await gitLink.focus();
+     await expect(gitLink).toBeFocused();
+diff --git a/dashboard/src/api/client.ts b/dashboard/src/api/client.ts
+index 2cfb14a6..5a585702 100644
+--- a/dashboard/src/api/client.ts
++++ b/dashboard/src/api/client.ts
+@@ -5,7 +5,6 @@
+  */
+ 
+ import { z } from 'zod';
+-import { createAccessPinHeaders } from '../utils/accessPinCredential';
+ import { ChatFinalContentFrameSchema, ChatStatusFrameSchema } from './chatStreamFrameSchema';
+ import {
+   createProjectIdentityHeaders,
+diff --git a/dashboard/src/components/Agent/AgentMonitorPanel.tsx b/dashboard/src/components/Agent/AgentMonitorPanel.tsx
+index 3dac3730..bc7ecb3b 100644
+--- a/dashboard/src/components/Agent/AgentMonitorPanel.tsx
++++ b/dashboard/src/components/Agent/AgentMonitorPanel.tsx
+@@ -15,7 +15,7 @@ import { useAgentMonitorStore, type AgentStatus } from '../../stores/agentMonito
+ /* ─── Constants ────────────────────────────────────────────── */
+ 
+ const STATUS_CONFIG: Record<AgentStatus, { icon: string; label: string; color: string }> = {
+-  idle:     { icon: '💤', label: '대기 중', color: '#7c82a8' },
++  idle:     { icon: '💤', label: '대기 중', color: '#9ba1c4' },
+   running:  { icon: '⚡', label: '실행 중', color: '#7c6aef' },
+   planning: { icon: '📋', label: '계획 중', color: '#e0af68' },
+   thinking: { icon: '🤔', label: '추론 중', color: '#7aa2f7' },
+diff --git a/dashboard/src/components/Chat/ActivityTimeline.tsx b/dashboard/src/components/Chat/ActivityTimeline.tsx
+index b254a27d..ccd11439 100644
+--- a/dashboard/src/components/Chat/ActivityTimeline.tsx
++++ b/dashboard/src/components/Chat/ActivityTimeline.tsx
+@@ -8,6 +8,7 @@
+  */
+ 
+ import React, { useState } from 'react';
++import { useWallClock } from '../../hooks/useWallClock';
+ import { useActivityStore, type ActivityItem } from '../../stores/activityStore';
+ 
+ const KIND_ICONS: Record<ActivityItem['kind'], string> = {
+@@ -29,10 +30,9 @@ function relativeTime(at: number, now: number): string {
+ export const ActivityTimeline: React.FC = () => {
+   const items = useActivityStore((s) => s.items);
+   const [expanded, setExpanded] = useState<boolean>(false);
++  const now = useWallClock();
+ 
+   if (items.length === 0) return null;
+-
+-  const now = Date.now();
+   const chipLabels: string[] = [];
+   for (let i = items.length - 1; i >= 0 && chipLabels.length < 3; i -= 1) {
+     if (!chipLabels.includes(items[i].label)) chipLabels.push(items[i].label);
+diff --git a/dashboard/src/components/Chat/ChatComposerTools.tsx b/dashboard/src/components/Chat/ChatComposerTools.tsx
+index b2e877f5..52255c50 100644
+--- a/dashboard/src/components/Chat/ChatComposerTools.tsx
++++ b/dashboard/src/components/Chat/ChatComposerTools.tsx
+@@ -33,8 +33,8 @@ export function ChatComposerTools({
+           type="button"
+           className={`plus-action-circle-btn ${actionMenuOpen ? 'open' : ''}`}
+           onClick={onToggleActionMenu}
+-          title="옵션 및 파일 첨부"
+-          aria-label="옵션 및 파일 첨부"
++          title="옵션 및 이미지 첨부"
++          aria-label="옵션 및 이미지 첨부"
+           aria-expanded={actionMenuOpen}
+           aria-controls="chat-attachment-options"
+         >
+@@ -42,9 +42,9 @@ export function ChatComposerTools({
+         </button>
+         {actionMenuOpen && (
+           <div id="chat-attachment-options" className="plus-popover-dropdown">
+-            <button type="button" className="popover-row" onClick={onAttach}>
++            <button type="button" className="popover-row" onClick={onAttach} title="PNG, JPEG, WebP, GIF 이미지">
+               <AppIcon name="paperclip" size={16} />
+-              <span>파일 및 사진 첨부</span>
++              <span>이미지 첨부</span>
+             </button>
+           </div>
+         )}
+diff --git a/dashboard/src/components/Chat/ChatModelSelector.tsx b/dashboard/src/components/Chat/ChatModelSelector.tsx
+index f23fbc47..56dc2655 100644
+--- a/dashboard/src/components/Chat/ChatModelSelector.tsx
++++ b/dashboard/src/components/Chat/ChatModelSelector.tsx
+@@ -1,12 +1,9 @@
+ import type { LocalModelItem, ModelInfo } from '../../api/client';
+ import { QuantBadge } from '../shared';
+ import { AppIcon } from '../UI/AppIcon';
++import { formatModelAmount } from '../../utils/modelAmount';
+ 
+-const modelAmountFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 });
+-
+-export function formatModelAmount(amount: number): string {
+-  return modelAmountFormatter.format(amount);
+-}
++export { formatModelAmount };
+ 
+ type ChatModelSelectorProps = {
+   readonly label: string;
+diff --git a/dashboard/src/components/Chat/ChatPage.tsx b/dashboard/src/components/Chat/ChatPage.tsx
+index f22518a1..dab313e1 100644
+--- a/dashboard/src/components/Chat/ChatPage.tsx
++++ b/dashboard/src/components/Chat/ChatPage.tsx
+@@ -523,10 +523,11 @@ export const ChatPage: React.FC = () => {
+ 
+   useEffect(() => {
+     mountedRef.current = true;
++    const runGate = runGateRef.current;
+     return () => {
+       mountedRef.current = false;
+       conversationTransitionRef.current += 1;
+-      runGateRef.current.invalidate();
++      runGate.invalidate();
+       abortRef.current?.abort();
+       abortRef.current = null;
+     };
+@@ -704,27 +705,28 @@ export const ChatPage: React.FC = () => {
+         updateLastAssistantMessage(`⚠️ 통신 오류: ${errText}`);
+         setStreamError(errText);
+       } finally {
+-        if (!ownsRun(runIdentity)) return;
+-        saveToStorage();
+-        setStreaming(false);
+-        setStreamStatus(null);
+-        stopElapsedTimer();
+-        if (abortRef.current === abortController) abortRef.current = null;
+-        useActivityStore.getState().setSessionEnded();
+-        if (!completedSuccessfully) {
+-          if (queueRef.current.length > 0) {
++        if (ownsRun(runIdentity)) {
++          saveToStorage();
++          setStreaming(false);
++          setStreamStatus(null);
++          stopElapsedTimer();
++          if (abortRef.current === abortController) abortRef.current = null;
++          useActivityStore.getState().setSessionEnded();
++          if (!completedSuccessfully) {
++            if (queueRef.current.length > 0) {
++              syncQueuedMessages();
++              addToast(
++                '부모 실행이 실패해 후속 대기 메시지를 자동 전송하지 않았습니다. 대기열에서 편집하거나 다시 전송해 주세요.',
++                'info',
++              );
++            }
++          } else {
++            const next = queueRef.current.shift();
+             syncQueuedMessages();
+-            addToast(
+-              '부모 실행이 실패해 후속 대기 메시지를 자동 전송하지 않았습니다. 대기열에서 편집하거나 다시 전송해 주세요.',
+-              'info',
+-            );
++            if (next !== undefined) {
++              void runRef.current(next);
++            }
+           }
+-          return;
+-        }
+-        const next = queueRef.current.shift();
+-        syncQueuedMessages();
+-        if (next !== undefined) {
+-          void runRef.current(next);
+         }
+       }
+       return;
+@@ -836,7 +838,7 @@ export const ChatPage: React.FC = () => {
+           } else {
+             setStreamError(errorMessage);
+           }
+-        } catch (error: unknown) {
++        } catch {
+           if (!ownsRun(runIdentity)) return;
+           setStreamError(errorMessage);
+         }
+diff --git a/dashboard/src/components/Chat/EnvironmentPanel.tsx b/dashboard/src/components/Chat/EnvironmentPanel.tsx
+index 46dd31be..00ac5011 100644
+--- a/dashboard/src/components/Chat/EnvironmentPanel.tsx
++++ b/dashboard/src/components/Chat/EnvironmentPanel.tsx
+@@ -14,6 +14,7 @@ import { fetchGitStatus, fetchGitBranches, fetchGitLog, checkoutGitBranch } from
+ import type { GitBranch, GitCommit, GitFile } from '../../stores/gitSchema';
+ import { useChangeStore } from '../../stores/changeStore';
+ import { useUiStore } from '../../stores/uiStore';
++import { useWallClock } from '../../hooks/useWallClock';
+ import { useActivityStore, type ActivityItem } from '../../stores/activityStore';
+ import { useChatStore } from '../../stores/chatStore';
+ 
+@@ -108,16 +109,10 @@ const AgentMonitorTab: React.FC = () => {
+   const fileReadCount = useActivityStore((s) => s.fileReadCount);
+   const isStreaming = useChatStore((s) => s.isStreaming);
+ 
+-  const [now, setNow] = useState(Date.now());
++  const now = useWallClock();
+   const [activityExpanded, setActivityExpanded] = useState(true);
+   const [errorsExpanded, setErrorsExpanded] = useState(true);
+ 
+-  // Tick every second for live timers
+-  useEffect(() => {
+-    const timer = setInterval(() => setNow(Date.now()), 1000);
+-    return () => clearInterval(timer);
+-  }, []);
+-
+   const isRunning = isStreaming || activeTool !== null;
+   const elapsed = sessionStartedAt
+     ? (sessionEndedAt ?? now) - sessionStartedAt
+diff --git a/dashboard/src/components/Chat/__tests__/ActivityTimeline.test.tsx b/dashboard/src/components/Chat/__tests__/ActivityTimeline.test.tsx
+index 5d2d815f..32a3b3a6 100644
+--- a/dashboard/src/components/Chat/__tests__/ActivityTimeline.test.tsx
++++ b/dashboard/src/components/Chat/__tests__/ActivityTimeline.test.tsx
+@@ -1,5 +1,5 @@
+-import { describe, expect, it, beforeEach } from 'vitest';
+-import { render, screen, fireEvent } from '@testing-library/react';
++import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
++import { act, render, screen, fireEvent } from '@testing-library/react';
+ import ActivityTimeline from '../ActivityTimeline';
+ import { useActivityStore } from '../../../stores/activityStore';
+ 
+@@ -38,11 +38,37 @@ describe('ActivityTimeline', () => {
+     useActivityStore.getState().clear();
+   });
+ 
++  afterEach(() => {
++    vi.useRealTimers();
++  });
++
+   it('renders nothing without activity', () => {
+     render(<ActivityTimeline />);
+     expect(screen.queryByTestId('activity-timeline')).not.toBeInTheDocument();
+   });
+ 
++  it('updates relative timestamps from a shared clock without reading time during render', () => {
++    vi.useFakeTimers();
++    vi.setSystemTime(10_000);
++    useActivityStore.setState({
++      items: [{
++        id: 'activity-clock-test',
++        kind: 'file_read',
++        label: '파일 읽음',
++        detail: 'README.md',
++        status: 'done',
++        at: 9_000,
++      }],
++    });
++
++    render(<ActivityTimeline />);
++    fireEvent.click(screen.getByRole('button'));
++
++    expect(screen.getByText('1s')).toBeInTheDocument();
++    act(() => { vi.advanceTimersByTime(1_000); });
++    expect(screen.getByText('2s')).toBeInTheDocument();
++  });
++
+   it('shows collapsed chips and expands into detail rows', () => {
+     const store = useActivityStore.getState();
+     store.recordFileEdit('src/App.tsx');
+diff --git a/dashboard/src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx b/dashboard/src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx
+index 9a7232c7..ac6d79e0 100644
+--- a/dashboard/src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx
++++ b/dashboard/src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx
+@@ -290,9 +290,47 @@ describe('ChatPage conversation run ownership', () => {
+     expect(screen.getByRole('button', { name: '대기 메시지 편집' })).toBeEnabled();
+   });
+ 
++  it('does not let a stale Adaptive finally return override a newer run result', async () => {
++    // Given
++    let resolveAgent!: (value: Awaited<ReturnType<typeof client.askAgent>>) => void;
++    const pendingAgent = new Promise<Awaited<ReturnType<typeof client.askAgent>>>((resolve) => {
++      resolveAgent = resolve;
++    });
++    vi.spyOn(client, 'askAgent').mockReturnValue(pendingAgent);
++    useChatStore.setState({ isAdaptiveMode: true });
++    await renderPage();
++    const input = screen.getByRole('textbox', { name: '메시지 입력' });
++    fireEvent.change(input, { target: { value: '오래된 Adaptive 실행' } });
++    fireEvent.keyDown(input, { key: 'Enter' });
++    await waitFor(() => expect(client.askAgent).toHaveBeenCalledTimes(1));
++    fireEvent.click(screen.getByRole('button', { name: '생성 중단' }));
++    act(() => useChatStore.setState({ isAdaptiveMode: false }));
++    await send('새로운 스트림 실행');
++    act(() => streams[0]?.handlers.onChunk('새 실행 응답'));
++
++    // When
++    await act(async () => resolveAgent({
++      ok: true,
++      task: '오래된 Adaptive 실행',
++      answer: 'stale adaptive result',
++      used_web: false,
++      used_graphify: false,
++      steps: 1,
++      total_seconds: 0.1,
++      passed: true,
++      mode: 'adaptive',
++    }));
++
++    // Then
++    expect(useChatStore.getState().isStreaming).toBe(true);
++    expect(useChatStore.getState().messages.at(-1)?.content).toBe('새 실행 응답');
++    expect(screen.getByRole('button', { name: '생성 중단' })).toBeInTheDocument();
++    await act(async () => streams[0]?.finish());
++  });
++
+   it('does not drain the dependent queue after an Adaptive failure', async () => {
+     // Given
+-    let resolveAgent = (_value: Awaited<ReturnType<typeof client.askAgent>>) => {};
++    let resolveAgent!: (value: Awaited<ReturnType<typeof client.askAgent>>) => void;
+     const pendingAgent = new Promise<Awaited<ReturnType<typeof client.askAgent>>>((resolve) => {
+       resolveAgent = resolve;
+     });
+@@ -349,7 +387,7 @@ describe('ChatPage conversation run ownership', () => {
+ 
+   it('ignores a stale compaction result after navigating away and back', async () => {
+     // Given
+-    let resolveCompaction = (_value: Awaited<ReturnType<typeof client.compactConversation>>) => {};
++    let resolveCompaction!: (value: Awaited<ReturnType<typeof client.compactConversation>>) => void;
+     const pendingCompaction = new Promise<Awaited<ReturnType<typeof client.compactConversation>>>((resolve) => {
+       resolveCompaction = resolve;
+     });
+@@ -380,7 +418,7 @@ describe('ChatPage conversation run ownership', () => {
+   it('ignores stale server history after navigating away and back', async () => {
+     // Given
+     await renderPage();
+-    let resolveHistory = (_value: Awaited<ReturnType<typeof client.fetchConversationHistory>>) => {};
++    let resolveHistory!: (value: Awaited<ReturnType<typeof client.fetchConversationHistory>>) => void;
+     const pendingHistory = new Promise<Awaited<ReturnType<typeof client.fetchConversationHistory>>>((resolve) => {
+       resolveHistory = resolve;
+     });
+@@ -448,7 +486,7 @@ describe('ChatPage conversation run ownership', () => {
+ 
+   it('does not apply an idle history response after the source revision advances', async () => {
+     // Given
+-    let resolveHistory = (_value: Awaited<ReturnType<typeof client.fetchConversationHistory>>) => {};
++    let resolveHistory!: (value: Awaited<ReturnType<typeof client.fetchConversationHistory>>) => void;
+     const pendingHistory = new Promise<Awaited<ReturnType<typeof client.fetchConversationHistory>>>((resolve) => {
+       resolveHistory = resolve;
+     });
+diff --git a/dashboard/src/components/Chat/__tests__/EnvironmentPanel.test.tsx b/dashboard/src/components/Chat/__tests__/EnvironmentPanel.test.tsx
+index 6364452d..f1418ec6 100644
+--- a/dashboard/src/components/Chat/__tests__/EnvironmentPanel.test.tsx
++++ b/dashboard/src/components/Chat/__tests__/EnvironmentPanel.test.tsx
+@@ -1,6 +1,6 @@
+ import { useState } from 'react';
+ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
++import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+ import { EnvironmentPanel, type EnvPanelTab } from '../EnvironmentPanel';
+ import { useActivityStore } from '../../../stores/activityStore';
+ 
+@@ -30,7 +30,10 @@ function PanelHarness() {
+ }
+ 
+ beforeEach(() => { useActivityStore.getState().clear(); });
+-afterEach(() => { vi.restoreAllMocks(); });
++afterEach(() => {
++  vi.useRealTimers();
++  vi.restoreAllMocks();
++});
+ 
+ describe('EnvironmentPanel compact modal', () => {
+   it('focuses its close button and restores focus after Escape', async () => {
+@@ -75,6 +78,31 @@ describe('EnvironmentPanel compact modal', () => {
+ });
+ 
+ describe('EnvironmentPanel desktop tabs', () => {
++  it('updates live elapsed and relative-time labels using the shared clock', async () => {
++    vi.useFakeTimers();
++    vi.setSystemTime(10_000);
++    useActivityStore.setState({
++      sessionStartedAt: 1_000,
++      items: [{
++        id: 'environment-clock-test',
++        kind: 'file_read',
++        label: '파일 읽음',
++        detail: 'README.md',
++        status: 'done',
++        at: 4_000,
++      }],
++    });
++    setCompact(false);
++    render(<PanelHarness />);
++    fireEvent.click(screen.getByRole('button', { name: '검사 열기' }));
++
++    expect(screen.getByText('9초')).toBeInTheDocument();
++    expect(screen.getByText('6초 전')).toBeInTheDocument();
++    await act(async () => { await vi.advanceTimersByTimeAsync(4_000); });
++    expect(screen.getByText('13초')).toBeInTheDocument();
++    expect(screen.getByText('10초 전')).toBeInTheDocument();
++  });
++
+   it('keeps the desktop rail nonmodal and the background interactive', () => {
+     // Given
+     setCompact(false);
+diff --git a/dashboard/src/components/Editor/ChangePanel.tsx b/dashboard/src/components/Editor/ChangePanel.tsx
+index 1ab484ff..cf1b0891 100644
+--- a/dashboard/src/components/Editor/ChangePanel.tsx
++++ b/dashboard/src/components/Editor/ChangePanel.tsx
+@@ -131,9 +131,7 @@ const ChangePanel: React.FC<ChangePanelProps> = ({ visible, onClose }) => {
+     panelMode,
+     pendingCount,
+     selectChange,
+-    approveChange,
+     rejectChange,
+-    approveAll,
+     rejectAll,
+     setPanelMode,
+     clearChanges,
+diff --git a/dashboard/src/components/Editor/FolderBrowser.tsx b/dashboard/src/components/Editor/FolderBrowser.tsx
+index 9f6be9cb..9569f76d 100644
+--- a/dashboard/src/components/Editor/FolderBrowser.tsx
++++ b/dashboard/src/components/Editor/FolderBrowser.tsx
+@@ -6,7 +6,7 @@
+  * project directories with zero manual key-in required.
+  */
+ 
+-import React, { useState, useEffect, useCallback, useMemo } from 'react';
++import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+ import { useFileStore } from '../../stores/fileStore';
+ import { useProjectStore } from '../../stores/projectStore';
+ import { useUiStore } from '../../stores/uiStore';
+@@ -52,6 +52,11 @@ const FolderBrowser: React.FC = () => {
+   const [existingProjects, setExistingProjects] = useState<ExistingProject[]>([]);
+   const [history, setHistory] = useState<string[]>([]);
+   const [historyIdx, setHistoryIdx] = useState<number>(-1);
++  const historyIdxRef = useRef(-1);
++  const setHistoryPosition = useCallback((index: number) => {
++    historyIdxRef.current = index;
++    setHistoryIdx(index);
++  }, []);
+ 
+   // Load existing registered projects for quick jumping
+   useEffect(() => {
+@@ -85,11 +90,9 @@ const FolderBrowser: React.FC = () => {
+           setSearchFilter('');
+ 
+           if (pushHistory) {
+-            setHistory(prev => {
+-              const sliced = prev.slice(0, historyIdx + 1);
+-              return [...sliced, data.current];
+-            });
+-            setHistoryIdx(prev => prev + 1);
++            const nextIndex = historyIdxRef.current + 1;
++            setHistory(prev => [...prev.slice(0, nextIndex), data.current]);
++            setHistoryPosition(nextIndex);
+           }
+         }
+       } catch (err) {
+@@ -98,36 +101,36 @@ const FolderBrowser: React.FC = () => {
+         setLoading(false);
+       }
+     },
+-    [historyIdx]
++    [setHistoryPosition]
+   );
+ 
+   // Initialize when opened
+   useEffect(() => {
+-    if (folderBrowserVisible) {
++    if (!folderBrowserVisible) return undefined;
++    const timer = setTimeout(() => {
+       setHistory([]);
+-      setHistoryIdx(-1);
+-      const timer = setTimeout(() => void loadBrowse('', true), 0);
+-      return () => clearTimeout(timer);
+-    }
+-    return undefined;
+-  }, [folderBrowserVisible]);
++      setHistoryPosition(-1);
++      void loadBrowse('', true);
++    }, 0);
++    return () => clearTimeout(timer);
++  }, [folderBrowserVisible, loadBrowse, setHistoryPosition]);
+ 
+   // History Back / Forward
+   const handleHistoryBack = useCallback(() => {
+     if (historyIdx > 0) {
+       const prevPath = history[historyIdx - 1];
+-      setHistoryIdx(historyIdx - 1);
++      setHistoryPosition(historyIdx - 1);
+       loadBrowse(prevPath, false);
+     }
+-  }, [history, historyIdx, loadBrowse]);
++  }, [history, historyIdx, loadBrowse, setHistoryPosition]);
+ 
+   const handleHistoryForward = useCallback(() => {
+     if (historyIdx < history.length - 1) {
+       const nextPath = history[historyIdx + 1];
+-      setHistoryIdx(historyIdx + 1);
++      setHistoryPosition(historyIdx + 1);
+       loadBrowse(nextPath, false);
+     }
+-  }, [history, historyIdx, loadBrowse]);
++  }, [history, historyIdx, loadBrowse, setHistoryPosition]);
+ 
+   const handleNavigate = useCallback(
+     (dirPath: string) => {
+@@ -192,7 +195,7 @@ const FolderBrowser: React.FC = () => {
+     if (!searchFilter.trim()) return browseData.items;
+     const q = searchFilter.trim().toLowerCase();
+     return browseData.items.filter(it => it.name.toLowerCase().includes(q));
+-  }, [browseData?.items, searchFilter]);
++  }, [browseData, searchFilter]);
+ 
+   if (!folderBrowserVisible) return null;
+ 
+diff --git a/dashboard/src/components/Search/SearchIntegrationPanel.tsx b/dashboard/src/components/Search/SearchIntegrationPanel.tsx
+index 689377a6..cd26227a 100644
+--- a/dashboard/src/components/Search/SearchIntegrationPanel.tsx
++++ b/dashboard/src/components/Search/SearchIntegrationPanel.tsx
+@@ -361,7 +361,15 @@ export const SearchIntegrationPanel: React.FC<SearchIntegrationPanelProps> = ({
+     }, [applyStatus]);
+ 
+     useEffect(() => {
+-        void refresh();
++        // Start the initial network refresh after this effect returns. Cancel the
++        // scheduled start during Strict Mode's setup/cleanup replay or unmount.
++        let cancelled = false;
++        void Promise.resolve().then(() => {
++            if (!cancelled) void refresh();
++        });
++        return () => {
++            cancelled = true;
++        };
+     }, [refresh]);
+ 
+     // 상대 시각("15분 전 수집")을 살아 있게 둔다 — 한 번 그린 시각이 굳으면 거짓이 된다.
+diff --git a/dashboard/src/components/shared/McpHealthCachePanel.tsx b/dashboard/src/components/shared/McpHealthCachePanel.tsx
+index b3eaa248..47b1bb31 100644
+--- a/dashboard/src/components/shared/McpHealthCachePanel.tsx
++++ b/dashboard/src/components/shared/McpHealthCachePanel.tsx
+@@ -139,12 +139,12 @@ const McpHealthCachePanel: React.FC<Props> = ({ refreshInterval = 20000 }) => {
+             ))}
+           </div>
+ 
+-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+-            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
++          <div className="mcp-health-toolbar">
++            <div className="mcp-health-source" style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+               소스: {data?.source || '—'}
+               {data?.probed_at ? ` · 프로브 ${formatCheckedAt(data.probed_at)}` : ''}
+             </div>
+-            <div style={{ display: 'flex', gap: 8 }}>
++            <div className="mcp-health-actions">
+               <button className="glass-btn small" onClick={() => void load()} style={{ fontSize: 11 }}>
+                 🔄 새로고침
+               </button>
+diff --git a/dashboard/src/components/shared/__tests__/SessionDisclosurePanel.test.tsx b/dashboard/src/components/shared/__tests__/SessionDisclosurePanel.test.tsx
+index 5dd97f04..7fe07ebd 100644
+--- a/dashboard/src/components/shared/__tests__/SessionDisclosurePanel.test.tsx
++++ b/dashboard/src/components/shared/__tests__/SessionDisclosurePanel.test.tsx
+@@ -5,7 +5,7 @@
+  */
+ 
+ import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
++import { render, screen, waitFor } from '@testing-library/react';
+ import SessionDisclosurePanel, { formatCountdown } from '../SessionDisclosurePanel';
+ import { useDisclosureStore } from '../../../stores/disclosureStore';
+ import { fetchSessionDisclosure, type SessionDisclosure } from '../../../api/client';
+diff --git a/dashboard/src/features/browser-approval/BrowserApprovalPanel.test.tsx b/dashboard/src/features/browser-approval/BrowserApprovalPanel.test.tsx
+index 1dcb16b1..52bcd272 100644
+--- a/dashboard/src/features/browser-approval/BrowserApprovalPanel.test.tsx
++++ b/dashboard/src/features/browser-approval/BrowserApprovalPanel.test.tsx
+@@ -174,6 +174,31 @@ describe('BrowserApprovalPanel', () => {
+     expect(screen.getByTestId<HTMLButtonElement>('browser-approval-approve').disabled).toBe(true);
+   });
+ 
++  it('긴 주소·지문을 생략하지 않고 승인과 거절을 키보드로 구분한다', () => {
++    const origin = `https://example.invalid/${'long-path-'.repeat(20)}`;
++    const payloadHash = 'a'.repeat(128);
++    const request = requirement();
++    render(
++      <BrowserApprovalPanel
++        requirements={[{ ...request, binding: { ...request.binding, origin, payload_hash: payloadHash } }]}
++        decisions={{}}
++        pendingRequestId={null}
++        error={null}
++        now={NOW}
++        onDecide={vi.fn()}
++      />,
++    );
++    expect(screen.getByText(origin)).toHaveTextContent(origin);
++    expect(screen.getByText(payloadHash)).toHaveTextContent(payloadHash);
++    const approve = screen.getByRole('button', { name: /^승인$/ });
++    const deny = screen.getByRole('button', { name: /^거절$/ });
++    approve.focus();
++    expect(approve).toHaveFocus();
++    deny.focus();
++    expect(deny).toHaveFocus();
++    expect(deny).toHaveClass('secondary');
++  });
++
+   it('라벨·남은 초 계산은 경계에서 음수를 만들지 않는다', () => {
+     expect(effectLabel('transmit')).toBe('전송·게시');
+     expect(effectLabel('mystery')).toBe('mystery'); // 모르는 코드를 감추지 않는다
+diff --git a/dashboard/src/features/browser-approval/BrowserApprovalPanel.tsx b/dashboard/src/features/browser-approval/BrowserApprovalPanel.tsx
+index dff13761..ace05561 100644
+--- a/dashboard/src/features/browser-approval/BrowserApprovalPanel.tsx
++++ b/dashboard/src/features/browser-approval/BrowserApprovalPanel.tsx
+@@ -22,6 +22,7 @@
+ import React, { useEffect, useMemo, useState } from 'react';
+ 
+ import type { BrowserApprovalDecision, BrowserApprovalRequirement } from './browserApprovalApi';
++import './BrowserApprovalPanel.css';
+ 
+ /** 서버가 준 effect 코드를 사람 말로 옮기는 **표시용** 사전(판정은 서버가 한다). */
+ const EFFECT_LABEL: Record<string, string> = {
+diff --git a/dashboard/src/features/task-execution/TaskQueuePanel.test.tsx b/dashboard/src/features/task-execution/TaskQueuePanel.test.tsx
+index b53528e2..df75037c 100644
+--- a/dashboard/src/features/task-execution/TaskQueuePanel.test.tsx
++++ b/dashboard/src/features/task-execution/TaskQueuePanel.test.tsx
+@@ -197,6 +197,7 @@ describe('TaskQueuePanel', () => {
+ 
+   it('clears an unchanged draft after a retry completion', async () => {
+     const onRetryTaskOperation = vi.fn();
++    const onSubmit = vi.fn();
+     const completedSubmitDraft = { prompt: 'retry task', input: 'retry task', generation: 1 };
+     const failedTaskOperation = await createTaskSubmitOperation(completedSubmitDraft);
+     const { rerender } = render(
+@@ -207,7 +208,7 @@ describe('TaskQueuePanel', () => {
+         failedTaskOperation={failedTaskOperation}
+         completedSubmitDraft={null}
+         onSelectTask={vi.fn()}
+-        onSubmit={vi.fn()}
++        onSubmit={onSubmit}
+         onCancel={vi.fn()}
+         onResume={vi.fn()}
+         onFork={vi.fn()}
+@@ -225,7 +226,7 @@ describe('TaskQueuePanel', () => {
+         failedTaskOperation={null}
+         completedSubmitDraft={completedSubmitDraft}
+         onSelectTask={vi.fn()}
+-        onSubmit={vi.fn()}
++        onSubmit={onSubmit}
+         onCancel={vi.fn()}
+         onResume={vi.fn()}
+         onFork={vi.fn()}
+@@ -234,6 +235,15 @@ describe('TaskQueuePanel', () => {
+     );
+ 
+     expect(onRetryTaskOperation).toHaveBeenCalledTimes(1);
+-    expect(screen.getByLabelText('새 작업 지시')).toHaveValue('');
++    const promptInput = screen.getByLabelText('새 작업 지시');
++    expect(promptInput).toHaveValue('');
++
++    // The completed draft is hidden without an effect; a deliberate resubmission
++    // of the same text gets a fresh generation and cannot be mistaken for the old one.
++    fireEvent.change(promptInput, { target: { value: 'retry task' } });
++    fireEvent.click(screen.getByRole('button', { name: '작업 제출' }));
++    expect(onSubmit).toHaveBeenCalledWith({ prompt: 'retry task', input: 'retry task', generation: 2 });
++    expect(onSubmit.mock.calls[0]?.[0].generation).not.toBe(completedSubmitDraft.generation);
++    expect(screen.getByLabelText('새 작업 지시')).toHaveValue('retry task');
+   });
+ });
+diff --git a/dashboard/src/features/task-execution/TaskQueuePanel.tsx b/dashboard/src/features/task-execution/TaskQueuePanel.tsx
+index c4baf360..f7a566fc 100644
+--- a/dashboard/src/features/task-execution/TaskQueuePanel.tsx
++++ b/dashboard/src/features/task-execution/TaskQueuePanel.tsx
+@@ -1,4 +1,4 @@
+-import { useEffect, useState, type FormEvent } from 'react';
++import { useState, type FormEvent } from 'react';
+ 
+ import type { TaskId, TaskSummary } from './taskExecutionSchema';
+ import { canCancelTask, canResumeTask, taskStateLabel } from './taskLifecycleActions';
+@@ -42,21 +42,17 @@ export function TaskQueuePanel({
+ }: TaskQueuePanelProps) {
+   const [prompt, setPrompt] = useState('');
+   const [draftGeneration, setDraftGeneration] = useState(0);
+-  useEffect(() => {
+-    if (
+-      completedSubmitDraft !== null
+-      && completedSubmitDraft.input === prompt
+-      && completedSubmitDraft.generation === draftGeneration
+-    ) {
+-      setPrompt('');
+-      setDraftGeneration((generation) => generation + 1);
+-    }
+-  }, [completedSubmitDraft, draftGeneration, prompt]);
++  const completedDraftMatches = completedSubmitDraft !== null
++    && completedSubmitDraft.input === prompt
++    && completedSubmitDraft.generation === draftGeneration;
++  const displayedPrompt = completedDraftMatches ? '' : prompt;
++  const displayedGeneration = completedDraftMatches ? draftGeneration + 1 : draftGeneration;
+   const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
+     event.preventDefault();
+-    const normalized = prompt.trim();
++    const input = displayedPrompt;
++    const normalized = input.trim();
+     if (normalized.length === 0) return;
+-    onSubmit({ prompt: normalized, input: prompt, generation: draftGeneration });
++    onSubmit({ prompt: normalized, input, generation: displayedGeneration });
+   };
+   const operationPending = pendingAction?.kind === 'submit' || pendingAction?.kind === 'fork';
+ 
+@@ -73,15 +69,15 @@ export function TaskQueuePanel({
+         <div>
+           <input
+             id="task-submit-prompt"
+-            value={prompt}
++            value={displayedPrompt}
+             onChange={(event) => {
+               setPrompt(event.currentTarget.value);
+-              setDraftGeneration((generation) => generation + 1);
++              setDraftGeneration((generation) => Math.max(generation, completedSubmitDraft?.generation ?? -1) + 1);
+             }}
+             placeholder="실행할 작업을 입력하세요"
+             disabled={operationPending}
+           />
+-          <button type="submit" disabled={prompt.trim().length === 0 || operationPending}>
++          <button type="submit" disabled={displayedPrompt.trim().length === 0 || operationPending}>
+             {pendingAction?.kind === 'submit' ? '제출 중' : '작업 제출'}
+           </button>
+         </div>
+diff --git a/dashboard/src/hooks/useConversationFork.ts b/dashboard/src/hooks/useConversationFork.ts
+index dc70b715..49eaf74c 100644
+--- a/dashboard/src/hooks/useConversationFork.ts
++++ b/dashboard/src/hooks/useConversationFork.ts
+@@ -55,9 +55,6 @@ export function useConversationFork(options: UseConversationForkOptions): UseCon
+   const pendingRef = useRef(false);
+   const invalidatedRef = useRef(false);
+   const isCompactingRef = useRef(options.isCompacting);
+-  const onStatusRef = useRef(options.onStatus);
+-  isCompactingRef.current = options.isCompacting;
+-  onStatusRef.current = options.onStatus;
+ 
+   useEffect(() => {
+     mountedRef.current = true;
+@@ -85,14 +82,16 @@ export function useConversationFork(options: UseConversationForkOptions): UseCon
+   }, []);
+ 
+   useEffect(() => {
++    isCompactingRef.current = options.isCompacting;
+     if (pendingRef.current && options.isCompacting) invalidatedRef.current = true;
+   }, [options.isCompacting]);
+ 
++  const onStatus = options.onStatus;
+   const publishStatus = useCallback((next: ConversationForkStatus): void => {
+     if (!mountedRef.current) return;
+     setStatus(next);
+-    onStatusRef.current?.(next);
+-  }, []);
++    onStatus?.(next);
++  }, [onStatus]);
+ 
+   const isCapturedContextCurrent = useCallback((captured: CapturedForkContext): boolean => {
+     const project = useProjectStore.getState();
+diff --git a/dashboard/src/pages/DataExtractionPage.test.tsx b/dashboard/src/pages/DataExtractionPage.test.tsx
+index 5966fad9..e3d1aeeb 100644
+--- a/dashboard/src/pages/DataExtractionPage.test.tsx
++++ b/dashboard/src/pages/DataExtractionPage.test.tsx
+@@ -168,6 +168,44 @@ describe('DataExtractionPage authenticated operations', () => {
+     });
+   });
+ 
++  it('keeps long result identifiers in shrinkable, wrapping panels', async () => {
++    const ticker = 'QA-TICKER-'.repeat(12);
++    const date = '2026-10-06T10:00:00.000Z';
++    const log = 'synthetic-long-output-'.repeat(30);
++    const populated = { ...result, extraction_log: log, extracted: { ...result.extracted,
++      stock_prices: [{ ...stock, name: 'synthetic-long-company-name-'.repeat(8), ticker }],
++      weather: [{ location: 'synthetic-location', temperature: 16 }],
++      exchange_rates: [{ currency_pair: 'USD/FX1', rate: 1300 }], dates_found: [date],
++    } };
++    sessionStorage.setItem('dex_last_result', JSON.stringify(populated));
++    wire('/api/search/extraction-metrics');
++    render(<DataExtractionPage />);
++    await screen.findByText(String(metrics.total_calls));
++    expect(screen.getByText(ticker)).toHaveStyle({ maxWidth: '100%', overflowWrap: 'anywhere' });
++    expect(screen.getByText(ticker).parentElement).toHaveStyle({ flexWrap: 'wrap' });
++    expect(screen.getByText(`📌 ${date}`)).toHaveStyle({ maxWidth: '100%', overflowWrap: 'anywhere' });
++    expect(screen.getByText(log)).toHaveStyle({ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' });
++    const grids = [...document.querySelectorAll<HTMLElement>('#dex-content div')]
++      .filter(element => element.style.display === 'grid');
++    expect(grids).toHaveLength(2);
++    for (const grid of grids) {
++      expect(grid.style.gridTemplateColumns).toBe('repeat(auto-fit, minmax(min(100%, 300px), 1fr))');
++    }
++    expect(screen.getByText('USD/FX1')).toBeInTheDocument();
++  });
++
++  it('uses the readable error color token for negative stock and exchange changes', async () => {
++    sessionStorage.setItem('dex_last_result', JSON.stringify({ ...result, extracted: { ...result.extracted,
++      stock_prices: [{ ...stock, change_percent: -1.25 }],
++      exchange_rates: [{ currency_pair: 'USD/QA', rate: 1300, change_percent: -0.15 }],
++    } }));
++    wire('/api/search/extraction-metrics');
++    render(<DataExtractionPage />);
++    await screen.findByText(String(metrics.total_calls));
++    expect(screen.getByText('-1.25%').style.color).toBe('var(--error-color)');
++    expect(screen.getByText('-0.15%').style.color).toBe('var(--error-color)');
++  });
++
+   it('ends metrics loading when the server has no metrics', async () => {
+     // Given the server returns no metrics rather than a failure.
+     wire('/api/search/extraction-metrics', () => Response.json({ ok: true, metrics: null }));
+diff --git a/dashboard/src/pages/DataExtractionPage.tsx b/dashboard/src/pages/DataExtractionPage.tsx
+index 2c1574b2..3a24374e 100644
+--- a/dashboard/src/pages/DataExtractionPage.tsx
++++ b/dashboard/src/pages/DataExtractionPage.tsx
+@@ -197,7 +197,7 @@ const ResultView: React.FC<ResultViewProps> = ({ result, stocks, weather, exchan
+     <div className="dex-card-enter">
+       <PipelineStatus result={result} />
+     </div>
+-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="dex-card-enter">
++    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: 16 }} className="dex-card-enter">
+       <StockPanel stocks={stocks} />
+       <WeatherExchangePanel weather={weather} exchange={exchange} />
+     </div>
+diff --git a/dashboard/src/pages/ModelHubPage.tsx b/dashboard/src/pages/ModelHubPage.tsx
+index 99517e37..99ecd458 100644
+--- a/dashboard/src/pages/ModelHubPage.tsx
++++ b/dashboard/src/pages/ModelHubPage.tsx
+@@ -9,7 +9,8 @@ import React, { useState, useEffect, useCallback } from 'react';
+ import { useChatStore } from '../stores/chatStore';
+ import { useUiStore } from '../stores/uiStore';
+ import { fetchLocalModels, loadModel, type LocalModelItem } from '../api/client';
+-import { quantQuality, type QuantQualityLevel } from '../utils/quantQuality';
++import type { QuantQualityLevel } from '../utils/quantQuality';
++import { toHubDisplayModel, type HubDisplayModel } from '../utils/modelHubDisplay';
+ import { QuantBadge } from '../components/shared';
+ 
+ export type QuantTierFilter = 'any' | 'balanced-up' | 'high-up' | 'premium-only';
+@@ -44,25 +45,6 @@ const QUANT_TIER_FILTERS: { id: QuantTierFilter; label: string; title: string; l
+   { id: 'premium-only', label: '💎 프리미엄만', title: 'premium — 원본 손실 거의 없음(Q8_0·F16·BF16)', levels: new Set(['premium']) },
+ ];
+ 
+-interface HubDisplayModel {
+-  id: string;
+-  name: string;
+-  provider: string;
+-  category: 'all' | 'running' | 'unsloth' | 'mlx' | 'embedding' | 'llm';
+-  params: string;
+-  context: string;
+-  quantization: string;
+-  quantLevel: QuantQualityLevel;
+-  vram: string;
+-  diskSize: string;
+-  diskSizeGb: number;
+-  vramGb: number;
+-  diskPath: string;
+-  description: string;
+-  status: LocalModelItem['status'];
+-  isLocal: boolean;
+-}
+-
+ export const ModelHubPage: React.FC = () => {
+   const { selectedModel, setSelectedModel } = useChatStore();
+   const { addToast } = useUiStore();
+@@ -112,37 +94,7 @@ export const ModelHubPage: React.FC = () => {
+     }
+   };
+ 
+-  // Convert LocalModelItem to HubDisplayModel
+-  const displayModels: HubDisplayModel[] = localModels.map((m) => {
+-    let cat: 'all' | 'running' | 'unsloth' | 'mlx' | 'embedding' | 'llm' = 'llm';
+-    if (m.status === 'running') cat = 'running';
+-    else if (m.provider === 'unsloth') cat = 'unsloth';
+-    else if (m.provider === 'mlx') cat = 'mlx';
+-    else if (m.role === 'embedding') cat = 'embedding';
+-
+-    const paramStr = m.parameter_count_b > 0
+-      ? `${m.parameter_count_b}B`
+-      : (m.disk_size_gb > 0 ? `${m.disk_size_gb} GB` : 'Local');
+-
+-    return {
+-      id: m.id,
+-      name: m.name || m.id,
+-      provider: m.provider.toUpperCase(),
+-      category: cat,
+-      params: paramStr,
+-      context: m.context_length ? `${Math.round(m.context_length / 1024)}K` : 'Auto',
+-      quantization: m.quantization || (m.status === 'running' ? 'Active' : 'N/A'),
+-      quantLevel: quantQuality(m.quantization || (m.status === 'running' ? 'Active' : 'N/A')).level,
+-      vram: m.parameter_count_b > 0 ? `~${Math.round(m.parameter_count_b * 0.7)} GB` : (m.disk_size_gb > 0 ? `~${Math.round(m.disk_size_gb)} GB` : 'N/A'),
+-      diskSize: m.disk_size_gb > 0 ? `${m.disk_size_gb} GB` : (m.status === 'running' ? 'Ollama 메모리' : '로컬 디스크'),
+-      diskSizeGb: m.disk_size_gb > 0 ? m.disk_size_gb : 0,
+-      vramGb: m.parameter_count_b > 0 ? Math.round(m.parameter_count_b * 0.7) : (m.disk_size_gb > 0 ? Math.round(m.disk_size_gb) : 0),
+-      diskPath: m.disk_path || '',
+-      description: m.description || `본 PC에 설치된 ${m.provider} 로컬 모델.`,
+-      status: m.status,
+-      isLocal: true,
+-    };
+-  });
++  const displayModels = localModels.map(toHubDisplayModel);
+ 
+   const quantTierPreset = QUANT_TIER_FILTERS.find((t) => t.id === quantTierFilter);
+   const filteredModels = displayModels.filter((m) => {
+diff --git a/dashboard/src/pages/SettingsPage.tsx b/dashboard/src/pages/SettingsPage.tsx
+index 9bbc3525..a58c669d 100644
+--- a/dashboard/src/pages/SettingsPage.tsx
++++ b/dashboard/src/pages/SettingsPage.tsx
+@@ -1108,7 +1108,7 @@ const LogLevelSection: React.FC = () => {
+       </div>
+ 
+       {/* Individual Logger Control */}
+-      <div style={{
++      <div className="settings-logger-controls" style={{
+         display: 'flex', gap: 8, alignItems: 'center',
+         marginBottom: 12, padding: 8,
+         background: 'rgba(0,0,0,0.15)', borderRadius: 6,
+diff --git a/dashboard/src/pages/dex/BottomPanels.tsx b/dashboard/src/pages/dex/BottomPanels.tsx
+index ea913843..88b01bb7 100644
+--- a/dashboard/src/pages/dex/BottomPanels.tsx
++++ b/dashboard/src/pages/dex/BottomPanels.tsx
+@@ -15,7 +15,7 @@ const BottomPanels: React.FC<Props> = ({ result }) => {
+   const dates = result.extracted?.dates_found || [];
+ 
+   return (
+-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16, marginTop: 16 }}>
++    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: 16, marginTop: 16 }}>
+       {/* Dates */}
+       <GlassPanel title="📅 추출된 날짜" count={dates.length}>
+         {dates.length > 0 ? (
+@@ -25,6 +25,7 @@ const BottomPanels: React.FC<Props> = ({ result }) => {
+                 padding: '4px 8px', borderRadius: 6,
+                 background: 'rgba(124,106,239,0.08)',
+                 color: 'var(--accent-color)', fontSize: 12,
++                maxWidth: '100%', overflowWrap: 'anywhere',
+                 border: '1px solid rgba(124,106,239,0.2)',
+               }}>
+                 📌 {d}
+@@ -42,7 +43,7 @@ const BottomPanels: React.FC<Props> = ({ result }) => {
+           <pre style={{
+             margin: 0, fontFamily: "'JetBrains Mono', monospace",
+             fontSize: 12, lineHeight: 1.6,
+-            color: 'var(--text-secondary)', whiteSpace: 'pre-wrap',
++            color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere',
+           }}>
+             {result.extraction_log}
+           </pre>
+diff --git a/dashboard/src/pages/dex/StockPanel.tsx b/dashboard/src/pages/dex/StockPanel.tsx
+index 3129e7cb..f658d3d8 100644
+--- a/dashboard/src/pages/dex/StockPanel.tsx
++++ b/dashboard/src/pages/dex/StockPanel.tsx
+@@ -23,15 +23,15 @@ const StockPanel: React.FC<Props> = ({ stocks }) => {
+             marginBottom: 8,
+           }}>
+             {/* Name + Ticker */}
+-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+-              <span style={{ fontSize: 15, fontWeight: 600, flex: 1 }}>
++            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginBottom: 6 }}>
++              <span style={{ fontSize: 15, fontWeight: 600, flex: 1, minWidth: 0, overflowWrap: 'anywhere' }}>
+                 {s.name || '(이름 없음)'}
+               </span>
+               {s.ticker && (
+                 <span style={{
+                   padding: '2px 6px', borderRadius: 4,
+                   background: 'rgba(124,106,239,0.1)', color: 'var(--accent-color)',
+-                  fontSize: 11, fontWeight: 500,
++                  fontSize: 11, fontWeight: 500, maxWidth: '100%', overflowWrap: 'anywhere',
+                 }}>
+                   {s.ticker}
+                 </span>
+@@ -56,7 +56,7 @@ const StockPanel: React.FC<Props> = ({ stocks }) => {
+                 <StatBox
+                   label="등락률"
+                   value={`${s.change_percent >= 0 ? '+' : ''}${s.change_percent.toFixed(2)}%`}
+-                  color={s.change_percent >= 0 ? '#10b981' : '#ef4444'}
++                  color={s.change_percent >= 0 ? '#10b981' : 'var(--error-color)'}
+                 />
+               )}
+             </div>
+diff --git a/dashboard/src/pages/dex/WeatherExchangePanel.tsx b/dashboard/src/pages/dex/WeatherExchangePanel.tsx
+index 862f007d..b1606f40 100644
+--- a/dashboard/src/pages/dex/WeatherExchangePanel.tsx
++++ b/dashboard/src/pages/dex/WeatherExchangePanel.tsx
+@@ -52,7 +52,7 @@ const WeatherExchangePanel: React.FC<Props> = ({ weather, exchange }) => {
+                 <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                   {e.rate != null && e.rate.toLocaleString()}
+                   {e.change_percent != null && (
+-                    <span style={{ color: e.change_percent >= 0 ? '#10b981' : '#ef4444' }}>
++                    <span style={{ color: e.change_percent >= 0 ? '#10b981' : 'var(--error-color)' }}>
+                       {' '}{e.change_percent >= 0 ? '+' : ''}{e.change_percent.toFixed(2)}%
+                     </span>
+                   )}
+diff --git a/dashboard/src/pages/wiki/NewDocModal.tsx b/dashboard/src/pages/wiki/NewDocModal.tsx
+index 9a63c7f0..f78fba18 100644
+--- a/dashboard/src/pages/wiki/NewDocModal.tsx
++++ b/dashboard/src/pages/wiki/NewDocModal.tsx
+@@ -4,12 +4,13 @@
+  * Extracted from WikiPage.tsx.
+  */
+ 
+-import React, { useState } from 'react';
++import React, { useId, useRef, useState } from 'react';
++import { useModalDialog } from '../../hooks/useModalDialog';
+ import { useWikiStore } from '../../stores/wikiStore';
+ 
+ interface Props {
+-  visible: boolean;
+-  onClose: () => void;
++  readonly visible: boolean;
++  readonly onClose: () => void;
+ }
+ 
+ const NewDocModal: React.FC<Props> = ({ visible, onClose }) => {
+@@ -18,6 +19,11 @@ const NewDocModal: React.FC<Props> = ({ visible, onClose }) => {
+   const [title, setTitle] = useState('');
+   const [tags, setTags] = useState('');
+   const [saving, setSaving] = useState(false);
++  const overlayRef = useRef<HTMLDivElement>(null);
++  const pathRef = useRef<HTMLInputElement>(null);
++  const formId = useId();
++
++  useModalDialog({ active: visible, containerRef: overlayRef, initialFocusRef: pathRef });
+ 
+   if (!visible) return null;
+ 
+@@ -35,26 +41,34 @@ const NewDocModal: React.FC<Props> = ({ visible, onClose }) => {
+   };
+ 
+   return (
+-    <div className="modal-overlay" onClick={onClose}>
+-      <div className="modal-content glass-panel" style={{ width: 440 }} onClick={e => e.stopPropagation()}>
++    <div ref={overlayRef} className="modal-overlay" onClick={onClose} role="presentation"
++      onKeyDown={event => {
++        if (event.key === 'Escape') {
++          event.preventDefault();
++          event.stopPropagation();
++          onClose();
++        }
++      }}>
++      <div className="modal-content glass-panel" style={{ width: 440 }} onClick={e => e.stopPropagation()}
++        role="dialog" aria-modal="true" aria-labelledby={`${formId}-heading`} tabIndex={-1}>
+         <div style={{ padding: 16, borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between' }}>
+-          <h3 style={{ margin: 0, fontSize: 14 }}>📝 새 문서 생성</h3>
+-          <button className="icon-btn" onClick={onClose}>✕</button>
++          <h3 id={`${formId}-heading`} style={{ margin: 0, fontSize: 14 }}>새 문서 생성</h3>
++          <button className="icon-btn" onClick={onClose} aria-label="새 문서 생성 닫기">✕</button>
+         </div>
+         <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+           <div>
+-            <label style={{ display: 'block', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>파일 경로 (vault 기준)</label>
+-            <input className="glass-input" value={path} onChange={e => setPath(e.target.value)} placeholder="예: notes/my-note.md"
++            <label htmlFor={`${formId}-path`} style={{ display: 'block', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>파일 경로 (vault 기준)</label>
++            <input ref={pathRef} id={`${formId}-path`} className="glass-input" value={path} onChange={e => setPath(e.target.value)} placeholder="예: notes/my-note.md"
+               style={{ width: '100%', padding: 8, background: 'rgba(0,0,0,0.2)', border: '1px solid var(--glass-border)', color: '#fff', borderRadius: 4 }} />
+           </div>
+           <div>
+-            <label style={{ display: 'block', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>제목</label>
+-            <input className="glass-input" value={title} onChange={e => setTitle(e.target.value)} placeholder="문서 제목"
++            <label htmlFor={`${formId}-title`} style={{ display: 'block', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>제목</label>
++            <input id={`${formId}-title`} className="glass-input" value={title} onChange={e => setTitle(e.target.value)} placeholder="문서 제목"
+               style={{ width: '100%', padding: 8, background: 'rgba(0,0,0,0.2)', border: '1px solid var(--glass-border)', color: '#fff', borderRadius: 4 }} />
+           </div>
+           <div>
+-            <label style={{ display: 'block', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>태그 (쉼표로 구분)</label>
+-            <input className="glass-input" value={tags} onChange={e => setTags(e.target.value)} placeholder="architecture, notes"
++            <label htmlFor={`${formId}-tags`} style={{ display: 'block', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>태그 (쉼표로 구분)</label>
++            <input id={`${formId}-tags`} className="glass-input" value={tags} onChange={e => setTags(e.target.value)} placeholder="architecture, notes"
+               style={{ width: '100%', padding: 8, background: 'rgba(0,0,0,0.2)', border: '1px solid var(--glass-border)', color: '#fff', borderRadius: 4 }} />
+           </div>
+         </div>
+diff --git a/dashboard/src/pages/wiki/WikiSidebar.tsx b/dashboard/src/pages/wiki/WikiSidebar.tsx
+index 5773459d..48eb5823 100644
+--- a/dashboard/src/pages/wiki/WikiSidebar.tsx
++++ b/dashboard/src/pages/wiki/WikiSidebar.tsx
+@@ -36,7 +36,7 @@ const WikiSidebar: React.FC<Props> = ({
+         <h2 style={{ fontSize: 14, margin: 0 }}>📚 Wiki</h2>
+         <div style={{ display: 'flex', gap: 4 }}>
+           <button className="icon-btn" style={{ fontSize: 12, padding: '4px 8px' }} onClick={onOpenVaultModal} title="Vault 폴더 변경">📂</button>
+-          <button className="icon-btn" style={{ fontSize: 12, padding: '4px 8px' }} onClick={onOpenNewModal} title="새 문서 생성">+</button>
++          <button className="icon-btn" style={{ fontSize: 12, padding: '4px 8px' }} onClick={onOpenNewModal} title="새 문서 생성" aria-label="새 문서 생성" aria-haspopup="dialog">+</button>
+         </div>
+       </div>
+ 
+diff --git a/dashboard/src/stores/chatStore.ts b/dashboard/src/stores/chatStore.ts
+index e2bf996a..f90e2391 100644
+--- a/dashboard/src/stores/chatStore.ts
++++ b/dashboard/src/stores/chatStore.ts
+@@ -185,7 +185,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
+   updateSessionTitle: (id: string, title: string) => {
+     const trimmed = title.trim();
+     if (!trimmed) return;
+-    const { sessions, activeSessionId, activeSession } = get();
++    const { sessions, activeSession } = get();
+     const updatedSessions = sessions.map(s =>
+       s.id === id ? { ...s, title: trimmed, updatedAt: new Date().toISOString() } : s
+     );
+@@ -400,7 +400,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
+       if (parsed.sessions && parsed.sessions.length > 0) {
+         const sessions = parsed.sessions;
+         const activeSessionId = parsed.activeSessionId || sessions[0].id;
+-        const activeSession = sessions.find((s: ChatSession) => s.id === activeSessionId) || sessions[0];
+         const normalized = sessions.map((s: ChatSession) => ({
+           ...s,
+           conversationRevision: s.conversationRevision ?? 0,
+diff --git a/dashboard/src/stores/fileStore.ts b/dashboard/src/stores/fileStore.ts
+index 4f10b4ad..ead134c8 100644
+--- a/dashboard/src/stores/fileStore.ts
++++ b/dashboard/src/stores/fileStore.ts
+@@ -95,7 +95,7 @@ function abortInflightFetches(): void {
+   }
+ }
+ 
+-function beginInflightFetch(_epoch: number): AbortController {
++function beginInflightFetch(): AbortController {
+   abortInflightFetches();
+   const controller = new AbortController();
+   inflightController = controller;
+@@ -138,7 +138,7 @@ export const useFileStore = create<FileTreeState>((set, get) => ({
+ 
+   refreshTree: async () => {
+     const capturedEpoch = useProjectStore.getState().switchEpoch;
+-    const controller = beginInflightFetch(capturedEpoch);
++    const controller = beginInflightFetch();
+     const { loadDirectory, workspacePath } = get();
+     set({ isLoading: true });
+     try {
+@@ -235,7 +235,7 @@ export const useFileStore = create<FileTreeState>((set, get) => ({
+ 
+   getWorkspace: async () => {
+     const capturedEpoch = useProjectStore.getState().switchEpoch;
+-    const controller = beginInflightFetch(capturedEpoch);
++    const controller = beginInflightFetch();
+     try {
+       const res = await fetch(withProjectIdentitySearchParams('/api/fs/workspace'), {
+         headers: createProjectIdentityHeaders(),
+diff --git a/dashboard/src/styles/index.css b/dashboard/src/styles/index.css
+index 56a2c3a2..1f4902e1 100644
+--- a/dashboard/src/styles/index.css
++++ b/dashboard/src/styles/index.css
+@@ -6323,6 +6323,10 @@ html, body {
+   color: var(--text-muted);
+ }
+ 
++.agent-status-card .metric-label {
++  color: #a0a0a0;
++}
++
+ .metric-value {
+   color: var(--text-primary);
+   font-weight: 600;
+diff --git a/dashboard/src/styles/workspace-chat.css b/dashboard/src/styles/workspace-chat.css
+index 70c398f2..7bd9375b 100644
+--- a/dashboard/src/styles/workspace-chat.css
++++ b/dashboard/src/styles/workspace-chat.css
+@@ -13,7 +13,7 @@
+ .workspace-chat .agk-topbar-actions { gap: var(--space-1); }
+ .workspace-chat .agk-canvas { min-width: 0; }
+ .workspace-chat.is-empty .agk-canvas { flex: 0 1 auto; margin-top: auto; overflow-y: auto; }
+-.workspace-chat .agk-feed { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
++.workspace-chat .agk-feed { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--text-dim) var(--bg-primary); }
+ .workspace-chat .agk-feed-inner {
+   width: 100%; max-width: calc(var(--chat-content-width) + 48px);
+   margin: 0 auto; padding: var(--space-8) var(--space-6);
+diff --git a/dashboard/src/styles/workspace-pages.css b/dashboard/src/styles/workspace-pages.css
+index f02e30d9..6a3ff6d7 100644
+--- a/dashboard/src/styles/workspace-pages.css
++++ b/dashboard/src/styles/workspace-pages.css
+@@ -173,6 +173,11 @@
+   min-inline-size: 0;
+ }
+ 
++.app-shell .hub-card-top > :where(.spec-badge, .popular-badge, .active-badge) {
++  flex: 0 0 auto;
++  white-space: nowrap;
++}
++
+ .app-shell :where(.spec-key, .spec-val, .quant-quality-wrap) {
+   min-inline-size: 0;
+   overflow-wrap: anywhere;
+@@ -222,6 +227,46 @@
+   overflow-wrap: break-word;
+ }
+ 
++.app-shell :where(.unsloth-studio-container .card-header p, .tunnel-info p, .settings-section .toggle-label) {
++  word-break: keep-all;
++  overflow-wrap: break-word;
++}
++
++.app-shell .mcp-health-toolbar {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: center;
++  justify-content: space-between;
++  gap: var(--space-2);
++  margin-bottom: var(--space-3);
++}
++
++.app-shell .mcp-health-source {
++  min-inline-size: 0;
++  max-inline-size: 100%;
++  overflow-wrap: anywhere;
++}
++
++.app-shell .mcp-health-actions {
++  display: flex;
++  flex-wrap: wrap;
++  gap: var(--space-2);
++}
++
++.app-shell :where(.mcp-health-actions, .settings-logger-controls) > button {
++  flex-shrink: 0;
++  white-space: nowrap;
++}
++
++.app-shell .settings-logger-controls {
++  flex-wrap: wrap;
++}
++
++.app-shell .settings-logger-controls > select {
++  min-inline-size: 0;
++  max-inline-size: 100%;
++}
++
+ @media (max-width: 1023px) {
+   .app-shell :where(.unsloth-studio-header, .unsloth-start-header) {
+     align-items: stretch;
+diff --git a/dashboard/src/styles/workspace-response.css b/dashboard/src/styles/workspace-response.css
+index 245a379e..8dd0acc6 100644
+--- a/dashboard/src/styles/workspace-response.css
++++ b/dashboard/src/styles/workspace-response.css
+@@ -141,6 +141,14 @@
+   border-bottom-color: var(--glass-border);
+   font-size: inherit;
+   line-height: var(--leading-normal);
++  word-break: keep-all;
++  overflow-wrap: normal;
++}
++
++.workspace-chat .antigravity-markdown-body .agk-markdown-table code {
++  white-space: nowrap;
++  word-break: normal;
++  overflow-wrap: normal;
+ }
+ 
+ .workspace-chat .antigravity-markdown-body .agk-markdown-table th { background: var(--bg-tertiary); color: var(--text-primary); font-weight: var(--font-weight-semibold); }
+diff --git a/dashboard/src/utils/__tests__/exhaustedNotification.test.ts b/dashboard/src/utils/__tests__/exhaustedNotification.test.ts
+index 0d6c1728..9cf915e4 100644
+--- a/dashboard/src/utils/__tests__/exhaustedNotification.test.ts
++++ b/dashboard/src/utils/__tests__/exhaustedNotification.test.ts
+@@ -4,7 +4,7 @@
+  * Notification stub으로 권한/미지원/거부 분기와 tag·onclick 동작을 검증한다.
+  */
+ 
+-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
++import { describe, expect, it, vi, afterEach } from 'vitest';
+ import {
+   EXHAUSTED_NOTIFICATION_TAG,
+   isNotificationSupported,
+diff --git a/dashboard/src/utils/monacoRuntime.test.ts b/dashboard/src/utils/monacoRuntime.test.ts
+index 9d663fd3..91a02433 100644
+--- a/dashboard/src/utils/monacoRuntime.test.ts
++++ b/dashboard/src/utils/monacoRuntime.test.ts
+@@ -12,8 +12,6 @@ const loaderMock = vi.hoisted(() => ({ config: vi.fn() }));
+ 
+ vi.mock('@monaco-editor/react', () => ({ loader: loaderMock }));
+ 
+-import { configureLocalMonacoRuntime } from './monacoRuntime';
+-
+ interface MonacoEnvironmentLike {
+   getWorker: (workerId: string, label: string) => unknown;
+ }
+diff --git a/dashboard/src/utils/responsePresentation.ts b/dashboard/src/utils/responsePresentation.ts
+index 45a0c6ca..3e23e7ab 100644
+--- a/dashboard/src/utils/responsePresentation.ts
++++ b/dashboard/src/utils/responsePresentation.ts
+@@ -99,6 +99,16 @@ export function formatResponseMarkdown(content: string): string {
+     return { token, source, beforeFormatting: /^`[^`\n<>]*`$/.test(source) };
+   });
+   protectedContent += content.slice(cursor);
++  const linkUrls: { readonly token: string; readonly source: string }[] = [];
++  // Preserve URI syntax, not link labels: their embedded HTML must still be sanitized.
++  for (const { start, end } of [...markdownRanges(protectedContent, ['link', 'definition'])].reverse()) {
++    const source = protectedContent.slice(start, end).replace(/<https?:\/\/[^<>\s"'`]+>/gi, source => {
++      const token = `%%SSAK_RESPONSE_${nonce}_URL_${linkUrls.length}%%`;
++      linkUrls.push({ token, source });
++      return token;
++    });
++    protectedContent = protectedContent.slice(0, start) + source + protectedContent.slice(end);
++  }
+   const thoughtTags: { readonly token: string; readonly source: string }[] = [];
+   protectedContent = protectedContent.replace(/<\/?think>/gi, source => {
+     const token = `%%SSAK_RESPONSE_${nonce}_THINK_${thoughtTags.length}%%`;
+@@ -106,6 +116,7 @@ export function formatResponseMarkdown(content: string): string {
+     return token;
+   });
+   let sanitized = DOMPurify.sanitize(protectedContent, { USE_PROFILES: { html: true }, FORBID_ATTR: ['style'] });
++  for (const { token, source } of linkUrls) sanitized = sanitized.replace(token, () => source);
+   for (const { token, source } of thoughtTags) sanitized = sanitized.replace(token, () => source);
+   for (const { token, source, beforeFormatting } of segments) {
+     if (beforeFormatting) sanitized = sanitized.replace(token, () => source);
+diff --git a/dashboard/vite.backendHealth.ts b/dashboard/vite.backendHealth.ts
+index ce6e3088..af75a4b9 100644
+--- a/dashboard/vite.backendHealth.ts
++++ b/dashboard/vite.backendHealth.ts
+@@ -61,13 +61,10 @@ function probeOnce(targetBase: string, timeoutMs = 2500): Promise<{ ok: boolean;
+ 
+ function banner(lines: string[]): void {
+   const bar = '!'.repeat(72);
+-  // eslint-disable-next-line no-console
+   console.warn(`\n${bar}`);
+   for (const line of lines) {
+-    // eslint-disable-next-line no-console
+     console.warn(`! ${line}`);
+   }
+-  // eslint-disable-next-line no-console
+   console.warn(`${bar}\n`);
+ }
+ 

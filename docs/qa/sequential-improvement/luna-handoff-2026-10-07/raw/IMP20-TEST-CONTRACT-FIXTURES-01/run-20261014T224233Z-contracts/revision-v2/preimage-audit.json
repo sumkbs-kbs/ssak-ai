@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "/Users/mr.k/.codex/plugins/cache/sisyphuslabs/omo/5.1.33/skills/programming/scripts/python/check-no-excuse-rules.py",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/preimage.py"
+  ],
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/preimage.py:30:13: [generic-exception] `raise TypeError(\"...\")` - define a typed error class instead\n/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/revision-v2/preimage.py:64:13: [generic-exception] `raise RuntimeError(\"...\")` - define a typed error class instead\n\n2 violation(s) in 1 file(s)\n"
+}

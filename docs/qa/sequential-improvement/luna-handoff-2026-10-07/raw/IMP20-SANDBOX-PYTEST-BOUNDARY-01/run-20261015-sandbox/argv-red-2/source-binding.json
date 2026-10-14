@@ -1,0 +1,10 @@
+[
+  {
+    "path": "src/antigravity_k/engine/sandbox.py",
+    "sha256": "8e65e315d451aecb62fae2ce746935694416c4ee685fafe5b3531788a4e094b2"
+  },
+  {
+    "path": "tests/test_cr03_sandbox_read_boundary.py",
+    "sha256": "bb4692543635e34ce5bd4e12cc1b2d701250057158aa128abe65a3f911251843"
+  }
+]

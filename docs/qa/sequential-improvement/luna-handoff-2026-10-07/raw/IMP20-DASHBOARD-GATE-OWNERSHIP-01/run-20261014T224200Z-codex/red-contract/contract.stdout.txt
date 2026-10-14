@@ -1,0 +1,25 @@
+.F                                                                       [100%]
+=================================== FAILURES ===================================
+___ test_the_ambient_gate_is_required_and_starts_a_server[accessibility-e2e] ___
+
+gate_id = 'accessibility-e2e'
+
+    @pytest.mark.parametrize("gate_id", [AMBIENT_GATE_ID, "accessibility-e2e"])
+    def test_the_ambient_gate_is_required_and_starts_a_server(gate_id: str) -> None:
+        """게이트는 required 이고, 명령이 서버를 세우는 스크립트를 부른다."""
+        gate = next(row for row in _manifest()["gates"] if row["id"] == gate_id)
+        assert gate["required"] is True
+        command = [str(token) for token in gate["command"]]
+>       assert "scripts/run_dashboard_e2e_ambient.py" in " ".join(command) or any(
+            "run_dashboard_e2e_ambient.py" in token for token in command
+        ), f"서버 기동 스크립트가 명령에 없다: {command}"
+E       AssertionError: 서버 기동 스크립트가 명령에 없다: ['pnpm', 'exec', 'playwright', 'test', 'e2e/tests/accessibility.spec.ts']
+E       assert ('scripts/run_dashboard_e2e_ambient.py' in 'pnpm exec playwright test e2e/tests/accessibility.spec.ts' or False)
+E        +  where 'pnpm exec playwright test e2e/tests/accessibility.spec.ts' = <built-in method join of str object at 0x1029ad978>(['pnpm', 'exec', 'playwright', 'test', 'e2e/tests/accessibility.spec.ts'])
+E        +    where <built-in method join of str object at 0x1029ad978> = ' '.join
+E        +  and   False = any(<generator object test_the_ambient_gate_is_required_and_starts_a_server.<locals>.<genexpr> at 0x11065f2a0>)
+
+tests/test_cr14_ambient_backend_gate_contract.py:87: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_cr14_ambient_backend_gate_contract.py::test_the_ambient_gate_is_required_and_starts_a_server[accessibility-e2e]
+1 failed, 1 passed in 0.36s

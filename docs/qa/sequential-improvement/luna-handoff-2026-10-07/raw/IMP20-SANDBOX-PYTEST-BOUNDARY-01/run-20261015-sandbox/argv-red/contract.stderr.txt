@@ -1,0 +1,6 @@
+ERROR: not found: /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/tests/test_cr03_sandbox_read_boundary.py::TestWorkspaceStillRuns::test_script_pytest_arguments_are_preserved
+(no match in any of [<Class TestWorkspaceStillRuns>])
+
+ERROR: not found: /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/tests/test_cr03_sandbox_read_boundary.py::TestWorkspaceStillRuns::test_pytest_launchers_keep_workspace_boundary
+(no match in any of [<Class TestWorkspaceStillRuns>])
+

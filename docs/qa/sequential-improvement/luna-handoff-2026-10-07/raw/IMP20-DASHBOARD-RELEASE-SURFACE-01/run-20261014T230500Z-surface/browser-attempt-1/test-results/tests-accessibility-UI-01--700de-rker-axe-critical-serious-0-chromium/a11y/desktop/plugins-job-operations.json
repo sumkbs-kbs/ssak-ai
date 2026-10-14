@@ -1,0 +1,10 @@
+{
+  "pathname": "/plugins/job-operations",
+  "routeName": "plugins-job-operations",
+  "viewport": "desktop",
+  "verifiedPathname": "/plugins/job-operations",
+  "routeMarkerFound": true,
+  "passes": 39,
+  "violations": [],
+  "criticalSerious": []
+}

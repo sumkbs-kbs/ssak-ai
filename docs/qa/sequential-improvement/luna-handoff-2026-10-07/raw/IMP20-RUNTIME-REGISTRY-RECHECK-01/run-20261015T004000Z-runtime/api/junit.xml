@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="9" failures="0" skipped="0" tests="9" time="33.104" timestamp="2026-10-15T07:56:28.001503+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_e2e_smoke" name="test_health_endpoint" time="32.520"><error message="failed on setup with &quot;Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json&#10;모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json&#10;Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md&#10;INFO:     Shutting down&#10;INFO:     Waiting for application shutdown.&#10;INFO:     Application shutdown complete.&#10;INFO:     Finished server process [18054]&quot;">@pytest.fixture(scope="session", autouse=True)
+    def server_process():
+        external_url = os.environ.get("AGK_TEST_URL")
+        if external_url:
+            _set_base_url(external_url)
+            yield None
+            return
+    
+        proc = subprocess.Popen(
+            [
+                *python_invocation(project=True),
+                "-m",
+                "uvicorn",
+                "antigravity_k.api.server:app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "0",
+                "--no-access-log",
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            cwd=Path(__file__).resolve().parent.parent,
+        )
+    
+        assert proc.stderr is not None
+        startup_logs: list[str] = []
+        deadline = time.monotonic() + 30
+        while time.monotonic() &lt; deadline:
+            if proc.poll() is not None:
+                _, stderr = proc.communicate()
+                pytest.fail(f"E2E server exited during startup: {(stderr or ''.join(startup_logs)).strip()}")
+    
+            readable, _, _ = select.select([proc.stderr], [], [], 1)
+            if not readable:
+                continue
+    
+            line = proc.stderr.readline()
+            startup_logs.append(line)
+            match = re.search(r"Uvicorn running on http://127\.0\.0\.1:(\d+)", line)
+            if match is not None:
+                _set_base_url(f"http://127.0.0.1:{match.group(1)}")
+                break
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+            pytest.fail(f"E2E server did not report an ephemeral port: {(stderr or ''.join(startup_logs)).strip()}")
+    
+        last_status = None
+        for _ in range(30):
+            try:
+                resp = requests.get(health_url, timeout=2)
+                if resp.status_code == 200:
+                    break
+            except requests.RequestException:
+                if proc.poll() is not None:
+                    stderr = proc.stderr.read() if proc.stderr is not None else ""
+                    pytest.fail(f"E2E server exited during startup: {stderr.strip()}")
+            else:
+                last_status = resp.status_code
+            time.sleep(1)
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+&gt;           pytest.fail(f"E2E server did not become healthy (last status: {last_status}): {stderr.strip()}")
+E           Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json
+E           모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json
+E           Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md
+E           INFO:     Shutting down
+E           INFO:     Waiting for application shutdown.
+E           INFO:     Application shutdown complete.
+E           INFO:     Finished server process [18054]
+
+tests/test_e2e_smoke.py:226: Failed</error></testcase><testcase classname="tests.test_e2e_smoke" name="test_health_returns_backends" time="0.000"><error message="failed on setup with &quot;Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json&#10;모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json&#10;Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md&#10;INFO:     Shutting down&#10;INFO:     Waiting for application shutdown.&#10;INFO:     Application shutdown complete.&#10;INFO:     Finished server process [18054]&quot;">@pytest.fixture(scope="session", autouse=True)
+    def server_process():
+        external_url = os.environ.get("AGK_TEST_URL")
+        if external_url:
+            _set_base_url(external_url)
+            yield None
+            return
+    
+        proc = subprocess.Popen(
+            [
+                *python_invocation(project=True),
+                "-m",
+                "uvicorn",
+                "antigravity_k.api.server:app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "0",
+                "--no-access-log",
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            cwd=Path(__file__).resolve().parent.parent,
+        )
+    
+        assert proc.stderr is not None
+        startup_logs: list[str] = []
+        deadline = time.monotonic() + 30
+        while time.monotonic() &lt; deadline:
+            if proc.poll() is not None:
+                _, stderr = proc.communicate()
+                pytest.fail(f"E2E server exited during startup: {(stderr or ''.join(startup_logs)).strip()}")
+    
+            readable, _, _ = select.select([proc.stderr], [], [], 1)
+            if not readable:
+                continue
+    
+            line = proc.stderr.readline()
+            startup_logs.append(line)
+            match = re.search(r"Uvicorn running on http://127\.0\.0\.1:(\d+)", line)
+            if match is not None:
+                _set_base_url(f"http://127.0.0.1:{match.group(1)}")
+                break
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+            pytest.fail(f"E2E server did not report an ephemeral port: {(stderr or ''.join(startup_logs)).strip()}")
+    
+        last_status = None
+        for _ in range(30):
+            try:
+                resp = requests.get(health_url, timeout=2)
+                if resp.status_code == 200:
+                    break
+            except requests.RequestException:
+                if proc.poll() is not None:
+                    stderr = proc.stderr.read() if proc.stderr is not None else ""
+                    pytest.fail(f"E2E server exited during startup: {stderr.strip()}")
+            else:
+                last_status = resp.status_code
+            time.sleep(1)
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+&gt;           pytest.fail(f"E2E server did not become healthy (last status: {last_status}): {stderr.strip()}")
+E           Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json
+E           모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json
+E           Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md
+E           INFO:     Shutting down
+E           INFO:     Waiting for application shutdown.
+E           INFO:     Application shutdown complete.
+E           INFO:     Finished server process [18054]
+
+tests/test_e2e_smoke.py:226: Failed</error></testcase><testcase classname="tests.test_e2e_smoke" name="test_health_returns_version" time="0.000"><error message="failed on setup with &quot;Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json&#10;모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json&#10;Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md&#10;INFO:     Shutting down&#10;INFO:     Waiting for application shutdown.&#10;INFO:     Application shutdown complete.&#10;INFO:     Finished server process [18054]&quot;">@pytest.fixture(scope="session", autouse=True)
+    def server_process():
+        external_url = os.environ.get("AGK_TEST_URL")
+        if external_url:
+            _set_base_url(external_url)
+            yield None
+            return
+    
+        proc = subprocess.Popen(
+            [
+                *python_invocation(project=True),
+                "-m",
+                "uvicorn",
+                "antigravity_k.api.server:app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "0",
+                "--no-access-log",
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            cwd=Path(__file__).resolve().parent.parent,
+        )
+    
+        assert proc.stderr is not None
+        startup_logs: list[str] = []
+        deadline = time.monotonic() + 30
+        while time.monotonic() &lt; deadline:
+            if proc.poll() is not None:
+                _, stderr = proc.communicate()
+                pytest.fail(f"E2E server exited during startup: {(stderr or ''.join(startup_logs)).strip()}")
+    
+            readable, _, _ = select.select([proc.stderr], [], [], 1)
+            if not readable:
+                continue
+    
+            line = proc.stderr.readline()
+            startup_logs.append(line)
+            match = re.search(r"Uvicorn running on http://127\.0\.0\.1:(\d+)", line)
+            if match is not None:
+                _set_base_url(f"http://127.0.0.1:{match.group(1)}")
+                break
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+            pytest.fail(f"E2E server did not report an ephemeral port: {(stderr or ''.join(startup_logs)).strip()}")
+    
+        last_status = None
+        for _ in range(30):
+            try:
+                resp = requests.get(health_url, timeout=2)
+                if resp.status_code == 200:
+                    break
+            except requests.RequestException:
+                if proc.poll() is not None:
+                    stderr = proc.stderr.read() if proc.stderr is not None else ""
+                    pytest.fail(f"E2E server exited during startup: {stderr.strip()}")
+            else:
+                last_status = resp.status_code
+            time.sleep(1)
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+&gt;           pytest.fail(f"E2E server did not become healthy (last status: {last_status}): {stderr.strip()}")
+E           Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json
+E           모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json
+E           Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md
+E           INFO:     Shutting down
+E           INFO:     Waiting for application shutdown.
+E           INFO:     Application shutdown complete.
+E           INFO:     Finished server process [18054]
+
+tests/test_e2e_smoke.py:226: Failed</error></testcase><testcase classname="tests.test_e2e_smoke" name="test_cors_headers" time="0.000"><error message="failed on setup with &quot;Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json&#10;모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json&#10;Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md&#10;INFO:     Shutting down&#10;INFO:     Waiting for application shutdown.&#10;INFO:     Application shutdown complete.&#10;INFO:     Finished server process [18054]&quot;">@pytest.fixture(scope="session", autouse=True)
+    def server_process():
+        external_url = os.environ.get("AGK_TEST_URL")
+        if external_url:
+            _set_base_url(external_url)
+            yield None
+            return
+    
+        proc = subprocess.Popen(
+            [
+                *python_invocation(project=True),
+                "-m",
+                "uvicorn",
+                "antigravity_k.api.server:app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "0",
+                "--no-access-log",
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            cwd=Path(__file__).resolve().parent.parent,
+        )
+    
+        assert proc.stderr is not None
+        startup_logs: list[str] = []
+        deadline = time.monotonic() + 30
+        while time.monotonic() &lt; deadline:
+            if proc.poll() is not None:
+                _, stderr = proc.communicate()
+                pytest.fail(f"E2E server exited during startup: {(stderr or ''.join(startup_logs)).strip()}")
+    
+            readable, _, _ = select.select([proc.stderr], [], [], 1)
+            if not readable:
+                continue
+    
+            line = proc.stderr.readline()
+            startup_logs.append(line)
+            match = re.search(r"Uvicorn running on http://127\.0\.0\.1:(\d+)", line)
+            if match is not None:
+                _set_base_url(f"http://127.0.0.1:{match.group(1)}")
+                break
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+            pytest.fail(f"E2E server did not report an ephemeral port: {(stderr or ''.join(startup_logs)).strip()}")
+    
+        last_status = None
+        for _ in range(30):
+            try:
+                resp = requests.get(health_url, timeout=2)
+                if resp.status_code == 200:
+                    break
+            except requests.RequestException:
+                if proc.poll() is not None:
+                    stderr = proc.stderr.read() if proc.stderr is not None else ""
+                    pytest.fail(f"E2E server exited during startup: {stderr.strip()}")
+            else:
+                last_status = resp.status_code
+            time.sleep(1)
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+&gt;           pytest.fail(f"E2E server did not become healthy (last status: {last_status}): {stderr.strip()}")
+E           Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json
+E           모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json
+E           Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md
+E           INFO:     Shutting down
+E           INFO:     Waiting for application shutdown.
+E           INFO:     Application shutdown complete.
+E           INFO:     Finished server process [18054]
+
+tests/test_e2e_smoke.py:226: Failed</error></testcase><testcase classname="tests.test_e2e_smoke" name="test_security_headers" time="0.000"><error message="failed on setup with &quot;Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json&#10;모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json&#10;Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md&#10;INFO:     Shutting down&#10;INFO:     Waiting for application shutdown.&#10;INFO:     Application shutdown complete.&#10;INFO:     Finished server process [18054]&quot;">@pytest.fixture(scope="session", autouse=True)
+    def server_process():
+        external_url = os.environ.get("AGK_TEST_URL")
+        if external_url:
+            _set_base_url(external_url)
+            yield None
+            return
+    
+        proc = subprocess.Popen(
+            [
+                *python_invocation(project=True),
+                "-m",
+                "uvicorn",
+                "antigravity_k.api.server:app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "0",
+                "--no-access-log",
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            cwd=Path(__file__).resolve().parent.parent,
+        )
+    
+        assert proc.stderr is not None
+        startup_logs: list[str] = []
+        deadline = time.monotonic() + 30
+        while time.monotonic() &lt; deadline:
+            if proc.poll() is not None:
+                _, stderr = proc.communicate()
+                pytest.fail(f"E2E server exited during startup: {(stderr or ''.join(startup_logs)).strip()}")
+    
+            readable, _, _ = select.select([proc.stderr], [], [], 1)
+            if not readable:
+                continue
+    
+            line = proc.stderr.readline()
+            startup_logs.append(line)
+            match = re.search(r"Uvicorn running on http://127\.0\.0\.1:(\d+)", line)
+            if match is not None:
+                _set_base_url(f"http://127.0.0.1:{match.group(1)}")
+                break
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+            pytest.fail(f"E2E server did not report an ephemeral port: {(stderr or ''.join(startup_logs)).strip()}")
+    
+        last_status = None
+        for _ in range(30):
+            try:
+                resp = requests.get(health_url, timeout=2)
+                if resp.status_code == 200:
+                    break
+            except requests.RequestException:
+                if proc.poll() is not None:
+                    stderr = proc.stderr.read() if proc.stderr is not None else ""
+                    pytest.fail(f"E2E server exited during startup: {stderr.strip()}")
+            else:
+                last_status = resp.status_code
+            time.sleep(1)
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+&gt;           pytest.fail(f"E2E server did not become healthy (last status: {last_status}): {stderr.strip()}")
+E           Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json
+E           모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json
+E           Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md
+E           INFO:     Shutting down
+E           INFO:     Waiting for application shutdown.
+E           INFO:     Application shutdown complete.
+E           INFO:     Finished server process [18054]
+
+tests/test_e2e_smoke.py:226: Failed</error></testcase><testcase classname="tests.test_e2e_smoke" name="test_public_paths_accessible" time="0.000"><error message="failed on setup with &quot;Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json&#10;모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json&#10;Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md&#10;INFO:     Shutting down&#10;INFO:     Waiting for application shutdown.&#10;INFO:     Application shutdown complete.&#10;INFO:     Finished server process [18054]&quot;">@pytest.fixture(scope="session", autouse=True)
+    def server_process():
+        external_url = os.environ.get("AGK_TEST_URL")
+        if external_url:
+            _set_base_url(external_url)
+            yield None
+            return
+    
+        proc = subprocess.Popen(
+            [
+                *python_invocation(project=True),
+                "-m",
+                "uvicorn",
+                "antigravity_k.api.server:app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "0",
+                "--no-access-log",
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            cwd=Path(__file__).resolve().parent.parent,
+        )
+    
+        assert proc.stderr is not None
+        startup_logs: list[str] = []
+        deadline = time.monotonic() + 30
+        while time.monotonic() &lt; deadline:
+            if proc.poll() is not None:
+                _, stderr = proc.communicate()
+                pytest.fail(f"E2E server exited during startup: {(stderr or ''.join(startup_logs)).strip()}")
+    
+            readable, _, _ = select.select([proc.stderr], [], [], 1)
+            if not readable:
+                continue
+    
+            line = proc.stderr.readline()
+            startup_logs.append(line)
+            match = re.search(r"Uvicorn running on http://127\.0\.0\.1:(\d+)", line)
+            if match is not None:
+                _set_base_url(f"http://127.0.0.1:{match.group(1)}")
+                break
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+            pytest.fail(f"E2E server did not report an ephemeral port: {(stderr or ''.join(startup_logs)).strip()}")
+    
+        last_status = None
+        for _ in range(30):
+            try:
+                resp = requests.get(health_url, timeout=2)
+                if resp.status_code == 200:
+                    break
+            except requests.RequestException:
+                if proc.poll() is not None:
+                    stderr = proc.stderr.read() if proc.stderr is not None else ""
+                    pytest.fail(f"E2E server exited during startup: {stderr.strip()}")
+            else:
+                last_status = resp.status_code
+            time.sleep(1)
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+&gt;           pytest.fail(f"E2E server did not become healthy (last status: {last_status}): {stderr.strip()}")
+E           Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json
+E           모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json
+E           Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md
+E           INFO:     Shutting down
+E           INFO:     Waiting for application shutdown.
+E           INFO:     Application shutdown complete.
+E           INFO:     Finished server process [18054]
+
+tests/test_e2e_smoke.py:226: Failed</error></testcase><testcase classname="tests.test_e2e_smoke" name="test_protected_path_requires_auth" time="0.000"><error message="failed on setup with &quot;Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json&#10;모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json&#10;Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md&#10;INFO:     Shutting down&#10;INFO:     Waiting for application shutdown.&#10;INFO:     Application shutdown complete.&#10;INFO:     Finished server process [18054]&quot;">@pytest.fixture(scope="session", autouse=True)
+    def server_process():
+        external_url = os.environ.get("AGK_TEST_URL")
+        if external_url:
+            _set_base_url(external_url)
+            yield None
+            return
+    
+        proc = subprocess.Popen(
+            [
+                *python_invocation(project=True),
+                "-m",
+                "uvicorn",
+                "antigravity_k.api.server:app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "0",
+                "--no-access-log",
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            cwd=Path(__file__).resolve().parent.parent,
+        )
+    
+        assert proc.stderr is not None
+        startup_logs: list[str] = []
+        deadline = time.monotonic() + 30
+        while time.monotonic() &lt; deadline:
+            if proc.poll() is not None:
+                _, stderr = proc.communicate()
+                pytest.fail(f"E2E server exited during startup: {(stderr or ''.join(startup_logs)).strip()}")
+    
+            readable, _, _ = select.select([proc.stderr], [], [], 1)
+            if not readable:
+                continue
+    
+            line = proc.stderr.readline()
+            startup_logs.append(line)
+            match = re.search(r"Uvicorn running on http://127\.0\.0\.1:(\d+)", line)
+            if match is not None:
+                _set_base_url(f"http://127.0.0.1:{match.group(1)}")
+                break
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+            pytest.fail(f"E2E server did not report an ephemeral port: {(stderr or ''.join(startup_logs)).strip()}")
+    
+        last_status = None
+        for _ in range(30):
+            try:
+                resp = requests.get(health_url, timeout=2)
+                if resp.status_code == 200:
+                    break
+            except requests.RequestException:
+                if proc.poll() is not None:
+                    stderr = proc.stderr.read() if proc.stderr is not None else ""
+                    pytest.fail(f"E2E server exited during startup: {stderr.strip()}")
+            else:
+                last_status = resp.status_code
+            time.sleep(1)
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+&gt;           pytest.fail(f"E2E server did not become healthy (last status: {last_status}): {stderr.strip()}")
+E           Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json
+E           모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json
+E           Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md
+E           INFO:     Shutting down
+E           INFO:     Waiting for application shutdown.
+E           INFO:     Application shutdown complete.
+E           INFO:     Finished server process [18054]
+
+tests/test_e2e_smoke.py:226: Failed</error></testcase><testcase classname="tests.test_e2e_smoke" name="test_error_response_has_correlation_id" time="0.000"><error message="failed on setup with &quot;Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json&#10;모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json&#10;Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md&#10;INFO:     Shutting down&#10;INFO:     Waiting for application shutdown.&#10;INFO:     Application shutdown complete.&#10;INFO:     Finished server process [18054]&quot;">@pytest.fixture(scope="session", autouse=True)
+    def server_process():
+        external_url = os.environ.get("AGK_TEST_URL")
+        if external_url:
+            _set_base_url(external_url)
+            yield None
+            return
+    
+        proc = subprocess.Popen(
+            [
+                *python_invocation(project=True),
+                "-m",
+                "uvicorn",
+                "antigravity_k.api.server:app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "0",
+                "--no-access-log",
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            cwd=Path(__file__).resolve().parent.parent,
+        )
+    
+        assert proc.stderr is not None
+        startup_logs: list[str] = []
+        deadline = time.monotonic() + 30
+        while time.monotonic() &lt; deadline:
+            if proc.poll() is not None:
+                _, stderr = proc.communicate()
+                pytest.fail(f"E2E server exited during startup: {(stderr or ''.join(startup_logs)).strip()}")
+    
+            readable, _, _ = select.select([proc.stderr], [], [], 1)
+            if not readable:
+                continue
+    
+            line = proc.stderr.readline()
+            startup_logs.append(line)
+            match = re.search(r"Uvicorn running on http://127\.0\.0\.1:(\d+)", line)
+            if match is not None:
+                _set_base_url(f"http://127.0.0.1:{match.group(1)}")
+                break
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+            pytest.fail(f"E2E server did not report an ephemeral port: {(stderr or ''.join(startup_logs)).strip()}")
+    
+        last_status = None
+        for _ in range(30):
+            try:
+                resp = requests.get(health_url, timeout=2)
+                if resp.status_code == 200:
+                    break
+            except requests.RequestException:
+                if proc.poll() is not None:
+                    stderr = proc.stderr.read() if proc.stderr is not None else ""
+                    pytest.fail(f"E2E server exited during startup: {stderr.strip()}")
+            else:
+                last_status = resp.status_code
+            time.sleep(1)
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+&gt;           pytest.fail(f"E2E server did not become healthy (last status: {last_status}): {stderr.strip()}")
+E           Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json
+E           모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json
+E           Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md
+E           INFO:     Shutting down
+E           INFO:     Waiting for application shutdown.
+E           INFO:     Application shutdown complete.
+E           INFO:     Finished server process [18054]
+
+tests/test_e2e_smoke.py:226: Failed</error></testcase><testcase classname="tests.test_e2e_smoke" name="test_server_stable_over_time" time="0.000"><error message="failed on setup with &quot;Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json&#10;모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json&#10;Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md&#10;INFO:     Shutting down&#10;INFO:     Waiting for application shutdown.&#10;INFO:     Application shutdown complete.&#10;INFO:     Finished server process [18054]&quot;">@pytest.fixture(scope="session", autouse=True)
+    def server_process():
+        external_url = os.environ.get("AGK_TEST_URL")
+        if external_url:
+            _set_base_url(external_url)
+            yield None
+            return
+    
+        proc = subprocess.Popen(
+            [
+                *python_invocation(project=True),
+                "-m",
+                "uvicorn",
+                "antigravity_k.api.server:app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "0",
+                "--no-access-log",
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            cwd=Path(__file__).resolve().parent.parent,
+        )
+    
+        assert proc.stderr is not None
+        startup_logs: list[str] = []
+        deadline = time.monotonic() + 30
+        while time.monotonic() &lt; deadline:
+            if proc.poll() is not None:
+                _, stderr = proc.communicate()
+                pytest.fail(f"E2E server exited during startup: {(stderr or ''.join(startup_logs)).strip()}")
+    
+            readable, _, _ = select.select([proc.stderr], [], [], 1)
+            if not readable:
+                continue
+    
+            line = proc.stderr.readline()
+            startup_logs.append(line)
+            match = re.search(r"Uvicorn running on http://127\.0\.0\.1:(\d+)", line)
+            if match is not None:
+                _set_base_url(f"http://127.0.0.1:{match.group(1)}")
+                break
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+            pytest.fail(f"E2E server did not report an ephemeral port: {(stderr or ''.join(startup_logs)).strip()}")
+    
+        last_status = None
+        for _ in range(30):
+            try:
+                resp = requests.get(health_url, timeout=2)
+                if resp.status_code == 200:
+                    break
+            except requests.RequestException:
+                if proc.poll() is not None:
+                    stderr = proc.stderr.read() if proc.stderr is not None else ""
+                    pytest.fail(f"E2E server exited during startup: {stderr.strip()}")
+            else:
+                last_status = resp.status_code
+            time.sleep(1)
+        else:
+            proc.terminate()
+            _, stderr = proc.communicate(timeout=10)
+&gt;           pytest.fail(f"E2E server did not become healthy (last status: {last_status}): {stderr.strip()}")
+E           Failed: E2E server did not become healthy (last status: None): 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-stable-simple.json
+E           모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-RUNTIME-REGISTRY-RECHECK-01/run-20261015T004000Z-runtime/api/private-runtime/data/benchmarks/local-model-frontier.json
+E           Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md
+E           INFO:     Shutting down
+E           INFO:     Waiting for application shutdown.
+E           INFO:     Application shutdown complete.
+E           INFO:     Finished server process [18054]
+
+tests/test_e2e_smoke.py:226: Failed</error></testcase></testsuite></testsuites>

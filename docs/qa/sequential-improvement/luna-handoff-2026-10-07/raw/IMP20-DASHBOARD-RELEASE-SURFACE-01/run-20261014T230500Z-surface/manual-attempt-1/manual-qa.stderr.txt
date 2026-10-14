@@ -1,0 +1,8 @@
+ENOENT: no such file or directory, open '/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/node_modules/axe-core/axe.min.js'
+    path: "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/node_modules/axe-core/axe.min.js",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+
+Bun v1.4.0 (macOS arm64)

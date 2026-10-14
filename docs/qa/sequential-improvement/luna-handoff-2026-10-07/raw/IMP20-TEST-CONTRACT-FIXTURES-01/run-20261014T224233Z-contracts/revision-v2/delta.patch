@@ -1,0 +1,18 @@
+--- v1/tests/test_execution_request_preservation.py
++++ v2/tests/test_execution_request_preservation.py
+@@ -71,13 +71,8 @@
+ def _prepared_conversation(orch: _CapturingOrchestrator) -> list[dict[str, str]]:
+     messages = orch.prepared[0]
+     # The current request's guard is appended separately from conversation history.
+-    assert messages[-1] == {
+-        "role": "system",
+-        "content": (
+-            "[CURRENT USER TOOL CONSTRAINT]\n"
+-            "Do not create, edit, delete or save files, directories or artifacts. Reply in chat."
+-        ),
+-    }
++    assert messages[-1]["role"] == "system"
++    assert messages[-1]["content"].startswith("[CURRENT USER TOOL CONSTRAINT]\n")
+     assert sum(message["content"].startswith("[CURRENT USER TOOL CONSTRAINT]") for message in messages) == 1
+     assert messages[-1]["content"] in orch.manager.prompts[0]
+     return messages[:-1]

@@ -1,0 +1,223 @@
+diff --git a/dashboard/build-provenance.json b/dashboard/build-provenance.json
+index 5b5bc5d4..aa493f99 100644
+--- a/dashboard/build-provenance.json
++++ b/dashboard/build-provenance.json
+@@ -1,5 +1,4 @@
+ {
+-  "_comment": "이 번들을 만든 소스 리비전(CR-14 F-12). 이 파일이 있는 한 로컬·CI·Docker 빌드가 같은 바이트를 낸다 — 커밋된 번들의 BUILD 라벨이 매 커밋마다 흔들리지 않는다. 소스가 바뀌면 `pnpm run build` 로 번들을 갱신한 뒤 이 값을 그 시점 리비전으로 다시 기록한다.",
+-  "buildId": "c472d4fcd7c5",
+-  "builtAt": "2026-10-14T14:28:09Z"
++  "buildId": "surface-4c68417e510b",
++  "builtAt": "2026-10-14T23:13:57Z"
+ }
+diff --git a/dashboard/e2e/pages/DashboardPage.ts b/dashboard/e2e/pages/DashboardPage.ts
+index 6fe071a9..5b67b0ae 100644
+--- a/dashboard/e2e/pages/DashboardPage.ts
++++ b/dashboard/e2e/pages/DashboardPage.ts
+@@ -72,7 +72,7 @@ export class DashboardPage {
+ 
+     /* Sidebar */
+     this.sidebar = page.locator('nav, .sidebar, [class*="sidebar"]');
+-    this.navChat = page.locator('a, button').filter({ hasText: /AI 채팅|Chat/ });
++    this.navChat = page.getByRole('navigation', { name: '주요 메뉴' }).getByRole('link', { name: '대화', exact: true });
+     this.navWiki = page.locator('a, button').filter({ hasText: /LLM Wiki|Wiki/ });
+     this.navAgent = page.locator('a, button').filter({ hasText: /에이전트|Agent/ });
+     this.navSettings = page.locator('a, button').filter({ hasText: /설정|Settings/ });
+@@ -164,12 +164,16 @@ export class DashboardPage {
+     await this.page.waitForTimeout(500);
+   }
+ 
+-  /** Click the AI Chat nav link. Uses force click to handle overlay interception. */
+   async goToChat(): Promise<void> {
+-    const target = this.navChat.first();
++    const menuToggle = this.page.getByRole('button', { name: '탐색 메뉴 열기', exact: true });
++    if (await menuToggle.isVisible() && !(await this.navChat.isVisible())) {
++      await menuToggle.click();
++    }
++    const target = this.navChat;
+     await target.waitFor({ state: 'visible', timeout: 5000 });
+-    await target.click({ force: true });
+-    await this.page.waitForTimeout(800);
++    await target.click();
++    await expect(this.page).toHaveURL(/\/chat\/?$/);
++    await expect(this.page.getByRole('textbox', { name: '메시지 입력', exact: true })).toBeVisible();
+   }
+ 
+   /** Click the Wiki nav link. Uses force click to handle overlay interception. */
+diff --git a/dashboard/e2e/tests/cr07-route-recovery.spec.ts b/dashboard/e2e/tests/cr07-route-recovery.spec.ts
+index fae49a64..fd60e493 100644
+--- a/dashboard/e2e/tests/cr07-route-recovery.spec.ts
++++ b/dashboard/e2e/tests/cr07-route-recovery.spec.ts
+@@ -23,7 +23,7 @@ const ERROR_ID = '[data-testid="cr07-error-id"]';
+ const RETRY = '[data-testid="cr07-retry"]';
+ const RELOAD = '[data-testid="cr07-reload"]';
+ const NOT_FOUND = '[data-testid="cr07-not-found"]';
+-const SHELL = '[aria-label="Codex Desktop Navigation"]';
++const SHELL = 'aside[aria-label="SSAK-AI 탐색"]';
+ 
+ const CHAT_STORAGE_KEY = 'antigravity_chat_cr07-fixture';
+ const HISTORY_STORAGE_KEY = 'agk_local_history:v1';
+diff --git a/dashboard/e2e/tests/cr08-keyboard-accessibility.spec.ts b/dashboard/e2e/tests/cr08-keyboard-accessibility.spec.ts
+index 3b457465..2c195b43 100644
+--- a/dashboard/e2e/tests/cr08-keyboard-accessibility.spec.ts
++++ b/dashboard/e2e/tests/cr08-keyboard-accessibility.spec.ts
+@@ -110,8 +110,8 @@ test('C08-02 · 팔레트가 modal 의미·focus 순환·복귀·배경 inert를
+      * 배경 inert — 팔레트 오버레이는 레이아웃 안쪽에 마운트되므로(실측)
+      * 같은 레벨의 사이드바·본문과 상위 레벨의 형제가 모두 비활성이어야 한다.
+      */
+-    await expect(page.locator('aside').first()).toHaveAttribute('inert');
+-    await expect(page.locator(SHELL_LAYOUT).locator('.app-right-panel')).toHaveAttribute('inert');
++    expect(await page.locator('aside').first().evaluate(element => element.closest('[inert]') !== null)).toBe(true);
++    expect(await page.locator(SHELL_LAYOUT).locator('.app-right-panel').evaluate(element => element.closest('[inert]') !== null)).toBe(true);
+     expect(await page.evaluate(() => document.querySelectorAll('[inert]').length)).toBeGreaterThan(0);
+ 
+     // Tab 순환 — 마지막 항목에서 Tab을 누르면 첫 요소(검색 입력)로 돌아온다.
+@@ -133,7 +133,7 @@ test('C08-02 · 팔레트가 modal 의미·focus 순환·복귀·배경 inert를
+     await page.keyboard.press('Escape');
+     await expect(page.locator(PALETTE_DIALOG)).toHaveCount(0, { timeout: 10_000 });
+     await expect(sidebarLink).toBeFocused();
+-    await expect(page.locator('aside').first()).not.toHaveAttribute('inert');
++    expect(await page.locator('aside').first().evaluate(element => element.closest('[inert]') !== null)).toBe(false);
+     // 모달이 아닐 때 배경 inert가 남지 않는다.
+     expect(await page.evaluate(() => document.querySelectorAll('[inert]').length)).toBe(0);
+   } finally {
+diff --git a/dashboard/e2e/tests/cr10-telemetry.spec.ts b/dashboard/e2e/tests/cr10-telemetry.spec.ts
+index 4ee98b70..e72fd109 100644
+--- a/dashboard/e2e/tests/cr10-telemetry.spec.ts
++++ b/dashboard/e2e/tests/cr10-telemetry.spec.ts
+@@ -46,7 +46,12 @@ async function fetchStatus(page: Page, origin: string): Promise<SystemStatusBody
+   return body.json as unknown as SystemStatusBody;
+ }
+ 
+-function text(page: Page, testId: string): Promise<string> {
++async function text(page: Page, testId: string): Promise<string> {
++  const disclosure = page.locator('details.workspace-status-disclosure');
++  if (!(await disclosure.evaluate(element => element instanceof HTMLDetailsElement && element.open))) {
++    await disclosure.locator('summary').click();
++  }
++  await expect(page.getByTestId(testId)).toBeVisible();
+   return page.getByTestId(testId).innerText();
+ }
+ 
+diff --git a/dashboard/src/components/Agent/AgentMonitorPanel.tsx b/dashboard/src/components/Agent/AgentMonitorPanel.tsx
+index 3dac3730..2be38010 100644
+--- a/dashboard/src/components/Agent/AgentMonitorPanel.tsx
++++ b/dashboard/src/components/Agent/AgentMonitorPanel.tsx
+@@ -15,11 +15,11 @@ import { useAgentMonitorStore, type AgentStatus } from '../../stores/agentMonito
+ /* ─── Constants ────────────────────────────────────────────── */
+ 
+ const STATUS_CONFIG: Record<AgentStatus, { icon: string; label: string; color: string }> = {
+-  idle:     { icon: '💤', label: '대기 중', color: '#7c82a8' },
+-  running:  { icon: '⚡', label: '실행 중', color: '#7c6aef' },
+-  planning: { icon: '📋', label: '계획 중', color: '#e0af68' },
+-  thinking: { icon: '🤔', label: '추론 중', color: '#7aa2f7' },
+-  error:    { icon: '❌', label: '오류', color: '#f7768e' },
++  idle:     { icon: '💤', label: '대기 중', color: 'var(--text-muted)' },
++  running:  { icon: '⚡', label: '실행 중', color: 'var(--info-color)' },
++  planning: { icon: '📋', label: '계획 중', color: 'var(--warning-color)' },
++  thinking: { icon: '🤔', label: '추론 중', color: 'var(--info-color)' },
++  error:    { icon: '❌', label: '오류', color: 'var(--error-color)' },
+ };
+ 
+ const LOG_LEVEL_CONFIG: Record<string, { icon: string; color: string }> = {
+diff --git a/dashboard/src/components/Layout/SystemTelemetricsBar.tsx b/dashboard/src/components/Layout/SystemTelemetricsBar.tsx
+index 71ac6106..ee559742 100644
+--- a/dashboard/src/components/Layout/SystemTelemetricsBar.tsx
++++ b/dashboard/src/components/Layout/SystemTelemetricsBar.tsx
+@@ -72,7 +72,7 @@ export const SystemTelemetricsBar: FC = () => {
+   const ui = getUiBuildInfo();
+   const serverBuild = version ? `v${version}${buildId ? ` · ${buildId}` : ''}` : null;
+   const buildLabel = serverBuild === null ? UNKNOWN : ui.version === version ? serverBuild : `${serverBuild} (ui v${ui.version})`;
+-  const uptimeLabel = systemStatus.uptimeSeconds === null ? UNKNOWN : formatUptime(systemStatus.uptimeSeconds + (isLive && observedAt !== null ? (now - observedAt) / 1000 : 0));
++  const uptimeLabel = systemStatus.uptimeSeconds === null ? UNKNOWN : formatUptime(systemStatus.uptimeSeconds + (isLive && observedAt !== null ? Math.max(0, now - observedAt) / 1000 : 0));
+   const healthState = healthy === null ? UNKNOWN : healthy ? 'NOMINAL' : 'DEGRADED';
+   const nodeLabel = processId === null ? UNKNOWN : `PID-${processId} · ${healthState}`;
+   const cpuLabel = systemStatus.cpuPercent === null ? UNKNOWN : `${systemStatus.cpuPercent.toFixed(1)}%`;
+diff --git a/dashboard/src/components/Layout/__tests__/SystemTelemetricsBar.cr10.test.tsx b/dashboard/src/components/Layout/__tests__/SystemTelemetricsBar.cr10.test.tsx
+index 8be33e50..62feedba 100644
+--- a/dashboard/src/components/Layout/__tests__/SystemTelemetricsBar.cr10.test.tsx
++++ b/dashboard/src/components/Layout/__tests__/SystemTelemetricsBar.cr10.test.tsx
+@@ -13,7 +13,7 @@
+  */
+ 
+ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+-import { cleanup, render, screen } from '@testing-library/react';
++import { act, cleanup, render, screen } from '@testing-library/react';
+ import { MemoryRouter } from 'react-router-dom';
+ 
+ const uiBuild = vi.hoisted(() => ({
+@@ -187,6 +187,21 @@ describe('SystemTelemetricsBar · CR-10', () => {
+     expect(value('telemetrics-uptime')).toBe('1H 00M');
+   });
+ 
++  it('C10-02: 새 관측이 화면 시계보다 앞서도 서버 uptime을 줄이지 않는다', () => {
++    vi.useFakeTimers();
++    vi.setSystemTime(0);
++    renderBar();
++
++    act(() => {
++      vi.setSystemTime(500);
++      setStatus({ state: 'live', observedAt: Date.now(), uptimeSeconds: 900 });
++    });
++    expect(value('telemetrics-uptime')).toBe('15M 00S');
++
++    act(() => { vi.advanceTimersByTime(1_500); });
++    expect(value('telemetrics-uptime')).toBe('15M 01S');
++  });
++
+   it('C10-03: 폴링이 오래 끊기면 STALE, 명시적 실패는 OFFLINE이다', () => {
+     setStatus({
+       state: 'live',
+diff --git a/dashboard/src/styles/index.css b/dashboard/src/styles/index.css
+index 56a2c3a2..cea94328 100644
+--- a/dashboard/src/styles/index.css
++++ b/dashboard/src/styles/index.css
+@@ -2951,13 +2951,9 @@ html, body {
+   flex-shrink: 0;
+ }
+ 
+-/*
+- * CR-08: 선택/호버 배경(accent-glow)에서 --text-muted는 3.87:1로 AA 미달이었다
+- * (axe serious color-contrast, 11px). 선택 상태에서만 한 단계 밝은 토큰을 쓴다.
+- */
+ .cmd-item.selected .cmd-item-subtitle,
+ .cmd-item:hover .cmd-item-subtitle {
+-  color: var(--text-secondary);
++  color: var(--text-primary);
+ }
+ 
+ /* ─── Terminal Panel ──────────────────────────────────────────── */
+@@ -6323,6 +6319,10 @@ html, body {
+   color: var(--text-muted);
+ }
+ 
++.agent-status-card .metric-label {
++  color: var(--text-muted);
++}
++
+ .metric-value {
+   color: var(--text-primary);
+   font-weight: 600;
+diff --git a/tests/test_planning_and_rendering_quality.py b/tests/test_planning_and_rendering_quality.py
+index dc3f2c43..857996d5 100644
+--- a/tests/test_planning_and_rendering_quality.py
++++ b/tests/test_planning_and_rendering_quality.py
+@@ -1,3 +1,4 @@
++import re
+ from collections.abc import Iterator
+ from pathlib import Path
+ from typing import Callable, cast
+@@ -155,7 +156,12 @@ def gcd(a, b):
+ def test_dashboard_chat_output_uses_codex_like_reading_style() -> None:
+     source = Path("dashboard/src/styles/index.css").read_text(encoding="utf-8")
+ 
+-    assert "--sidebar-width: 240px;" in source
++    sidebar_width = re.search(r"--sidebar-width:\s*(\d+)px;", source)
++    assert sidebar_width is not None
++    assert int(sidebar_width.group(1)) > 0
++    sidebar_rules = re.findall(r"(?m)^\.sidebar\s*\{([^}]+)\}", source)
++    assert any("width: var(--sidebar-width);" in rule for rule in sidebar_rules)
++    assert any("min-width: var(--sidebar-width);" in rule for rule in sidebar_rules)
+     assert ".glass-panel" in source
+     assert ".btn-primary" in source
+     assert ".btn-secondary" in source

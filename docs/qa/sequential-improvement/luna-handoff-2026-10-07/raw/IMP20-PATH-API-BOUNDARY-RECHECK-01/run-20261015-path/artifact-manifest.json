@@ -1,0 +1,222 @@
+[
+  {
+    "path": "finalize.py",
+    "bytes": 2110,
+    "sha256": "dbf228f7ecd1196eac30e13403b38ccaf8b3dc05d300a31d7c45fe1ac6a6b882"
+  },
+  {
+    "path": "green/checks.json",
+    "bytes": 1079,
+    "sha256": "e246086f1cde16f06ea902b1c793ea3354621f6cd100701f189ae888bb84bf3b"
+  },
+  {
+    "path": "green/contract.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "green/contract.stdout.txt",
+    "bytes": 1019,
+    "sha256": "8a5cfccd189d1d6fc29592041bddebe7bdc9a5d0722897ae20b37057048774cc"
+  },
+  {
+    "path": "green/junit.xml",
+    "bytes": 747,
+    "sha256": "18650b664d3ec9d9da2ce1585bbd676de8ae2ad313eccac8f0baf7817d2a4224"
+  },
+  {
+    "path": "green/source/src/antigravity_k/api/path_security.py",
+    "bytes": 1946,
+    "sha256": "123436e5707f956d39ef90a362ab881b59c3dda8bee42ea3d3b647ad2fb40d85"
+  },
+  {
+    "path": "green/source/src/antigravity_k/api/routes/git_api.py",
+    "bytes": 24176,
+    "sha256": "5d7420599c28bf46a80943340316896b991f7684a07a31f2ba1e1b1a3c787600"
+  },
+  {
+    "path": "green/source/tests/test_git_api_boundary.py",
+    "bytes": 3997,
+    "sha256": "5681b74e99531ca676da16fccf4a94b9c2b498690cefec4fef51be2477134fb5"
+  },
+  {
+    "path": "green/source/tests/test_git_api_endpoints.py",
+    "bytes": 14734,
+    "sha256": "9887d72a9e2ce33843b54efb8073c9731a3a7c01a48fa036d3bba73731de1d0e"
+  },
+  {
+    "path": "green/source/tests/test_path_security.py",
+    "bytes": 2349,
+    "sha256": "ffc00edffa7efc23f6b29da0b9cba307f225c29866f08ecb5621894a64762559"
+  },
+  {
+    "path": "green/source-binding.json",
+    "bytes": 698,
+    "sha256": "85a6082fd99e546ebe7b99727979a7fe8cc71c6bb36caba64d5c93aeb66acf02"
+  },
+  {
+    "path": "handoff-ko.md",
+    "bytes": 3279,
+    "sha256": "ebd8852dde91686cb1971c08d4aa5c89fbbb676fc3d0fa890811fbf863904837"
+  },
+  {
+    "path": "patch-reconstruction.json",
+    "bytes": 127,
+    "sha256": "4ff04800ef63b8acae82ed1c00c7d4a0284b3cbeed78804086c92f62664d1dd9"
+  },
+  {
+    "path": "protected-source-check.json",
+    "bytes": 104,
+    "sha256": "c55a96d4d3351ad28fefad3d9790bb7ca627c017d6ba2cdf7c34ccd4bef0b5d9"
+  },
+  {
+    "path": "red/checks.json",
+    "bytes": 1075,
+    "sha256": "97c0f080aacaca6611ae968b4dfd77acf8802725c435583305190266a278d842"
+  },
+  {
+    "path": "red/contract.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "red/contract.stdout.txt",
+    "bytes": 5114,
+    "sha256": "51a437af6dff0d03726b535df3be94e102cf36508bcbb575b5c6e01703cebb08"
+  },
+  {
+    "path": "red/junit.xml",
+    "bytes": 4348,
+    "sha256": "3c577dd26b915c7b63158d387b2f993cb0d33c8e1e8030328b060cfd866285ac"
+  },
+  {
+    "path": "red/source/src/antigravity_k/api/path_security.py",
+    "bytes": 1946,
+    "sha256": "123436e5707f956d39ef90a362ab881b59c3dda8bee42ea3d3b647ad2fb40d85"
+  },
+  {
+    "path": "red/source/src/antigravity_k/api/routes/git_api.py",
+    "bytes": 24176,
+    "sha256": "5d7420599c28bf46a80943340316896b991f7684a07a31f2ba1e1b1a3c787600"
+  },
+  {
+    "path": "red/source/tests/test_git_api_boundary.py",
+    "bytes": 3643,
+    "sha256": "2d6a76f09339f900a1db7fbb3b449138bb14d0e15eeee4b28769a9274a7d4d49"
+  },
+  {
+    "path": "red/source/tests/test_git_api_endpoints.py",
+    "bytes": 14538,
+    "sha256": "933854fa7cf3c941b5aa10031c46e975b70301e20dc3b2f96e4bcf7c35c8c0a2"
+  },
+  {
+    "path": "red/source/tests/test_path_security.py",
+    "bytes": 1613,
+    "sha256": "1f641d72b9a335820afe0caa68fdccee9231ce0138c644e4031a1f6f0c7f8dbe"
+  },
+  {
+    "path": "red/source-binding.json",
+    "bytes": 698,
+    "sha256": "1f514c07123a0b27e53add17dcddc9da88fb7d09ca591f9158fb47c345805d4f"
+  },
+  {
+    "path": "regression/checks.json",
+    "bytes": 2108,
+    "sha256": "1622dd1837947a68d8c4b087f73fbc00347612062c1d4c54b03d9d013af23fde"
+  },
+  {
+    "path": "regression/contract.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "regression/contract.stdout.txt",
+    "bytes": 1020,
+    "sha256": "bc7fb19358baa9c684ef1be8d5c0281c88ce8e759cf3f6f4668255f1ec88c80b"
+  },
+  {
+    "path": "regression/diff.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "regression/diff.stdout.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "regression/format.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "regression/format.stdout.txt",
+    "bytes": 26,
+    "sha256": "eee76f865de5a9f2456950f710ae5d5f9b5bd0ea02aa54f614c5eed6642a0bfd"
+  },
+  {
+    "path": "regression/junit.xml",
+    "bytes": 1828,
+    "sha256": "cfb59fa736dbcb963ca31eb1770dd69c0a1025d2f22f783f6b8269a9ae384ba9"
+  },
+  {
+    "path": "regression/ruff.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "regression/ruff.stdout.txt",
+    "bytes": 19,
+    "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+  },
+  {
+    "path": "regression/source/src/antigravity_k/api/path_security.py",
+    "bytes": 1946,
+    "sha256": "123436e5707f956d39ef90a362ab881b59c3dda8bee42ea3d3b647ad2fb40d85"
+  },
+  {
+    "path": "regression/source/src/antigravity_k/api/routes/git_api.py",
+    "bytes": 24176,
+    "sha256": "5d7420599c28bf46a80943340316896b991f7684a07a31f2ba1e1b1a3c787600"
+  },
+  {
+    "path": "regression/source/tests/test_git_api_boundary.py",
+    "bytes": 3997,
+    "sha256": "5681b74e99531ca676da16fccf4a94b9c2b498690cefec4fef51be2477134fb5"
+  },
+  {
+    "path": "regression/source/tests/test_git_api_endpoints.py",
+    "bytes": 14734,
+    "sha256": "9887d72a9e2ce33843b54efb8073c9731a3a7c01a48fa036d3bba73731de1d0e"
+  },
+  {
+    "path": "regression/source/tests/test_path_security.py",
+    "bytes": 2349,
+    "sha256": "ffc00edffa7efc23f6b29da0b9cba307f225c29866f08ecb5621894a64762559"
+  },
+  {
+    "path": "regression/source-binding.json",
+    "bytes": 698,
+    "sha256": "85a6082fd99e546ebe7b99727979a7fe8cc71c6bb36caba64d5c93aeb66acf02"
+  },
+  {
+    "path": "result.json",
+    "bytes": 533,
+    "sha256": "91dfa85198e0cec75cbc6c798c8b48ca29048f44f9369a5195ffc6c9b543cd03"
+  },
+  {
+    "path": "run_checks.py",
+    "bytes": 3751,
+    "sha256": "4981ac10c9fb0f33153bc7ef31605135ec6bfac8a3f607e2748e273647b5d869"
+  },
+  {
+    "path": "run_regression.py",
+    "bytes": 3877,
+    "sha256": "3753439437f73bb53836b6a2a1d32ca8bbfeb488b63e9f2201c65b61252df504"
+  },
+  {
+    "path": "task-only.patch",
+    "bytes": 4399,
+    "sha256": "0734bdebd9250cac970e3281a27a2c50faf3953dea1e24086899d3ec5eb4ef05"
+  }
+]

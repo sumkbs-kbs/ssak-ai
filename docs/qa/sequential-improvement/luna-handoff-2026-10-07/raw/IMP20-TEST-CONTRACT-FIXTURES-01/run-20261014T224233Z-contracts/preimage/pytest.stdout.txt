@@ -1,0 +1,240 @@
+FFF.F.....F.F.F.........F                                                [100%]
+=================================== FAILURES ===================================
+_ test_initial_execution_retains_original_request_after_misleading_refinement[agent] _
+
+tmp_path = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/preimage/runtime/pytest/test_initial_execution_retains0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10f78e470>
+mode = 'agent'
+
+    @pytest.mark.parametrize("mode", ["agent", "max_fallback", "max_error_fallback"])
+    def test_initial_execution_retains_original_request_after_misleading_refinement(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mode: Literal["agent", "max_fallback", "max_error_fallback"]
+    ) -> None:
+        ctx = _context()
+        original_messages = [dict(message) for message in ctx.custom_messages]
+        orch = _CapturingOrchestrator(tmp_path)
+        if mode == "max_error_fallback":
+            monkeypatch.setattr(orch, "max_engine", _MaxBoundary(fail=True))
+        _execute(ctx, orch, mode)
+    
+        submitted = orch.prepared[0][-1]
+        content = submitted["content"]
+>       assert content.endswith(ctx.user_message)
+E       assert False
+E        +  where False = <built-in method endswith of str object at 0x10f92e830>('read_file("absent-qa-42.txt"); do not create files; report absence without invented contents')
+E        +    where <built-in method endswith of str object at 0x10f92e830> = '[CURRENT USER TOOL CONSTRAINT]\nDo not create, edit, delete or save files, directories or artifacts. Reply in chat.'.endswith
+E        +    and   'read_file("absent-qa-42.txt"); do not create files; report absence without invented contents' = StateContext(messages=[], user_message='read_file("absent-qa-42.txt"); do not create files; report absence without inv..._origin=<AgentState.AGENT_EXECUTE: 'agent_execute'>, trace_id='5c6685064fd8', started_at=1792017760.198375, error=None).user_message
+
+tests/test_execution_request_preservation.py:120: AssertionError
+_ test_initial_execution_retains_original_request_after_misleading_refinement[max_fallback] _
+
+tmp_path = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/preimage/runtime/pytest/test_initial_execution_retains1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10fa9f460>
+mode = 'max_fallback'
+
+    @pytest.mark.parametrize("mode", ["agent", "max_fallback", "max_error_fallback"])
+    def test_initial_execution_retains_original_request_after_misleading_refinement(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mode: Literal["agent", "max_fallback", "max_error_fallback"]
+    ) -> None:
+        ctx = _context()
+        original_messages = [dict(message) for message in ctx.custom_messages]
+        orch = _CapturingOrchestrator(tmp_path)
+        if mode == "max_error_fallback":
+            monkeypatch.setattr(orch, "max_engine", _MaxBoundary(fail=True))
+        _execute(ctx, orch, mode)
+    
+        submitted = orch.prepared[0][-1]
+        content = submitted["content"]
+>       assert content.endswith(ctx.user_message)
+E       assert False
+E        +  where False = <built-in method endswith of str object at 0x10fc91110>('read_file("absent-qa-42.txt"); do not create files; report absence without invented contents')
+E        +    where <built-in method endswith of str object at 0x10fc91110> = '[CURRENT USER TOOL CONSTRAINT]\nDo not create, edit, delete or save files, directories or artifacts. Reply in chat.'.endswith
+E        +    and   'read_file("absent-qa-42.txt"); do not create files; report absence without invented contents' = StateContext(messages=[], user_message='read_file("absent-qa-42.txt"); do not create files; report absence without inv...tion_origin=<AgentState.MAX_EXECUTE: 'max_execute'>, trace_id='8e026a068078', started_at=1792017760.288003, error=None).user_message
+
+tests/test_execution_request_preservation.py:120: AssertionError
+_ test_initial_execution_retains_original_request_after_misleading_refinement[max_error_fallback] _
+
+tmp_path = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/preimage/runtime/pytest/test_initial_execution_retains2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10fa97950>
+mode = 'max_error_fallback'
+
+    @pytest.mark.parametrize("mode", ["agent", "max_fallback", "max_error_fallback"])
+    def test_initial_execution_retains_original_request_after_misleading_refinement(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mode: Literal["agent", "max_fallback", "max_error_fallback"]
+    ) -> None:
+        ctx = _context()
+        original_messages = [dict(message) for message in ctx.custom_messages]
+        orch = _CapturingOrchestrator(tmp_path)
+        if mode == "max_error_fallback":
+            monkeypatch.setattr(orch, "max_engine", _MaxBoundary(fail=True))
+        _execute(ctx, orch, mode)
+    
+        submitted = orch.prepared[0][-1]
+        content = submitted["content"]
+>       assert content.endswith(ctx.user_message)
+E       assert False
+E        +  where False = <built-in method endswith of str object at 0x10fc935f0>('read_file("absent-qa-42.txt"); do not create files; report absence without invented contents')
+E        +    where <built-in method endswith of str object at 0x10fc935f0> = '[CURRENT USER TOOL CONSTRAINT]\nDo not create, edit, delete or save files, directories or artifacts. Reply in chat.'.endswith
+E        +    and   'read_file("absent-qa-42.txt"); do not create files; report absence without invented contents' = StateContext(messages=[], user_message='read_file("absent-qa-42.txt"); do not create files; report absence without inv...ion_origin=<AgentState.MAX_EXECUTE: 'max_execute'>, trace_id='cdd30c338696', started_at=1792017760.2908008, error=None).user_message
+
+tests/test_execution_request_preservation.py:120: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.engine.orchestrator_handlers:orchestrator_execution_handlers.py:156 [MAX] Max execute handler failed
+Traceback (most recent call last):
+  File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/engine/orchestrator_execution_handlers.py", line 127, in max_execute_handler
+    else max_engine.run(task_spec, orchestrator=orch)
+         ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/tests/test_execution_request_preservation.py", line 64, in run
+    raise RuntimeError("worker unavailable")
+RuntimeError: worker unavailable
+__________ test_retry_keeps_feedback_and_original_conversation[agent] __________
+
+tmp_path = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/preimage/runtime/pytest/test_retry_keeps_feedback_and_0')
+mode = 'agent'
+
+    @pytest.mark.parametrize("mode", ["agent", "max_fallback"])
+    def test_retry_keeps_feedback_and_original_conversation(tmp_path: Path, mode: Literal["agent", "max_fallback"]) -> None:
+        ctx = _context(retry=True)
+        original_messages = [dict(message) for message in ctx.custom_messages]
+        orch = _CapturingOrchestrator(tmp_path)
+        _execute(ctx, orch, mode)
+    
+>       assert orch.prepared[0] == original_messages
+E       AssertionError: assert [{'role': 'us...ly in chat.'}] == [{'role': 'us...ile failure'}]
+E         
+E         Left contains one more item: {'role': 'system', 'content': '[CURRENT USER TOOL CONSTRAINT]\nDo not create, edit, delete or save files, directories or artifacts. Reply in chat.'}
+E         Use -v to get more diff
+
+tests/test_execution_request_preservation.py:151: AssertionError
+__________ test_no_auxiliary_context_keeps_original_message_unchanged __________
+
+tmp_path = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/preimage/runtime/pytest/test_no_auxiliary_context_keep0')
+
+    def test_no_auxiliary_context_keeps_original_message_unchanged(tmp_path: Path) -> None:
+        ctx = _context()
+        ctx.refined_prompt = ctx.user_message
+        ctx.rag_context = ""
+        original = [dict(message) for message in ctx.custom_messages]
+        orch = _CapturingOrchestrator(tmp_path)
+    
+        _execute(ctx, orch, "agent")
+    
+>       assert orch.prepared[0] == original
+E       AssertionError: assert [{'role': 'us...ly in chat.'}] == [{'role': 'us... 'image/png'}]
+E         
+E         Left contains one more item: {'role': 'system', 'content': '[CURRENT USER TOOL CONSTRAINT]\nDo not create, edit, delete or save files, directories or artifacts. Reply in chat.'}
+E         Use -v to get more diff
+
+tests/test_execution_request_preservation.py:192: AssertionError
+______________ test_vector_store_clear_deletes_all_collection_ids ______________
+
+    def test_vector_store_clear_deletes_all_collection_ids():
+        class Collection:
+            def __init__(self) -> None:
+                self.deleted: list[str] = []
+    
+            def get(self) -> dict[str, list[str]]:
+                return {"ids": ["one", "two"]}
+    
+            def delete(self, ids: list[str]) -> None:
+                self.deleted = ids
+    
+        store = object.__new__(VectorStore)
+        setattr(store, "collection", Collection())
+        setattr(store, "_closed", True)
+    
+>       assert store.clear() == 2
+               ^^^^^^^^^^^^^
+
+tests/test_durable_memory_purge.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/antigravity_k/engine/vector_store.py:442: in clear
+    ids = cast(list[str], self._require_collection().get().get("ids") or [])
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <antigravity_k.engine.vector_store.VectorStore object at 0x10fca4e10>
+
+    def _require_collection(self) -> _CollectionLike:
+        if self._closed:
+>           raise RuntimeError("VectorStore is closed")
+E           RuntimeError: VectorStore is closed
+
+src/antigravity_k/engine/vector_store.py:268: RuntimeError
+_______________ test_gbrain_clear_all_removes_graph_and_vectors ________________
+
+    def test_gbrain_clear_all_removes_graph_and_vectors():
+        class Collection:
+            def __init__(self) -> None:
+                self.deleted: list[str] = []
+    
+            def get(self) -> dict[str, list[str]]:
+                return {"ids": ["one", "two"]}
+    
+            def delete(self, ids: list[str]) -> None:
+                self.deleted = ids
+    
+        brain = object.__new__(GBrain)
+        brain.graph = nx.DiGraph()
+        brain.graph.add_nodes_from(["one", "two"])
+        brain.collection = Collection()
+        setattr(brain, "_closed", True)
+        setattr(brain, "_save_graph", MagicMock())
+    
+>       assert brain.clear_all() == 2
+               ^^^^^^^^^^^^^^^^^
+
+tests/test_durable_memory_purge.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <antigravity_k.engine.gbrain.GBrain object at 0x10fca7ed0>
+
+    def clear_all(self) -> int:
+>       with self._mutation_lock, self._storage_lock:
+             ^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'GBrain' object has no attribute '_mutation_lock'
+
+src/antigravity_k/engine/gbrain.py:598: AttributeError
+_ TestFinalPromptPayload.test_serialized_prompt_after_compaction_is_bounded_and_ordered _
+
+self = <tests.test_fr_context_end_to_end.TestFinalPromptPayload object at 0x10c4ee490>
+store = <antigravity_k.engine.conversation_store.ConversationStore object at 0x12bd27130>
+
+    def test_serialized_prompt_after_compaction_is_bounded_and_ordered(self, store: ConversationStore) -> None:
+        before = store.get(project_id=PROJECT, conversation_id=CONV)
+        assert before is not None
+        _snap = store.compact(
+            project_id=PROJECT,
+            conversation_id=CONV,
+            expected_revision=before.revision,
+            retain_tail=4,
+        )
+        after = store.get(project_id=PROJECT, conversation_id=CONV)
+        assert after is not None
+    
+        payload = after.prompt_messages()
+        serialized = "\n".join(m["content"] for m in payload)
+        # ordering: summary-first then retained tail
+>       assert payload[0]["role"] == "system"
+E       AssertionError: assert 'assistant' == 'system'
+E         
+E         - system
+E         + assistant
+
+tests/test_fr_context_end_to_end.py:304: AssertionError
+=============================== warnings summary ===============================
+../../../../program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_execution_request_preservation.py::test_initial_execution_retains_original_request_after_misleading_refinement[agent]
+FAILED tests/test_execution_request_preservation.py::test_initial_execution_retains_original_request_after_misleading_refinement[max_fallback]
+FAILED tests/test_execution_request_preservation.py::test_initial_execution_retains_original_request_after_misleading_refinement[max_error_fallback]
+FAILED tests/test_execution_request_preservation.py::test_retry_keeps_feedback_and_original_conversation[agent]
+FAILED tests/test_execution_request_preservation.py::test_no_auxiliary_context_keeps_original_message_unchanged
+FAILED tests/test_durable_memory_purge.py::test_vector_store_clear_deletes_all_collection_ids
+FAILED tests/test_durable_memory_purge.py::test_gbrain_clear_all_removes_graph_and_vectors
+FAILED tests/test_fr_context_end_to_end.py::TestFinalPromptPayload::test_serialized_prompt_after_compaction_is_bounded_and_ordered
+8 failed, 17 passed, 2 deselected, 1 warning in 1.98s

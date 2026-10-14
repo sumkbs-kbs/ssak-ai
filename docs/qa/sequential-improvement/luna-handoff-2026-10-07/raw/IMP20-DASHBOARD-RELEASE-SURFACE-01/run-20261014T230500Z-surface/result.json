@@ -1,0 +1,74 @@
+{
+  "status": "COMPLETE_SCOPED_VALIDATION",
+  "independent_review": "PENDING",
+  "commit_push": "NOT_PERFORMED_BY_WORKER",
+  "candidate": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+  "final_build_pin": {
+    "buildId": "surface-4c68417e510b",
+    "builtAt": "2026-10-14T23:13:57Z"
+  },
+  "scoped_browser_before_uptime_fix": {
+    "passed": 56,
+    "failed": 1,
+    "total": 57,
+    "receipt": "browser-attempt-1/checks.json"
+  },
+  "changed_browser_selector_after_uptime_fix": {
+    "passed": 1,
+    "failed": 0,
+    "receipt": "browser-c10-attempt-2/checks.json"
+  },
+  "telemetry_unit": {
+    "before": {
+      "failed": 1,
+      "selection_excluded": 11
+    },
+    "after": {
+      "passed": 12,
+      "failed": 0
+    },
+    "logs": [
+      "telemetry-unit-red.txt",
+      "telemetry-unit-green.txt"
+    ]
+  },
+  "reading_style": {
+    "before_failed": 1,
+    "after_passed": 1,
+    "logs": [
+      "reading-style-before.txt",
+      "reading-style-after.txt"
+    ]
+  },
+  "manual_before_uptime_fix": {
+    "observations": 8,
+    "critical_serious": 0,
+    "viewport_widths": [
+      1440,
+      390
+    ],
+    "app_light_theme_verified": false,
+    "requests": 125,
+    "same_origin_only": true,
+    "cleanup": true,
+    "receipt": "manual-attempt-5/checks.json"
+  },
+  "bundle_reproduction": {
+    "identical_files": 106,
+    "receipt": "build-reproduce-1/checks.json",
+    "comparison": "bundle-reproduction.json"
+  },
+  "patch_reconstruction": {
+    "identical_files": 10,
+    "artifact": "patch-reconstruction.json"
+  },
+  "preservation": "preservation-check.json",
+  "handoff": "handoff-ko.md",
+  "final_full_ga_gate": "NOT_RUN_BY_THIS_WORKER",
+  "limitations": [
+    "56 earlier browser passes and 8 manual observations are bound to pre-uptime-fix source; not reclassified as final-bundle full gate",
+    "Initial manual setup failures and invalid mobile emulation preserved",
+    "Original parent witness/accessibility attachments unavailable after ambient replacement",
+    "Existing build chunk-size warnings retained"
+  ]
+}

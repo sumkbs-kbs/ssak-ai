@@ -1,0 +1,4 @@
+{
+  "config.yaml": true,
+  "tests/test_cli_smoke.py": true
+}

@@ -1,0 +1,7 @@
+{
+  "command": "uv lock --upgrade-package anyio --upgrade-package pyjwt --upgrade-package fsspec --upgrade-package multidict --upgrade-package oauthlib --upgrade-package sentence-transformers --upgrade-package urllib3",
+  "exit_code": 0,
+  "resolved_packages": 219,
+  "updates": {"anyio": "4.13.0 -> 4.15.1", "fsspec": "2025.3.0 -> 2026.6.0", "multidict": "6.7.1 -> 6.9.1", "oauthlib": "3.3.1 -> 4.0.0", "pyjwt": "2.13.0 -> 2.15.1", "sentence-transformers": "5.5.1 -> 5.7.0", "urllib3": "2.7.0 -> 2.8.0", "typing-extensions": "4.15.0 -> conditional 4.15.0 / 4.16.0"},
+  "source": "Observed native command output; stderr was not separately exported"
+}

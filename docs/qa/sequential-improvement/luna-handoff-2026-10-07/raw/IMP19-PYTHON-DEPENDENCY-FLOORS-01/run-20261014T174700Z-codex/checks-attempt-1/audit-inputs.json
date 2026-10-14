@@ -1,0 +1,14 @@
+{
+  "schema": "agk-python-audit-inputs/1",
+  "shipped_extras": [
+    "rag"
+  ],
+  "audit_record_file": "uv.lock",
+  "targets": {
+    "union": {
+      "packages": 1,
+      "sha256_16": "392fdc14bcdbc6f7"
+    }
+  },
+  "source": "--requirement-file"
+}

@@ -1,0 +1,10 @@
+{
+  "pathname": "/models",
+  "routeName": "models",
+  "viewport": "desktop",
+  "verifiedPathname": "/models",
+  "routeMarkerFound": true,
+  "passes": 43,
+  "violations": [],
+  "criticalSerious": []
+}

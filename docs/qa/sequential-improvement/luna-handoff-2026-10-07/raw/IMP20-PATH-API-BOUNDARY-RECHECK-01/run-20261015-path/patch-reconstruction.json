@@ -1,0 +1,5 @@
+{
+  "tests/test_git_api_boundary.py": true,
+  "tests/test_git_api_endpoints.py": true,
+  "tests/test_path_security.py": true
+}

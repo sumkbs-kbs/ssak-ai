@@ -1,0 +1,94 @@
+[dashboard-e2e-ambient] selected base_url=http://127.0.0.1:54729 specs=6
+
+Running 57 tests using 9 workers
+
+  ✓   5 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /wiki · desktop — marker + axe critical/serious 0 (2.2s)
+  ✓   3 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /agent · desktop — marker + axe critical/serious 0 (2.4s)
+  ✓   4 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] / · desktop — marker + axe critical/serious 0 (3.0s)
+  ✓   2 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /studio · desktop — marker + axe critical/serious 0 (3.0s)
+  ✓   1 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /chat · desktop — marker + axe critical/serious 0 (3.0s)
+  ✓   6 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /start · desktop — marker + axe critical/serious 0 (3.0s)
+  ✓   8 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /models · desktop — marker + axe critical/serious 0 (3.2s)
+  ✓   7 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /settings · desktop — marker + axe critical/serious 0 (3.2s)
+  ✓   9 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /skills · desktop — marker + axe critical/serious 0 (3.8s)
+  ✓  10 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /data-extraction · desktop — marker + axe critical/serious 0 (1.9s)
+  ✓  12 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /history · desktop — marker + axe critical/serious 0 (2.0s)
+  ✓  17 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /cr08-unknown-route · desktop — marker + axe critical/serious 0 (1.8s)
+  ✓  13 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /plugins · desktop — marker + axe critical/serious 0 (2.0s)
+  ✓  15 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /plugins/hello-world · desktop — marker + axe critical/serious 0 (2.0s)
+  ✓  14 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /plugins/job-operations · desktop — marker + axe critical/serious 0 (2.1s)
+  ✓  16 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /mutation · desktop — marker + axe critical/serious 0 (2.0s)
+  ✓  18 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] / · mobile — marker + axe critical/serious 0 (1.8s)
+  ✓  19 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /chat · mobile — marker + axe critical/serious 0 (1.7s)
+  ✓  20 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /studio · mobile — marker + axe critical/serious 0 (1.7s)
+  ✓  23 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /wiki · mobile — marker + axe critical/serious 0 (1.8s)
+  ✓  22 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /start · mobile — marker + axe critical/serious 0 (1.9s)
+  ✓  21 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /models · mobile — marker + axe critical/serious 0 (1.9s)
+  ✓  24 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /agent · mobile — marker + axe critical/serious 0 (1.9s)
+  ✓  25 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /settings · mobile — marker + axe critical/serious 0 (2.3s)
+  ✓  27 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /data-extraction · mobile — marker + axe critical/serious 0 (1.6s)
+  ✓  26 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /skills · mobile — marker + axe critical/serious 0 (2.5s)
+  ✓  35 [chromium] › e2e/tests/accessibility.spec.ts:188:1 › [UI-01] gate 스펙 — 17 route × 2 viewport 매트릭스 고정 (5ms)
+  ✓  29 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /history · mobile — marker + axe critical/serious 0 (1.7s)
+  ✓  30 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /plugins · mobile — marker + axe critical/serious 0 (1.7s)
+  ✓  32 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /plugins/hello-world · mobile — marker + axe critical/serious 0 (1.7s)
+  ✓  31 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /plugins/job-operations · mobile — marker + axe critical/serious 0 (1.9s)
+  ✓  34 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /cr08-unknown-route · mobile — marker + axe critical/serious 0 (1.7s)
+  ✓  33 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /mutation · mobile — marker + axe critical/serious 0 (1.7s)
+  ✓  11 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · desktop › [UI-01] /git · desktop — marker + axe critical/serious 0 (16.7s)
+  ✓  28 [chromium] › e2e/tests/accessibility.spec.ts:120:7 › UI-01 route gate · mobile › [UI-01] /git · mobile — marker + axe critical/serious 0 (16.0s)
+  ✓  36 [chromium] › e2e/tests/cr07-route-recovery.spec.ts:37:1 › a blocked page chunk shows a reload recovery screen and recovers after reload (19.1s)
+  ✓  38 [chromium] › e2e/tests/cr07-route-recovery.spec.ts:106:1 › an unknown deep link shows a not-found screen with home and back (18.9s)
+  ✓  37 [chromium] › e2e/tests/cr07-route-recovery.spec.ts:70:1 › a page that throws while rendering keeps the shell and offers retry (19.1s)
+  ✓  41 [chromium] › e2e/tests/cr08-keyboard-accessibility.spec.ts:90:1 › C08-02 · 팔레트가 modal 의미·focus 순환·복귀·배경 inert를 지킨다 (18.6s)
+  ✓  39 [chromium] › e2e/tests/cr07-route-recovery.spec.ts:132:1 › a crash and recovery keep stored conversations and local history (19.0s)
+  ✓  42 [chromium] › e2e/tests/cr08-keyboard-accessibility.spec.ts:145:1 › C08-03 · 검색/Enter 실행과 IME 조합 Enter를 구분한다 (18.8s)
+  ✓  40 [chromium] › e2e/tests/cr08-keyboard-accessibility.spec.ts:64:1 › C08-01 · provider 비밀 입력이 각각 고유한 접근성 이름을 갖는다 (19.3s)
+  ✓  43 [chromium] › e2e/tests/cr08-keyboard-accessibility.spec.ts:185:3 › C08-04 · desktop — 팔레트·404·복구 화면 확인과 axe 심각·치명 0 (19.1s)
+  ✓  44 [chromium] › e2e/tests/cr08-keyboard-accessibility.spec.ts:185:3 › C08-04 · narrow — 팔레트·404·복구 화면 확인과 axe 심각·치명 0 (18.9s)
+  ✓  53 [chromium] › e2e/tests/file-explorer.spec.ts:34:3 › Environment Rail — file browsing › should keep the canvas clear until inspection is opened (361ms)
+  ✓  54 [chromium] › e2e/tests/file-explorer.spec.ts:44:3 › Environment Rail — file browsing › should show file activity from git status (430ms)
+  ✓  55 [chromium] › e2e/tests/file-explorer.spec.ts:61:3 › Environment Rail — file browsing › should mount the editor from the 코드 tab (522ms)
+  ✓  56 [chromium] › e2e/tests/file-explorer.spec.ts:70:3 › Environment Rail — file browsing › should mount the change panel from the 변경 tab (414ms)
+  ✓  57 [chromium] › e2e/tests/file-explorer.spec.ts:79:3 › Environment Rail — file browsing › should toggle the environment rail closed and open (1.1s)
+[C09-EVIDENCE] {"blockedExternal":[],"consoleMessages":["error: Failed to load resource: the server responded with a status of 404 (Not Found)"],"failedResponses":["404 /v1/conversations/mv8q5srnk3toj7be?project_id=default"],"fontFaces":{"families":[],"externalSources":[]},"highlightApplied":true}
+  ✓  45 [chromium] › e2e/tests/cr09-offline-assets.spec.ts:220:1 › C09-01/02 · cold cache + 외부 차단에서 Chat/Markdown/코드/Mermaid가 로컬 자산으로 렌더된다 (19.1s)
+  ✘  50 [chromium] › e2e/tests/cr10-telemetry.spec.ts:163:1 › C10-04 · 화면 지표가 API 응답을 그대로 옮긴다(고정 payload 대조) (18.4s)
+[C09-EVIDENCE] {"blockedExternal":[],"consoleMessages":[],"failedResponses":[],"fontFaces":{"families":[],"externalSources":[]},"highlightApplied":null}
+[C10-EVIDENCE] {"build":"v0.1.0","uptimeLabel":"0M 15S","apiUptime":17,"processId":26063,"cpu":0,"memoryPercent":24.5}
+[C09-EVIDENCE] {"blockedExternal":[],"consoleMessages":[],"failedResponses":[],"fontFaces":{"families":[],"externalSources":[]},"highlightApplied":null}
+  ✓  49 [chromium] › e2e/tests/cr10-telemetry.spec.ts:72:1 › C10-01/02/04/05 · 화면 지표가 실제 API 값과 일치한다 (18.9s)
+  ✓  46 [chromium] › e2e/tests/cr09-offline-assets.spec.ts:262:1 › C09-01 · 설정 화면도 외부 요청 없이 cold cache에서 로드된다 (19.1s)
+  ✓  47 [chromium] › e2e/tests/cr09-offline-assets.spec.ts:285:1 › C09-01/02 · 승인 큐 Monaco diff도 외부 요청 없이 로컬 번들/워커로 렌더된다 (19.2s)
+[C09-EVIDENCE] {"blockedExternal":[],"consoleMessages":["error: Failed to load resource: the server responded with a status of 404 (Not Found)"],"failedResponses":["404 /v1/conversations/mv8q5t6xa7srg4gq?project_id=default"],"fontFaces":{"families":[],"externalSources":[]},"highlightApplied":null}
+  ✓  48 [chromium] › e2e/tests/cr09-offline-assets.spec.ts:316:1 › C09-03 · 악성 다이어그램 라벨이 실행되지 않고 주입되지도 않는다 (21.1s)
+[C10-EVIDENCE-offline] {"link":"OFFLINE"}
+  ✓  52 [chromium] › e2e/tests/cr10-telemetry.spec.ts:254:1 › C10-03 · API가 끊기면 UNKNOWN/OFFLINE이고 healthy를 주장하지 않는다 (18.0s)
+  ✓  51 [chromium] › e2e/tests/cr10-telemetry.spec.ts:215:1 › C10-02 · 서버 재시작 후 UPTIME이 0에서 다시 시작한다 (36.6s)
+
+
+  1) [chromium] › e2e/tests/cr10-telemetry.spec.ts:163:1 › C10-04 · 화면 지표가 API 응답을 그대로 옮긴다(고정 payload 대조) 
+
+    Error: expect(received).toMatch(expected)
+
+    Expected pattern: /^15M 0\dS$/
+    Received string:  "14M 59S"
+
+      201 |     expect(await text(page, 'telemetrics-vault')).toBe('7 INDEXED');
+      202 |     // 900초 = 15분. 방금 관측했으므로 초는 00~05 사이에서만 흘렀다.
+    > 203 |     expect(await text(page, 'telemetrics-uptime')).toMatch(/^15M 0\dS$/);
+          |                                                    ^
+      204 |
+      205 |     console.log(`[C10-EVIDENCE-stub] ${JSON.stringify({
+      206 |       build: await text(page, 'telemetrics-build'),
+        at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard/e2e/tests/cr10-telemetry.spec.ts:203:52
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tests-cr10-telemetry-C10-0-597f3--응답을-그대로-옮긴다-고정-payload-대조--chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tests-cr10-telemetry-C10-0-597f3--응답을-그대로-옮긴다-고정-payload-대조--chromium/error-context.md
+
+  1 failed
+    [chromium] › e2e/tests/cr10-telemetry.spec.ts:163:1 › C10-04 · 화면 지표가 API 응답을 그대로 옮긴다(고정 payload 대조) 
+  56 passed (1.1m)

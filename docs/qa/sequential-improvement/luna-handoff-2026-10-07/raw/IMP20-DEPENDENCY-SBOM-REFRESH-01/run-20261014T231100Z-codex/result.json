@@ -1,0 +1,13 @@
+{
+  "status": "GENERATED_CURRENT_LOCK_SCOPED_REGRESSION_PASS",
+  "review": "PENDING",
+  "changed_files": [
+    "src/antigravity_k/release/python.cdx.json",
+    "src/antigravity_k/release/THIRD_PARTY_NOTICES.txt"
+  ],
+  "regression_passed": 27,
+  "patch_reconstruction": "2_BYTE_IDENTICAL",
+  "dashboard_sbom_unchanged": true,
+  "lock_sha256": "82390dd4dd4f350fd2411f79fa6492f6d9ef8082dd100a0047170740e11c2380",
+  "release_approval": "NOT_APPROVED"
+}

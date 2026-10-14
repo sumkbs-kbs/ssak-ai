@@ -1,0 +1,136 @@
+diff --git a/scripts/commercial_ga_gates.json b/scripts/commercial_ga_gates.json
+index b564343d..60fd2ed1 100644
+--- a/scripts/commercial_ga_gates.json
++++ b/scripts/commercial_ga_gates.json
+@@ -467,13 +467,22 @@
+       "id": "accessibility-e2e",
+       "category": "accessibility",
+       "command": [
+-        "pnpm",
+-        "exec",
+-        "playwright",
+-        "test",
++        "uv",
++        "run",
++        "--isolated",
++        "--frozen",
++        "--extra",
++        "dev",
++        "--extra",
++        "rag",
++        "--extra",
++        "documents",
++        "python",
++        "scripts/run_dashboard_e2e_ambient.py",
++        "--spec",
+         "e2e/tests/accessibility.spec.ts"
+       ],
+-      "cwd": "dashboard",
++      "cwd": ".",
+       "timeout_seconds": 2400,
+       "required": true,
+       "finding_ids": [
+diff --git a/scripts/run_dashboard_e2e_ambient.py b/scripts/run_dashboard_e2e_ambient.py
+index 464ca0b1..a1b16e8a 100755
+--- a/scripts/run_dashboard_e2e_ambient.py
++++ b/scripts/run_dashboard_e2e_ambient.py
+@@ -241,11 +241,14 @@ def main(argv: list[str] | None = None) -> int:
+         action="store_true",
+         help="서버를 세우지 않는다(계약 이빨 — 이 모드에서는 스펙이 실패해야 한다).",
+     )
++    parser.add_argument("--spec", action="append", default=[], dest="specs", help="소유 서버에서 실행할 명시적 스펙.")
+     args = parser.parse_args(argv)
+     if args.skip_server:
+         # 닫힌 포트 — Chromium 이 UNSAFE 로 거절하는 :1 대신 연결 거부되는 고번호.
+         # disclosure·hub 도 상대경로라 같은 닫힌 포트에서 실패해야 한다(이빨).
+         closed = "http://127.0.0.1:59999"
++        if args.specs:
++            return run_playwright(closed, args.specs, grep_invert=None, label="selected-skip-server") or 1
+         rc_main = _run_main_suite(closed)
+         rc_disc = run_playwright(
+             closed,
+@@ -267,10 +270,15 @@ def main(argv: list[str] | None = None) -> int:
+         state = Path(tmp)
+         proc = start_server(port, state)
+         try:
+-            rc = _run_main_suite(f"http://127.0.0.1:{port}")
++            base_url = f"http://127.0.0.1:{port}"
++            rc = (
++                run_playwright(base_url, args.specs, grep_invert=None, label="selected")
++                if args.specs
++                else _run_main_suite(base_url)
++            )
+         finally:
+             _stop(proc)
+-    if rc != 0:
++    if rc != 0 or args.specs:
+         return rc
+     rc_disc = _run_disclosure_seeded()
+     if rc_disc != 0:
+diff --git a/tests/test_cr14_ambient_backend_gate_contract.py b/tests/test_cr14_ambient_backend_gate_contract.py
+index 2b3e4f67..085a641a 100644
+--- a/tests/test_cr14_ambient_backend_gate_contract.py
++++ b/tests/test_cr14_ambient_backend_gate_contract.py
+@@ -39,6 +39,9 @@ import json
+ import re
+ from pathlib import Path
+ from typing import Any, cast
++from unittest.mock import MagicMock
++
++import pytest
+ 
+ REPO_ROOT = Path(__file__).resolve().parents[1]
+ GATE_MANIFEST = REPO_ROOT / "scripts" / "commercial_ga_gates.json"
+@@ -76,9 +79,10 @@ def _script_owned_specs() -> list[str]:
+     return re.findall(r'"([^"]+\.spec\.ts)"', match.group(1))
+ 
+ 
+-def test_the_ambient_gate_is_required_and_starts_a_server() -> None:
++@pytest.mark.parametrize("gate_id", [AMBIENT_GATE_ID, "accessibility-e2e"])
++def test_the_ambient_gate_is_required_and_starts_a_server(gate_id: str) -> None:
+     """게이트는 required 이고, 명령이 서버를 세우는 스크립트를 부른다."""
+-    gate = _ambient_gate()
++    gate = next(row for row in _manifest()["gates"] if row["id"] == gate_id)
+     assert gate["required"] is True
+     command = [str(token) for token in gate["command"]]
+     assert "scripts/run_dashboard_e2e_ambient.py" in " ".join(command) or any(
+@@ -86,6 +90,39 @@ def test_the_ambient_gate_is_required_and_starts_a_server() -> None:
+     ), f"서버 기동 스크립트가 명령에 없다: {command}"
+     assert "--skip-server" not in command, "게이트 명령이 서버를 건너뛰면 안 된다"
+     assert AMBIENT_SCRIPT.is_file(), "게이트 스크립트 파일이 없다"
++    if gate_id == "accessibility-e2e":
++        selected = command.index("--spec")
++        assert command[selected + 1] == "e2e/tests/accessibility.spec.ts"
++
++
++@pytest.mark.parametrize("exit_code", [0, 1])
++def test_selected_spec_owns_server_cleanup_and_propagates_failure(
++    monkeypatch: pytest.MonkeyPatch, exit_code: int
++) -> None:
++    from scripts import run_dashboard_e2e_ambient as gate
++
++    process = MagicMock()
++    start = MagicMock(return_value=process)
++    stop = MagicMock()
++    run = MagicMock(return_value=exit_code)
++    other_suites = MagicMock(side_effect=AssertionError("Explicit selection ran another suite"))
++    monkeypatch.setattr(gate, "_free_port", lambda: 45678)
++    monkeypatch.setattr(gate, "start_server", start)
++    monkeypatch.setattr(gate, "_stop", stop)
++    monkeypatch.setattr(gate, "run_playwright", run)
++    monkeypatch.setattr(gate, "_run_main_suite", other_suites)
++    monkeypatch.setattr(gate, "_run_disclosure_seeded", other_suites)
++    monkeypatch.setattr(gate, "_run_hub_seeded", other_suites)
++
++    assert gate.main(["--spec", "e2e/tests/accessibility.spec.ts"]) == exit_code
++    start.assert_called_once()
++    run.assert_called_once_with(
++        "http://127.0.0.1:45678",
++        ["e2e/tests/accessibility.spec.ts"],
++        grep_invert=None,
++        label="selected",
++    )
++    stop.assert_called_once_with(process)
+ 
+ 
+ def _script_disclosure_specs() -> list[str]:

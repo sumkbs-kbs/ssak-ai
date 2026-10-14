@@ -1,0 +1,53 @@
+[
+  {
+    "name": "pytest",
+    "command": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+      "-B",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/pytest_entry.py",
+      "-q",
+      "tests/test_execution_request_preservation.py",
+      "tests/test_durable_memory_purge.py",
+      "tests/test_fr_context_end_to_end.py",
+      "-k",
+      "not TestManualCompactApiLevel",
+      "--basetemp",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/postimage/runtime/pytest",
+      "--junitxml",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/postimage/junit.xml",
+      "-o",
+      "cache_dir=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-TEST-CONTRACT-FIXTURES-01/run-20261014T224233Z-contracts/postimage/runtime/pytest-cache"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 2.1369080543518066
+  },
+  {
+    "name": "ruff",
+    "command": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+      "-m",
+      "ruff",
+      "check",
+      "tests/test_execution_request_preservation.py",
+      "tests/test_durable_memory_purge.py",
+      "tests/test_fr_context_end_to_end.py"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.04013705253601074
+  },
+  {
+    "name": "format",
+    "command": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+      "-m",
+      "ruff",
+      "format",
+      "--check",
+      "tests/test_execution_request_preservation.py",
+      "tests/test_durable_memory_purge.py",
+      "tests/test_fr_context_end_to_end.py"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.03966474533081055
+  }
+]

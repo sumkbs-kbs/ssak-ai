@@ -1,0 +1,3 @@
+Invocation: git diff --check -- README.md docs/ga/CR14_EX_EXECUTION_LEDGER.md docs/ga/CR14_FINAL_CANDIDATE_VERDICT.md tests/test_nx07_doc_consistency.py tests/test_cr14_fence_movement_detection.py tests/test_cr14_fingerprint_scope_contract.py tests/test_docs_toolchain_contract.py
+Exit: 0
+No diagnostics.

@@ -1,0 +1,54 @@
+   Building antigravity-k @ file:///Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai
+Downloading pydantic-core (1.9MiB)
+Downloading lxml (8.2MiB)
+Downloading ruff (10.0MiB)
+Downloading numpy (5.0MiB)
+Downloading pygments (1.2MiB)
+Downloading uvloop (1.3MiB)
+Downloading networkx (2.0MiB)
+Downloading nodejs-wheel-binaries (53.1MiB)
+Downloading basedpyright (12.8MiB)
+Downloading sqlalchemy (2.1MiB)
+Downloading mypy (12.7MiB)
+Downloading playwright (40.3MiB)
+Downloading cryptography (3.8MiB)
+ Downloaded uvloop
+ Downloaded pygments
+ Downloaded pydantic-core
+ Downloaded sqlalchemy
+ Downloaded networkx
+ Downloaded cryptography
+ Downloaded numpy
+ Downloaded lxml
+ Downloaded ruff
+      Built antigravity-k @ file:///Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai
+ Downloaded mypy
+ Downloaded playwright
+ Downloaded basedpyright
+ Downloaded nodejs-wheel-binaries
+Installed 94 packages in 234ms
+[main]	INFO	profile include tests: None
+[main]	INFO	profile exclude tests: None
+[main]	INFO	cli include tests: None
+[main]	INFO	cli exclude tests: None
+[main]	INFO	running on Python 3.13.13
+[tester]	WARNING	nosec encountered (B608), but no failed test on file src/antigravity_k/engine/audit_db.py:214
+[tester]	WARNING	nosec encountered (B608), but no failed test on file src/antigravity_k/engine/audit_db.py:254
+[tester]	WARNING	nosec encountered (B104), but no failed test on file src/antigravity_k/engine/mcp_oauth.py:457
+[manager]	WARNING	Test in comment: deny is not a test name or id, ignoring
+[tester]	WARNING	nosec encountered (B108), but no failed test on file src/antigravity_k/engine/sandbox.py:44
+[tester]	WARNING	nosec encountered (B108), but no failed test on file src/antigravity_k/engine/sandbox.py:46
+[tester]	WARNING	nosec encountered (B108), but no failed test on file src/antigravity_k/engine/sandbox.py:47
+[tester]	WARNING	nosec encountered (B108), but no failed test on file src/antigravity_k/engine/sandbox.py:48
+[tester]	WARNING	nosec encountered (B608), but no failed test on file src/antigravity_k/engine/task_state_store.py:387
+[tester]	WARNING	nosec encountered (B608), but no failed test on file src/antigravity_k/engine/task_state_store.py:388
+[tester]	WARNING	nosec encountered (B608), but no failed test on file src/antigravity_k/engine/task_state_store.py:443
+[tester]	WARNING	nosec encountered (B608), but no failed test on file src/antigravity_k/engine/task_state_store.py:444
+[tester]	WARNING	nosec encountered (B608), but no failed test on file src/antigravity_k/knowledge/memory_service.py:292
+[tester]	WARNING	nosec encountered (B608), but no failed test on file src/antigravity_k/knowledge/wiki.py:342
+[tester]	WARNING	nosec encountered (B608), but no failed test on file src/antigravity_k/knowledge/wiki.py:628
+[tester]	WARNING	nosec encountered (B608), but no failed test on file src/antigravity_k/knowledge/wiki.py:811
+[tester]	WARNING	nosec encountered (B608), but no failed test on file src/antigravity_k/knowledge/wiki.py:848
+[tester]	WARNING	nosec encountered (B608), but no failed test on file src/antigravity_k/knowledge/wiki.py:852
+[tester]	WARNING	nosec encountered (B608), but no failed test on file src/antigravity_k/knowledge/wiki.py:1113
+[tester]	WARNING	nosec encountered (B608), but no failed test on file src/antigravity_k/knowledge/wiki.py:1117

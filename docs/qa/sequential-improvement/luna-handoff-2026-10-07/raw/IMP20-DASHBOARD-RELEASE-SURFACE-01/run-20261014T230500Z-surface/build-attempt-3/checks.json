@@ -1,0 +1,17 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "pnpm",
+      "--dir",
+      "dashboard",
+      "run",
+      "build"
+    ],
+    "cwd": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+    "exit_code": 0,
+    "timed_out": false,
+    "reaped": true,
+    "elapsed_seconds": 23.618401050567627
+  }
+]

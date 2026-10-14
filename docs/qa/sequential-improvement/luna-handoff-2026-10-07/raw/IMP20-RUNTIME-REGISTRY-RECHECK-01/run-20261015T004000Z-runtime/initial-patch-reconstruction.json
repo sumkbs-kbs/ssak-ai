@@ -1,0 +1,4 @@
+{
+  "config.yaml": false,
+  "tests/test_cli_smoke.py": false
+}

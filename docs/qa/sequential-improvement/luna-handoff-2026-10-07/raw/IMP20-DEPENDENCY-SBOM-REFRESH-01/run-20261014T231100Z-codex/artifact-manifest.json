@@ -1,0 +1,87 @@
+[
+  {
+    "path": "checks-attempt-1/checks.json",
+    "bytes": 966,
+    "sha256": "a590af3a295eae65d4d110d4b93841e23cb5e556ad20cc7fecc9d464c0b44b94"
+  },
+  {
+    "path": "checks-attempt-1/junit.xml",
+    "bytes": 3633,
+    "sha256": "10f0981e02ba6d9c1d7bfeaae774eb60ed24b6bb58f75cd0072da5e38efc588b"
+  },
+  {
+    "path": "checks-attempt-1/sbom-regression.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "checks-attempt-1/sbom-regression.stdout.txt",
+    "bytes": 99,
+    "sha256": "fe3a7df82da4f4101d4df622a5145f55f0aa852d7a4ccfaba4e6d03ef297c194"
+  },
+  {
+    "path": "checks-attempt-1/source-binding.json",
+    "bytes": 418,
+    "sha256": "ef05373a3be8a50fcf1d59b61df6f363b380e27a6ebea8b9b3398cb8850c1a18"
+  },
+  {
+    "path": "finalize_packet.py",
+    "bytes": 2617,
+    "sha256": "be063e8ef5e609bb77a3f28352b3fc130e94c59ffefe0deb98c2218ebda7f022"
+  },
+  {
+    "path": "generate.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "generate.stdout.txt",
+    "bytes": 183,
+    "sha256": "5f9307086f203f733a44ba116219ac495785a111b3d9e0417a9df24ca3565d60"
+  },
+  {
+    "path": "generation-receipt.json",
+    "bytes": 1101,
+    "sha256": "54b47976a34f64ee5727de68e71914a394a53bd454f6367b73099fd2674f8bb6"
+  },
+  {
+    "path": "handoff-ko.md",
+    "bytes": 470,
+    "sha256": "891289d48b2cab6ab67fe14beb1f38621709984ab03015564560361679ae5a5c"
+  },
+  {
+    "path": "preimage/src/antigravity_k/release/THIRD_PARTY_NOTICES.txt",
+    "bytes": 10487,
+    "sha256": "e4b461ab9ec978cf22af3eae080d19cb7a23635c55268f8601a5f035fb467fa6"
+  },
+  {
+    "path": "preimage/src/antigravity_k/release/dashboard.cdx.json",
+    "bytes": 118241,
+    "sha256": "666a2ea3221b6b68f11126be493e12a8c424764125fbd3aea4e77a4ce1c4aa78"
+  },
+  {
+    "path": "preimage/src/antigravity_k/release/python.cdx.json",
+    "bytes": 28753,
+    "sha256": "ae124d6bb469fb769fd14c9fa98f21fe5fecae218e581b86a0a2a20c89590c86"
+  },
+  {
+    "path": "result.json",
+    "bytes": 450,
+    "sha256": "0f76b6c205169447ab3b72d589bfcf9c242793fde6af403d9b4438bc236dac11"
+  },
+  {
+    "path": "run_checks.py",
+    "bytes": 4131,
+    "sha256": "81013b5021254ffe98eeb0383606c5085787df4f060a98aeb6ce8c7a62ca073f"
+  },
+  {
+    "path": "run_sbom_refresh.py",
+    "bytes": 1334,
+    "sha256": "1ea717fab1d2124de905133fceb8fa516200fe651d4fa86db077dcf8c7b7423a"
+  },
+  {
+    "path": "task-only.patch",
+    "bytes": 3506,
+    "sha256": "41b6c1b69bbebc912c7c5d697431ba445e96cf202d2dd92f788149de52afb61b"
+  }
+]

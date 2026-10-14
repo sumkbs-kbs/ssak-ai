@@ -1,0 +1,10 @@
+{
+  "pathname": "/plugins/hello-world",
+  "routeName": "plugins-hello-world",
+  "viewport": "mobile",
+  "verifiedPathname": "/plugins/hello-world",
+  "routeMarkerFound": true,
+  "passes": 32,
+  "violations": [],
+  "criticalSerious": []
+}

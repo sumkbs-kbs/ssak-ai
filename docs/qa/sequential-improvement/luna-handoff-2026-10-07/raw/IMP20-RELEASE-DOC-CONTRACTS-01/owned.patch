@@ -1,0 +1,443 @@
+diff --git a/README.md b/README.md
+index cb2d7fe1..0b6764f8 100644
+--- a/README.md
++++ b/README.md
+@@ -14,6 +14,10 @@ The core separates **Brain** planning and reasoning from **Body** execution. It
+ 
+ For release and support status, see the [status document](docs/20_CURRENT_STATUS.md). Dated improvements and their verification limits are recorded in the [core execution plan](docs/ssak-ai-core/EXECUTION_PLAN_2026-10-03.md), [full feature live-validation plan](docs/ssak-ai-core/FULL_FUNCTION_LIVE_PLAN_2026-10-04.md), and [decision-diagnostics results](docs/qa/2026-10-04-oh-my-jev-followup/RESULT.md). Test results apply to the source and scope recorded in each report.
+ 
++**Historical CR candidate status:** RP-01 through RP-14 and GA-100 33/33 are implementation history, not release approval. CR-01 ~ CR-14 remains **REVIEW**: the candidate is committed (커밋됨); **GA 승인 없음**. The candidate SHA and code fingerprint are owned by the [CR-14 verdict](docs/ga/CR14_FINAL_CANDIDATE_VERDICT.md); third-party independent review remains unassigned, and the assigned release owner recorded **NO-GO**. Technical TODOs remain in the [current status](docs/20_CURRENT_STATUS.md); 사람 축도 이 후보의 별도 차단 사유이며, 기술 TODO 역시 남아 있다. GA-100 33/33 is **구현 이력**, not an approval or release verdict.
++
++These statements describe the documented CR candidate and do not certify the current working tree or a new candidate.
++
+ ## What you can use
+ 
+ - **Local inference:** a shared model registry, local model discovery, provider adapters, and explicit model selection.
+diff --git a/docs/ga/CR14_EX_EXECUTION_LEDGER.md b/docs/ga/CR14_EX_EXECUTION_LEDGER.md
+index 7f8b95d5..c004f150 100644
+--- a/docs/ga/CR14_EX_EXECUTION_LEDGER.md
++++ b/docs/ga/CR14_EX_EXECUTION_LEDGER.md
+@@ -37,7 +37,7 @@ VAL-02 계승 (`scripts/val02_staging.py`):
+ | EX-02 | 모델/라이선스/개인정보·지원 승인 | **PARTIAL** | [CR14_EX02_APPROVAL_RECORD.md](./CR14_EX02_APPROVAL_RECORD.md) — PRODUCT_SELF_APPROVAL(범위 문구) 완료; `BLOCKED_EXTERNAL` legal 미해제 · Experimental→Supported 없음 · GA GO 아님 |
+ | EX-03 | 이전 출시 artifact | **DONE** | **NOT_AVAILABLE** — 태그 0 · gh release 401 · dist는 현재 후보만 · `ex03_summary.md` |
+ | EX-04 | 지원 OS sandbox 실측 | **DONE** | macOS 26.6.2 arm64 · seatbelt/`sandbox-exec` · pytest 46 passed · `ex04_summary.md` (행렬 미승격) |
+-| EX-05 | 8h soak | **PASS** (resoake Decision A) | prior FAIL retained · resoake `run28800e` · `all_pass: true` · SC-1..6 PASS · SC-6 rss_growth_mb=**48.7** (<64) · messages_bounded · duration≈28801s · JSON `…/val02_soak_28800_resoake.json` (~2026-09-15 23:08 KST) · watch routine deleted |
++| EX-05 | 8h soak | **INCONCLUSIVE — DONE 아님** (JSON 지표 PASS, 종료·귀속 미확정) | prior FAIL retained · resoake `run28800e` · `all_pass: true` · SC-1..6 PASS · SC-6 rss_growth_mb=**48.7** (<64) · messages_bounded · duration≈28801s · JSON `…/val02_soak_28800_resoake.json` (~2026-09-15 23:08 KST) · wrapper `finished exit:141` (original command unavailable) · `run_sha_binding: UNVERIFIED` · watch routine deleted |
+ | EX-06 | 범위 축소 여부 | **DONE** | 축소 없음 (`EX-06-NO-SHRINK-2026-09-15`) |
+ 
+ ## 진행 노트
+diff --git a/docs/ga/CR14_FINAL_CANDIDATE_VERDICT.md b/docs/ga/CR14_FINAL_CANDIDATE_VERDICT.md
+index 78affca5..331ec72a 100644
+--- a/docs/ga/CR14_FINAL_CANDIDATE_VERDICT.md
++++ b/docs/ga/CR14_FINAL_CANDIDATE_VERDICT.md
+@@ -1,5 +1,10 @@
+ # CR-14 최종 후보 판정서 — NO-GO
+ 
++- release declaration status: **ARCHIVED**
++- Current HEAD release status: **NOT_APPROVED**
++
++이 문서는 attempt-040까지의 역사적 후보·지문·NO-GO 기록이다. 아래의 최신/현재/HEAD 표기는 각 attempt 당시의 상태이며, 이후 개발 커밋이나 현재 작업 트리의 검증·승인을 선언하지 않는다. 보관된 지문은 기록된 후보 커밋과 대조한다. 새 활성 선언(`ACTIVE`)은 후보 SHA == 현재 HEAD, 커밋·작업 트리 지문 일치와 새 증거를 요구한다. 현재 지원·미완료 축은 [현재 상태](../20_CURRENT_STATUS.md)를 참조한다.
++
+ - 판정일: 2026-09-12 (attempt-001) · **attempt-002 갱신: 2026-09-12** · **attempt-003 갱신: 2026-09-12** · **attempt-004 갱신: 2026-09-12** · **attempt-005 갱신: 2026-09-13** · **attempt-006 갱신: 2026-09-13** · **attempt-007 갱신: 2026-09-13** · **attempt-008 갱신: 2026-09-13** · **attempt-009 갱신: 2026-09-13** · **attempt-010 갱신: 2026-09-13** · **attempt-011 갱신: 2026-09-13** · **attempt-012 갱신: 2026-09-13** · **attempt-013 갱신: 2026-09-13** · **attempt-014 갱신: 2026-09-13** · **attempt-015 갱신: 2026-09-13** · **attempt-016 갱신: 2026-09-13** · **attempt-017 갱신: 2026-09-13** · **attempt-018 갱신: 2026-09-13** · **attempt-019 갱신: 2026-09-13** · **attempt-020 갱신: 2026-09-13** · **attempt-021 갱신: 2026-09-13** · **attempt-022 갱신: 2026-09-13** · **attempt-023 갱신: 2026-09-13** · **attempt-024 갱신: 2026-09-13** · **attempt-025 갱신: 2026-09-13** · **attempt-026 갱신: 2026-09-13** · **attempt-027 갱신: 2026-09-14** · **attempt-028 갱신: 2026-09-14** · **attempt-029 갱신: 2026-09-14** · **attempt-030 갱신: 2026-09-14** · **attempt-031 갱신: 2026-09-14** · **attempt-032 갱신: 2026-09-14** · **attempt-033 갱신: 2026-09-14** · **attempt-034 갱신: 2026-09-14(직전)** · **attempt-035 갱신: 2026-09-14** · **attempt-036 갱신: 2026-09-14** · **attempt-040 갱신: 2026-09-14(최신)** · **attempt-039 갱신: 2026-09-14** · **attempt-037 갱신: 2026-09-14**
+ - 후보: 커밋 `08b8bb2e94f92a1d95d4a38b7d1171a58b9fe04f` + 미커밋 patch(CR-01~CR-14)
+ - 코드 지문(gate 실행 시점, `docs/`·`.omo/` 제외): attempt-001 `11979d6c…` → attempt-002 `ebbbd7f06fab3fb2d10008336ef96ba0d7949ee72007774c6372fc07f1bba0b5`(2544 files) → attempt-003 `eb10aed606ba7e84ecce03a50a19153b92105cacd196b5a167b5e38770f1f448`(2545 files) → attempt-004 `eca54773d5504e40a724a0c86ab9d1724be310986ef3e326f8f4904f52d98dd8`(2546 files) → attempt-005 `1981bfb5143d3f9eac947826bf6ee53655c47194f5be9c4a5bf755ba982a1844` → attempt-006 `3a9a7d66909e2fafaf31b4c429d2338f262d50b0d0d8ef3b5f00b5be0ca41e2d` → attempt-007 `c36327effafcc6dbe4a80970682f5e82eccd98f81951b000c758e888e7b0130a` → attempt-008 `6641446ef41e0562118dd0741637f57eae6412f18fdf18813ea87f777d0b0076` → **attempt-009 `dd34a76bf076ebc09be8c575ad733c52a0a647faa4d5d9758f3b01cf6f667f37`** → attempt-010 `d4a42ab8…` → attempt-011 `e428aacc…` → attempt-012 `7ecb4fc2…` → attempt-013 `2c5a15c8…` → attempt-014 `b6494f40…` → attempt-015 `b637d8b9…` → attempt-016 `1b84209e…` → attempt-017 `29fac8a0…`(앞선 `5e7d5c4c…` 는 F-26 수정이 지문을 옮겨 낡았다) → attempt-018 `56971ed6…`(F-27 수정: 이어받기 판단을 게이트 규칙에 위임) → attempt-019 `7f19c3a7…`(R-11 폐쇄: 마감 절차를 CI/릴리스가 부른다. 앞선 `a4e3e71d…` 는 F-28 수정이 지문을 옮겨 낡았다) → attempt-020 `aad2601c…`(CR-12 소관 재확인(R-5) + F-29 폐쇄) → attempt-021 `15e79e84…`(R-8 감사: 게이트에서 조용히 사라지는 테스트를 등록부가 소유한다 + F-30) → attempt-022 `6a51100f…`(F-31: 배포된 `/benchmark` 의 기본 타겟이 config 가 소유하지 않는 콤보를 가리켰다 → 설정을 복원하고 그 일치를 계약이 잰다 · `config-models-unregistered` 를 **능력으로** 되돌렸다(스킵 17 → 15))** → attempt-023 `37b76cb8…`(F-32: 조건 없이 스킵돼 있던 에이전트 실행 루프 2건을 **제품 결함이 아니라 계약 드리프트**로 닫았다 — 실패 이유를 관측하니 두 루프는 돌고 있었고, 막던 것은 리팩토링 이전 인터페이스를 흉내내는 **테스트 더블**과 그 뒤에 생긴 **승인·경로 경계**였다. 미검증 능력 **0건**) → **attempt-024 `7ae9af28…`(최신 — R-16 폐쇄: 등록부의 소유 단위를 **required 게이트 21개 전수**로 넓혔다. 같은 후보가 21개 게이트로 초록을 만드는데 그중 다섯이 테스트를 돌고, 나머지 네의 스킵은 아무도 세지 않았다. `api-e2e`(`-q` 단독 = 스킵 익명) · `dashboard-test`(vitest 기본 리포터 = 건수만)를 귀속시키고, `clean-machine-runtime` 의 `--skip-*` 채널을 등록부에 올렸다) → **attempt-025 `57e32c9a…`(F-33: attempt-023/024 가 **재지 않고 남긴 보안 질문** — 승인 게이트의 '항상 허용' 이 **무엇을 덮고 언제 사라지는지** — 을 제품 경로에서 쟀다. 부여는 도구 전체를 덮고 **프로세스가 살아 있는 한** 사라지지 않으며, **새 세션·다른 프로젝트가 같은 부여를 본다**(그래도 세션 간 유출은 아니다 — 프로세스가 새로 뜨면 0). 결함은 그 세 가지 사실이 아니라 그 사실들이 **감사 불가능**했다는 것이다: 부여 저장소가 `set[str]` 이라 시각·근거가 사라졌고(①), 부여를 **읽는 표면이 없었고**(② — 해제만 있었다), 동의 없이 실행된 횟수를 아무도 세지 않았고(③), 그 읽기 경로를 만들자 `GET /{request_id}` 가 `always-allowed` 를 요청 ID 로 삼켜 **404** 를 냈다(④ 경로 순서). 동의 문구도 `${description} 항상 허용` 이라 **이 요청**을 덮는 것처럼 읽혔다(⑤). 다섯 자리를 고치고 계약으로 고정했다 — **attempt-002 이후 처음으로 제품 런타임 코드가 바뀌었다**(승인 경로의 관측성이며, 이 attempt 는 판정을 움직이지 않는다))** → **attempt-026 `994b21fd…`(최신 — F-34: **게이트는 자기가 재는 코드를 바꾸지 않는다**.** 추적되는 빌드 산출물(`src/antigravity_k/dashboard_dist/`)을 다시 쓰는 게이트(`dashboard-build`)가 있으면, 그 게이트가 트리를 옮긴 뒤의 초록은 **다른 코드 상태**의 것이다. 게다가 낡은 번들은 **pytest 계약 6파일을 전부 통과**했다(68 passed) — 그 검사를 잡을 자리가 계약 안에는 없었다. 지문을 만들던 한 곳이 **게이트 앞뒤의 경로별 내용 지도**를 비교해, 트리를 옮긴 게이트를 `tree_moved` 로 적고 실행을 exit 1 로 끝낸다(required 여부와 무관). **제품 런타임 코드 변경 0줄.** 자세한 자리는 이 카드의 attempt-026 절과 §5.)** → **attempt-027 `98fd6695…`(앞선 선언 `e12ec3cb`(지문 `4dbfa955…`)는 **첫 측정이 `security-bandit` 에서 멈춰** 낡았다(B608 — 새 `cancel_if_permitted` 의 UPDATE 가 `prepare_resume` 과 같은 형태인데 그 표기(`# nosec B608`)를 갖지 않았다). 그 수정이 코드를 옮겼으므로 **측정 전에** 다시 선언한다(선언 → 측정 순서는 그대로다). F-35: **취소도 소유 규칙을 지킨다**. `resume` 은 `can_prepare_resume(raw_status, owner_pid)` 로 **소유자**를 보는데 `cancel` 은 보지 않아서, 다른 프로세스가 실행 중인 태스크를 `cancelled` 로 적을 수 있었다 — 그 행은 "끝났다"고 말하는데 소유자의 실행은 계속됐고(취소 신호는 프로세스 안의 event 다), 소유자의 마지막 상태 쓰기는 CAS 에 막혀 **이력이 거짓**이 됐다. 이제 두 경로가 **같은 liveness 함수**를 쓰고, 거부는 `owned_elsewhere` 로 **이름 붙어** API 409 로 나가며, 화면은 서버의 사유를 말한다)** → **attempt-028 `f838f2ea…`(F-36: **재시작한 서버는 주인에 대해 아는 것을 말한다**. attempt-027 이 **재지 않고 남긴** 절반을 실 서버로 재니(`uvicorn` + 실제 인증 + **SIGKILL** + 같은 DB 재기동), 죽은 소유자의 `running` 행이 표면에서 **살아 있는 실행과 구별되지 않았다** — 상세·목록은 `running` 이라고 말하고(주인에 대한 필드가 없다), 같은 행에 대해 `POST /resume` 은 **200** 을 돌려줬다. 그래서 화면은 복구 가능한 태스크에 **재개가 아니라 취소만** 제안했다(막다른 길). 고침은 **정책이 아니라 표면**이다(저장된 상태는 그대로 둔다 — 재시작이 고아 행을 자동으로 끝내면 재개 가능성이 사라진다): `/api/tasks` 와 `/api/tasks/{id}/status` 가 `execution_owner`(`live`/`dead`/`none`) 와 `resumable` 을 말하고, 값은 **한 곳**(`execution_owner_of` 는 `can_*` 와 같은 liveness 함수 · `resumable_task` 는 행동의 두 조건)에서 만들며, 화면은 그 필드로 버튼을 그린다(주인이 죽은 비종결 행은 "실행 중단(소유 프로세스 종료) — 재개 가능"). 증인 `attempt-028/repro/f36_orphan_surface_witness.py` — 실 서버 + 실 인증 + SIGKILL + 재기동으로 고침 전 **exit 1**(위반 4건) / 고침 후 **exit 0**)** → **attempt-029 `57f38a23…`(F-37 · F-38: **화면의 쓰기 경로는 서버가 받아들이는 것이어야 한다**. attempt-028 이 남긴 실 브라우저 슬라이스를 밟는 첫 걸음에서 브라우저 증인이 **제출 자체가 거부된다**는 사실을 먼저 만났다: 화면은 정체성을 최상위 `project_id` 로 보내는데 서버의 `TaskSubmitRequest`(`extra="forbid"`)가 그 본문을 422 로 막았고(F-37), 처음 설치한 기계에서는 서버가 보내는 `last_accessed_at: null` 을 화면의 스키마가 거부해 화면이 자기 프로젝트를 잃은 채 정체성 없이 제출했다(F-38) — 두 상태 어디에서도 제출은 성공할 수 없었다. 두 결함의 뿌리는 같다: **화면과 서버가 만나는 와이어를 재는 자리가 없었다**. 증인 둘(와이어 + 제품 경로 · 두 기계 상태)이 같은 파일을 고침 전/후로 돌려 각각 exit 1 → exit 0 이고, 계약은 서버 6건 + 대시보드 스키마 2건이며 대시보드 스키마가 깨진 이유는 그 테스트의 기존 픽스처가 `last_accessed_at` 을 **빼놓은 채** "실제 응답"이라 적혀 있었기 때문이다)** → **attempt-030 `87c5091b…`(F-39 · F-40: **크래시 뒤 열려 있는 화면도 새 사실을 배워야 한다**. attempt-028(서버가 죽은 주인을 말한다)·attempt-029(화면의 쓰기 경로)는 둘 다 **새로 연 화면**을 덮었고, "**이미 열려 있는** 화면"은 attempt-028 의 기술 잔여 ③이자 attempt-029 의 한계 — **두 번 연속 미측정으로 남은** 질문이었다. 답은 **아니오**였다: 실 서버 + 실제 PIN 로그인 + 제품의 버튼 + **그룹째 SIGKILL** + 같은 포트·같은 상태 디렉터리로 재기동했을 때 화면의 연결 라벨은 `["연결됨"]` 이었다 — 스트림이 조용히 다시 붙어 **연결을 잃은 적이 없다고 말하는 동안** 서버는 `execution_owner: dead`·`resumable: true` 로 바뀌었는데 화면은 크래시 전 스냅샷(`label="running"` · 재개 **없음** · 취소만)을 그대로 그렸다(위반 1건 · **exit 1**) — F-36 이 **서버 표면**에서 없앤 막다른 길이 **이미 열려 있는 화면**에는 그대로 남아 있었다. 뿌리는 구조다: 스트림은 스스로 다시 붙지만 **목록은 한 번 읽은 스냅샷**이고 그 안에 시간에 따라 변하는 값(`status`·`execution_owner`·`resumable`)이 들어 있다. 고침은 재연결 성공 지점이 목록을 다시 읽게 하는 **화면 코드**(`useTaskExecutionEvents.ts`)이고, 그 재조회는 `reloadVersion` 이 **아니라 별도 경로**여야 한다(`reloadVersion` 은 스트림 이펙트까지 다시 시작시키므로 스트림이 스스로 그것을 올리면 **재시작 루프**가 된다). 실패는 **삼키지 않는다**. **서버는 한 줄도 바뀌지 않았다**(F-35/F-36 의 규칙·표면·저장 상태 그대로). **F-40(측정 도구)**: 도구가 크래시를 **재현할 수 없다**는 사실이 먼저 드러났다 — `uv run … uvicorn` 의 실제 서버는 런처의 자식이라 런처만 죽이고 서버는 포트를 붙들고 살아 있고, 재기동이 토큰 비밀을 새로 만들면 질문이 "사용자가 로그아웃됐는가"로 바뀐다(두 성질 모두 그 파일의 docstring 이 처음부터 약속했다). 하네스는 이제 그룹째로 신호하고 비밀을 재사용한다. 증인 둘(제품 경로 exit 1 → exit 0 · 도구 A/B/C exit 0), 계약은 대시보드 단위 3건(고침 전 2 failed / 1 passed → 3 passed)) → **attempt-031 `7461ae3d…`(최신 — F-41 후보를 **측정으로 반증**했다: attempt-030 이 자기 한계로 적은 문장(*"M3(수동 탈출구) 경로는 이 실행에서 발화하지 않았다"*)이 남긴 질문을 실 서버·실 인증·**그룹째 SIGKILL**·같은 포트·같은 상태 디렉터리로 쟀다 — 화면이 스스로 포기할 때까지 **재기동하지 않고** 기다린 뒤(그것이 M3 의 전제다) 탈출구를 누르면 행이 서버의 새 사실(`dead`·`resumable`)로 바뀌고 라벨도 정착한다(`["연결 오류","연결됨"]`). 서버가 **없는 동안** 눌러도 화면은 `연결 오류` + 탈출구로 남고(막다른 길이 아니다), **두 번째** 크래시·재기동에서도 같다. **대조군**: 같은 증인을 **F-39 고침 이전 트리**에서 돌려도 **exit 0** — 이 축은 attempt-030 **이전에도 참**이었고, 즉 **결함이 아니라 재지 않은 경로**였다(attempt-030 이 닫은 결함은 **자동** 경로에만 있었다). **이빨**: 스크래치 트리에서 `retry` 를 무력화하고 그 트리의 번들을 다시 빌드하면 증인 **exit 1(위반 4건)** · 계약 **1 failed / 3 passed**. **제품 런타임 코드 변경 0줄** — 대신 `retry` 가 목록을 다시 읽는 **암묵적 의존**(`reloadVersion` 이 목록 이펙트의 의존성이라는 사실)에 계약이 소유자가 됐다. **판정 MOVED 없음**)** → **attempt-032 `5a8950a1…`(F-42: **브라우저 증인에게 게이트 소유자를 줬다**(required 21 → **22**). attempt-030/031 이 실 브라우저 증인으로 F-39·F-41 을 닫으면서 경계 문서에 적어 둔 문장(*"실 브라우저 증인 셋은 모두 수동이고, required 21개 중 어느 것도 이들을 돌리지 않는다"*)을 **측정으로 바꾸니 그 문장은 브라우저 패밀리 전체의 것이었다** — `dashboard/e2e/tests/cr*.spec.ts` **9파일 29건** 이 어느 required 게이트에도 소유자가 없었다(게이트 커버리지 0/9). 그런데 그 증인들은 **ambient 백엔드 없이** 돈다(실측 29 passed / 43.5s — 스스로 서버를 띄우거나 화면만 본다): 게이트로 세울 수 있었는데 세우지 않았다. 새 required 게이트 `dashboard-e2e-witnesses` 가 **이름 규칙으로** 그 패밀리를 돈다(그래서 증인을 새로 만들면 자동으로 게이트 안이고, `--project=chromium --reporter=list` 를 게이트가 직접 들고 있다 — 등록부가 스킵 귀속을 그 리포터에 걸어 두었는데 설정을 바꾸면 그 게이트의 스킵이 익명이 되기 때문이다). 계약 `tests/test_cr14_browser_witness_gate_contract.py` 가 **커버리지 주장**을 소유한다(전수성 + 경계 + 이빨). **이빨**: 게이트를 manifest 에서 지우면 계약 **4 failed** · required 를 false 로 강등하면 **1 failed** · 가족 이름으로 **일부로 실패하는 증인**을 만들면 게이트가 **exit 1 로 그 파일의 이름을 대며** 멈춘다(같은 파일은 고침 전 세계에서 **아무도 돌리지 않는다**). **제품 런타임 코드 변경 0줄** — 대신 **게이트 목록이 바뀌었으므로 `21/21` 은 이 후보부터 `22/22` 다**(인벤토리는 계약에 pinned 되어 있다). **판정 MOVED 없음**)** → **attempt-033 `1873d2c7…`(F-43 · F-44: **화면이 보내는 경로는 서버가 서는 경로여야 한다** · **런타임 상태는 코드 스코프 밖에 있다**. *(재선언 둘 — 측정 전)* 첫 선언은 후보 `b11ff74f`(지문 `03a7db8d…`)이었고 **그 첫 fast 배치가 `dashboard-build` 의 `tree_moved`(추적 번들 59 경로)로 멈췄다**(passed 18 / failed 1 / total 19) — 번들을 후보의 소스에서 다시 빌드해(두 번 빌드 바이트 동일) `ec76c7ce` 로 커밋한 뒤 **측정 전에** 다시 선언한다(D-52; 재선언 이유는 실패를 덮는 것이 아니라 코드가 옮겨졌기 때문이다). attempt-032 가 자기 한계로 남긴 *"ambient 백엔드 슬라이스는 게이트 밖"* 을 재려고 **서버를 띄우는 증인**을 세우는 첫 걸음에서 제품 결함이 나왔다: `apiRequest` 는 **래퍼 안에서** '/v1' 을 앞에 붙이는데 두 호출부가 **이미 namespace 를 가진 경로**를 넘겨서 실효 경로가 `/v1/api/agent/ask` · `/v1/auth/ws-ticket` 이 됐고, 서버에는 **`/v1/api/*` 도 `/v1/auth/*` 도 없다**(58 namespace 중 둘 부재 · 실효 경로는 살아 있는 서버에서 **405**, 정본 `/api/auth/ws-ticket` 은 **200 + ticket**). **이 발견의 핵심은 왜 아무도 못 봤는가다**: 접두사가 호출부의 **리터럴에 없어서** grep 도, 리터럴만 모으는 대조도 그 자리를 **건너뛴다**(증인 A 축이 그 눈먼 자리를 재현한다) — 그리고 `fetchWsTicket` 은 405 를 `catch { return null }` 로 삼키며, ticket 없는 WS 는 `open_loopback` 일 때만 통과하므로 **PIN 이 걸린 배포는 이벤트 스트림을 4401 로 잃고 3초마다 재시도**한다(로컬 dev 익명 모드가 그것을 가렸다). 고침은 전체 경로를 받는 `apiRequestPath` 로 바꾸는 **제품 런타임 2줄**(`loginWithAccessPin` 이 이미 따르던 규약)이고, 소유자는 **둘**이다 — 라우트 표와 대조하는 pytest 계약 6건(`tests/test_cr14_client_path_contract.py`: 래퍼를 해석한 실효 경로의 namespace 도달성 · 이빨 · **리터럴 전용 검사가 볼 수 없다는 사실 자체**를 고정) + 정확한 URL 을 고정하는 vitest 5건(`dashboard/src/utils/wsTicket.test.ts` — 이 호출의 URL 을 보는 테스트가 없었던 것이 이 결함이 살아남은 이유다). **이빨은 실제로 되돌려 확인했다**: 고침 전 소스에서 계약 **3 failed / 3 passed** · vitest **2 failed / 3 passed** · 증인 **exit 1**, 고침 후 계약 **6 passed** · vitest **5 passed** · 증인 **exit 0**. 증인은 **여섯 번 스스로 틀렸다**(쿼리 보간을 경로 param 으로 접고 · 래퍼 정의를 호출부로 세고 · 메서드를 GET 으로 박고 · C 축이 고정 문자열을 쳤다) — 자를 고친 기록을 docstring 에 남겼고, 증인이 저장소 `data/`(다른 서버의 sqlite)를 열 수 있던 것도 함께 막았다(상태·cwd 격리). **두 번째 후보 `ec76c7ce` 의 측정은 배치를 완주하고도 마감 직전에 멈췄다(F-44)** — 제품의 상대경로 상태 기본값이 cwd `src/` 프로세스의 `src/data/projects.json` 을 저장소 안에 만들어 작업 트리 지문을 후보에서 떨어뜨렸고(`e116d58d…` ≠ `f8cab12b…`), 무시 규칙 + 계약 5건(제품 런타임 0줄)으로 닫고 다시 선언했다. **판정 MOVED 없음**)** (010 이후 값의 전체 자리는 §5 판정 카드가 소유한다)
+diff --git a/tests/test_cr14_fence_movement_detection.py b/tests/test_cr14_fence_movement_detection.py
+index 89318036..5994a1c9 100644
+--- a/tests/test_cr14_fence_movement_detection.py
++++ b/tests/test_cr14_fence_movement_detection.py
+@@ -13,19 +13,23 @@ attempt-013 에서 실제로 일어난 일 (F-22)
+ 
+ 이 파일이 만드는 탐지기
+ =======================
++ARCHIVED 선언은 기록된 후보 커밋에만 결박한다. ACTIVE 선언은 현재 HEAD와 작업 트리까지 요구한다.
++과거 C14-F23-2의 docs-only 기록 규율은 아래 합성·실제 이력 이빨로 계속 검증한다.
++
+ 작업 트리를 건드리지 않고 **git 객체만으로** 커밋의 코드 지문을 계산해, 선언된 값과 울타리의
+ 위치를 대조한다. 그래서 미커밋 상태와 무관하게 과거·현재를 같은 규칙으로 잴 수 있다.
+ 
+   C14-F23-1  선언된 지문 == 후보 커밋 트리 지문        → 그 값은 실제로 그 커밋의 것이다
+-  C14-F23-2  후보..HEAD 사이에 코드 스코프 변경 0건     → **울타리가 움직이지 않았다**(R-1 의 탐지기)
++  C14-F23-2  ACTIVE 선언은 후보 == HEAD · 작업 트리 지문 일치     → **울타리가 움직이지 않았다**(R-1 의 탐지기)
+   C14-F23-3  지문과 `git status` 가 청결에 대해 같은 말 → 지문 함수의 사각지대가 없다
+   C14-F23-4  측정 보고서가 이름 붙인 커밋의 트리 == 보고서의 지문 → 보고서가 다른 트리의 초록이 아니다
+ 
+-`C14-F23-2` 가 F-22 의 탐지기다. 기록 커밋이 `docs/` 전용이면 통과하고, `README.md`·`tests/**`·
++아래는 활성 후보 측정·기록 당시의 F-22 규율이다. `C14-F23-2` 가 탐지기이며 기록 커밋이 `docs/` 전용이면 통과하고, `README.md`·`tests/**`·
+ 설정·lock 을 건드리면 **그 경로를 이름으로 대며** 실패한다. 진행 중(미커밋 코드 편집)은 커밋
+ 이력과 무관하므로 이 계약을 깨지 않는다 — R-1 이 "진행 중 상태와 구분해야 해서 단순 동등
+ 비교로는 만들 수 없다"고 한 지점이 여기서 성립한다: 이 계약이 보는 것은 **커밋된 이력**이고,
+-미커밋 진행분은 커밋되는 순간 후보가 되어 C14-F23-1 이 값을 요구한다.
++미커밋 진행분을 새 활성 후보로 선언할 때 C14-F23-1 이 값을 요구한다. 보관된 선언에 이 규율을
++현재 HEAD까지 연장하지 않는다.
+ 
+ `C14-F23-3` 은 다른 각도에서 같은 경계를 본다: 지문 함수가 어떤 파일을 **조용히 무시**하면
+ (예: 제외 목록을 늘려 `README.md` 를 빼면) `git status` 는 그 파일을 보고하는데 지문은 "같다"고
+@@ -190,6 +194,29 @@ def declared_values(card_text: str) -> tuple[str, str]:
+     return candidates[0], fingerprints[0]
+ 
+ 
++def declaration_violations(card_text: str, root: Path) -> list[str]:
++    """Bind archives to their recorded commit; active declarations also bind to HEAD."""
++    candidate, declared = declared_values(card_text)
++    statuses = re.findall(r"^- release declaration status: \*\*([A-Z]+)\*\*$", card_text, re.M)
++    assert len(statuses) == 1 and statuses[0] in {"ARCHIVED", "ACTIVE"}, "Explicit declaration status required"
++    violations: list[str] = []
++    if commit_fingerprint(root, candidate) != declared:
++        violations.append("Recorded candidate fingerprint mismatch")
++    if statuses == ["ARCHIVED"]:
++        current = re.findall(r"^- Current HEAD release status: \*\*([A-Z_]+)\*\*$", card_text, re.M)
++        if current != ["NOT_APPROVED"]:
++            violations.append("Archive must not certify current HEAD")
++    else:
++        head = git_bytes(root, "rev-parse", "HEAD").decode().strip()
++        if candidate != head:
++            violations.append("Active candidate must equal current HEAD")
++        if commit_fingerprint(root, head) != declared:
++            violations.append("Active HEAD fingerprint mismatch")
++        if _worktree_fingerprint(root) != declared:
++            violations.append("Active worktree fingerprint mismatch")
++    return violations
++
++
+ def report_violations(
+     evidence_root: Path, declared: str, root: Path = REPO_ROOT, prefixes: tuple[str, ...] | None = None
+ ) -> list[str]:
+@@ -266,38 +293,66 @@ def test_declared_fingerprint_is_the_declared_candidates_own_tree() -> None:
+     )
+ 
+ 
+-def test_no_code_scope_commit_after_the_declared_candidate() -> None:
+-    """C14-F23-2 — **울타리 이동 탐지기**: 후보 뒤에 코드 스코프를 건드린 커밋이 없어야 한다.
+-
+-    기록 커밋이 `docs/` 전용이면 통과한다. `README.md`·`tests/**`·설정·lock 을 건드리면
+-    그 순간 gate 증거가 후보가 아닌 트리를 가리키게 되므로 **그 경로를 이름으로 대며** 실패한다
+-    (attempt-013 의 기록 커밋 `f95f22b9` 가 `README.md` 하나로 이 상태를 만들었다).
+-    """
+-    candidate, _declared = declared_values(_CARD.read_text(encoding="utf-8"))
+-    moved = code_scope_changes(REPO_ROOT, candidate, _head())
+-    assert not moved, (
+-        "후보 커밋 뒤에 코드 스코프가 움직였다 — 그 커밋들의 초록은 이 후보의 것이 아니다: "
+-        + ", ".join(moved)
+-        + " (지문에서 제외되는 것은 `docs/`·`.omo/` 뿐이다. 기록은 거기서만 해야 한다)"
+-    )
+-
+-
+-def test_declared_fingerprint_is_the_fingerprint_of_head_within_the_fence() -> None:
+-    """C14-F23-2 보강 — 후보~HEAD 가 docs 전용이면 **HEAD 의 코드 트리 == 선언값**이어야 한다."""
+-    candidate, declared = declared_values(_CARD.read_text(encoding="utf-8"))
+-    assert commit_fingerprint(REPO_ROOT, _head()) == commit_fingerprint(REPO_ROOT, candidate)
+-    assert commit_fingerprint(REPO_ROOT, _head()) == declared
++def test_release_declaration_binds_to_its_explicit_status() -> None:
++    violations = declaration_violations(_CARD.read_text(encoding="utf-8"), REPO_ROOT)
++    assert not violations, " / ".join(violations)
+ 
+ 
+-def test_worktree_matches_the_declared_fingerprint_when_the_code_scope_is_settled() -> None:
+-    """C14-F23-4 — 미커밋 코드 편집이 없으면 **지금 이 작업 트리**가 선언된 값의 것이다."""
+-    _candidate, declared = declared_values(_CARD.read_text(encoding="utf-8"))
+-    if _worktree_fingerprint(REPO_ROOT) != commit_fingerprint(REPO_ROOT, _head()):
+-        pytest.skip(
+-            "미커밋 코드 편집이 진행 중이다 — 이 계약은 커밋된 이력만 본다"
+-            "(진행 중분은 커밋되는 순간 후보가 되고 C14-F23-1 이 값을 요구한다)"
+-        )
+-    assert _worktree_fingerprint(REPO_ROOT) == declared
++@pytest.mark.parametrize("status", ["ARCHIVED", "ACTIVE"])
++def test_teeth_declaration_scope_preserves_archive_and_rejects_active_drift(tmp_path: Path, status: str) -> None:
++    # Given: a recorded candidate and its exact fingerprint.
++    repo = tmp_path / "repo"
++    repo.mkdir()
++    (repo / "app.py").write_text("value = 1\n", encoding="utf-8")
++    _init_repo(repo)
++    candidate = git_bytes(repo, "rev-parse", "HEAD").decode().strip()
++    fingerprint = commit_fingerprint(repo, candidate)
++    card = (
++        f"- release declaration status: **{status}**\n"
++        "- Current HEAD release status: **NOT_APPROVED**\n"
++        f"code candidate full SHA: **`{candidate}`**\n코드 지문 **`{fingerprint}`**\n"
++    )
++    assert declaration_violations(card, repo) == []
++    # When: the source moves, first uncommitted and then committed.
++    (repo / "app.py").write_text("value = 2\n", encoding="utf-8")
++    dirty = declaration_violations(card, repo)
++    _commit_all(repo, "next candidate")
++    moved = declaration_violations(card, repo)
++    # Then: archives retain historical binding; active claims reject both drifts.
++    assert bool(dirty) == (status == "ACTIVE")
++    assert bool(moved) == (status == "ACTIVE")
++    wrong = card.replace(fingerprint, commit_fingerprint(repo, "HEAD"))
++    assert "Recorded candidate fingerprint mismatch" in declaration_violations(wrong, repo)
++    for malformed in (
++        card.replace(f"**{status}**", "**UNKNOWN**"),
++        card.replace(f"- release declaration status: **{status}**\n", ""),
++        card + f"- release declaration status: **{status}**\n",
++    ):
++        with pytest.raises(AssertionError, match="Explicit declaration status required"):
++            declaration_violations(malformed, repo)
++    if status == "ARCHIVED":
++        assert declaration_violations(card.replace("**NOT_APPROVED**", "**APPROVED**"), repo)
++        assert declaration_violations(card + "- Current HEAD release status: **APPROVED**\n", repo)
++
++
++def test_teeth_active_declaration_requires_head_even_after_docs_only_commit(tmp_path: Path) -> None:
++    # Given: an active declaration at a clean candidate.
++    repo = tmp_path / "repo"
++    (repo / "docs").mkdir(parents=True)
++    (repo / "app.py").write_text("value = 1\n", encoding="utf-8")
++    _init_repo(repo)
++    candidate = git_bytes(repo, "rev-parse", "HEAD").decode().strip()
++    card = (
++        "- release declaration status: **ACTIVE**\n"
++        f"code candidate full SHA: **`{candidate}`**\n"
++        f"코드 지문 **`{commit_fingerprint(repo, candidate)}`**\n"
++    )
++    assert declaration_violations(card, repo) == []
++    # When: even a docs-only commit moves HEAD.
++    (repo / "docs" / "note.md").write_text("record\n", encoding="utf-8")
++    _commit_all(repo, "record")
++    # Then: an active declaration must name the current HEAD explicitly.
++    assert declaration_violations(card, repo) == ["Active candidate must equal current HEAD"]
+ 
+ 
+ def test_fingerprint_function_and_git_status_agree_on_the_working_tree() -> None:
+diff --git a/tests/test_cr14_fingerprint_scope_contract.py b/tests/test_cr14_fingerprint_scope_contract.py
+index 69ca0f44..7c1d266a 100644
+--- a/tests/test_cr14_fingerprint_scope_contract.py
++++ b/tests/test_cr14_fingerprint_scope_contract.py
+@@ -42,7 +42,7 @@ _PLAN = REPO_ROOT / "docs" / "16_COMMERCIAL_RELIABILITY_DEVELOPMENT_PLAN.md"
+ _GATE_SCRIPT = REPO_ROOT / "scripts" / "ga_gate.py"
+ 
+ _HEX64 = re.compile(r"\b[0-9a-f]{64}\b")
+-# 판정 카드가 **현재** 지문을 선언하는 자리. 이 표기가 값의 유일한 소유자다.
++# 판정 카드가 기록된 후보 지문을 선언하는 자리. 이 표기가 값의 유일한 소유자다.
+ _DECLARED = re.compile(r"코드 지문 \*\*`([0-9a-f]{64})`\*\*")
+ _EXCLUDED = re.compile(r"FINGERPRINT_EXCLUDED_PREFIXES[^=\n]*=\s*\(([^)]*)\)")
+ _OWNER_POINTER = "CR14_FINAL_CANDIDATE_VERDICT"
+@@ -62,7 +62,7 @@ def _read(path: Path) -> str:
+ 
+ 
+ def declared_fingerprint(text: str) -> str:
+-    """판정 카드가 선언한 **현재** 코드 지문. 0개거나 2개 이상이면 실패시킨다."""
++    """판정 카드가 선언한 기록된 후보의 코드 지문. 0개거나 2개 이상이면 실패시킨다."""
+     matches = _DECLARED.findall(text)
+     if len(matches) != 1:
+         raise AssertionError(
+@@ -134,8 +134,8 @@ def excluded_prefixes(script_text: str) -> tuple[str, ...]:
+ # ---------------------------------------------------------------------------
+ 
+ 
+-def test_owner_document_declares_exactly_one_current_fingerprint() -> None:
+-    """값의 소유자는 하나다 — 판정 카드가 현재 지문을 선언한다(C14-F15-2 의 전제)."""
++def test_owner_document_declares_exactly_one_recorded_fingerprint() -> None:
++    """값의 소유자는 하나다 — 판정 카드가 기록된 후보 지문을 선언한다(C14-F15-2 의 전제)."""
+     declared = declared_fingerprint(_read(_OWNER_DOC))
+     assert len(declared) == 64
+ 
+diff --git a/tests/test_docs_toolchain_contract.py b/tests/test_docs_toolchain_contract.py
+index 32a73c54..22db7fb6 100644
+--- a/tests/test_docs_toolchain_contract.py
++++ b/tests/test_docs_toolchain_contract.py
+@@ -10,7 +10,7 @@
+   2. 문서의 `AGK_*` 환경변수가 코드에 있거나, pydantic `env_prefix` + 필드명으로 파생되는가
+   3. 문서가 참조하는 경로가 실재하는가
+   4. 문서의 로컬 상대 링크가 실재하는 파일을 가리키는가
+-  5. 커밋 대상(dirty+untracked)에 비밀 패턴이 섞이지 않았는가(자리표시자는 제외)
++  5. 커밋 대상(dirty+untracked), 또는 clean 트리의 tracked production/config에 비밀 패턴이 없는가
+ 
+ 승격 상태: 이 파일은 `tests/test_docs_toolchain_contract.py` 로 옮겨지고, `verify_docs_commands.py` 는
+ `scripts/verify_docs_commands.py` 로 옮겨진다. 그 전에도 통과하도록 도구를 **탐색**해서 찾는다.
+@@ -21,8 +21,10 @@ from __future__ import annotations
+ import importlib.util
+ import json
+ import re
++import subprocess
+ import sys
+ from pathlib import Path
++from typing import Final
+ 
+ import pytest
+ 
+@@ -145,33 +147,71 @@ def test_local_relative_links_resolve() -> None:
+     assert not broken, "깨진 로컬 상대 링크: " + " | ".join(broken[:8])
+ 
+ 
+-@pytest.mark.skipif(
+-    not (REPO / ".git").exists(),
+-    reason="git 작업 트리가 아니다(승격 리허설의 미러 트리) — 스캔 대상(dirty+untracked)이 정의되지 않는다.",
++# Clean-tree baseline: tracked production and deployment/package configuration.
++# Historical evidence and fixture corpora are not this baseline; every dirty/untracked
++# text candidate still uses the original content rules, regardless of its directory.
++_BASELINE_PATHS: Final = (
++    "src/",
++    "scripts/",
++    "config/",
++    "dashboard/src/",
++    ".github/",
++    "deploy/",
++    "desktop/",
++    "vscode-extension/src/",
++    "pyproject.toml",
++    "setup.py",
++    "requirements.txt",
++    "uv.lock",
++    "config.yaml",
++    "policy.yaml",
++    "Dockerfile",
++    "docker-compose.vllm.yml",
++    "docker-entrypoint.sh",
++    "Makefile",
++    "run.sh",
++    "setup_env.sh",
++    ".pre-commit-config.yaml",
++    "dashboard/package.json",
++    "dashboard/pnpm-lock.yaml",
++    "dashboard/vite.config.ts",
++    "dashboard/tsconfig*.json",
++    "vscode-extension/package.json",
++    "vscode-extension/package-lock.json",
+ )
+-def test_commit_set_has_no_secret_patterns() -> None:
+-    """커밋 대상(dirty+untracked)에 비밀 패턴이 섞이지 않았는가.
+-
+-    `git add -A` 로 인증 해시 사본이 커밋될 수 있는 상태를 이 카드에서 실제로 확인했다
+-    (`data/auth_hash.bak.pre-0000` 이 무시되지 않은 채 untracked). 값은 절대 출력하지 않고
+-    파일:줄만 보고한다.
+ 
+-    리허설 미러 트리에는 `.git` 이 없다 — 그래서 여기서만 건너뛴다. 이 시험이 실제로 문다는
+-    것은 본 트리(=릴리스 게이트가 도는 곳)의 몫이고, 스캔 대상이 0건이면 그때는 실패한다.
+-    """
+-    import subprocess
+ 
++def _scan_secret_candidates(root: Path) -> tuple[int, list[str]]:
++    """Scan the commit set, falling back to tracked production/config on clean trees."""
+     status = subprocess.run(
+-        ["git", "status", "--porcelain"], cwd=REPO, capture_output=True, text=True, check=True
++        ["git", "status", "--porcelain"], cwd=root, capture_output=True, text=True, check=True
+     ).stdout.splitlines()
+-    text_suffixes = {".py", ".ts", ".tsx", ".js", ".json", ".md", ".sh", ".yaml", ".yml", ".toml", ".txt", ""}
+-    hits: list[str] = []
+-    scanned = 0
++    candidates = []
+     for line in status:
+         path = line[3:].strip().strip('"')
+         if " -> " in path:
+             path = path.split(" -> ")[-1]
+-        target = REPO / path
++        candidates.append(path)
++    scanned, hits = _scan_secret_paths(root, candidates)
++    if scanned == 0:
++        tracked = subprocess.run(
++            ["git", "ls-files", "-z", "--", *_BASELINE_PATHS],
++            cwd=root,
++            capture_output=True,
++            text=True,
++            check=True,
++        ).stdout.split("\0")
++        scanned, hits = _scan_secret_paths(root, tracked)
++    return scanned, hits
++
++
++def _scan_secret_paths(root: Path, candidates: list[str]) -> tuple[int, list[str]]:
++    """Apply the documentation scanner's unchanged text and placeholder rules."""
++    text_suffixes = {".py", ".ts", ".tsx", ".js", ".json", ".md", ".sh", ".yaml", ".yml", ".toml", ".txt", ""}
++    hits: list[str] = []
++    scanned = 0
++    for path in candidates:
++        target = root / path
+         if not path or not target.is_file() or target.suffix not in text_suffixes:
+             continue
+         if target.stat().st_size > 2_000_000:
+@@ -184,10 +224,57 @@ def test_commit_set_has_no_secret_patterns() -> None:
+                 if quoted and all(TOOL.PLACEHOLDER_RE.match(q) or len(q) < 12 for q in quoted):  # type: ignore[attr-defined]
+                     continue
+                 hits.append(f"{path}:{body[: match.start()].count(chr(10)) + 1} ({label})")
+-    assert scanned > 0, "커밋 대상 파일을 하나도 스캔하지 못했다(작업 트리가 비었거나 git 이 실패)"
++    return scanned, hits
++
++
++@pytest.mark.skipif(not (REPO / ".git").exists(), reason="No git worktree for commit-set/production scan")
++def test_commit_set_has_no_secret_patterns() -> None:
++    scanned, hits = _scan_secret_candidates(REPO)
++    assert scanned > 0, "No eligible commit-set or tracked production/config files scanned"
+     assert not hits, "커밋 대상에서 비밀 패턴 의심: " + ", ".join(hits[:8])
+ 
+ 
++@pytest.mark.parametrize("planted", [False, True])
++def test_clean_tracked_production_baseline_detects_synthetic_secret(tmp_path: Path, planted: bool) -> None:
++    # Given: a clean tracked production source, with an optional deliberately fake pattern.
++    (tmp_path / "src").mkdir()
++    body = "value = 1\n"
++    if planted:
++        body += 'token = "' + "sk-" + "0" * 24 + '"\n'
++    (tmp_path / "src" / "app.py").write_text(body, encoding="utf-8")
++    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True, capture_output=True)
++    subprocess.run(["git", "add", "src/app.py"], cwd=tmp_path, check=True, capture_output=True)
++    subprocess.run(
++        [
++            "git",
++            "-c",
++            "user.name=contract",
++            "-c",
++            "user.email=contract@example.invalid",
++            "-c",
++            "commit.gpgsign=false",
++            "commit",
++            "-qm",
++            "synthetic baseline",
++        ],
++        cwd=tmp_path,
++        check=True,
++        capture_output=True,
++    )
++    assert subprocess.check_output(["git", "status", "--porcelain"], cwd=tmp_path) == b""
++    # When: the clean tree has no dirty or untracked scan targets.
++    scanned, hits = _scan_secret_candidates(tmp_path)
++    # Then: production is scanned and the planted pattern cannot pass.
++    assert scanned == 1
++    assert hits == (["src/app.py:2 (openai_key)"] if planted else [])
++    # Changed fixture/evidence paths retain the original scan rules, without exclusions.
++    (tmp_path / "tests").mkdir()
++    fixture = tmp_path / "tests" / "fixture.py"
++    fixture.write_text('token = "' + "sk-" + "0" * 24 + '"\n', encoding="utf-8")
++    subprocess.run(["git", "add", "tests/fixture.py"], cwd=tmp_path, check=True, capture_output=True)
++    assert _scan_secret_candidates(tmp_path) == (1, ["tests/fixture.py:1 (openai_key)"])
++
++
+ def test_tool_docs_manifest_is_json_serialisable() -> None:
+     """검사기의 문서 집합 자기선언이 비어 있지 않다(검사 대상이 조용히 0개가 되는 것을 막는다)."""
+     docs = list(TOOL.DOCS)  # type: ignore[attr-defined]
+diff --git a/tests/test_nx07_doc_consistency.py b/tests/test_nx07_doc_consistency.py
+index 95ac00ca..4c568ba0 100644
+--- a/tests/test_nx07_doc_consistency.py
++++ b/tests/test_nx07_doc_consistency.py
+@@ -62,9 +62,9 @@ SUPPORT_LEVELS = ("**Supported**", "**Experimental**", "**Unsupported**", "**Not
+ SOAK_MARKERS = ("SC-6 FAIL", "1654.9", "all_pass", "UNVERIFIED", "exit:141")
+ 
+ _LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
+-_ENV_ROW_RE = re.compile(r"^\|\s*`AGK_SERVER_PORT`\s*\|\s*`(\d+)`", re.M)
++_ENV_ROW_RE = re.compile(r"^\|[^|]*`AGK_SERVER_PORT`[^|]*\|[^|\n]*`(\d+)`", re.M)
+ _SERVE_PORT_RE = re.compile(r"--port\s+(\d+)")
+-_DOC_URL_RE = re.compile(r"\*\*(?:Swagger UI|ReDoc|OpenAPI JSON)\*\*:\s*https?://[^:]+:(\d+)")
++_DOC_URL_RE = re.compile(r"https?://(?:localhost|127\.0\.0\.1):(\d+)/(?:docs|redoc|openapi\.json)(?=[)\s`#]|$)")
+ _OPEN_CARD_RE = re.compile(r"^\|\s*(NX-\d+(?:-F\d+)?)\s*\|([^|]*)\|", re.M)
+ _DMG_ROW_MARKER = "Ssak-Ai-0.1.0.dmg"
+ 
+@@ -333,12 +333,16 @@ def test_teeth_readme_port_drift_is_detected() -> None:
+     healthy = _read(README)
+     port = code_default_port()
+     cases = {
+-        "serve 예시를 레거시로 되돌림": healthy.replace(f"--port {port}", "--port 8400"),
+-        "문서 주소만 남겨 둠": healthy.replace(f"localhost:{port}/docs", "localhost:8400/docs"),
+-        "환경변수 기본값만 어긋남": healthy.replace(f"| `{port}` |", "| `8400` |"),
++        "serve 포트 불일치": healthy.replace(f"--port {port}", "--port 9999"),
++        "Swagger 포트 불일치": healthy.replace(f":{port}/docs", ":9999/docs"),
++        "OpenAPI 포트 불일치": healthy.replace(f":{port}/openapi.json", ":9999/openapi.json"),
++        "환경변수 기본값 불일치": healthy.replace(f"`{port}`", "`9999`"),
++        "문서 주소 누락": _DOC_URL_RE.sub("", healthy),
++        "환경변수 기본값 누락": _ENV_ROW_RE.sub("", healthy),
+     }
+     assert not readme_port_violations(healthy, port, dev_ui_port()), "기준 README 가 이미 어긋난다"
+     for label, text in cases.items():
++        assert text != healthy, f"변이 적용 실패 — {label}"
+         assert readme_port_violations(text, port, dev_ui_port()), f"이빨 없음 — {label}"
+ 
+ 

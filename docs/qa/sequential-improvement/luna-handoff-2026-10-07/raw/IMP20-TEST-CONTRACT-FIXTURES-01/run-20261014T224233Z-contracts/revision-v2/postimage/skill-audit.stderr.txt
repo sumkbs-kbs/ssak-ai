@@ -1,0 +1,4 @@
+/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/tests/test_execution_request_preservation.py:30:13: [generic-exception] `raise TypeError("...")` - define a typed error class instead
+/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/tests/test_execution_request_preservation.py:64:13: [generic-exception] `raise RuntimeError("...")` - define a typed error class instead
+
+2 violation(s) in 1 file(s)

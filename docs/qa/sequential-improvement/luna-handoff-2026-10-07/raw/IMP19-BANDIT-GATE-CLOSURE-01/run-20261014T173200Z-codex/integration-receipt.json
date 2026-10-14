@@ -1,0 +1,12 @@
+{
+  "recorded_at": "2026-10-14T17:41:45.485580+00:00",
+  "operation": "fast_forward_ref_and_owned_index_entries_only",
+  "old_head": "b91fa86cebff0bdfd7af1b1f0d9681c8f6392e5f",
+  "new_head": "367863ce56774ea022e6ae75e255dca41f53fc18",
+  "changed_committed_paths": 6,
+  "preserved_staged_paths": 97,
+  "preserved_staged_binary_sha256": "84297d5d47940af4560187d6b9f531b3b1eed5a7fa6cd1dca20c4da48fddab6f",
+  "recovery_index_tree": "b680782c1400a60bd048936d5cef32a17a4d4ae8",
+  "working_file_hashes_checked": 202,
+  "working_files_changed_by_integration": []
+}

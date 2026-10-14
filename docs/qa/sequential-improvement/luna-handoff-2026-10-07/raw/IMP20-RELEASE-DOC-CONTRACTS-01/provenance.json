@@ -1,0 +1,62 @@
+[
+  {
+    "path": "docs/qa/2026-09-16-followup/nx10/GATE_LEDGER.md",
+    "last_commit": "d2a196a842a08865833832c763b608aafb55ced4 2026-09-18",
+    "committed_sha256": "c0baae23d000cfada0f401305645f58b4e5ca39375742c059227cef36fb92509",
+    "matching_lines": [
+      {
+        "line": 1175,
+        "text": "RSS 누수와 별개로 잡아내야 해.”* 설계 전문·보정 원자료: [perf/THROUGHPUT_GATE_DESIGN.md](./perf/THROUGHPUT_GATE_DESIGN.md)."
+      },
+      {
+        "line": 1253,
+        "text": "시험으로 고정해줘.”* 설계·실측: [perf/THROUGHPUT_GATE_DESIGN.md](./perf/THROUGHPUT_GATE_DESIGN.md) §9."
+      },
+      {
+        "line": 1314,
+        "text": "칸을 설계하고 계약 시험으로 고정해줘.”* 설계·실측: [perf/THROUGHPUT_GATE_DESIGN.md](./perf/THROUGHPUT_GATE_DESIGN.md) §10."
+      },
+      {
+        "line": 1375,
+        "text": "설계하고 계약 시험으로 고정해줘.”* 설계·실측: [perf/THROUGHPUT_GATE_DESIGN.md](./perf/THROUGHPUT_GATE_DESIGN.md) §11."
+      },
+      {
+        "line": 1461,
+        "text": "있는 배치로 설계해줘.”* 설계·증거: [fsync/FLUSH_BATCH_DESIGN.md](./fsync/FLUSH_BATCH_DESIGN.md). 배치 `FLUSH`."
+      },
+      {
+        "line": 1660,
+        "text": "리뷰 가능한 형태로 작성해줘.”* → 초안 [fsync3/ADR_DAT02_S2_AMENDMENT_DRAFT.md](./fsync3/ADR_DAT02_S2_AMENDMENT_DRAFT.md) ·"
+      },
+      {
+        "line": 1726,
+        "text": "D-F3-2 결정지를 채워줘.”* → 근거 [fsync4/MEDIA_OFFLOAD_COST_MODEL.md](./fsync4/MEDIA_OFFLOAD_COST_MODEL.md) ·"
+      }
+    ]
+  },
+  {
+    "path": "docs/ga/GA_OWNER_DECISION_PACKET.md",
+    "last_commit": "d2a196a842a08865833832c763b608aafb55ced4 2026-09-18",
+    "committed_sha256": "0b12f920edb128d82d5a3293959a525941be757e0a8d7d0fb78f21cb87aff60a",
+    "matching_lines": [
+      {
+        "line": 137,
+        "text": "근거·문집: [perf/THROUGHPUT_GATE_DESIGN.md](../qa/2026-09-16-followup/nx10/perf/THROUGHPUT_GATE_DESIGN.md)(§8 잔여 결정) ·"
+      },
+      {
+        "line": 153,
+        "text": "근거: [fsync3/ADR_DAT02_S2_AMENDMENT_DRAFT.md](../qa/2026-09-16-followup/nx10/fsync3/ADR_DAT02_S2_AMENDMENT_DRAFT.md) §8 ·"
+      },
+      {
+        "line": 154,
+        "text": "[fsync4/MEDIA_OFFLOAD_COST_MODEL.md](../qa/2026-09-16-followup/nx10/fsync4/MEDIA_OFFLOAD_COST_MODEL.md)(비용 모델·간섭 실측) ·"
+      }
+    ]
+  },
+  {
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/2026-10-04-full-live/budget-sha256.json",
+    "sha256": "57252483cb53c525b5849d85739079333e2dd1db9839ba0759e3738495b75c06",
+    "fixture_hash": "c5eef98cb706dda07601ca0dbc38bd704cc33795a2134c7b28adc7889ce184cc",
+    "provenance": "Existing local hash record only; not proof of historical execution"
+  }
+]

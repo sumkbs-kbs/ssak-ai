@@ -1,0 +1,10 @@
+{
+  "pathname": "/skills",
+  "routeName": "skills",
+  "viewport": "mobile",
+  "verifiedPathname": "/skills",
+  "routeMarkerFound": true,
+  "passes": 31,
+  "violations": [],
+  "criticalSerious": []
+}

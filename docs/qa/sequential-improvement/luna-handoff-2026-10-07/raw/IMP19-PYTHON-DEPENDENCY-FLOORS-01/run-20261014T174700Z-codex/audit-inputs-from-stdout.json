@@ -1,0 +1,28 @@
+{
+  "source": "checks-attempt-1/audit.stdout.txt",
+  "source_sha256": "2295d28ac635ad69aa517655a2c4e9771ee2bf43e75f643ea9a371553e51ae09",
+  "input": {
+    "schema": "agk-python-audit-inputs/1",
+    "shipped_extras": [
+      "rag"
+    ],
+    "audit_record_file": "uv.lock",
+    "targets": {
+      "base": {
+        "packages": 74,
+        "sha256_16": "3a33726031790ba4"
+      },
+      "extras": {
+        "rag": {
+          "packages": 150,
+          "sha256_16": "d12dc3281fd29a79"
+        }
+      },
+      "union": {
+        "packages": 150,
+        "sha256_16": "67172475616343e9"
+      }
+    }
+  },
+  "original_record_json": "CONTAMINATED_BY_OLD_FIXTURE_PRESERVED"
+}

@@ -1,0 +1,14 @@
+{
+  "status": "COMPLETE_SCOPED",
+  "review": "PENDING",
+  "red": {"passed": 0, "failed": 4, "junit": "red/junit.xml"},
+  "green": {"passed": 4, "failed": 0, "junit": "green/junit.xml"},
+  "related_regression": {"passed": 13, "failed": 0, "warnings": 2, "junit": "regression/junit.xml"},
+  "denied_git_subprocess_count": 0,
+  "failed_git_command_subprocess_count": 1,
+  "failed_git_fixture_init_count": 1,
+  "product_source_changed": false,
+  "full_suite": "NOT_RUN",
+  "real_model_inference": "NOT_RUN",
+  "commit_push": "NOT_RUN"
+}

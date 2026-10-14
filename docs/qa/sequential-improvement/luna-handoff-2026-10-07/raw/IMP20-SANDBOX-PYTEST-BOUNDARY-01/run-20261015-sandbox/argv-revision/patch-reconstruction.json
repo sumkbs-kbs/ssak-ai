@@ -1,0 +1,4 @@
+{
+  "src/antigravity_k/engine/sandbox.py": true,
+  "tests/test_cr03_sandbox_read_boundary.py": true
+}

@@ -1,0 +1,6 @@
+{
+  "candidate": "367863ce56774ea022e6ae75e255dca41f53fc18",
+  "manual_qa": {"verdict": "PASS_SCOPED", "source": "checks-attempt-1/checks.json"},
+  "independent_gate": {"verdict": "APPROVE_SCOPED", "source": ".omo/evidence/IMP19-BANDIT-GATE-CLOSURE-01-gate-review.md"},
+  "full_ga_soak_release": "NOT_APPROVED"
+}

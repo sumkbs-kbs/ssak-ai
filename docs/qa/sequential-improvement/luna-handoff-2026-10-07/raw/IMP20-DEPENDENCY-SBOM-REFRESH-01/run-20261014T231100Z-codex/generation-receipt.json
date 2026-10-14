@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "-m",
+    "antigravity_k.engine.release_sbom",
+    "generate",
+    "--project-root",
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+    "--release-root",
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/release"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 0.3468170166015625,
+  "lock_sha256": "82390dd4dd4f350fd2411f79fa6492f6d9ef8082dd100a0047170740e11c2380",
+  "generated_files": [
+    {
+      "path": "src/antigravity_k/release/python.cdx.json",
+      "sha256": "71c318920056b819085767c1559c52a6468a0e286335ce1a36a832446fccc9dc",
+      "bytes": 29596
+    },
+    {
+      "path": "src/antigravity_k/release/dashboard.cdx.json",
+      "sha256": "666a2ea3221b6b68f11126be493e12a8c424764125fbd3aea4e77a4ce1c4aa78",
+      "bytes": 118241
+    },
+    {
+      "path": "src/antigravity_k/release/THIRD_PARTY_NOTICES.txt",
+      "sha256": "70d20bfd7cc37bf3176c321f5a75f01eeb28f8139901569260fdba727b12f190",
+      "bytes": 10544
+    }
+  ]
+}

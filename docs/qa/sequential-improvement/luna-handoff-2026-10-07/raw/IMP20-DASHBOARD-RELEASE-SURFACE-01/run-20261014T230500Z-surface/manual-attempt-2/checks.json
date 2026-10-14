@@ -1,0 +1,15 @@
+[
+  {
+    "name": "manual-qa",
+    "command": [
+      "/Users/mr.k/.bun/bin/bun",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-RELEASE-SURFACE-01/run-20261014T230500Z-surface/manual_surface_qa.mjs",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DASHBOARD-RELEASE-SURFACE-01/run-20261014T230500Z-surface/manual-attempt-2"
+    ],
+    "cwd": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+    "exit_code": 1,
+    "timed_out": false,
+    "reaped": true,
+    "elapsed_seconds": 0.07218575477600098
+  }
+]

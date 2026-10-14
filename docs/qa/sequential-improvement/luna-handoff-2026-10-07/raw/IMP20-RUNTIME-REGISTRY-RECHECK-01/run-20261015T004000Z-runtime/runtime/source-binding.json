@@ -1,0 +1,17 @@
+{
+  "config.yaml": "b2d1953515c900d50ca396dbfcef10d8eed1483a4da8bd70a7978a1ac91b0074",
+  "pyproject.toml": "1c55da4a70651de2fe08ff3e2f82dc87f9e3e26058c522f1d537865f2aee6db3",
+  "src/antigravity_k/config.yaml": "3948867a6b9ef51fc392e07d0015c45b7f881095942c4cbf64c503fdc08d8025",
+  "src/antigravity_k/engine/local_model_discovery.py": "1023e489d4eb0460e330736c5b70f4a3ffb2af3ae4f2b500e28d9d8d259ea818",
+  "src/antigravity_k/engine/model_manager.py": "43cf767e440c4d2c831bc82bfd22abf4f3679d19fb715ae3acd8d1e6ea3450fd",
+  "src/antigravity_k/engine/model_registry.py": "8febe07ec3e0b00c87b83afd31475727c893885c97f760aadcf3f1409e0e6bda",
+  "tests/_cli_subprocess.py": "3061047e52920208d192fb42bca837a85f62678de2c3f38f1e7659796985c25d",
+  "tests/conftest.py": "66a90cd1654457b603c7e779a23c52ee7fb7c440ca4cc4ce9d78af2c2a81b4f2",
+  "tests/test_cli_smoke.py": "0713caf7979e607c24d17da358454faab7276dfef373a8b64dc2d8bc115c4977",
+  "tests/test_local_model_discovery.py": "81fb98c5322806ae51e6e1a49590bdeee56000b94a838caca9f20a47694cedbd",
+  "tests/test_model_manager_lifecycle.py": "a3125f22429dfbab158ee3e7d021a2c3e99ddf65a2ac501e2943bf9aac7a2a32",
+  "tests/test_model_registry.py": "c71e7efa8d27f93278b129a2005a23d0620bc64b86e94c202744e37b3c9593b5",
+  "tests/test_project_registry_atomic.py": "f54168d01159ae4ee985b4c0fb8f8d82eb671812f4ced830e99d2f5de082791c",
+  "tests/test_secure_key.py": "bfec15b20319f2f3c8fe63c1214137dd013dcccb17a3b55c80ebd4d615cda669",
+  "uv.lock": "82390dd4dd4f350fd2411f79fa6492f6d9ef8082dd100a0047170740e11c2380"
+}

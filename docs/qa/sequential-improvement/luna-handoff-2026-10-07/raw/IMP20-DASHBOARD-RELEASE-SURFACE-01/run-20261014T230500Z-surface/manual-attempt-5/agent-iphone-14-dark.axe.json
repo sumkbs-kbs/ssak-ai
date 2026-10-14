@@ -1,0 +1,40 @@
+{
+  "violations": [],
+  "layout": {
+    "width": 390,
+    "documentWidth": 390,
+    "theme": null,
+    "mobile": true,
+    "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Mobile/15E148 Safari/604.1",
+    "sidebarWidthToken": "248px",
+    "sidebarWidth": 0,
+    "textMuted": "#a0a0a0",
+    "labels": [
+      {
+        "text": "대기 중",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "API Uptime",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "Tokens",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "RAM",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "CPU",
+        "color": "rgb(160, 160, 160)",
+        "background": "rgba(0, 0, 0, 0)"
+      }
+    ]
+  }
+}

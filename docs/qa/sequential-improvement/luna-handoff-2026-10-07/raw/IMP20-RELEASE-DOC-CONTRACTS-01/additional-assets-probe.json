@@ -1,0 +1,26 @@
+[
+  {
+    "path": "docs/qa/2026-09-16-followup/nx10/fsync2/VIEW_FRESHNESS_CONTRACT.md",
+    "exists": true,
+    "bytes": 11470,
+    "sha256": "d84a035d04392aa5fc8835d8eae2479f987eb3ac061b274ad56a7f542be52a39"
+  },
+  {
+    "path": "docs/qa/2026-09-16-followup/tests.log",
+    "exists": true,
+    "bytes": 612,
+    "sha256": "0a1a2f792dd8ba5189e8eaecb3a8a4b38b27843c8fc848a602a41756b79450b4"
+  },
+  {
+    "path": "docs/qa/2026-09-16-followup/nx10/SC6_CRITERION_REVIEW.md",
+    "exists": true,
+    "bytes": 21522,
+    "sha256": "44774ef536bba17b279d01385996b16256aad8191568fe9def98a23c5cd361c8"
+  },
+  {
+    "path": "docs/qa/2026-09-16-followup/nx10/fsync3/probe-durability-output.json",
+    "exists": true,
+    "bytes": 3920,
+    "sha256": "80987eb3c9788524f6e9bf105f8ec1d8521e2b7ece8352ae2a14e6616b1a18ac"
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "pathname": "/chat",
+  "routeName": "chat-alias",
+  "viewport": "desktop",
+  "verifiedPathname": "/chat",
+  "routeMarkerFound": true,
+  "passes": 41,
+  "violations": [],
+  "criticalSerious": []
+}

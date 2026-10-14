@@ -1,0 +1,84 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+__________ test_git_helper_rejects_working_directory_outside_project ___________
+
+tmp_path = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-PATH-API-BOUNDARY-RECHECK-01/run-20261015-path/red/runtime/pytest/test_git_helper_rejects_workin0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x128de7ac0>
+
+    def test_git_helper_rejects_working_directory_outside_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        project_root = tmp_path / "project"
+        project_root.mkdir()
+        outside = tmp_path / "outside"
+        outside.mkdir()
+        monkeypatch.setattr(config.paths, "project_root", project_root)
+    
+>       with pytest.raises(HTTPException) as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE HTTPException
+
+tests/test_git_api_boundary.py:48: Failed
+_______________ TestHelpers.test_git_command_failure_maps_to_400 _______________
+
+self = <tests.test_git_api_endpoints.TestHelpers object at 0x128eed480>
+tmp_path = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-PATH-API-BOUNDARY-RECHECK-01/run-20261015-path/red/runtime/pytest/test_git_command_failure_maps_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x128de7ce0>
+
+    def test_git_command_failure_maps_to_400(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(config.paths, "project_root", tmp_path)
+    
+>       with pytest.raises(HTTPException) as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE HTTPException
+
+tests/test_git_api_endpoints.py:335: Failed
+______________ test_resolve_allowed_path_rejects_absolute_escape _______________
+
+tmp_path = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-PATH-API-BOUNDARY-RECHECK-01/run-20261015-path/red/runtime/pytest/test_resolve_allowed_path_reje0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x129198550>
+
+    def test_resolve_allowed_path_rejects_absolute_escape(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        workspace = tmp_path / "workspace"
+        workspace.mkdir()
+        outside = tmp_path / "outside"
+        outside.mkdir()
+        monkeypatch.setattr(config.paths, "project_root", workspace)
+    
+>       with pytest.raises(PathSecurityError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE PathSecurityError
+
+tests/test_path_security.py:33: Failed
+_______________ test_resolve_allowed_path_rejects_symlink_escape _______________
+
+tmp_path = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-PATH-API-BOUNDARY-RECHECK-01/run-20261015-path/red/runtime/pytest/test_resolve_allowed_path_reje1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x129198c50>
+
+    def test_resolve_allowed_path_rejects_symlink_escape(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        workspace = tmp_path / "workspace"
+        workspace.mkdir()
+        outside = tmp_path / "outside"
+        outside.mkdir()
+        (workspace / "link").symlink_to(outside, target_is_directory=True)
+        monkeypatch.setattr(config.paths, "project_root", workspace)
+    
+>       with pytest.raises(PathSecurityError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE PathSecurityError
+
+tests/test_path_security.py:45: Failed
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+.venv/lib/python3.13/site-packages/starlette/testclient.py:53
+  /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_git_api_boundary.py::test_git_helper_rejects_working_directory_outside_project
+FAILED tests/test_git_api_endpoints.py::TestHelpers::test_git_command_failure_maps_to_400
+FAILED tests/test_path_security.py::test_resolve_allowed_path_rejects_absolute_escape
+FAILED tests/test_path_security.py::test_resolve_allowed_path_rejects_symlink_escape
+4 failed, 2 warnings in 1.93s

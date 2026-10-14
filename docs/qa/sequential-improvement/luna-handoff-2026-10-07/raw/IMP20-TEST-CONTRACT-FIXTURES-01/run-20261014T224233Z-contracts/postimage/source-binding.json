@@ -1,0 +1,13 @@
+{
+  "head": "481a634195bd3924ed601f1b881958c75e5e6892",
+  "files": {
+    "tests/test_execution_request_preservation.py": "65c4dbad8467b1ea15cec54656aa1de09068cc6f59354187298a66091d519f8a",
+    "tests/test_durable_memory_purge.py": "8d66a7c95a8ca4d2be48cf1c5081293cf9bb70d18f82003767acf89cf65e6373",
+    "tests/test_fr_context_end_to_end.py": "89766a525ce0cd01e8b0bcd66ce6713e42e5391f0bc3f1c25ff7095a9e4dad43",
+    "src/antigravity_k/engine/vector_store.py": "e15643641b1fc386c3a163c743bdc7addd47f3fb4b32f292d79515dbeaf72925",
+    "src/antigravity_k/engine/gbrain.py": "ab67f572a199d0b31787c4f6e1bd5aaeb62aaa29175817378e29eb0734269e49",
+    "src/antigravity_k/engine/conversation_store.py": "98dcbe3890dc4e1481ae2fa5a35cefeea328925a5d61e7572e60cb749c2db496",
+    "src/antigravity_k/engine/orchestrator_execution_handlers.py": "4a0493ca099bc68a7084c6c696365d894e9f139f0ab34ebb813e13ac73ba6284",
+    "src/antigravity_k/engine/turn_tool_constraints.py": "9d3aaf876c0211924953bb4574b6b0e82f31107651c017d9542db7414ffb48b3"
+  }
+}

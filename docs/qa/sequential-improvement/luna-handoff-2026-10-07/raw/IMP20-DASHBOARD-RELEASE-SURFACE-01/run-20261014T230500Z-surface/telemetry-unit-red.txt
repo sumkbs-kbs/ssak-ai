@@ -1,0 +1,30 @@
+
+ RUN  v4.1.11 /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/dashboard
+
+ ❯ src/components/Layout/__tests__/SystemTelemetricsBar.cr10.test.tsx (12 tests | 1 failed | 11 skipped) 19ms
+     × C10-02: 새 관측이 화면 시계보다 앞서도 서버 uptime을 줄이지 않는다 18ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/Layout/__tests__/SystemTelemetricsBar.cr10.test.tsx > SystemTelemetricsBar · CR-10 > C10-02: 새 관측이 화면 시계보다 앞서도 서버 uptime을 줄이지 않는다
+AssertionError: expected '14M 59S' to be '15M 00S' // Object.is equality
+
+Expected: "15M 00S"
+Received: "14M 59S"
+
+ ❯ src/components/Layout/__tests__/SystemTelemetricsBar.cr10.test.tsx:199:41
+    197|       setStatus({ state: 'live', observedAt: Date.now(), uptimeSeconds…
+    198|     });
+    199|     expect(value('telemetrics-uptime')).toBe('15M 00S');
+       |                                         ^
+    200|
+    201|     act(() => { vi.advanceTimersByTime(1_500); });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 11 skipped (12)
+   Start at  08:13:23
+   Duration  581ms (transform 38ms, setup 87ms, import 57ms, tests 19ms, environment 352ms)
+
