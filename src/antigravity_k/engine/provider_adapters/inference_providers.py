@@ -434,7 +434,7 @@ class OpenRouterProvider(BaseInferenceProvider):
             headers=headers,
         )
         try:
-            with safe_urlopen(req, timeout=300) as response:
+            with safe_urlopen(req, timeout=300, max_retries=0) as response:
                 # 네이티브 tool_call 누적 버퍼 (스트리밍 tool_calls 조립용)
                 pending_tool_calls: dict[int, JsonMap] = {}
                 for line in response:
@@ -481,15 +481,15 @@ class OpenRouterProvider(BaseInferenceProvider):
                                 pending_tool_calls.clear()
                     except json.JSONDecodeError:
                         continue
-        except Exception as e:
-            err_body = ""
-            if isinstance(e, _ReadableError):
-                try:
-                    err_body = f" Body: {e.read().decode('utf-8', errors='replace')}"
-                except Exception:
-                    pass
-            logger.exception("API stream failed (%s)%s", url, err_body)
-            yield f"[API Error for {loaded.profile.name}] {e}{err_body}"
+        except HTTPError as exc:
+            raise NativeTransportError(TransportFailure.HTTP, upstream_status=exc.code) from exc
+        except TimeoutError as exc:
+            raise NativeTransportError(TransportFailure.TIMEOUT) from exc
+        except URLError as exc:
+            failure = TransportFailure.TIMEOUT if isinstance(exc.reason, TimeoutError) else TransportFailure.UNAVAILABLE
+            raise NativeTransportError(failure) from exc
+        except OSError as exc:
+            raise NativeTransportError(TransportFailure.UNAVAILABLE) from exc
 
 
 class OllamaProvider(BaseInferenceProvider):
@@ -615,7 +615,7 @@ class OllamaProvider(BaseInferenceProvider):
             headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"},
         )
         try:
-            with safe_urlopen(req, timeout=300) as response:
+            with safe_urlopen(req, timeout=300, max_retries=0) as response:
                 result = _as_json_map(cast(object, json.loads(response.read().decode("utf-8"))))
                 message = _as_json_map(_first_choice(result).get("message"))
                 content = cast(str, message.get("content", ""))
@@ -636,9 +636,15 @@ class OllamaProvider(BaseInferenceProvider):
                         # reasoning이 아직 진행 중이면 (완결된 content가 없음) 빈 응답 방지
                         content = reasoning.strip()
                 return content
-        except Exception as e:
-            logger.exception("Local API generation failed")
-            return f"[API Error for {loaded.profile.name}] {e}"
+        except HTTPError as exc:
+            raise NativeTransportError(TransportFailure.HTTP, upstream_status=exc.code) from exc
+        except TimeoutError as exc:
+            raise NativeTransportError(TransportFailure.TIMEOUT) from exc
+        except URLError as exc:
+            failure = TransportFailure.TIMEOUT if isinstance(exc.reason, TimeoutError) else TransportFailure.UNAVAILABLE
+            raise NativeTransportError(failure) from exc
+        except OSError as exc:
+            raise NativeTransportError(TransportFailure.UNAVAILABLE) from exc
 
     def _generate_native(
         self,
