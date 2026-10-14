@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from antigravity_k.api.path_security import PathSecurityError, resolve_allowed_path
+from antigravity_k.api.path_security import PathSecurityError, allowed_roots, resolve_allowed_path
 from antigravity_k.config import config
 
 
@@ -29,6 +29,8 @@ def test_resolve_allowed_path_rejects_absolute_escape(tmp_path: Path, monkeypatc
     outside = tmp_path / "outside"
     outside.mkdir()
     monkeypatch.setattr(config.paths, "project_root", workspace)
+    monkeypatch.setenv("AGK_ALLOWED_ROOTS", str(workspace))
+    assert all(not outside.resolve().is_relative_to(root) for root in allowed_roots())
 
     with pytest.raises(PathSecurityError):
         resolve_allowed_path(outside)
@@ -41,6 +43,19 @@ def test_resolve_allowed_path_rejects_symlink_escape(tmp_path: Path, monkeypatch
     outside.mkdir()
     (workspace / "link").symlink_to(outside, target_is_directory=True)
     monkeypatch.setattr(config.paths, "project_root", workspace)
+    monkeypatch.setenv("AGK_ALLOWED_ROOTS", str(workspace))
+    assert all(not outside.resolve().is_relative_to(root) for root in allowed_roots())
 
     with pytest.raises(PathSecurityError):
         resolve_allowed_path(workspace / "link" / "secret.md")
+
+
+def test_resolve_allowed_path_accepts_explicit_allowlist(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    workspace = tmp_path / "workspace"
+    allowed = tmp_path / "explicitly-allowed"
+    monkeypatch.setattr(config.paths, "project_root", workspace)
+    monkeypatch.setenv("AGK_ALLOWED_ROOTS", str(allowed))
+
+    resolved = resolve_allowed_path(allowed / "note.md")
+
+    assert resolved == allowed / "note.md"

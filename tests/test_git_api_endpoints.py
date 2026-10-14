@@ -10,6 +10,7 @@ import subprocess
 from collections.abc import Callable, Iterator
 from pathlib import Path
 from typing import Protocol, cast
+from unittest.mock import patch
 
 import pytest
 from fastapi import HTTPException
@@ -331,9 +332,12 @@ class TestHelpers:
 
     def test_git_command_failure_maps_to_400(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setattr(config.paths, "project_root", tmp_path)
+        _git_raw(["init"], str(tmp_path))
 
-        with pytest.raises(HTTPException) as error:
-            _ = _git(["show", "HEAD"], cwd=".")  # 커밋 없는 저장소
+        with patch.object(subprocess, "run", wraps=subprocess.run) as run:
+            with pytest.raises(HTTPException) as error:
+                _ = _git(["show", "HEAD"], cwd=".")  # 커밋 없는 저장소
+            assert run.call_count == 1
 
         assert error.value.status_code == 400
 

@@ -3,11 +3,13 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol, cast, final
+from unittest.mock import patch
 
 import pytest
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
+from antigravity_k.api.path_security import allowed_roots
 from antigravity_k.api.routes import git_api
 from antigravity_k.api.server import app
 from antigravity_k.config import config
@@ -44,9 +46,13 @@ def test_git_helper_rejects_working_directory_outside_project(tmp_path: Path, mo
     outside = tmp_path / "outside"
     outside.mkdir()
     monkeypatch.setattr(config.paths, "project_root", project_root)
+    monkeypatch.setenv("AGK_ALLOWED_ROOTS", str(project_root))
+    assert all(not outside.resolve().is_relative_to(root) for root in allowed_roots())
 
-    with pytest.raises(HTTPException) as error:
-        _ = _git_helper(["status"], cwd=str(outside))
+    with patch.object(subprocess, "run", wraps=subprocess.run) as run:
+        with pytest.raises(HTTPException) as error:
+            _ = _git_helper(["status"], cwd=str(outside))
+        assert run.call_count == 0
 
     assert error.value.status_code == 403
 
