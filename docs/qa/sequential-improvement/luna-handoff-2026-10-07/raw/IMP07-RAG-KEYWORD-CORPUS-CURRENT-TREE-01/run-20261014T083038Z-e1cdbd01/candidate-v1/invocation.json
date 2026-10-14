@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-o",
+    "pythonpath=src:.",
+    "-p",
+    "source_guard",
+    "tests/test_project_rag_keyword_corpus_contract.py",
+    "tests/test_rag_incremental.py",
+    "tests/test_rag_subdir_sync_regression.py",
+    "tests/test_rag_provenance.py",
+    "tests/test_rag01_chunk_identity.py::TestUniqueIds",
+    "-q",
+    "--tb=short",
+    "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-KEYWORD-CORPUS-CURRENT-TREE-01/run-20261014T083038Z-e1cdbd01/candidate-v1/junit.xml"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "env_overrides": {
+    "PYTHONPATH": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-KEYWORD-CORPUS-CURRENT-TREE-01/run-20261014T083038Z-e1cdbd01:/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src:/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+    "RAG_BINDING_CAPTURE_ROOT": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-KEYWORD-CORPUS-CURRENT-TREE-01/run-20261014T083038Z-e1cdbd01/candidate-v1/captures",
+    "ANONYMIZED_TELEMETRY": "False",
+    "AGK_AUTO_DISCOVER_LOCAL_MODELS": "false",
+    "BINDING_CHECK_DIR": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-KEYWORD-CORPUS-CURRENT-TREE-01/run-20261014T083038Z-e1cdbd01/candidate-v1"
+  },
+  "source_sha256": {
+    "src/antigravity_k/engine/vector_store.py": "6b4a5c74fea5d6f1106d5b3e1949de14716cd70ccd7a116053616cdf32e87b78",
+    "src/antigravity_k/engine/project_embedding_binding.py": "593d1263f39584ac9ac05347069f03441cc6e0df4f92412372e09502bf169a68",
+    "src/antigravity_k/engine/rag_indexer.py": "aab8bf7af20d8e4b16743b2d9b47e694417fcaf0503a067b7a2fd88677ae195c",
+    "tests/test_project_rag_embedding_identity_contract.py": "283c2dd7b63932076f7fe0794f0974859f0bdcf13a74291dea54be6687599145",
+    "tests/test_project_rag_keyword_corpus_contract.py": "efda56d2f372a426f6d92836065a61e61971fe89c14e4a3149dccc62466a8c1f"
+  },
+  "effective_preimage_sha256": null
+}

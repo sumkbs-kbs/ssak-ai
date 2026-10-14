@@ -1,0 +1,70 @@
+{
+  "nodeid": "tests/test_project_rag_keyword_corpus_contract.py::test_hybrid_only_existing_semantic_channels_embed[ledger-1]",
+  "engine_calls": [
+    {
+      "text": [
+        "ledger"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "query",
+      "query_texts": null,
+      "query_embeddings": [
+        [
+          1.0,
+          7.0,
+          0.5
+        ]
+      ]
+    }
+  ],
+  "observations": {
+    "results": [
+      {
+        "id": "identifier",
+        "text": "def reconcile_ledger(): pass",
+        "metadata": {
+          "node_name": "reconcile_ledger",
+          "source": "worker.py"
+        },
+        "provenance": {
+          "source_id": "identifier",
+          "source": "worker.py",
+          "source_type": "code",
+          "node_type": null,
+          "node_name": "reconcile_ledger",
+          "start_line": null,
+          "end_line": null,
+          "source_hash": null,
+          "indexed_at": null,
+          "freshness": "unknown"
+        }
+      },
+      {
+        "id": "text",
+        "text": "reconcile ledger happens here",
+        "metadata": {
+          "source": "notes.md",
+          "node_name": "notes"
+        },
+        "provenance": {
+          "source_id": "text",
+          "source": "notes.md",
+          "source_type": "code",
+          "node_type": null,
+          "node_name": "notes",
+          "start_line": null,
+          "end_line": null,
+          "source_hash": null,
+          "indexed_at": null,
+          "freshness": "unknown"
+        }
+      }
+    ]
+  }
+}

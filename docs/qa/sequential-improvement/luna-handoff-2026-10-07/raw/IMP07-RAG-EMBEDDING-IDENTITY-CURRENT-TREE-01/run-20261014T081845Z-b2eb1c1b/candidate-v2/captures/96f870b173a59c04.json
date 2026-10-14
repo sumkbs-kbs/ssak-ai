@@ -1,0 +1,7 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_explicit_open_rejects_legacy_without_metadata_even_when_empty[False]",
+  "engine_calls": [],
+  "forbidden": [],
+  "native": [],
+  "observations": {}
+}

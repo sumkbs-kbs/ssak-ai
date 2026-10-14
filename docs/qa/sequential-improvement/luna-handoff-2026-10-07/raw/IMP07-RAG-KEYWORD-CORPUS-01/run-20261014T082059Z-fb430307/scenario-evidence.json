@@ -1,0 +1,293 @@
+{
+  "invocation": "candidate-v2/invocation.json",
+  "junit": "candidate-v2/junit.xml",
+  "captured_native_cases": [
+    {
+      "scenario": "tests/test_project_rag_keyword_corpus_contract.py::test_real_keyword_export_rank_without_embedding[invoice archive-filename]",
+      "artifact": "candidate-v2/captures/22c9268c965842a1.json",
+      "model_calls": 0,
+      "native_operations": 3,
+      "forbidden": []
+    },
+    {
+      "scenario": "tests/test_project_rag_keyword_corpus_contract.py::test_native_export_preserves_existing_lexical_ranking[reconcile ledger]",
+      "artifact": "candidate-v2/captures/3238d89bef2f7857.json",
+      "model_calls": 0,
+      "native_operations": 0,
+      "forbidden": []
+    },
+    {
+      "scenario": "tests/test_project_rag_keyword_corpus_contract.py::test_hybrid_only_existing_semantic_channels_embed[ledger-1]",
+      "artifact": "candidate-v2/captures/373f5f09861a9876.json",
+      "model_calls": 1,
+      "native_operations": 1,
+      "forbidden": []
+    },
+    {
+      "scenario": "tests/test_project_rag_keyword_corpus_contract.py::test_empty_or_no_match_keyword_never_embeds[True-unmatchedword]",
+      "artifact": "candidate-v2/captures/3ba27e88d8b9f56e.json",
+      "model_calls": 0,
+      "native_operations": 0,
+      "forbidden": []
+    },
+    {
+      "scenario": "tests/test_project_rag_keyword_corpus_contract.py::test_real_keyword_export_rank_without_embedding[reconcile ledger-identifier]",
+      "artifact": "candidate-v2/captures/3ccd4fbc28955634.json",
+      "model_calls": 0,
+      "native_operations": 3,
+      "forbidden": []
+    },
+    {
+      "scenario": "tests/test_project_rag_keyword_corpus_contract.py::test_closed_and_export_failure_surface_without_model",
+      "artifact": "candidate-v2/captures/4e3ba2afcb79fd15.json",
+      "model_calls": 0,
+      "native_operations": 0,
+      "forbidden": []
+    },
+    {
+      "scenario": "tests/test_project_rag_keyword_corpus_contract.py::test_hybrid_only_existing_semantic_channels_embed[context-2]",
+      "artifact": "candidate-v2/captures/608ad1b019578a66.json",
+      "model_calls": 2,
+      "native_operations": 2,
+      "forbidden": []
+    },
+    {
+      "scenario": "tests/test_project_rag_keyword_corpus_contract.py::test_empty_or_no_match_keyword_never_embeds[True-!!!]",
+      "artifact": "candidate-v2/captures/6188b02ce182cf8c.json",
+      "model_calls": 0,
+      "native_operations": 0,
+      "forbidden": []
+    },
+    {
+      "scenario": "tests/test_project_rag_keyword_corpus_contract.py::test_keyword_corpus_change_delete_reopen_and_other_project",
+      "artifact": "candidate-v2/captures/715b199ccdcd617c.json",
+      "model_calls": 0,
+      "native_operations": 5,
+      "forbidden": []
+    },
+    {
+      "scenario": "tests/test_project_rag_keyword_corpus_contract.py::test_existing_stale_filters_and_provenance_unchanged",
+      "artifact": "candidate-v2/captures/75dd1ee59344a3b8.json",
+      "model_calls": 2,
+      "native_operations": 3,
+      "forbidden": []
+    },
+    {
+      "scenario": "tests/test_project_rag_keyword_corpus_contract.py::test_empty_or_no_match_keyword_never_embeds[False-unmatchedword]",
+      "artifact": "candidate-v2/captures/7c2a06d61d2f917f.json",
+      "model_calls": 0,
+      "native_operations": 0,
+      "forbidden": []
+    },
+    {
+      "scenario": "tests/test_project_rag_keyword_corpus_contract.py::test_native_export_preserves_existing_lexical_ranking[invoice archive]",
+      "artifact": "candidate-v2/captures/7db20a1de232a4a5.json",
+      "model_calls": 0,
+      "native_operations": 0,
+      "forbidden": []
+    },
+    {
+      "scenario": "tests/test_project_rag_keyword_corpus_contract.py::test_empty_or_no_match_keyword_never_embeds[False-]",
+      "artifact": "candidate-v2/captures/bb351fc2f124705e.json",
+      "model_calls": 0,
+      "native_operations": 0,
+      "forbidden": []
+    },
+    {
+      "scenario": "tests/test_project_rag_keyword_corpus_contract.py::test_empty_or_no_match_keyword_never_embeds[True-]",
+      "artifact": "candidate-v2/captures/cee8795de00fc356.json",
+      "model_calls": 0,
+      "native_operations": 0,
+      "forbidden": []
+    },
+    {
+      "scenario": "tests/test_project_rag_keyword_corpus_contract.py::test_empty_or_no_match_keyword_never_embeds[False-!!!]",
+      "artifact": "candidate-v2/captures/d0824f8579c4c625.json",
+      "model_calls": 0,
+      "native_operations": 0,
+      "forbidden": []
+    }
+  ],
+  "all_selected_cases": [
+    {
+      "name": "test_real_keyword_export_rank_without_embedding[reconcile ledger-identifier]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_real_keyword_export_rank_without_embedding[invoice archive-filename]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_empty_or_no_match_keyword_never_embeds[False-]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_empty_or_no_match_keyword_never_embeds[False-unmatchedword]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_empty_or_no_match_keyword_never_embeds[False-!!!]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_empty_or_no_match_keyword_never_embeds[True-]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_empty_or_no_match_keyword_never_embeds[True-unmatchedword]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_empty_or_no_match_keyword_never_embeds[True-!!!]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_hybrid_only_existing_semantic_channels_embed[ledger-1]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_hybrid_only_existing_semantic_channels_embed[context-2]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_keyword_corpus_change_delete_reopen_and_other_project",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_existing_stale_filters_and_provenance_unchanged",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_closed_and_export_failure_surface_without_model",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_private_chunks_compatibility_and_genuine_absence_fallback",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_export_is_not_semantic_fallback[None]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_export_is_not_semantic_fallback[bad]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_export_is_not_semantic_fallback[value2]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_export_is_not_semantic_fallback[value3]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_export_is_not_semantic_fallback[value4]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_export_is_not_semantic_fallback[value5]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_present_but_invalid_export_capability_is_not_fallback[None]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_present_but_invalid_export_capability_is_not_fallback[7]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_present_but_invalid_export_capability_is_not_fallback[not callable]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_native_export_preserves_existing_lexical_ranking[reconcile ledger]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_native_export_preserves_existing_lexical_ranking[invoice archive]",
+      "classname": "tests.test_project_rag_keyword_corpus_contract",
+      "passed": true
+    },
+    {
+      "name": "test_index_project_reuses_manifest_for_persistent_store",
+      "classname": "tests.test_rag_incremental",
+      "passed": true
+    },
+    {
+      "name": "test_index_project_batches_upserts_and_reindexes_changed_file",
+      "classname": "tests.test_rag_incremental",
+      "passed": true
+    },
+    {
+      "name": "test_index_project_removes_stale_chunks_when_file_becomes_empty",
+      "classname": "tests.test_rag_incremental",
+      "passed": true
+    },
+    {
+      "name": "test_subdir_sync_does_not_delete_chunks_outside_scope",
+      "classname": "tests.test_rag_subdir_sync_regression",
+      "passed": true
+    },
+    {
+      "name": "test_indexed_chunks_expose_provenance_and_freshness",
+      "classname": "tests.test_rag_provenance",
+      "passed": true
+    },
+    {
+      "name": "test_format_context_exposes_citation_marker",
+      "classname": "tests.test_rag_provenance",
+      "passed": true
+    },
+    {
+      "name": "test_validate_citations_rejects_missing_unknown_and_unverified_sources",
+      "classname": "tests.test_rag_provenance",
+      "passed": true
+    },
+    {
+      "name": "test_repeated_headings_get_unique_ids",
+      "classname": "tests.test_rag01_chunk_identity.TestUniqueIds",
+      "passed": true
+    },
+    {
+      "name": "test_long_common_prefix_docs_get_unique_ids",
+      "classname": "tests.test_rag01_chunk_identity.TestUniqueIds",
+      "passed": true
+    },
+    {
+      "name": "test_multiple_intros_unique",
+      "classname": "tests.test_rag01_chunk_identity.TestUniqueIds",
+      "passed": true
+    },
+    {
+      "name": "test_mixed_table_doc_unique_ids",
+      "classname": "tests.test_rag01_chunk_identity.TestUniqueIds",
+      "passed": true
+    }
+  ]
+}

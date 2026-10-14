@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "git",
+    "apply",
+    "--unsafe-paths",
+    "--directory=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-KEYWORD-CORPUS-CURRENT-TREE-01/run-20261014T083038Z-e1cdbd01/reconstruction",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-KEYWORD-CORPUS-CURRENT-TREE-01/run-20261014T083038Z-e1cdbd01/task-only.patch"
+  ],
+  "returncode": 0,
+  "matches": {
+    "src/antigravity_k/engine/rag_indexer.py": true,
+    "tests/test_project_rag_keyword_corpus_contract.py": true
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "nodeid": "tests/test_project_rag_keyword_corpus_contract.py::test_real_keyword_export_rank_without_embedding[invoice archive-filename]",
+  "engine_calls": [],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "get",
+      "include": [
+        "embeddings"
+      ]
+    },
+    {
+      "operation": "get",
+      "include": [
+        "embeddings"
+      ]
+    },
+    {
+      "operation": "get",
+      "include": [
+        "documents",
+        "metadatas"
+      ]
+    }
+  ],
+  "observations": {
+    "results": [
+      {
+        "id": "filename",
+        "text": "unrelated content",
+        "metadata": {
+          "source": "invoice_archive.py",
+          "node_name": "archive"
+        },
+        "provenance": {
+          "source_id": "filename",
+          "source": "invoice_archive.py",
+          "source_type": "code",
+          "node_type": null,
+          "node_name": "archive",
+          "start_line": null,
+          "end_line": null,
+          "source_hash": null,
+          "indexed_at": null,
+          "freshness": "unknown"
+        }
+      }
+    ]
+  }
+}

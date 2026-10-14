@@ -1,0 +1,24 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_unknown_first_batch_dimension_consistency_and_float32_norm",
+  "engine_calls": [
+    {
+      "text": [
+        "stored document",
+        "stored document"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "stored document",
+        "stored document"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [],
+  "observations": {}
+}

@@ -1,0 +1,22 @@
+{
+  "modules": {
+    "antigravity_k.engine.vector_store": {
+      "path": "None",
+      "sha256": null
+    },
+    "antigravity_k.engine.project_embedding_binding": {
+      "path": "None",
+      "sha256": null
+    },
+    "antigravity_k.engine.rag_indexer": {
+      "path": "None",
+      "sha256": null
+    },
+    "antigravity_k.engine.embeddings": {
+      "path": "None",
+      "sha256": null
+    }
+  },
+  "socket_attempts": [],
+  "exitstatus": 1
+}

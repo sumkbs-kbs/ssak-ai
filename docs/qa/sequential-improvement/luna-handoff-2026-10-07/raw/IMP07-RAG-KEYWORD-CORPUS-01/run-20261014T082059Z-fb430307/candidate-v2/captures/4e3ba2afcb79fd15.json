@@ -1,0 +1,7 @@
+{
+  "nodeid": "tests/test_project_rag_keyword_corpus_contract.py::test_closed_and_export_failure_surface_without_model",
+  "engine_calls": [],
+  "forbidden": [],
+  "native": [],
+  "observations": {}
+}

@@ -1,0 +1,24 @@
+{
+  "status": "READY_FOR_INDEPENDENT_REVIEW",
+  "scope": "CURRENT_ROOT_OFFLINE",
+  "passed": 36,
+  "new_keyword": 25,
+  "adjacent": 11,
+  "identity_58_replayed": false,
+  "static_checks": {
+    "ruff": 0,
+    "basedpyright": 0,
+    "format": 0,
+    "compile": 0
+  },
+  "socket_attempts": 0,
+  "guarded_capture_count": 15,
+  "source_sha256": {
+    "src/antigravity_k/engine/rag_indexer.py": "aab8bf7af20d8e4b16743b2d9b47e694417fcaf0503a067b7a2fd88677ae195c",
+    "tests/test_project_rag_keyword_corpus_contract.py": "efda56d2f372a426f6d92836065a61e61971fe89c14e4a3149dccc62466a8c1f"
+  },
+  "scope_verification": "scope-verification.json",
+  "reconstruction": "reconstruction.json",
+  "live": "NOT_RUN",
+  "git_mutations": false
+}

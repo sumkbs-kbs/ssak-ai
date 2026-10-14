@@ -1,0 +1,70 @@
+{
+  "nodeid": "tests/test_project_rag_keyword_corpus_contract.py::test_real_keyword_export_rank_without_embedding[reconcile ledger-identifier]",
+  "engine_calls": [],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "get",
+      "include": [
+        "embeddings"
+      ]
+    },
+    {
+      "operation": "get",
+      "include": [
+        "embeddings"
+      ]
+    },
+    {
+      "operation": "get",
+      "include": [
+        "documents",
+        "metadatas"
+      ]
+    }
+  ],
+  "observations": {
+    "results": [
+      {
+        "id": "identifier",
+        "text": "def reconcile_ledger(): pass",
+        "metadata": {
+          "node_name": "reconcile_ledger",
+          "source": "worker.py"
+        },
+        "provenance": {
+          "source_id": "identifier",
+          "source": "worker.py",
+          "source_type": "code",
+          "node_type": null,
+          "node_name": "reconcile_ledger",
+          "start_line": null,
+          "end_line": null,
+          "source_hash": null,
+          "indexed_at": null,
+          "freshness": "unknown"
+        }
+      },
+      {
+        "id": "text",
+        "text": "reconcile ledger happens here",
+        "metadata": {
+          "source": "notes.md",
+          "node_name": "notes"
+        },
+        "provenance": {
+          "source_id": "text",
+          "source": "notes.md",
+          "source_type": "code",
+          "node_type": null,
+          "node_name": "notes",
+          "start_line": null,
+          "end_line": null,
+          "source_hash": null,
+          "indexed_at": null,
+          "freshness": "unknown"
+        }
+      }
+    ]
+  }
+}

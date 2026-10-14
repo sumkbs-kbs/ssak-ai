@@ -1,0 +1,10 @@
+{
+  "protected_python_files": 1243,
+  "unchanged": true,
+  "staged_sha256": "84297d5d47940af4560187d6b9f531b3b1eed5a7fa6cd1dca20c4da48fddab6f",
+  "HEAD": "2a8791ed8259543b54a12225bcc46cea69451efa",
+  "root_lifecycle_lock_preserved": true,
+  "persistent_only_preserved": true,
+  "no_global_cache_clear_preserved": true,
+  "unrelated_dependencies_generate_return_preserved": true
+}

@@ -1,0 +1,7 @@
+{
+  "nodeid": "tests/test_project_rag_keyword_corpus_contract.py::test_empty_or_no_match_keyword_never_embeds[True-unmatchedword]",
+  "engine_calls": [],
+  "forbidden": [],
+  "native": [],
+  "observations": {}
+}

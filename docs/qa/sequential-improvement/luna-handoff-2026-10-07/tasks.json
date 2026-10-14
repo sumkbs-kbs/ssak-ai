@@ -1,6 +1,6 @@
 {
   "current_snapshot": {
-    "as_of_utc": "2026-10-14T07:54:00Z",
+    "as_of_utc": "2026-10-14T08:34:00Z",
     "scope": "Listed IMP-09 scoped evidence and active priority queue only; other parent acceptance not re-audited",
     "authority": "This current_snapshot and STATUS.md current section take precedence for listed rows; original recorded_at/summary/tasks/subtasks below remain historical",
     "parent_status": {
@@ -112,11 +112,43 @@
       },
       {
         "id": "IMP-07-RAG-EMBEDDING-PREREQUISITES-01",
-        "status": "APPROVED_SCOPED_CLEAN_CANDIDATE_COMMITTED",
+        "status": "APPROVED_SCOPED_AND_PUSHED",
         "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/review/independent-review.md",
         "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/result.json",
         "limits": "Clean66/static4 and annotation-only Protocol/config-path closure; socket/model0; no RAG quality/defaultactivation",
-        "feature_commit": "b9709defca9576df604e4c41674a51551ce27c09"
+        "feature_commit": "b9709defca9576df604e4c41674a51551ce27c09",
+        "qa_commit": "2a8791ed8259543b54a12225bcc46cea69451efa"
+      },
+      {
+        "id": "IMP-07-RAG-EMBEDDING-IDENTITY-01",
+        "status": "APPROVED_SCOPED_AND_PUSHED",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/review/independent-review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/scenario-evidence.json",
+        "feature_commit": "4de2ef8b3df692e36f2e39230e6428e041c158d4",
+        "qa_commit": "f11c8563e88540c8c8322ba98c23eff53e0604e6",
+        "limits": "Clean58/root58 same cases separately bound; strict configured identity/prefix/persistence/failed-reindex preservation. WeightrevisionUNVERIFIED/defaultactivationnone/livequalityNOT_RUN"
+      },
+      {
+        "id": "IMP-07-RAG-EMBEDDING-IDENTITY-CURRENT-TREE-01",
+        "status": "APPROVED_SCOPED_ROOT_COMPOSITION",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-CURRENT-TREE-01/run-20261014T081845Z-b2eb1c1b/review/independent-review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-CURRENT-TREE-01/run-20261014T081845Z-b2eb1c1b/result.json",
+        "limits": "Fresh root58/static4; lifecyclelock/persistentonly/no-globalclear and unrelateddeps preserved; cleanfeaturepublishedseparately"
+      },
+      {
+        "id": "IMP-07-RAG-KEYWORD-CORPUS-01",
+        "status": "APPROVED_SCOPED_COMMITTED",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-KEYWORD-CORPUS-01/run-20261014T082059Z-fb430307/review/independent-review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-KEYWORD-CORPUS-01/run-20261014T082059Z-fb430307/scenario-evidence.json",
+        "feature_commit": "b7204877619ba2bf70e125ec9a093a09d4bd960d",
+        "limits": "Clean36/root36 same cases separatelybound; keywordmodel0, hybridstub1..2; no semanticquality/largedataperfclaim"
+      },
+      {
+        "id": "IMP-07-RAG-KEYWORD-CORPUS-CURRENT-TREE-01",
+        "status": "APPROVED_SCOPED_ROOT_COMPOSITION",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-KEYWORD-CORPUS-CURRENT-TREE-01/run-20261014T083038Z-e1cdbd01/review/independent-review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-KEYWORD-CORPUS-CURRENT-TREE-01/run-20261014T083038Z-e1cdbd01/result.json",
+        "limits": "Root36/static4; identicalapprovedkeyword/RRF/provenance; otherrootcode/staged97 preserved"
       }
     ],
     "current_capability_boundary": {
@@ -128,11 +160,13 @@
       "historical_format_omitted_vision": "FAIL_SEMANTIC_UNCHANGED",
       "native_direct_failure": "TYPED502_503_504_NO_AUTOMATIC_NATIVE_RETRY",
       "native_stream_failure": "TYPED_PROTOCOL_ERROR_AND_TOOL_BUFFERING_APPROVED_SCOPED",
-      "project_rag_embedding": "IMPLICIT_CHROMA_DEFAULT_MODEL_NOT_VERIFIED",
+      "project_rag_embedding": "EXPLICIT_OLLAMA_IDENTITY_OFFLINE_APPROVED_DEFAULT_LEGACY_UNVERIFIED",
       "compatible_transport_failure": "TYPED502_503_504_SHARED_OPENROUTER_LMSTUDIO_AND_OLLAMA_COMPATIBLE",
       "compatible_stream_failure": "TYPED_PROTOCOL_ERROR_REQUIRES_DONE_BEFORE_TOOLS",
       "default_agent_failure": "TYPED_FAILED_TASK_TERMINAL_NO_ASSISTANT_SUCCESS_OR_QUEUE",
-      "native_startup_fixture_sigsegv": "BASELINE_AND_CANDIDATE_MINUS11_PRESERVED_ROUTING_FIXTURES_ISOLATED_NOT_PRODUCTION_FIX"
+      "native_startup_fixture_sigsegv": "BASELINE_AND_CANDIDATE_MINUS11_PRESERVED_ROUTING_FIXTURES_ISOLATED_NOT_PRODUCTION_FIX",
+      "rag_keyword_provider_calls": "ZERO_FOR_PUBLIC_CHROMA_EXPORT_HYBRID_EXISTING1_OR2",
+      "rag_semantic_quality": "PREPARED30_DOC20_QUERY_METADATA_ONLY_INFERENCE_NOT_RUN"
     },
     "priority_queue": [
       {
@@ -210,13 +244,25 @@
         "id": "MEMORY_SEARCH_QUALITY",
         "status": "IN_PROGRESS",
         "scope": "Publish approved strict/native embedding dependency closure, then explicit opt-in RAG embedding identity and source-bound retrieval quality",
-        "next_concrete_task": "IMP-07-RAG-EMBEDDING-IDENTITY-01",
-        "current_task": "IMP-07-RAG-EMBEDDING-IDENTITY-01",
+        "next_concrete_task": "FROZEN_REAL_EMBEDDING30_DOC20_QUERY_THEN_STARTUP_ACCEPTANCE",
+        "current_task": "IMP-07-RAG-REAL-RETRIEVAL-01",
         "completed_subtasks": [
           {
             "id": "IMP-07-RAG-EMBEDDING-PREREQUISITES-01",
-            "status": "APPROVED_SCOPED_CLEAN_COMMITTED",
-            "feature_commit": "b9709defca9576df604e4c41674a51551ce27c09"
+            "status": "DONE_SCOPED_REVIEWED_AND_PUSHED",
+            "feature_commit": "b9709defca9576df604e4c41674a51551ce27c09",
+            "qa_commit": "2a8791ed8259543b54a12225bcc46cea69451efa"
+          },
+          {
+            "id": "IMP-07-RAG-EMBEDDING-IDENTITY-01",
+            "status": "DONE_SCOPED_REVIEWED_PUSHED_ROOT_INTEGRATED",
+            "feature_commit": "4de2ef8b3df692e36f2e39230e6428e041c158d4",
+            "qa_commit": "f11c8563e88540c8c8322ba98c23eff53e0604e6"
+          },
+          {
+            "id": "IMP-07-RAG-KEYWORD-CORPUS-01",
+            "status": "DONE_SCOPED_REVIEWED_COMMITTED_ROOT_INTEGRATED",
+            "feature_commit": "b7204877619ba2bf70e125ec9a093a09d4bd960d"
           }
         ]
       },
@@ -249,7 +295,7 @@
       "status_commit": "8ed827654cb608c55b22fe75b295abf3365114f4",
       "direct_transport_feature_commit": "8b22847730f5419307dda66f5ca6ab57fc1b023f",
       "direct_transport_qa_commit": "50437f0ccbb0dd512204ce38b640bd5c238eb97a",
-      "latest_remote_sha_verified": "23708fe45cfb9140f9934bec88ec487913e3f7f6",
+      "latest_remote_sha_verified": "f11c8563e88540c8c8322ba98c23eff53e0604e6",
       "native_stream_feature_commit": "97f898661195623ba87eb826e94b03538aecb38f",
       "native_stream_qa_commit": "d2aed8c1f7237f08f7b497e6760b792754c61b1e",
       "compatible_transport_feature_commit": "bad768d9bf07a805446edac98861d0a2f596b124",
@@ -261,10 +307,14 @@
       "process_restart_qa_commit": "58ca7e3339759b26f7ed4d38f850c13e219a19a1",
       "agent_failure_feature_commit": "fa31135b1d2a97ce721d60c13c050ae087810117",
       "agent_failure_qa_commit": "23708fe45cfb9140f9934bec88ec487913e3f7f6",
-      "commit_hook_mypy_source_files_latest": 574,
-      "embedding_prerequisites_feature_commit": "b9709defca9576df604e4c41674a51551ce27c09"
+      "commit_hook_mypy_source_files_latest": 575,
+      "embedding_prerequisites_feature_commit": "b9709defca9576df604e4c41674a51551ce27c09",
+      "embedding_prerequisites_qa_commit": "2a8791ed8259543b54a12225bcc46cea69451efa",
+      "rag_identity_feature_commit": "4de2ef8b3df692e36f2e39230e6428e041c158d4",
+      "rag_identity_qa_commit": "f11c8563e88540c8c8322ba98c23eff53e0604e6",
+      "rag_keyword_feature_commit": "b7204877619ba2bf70e125ec9a093a09d4bd960d"
     },
-    "next_task": "IMP-07-RAG-EMBEDDING-IDENTITY-01",
+    "next_task": "IMP-07-RAG-REAL-RETRIEVAL-01",
     "do_not_repeat": "Use saved successful receipts unless source, environment or a new failure hypothesis changes; do not replay old inference or reconstruct lost ledgers"
   },
   "recorded_at": "2026-10-07T13:16:06.378463+00:00",

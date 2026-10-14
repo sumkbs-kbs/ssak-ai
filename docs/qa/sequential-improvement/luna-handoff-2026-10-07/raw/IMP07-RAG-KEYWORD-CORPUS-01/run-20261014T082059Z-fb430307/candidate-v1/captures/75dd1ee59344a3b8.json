@@ -1,0 +1,61 @@
+{
+  "nodeid": "tests/test_project_rag_keyword_corpus_contract.py::test_existing_stale_filters_and_provenance_unchanged",
+  "engine_calls": [
+    {
+      "text": [
+        "ledger"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "ledger"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "upsert",
+      "ids": [
+        "b40018e0756304ab"
+      ],
+      "documents": [
+        "def ledger():\n    return 1"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          1.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "query",
+      "query_texts": null,
+      "query_embeddings": [
+        [
+          1.0,
+          7.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "query",
+      "query_texts": null,
+      "query_embeddings": [
+        [
+          1.0,
+          7.0,
+          0.5
+        ]
+      ]
+    }
+  ],
+  "observations": {}
+}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.800" timestamp="2026-10-14T17:22:37.534261+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_project_rag_keyword_corpus_contract" name="test_real_keyword_export_rank_without_embedding[reconcile ledger-identifier]" time="0.308"><failure message="AssertionError: assert 'text' == 'identifier'&#10;  &#10;  - identifier&#10;  + text">tests/test_project_rag_keyword_corpus_contract.py:60: in test_real_keyword_export_rank_without_embedding
+    assert result[0]["id"] == expected
+E   AssertionError: assert 'text' == 'identifier'
+E     
+E     - identifier
+E     + text</failure></testcase><testcase classname="tests.test_project_rag_keyword_corpus_contract" name="test_real_keyword_export_rank_without_embedding[invoice archive-filename]" time="0.019"><failure message="AssertionError: assert 'identifier' == 'filename'&#10;  &#10;  - filename&#10;  + identifier">tests/test_project_rag_keyword_corpus_contract.py:60: in test_real_keyword_export_rank_without_embedding
+    assert result[0]["id"] == expected
+E   AssertionError: assert 'identifier' == 'filename'
+E     
+E     - filename
+E     + identifier</failure></testcase></testsuite></testsuites>

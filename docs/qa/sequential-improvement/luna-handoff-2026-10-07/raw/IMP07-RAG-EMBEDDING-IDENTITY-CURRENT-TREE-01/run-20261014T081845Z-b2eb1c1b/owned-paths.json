@@ -1,0 +1,7 @@
+[
+  "src/antigravity_k/engine/vector_store.py",
+  "src/antigravity_k/engine/project_embedding_binding.py",
+  "src/antigravity_k/engine/rag_indexer.py",
+  "src/antigravity_k/api/dependencies.py",
+  "tests/test_project_rag_embedding_identity_contract.py"
+]

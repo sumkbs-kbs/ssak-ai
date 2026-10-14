@@ -1,0 +1,22 @@
+{
+  "modules": {
+    "antigravity_k.engine.vector_store": {
+      "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/vector_store.py",
+      "sha256": "6b4a5c74fea5d6f1106d5b3e1949de14716cd70ccd7a116053616cdf32e87b78"
+    },
+    "antigravity_k.engine.project_embedding_binding": {
+      "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/project_embedding_binding.py",
+      "sha256": "593d1263f39584ac9ac05347069f03441cc6e0df4f92412372e09502bf169a68"
+    },
+    "antigravity_k.engine.rag_indexer": {
+      "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/rag_indexer.py",
+      "sha256": "aab8bf7af20d8e4b16743b2d9b47e694417fcaf0503a067b7a2fd88677ae195c"
+    },
+    "antigravity_k.engine.embeddings": {
+      "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/embeddings.py",
+      "sha256": "3522ff04d2df755bfeab8dadc1eaa9339b309db46b7c927efba50b9ad998b0cb"
+    }
+  },
+  "socket_attempts": [],
+  "exitstatus": 0
+}

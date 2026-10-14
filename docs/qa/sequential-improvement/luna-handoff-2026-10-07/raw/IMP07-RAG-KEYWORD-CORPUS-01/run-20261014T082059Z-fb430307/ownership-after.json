@@ -1,0 +1,6 @@
+{
+  "head": "f11c8563e88540c8c8322ba98c23eff53e0604e6",
+  "protected_files": 577,
+  "unowned_source_changes": [],
+  "status": " M src/antigravity_k/engine/rag_indexer.py\n?? tests/test_project_rag_keyword_corpus_contract.py\n"
+}

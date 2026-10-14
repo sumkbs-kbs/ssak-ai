@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-c",
+    "from pathlib import Path; import sys; [compile(Path(p).read_text(),p,'exec') for p in sys.argv[1:]]; print('2 files compiled in memory')",
+    "src/antigravity_k/engine/rag_indexer.py",
+    "tests/test_project_rag_keyword_corpus_contract.py"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "returncode": 0,
+  "source_sha256": {
+    "src/antigravity_k/engine/rag_indexer.py": "aab8bf7af20d8e4b16743b2d9b47e694417fcaf0503a067b7a2fd88677ae195c",
+    "tests/test_project_rag_keyword_corpus_contract.py": "efda56d2f372a426f6d92836065a61e61971fe89c14e4a3149dccc62466a8c1f"
+  }
+}

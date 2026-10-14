@@ -1,0 +1,7 @@
+{
+  "nodeid": "tests/test_project_rag_keyword_corpus_contract.py::test_native_export_preserves_existing_lexical_ranking[reconcile ledger]",
+  "engine_calls": [],
+  "forbidden": [],
+  "native": [],
+  "observations": {}
+}

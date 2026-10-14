@@ -1,0 +1,100 @@
+{
+  "nodeid": "tests/test_project_rag_keyword_corpus_contract.py::test_keyword_corpus_change_delete_reopen_and_other_project",
+  "engine_calls": [],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "upsert",
+      "ids": [
+        "7696fda1a51b12a0"
+      ],
+      "documents": [
+        "def old_identifier():\n    return 1"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          9.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "upsert",
+      "ids": [
+        "other"
+      ],
+      "documents": [
+        "other_sentinel"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          2.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "upsert",
+      "ids": [
+        "b03842fcbec4dcdb"
+      ],
+      "documents": [
+        "def new_identifier():\n    return 2"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          9.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "delete",
+      "ids": [
+        "7696fda1a51b12a0"
+      ],
+      "where": null
+    },
+    {
+      "operation": "delete",
+      "ids": [
+        "b03842fcbec4dcdb"
+      ],
+      "where": null
+    }
+  ],
+  "observations": {
+    "fresh_result": [
+      {
+        "id": "b03842fcbec4dcdb",
+        "text": "def new_identifier():\n    return 2",
+        "metadata": {
+          "node_name": "new_identifier",
+          "decorators": "",
+          "start_line": 1,
+          "source_hash": "c7c7de4f5467033fb133a198f317816c",
+          "node_type": "function",
+          "source_type": "code",
+          "end_line": 2,
+          "indexed_at": "2026-10-14T08:24:09.979218+00:00",
+          "source": "ledger.py"
+        },
+        "provenance": {
+          "source_id": "b03842fcbec4dcdb",
+          "source": "ledger.py",
+          "source_type": "code",
+          "node_type": "function",
+          "node_name": "new_identifier",
+          "start_line": 1,
+          "end_line": 2,
+          "source_hash": "c7c7de4f5467033fb133a198f317816c",
+          "indexed_at": "2026-10-14T08:24:09.979218+00:00",
+          "freshness": "fresh"
+        }
+      }
+    ]
+  }
+}

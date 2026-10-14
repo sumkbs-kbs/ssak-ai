@@ -1,0 +1,45 @@
+{
+  "nodeid": "tests/test_project_rag_keyword_corpus_contract.py::test_real_keyword_export_rank_without_embedding[invoice archive-filename]",
+  "engine_calls": [
+    {
+      "text": [
+        "invoice archive"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "get",
+      "include": [
+        "embeddings"
+      ]
+    },
+    {
+      "operation": "get",
+      "include": [
+        "embeddings"
+      ]
+    },
+    {
+      "operation": "get",
+      "include": [
+        "embeddings"
+      ]
+    },
+    {
+      "operation": "query",
+      "query_texts": null,
+      "query_embeddings": [
+        [
+          1.0,
+          3.0,
+          0.5
+        ]
+      ]
+    }
+  ],
+  "observations": {}
+}

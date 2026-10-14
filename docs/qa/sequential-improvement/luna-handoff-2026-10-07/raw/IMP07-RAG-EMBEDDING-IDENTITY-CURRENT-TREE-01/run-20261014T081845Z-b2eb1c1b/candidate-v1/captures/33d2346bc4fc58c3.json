@@ -1,0 +1,110 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_real_rag_index_search_change_delete_preserves_other_project",
+  "engine_calls": [
+    {
+      "text": [
+        "untouched other project"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "# Alpha\noriginal owned content\n"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "content"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "# Beta\nchanged owned content\n"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "upsert",
+      "ids": [
+        "other"
+      ],
+      "documents": [
+        "untouched other project"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          11.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "upsert",
+      "ids": [
+        "b5ee57d556ca3bdd"
+      ],
+      "documents": [
+        "# Alpha\noriginal owned content\n"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          6.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "query",
+      "query_texts": null,
+      "query_embeddings": [
+        [
+          1.0,
+          8.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "upsert",
+      "ids": [
+        "a6c7cc4e2348a0eb"
+      ],
+      "documents": [
+        "# Beta\nchanged owned content\n"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          4.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "delete",
+      "ids": [
+        "b5ee57d556ca3bdd"
+      ],
+      "where": null
+    },
+    {
+      "operation": "delete",
+      "ids": [
+        "a6c7cc4e2348a0eb"
+      ],
+      "where": null
+    }
+  ],
+  "observations": {}
+}

@@ -1,0 +1,43 @@
+{
+  "status": "READY_FOR_INDEPENDENT_REVIEW",
+  "scope": "CURRENT_ROOT_OFFLINE",
+  "tests": 58,
+  "statics": {
+    "ruff": 0,
+    "basedpyright": 0,
+    "format": 0,
+    "compile": 0
+  },
+  "socket_attempts": 0,
+  "source_binding": {
+    "src/antigravity_k/engine/vector_store.py": {
+      "before": "147cea96911f438fa1c42086924988288651d5fbfa96d21d82b2361e9c194680",
+      "after": "6b4a5c74fea5d6f1106d5b3e1949de14716cd70ccd7a116053616cdf32e87b78"
+    },
+    "src/antigravity_k/engine/project_embedding_binding.py": {
+      "before": null,
+      "after": "593d1263f39584ac9ac05347069f03441cc6e0df4f92412372e09502bf169a68"
+    },
+    "src/antigravity_k/engine/rag_indexer.py": {
+      "before": "6177bd17e550fbf94d7ee22c8a16e9f4ecfaba6b1e6c2737c09bf35587acdfcb",
+      "after": "154be669bb76c970098d19df533cc1d62ec8465b46773e90490271b5f017702c"
+    },
+    "src/antigravity_k/api/dependencies.py": {
+      "before": "64bcea9f345cce3ba85da4329bc83443720621b24e3ff6f0061adda0440eb1de",
+      "after": "26a45f9dd971e4dfb150692acdbd6dca85a7f1a1941f361449801cafcded6a36"
+    },
+    "tests/test_project_rag_embedding_identity_contract.py": {
+      "before": null,
+      "after": "283c2dd7b63932076f7fe0794f0974859f0bdcf13a74291dea54be6687599145"
+    }
+  },
+  "historical_preparation": "Earlier baseline-only run stopped at exact-expression assertion before source writes; preserved, not a test result.",
+  "prior_candidate": "candidate-v1 58 passed; format check failed; source snapshot and logs preserved. Final candidate-v2 after format only.",
+  "limitations": [
+    "No real HTTP/Ollama/models/downloads/Uvicorn/live quality",
+    "No default activation; explicit opt-in only",
+    "Native write/delete transaction atomicity and concurrent writers not claimed",
+    "Weight revision remains UNVERIFIED",
+    "No commit/stage/push"
+  ]
+}

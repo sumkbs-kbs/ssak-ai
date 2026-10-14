@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.648" timestamp="2026-10-14T17:22:59.993817+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_project_rag_keyword_corpus_contract" name="test_real_keyword_export_rank_without_embedding[reconcile ledger-identifier]" time="0.194"><failure message="AssertionError: assert [{'text': ['r...back': False}] == []&#10;  &#10;  Left contains one more item: {'text': ['reconcile ledger'], 'model_name': 'configured-embedding', 'allow_fallback': False}&#10;  Use -v to get more diff">tests/test_project_rag_keyword_corpus_contract.py:60: in test_real_keyword_export_rank_without_embedding
+    assert case.engine.calls == []
+E   AssertionError: assert [{'text': ['r...back': False}] == []
+E     
+E     Left contains one more item: {'text': ['reconcile ledger'], 'model_name': 'configured-embedding', 'allow_fallback': False}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_project_rag_keyword_corpus_contract" name="test_real_keyword_export_rank_without_embedding[invoice archive-filename]" time="0.019"><failure message="AssertionError: assert [{'text': ['i...back': False}] == []&#10;  &#10;  Left contains one more item: {'text': ['invoice archive'], 'model_name': 'configured-embedding', 'allow_fallback': False}&#10;  Use -v to get more diff">tests/test_project_rag_keyword_corpus_contract.py:60: in test_real_keyword_export_rank_without_embedding
+    assert case.engine.calls == []
+E   AssertionError: assert [{'text': ['i...back': False}] == []
+E     
+E     Left contains one more item: {'text': ['invoice archive'], 'model_name': 'configured-embedding', 'allow_fallback': False}
+E     Use -v to get more diff</failure></testcase></testsuite></testsuites>

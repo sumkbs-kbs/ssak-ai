@@ -1,0 +1,47 @@
+{
+  "nodeid": "tests/test_project_rag_keyword_corpus_contract.py::test_hybrid_only_existing_semantic_channels_embed[context-2]",
+  "engine_calls": [
+    {
+      "text": [
+        "context"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "context memory window"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "query",
+      "query_texts": null,
+      "query_embeddings": [
+        [
+          1.0,
+          8.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "query",
+      "query_texts": null,
+      "query_embeddings": [
+        [
+          1.0,
+          9.0,
+          0.5
+        ]
+      ]
+    }
+  ],
+  "observations": {
+    "results": []
+  }
+}

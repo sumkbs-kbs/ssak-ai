@@ -19,13 +19,15 @@
 | 실제 프로세스 재개 | root source에서 kill(-9)→새 owner(0), checkpoint10→11·12, effects 중복0 | [관측](raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f/result.json) |
 | 기본 agent 실패 | failed task→typed 오류·저장/DONE/대기열 차단, clean Python202/UI45·독립승인·푸시 | [검수](raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/review/clean-approved.md) |
 | 새 Chroma 소유 저장소 | 생성·종료·재개 count0→0→1→1, 모델생성0, scoped 승인 | [검수](raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/review/independent-review.md) |
-| Embedding 선행 게시 후보 | clean66·정적4·독립승인·기능 커밋, 공개 strict/provider 검증 | [검수](raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/review/independent-review.md) |
+| Embedding 선행 게시 후보 | clean66·정적4·독립승인·커밋/푸시, 공개 strict/provider 검증 | [검수](raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/review/independent-review.md) |
+| RAG 모델 identity | clean/root 각각58·정적4·독립승인, 등록 모델/입력prefix·실패시 기존색인 보존 | [현재 트리 검수](raw/IMP07-RAG-EMBEDDING-IDENTITY-CURRENT-TREE-01/run-20261014T081845Z-b2eb1c1b/review/independent-review.md) |
+| 실제 Chroma keyword | clean/root 각각36·정적4·독립승인, keyword 모델0·hybrid stub1~2 | [현재 트리 검수](raw/IMP07-RAG-KEYWORD-CORPUS-CURRENT-TREE-01/run-20261014T083038Z-e1cdbd01/review/independent-review.md) |
 
 구조화 실관측 원본의 `format=omitted` 표기는 별도정정 기록으로 보존했습니다. 후속 writer 수정은 새 사본에서만 수행했고 원본144개는 불변입니다. 모의 writer회귀의 `INCONCLUSIVE_CLEANUP_NOT_CONFIRMED`는 OS cleanup PASS로 승격하지 않습니다. 과거 format생략 vision FAIL도 유지합니다.
 
 **현재 순서:** 1 기록생성기 완료 → 2 상태통합 완료 → 3 기능·의존fixture·소유증거 커밋/푸시 완료 → 4 provider/agent 실패·취소·권한·checkpoint 재개 scoped 완료 → **5 기억·검색품질 진행** → 6 확대제품검증 → 7 통합/패키징/soak. 옵션 IMP-16/18은 자동착수하지 않습니다.
 
-**NEXT_TASK=IMP-07-RAG-EMBEDDING-IDENTITY-01.** 기본 agent 실패 전달은 clean Python202/UI45·정적4·독립 검수와 커밋/푸시를 완료했습니다. 확인한 원격 SHA는 `23708fe4`이며 staged97개를 보존합니다. Embedding 선행 후보는 clean66·정적4·독립 검수를 거쳐 `b9709def` 기능 커밋까지 완료했고 증거 게시를 진행합니다. 우선순위4는 검증한 provider와 실행 경계 범위에서 완료했고 다른 SDK 전체·full auth/startup/lifespan·임의 crash exactly-once·실모델 품질은 별도입니다. 과거 route fixture의 Chroma SIGSEGV(-11)는 baseline과 candidate 원문으로 보존했습니다. Routing 단위 테스트는 소유 SessionManager로 격리했고 별도 fresh Chroma 생성·재개는 승인됐으나 native 충돌의 원인을 해결한 것은 아닙니다. 이후 실제 startup gate에서 다시 구분합니다. 다음은 문서·질의 벡터의 등록 모델을 고정하는 명시적 RAG identity opt-in입니다. 현재 implicit Chroma 모델과 검색 품질은 미검증입니다.
+**NEXT_TASK=IMP-07-RAG-REAL-RETRIEVAL-01.** 우선순위4의 provider/agent 실패·취소·권한·checkpoint 재개는 검증한 실행 경계 범위에서 완료했습니다. Embedding 선행 `b9709def/2a8791ed`, RAG identity `4de2ef8b/f11c8563`는 커밋·푸시했습니다. Keyword 기능 `b7204877`도 독립승인 후 커밋했고 현재 트리 두 기능 이식과 추가증거 게시를 진행합니다. Clean/root의58 및36은 같은 사례의 별도 소스 검증이며 합산하지 않습니다. Staged97개는 보존합니다. 실제 검색 품질은 별도30문서·20질의 정답을 사전고정했고 메타데이터4요청만 실행해 Ollama0.40.3/Nomic 설치·embedding 기능·메타데이터상768차원을 확인했습니다. 추론은 아직0이며 설정 차원0/UNKNOWN·weights revision UNVERIFIED·기본 모델 활성화 없음은 유지합니다. 다음은 승인 소스를 고정한 실제 embedding/검색·격리·삭제·purge/peer 검증입니다. 다른 SDK 전체·full auth/startup/lifespan·임의 crash exactly-once·큰 corpus 성능은 별도입니다. 기존 Chroma SIGSEGV(-11)의 baseline/candidate 원문과 격리 한계도 유지합니다.
 
 원장복구는 정확한백업을 필요로 하는 별도항목이며 독립기능 진행을 무기한 막지 않습니다. 이 통합은 실행·변경 JSONL의 유실행을 재구성하거나 기존21개 parent를 전수재승인한 것이 아닙니다. [기존상태 preimage](raw/IMP09C-STATUS-RECONCILIATION-2026-10-14/run-20261014T043024Z-codex-86e22b4940/source-preimage/STATUS.md), [기존tasks preimage](raw/IMP09C-STATUS-RECONCILIATION-2026-10-14/run-20261014T043024Z-codex-86e22b4940/source-preimage/tasks.json).
 
