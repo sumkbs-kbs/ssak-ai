@@ -102,11 +102,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:pypi/anyio@4.13.0",
+      "bom-ref": "pkg:pypi/anyio@4.15.1",
       "type": "library",
       "name": "anyio",
-      "version": "4.13.0",
-      "purl": "pkg:pypi/anyio@4.13.0",
+      "version": "4.15.1",
+      "purl": "pkg:pypi/anyio@4.15.1",
       "licenses": [
         {
           "license": {
@@ -595,6 +595,26 @@
       ]
     },
     {
+      "bom-ref": "pkg:pypi/multidict@6.9.1",
+      "type": "library",
+      "name": "multidict",
+      "version": "6.9.1",
+      "purl": "pkg:pypi/multidict@6.9.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://pypi.org/simple"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:pypi/nest-asyncio@1.6.0",
       "type": "library",
       "name": "nest-asyncio",
@@ -855,11 +875,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:pypi/pyjwt@2.13.0",
+      "bom-ref": "pkg:pypi/pyjwt@2.15.1",
       "type": "library",
       "name": "pyjwt",
-      "version": "2.13.0",
-      "purl": "pkg:pypi/pyjwt@2.13.0",
+      "version": "2.15.1",
+      "purl": "pkg:pypi/pyjwt@2.15.1",
       "licenses": [
         {
           "license": {
@@ -1253,6 +1273,26 @@
       "name": "typing-inspection",
       "version": "0.4.2",
       "purl": "pkg:pypi/typing-inspection@0.4.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://pypi.org/simple"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:pypi/urllib3@2.8.0",
+      "type": "library",
+      "name": "urllib3",
+      "version": "2.8.0",
+      "purl": "pkg:pypi/urllib3@2.8.0",
       "licenses": [
         {
           "license": {
