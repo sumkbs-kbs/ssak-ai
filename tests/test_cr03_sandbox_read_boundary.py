@@ -78,6 +78,42 @@ def _outside_dir(prefix: str) -> Path:
 
 @requires_seatbelt
 class TestWorkspaceStillRuns:
+    @pytest.mark.parametrize("launcher", ["script", "command", "delimiter"])
+    def test_script_pytest_arguments_are_preserved(self, workdir: Path, launcher: str) -> None:
+        source = "import sys\nassert sys.argv[1:] == ['-m', 'pytest']\nprint('ARGS_OK')\n"
+        (workdir / "app.py").write_text(source, encoding="utf-8")
+        launchers = {"script": ["app.py"], "command": ["-c", source], "delimiter": ["--", "app.py"]}
+
+        result = run_sandboxed_argv(
+            [sys.executable, *launchers[launcher], "-m", "pytest"],
+            cwd=str(workdir),
+            timeout=60,
+            env=_sandbox_env(str(workdir)),
+        )
+
+        assert result.success is True, result.stdout + result.stderr
+        assert "ARGS_OK" in result.stdout
+
+    @pytest.mark.parametrize("launcher", ["bytecode", "isolated", "warning", "standalone"])
+    def test_pytest_launchers_keep_workspace_boundary(self, workdir: Path, launcher: str) -> None:
+        (workdir / "test_sample.py").write_text("def test_ok():\n    assert 1 + 1 == 2\n", encoding="utf-8")
+        launchers = {
+            "bytecode": [sys.executable, "-B", "-m", "pytest"],
+            "isolated": [sys.executable, "-I", "-m", "pytest"],
+            "warning": [sys.executable, "-W", "default", "-m", "pytest"],
+            "standalone": [str(Path(sys.executable).parent / "pytest")],
+        }
+
+        result = run_sandboxed_argv(
+            [*launchers[launcher], "-q", "--", "test_sample.py"],
+            cwd=str(workdir),
+            timeout=120,
+            env=_sandbox_env(str(workdir)),
+        )
+
+        assert result.success is True, result.stdout + result.stderr
+        assert "1 passed" in result.stdout
+
     def test_python_runs_inside_workspace(self, workdir: Path) -> None:
         result = _run_probe(workdir, "print('PYTHON_OK')\n")
 
@@ -109,6 +145,30 @@ class TestWorkspaceStillRuns:
 
         assert result.success is True, result.error or result.stderr
         assert "READ INSIDE-OK" in result.stdout
+
+    @pytest.mark.parametrize("config_mode", ["local", "explicit", "environment"])
+    def test_pytest_preserves_workspace_configuration(self, workdir: Path, config_mode: str) -> None:
+        config = workdir / ("pytest.ini" if config_mode == "local" else "custom.ini")
+        config.write_text(
+            "[pytest]\naddopts = --strict-markers\nmarkers = configured: local marker\n", encoding="utf-8"
+        )
+        (workdir / "test_config.py").write_text(
+            "import pytest\n@pytest.mark.configured\ndef test_config(pytestconfig):\n"
+            "    assert pytestconfig.getoption('strict_markers')\n",
+            encoding="utf-8",
+        )
+        argv = [sys.executable, "-m", "pytest", "-q"]
+        env = _sandbox_env(str(workdir))
+        if config_mode == "explicit":
+            argv.extend(["-c", str(config), "--rootdir", str(workdir), "--confcutdir", str(workdir)])
+        if config_mode == "environment":
+            env["PYTEST_ADDOPTS"] = f"-c {config}"
+        argv.extend(["--", "test_config.py"])
+
+        result = run_sandboxed_argv(argv, cwd=str(workdir), timeout=120, env=env)
+
+        assert result.success is True, result.stdout + result.stderr
+        assert "1 passed" in result.stdout
 
 
 # ── C03-02: 외부 sentinel 거부 ────────────────────────────────────────────
@@ -195,16 +255,18 @@ class TestCanonicalAndChildBoundary:
         assert "READ_BLOCKED" in result.stdout
 
     def test_alias_path_to_same_sentinel_is_denied(self, workdir: Path) -> None:
-        """/var/folders(비-canonical)로 접근해도 canonical deny가 적용된다."""
-        outside = _outside_dir("cr03-alias-")
-        sentinel = outside / "other-process-secret.txt"
-        sentinel.write_text(SENTINEL, encoding="utf-8")
+        """/tmp alias로 접근해도 /private/tmp canonical deny가 적용된다."""
+        with tempfile.TemporaryDirectory(prefix="cr03-alias-", dir="/tmp") as outside:
+            sentinel = Path(outside) / "other-process-secret.txt"
+            sentinel.write_text(SENTINEL, encoding="utf-8")
+            assert str(sentinel) != os.path.realpath(sentinel)
+            assert Path(sentinel).samefile(Path(os.path.realpath(sentinel)))
 
-        result = _run_probe(workdir, _read_probe(str(sentinel)))
+            result = _run_probe(workdir, _read_probe(str(sentinel)))
 
-        assert os.path.realpath(sentinel).startswith("/private/var/folders")
-        assert SENTINEL not in result.stdout
-        assert "READ_BLOCKED" in result.stdout
+            assert result.success is True, result.error or result.stderr
+            assert SENTINEL not in result.stdout
+            assert "READ_BLOCKED PermissionError" in result.stdout
 
     def test_child_process_inherits_boundary(self, workdir: Path) -> None:
         outside = _outside_dir("cr03-child-")

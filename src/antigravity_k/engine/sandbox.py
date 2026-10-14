@@ -29,6 +29,7 @@ import sys
 import tempfile
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Final
 
 from antigravity_k.engine.limited_process_runner import LimitedProcessRunner
@@ -160,11 +161,50 @@ def run_sandboxed_argv(
         read_allow_paths=read_paths,
     )
     return runner.execute(
-        shlex.join(args),
+        shlex.join(_workspace_pytest_argv(args, workspace, effective_env.get("PYTEST_ADDOPTS", ""))),
         timeout=effective_timeout,
         env=effective_env,
         cwd=workspace,
     )
+
+
+def _workspace_pytest_argv(args: list[str], workspace: str, addopts: str) -> list[str]:
+    """Bound implicit pytest discovery without replacing explicit caller options."""
+    executable = Path(args[0]).name
+    index = 1
+    while index < len(args):
+        option = args[index]
+        if option in {"-W", "-X"}:
+            index += 2
+        elif option.startswith(("-W", "-X")) or (
+            option.startswith("-") and option[1:] and all(flag in "bBdEIOPqRsSuvx" for flag in option[1:])
+        ):
+            index += 1
+        else:
+            break
+    module_pytest = args[index : index + 2] == ["-m", "pytest"]
+    if executable not in {"pytest", "py.test"} and not (executable.startswith("python") and module_pytest):
+        return args
+    boundary = args.index("--") if "--" in args else len(args)
+    supplied_options = [*shlex.split(addopts), *args[1:boundary]]
+    options: list[str] = []
+    config_names = (
+        "pytest.toml",
+        ".pytest.toml",
+        "pytest.ini",
+        ".pytest.ini",
+        "pyproject.toml",
+        "tox.ini",
+        "setup.cfg",
+    )
+    if not any(arg.startswith(("-c", "--config-file")) for arg in supplied_options) and not any(
+        Path(workspace, name).is_file() for name in config_names
+    ):
+        options.extend(["-c", os.devnull])
+    for option in ("--rootdir", "--confcutdir"):
+        if not any(arg == option or arg.startswith(f"{option}=") for arg in supplied_options):
+            options.extend([option, workspace])
+    return [*args[:boundary], *options, *args[boundary:]]
 
 
 def _python_runtime_read_paths() -> list[str]:
