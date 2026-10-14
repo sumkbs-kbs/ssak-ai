@@ -1,0 +1,11 @@
+{
+  "operation": "Repair only owned candidate paths after rename-compacted changed-path list omitted deletions",
+  "head": "dcd30c96498ef4c5e0d419f408859ba5f7909f5a",
+  "owned_paths": 81,
+  "removed_owned_paths": 30,
+  "preserved_working_files": 230,
+  "preserved_staged_paths": 97,
+  "staged_sha256": "84297d5d47940af4560187d6b9f531b3b1eed5a7fa6cd1dca20c4da48fddab6f",
+  "working_files_changed": 0,
+  "initial_attempt": "Failed preservation assertion after ref/index integration; no working files written"
+}
