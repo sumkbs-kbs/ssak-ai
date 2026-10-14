@@ -445,27 +445,19 @@ def _clear_gbrain(*, project_root: str | None = None) -> int:
 
 
 def _clear_project_vector(*, project_root: str | None = None) -> int:
-    from antigravity_k.engine.vector_store import VectorStore
+    from antigravity_k.engine.vector_store import clear_persisted_collection
 
     if not project_root:
         vector_path = Path.cwd() / ".antigravity" / "vault_data"
         if not vector_path.exists():
             return 0
-        vector_store = VectorStore(str(vector_path), collection_name="agent_knowledge")
-        try:
-            return vector_store.clear()
-        finally:
-            vector_store.close()
+        return clear_persisted_collection(str(vector_path), "agent_knowledge")
 
     deleted = 0
     for vector_path, collection_name in _project_vector_targets(project_root):
         if not vector_path.exists():
             continue
-        vector_store = VectorStore(str(vector_path), collection_name=collection_name)
-        try:
-            deleted += vector_store.clear()
-        finally:
-            vector_store.close()
+        deleted += clear_persisted_collection(str(vector_path), collection_name)
     return deleted
 
 

@@ -2,6 +2,7 @@
 
 import logging
 from collections.abc import Callable, Mapping, Sequence
+from pathlib import Path
 from types import TracebackType
 from typing import Protocol, cast, final
 
@@ -77,6 +78,30 @@ class _ClientLike(Protocol):
     def create_collection(
         self, *, name: str, embedding_function: None, metadata: dict[str, MetadataValue]
     ) -> _CollectionLike: ...
+
+
+def clear_persisted_collection(persist_directory: str, collection_name: str) -> int:
+    if not Path(persist_directory).exists():
+        return 0
+    if not _chroma_available or chromadb is None:
+        raise RuntimeError("ChromaDB is required to purge persisted vectors.")
+    from chromadb.errors import NotFoundError
+
+    persistent_client = cast(Callable[..., _ClientLike], getattr(chromadb, "PersistentClient"))
+    client = persistent_client(path=persist_directory)
+    try:
+        try:
+            collection = client.get_collection(name=collection_name, embedding_function=None)
+        except NotFoundError:
+            return 0
+        ids = cast(list[str], collection.get(include=[]).get("ids") or [])
+        if ids:
+            _ = collection.delete(ids=ids)
+        return len(ids)
+    finally:
+        close = getattr(client, "close", None)
+        if callable(close):
+            _ = close()
 
 
 @final
