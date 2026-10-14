@@ -110,8 +110,8 @@ test('C08-02 · 팔레트가 modal 의미·focus 순환·복귀·배경 inert를
      * 배경 inert — 팔레트 오버레이는 레이아웃 안쪽에 마운트되므로(실측)
      * 같은 레벨의 사이드바·본문과 상위 레벨의 형제가 모두 비활성이어야 한다.
      */
-    await expect(page.locator('aside').first()).toHaveAttribute('inert');
-    await expect(page.locator(SHELL_LAYOUT).locator('.app-right-panel')).toHaveAttribute('inert');
+    expect(await page.locator('aside').first().evaluate(element => element.closest('[inert]') !== null)).toBe(true);
+    expect(await page.locator(SHELL_LAYOUT).locator('.app-right-panel').evaluate(element => element.closest('[inert]') !== null)).toBe(true);
     expect(await page.evaluate(() => document.querySelectorAll('[inert]').length)).toBeGreaterThan(0);
 
     // Tab 순환 — 마지막 항목에서 Tab을 누르면 첫 요소(검색 입력)로 돌아온다.
@@ -133,7 +133,7 @@ test('C08-02 · 팔레트가 modal 의미·focus 순환·복귀·배경 inert를
     await page.keyboard.press('Escape');
     await expect(page.locator(PALETTE_DIALOG)).toHaveCount(0, { timeout: 10_000 });
     await expect(sidebarLink).toBeFocused();
-    await expect(page.locator('aside').first()).not.toHaveAttribute('inert');
+    expect(await page.locator('aside').first().evaluate(element => element.closest('[inert]') !== null)).toBe(false);
     // 모달이 아닐 때 배경 inert가 남지 않는다.
     expect(await page.evaluate(() => document.querySelectorAll('[inert]').length)).toBe(0);
   } finally {

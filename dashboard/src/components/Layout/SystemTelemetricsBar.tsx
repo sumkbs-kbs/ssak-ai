@@ -72,7 +72,7 @@ export const SystemTelemetricsBar: FC = () => {
   const ui = getUiBuildInfo();
   const serverBuild = version ? `v${version}${buildId ? ` · ${buildId}` : ''}` : null;
   const buildLabel = serverBuild === null ? UNKNOWN : ui.version === version ? serverBuild : `${serverBuild} (ui v${ui.version})`;
-  const uptimeLabel = systemStatus.uptimeSeconds === null ? UNKNOWN : formatUptime(systemStatus.uptimeSeconds + (isLive && observedAt !== null ? (now - observedAt) / 1000 : 0));
+  const uptimeLabel = systemStatus.uptimeSeconds === null ? UNKNOWN : formatUptime(systemStatus.uptimeSeconds + (isLive && observedAt !== null ? Math.max(0, now - observedAt) / 1000 : 0));
   const healthState = healthy === null ? UNKNOWN : healthy ? 'NOMINAL' : 'DEGRADED';
   const nodeLabel = processId === null ? UNKNOWN : `PID-${processId} · ${healthState}`;
   const cpuLabel = systemStatus.cpuPercent === null ? UNKNOWN : `${systemStatus.cpuPercent.toFixed(1)}%`;

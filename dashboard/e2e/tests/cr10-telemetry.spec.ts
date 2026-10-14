@@ -46,7 +46,12 @@ async function fetchStatus(page: Page, origin: string): Promise<SystemStatusBody
   return body.json as unknown as SystemStatusBody;
 }
 
-function text(page: Page, testId: string): Promise<string> {
+async function text(page: Page, testId: string): Promise<string> {
+  const disclosure = page.locator('details.workspace-status-disclosure');
+  if (!(await disclosure.evaluate(element => element instanceof HTMLDetailsElement && element.open))) {
+    await disclosure.locator('summary').click();
+  }
+  await expect(page.getByTestId(testId)).toBeVisible();
   return page.getByTestId(testId).innerText();
 }
 

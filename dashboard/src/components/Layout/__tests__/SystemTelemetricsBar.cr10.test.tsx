@@ -13,7 +13,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { act, cleanup, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 const uiBuild = vi.hoisted(() => ({
@@ -185,6 +185,21 @@ describe('SystemTelemetricsBar · CR-10', () => {
 
     // 1H 00M (+ 관측 후 5초). 탭이 열린 시간(수 초)이 아니라 서버 uptime이다.
     expect(value('telemetrics-uptime')).toBe('1H 00M');
+  });
+
+  it('C10-02: 새 관측이 화면 시계보다 앞서도 서버 uptime을 줄이지 않는다', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
+    renderBar();
+
+    act(() => {
+      vi.setSystemTime(500);
+      setStatus({ state: 'live', observedAt: Date.now(), uptimeSeconds: 900 });
+    });
+    expect(value('telemetrics-uptime')).toBe('15M 00S');
+
+    act(() => { vi.advanceTimersByTime(1_500); });
+    expect(value('telemetrics-uptime')).toBe('15M 01S');
   });
 
   it('C10-03: 폴링이 오래 끊기면 STALE, 명시적 실패는 OFFLINE이다', () => {

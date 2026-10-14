@@ -72,7 +72,7 @@ export class DashboardPage {
 
     /* Sidebar */
     this.sidebar = page.locator('nav, .sidebar, [class*="sidebar"]');
-    this.navChat = page.locator('a, button').filter({ hasText: /AI 채팅|Chat/ });
+    this.navChat = page.getByRole('navigation', { name: '주요 메뉴' }).getByRole('link', { name: '대화', exact: true });
     this.navWiki = page.locator('a, button').filter({ hasText: /LLM Wiki|Wiki/ });
     this.navAgent = page.locator('a, button').filter({ hasText: /에이전트|Agent/ });
     this.navSettings = page.locator('a, button').filter({ hasText: /설정|Settings/ });
@@ -164,12 +164,16 @@ export class DashboardPage {
     await this.page.waitForTimeout(500);
   }
 
-  /** Click the AI Chat nav link. Uses force click to handle overlay interception. */
   async goToChat(): Promise<void> {
-    const target = this.navChat.first();
+    const menuToggle = this.page.getByRole('button', { name: '탐색 메뉴 열기', exact: true });
+    if (await menuToggle.isVisible() && !(await this.navChat.isVisible())) {
+      await menuToggle.click();
+    }
+    const target = this.navChat;
     await target.waitFor({ state: 'visible', timeout: 5000 });
-    await target.click({ force: true });
-    await this.page.waitForTimeout(800);
+    await target.click();
+    await expect(this.page).toHaveURL(/\/chat\/?$/);
+    await expect(this.page.getByRole('textbox', { name: '메시지 입력', exact: true })).toBeVisible();
   }
 
   /** Click the Wiki nav link. Uses force click to handle overlay interception. */

@@ -1,3 +1,4 @@
+import re
 from collections.abc import Iterator
 from pathlib import Path
 from typing import Callable, cast
@@ -155,7 +156,12 @@ def gcd(a, b):
 def test_dashboard_chat_output_uses_codex_like_reading_style() -> None:
     source = Path("dashboard/src/styles/index.css").read_text(encoding="utf-8")
 
-    assert "--sidebar-width: 240px;" in source
+    sidebar_width = re.search(r"--sidebar-width:\s*(\d+)px;", source)
+    assert sidebar_width is not None
+    assert int(sidebar_width.group(1)) > 0
+    sidebar_rules = re.findall(r"(?m)^\.sidebar\s*\{([^}]+)\}", source)
+    assert any("width: var(--sidebar-width);" in rule for rule in sidebar_rules)
+    assert any("min-width: var(--sidebar-width);" in rule for rule in sidebar_rules)
     assert ".glass-panel" in source
     assert ".btn-primary" in source
     assert ".btn-secondary" in source

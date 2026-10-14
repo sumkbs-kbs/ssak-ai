@@ -23,7 +23,7 @@ const ERROR_ID = '[data-testid="cr07-error-id"]';
 const RETRY = '[data-testid="cr07-retry"]';
 const RELOAD = '[data-testid="cr07-reload"]';
 const NOT_FOUND = '[data-testid="cr07-not-found"]';
-const SHELL = '[aria-label="Codex Desktop Navigation"]';
+const SHELL = 'aside[aria-label="SSAK-AI 탐색"]';
 
 const CHAT_STORAGE_KEY = 'antigravity_chat_cr07-fixture';
 const HISTORY_STORAGE_KEY = 'agk_local_history:v1';

@@ -2951,13 +2951,9 @@ html, body {
   flex-shrink: 0;
 }
 
-/*
- * CR-08: 선택/호버 배경(accent-glow)에서 --text-muted는 3.87:1로 AA 미달이었다
- * (axe serious color-contrast, 11px). 선택 상태에서만 한 단계 밝은 토큰을 쓴다.
- */
 .cmd-item.selected .cmd-item-subtitle,
 .cmd-item:hover .cmd-item-subtitle {
-  color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 /* ─── Terminal Panel ──────────────────────────────────────────── */
@@ -6320,6 +6316,10 @@ html, body {
 }
 
 .metric-label {
+  color: var(--text-muted);
+}
+
+.agent-status-card .metric-label {
   color: var(--text-muted);
 }
 

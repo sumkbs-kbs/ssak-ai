@@ -15,11 +15,11 @@ import { useAgentMonitorStore, type AgentStatus } from '../../stores/agentMonito
 /* ─── Constants ────────────────────────────────────────────── */
 
 const STATUS_CONFIG: Record<AgentStatus, { icon: string; label: string; color: string }> = {
-  idle:     { icon: '💤', label: '대기 중', color: '#7c82a8' },
-  running:  { icon: '⚡', label: '실행 중', color: '#7c6aef' },
-  planning: { icon: '📋', label: '계획 중', color: '#e0af68' },
-  thinking: { icon: '🤔', label: '추론 중', color: '#7aa2f7' },
-  error:    { icon: '❌', label: '오류', color: '#f7768e' },
+  idle:     { icon: '💤', label: '대기 중', color: 'var(--text-muted)' },
+  running:  { icon: '⚡', label: '실행 중', color: 'var(--info-color)' },
+  planning: { icon: '📋', label: '계획 중', color: 'var(--warning-color)' },
+  thinking: { icon: '🤔', label: '추론 중', color: 'var(--info-color)' },
+  error:    { icon: '❌', label: '오류', color: 'var(--error-color)' },
 };
 
 const LOG_LEVEL_CONFIG: Record<string, { icon: string; color: string }> = {
