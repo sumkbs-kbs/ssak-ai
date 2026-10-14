@@ -1,0 +1,7 @@
+{
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "head": "d2aed8c1f7237f08f7b497e6760b792754c61b1e",
+  "node": "v22.23.1",
+  "pnpm": "11.3.0",
+  "scope": "offline fetch fixtures and jsdom component; no provider/LLM/browser run"
+}

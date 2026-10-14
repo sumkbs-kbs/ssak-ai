@@ -1,0 +1,108 @@
+Already up to date
+Done in 127ms using pnpm v11.3.0
+
+   ╭──────────────────────────────────────────╮
+   │                                          │
+   │   Update available! 11.3.0 → 12.11.2.    │
+   │   Changelog: https://pnpm.io/v/12.11.2   │
+   │     To update, run: pnpm add -g pnpm     │
+   │                                          │
+   ╰──────────────────────────────────────────╯
+
+
+ RUN  v4.1.11 /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard
+
+ × src/api/client.streamChannels.test.ts > chat stream status and final channels > reports provider_protocol_error/incomplete_stream once after partial content without completing at EOF 6ms
+   → expected "vi.fn()" to be called once with arguments: [ ObjectContaining{…} ]
+
+Number of calls: 0
+
+ × src/api/client.streamChannels.test.ts > chat stream status and final channels > reports provider_protocol_error/invalid_stream once after partial content without completing at EOF 1ms
+   → expected "vi.fn()" to be called once with arguments: [ ObjectContaining{…} ]
+
+Number of calls: 0
+
+ × src/api/client.streamChannels.test.ts > chat stream status and final channels > reports provider_protocol_error/upstream_stream_error once after partial content without completing at EOF 1ms
+   → expected "vi.fn()" to be called once with arguments: [ ObjectContaining{…} ]
+
+Number of calls: 0
+
+ × src/api/client.streamChannels.test.ts > chat stream status and final channels > reports provider_transport_error/upstream_http_error once after partial content without completing at EOF 1ms
+   → expected "vi.fn()" to be called once with arguments: [ ObjectContaining{…} ]
+
+Number of calls: 0
+
+ × src/api/client.streamChannels.test.ts > chat stream status and final channels > reports provider_transport_error/provider_unavailable once after partial content without completing at EOF 1ms
+   → expected "vi.fn()" to be called once with arguments: [ ObjectContaining{…} ]
+
+Number of calls: 0
+
+ × src/api/client.streamChannels.test.ts > chat stream status and final channels > reports provider_transport_error/provider_timeout once after partial content without completing at EOF 1ms
+   → expected "vi.fn()" to be called once with arguments: [ ObjectContaining{…} ]
+
+Number of calls: 0
+
+ × src/api/client.streamChannels.test.ts > chat stream status and final channels > stops on a typed stream error with split framing 2ms
+   → expected [ 'chunk:partial', 'done' ] to deeply equal [ 'chunk:partial', …(1) ]
+ × src/api/client.streamChannels.test.ts > chat stream status and final channels > stops on a typed stream error with unterminated framing 1ms
+   → expected [ 'chunk:partial', 'done' ] to deeply equal [ 'chunk:partial', …(1) ]
+ × src/api/client.streamChannels.test.ts > chat stream status and final channels > stops on a typed stream error with trailing-success framing 2ms
+   → expected [ 'chunk:partial', …(2) ] to deeply equal [ 'chunk:partial', …(1) ]
+ ✓ src/api/client.streamChannels.test.ts > chat stream status and final channels > keeps legitimate content when an unrelated or malformed error field is "error" 0ms
+ ✓ src/api/client.streamChannels.test.ts > chat stream status and final channels > keeps legitimate content when an unrelated or malformed error field is null 0ms
+ ✓ src/api/client.streamChannels.test.ts > chat stream status and final channels > keeps legitimate content when an unrelated or malformed error field is {"type":"other_error","code":"incomplete_stream","message":"not recognized"} 0ms
+ ✓ src/api/client.streamChannels.test.ts > chat stream status and final channels > keeps legitimate content when an unrelated or malformed error field is {"type":"provider_protocol_error","code":"other_code","message":"not recognized"} 0ms
+ ✓ src/api/client.streamChannels.test.ts > chat stream status and final channels > keeps legitimate content when an unrelated or malformed error field is {"type":"provider_protocol_error","code":"incomplete_stream","message":42} 0ms
+ ✓ src/api/client.streamChannels.test.ts > chat stream status and final channels > keeps legitimate content when an unrelated or malformed error field is {"type":"provider_protocol_error","code":"incomplete_stream","message":""} 0ms
+ ✓ src/api/client.streamChannels.test.ts > chat stream status and final channels > keeps legitimate content when an unrelated or malformed error field is {"type":"provider_protocol_error","message":"missing code"} 0ms
+ ✓ src/api/client.streamChannels.test.ts > chat stream status and final channels > delivers status through its own handler without appending answer content 0ms
+ ✓ src/api/client.streamChannels.test.ts > chat stream status and final channels > delivers an authoritative final independently while preserving legacy delta compatibility 0ms
+ ✓ src/api/client.streamChannels.test.ts > chat stream status and final channels > ignores malformed channel data {"agk_status":null} 0ms
+ ✓ src/api/client.streamChannels.test.ts > chat stream status and final channels > ignores malformed channel data {"agk_status":{"text":42}} 0ms
+ ✓ src/api/client.streamChannels.test.ts > chat stream status and final channels > ignores malformed channel data {"agk_status":{}} 0ms
+ ✓ src/api/client.streamChannels.test.ts > chat stream status and final channels > ignores malformed channel data {"agk_final_content":null} 0ms
+ ✓ src/api/client.streamChannels.test.ts > chat stream status and final channels > ignores malformed channel data {"agk_final_content":{"text":"invalid"}} 0ms
+ ✓ src/api/client.streamChannels.test.ts > chat stream status and final channels > ignores malformed channel data {"agk_final_content":42} 0ms
+ ✓ src/api/client.test.ts > shared API client > PIN: preserves the model list URL, PIN header, and array result 3ms
+ ✓ src/api/client.test.ts > shared API client > health accepts an empty backend array returned before models are loaded 1ms
+ ✓ src/api/client.test.ts > shared API client > PIN: preserves the 401 PIN-required event and HTTP error 1ms
+ ✓ src/api/client.test.ts > shared API client > CR-06: a 401 rejects with a typed error the settings page can route to the PIN flow 3ms
+ ✓ src/api/client.test.ts > shared API client > settings requests use the shared status-checked client 1ms
+ ✓ src/api/client.test.ts > shared API client > settings requests reject malformed payloads and non-OK responses before parsing JSON 1ms
+ ✓ src/api/client.test.ts > shared API client > RED: JSON rejects a malformed models response 0ms
+ ✓ src/api/client.test.ts > shared API client > RED: JSON rejects a malformed model operations response 0ms
+ ✓ src/api/client.test.ts > shared API client > RED: JSON rejects a malformed health response 1ms
+ ✓ src/api/client.test.ts > shared API client > RED: JSON rejects a malformed system metrics response 0ms
+ ✓ src/api/client.test.ts > shared API client > RED: JSON rejects a malformed cache stats response 1ms
+ ✓ src/api/client.test.ts > shared API client > RED: JSON rejects a malformed log levels response 0ms
+ ✓ src/api/client.test.ts > shared API client > RED: JSON rejects a malformed single log update response 0ms
+ ✓ src/api/client.test.ts > shared API client > RED: JSON rejects a malformed all log updates response 0ms
+ ✓ src/api/client.test.ts > shared API client > RED: JSON rejects a malformed debug mode response 0ms
+ ✓ src/api/client.test.ts > shared API client > RED: system auth sends the PIN and dispatches the 401 event 1ms
+ ✓ src/api/client.test.ts > shared API client > RED: stream uses named handlers, PIN auth, and ordered chunks 1ms
+ ✓ src/api/client.test.ts > shared API client > RED: stream delivers a final unterminated data frame 0ms
+ ✓ src/api/client.test.ts > shared API client > RED: stream reports a missing response body deliberately 0ms
+ ✓ src/api/client.test.ts > shared API client > RED: stream emits the PIN event before reporting a 401 0ms
+ ✓ src/api/client.test.ts > shared API client > RED: stream treats abort as completion exactly once 0ms
+ ✓ src/api/client.test.ts > shared API client > GREEN: JSON preserves every consumed success shape 3ms
+ ✓ src/api/client.test.ts > shared API client > GREEN: stream ignores malformed frames and accepts multiline data 0ms
+ ✓ src/api/client.test.ts > shared API client > GREEN: stream preserves split UTF-8 content 0ms
+ ✓ src/api/client.test.ts > shared API client > CTX-01 F2: mid-stream stale conflict SSE surfaces ConversationRevisionConflictError 0ms
+ ✓ src/api/client.test.ts > shared API client > GREEN: stream reports a non-abort transport error once 0ms
+ ✓ src/api/client.test.ts > CR-01 conversation error mapping > maps 404 to conversation_not_found instead of a generic error 0ms
+ ✓ src/api/client.test.ts > CR-01 conversation error mapping > maps integrity and migration failures to their wire codes 0ms
+ ✓ src/api/client.test.ts > CR-01 conversation error mapping > keeps stale revision conflicts on the typed conflict error 0ms
+ ✓ src/api/client.test.ts > CTX-01 conversation fork request > sends only the fork schema fields in the body while retaining project identity headers 0ms
+ ✓ src/api/client.test.ts > CTX-01 conversation fork request > sends only the compact schema fields in the body while retaining project identity headers 0ms
+ × src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx > ChatPage stream channel ownership > preserves the queued turn and partial answer when the real parser receives a typed stream error 112ms
+   → expected [ '/v1/chat/completions', …(1) ] to have a length of 1 but got 2
+ ✓ src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx > ChatPage stream channel ownership > shows progress as accessible working status without adding it to the assistant body 25ms
+ ✓ src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx > ChatPage stream channel ownership > replaces the streaming draft with the authoritative final and clears working status 34ms
+ ✓ src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx > ChatPage stream channel ownership > ignores late final and status events from a stopped run while the next run owns the conversation 48ms
+
+ Test Files  2 failed | 1 passed (3)
+      Tests  10 failed | 49 passed (59)
+   Start at  15:25:39
+   Duration  1.64s (transform 704ms, setup 422ms, import 1.17s, tests 260ms, environment 1.54s)
+
+JSON report written to /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/red/vitest.json

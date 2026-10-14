@@ -1,0 +1,38 @@
+{
+  "command": [
+    "patch",
+    "-p1",
+    "-i",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/candidate.patch"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/reconstruction",
+  "exitCode": 0,
+  "stdout": "patching file 'dashboard/src/api/client.streamChannels.test.ts'\npatching file 'dashboard/src/api/client.ts'\npatching file 'dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx'\n",
+  "stderr": "",
+  "binding": [
+    {
+      "file": "dashboard/src/api/client.ts",
+      "head": "9e176ac5f29fe73f84384f3fa2b79b399ec4a4dcbc127cd05216700a4568f8c0",
+      "preimage": "9e176ac5f29fe73f84384f3fa2b79b399ec4a4dcbc127cd05216700a4568f8c0",
+      "current": "38d036ff7b373dcda4275f9d7b640220c458fa640ef0965ca1898248fb8adb03",
+      "source": "38d036ff7b373dcda4275f9d7b640220c458fa640ef0965ca1898248fb8adb03",
+      "reconstructed": "38d036ff7b373dcda4275f9d7b640220c458fa640ef0965ca1898248fb8adb03"
+    },
+    {
+      "file": "dashboard/src/api/client.streamChannels.test.ts",
+      "head": "4ce4f8f429890ab83d09f18045794aac0da22130c3137cf6f43d65e82ca8637f",
+      "preimage": "4ce4f8f429890ab83d09f18045794aac0da22130c3137cf6f43d65e82ca8637f",
+      "current": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f",
+      "source": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f",
+      "reconstructed": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f"
+    },
+    {
+      "file": "dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "head": "033a4099559f50bafb84b512dd6433c06980eab4dcfc042419a60e5d613f1a66",
+      "preimage": "033a4099559f50bafb84b512dd6433c06980eab4dcfc042419a60e5d613f1a66",
+      "current": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d",
+      "source": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d",
+      "reconstructed": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d"
+    }
+  ]
+}

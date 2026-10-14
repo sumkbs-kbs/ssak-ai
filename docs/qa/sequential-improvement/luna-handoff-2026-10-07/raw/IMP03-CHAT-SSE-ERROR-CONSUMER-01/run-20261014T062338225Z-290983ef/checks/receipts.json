@@ -1,0 +1,39 @@
+{
+  "receipts": [
+    {
+      "name": "typecheck",
+      "command": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "--noEmit",
+        "--pretty",
+        "false"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard",
+      "started": "2026-10-14T06:26:24.300Z",
+      "ended": "2026-10-14T06:26:30.771Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "name": "lint",
+      "command": [
+        "pnpm",
+        "exec",
+        "eslint",
+        "src/api/client.ts",
+        "src/api/client.streamChannels.test.ts",
+        "src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard",
+      "started": "2026-10-14T06:26:30.771Z",
+      "ended": "2026-10-14T06:26:32.362Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    }
+  ],
+  "sourcesStable": true
+}

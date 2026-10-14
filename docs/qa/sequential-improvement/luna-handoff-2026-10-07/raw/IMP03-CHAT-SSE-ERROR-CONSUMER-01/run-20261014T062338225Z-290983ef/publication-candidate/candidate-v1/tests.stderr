@@ -1,0 +1,25 @@
+stderr | src/api/client.test.ts > shared API client > CR-06: a 401 rejects with a typed error the settings page can route to the PIN flow
+[API] Error (/api/settings/env): ApiHttpError: HTTP 401: Unauthorized
+    at requestJson (/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/src/api/client.ts:239:13)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at saveSettings (/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/src/api/client.ts:818:15)
+    at /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/src/api/client.test.ts:129:21 {
+  status: 401
+}
+
+stderr | src/api/client.test.ts > shared API client > settings requests reject malformed payloads and non-OK responses before parsing JSON
+[API] Error (/api/settings/env): ApiHttpError: HTTP 503: Unavailable
+    at requestJson (/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/src/api/client.ts:239:13)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at saveSettings (/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/src/api/client.ts:818:15) {
+  status: 503
+}
+
+stderr | src/api/client.test.ts > shared API client > RED: system auth sends the PIN and dispatches the 401 event
+[API] Error (/api/system/status): ApiHttpError: HTTP 401: Unauthorized
+    at requestJson (/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/src/api/client.ts:239:13)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at fetchSystemMetrics (/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/src/api/client.ts:565:15) {
+  status: 401
+}
+

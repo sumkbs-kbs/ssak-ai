@@ -1,0 +1,6 @@
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/src/api/client.ts
+  8:10  warning  'createAccessPinHeaders' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 1 problem (0 errors, 1 warning)
+

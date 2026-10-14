@@ -1,0 +1,254 @@
+{
+  "status": "PASS_SCOPED_OFFLINE_CLEAN_CANDIDATE",
+  "tests": 59,
+  "passed": 59,
+  "failed": 0,
+  "skipped": 0,
+  "sourcesStable": true,
+  "sourceInputCount": 332,
+  "lint": {
+    "exitCode": 0,
+    "errors": 0,
+    "warnings": 1,
+    "preexisting": "createAccessPinHeaders unused import; baseline-lint.stdout reproduces from HEAD preimage"
+  },
+  "patchReconstructed": true,
+  "cases": [
+    {
+      "name": "chat stream status and final channels reports provider_protocol_error/incomplete_stream once after partial content without completing at EOF",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels reports provider_protocol_error/invalid_stream once after partial content without completing at EOF",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels reports provider_protocol_error/upstream_stream_error once after partial content without completing at EOF",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels reports provider_transport_error/upstream_http_error once after partial content without completing at EOF",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels reports provider_transport_error/provider_unavailable once after partial content without completing at EOF",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels reports provider_transport_error/provider_timeout once after partial content without completing at EOF",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels stops on a typed stream error with split framing",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels stops on a typed stream error with unterminated framing",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels stops on a typed stream error with trailing-success framing",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels keeps legitimate content when an unrelated or malformed error field is \"error\"",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels keeps legitimate content when an unrelated or malformed error field is null",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels keeps legitimate content when an unrelated or malformed error field is {\"type\":\"other_error\",\"code\":\"incomplete_stream\",\"message\":\"not recognized\"}",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels keeps legitimate content when an unrelated or malformed error field is {\"type\":\"provider_protocol_error\",\"code\":\"other_code\",\"message\":\"not recognized\"}",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels keeps legitimate content when an unrelated or malformed error field is {\"type\":\"provider_protocol_error\",\"code\":\"incomplete_stream\",\"message\":42}",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels keeps legitimate content when an unrelated or malformed error field is {\"type\":\"provider_protocol_error\",\"code\":\"incomplete_stream\",\"message\":\"\"}",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels keeps legitimate content when an unrelated or malformed error field is {\"type\":\"provider_protocol_error\",\"message\":\"missing code\"}",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels delivers status through its own handler without appending answer content",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels delivers an authoritative final independently while preserving legacy delta compatibility",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels ignores malformed channel data {\"agk_status\":null}",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels ignores malformed channel data {\"agk_status\":{\"text\":42}}",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels ignores malformed channel data {\"agk_status\":{}}",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels ignores malformed channel data {\"agk_final_content\":null}",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels ignores malformed channel data {\"agk_final_content\":{\"text\":\"invalid\"}}",
+      "status": "passed"
+    },
+    {
+      "name": "chat stream status and final channels ignores malformed channel data {\"agk_final_content\":42}",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client PIN: preserves the model list URL, PIN header, and array result",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client health accepts an empty backend array returned before models are loaded",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client PIN: preserves the 401 PIN-required event and HTTP error",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client CR-06: a 401 rejects with a typed error the settings page can route to the PIN flow",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client settings requests use the shared status-checked client",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client settings requests reject malformed payloads and non-OK responses before parsing JSON",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client RED: JSON rejects a malformed models response",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client RED: JSON rejects a malformed model operations response",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client RED: JSON rejects a malformed health response",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client RED: JSON rejects a malformed system metrics response",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client RED: JSON rejects a malformed cache stats response",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client RED: JSON rejects a malformed log levels response",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client RED: JSON rejects a malformed single log update response",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client RED: JSON rejects a malformed all log updates response",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client RED: JSON rejects a malformed debug mode response",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client RED: system auth sends the PIN and dispatches the 401 event",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client RED: stream uses named handlers, PIN auth, and ordered chunks",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client RED: stream delivers a final unterminated data frame",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client RED: stream reports a missing response body deliberately",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client RED: stream emits the PIN event before reporting a 401",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client RED: stream treats abort as completion exactly once",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client GREEN: JSON preserves every consumed success shape",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client GREEN: stream ignores malformed frames and accepts multiline data",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client GREEN: stream preserves split UTF-8 content",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client CTX-01 F2: mid-stream stale conflict SSE surfaces ConversationRevisionConflictError",
+      "status": "passed"
+    },
+    {
+      "name": "shared API client GREEN: stream reports a non-abort transport error once",
+      "status": "passed"
+    },
+    {
+      "name": "CR-01 conversation error mapping maps 404 to conversation_not_found instead of a generic error",
+      "status": "passed"
+    },
+    {
+      "name": "CR-01 conversation error mapping maps integrity and migration failures to their wire codes",
+      "status": "passed"
+    },
+    {
+      "name": "CR-01 conversation error mapping keeps stale revision conflicts on the typed conflict error",
+      "status": "passed"
+    },
+    {
+      "name": "CTX-01 conversation fork request sends only the fork schema fields in the body while retaining project identity headers",
+      "status": "passed"
+    },
+    {
+      "name": "CTX-01 conversation fork request sends only the compact schema fields in the body while retaining project identity headers",
+      "status": "passed"
+    },
+    {
+      "name": "ChatPage stream channel ownership preserves the queued turn and partial answer when the real parser receives a typed stream error",
+      "status": "passed"
+    },
+    {
+      "name": "ChatPage stream channel ownership shows progress as accessible working status without adding it to the assistant body",
+      "status": "passed"
+    },
+    {
+      "name": "ChatPage stream channel ownership replaces the streaming draft with the authoritative final and clears working status",
+      "status": "passed"
+    },
+    {
+      "name": "ChatPage stream channel ownership ignores late final and status events from a stopped run while the next run owns the conversation",
+      "status": "passed"
+    }
+  ]
+}

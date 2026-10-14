@@ -1,0 +1,388 @@
+{
+  "scope": "Published owned typed SSE consumer QA subset; original sealed worker manifests describe larger local scopes",
+  "feature_commit": "a7445b6b94ad11a2e159e518b380f416f9a51bf6",
+  "files": [
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/artifact-manifest.json",
+      "bytes": 6527,
+      "sha256": "858d7fdc8f6841440b86d18f7e0b9946c51a8c74fec8f8051c60a38a90094e96"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/capture.mjs",
+      "bytes": 2905,
+      "sha256": "fddefe9615ecf5c7eedfcb17218dd569e146c9f63bab5b7875bfca62711f8c36"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/checks/lint.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/checks/lint.stdout",
+      "bytes": 52,
+      "sha256": "69e04362f5c5e8e85d524e2dbec2d9b0676fe6e560c55c675c781e13d0642c4b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/checks/receipts.json",
+      "bytes": 925,
+      "sha256": "bff59cb33f6a345a8b0c1ae07edf80d4460be5e939cb538c7c8d142683de4f70"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/checks/source/dashboard/src/api/client.streamChannels.test.ts",
+      "bytes": 6568,
+      "sha256": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/checks/source/dashboard/src/api/client.ts",
+      "bytes": 33124,
+      "sha256": "657fe50011f9f070194f41b2afb7fb6093bf2d8567dd25d2baa49021e50ad9ea"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/checks/source/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "bytes": 6994,
+      "sha256": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/checks/source-after.json",
+      "bytes": 41539,
+      "sha256": "f99033566d50724123d0920ecd2afaa53296e87edb022c669c1f241b005379e7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/checks/source-before.json",
+      "bytes": 41539,
+      "sha256": "f99033566d50724123d0920ecd2afaa53296e87edb022c669c1f241b005379e7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/checks/typecheck.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/checks/typecheck.stdout",
+      "bytes": 52,
+      "sha256": "a562cd79cec28f9061f9ac30f01dc426434c65097f0518761f0bca10a709c6fc"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/counts-and-checks.json",
+      "bytes": 24382,
+      "sha256": "bf28d6242866eac36ff2ce0a6b775155990f875607e28b88c26ee8a8b307b58c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/environment.json",
+      "bytes": 241,
+      "sha256": "a2bb80c0622f955beaa270dda293cd149fd2d2d7b05ba53632eaf7e7a9281619"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/finalize.mjs",
+      "bytes": 4065,
+      "sha256": "fa876f5fa666772bf12c6569c3c8e68538b2ca7f82b5a50b4397c6c27ee18bc0"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/green/receipts.json",
+      "bytes": 827,
+      "sha256": "5c18e725868bcec2a21314f730fefab514da6b5d86d962102d2806c254664aa4"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/green/source/dashboard/src/api/client.streamChannels.test.ts",
+      "bytes": 6568,
+      "sha256": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/green/source/dashboard/src/api/client.ts",
+      "bytes": 33124,
+      "sha256": "657fe50011f9f070194f41b2afb7fb6093bf2d8567dd25d2baa49021e50ad9ea"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/green/source/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "bytes": 6994,
+      "sha256": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/green/source-after.json",
+      "bytes": 41539,
+      "sha256": "f99033566d50724123d0920ecd2afaa53296e87edb022c669c1f241b005379e7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/green/source-before.json",
+      "bytes": 41539,
+      "sha256": "f99033566d50724123d0920ecd2afaa53296e87edb022c669c1f241b005379e7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/green/tests.stderr",
+      "bytes": 1590,
+      "sha256": "64eeb274ae589dea27657c40fd0540e55dadfd3b422c1548b5157e9de3b1b0d7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/green/tests.stdout",
+      "bytes": 9249,
+      "sha256": "6e3c684b82af5f308c4882c78c0fb934cb035cdd31177518c025859cd8d3c1bf"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/green/vitest.json",
+      "bytes": 21440,
+      "sha256": "cc60d4ecf3d68ea9d715645a8e467258a8b488a76c9db3444ac032179c5ab844"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/handoff.md",
+      "bytes": 5763,
+      "sha256": "8559d8d2d5f3396d9980b048df87edeb65cbf744d291db24cdf1b6c3ecf59f0c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/patch-reconstruction.json",
+      "bytes": 1782,
+      "sha256": "8fbeb2c75d2e993851af4a6713328ea6274831c4890dfd7b2d34e6e01a905637"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/preimage/dashboard/src/api/client.streamChannels.test.ts",
+      "bytes": 2921,
+      "sha256": "4ce4f8f429890ab83d09f18045794aac0da22130c3137cf6f43d65e82ca8637f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/preimage/dashboard/src/api/client.ts",
+      "bytes": 32035,
+      "sha256": "87b377472e5df8a24b4329150373fce99fd1ee148c8efb886da8a3f4ceaf9c94"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/preimage/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "bytes": 4946,
+      "sha256": "033a4099559f50bafb84b512dd6433c06980eab4dcfc042419a60e5d613f1a66"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/prepare_publication.py",
+      "bytes": 2657,
+      "sha256": "c89d816dc285fb43c099e138b91ef9f9aab403bddc1bf2905a539112f49e0e12"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/artifact-manifest.json",
+      "bytes": 4583,
+      "sha256": "46c60dad8a0bb4260cf746b95db81ac03aa0abba2f40213b63f52c7627c16d51"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/baseline-lint-receipt.json",
+      "bytes": 537,
+      "sha256": "692a6ef4b22635e0418160bf9f19328ab2564b2bd01119301018f1359f4f214b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/baseline-lint.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/baseline-lint.stdout",
+      "bytes": 237,
+      "sha256": "661b1ecc8daa6cbcacd4ad25c42ea126df76f2d718893114dbb3375a1d2d063a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/candidate.patch",
+      "bytes": 9925,
+      "sha256": "1d6f3be84190b5d05e48288995417b9fccc269aecaaaef3e12abd05fd03ef2e9"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/capture.mjs",
+      "bytes": 3931,
+      "sha256": "d7177f16706ffd45d157d1b345d0e267eb40b8c5e1ea124255ed81ee39b40621"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/environment.json",
+      "bytes": 694,
+      "sha256": "e923b00afee78f42497ccf5bcfbda7db2d2af64b9b5806fae8669f592cd84fd2"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/finalize.mjs",
+      "bytes": 4347,
+      "sha256": "eb6f95c1b134c21432a435197faa9a6b3ae2cb5d190380b367bac1e5f7c75cc0"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/handoff.md",
+      "bytes": 2875,
+      "sha256": "c9482e0e870db416037969238f2272b38526c1740f774422f2d685ad603601de"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/junit.xml",
+      "bytes": 15455,
+      "sha256": "5a867bac564adfbc887a7759f6b49ad04e40f75623fc796248e4004109492373"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/lint.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/lint.stdout",
+      "bytes": 237,
+      "sha256": "16ca0ea24fcface1c93efef336ff33d1b69fb7146119d128c87927d77830b110"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/patch-reconstruction.json",
+      "bytes": 2301,
+      "sha256": "d06abfc0dda3fba3ad428593f98276cc974fb53078422f4f9d60e15c69c6372c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/preimage/dashboard/src/api/client.streamChannels.test.ts",
+      "bytes": 2921,
+      "sha256": "4ce4f8f429890ab83d09f18045794aac0da22130c3137cf6f43d65e82ca8637f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/preimage/dashboard/src/api/client.ts",
+      "bytes": 32106,
+      "sha256": "9e176ac5f29fe73f84384f3fa2b79b399ec4a4dcbc127cd05216700a4568f8c0"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/preimage/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "bytes": 4946,
+      "sha256": "033a4099559f50bafb84b512dd6433c06980eab4dcfc042419a60e5d613f1a66"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/receipts.json",
+      "bytes": 2335,
+      "sha256": "117c9c304bc58c092b755da82e4d4b79888f6eab9c8a4f308e7387ec28ffd91a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/reconstruction/dashboard/src/api/client.streamChannels.test.ts",
+      "bytes": 6568,
+      "sha256": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/reconstruction/dashboard/src/api/client.ts",
+      "bytes": 33195,
+      "sha256": "38d036ff7b373dcda4275f9d7b640220c458fa640ef0965ca1898248fb8adb03"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/reconstruction/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "bytes": 6994,
+      "sha256": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/result.json",
+      "bytes": 9811,
+      "sha256": "7f12696e0016a43be28441d8ecc20062ca4a681fdb24f0bd8bb5fdd6f3b89e41"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/source/dashboard/src/api/client.streamChannels.test.ts",
+      "bytes": 6568,
+      "sha256": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/source/dashboard/src/api/client.ts",
+      "bytes": 33195,
+      "sha256": "38d036ff7b373dcda4275f9d7b640220c458fa640ef0965ca1898248fb8adb03"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/source/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "bytes": 6994,
+      "sha256": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/source-after.json",
+      "bytes": 40573,
+      "sha256": "1c148310ca010c99e33f9f43c2381dfb0ea5f7d786eef8a3892425287efe027f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/source-before.json",
+      "bytes": 40573,
+      "sha256": "1c148310ca010c99e33f9f43c2381dfb0ea5f7d786eef8a3892425287efe027f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/tests.stderr",
+      "bytes": 1744,
+      "sha256": "bd753d76362ddcf100fe6127a3f4d50ad5628637dc4743ccebe0c77082232c03"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/tests.stdout",
+      "bytes": 9487,
+      "sha256": "3b942ef34ce1250fcfd39b43077dd1787387da965769cbbaa3d176f014210bf8"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/typecheck.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/typecheck.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/vitest.json",
+      "bytes": 21519,
+      "sha256": "af310392a36bb9817e624e32dff15608b944603a6142ac160a2b791b991e1601"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/reconstruction/dashboard/src/api/client.streamChannels.test.ts",
+      "bytes": 6568,
+      "sha256": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/reconstruction/dashboard/src/api/client.ts",
+      "bytes": 33124,
+      "sha256": "657fe50011f9f070194f41b2afb7fb6093bf2d8567dd25d2baa49021e50ad9ea"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/reconstruction/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "bytes": 6994,
+      "sha256": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/red/receipts.json",
+      "bytes": 825,
+      "sha256": "b85d20bddc2333580ea67eea1c135d6969a113b1f27dd836d48f14ffb229954e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/red/source/dashboard/src/api/client.streamChannels.test.ts",
+      "bytes": 6568,
+      "sha256": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/red/source/dashboard/src/api/client.ts",
+      "bytes": 32035,
+      "sha256": "87b377472e5df8a24b4329150373fce99fd1ee148c8efb886da8a3f4ceaf9c94"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/red/source/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "bytes": 6994,
+      "sha256": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/red/source-after.json",
+      "bytes": 41539,
+      "sha256": "89d70b91c7121848be7f5854435b7881768823bc86cfd462d5ac1ba65ce69bae"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/red/source-before.json",
+      "bytes": 41539,
+      "sha256": "89d70b91c7121848be7f5854435b7881768823bc86cfd462d5ac1ba65ce69bae"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/red/tests.stderr",
+      "bytes": 5576,
+      "sha256": "3c4da6717fc1ce989c0c11d30eef39bf8f41eb563a96ade80981ab34b597c78e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/red/tests.stdout",
+      "bytes": 10785,
+      "sha256": "abf0af34d83ecfd4d4597ae4378521f7da1c76dd38d6a15f2db5bd10c51efca2"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/red/vitest.json",
+      "bytes": 29664,
+      "sha256": "975fead794b7063298a09b61695dd851dae6dffe894f6c85a630ce29456c1e32"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/review/clean-approved.md",
+      "bytes": 952,
+      "sha256": "ba409e2e5a554b371d08964bd3930baabe74cc7d9e3b9f063676b2ad41ed3a3e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/review/root-approved.md",
+      "bytes": 1245,
+      "sha256": "bac84fb299a09f036771b05c6bb75bf052be54edea09b37f7a4f5d456112f622"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/task-only.patch",
+      "bytes": 9243,
+      "sha256": "5e7d253feae72370798b0907ad4ce26a6f43c132f39fb14cc8068b4c35175225"
+    }
+  ],
+  "omitted_local_files": [],
+  "omitted_files_preserved_locally": true
+}

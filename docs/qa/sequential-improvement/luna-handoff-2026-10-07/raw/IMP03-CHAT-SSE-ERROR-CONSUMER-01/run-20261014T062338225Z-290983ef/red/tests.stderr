@@ -1,0 +1,113 @@
+stderr | src/api/client.test.ts > shared API client > CR-06: a 401 rejects with a typed error the settings page can route to the PIN flow
+[API] Error (/api/settings/env): ApiHttpError: HTTP 401: Unauthorized
+    at requestJson (/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/api/client.ts:237:13)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at saveSettings (/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/api/client.ts:786:15)
+    at /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/api/client.test.ts:129:21 {
+  status: 401
+}
+
+stderr | src/api/client.test.ts > shared API client > settings requests reject malformed payloads and non-OK responses before parsing JSON
+[API] Error (/api/settings/env): ApiHttpError: HTTP 503: Unavailable
+    at requestJson (/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/api/client.ts:237:13)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at saveSettings (/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/api/client.ts:786:15) {
+  status: 503
+}
+
+stderr | src/api/client.test.ts > shared API client > RED: system auth sends the PIN and dispatches the 401 event
+[API] Error (/api/system/status): ApiHttpError: HTTP 401: Unauthorized
+    at requestJson (/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/api/client.ts:237:13)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at fetchSystemMetrics (/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/api/client.ts:533:15) {
+  status: 401
+}
+
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/api/client.streamChannels.test.ts > chat stream status and final channels > reports provider_protocol_error/incomplete_stream once after partial content without completing at EOF
+ FAIL  src/api/client.streamChannels.test.ts > chat stream status and final channels > reports provider_protocol_error/invalid_stream once after partial content without completing at EOF
+ FAIL  src/api/client.streamChannels.test.ts > chat stream status and final channels > reports provider_protocol_error/upstream_stream_error once after partial content without completing at EOF
+ FAIL  src/api/client.streamChannels.test.ts > chat stream status and final channels > reports provider_transport_error/upstream_http_error once after partial content without completing at EOF
+ FAIL  src/api/client.streamChannels.test.ts > chat stream status and final channels > reports provider_transport_error/provider_unavailable once after partial content without completing at EOF
+ FAIL  src/api/client.streamChannels.test.ts > chat stream status and final channels > reports provider_transport_error/provider_timeout once after partial content without completing at EOF
+AssertionError: expected "vi.fn()" to be called once with arguments: [ ObjectContaining{…} ]
+
+Number of calls: 0
+
+ ❯ src/api/client.streamChannels.test.ts:53:21
+     51|     // Then
+     52|     expect(onChunk.mock.calls).toEqual([['partial']]);
+     53|     expect(onError).toHaveBeenCalledExactlyOnceWith(expect.objectConta…
+       |                     ^
+     54|     expect(onError.mock.calls[0]?.[0]).toBeInstanceOf(Error);
+     55|     expect(onDone).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  src/api/client.streamChannels.test.ts > chat stream status and final channels > stops on a typed stream error with split framing
+ FAIL  src/api/client.streamChannels.test.ts > chat stream status and final channels > stops on a typed stream error with unterminated framing
+AssertionError: expected [ 'chunk:partial', 'done' ] to deeply equal [ 'chunk:partial', …(1) ]
+
+- Expected
++ Received
+
+  [
+    "chunk:partial",
+-   "error:Incomplete stream",
++   "done",
+  ]
+
+ ❯ src/api/client.streamChannels.test.ts:81:22
+     79|
+     80|       // Then
+     81|       expect(events).toEqual(['chunk:partial', 'error:Incomplete strea…
+       |                      ^
+     82|     },
+     83|   );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  src/api/client.streamChannels.test.ts > chat stream status and final channels > stops on a typed stream error with trailing-success framing
+AssertionError: expected [ 'chunk:partial', …(2) ] to deeply equal [ 'chunk:partial', …(1) ]
+
+- Expected
++ Received
+
+  [
+    "chunk:partial",
+-   "error:Incomplete stream",
++   "final:false success",
++   "done",
+  ]
+
+ ❯ src/api/client.streamChannels.test.ts:81:22
+     79|
+     80|       // Then
+     81|       expect(events).toEqual(['chunk:partial', 'error:Incomplete strea…
+       |                      ^
+     82|     },
+     83|   );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx > ChatPage stream channel ownership > preserves the queued turn and partial answer when the real parser receives a typed stream error
+AssertionError: expected [ '/v1/chat/completions', …(1) ] to have a length of 1 but got 2
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx:91:26
+     89|
+     90|     // Then
+     91|     expect(chatRequests).toHaveLength(1);
+       |                          ^
+     92|     expect(useChatStore.getState().messages.at(-1)?.content).toBe('par…
+     93|     expect(screen.getByText('queued-turn')).toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+

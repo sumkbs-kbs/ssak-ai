@@ -1,0 +1,31 @@
+{
+  "exitCode": 0,
+  "stdout": "patching file 'dashboard/src/api/client.ts'\npatching file 'dashboard/src/api/client.streamChannels.test.ts'\npatching file 'dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx'\n",
+  "stderr": "",
+  "binding": [
+    {
+      "file": "dashboard/src/api/client.ts",
+      "preimage": "87b377472e5df8a24b4329150373fce99fd1ee148c8efb886da8a3f4ceaf9c94",
+      "red": "87b377472e5df8a24b4329150373fce99fd1ee148c8efb886da8a3f4ceaf9c94",
+      "green": "657fe50011f9f070194f41b2afb7fb6093bf2d8567dd25d2baa49021e50ad9ea",
+      "current": "657fe50011f9f070194f41b2afb7fb6093bf2d8567dd25d2baa49021e50ad9ea",
+      "reconstructed": "657fe50011f9f070194f41b2afb7fb6093bf2d8567dd25d2baa49021e50ad9ea"
+    },
+    {
+      "file": "dashboard/src/api/client.streamChannels.test.ts",
+      "preimage": "4ce4f8f429890ab83d09f18045794aac0da22130c3137cf6f43d65e82ca8637f",
+      "red": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f",
+      "green": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f",
+      "current": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f",
+      "reconstructed": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f"
+    },
+    {
+      "file": "dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "preimage": "033a4099559f50bafb84b512dd6433c06980eab4dcfc042419a60e5d613f1a66",
+      "red": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d",
+      "green": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d",
+      "current": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d",
+      "reconstructed": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d"
+    }
+  ]
+}

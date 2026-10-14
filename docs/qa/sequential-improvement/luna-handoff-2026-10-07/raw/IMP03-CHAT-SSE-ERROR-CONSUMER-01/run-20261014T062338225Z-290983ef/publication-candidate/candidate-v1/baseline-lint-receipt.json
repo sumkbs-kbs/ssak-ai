@@ -1,0 +1,15 @@
+{
+  "command": [
+    "node",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/node_modules/eslint/bin/eslint.js",
+    "--stdin",
+    "--stdin-filename",
+    "src/api/client.ts"
+  ],
+  "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard",
+  "input": "preimage/dashboard/src/api/client.ts",
+  "inputSHA256": "9e176ac5f29fe73f84384f3fa2b79b399ec4a4dcbc127cd05216700a4568f8c0",
+  "started": "2026-10-14T06:32:41.884Z",
+  "ended": "2026-10-14T06:32:42.278Z",
+  "exitCode": 0
+}

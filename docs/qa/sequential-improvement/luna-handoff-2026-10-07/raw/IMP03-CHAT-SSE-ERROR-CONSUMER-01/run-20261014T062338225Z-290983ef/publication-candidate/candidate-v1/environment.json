@@ -1,0 +1,11 @@
+{
+  "head": "b345bbb7601f1611e6de639161f9fbd241ac1eba",
+  "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+  "node": "v22.23.1",
+  "dependencies": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/node_modules",
+  "dependencyReuse": "ignored node_modules directory contains links to existing root dependencies; no installation",
+  "beforeStatus": "clean at b345bbb7601f1611e6de639161f9fbd241ac1eba",
+  "afterStatus": " M dashboard/src/api/client.streamChannels.test.ts\n M dashboard/src/api/client.ts\n M dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx\n",
+  "ignoredDependencyDirectory": "dashboard/node_modules/\n",
+  "diffCheck": 0
+}

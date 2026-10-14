@@ -1,0 +1,26 @@
+{
+  "receipts": [
+    {
+      "name": "tests",
+      "command": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "src/api/client.test.ts",
+        "src/api/client.streamChannels.test.ts",
+        "src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/green/vitest.json"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard",
+      "started": "2026-10-14T06:26:07.918Z",
+      "ended": "2026-10-14T06:26:09.739Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    }
+  ],
+  "sourcesStable": true
+}

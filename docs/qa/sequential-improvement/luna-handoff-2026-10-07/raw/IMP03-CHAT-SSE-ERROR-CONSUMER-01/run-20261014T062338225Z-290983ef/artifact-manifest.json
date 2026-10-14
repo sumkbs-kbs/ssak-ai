@@ -1,0 +1,207 @@
+[
+  {
+    "file": "capture.mjs",
+    "bytes": 2905,
+    "sha256": "fddefe9615ecf5c7eedfcb17218dd569e146c9f63bab5b7875bfca62711f8c36"
+  },
+  {
+    "file": "counts-and-checks.json",
+    "bytes": 24382,
+    "sha256": "bf28d6242866eac36ff2ce0a6b775155990f875607e28b88c26ee8a8b307b58c"
+  },
+  {
+    "file": "environment.json",
+    "bytes": 241,
+    "sha256": "a2bb80c0622f955beaa270dda293cd149fd2d2d7b05ba53632eaf7e7a9281619"
+  },
+  {
+    "file": "finalize.mjs",
+    "bytes": 4065,
+    "sha256": "fa876f5fa666772bf12c6569c3c8e68538b2ca7f82b5a50b4397c6c27ee18bc0"
+  },
+  {
+    "file": "handoff.md",
+    "bytes": 5763,
+    "sha256": "8559d8d2d5f3396d9980b048df87edeb65cbf744d291db24cdf1b6c3ecf59f0c"
+  },
+  {
+    "file": "patch-reconstruction.json",
+    "bytes": 1782,
+    "sha256": "8fbeb2c75d2e993851af4a6713328ea6274831c4890dfd7b2d34e6e01a905637"
+  },
+  {
+    "file": "task-only.patch",
+    "bytes": 9243,
+    "sha256": "5e7d253feae72370798b0907ad4ce26a6f43c132f39fb14cc8068b4c35175225"
+  },
+  {
+    "file": "checks/lint.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "file": "checks/lint.stdout",
+    "bytes": 52,
+    "sha256": "69e04362f5c5e8e85d524e2dbec2d9b0676fe6e560c55c675c781e13d0642c4b"
+  },
+  {
+    "file": "checks/receipts.json",
+    "bytes": 925,
+    "sha256": "bff59cb33f6a345a8b0c1ae07edf80d4460be5e939cb538c7c8d142683de4f70"
+  },
+  {
+    "file": "checks/source-after.json",
+    "bytes": 41539,
+    "sha256": "f99033566d50724123d0920ecd2afaa53296e87edb022c669c1f241b005379e7"
+  },
+  {
+    "file": "checks/source-before.json",
+    "bytes": 41539,
+    "sha256": "f99033566d50724123d0920ecd2afaa53296e87edb022c669c1f241b005379e7"
+  },
+  {
+    "file": "checks/typecheck.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "file": "checks/typecheck.stdout",
+    "bytes": 52,
+    "sha256": "a562cd79cec28f9061f9ac30f01dc426434c65097f0518761f0bca10a709c6fc"
+  },
+  {
+    "file": "green/receipts.json",
+    "bytes": 827,
+    "sha256": "5c18e725868bcec2a21314f730fefab514da6b5d86d962102d2806c254664aa4"
+  },
+  {
+    "file": "green/source-after.json",
+    "bytes": 41539,
+    "sha256": "f99033566d50724123d0920ecd2afaa53296e87edb022c669c1f241b005379e7"
+  },
+  {
+    "file": "green/source-before.json",
+    "bytes": 41539,
+    "sha256": "f99033566d50724123d0920ecd2afaa53296e87edb022c669c1f241b005379e7"
+  },
+  {
+    "file": "green/tests.stderr",
+    "bytes": 1590,
+    "sha256": "64eeb274ae589dea27657c40fd0540e55dadfd3b422c1548b5157e9de3b1b0d7"
+  },
+  {
+    "file": "green/tests.stdout",
+    "bytes": 9249,
+    "sha256": "6e3c684b82af5f308c4882c78c0fb934cb035cdd31177518c025859cd8d3c1bf"
+  },
+  {
+    "file": "green/vitest.json",
+    "bytes": 21440,
+    "sha256": "cc60d4ecf3d68ea9d715645a8e467258a8b488a76c9db3444ac032179c5ab844"
+  },
+  {
+    "file": "red/receipts.json",
+    "bytes": 825,
+    "sha256": "b85d20bddc2333580ea67eea1c135d6969a113b1f27dd836d48f14ffb229954e"
+  },
+  {
+    "file": "red/source-after.json",
+    "bytes": 41539,
+    "sha256": "89d70b91c7121848be7f5854435b7881768823bc86cfd462d5ac1ba65ce69bae"
+  },
+  {
+    "file": "red/source-before.json",
+    "bytes": 41539,
+    "sha256": "89d70b91c7121848be7f5854435b7881768823bc86cfd462d5ac1ba65ce69bae"
+  },
+  {
+    "file": "red/tests.stderr",
+    "bytes": 5576,
+    "sha256": "3c4da6717fc1ce989c0c11d30eef39bf8f41eb563a96ade80981ab34b597c78e"
+  },
+  {
+    "file": "red/tests.stdout",
+    "bytes": 10785,
+    "sha256": "abf0af34d83ecfd4d4597ae4378521f7da1c76dd38d6a15f2db5bd10c51efca2"
+  },
+  {
+    "file": "red/vitest.json",
+    "bytes": 29664,
+    "sha256": "975fead794b7063298a09b61695dd851dae6dffe894f6c85a630ce29456c1e32"
+  },
+  {
+    "file": "preimage/dashboard/src/api/client.streamChannels.test.ts",
+    "bytes": 2921,
+    "sha256": "4ce4f8f429890ab83d09f18045794aac0da22130c3137cf6f43d65e82ca8637f"
+  },
+  {
+    "file": "preimage/dashboard/src/api/client.ts",
+    "bytes": 32035,
+    "sha256": "87b377472e5df8a24b4329150373fce99fd1ee148c8efb886da8a3f4ceaf9c94"
+  },
+  {
+    "file": "reconstruction/dashboard/src/api/client.streamChannels.test.ts",
+    "bytes": 6568,
+    "sha256": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f"
+  },
+  {
+    "file": "reconstruction/dashboard/src/api/client.ts",
+    "bytes": 33124,
+    "sha256": "657fe50011f9f070194f41b2afb7fb6093bf2d8567dd25d2baa49021e50ad9ea"
+  },
+  {
+    "file": "checks/source/dashboard/src/api/client.streamChannels.test.ts",
+    "bytes": 6568,
+    "sha256": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f"
+  },
+  {
+    "file": "checks/source/dashboard/src/api/client.ts",
+    "bytes": 33124,
+    "sha256": "657fe50011f9f070194f41b2afb7fb6093bf2d8567dd25d2baa49021e50ad9ea"
+  },
+  {
+    "file": "green/source/dashboard/src/api/client.streamChannels.test.ts",
+    "bytes": 6568,
+    "sha256": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f"
+  },
+  {
+    "file": "green/source/dashboard/src/api/client.ts",
+    "bytes": 33124,
+    "sha256": "657fe50011f9f070194f41b2afb7fb6093bf2d8567dd25d2baa49021e50ad9ea"
+  },
+  {
+    "file": "red/source/dashboard/src/api/client.streamChannels.test.ts",
+    "bytes": 6568,
+    "sha256": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f"
+  },
+  {
+    "file": "red/source/dashboard/src/api/client.ts",
+    "bytes": 32035,
+    "sha256": "87b377472e5df8a24b4329150373fce99fd1ee148c8efb886da8a3f4ceaf9c94"
+  },
+  {
+    "file": "preimage/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+    "bytes": 4946,
+    "sha256": "033a4099559f50bafb84b512dd6433c06980eab4dcfc042419a60e5d613f1a66"
+  },
+  {
+    "file": "reconstruction/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+    "bytes": 6994,
+    "sha256": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d"
+  },
+  {
+    "file": "checks/source/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+    "bytes": 6994,
+    "sha256": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d"
+  },
+  {
+    "file": "green/source/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+    "bytes": 6994,
+    "sha256": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d"
+  },
+  {
+    "file": "red/source/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+    "bytes": 6994,
+    "sha256": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d"
+  }
+]

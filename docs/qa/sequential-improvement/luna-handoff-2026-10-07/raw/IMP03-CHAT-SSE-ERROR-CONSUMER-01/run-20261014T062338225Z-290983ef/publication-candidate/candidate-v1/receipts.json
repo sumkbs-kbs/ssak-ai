@@ -1,0 +1,59 @@
+{
+  "receipts": [
+    {
+      "name": "tests",
+      "command": [
+        "node",
+        "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/node_modules/vitest/vitest.mjs",
+        "run",
+        "src/api/client.test.ts",
+        "src/api/client.streamChannels.test.ts",
+        "src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--reporter=junit",
+        "--outputFile.json=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/vitest.json",
+        "--outputFile.junit=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/junit.xml"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard",
+      "started": "2026-10-14T06:31:13.671Z",
+      "ended": "2026-10-14T06:31:15.332Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "name": "typecheck",
+      "command": [
+        "node",
+        "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "--pretty",
+        "false"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard",
+      "started": "2026-10-14T06:31:15.332Z",
+      "ended": "2026-10-14T06:31:18.998Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "name": "lint",
+      "command": [
+        "node",
+        "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/node_modules/eslint/bin/eslint.js",
+        "src/api/client.ts",
+        "src/api/client.streamChannels.test.ts",
+        "src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard",
+      "started": "2026-10-14T06:31:18.998Z",
+      "ended": "2026-10-14T06:31:19.703Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    }
+  ],
+  "sourcesStable": true
+}

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="59" failures="0" errors="0" time="0.273062416">
+    <testsuite name="src/api/client.streamChannels.test.ts" timestamp="2026-10-14T06:31:15.318Z" hostname="MrKui-MacBookPro.local" tests="24" failures="0" errors="0" skipped="0" time="0.01093575">
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; reports provider_protocol_error/incomplete_stream once after partial content without completing at EOF" time="0.004142208">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; reports provider_protocol_error/invalid_stream once after partial content without completing at EOF" time="0.00072475">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; reports provider_protocol_error/upstream_stream_error once after partial content without completing at EOF" time="0.0006255">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; reports provider_transport_error/upstream_http_error once after partial content without completing at EOF" time="0.00045375">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; reports provider_transport_error/provider_unavailable once after partial content without completing at EOF" time="0.000488208">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; reports provider_transport_error/provider_timeout once after partial content without completing at EOF" time="0.000243916">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; stops on a typed stream error with split framing" time="0.000438083">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; stops on a typed stream error with unterminated framing" time="0.000129959">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; stops on a typed stream error with trailing-success framing" time="0.000749666">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; keeps legitimate content when an unrelated or malformed error field is &quot;error&quot;" time="0.000220375">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; keeps legitimate content when an unrelated or malformed error field is null" time="0.000135209">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; keeps legitimate content when an unrelated or malformed error field is {&quot;type&quot;:&quot;other_error&quot;,&quot;code&quot;:&quot;incomplete_stream&quot;,&quot;message&quot;:&quot;not recognized&quot;}" time="0.000095833">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; keeps legitimate content when an unrelated or malformed error field is {&quot;type&quot;:&quot;provider_protocol_error&quot;,&quot;code&quot;:&quot;other_code&quot;,&quot;message&quot;:&quot;not recognized&quot;}" time="0.000114625">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; keeps legitimate content when an unrelated or malformed error field is {&quot;type&quot;:&quot;provider_protocol_error&quot;,&quot;code&quot;:&quot;incomplete_stream&quot;,&quot;message&quot;:42}" time="0.000324">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; keeps legitimate content when an unrelated or malformed error field is {&quot;type&quot;:&quot;provider_protocol_error&quot;,&quot;code&quot;:&quot;incomplete_stream&quot;,&quot;message&quot;:&quot;&quot;}" time="0.000155792">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; keeps legitimate content when an unrelated or malformed error field is {&quot;type&quot;:&quot;provider_protocol_error&quot;,&quot;message&quot;:&quot;missing code&quot;}" time="0.000187708">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; delivers status through its own handler without appending answer content" time="0.000214791">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; delivers an authoritative final independently while preserving legacy delta compatibility" time="0.000155">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; ignores malformed channel data {&quot;agk_status&quot;:null}" time="0.00010925">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; ignores malformed channel data {&quot;agk_status&quot;:{&quot;text&quot;:42}}" time="0.000135542">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; ignores malformed channel data {&quot;agk_status&quot;:{}}" time="0.000067916">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; ignores malformed channel data {&quot;agk_final_content&quot;:null}" time="0.000069333">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; ignores malformed channel data {&quot;agk_final_content&quot;:{&quot;text&quot;:&quot;invalid&quot;}}" time="0.000060375">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; ignores malformed channel data {&quot;agk_final_content&quot;:42}" time="0.000059834">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/client.test.ts" timestamp="2026-10-14T06:31:15.319Z" hostname="MrKui-MacBookPro.local" tests="31" failures="0" errors="0" skipped="0" time="0.020281333">
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; PIN: preserves the model list URL, PIN header, and array result" time="0.003060542">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; health accepts an empty backend array returned before models are loaded" time="0.001239083">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; PIN: preserves the 401 PIN-required event and HTTP error" time="0.000877625">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; CR-06: a 401 rejects with a typed error the settings page can route to the PIN flow" time="0.002686333">
+            <system-err>
+[API] Error (/api/settings/env): ApiHttpError: HTTP 401: Unauthorized
+    at requestJson (/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/src/api/client.ts:239:13)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at saveSettings (/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/src/api/client.ts:818:15)
+    at /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/src/api/client.test.ts:129:21 {
+  status: 401
+}
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; settings requests use the shared status-checked client" time="0.00120675">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; settings requests reject malformed payloads and non-OK responses before parsing JSON" time="0.00085425">
+            <system-err>
+[API] Error (/api/settings/env): ApiHttpError: HTTP 503: Unavailable
+    at requestJson (/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/src/api/client.ts:239:13)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at saveSettings (/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/src/api/client.ts:818:15) {
+  status: 503
+}
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; RED: JSON rejects a malformed models response" time="0.00039325">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; RED: JSON rejects a malformed model operations response" time="0.000344583">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; RED: JSON rejects a malformed health response" time="0.000522833">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; RED: JSON rejects a malformed system metrics response" time="0.000342042">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; RED: JSON rejects a malformed cache stats response" time="0.000486916">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; RED: JSON rejects a malformed log levels response" time="0.000334708">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; RED: JSON rejects a malformed single log update response" time="0.000173333">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; RED: JSON rejects a malformed all log updates response" time="0.000154583">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; RED: JSON rejects a malformed debug mode response" time="0.000115583">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; RED: system auth sends the PIN and dispatches the 401 event" time="0.000479292">
+            <system-err>
+[API] Error (/api/system/status): ApiHttpError: HTTP 401: Unauthorized
+    at requestJson (/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/src/api/client.ts:239:13)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at fetchSystemMetrics (/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard/src/api/client.ts:565:15) {
+  status: 401
+}
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; RED: stream uses named handlers, PIN auth, and ordered chunks" time="0.000765">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; RED: stream delivers a final unterminated data frame" time="0.000244875">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; RED: stream reports a missing response body deliberately" time="0.000114375">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; RED: stream emits the PIN event before reporting a 401" time="0.00015375">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; RED: stream treats abort as completion exactly once" time="0.000161541">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; GREEN: JSON preserves every consumed success shape" time="0.0023595">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; GREEN: stream ignores malformed frames and accepts multiline data" time="0.000466583">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; GREEN: stream preserves split UTF-8 content" time="0.000378375">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; CTX-01 F2: mid-stream stale conflict SSE surfaces ConversationRevisionConflictError" time="0.000267875">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="shared API client &gt; GREEN: stream reports a non-abort transport error once" time="0.000306833">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="CR-01 conversation error mapping &gt; maps 404 to conversation_not_found instead of a generic error" time="0.000212417">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="CR-01 conversation error mapping &gt; maps integrity and migration failures to their wire codes" time="0.000159459">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="CR-01 conversation error mapping &gt; keeps stale revision conflicts on the typed conflict error" time="0.000068958">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="CTX-01 conversation fork request &gt; sends only the fork schema fields in the body while retaining project identity headers" time="0.000221208">
+        </testcase>
+        <testcase classname="src/api/client.test.ts" name="CTX-01 conversation fork request &gt; sends only the compact schema fields in the body while retaining project identity headers" time="0.00019325">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx" timestamp="2026-10-14T06:31:15.321Z" hostname="MrKui-MacBookPro.local" tests="4" failures="0" errors="0" skipped="0" time="0.241845333">
+        <testcase classname="src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx" name="ChatPage stream channel ownership &gt; preserves the queued turn and partial answer when the real parser receives a typed stream error" time="0.120323041">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx" name="ChatPage stream channel ownership &gt; shows progress as accessible working status without adding it to the assistant body" time="0.029299083">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx" name="ChatPage stream channel ownership &gt; replaces the streaming draft with the authoritative final and clears working status" time="0.036835375">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx" name="ChatPage stream channel ownership &gt; ignores late final and status events from a stopped run while the next run owns the conversation" time="0.054155709">
+        </testcase>
+    </testsuite>
+</testsuites>
