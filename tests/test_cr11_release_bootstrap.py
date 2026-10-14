@@ -74,6 +74,8 @@ def _run_audit(
     extra_env: dict[str, str] | None = None,
 ) -> subprocess.CompletedProcess[str]:
     env = dict(os.environ)
+    env.pop("AGK_AUDIT_RECORD", None)
+    env.pop("AUDIT_RECORD", None)
     if audit_cmd is not None:
         env["AGK_PIP_AUDIT_CMD"] = str(audit_cmd)
     if extra_env:
@@ -98,8 +100,14 @@ def test_audit_rejects_undeclared_extra(audit_script: Path) -> None:
     assert "definitely-not-an-extra" in result.stderr
 
 
-def test_audit_discovers_shipped_extras_and_records_inputs(audit_script: Path, tmp_path: Path) -> None:
+@pytest.mark.parametrize("parent_record_name", ["AGK_AUDIT_RECORD", "AUDIT_RECORD"])
+def test_audit_discovers_shipped_extras_and_records_inputs(
+    audit_script: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, parent_record_name: str
+) -> None:
     """감사 대상은 Dockerfile이 설치하는 extras에서 파생되고, 감사 전에 기록된다."""
+    parent_record = tmp_path / "parent-audit-inputs.json"
+    parent_record.write_text("existing-parent-evidence", encoding="utf-8")
+    monkeypatch.setenv(parent_record_name, str(parent_record))
     dockerfile = _flatten(_read("Dockerfile"))
     shipped = sorted(
         {
@@ -137,6 +145,7 @@ def test_audit_discovers_shipped_extras_and_records_inputs(audit_script: Path, t
     legacy_run = _run_audit(audit_script, args=["--print-targets"], extra_env={"AUDIT_RECORD": str(legacy)})
     assert legacy_run.returncode == 0, legacy_run.stdout + legacy_run.stderr
     assert json.loads(legacy.read_text(encoding="utf-8"))["shipped_extras"] == shipped
+    assert parent_record.read_text(encoding="utf-8") == "existing-parent-evidence"
 
 
 def test_audit_separates_vulnerabilities_from_infrastructure_errors(audit_script: Path, tmp_path: Path) -> None:
