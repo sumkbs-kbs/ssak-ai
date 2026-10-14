@@ -82,23 +82,27 @@ def safe_urlopen(
     target: str | Request,
     allow_local: bool = True,
     timeout: float | None = None,
+    *,
+    max_retries: int = _MAX_RETRIES,
 ) -> HTTPResponse:
     """egress 정책 검증 후 urlopen — 일시적 HTTP 오류(429/5xx)는 재시도한다.
 
     재시도는 연결 설정 단계에서 거부된 경우에만 안전하므로 여기서만
     수행한다 (응답 소비 중 오류는 호출자 몫). Retry-After 헤더를 존중하고
-    최대 2회 재시도한다.
+    기본 최대 2회 재시도한다. 재전송하면 안 되는 호출은 max_retries=0을 사용한다.
     """
+    if max_retries < 0:
+        raise ValueError("max_retries must be non-negative")
     _ = validate_egress_url(_target_url(target), allow_local=allow_local)
     last_error: urllib.error.HTTPError | None = None
-    for attempt in range(_MAX_RETRIES + 1):
+    for attempt in range(max_retries + 1):
         try:
             # validate_egress_url above allowlists HTTP(S) before this sink.
             if timeout is None:
                 return cast(HTTPResponse, urllib.request.urlopen(target))  # nosec B310
             return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
         except urllib.error.HTTPError as error:
-            if error.code not in _RETRYABLE_STATUS or attempt >= _MAX_RETRIES:
+            if error.code not in _RETRYABLE_STATUS or attempt >= max_retries:
                 raise
             last_error = error
             delay = _retry_delay(attempt, error)
@@ -107,7 +111,7 @@ def safe_urlopen(
                 error.code,
                 delay,
                 attempt + 1,
-                _MAX_RETRIES,
+                max_retries,
                 _target_url(target)[:120],
             )
             _retry_sleep(delay)

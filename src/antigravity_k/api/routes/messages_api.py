@@ -33,6 +33,7 @@ from antigravity_k.engine.anthropic_tool_bridge import (
 )
 from antigravity_k.engine.model_manager import ModelManager
 from antigravity_k.engine.protocol_translator import APIFormat, ProtocolTranslator
+from antigravity_k.engine.provider_adapters.transport_errors import NativeTransportError
 
 logger = logging.getLogger("antigravity_k.api.messages")
 
@@ -448,6 +449,8 @@ async def create_message(
 
     try:
         text = await run_in_threadpool(_generate)
+    except NativeTransportError as exc:
+        return JSONResponse({"error": exc.detail()}, status_code=exc.status_code)
     except Exception as exc:  # noqa: BLE001
         logger.exception("generate failed")
         gen_err, gen_status = _error(529, "api_error", f"Model generation failed: {exc}")

@@ -21,6 +21,7 @@ from antigravity_k.api.dependencies import (
 from antigravity_k.engine.audit_logger import get_audit_logger
 from antigravity_k.engine.model_manager import ModelManager
 from antigravity_k.engine.protocol_translator import APIFormat, ProtocolTranslator
+from antigravity_k.engine.provider_adapters.transport_errors import NativeTransportError
 from antigravity_k.engine.structured_output import StructuredOutputError, parse_output_contract
 from antigravity_k.engine.tokenizer import TokenEstimator
 
@@ -1460,6 +1461,8 @@ async def chat_completions(
             return translator.translate_response(internal_resp, target=target_format)
     except StructuredOutputError as exc:
         raise HTTPException(status_code=502, detail={"type": "structured_output_error", "message": str(exc)}) from exc
+    except NativeTransportError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail()) from exc
     except Exception as e:
         logger.error("Generation error: %s", e, exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))

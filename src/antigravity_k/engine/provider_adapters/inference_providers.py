@@ -11,6 +11,7 @@ from collections.abc import Callable, Iterator
 from importlib import import_module
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, ContextManager, Protocol, TypeAlias, cast, override, runtime_checkable
+from urllib.error import HTTPError, URLError
 
 from antigravity_k.engine.context_budget import context_budget_for_context_length
 
@@ -18,6 +19,7 @@ from antigravity_k.engine.context_budget import context_budget_for_context_lengt
 # `engine/__init__ → model_manager → inference_providers` 와 순환한다(게이트:
 # reportImportCycles). leaf 모듈에서 이름을 직접 가져온다.
 from antigravity_k.engine.multimodal import adapter_messages
+from antigravity_k.engine.provider_adapters.transport_errors import NativeTransportError, TransportFailure
 from antigravity_k.tools.egress_policy import safe_urlopen
 
 if TYPE_CHECKING:
@@ -687,7 +689,7 @@ class OllamaProvider(BaseInferenceProvider):
             headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"},
         )
         try:
-            with safe_urlopen(request, timeout=300) as response:
+            with safe_urlopen(request, timeout=300, max_retries=0) as response:
                 message = _as_json_map(
                     _as_json_map(cast(object, json.loads(response.read().decode("utf-8")))).get("message")
                 )
@@ -702,9 +704,15 @@ class OllamaProvider(BaseInferenceProvider):
                         for call in native_tool_calls
                     )
                 return content
-        except Exception as e:
-            logger.exception("Local native API generation failed")
-            return f"[API Error for {loaded.profile.name}] {e}"
+        except HTTPError as exc:
+            raise NativeTransportError(TransportFailure.HTTP, upstream_status=exc.code) from exc
+        except TimeoutError as exc:
+            raise NativeTransportError(TransportFailure.TIMEOUT) from exc
+        except URLError as exc:
+            failure = TransportFailure.TIMEOUT if isinstance(exc.reason, TimeoutError) else TransportFailure.UNAVAILABLE
+            raise NativeTransportError(failure) from exc
+        except OSError as exc:
+            raise NativeTransportError(TransportFailure.UNAVAILABLE) from exc
 
     def _iter_stream_response(
         self, response: Iterator[bytes], tools_schema: list[DynamicValue] | None = None
