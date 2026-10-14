@@ -56,7 +56,10 @@ describe('ChatPage stream channel ownership', () => {
     await waitFor(() => expect(client.streamChatCompletion).toHaveBeenCalled());
   }
 
-  it('preserves the queued turn and partial answer when the real parser receives a typed stream error', async () => {
+  it.each([
+    ['provider_protocol_error', 'incomplete_stream'],
+    ['agent_execution_error', 'task_failed'],
+  ])('preserves the queue and partial answer for %s with the real parser', async (type, code) => {
     // Given
     vi.mocked(client.streamChatCompletion).mockRestore();
     const encoder = new TextEncoder();
@@ -82,7 +85,7 @@ describe('ChatPage stream channel ownership', () => {
 
     // When
     await act(async () => {
-      await writer.write(encoder.encode('event: error\ndata: {"error":{"type":"provider_protocol_error","code":"incomplete_stream","message":"Incomplete stream"}}\n\n'));
+      await writer.write(encoder.encode(`event: error\ndata: ${JSON.stringify({ error: { type, code, message: 'Incomplete stream' } })}\n\n`));
       await writer.close();
     });
     await waitFor(() => expect(useChatStore.getState().isStreaming).toBe(false));

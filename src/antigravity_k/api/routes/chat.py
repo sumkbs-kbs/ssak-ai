@@ -18,6 +18,7 @@ from antigravity_k.api.dependencies import (
     get_model_manager,
     get_translator,
 )
+from antigravity_k.engine.agent_execution_error import AgentExecutionError
 from antigravity_k.engine.audit_logger import get_audit_logger
 from antigravity_k.engine.model_manager import ModelManager
 from antigravity_k.engine.protocol_translator import APIFormat, ProtocolTranslator
@@ -1357,20 +1358,14 @@ async def chat_completions(
                         ]
                     )
                 raise
-            except Exception as e:
-                logger.error("Stream error: %s", e, exc_info=True)
-                active_session.error = str(e)
-                data = {
-                    "choices": [
-                        {
-                            "delta": {"content": f"\n\n[Error: {str(e)}]"},
-                            "index": 0,
-                            "finish_reason": "error",
-                        }
-                    ]
-                }
-                yield f"data: {json.dumps(data)}\n\n"
-                yield "data: [DONE]\n\n"
+            except (AgentExecutionError, NativeTransportError, NativeProtocolError) as exc:
+                active_session.error = str(exc)
+                yield f"event: error\ndata: {json.dumps({'error': exc.detail()})}\n\n"
+            except Exception:
+                logger.exception("Agent stream failed")
+                failure = AgentExecutionError()
+                active_session.error = str(failure)
+                yield f"event: error\ndata: {json.dumps({'error': failure.detail()})}\n\n"
             finally:
                 reset_chat_stream_events(event_token)
                 # 요청 단위 도구 정책 해제

@@ -297,6 +297,11 @@ function parseSseData(input: string, flush: boolean): ParsedSseData {
 const ChatProviderErrorFrameSchema = z.object({
   error: z.discriminatedUnion('type', [
     z.object({
+      type: z.literal('agent_execution_error'),
+      code: z.literal('task_failed'),
+      message: z.string().trim().min(1),
+    }),
+    z.object({
       type: z.literal('provider_protocol_error'),
       code: z.enum(['invalid_stream', 'upstream_stream_error', 'incomplete_stream']),
       message: z.string().trim().min(1),

@@ -26,6 +26,7 @@ describe('chat stream status and final channels', () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it.each([
+    ['agent_execution_error', 'task_failed'],
     ['provider_protocol_error', 'incomplete_stream'],
     ['provider_protocol_error', 'invalid_stream'],
     ['provider_protocol_error', 'upstream_stream_error'],

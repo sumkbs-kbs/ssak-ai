@@ -454,7 +454,12 @@ def test_runtime_preserves_inner_quality_failure_without_terminal_transition_con
 
     # Then: it keeps the inner failure rather than incorrectly forcing the task to done.
     assert tracked.task_id is not None
-    assert list(tracked.chunks) == ["quality rejected"]
+    from antigravity_k.engine.agent_execution_error import AgentExecutionError
+
+    emitted: list[str] = []
+    with pytest.raises(AgentExecutionError):
+        emitted.extend(tracked.chunks)
+    assert emitted == ["quality rejected"]
     record = store.get_task(tracked.task_id)
     assert record is not None
     assert record["status"] == "failed"
@@ -895,9 +900,14 @@ async def test_agent_stream_route_emits_direct_task_id_before_chunks(monkeypatch
 
 
 @pytest.mark.asyncio
-async def test_chat_stream_route_uses_canonical_runtime(monkeypatch: pytest.MonkeyPatch):
+async def test_chat_stream_route_uses_canonical_runtime(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    from antigravity_k.api import dependencies
     from antigravity_k.api.routes import chat
     from antigravity_k.engine.protocol_translator import ProtocolTranslator
+    from antigravity_k.engine.session_manager import SessionManager
+
+    sessions = SessionManager(base_dir=str(tmp_path / "sessions"))
+    monkeypatch.setattr(dependencies, "get_session_manager", lambda: sessions)
 
     calls: list[dict[str, object]] = []
 
@@ -940,11 +950,16 @@ async def test_chat_stream_route_uses_canonical_runtime(monkeypatch: pytest.Monk
 
 
 @pytest.mark.asyncio
-async def test_chat_stream_keeps_generator_context_across_threadpool(monkeypatch: pytest.MonkeyPatch):
+async def test_chat_stream_keeps_generator_context_across_threadpool(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     import contextvars
 
+    from antigravity_k.api import dependencies
     from antigravity_k.api.routes import chat
     from antigravity_k.engine.protocol_translator import ProtocolTranslator
+    from antigravity_k.engine.session_manager import SessionManager
+
+    sessions = SessionManager(base_dir=str(tmp_path / "sessions"))
+    monkeypatch.setattr(dependencies, "get_session_manager", lambda: sessions)
 
     marker = contextvars.ContextVar("chat_stream_marker", default="unset")
 

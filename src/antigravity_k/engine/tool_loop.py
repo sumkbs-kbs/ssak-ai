@@ -30,6 +30,7 @@ from antigravity_k.engine.long_context_policy import LongContextExecutionPlan, L
 
 # NX-10: 패키지 루트 임포트는 `engine/__init__` 순환을 만든다 — leaf 모듈에서 이름을 직접 가져온다.
 from antigravity_k.engine.multimodal import collect_images
+from antigravity_k.engine.provider_adapters.transport_errors import NativeProtocolError, NativeTransportError
 from antigravity_k.engine.quality_gate import QualityGrade, QualityScore
 from antigravity_k.engine.task_context_snapshot import (
     ContextSnapshotStoreError,
@@ -1831,6 +1832,20 @@ class ToolLoopEngine:
 
                 # ── 스트림 오류 처리 (try 밖 — 제어 메시지 yield 안전) ──
                 stream_exc = stream_error
+                if isinstance(stream_exc, (NativeTransportError, NativeProtocolError)):
+                    self._record_task_outcome(
+                        task_id,
+                        delegate_model,
+                        expected_tools,
+                        used_tools,
+                        retry_count,
+                        started_at,
+                        False,
+                        "error",
+                        str(stream_exc),
+                        output=full_output,
+                    )
+                    return
                 classified = classify_api_error(
                     stream_exc,
                     provider="ollama",
@@ -1903,7 +1918,7 @@ class ToolLoopEngine:
                     break
                 else:
                     error_text = str(stream_exc)
-                    yield f"\n\n❌ **에이전트 실행 오류**: {stream_exc!s}\n"
+                    yield ProgressChunk("\n\n❌ **에이전트 실행 오류**: 작업을 완료하지 못했습니다.\n")
                     self._record_task_outcome(
                         task_id,
                         delegate_model,

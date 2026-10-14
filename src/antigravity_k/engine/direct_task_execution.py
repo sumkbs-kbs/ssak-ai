@@ -11,6 +11,7 @@ from datetime import UTC, datetime
 from typing import Final, Protocol, assert_never, final, runtime_checkable
 
 from antigravity_k.engine import multimodal
+from antigravity_k.engine.agent_execution_error import AgentExecutionError
 from antigravity_k.engine.benchmark_harness import TaskOutcome
 from antigravity_k.engine.chat_stream_events import FinalChunk, ProgressChunk
 from antigravity_k.engine.language_normalizer import normalize_streaming_chunks
@@ -391,6 +392,8 @@ class DirectTaskExecution:
                     f"{execution_type}_{record['status']}",
                     json.dumps({"output_length": len(output), "error": record["error"]}, sort_keys=True),
                 )
+                if record["status"] == "failed":
+                    raise AgentExecutionError()
             else:
                 final_agent_output = str(getattr(self._orchestrator, "_last_agent_output", "") or "")
                 if not final_seen and final_agent_output and final_agent_output != initial_agent_output:
