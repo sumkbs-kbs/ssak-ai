@@ -473,12 +473,13 @@ def test_cli_help_is_usable() -> None:
     assert "--evidence" in result.stdout and "--timeout" in result.stdout
 
 
+@pytest.mark.parametrize("location", ["home", "outside-home"])
 @pytest.mark.parametrize("layout", ["file", "directory"])
 def test_owned_os_boundary_denies_native_origin_git_reads(
-    harness: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, layout: str
+    harness: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, layout: str, location: str
 ) -> None:
     home = tmp_path / "personal-home"
-    origin = home / "origin"
+    origin = home / "origin" if location == "home" else tmp_path / "outside-origin"
     owned = tmp_path / "owned"
     origin.mkdir(parents=True)
     owned.mkdir()

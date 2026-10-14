@@ -500,6 +500,11 @@ def sandbox_profile(root: Path, *, checkout: bool = False) -> str:
         "(allow default)",
         f"(deny file-read-data (require-all (subpath {quote(home)}) (require-not (require-any {exceptions}))))",
     ]
+    if checkout:
+        origin_exceptions = f"(subpath {quote(ROOT / '.venv')}) (subpath {quote(root)})"
+        rules.append(
+            f"(deny file-read-data (require-all (subpath {quote(ROOT)}) (require-not (require-any {origin_exceptions}))))"
+        )
     rules.extend(f"(deny file-read-data (subpath {quote(ROOT / name)}))" for name in (*STORES, ".env", "config.yaml"))
     rules.extend(
         (
