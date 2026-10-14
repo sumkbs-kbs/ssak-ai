@@ -332,6 +332,7 @@ async def stream_task_events_websocket(
                         "type": "stream.end",
                         "task_id": end.task_id,
                         "last_sequence": end.last_sequence,
+                        "sequence_scope": end.sequence_scope,
                         "status": end.status,
                     },
                 )

@@ -19,6 +19,7 @@ import {
   type TaskEvent,
   type TaskId,
   type TaskSummary,
+  type TaskSequenceScope,
 } from './taskExecutionSchema';
 import type { TaskForkOperation, TaskSubmitOperation } from './taskOperation';
 
@@ -34,6 +35,7 @@ export type ParsedSseChunk = Readonly<{
 }>;
 
 export type TaskStreamResult = Readonly<{
+  sequenceScope?: TaskSequenceScope;
   status: string;
   lastSequence: number;
 }>;
@@ -171,7 +173,7 @@ export async function fetchTaskEvents(
   taskId: TaskId,
   afterSequence: number,
   signal: AbortSignal,
-): Promise<Readonly<{ events: readonly TaskEvent[]; lastSequence: number }>> {
+): Promise<Readonly<{ events: readonly TaskEvent[]; lastSequence: number; sequenceScope?: TaskSequenceScope }>> {
   const events: TaskEvent[] = [];
   let sequence = afterSequence;
 
@@ -186,7 +188,7 @@ export async function fetchTaskEvents(
     const response = TaskEventsResponseSchema.parse(raw);
     events.push(...response.events);
     if (!response.has_more) {
-      return { events, lastSequence: response.last_sequence };
+      return { events, lastSequence: response.last_sequence, ...(response.sequence_scope === undefined ? {} : { sequenceScope: response.sequence_scope }) };
     }
     if (response.last_sequence <= sequence) {
       throw new TaskEventStreamError('invalid-event', 'Task event replay cursor did not advance.');
@@ -199,7 +201,7 @@ function frameResult(frame: SseFrame): TaskStreamResult | TaskEvent {
   const raw: unknown = JSON.parse(frame.data);
   if (frame.event === 'stream.end') {
     const end = TaskStreamEndSchema.parse(raw);
-    return { status: end.status, lastSequence: end.last_sequence };
+    return { status: end.status, lastSequence: end.last_sequence, ...(end.sequence_scope === undefined ? {} : { sequenceScope: end.sequence_scope }) };
   }
   return TaskEventSchema.parse(raw);
 }

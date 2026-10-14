@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { TaskEventSchema, TaskIdSchema, type TaskEvent, type TaskId } from './taskExecutionSchema';
+import { TaskEventSchema, TaskIdSchema, TaskSequenceScopeSchema, type TaskEvent, type TaskId, type TaskSequenceScope } from './taskExecutionSchema';
 
 export const TASK_EVENT_REPLICA_DEFAULT_LIMIT = 1_000;
 
@@ -10,6 +10,7 @@ export type TaskEventGap = Readonly<{
 }>;
 
 export type TaskEventReplicaState = Readonly<{
+  sequenceScope: TaskSequenceScope;
   taskId: TaskId;
   events: readonly TaskEvent[];
   lastSequence: number;
@@ -35,6 +36,7 @@ export class TaskEventReplicaTaskMismatchError extends Error {
 }
 
 const PersistedReplicaSchema = z.object({
+  sequence_scope: TaskSequenceScopeSchema.optional().default('task'),
   task_id: TaskIdSchema,
   events: z.array(TaskEventSchema).readonly(),
   last_sequence: z.number().int().nonnegative(),
@@ -78,12 +80,16 @@ function stateFrom(
   events: readonly TaskEvent[],
   lastSequence: number,
   snapshotSequence: number,
+  sequenceScope: TaskSequenceScope,
 ): TaskEventReplicaState {
   const normalized = normalizeEvents(taskId, events);
   const effectiveLast = Math.max(lastSequence, normalized.at(-1)?.sequence ?? 0);
   const effectiveSnapshot = Math.min(snapshotSequence, effectiveLast);
-  const contiguous = contiguousSequence(normalized, effectiveSnapshot);
+  const contiguous = sequenceScope === 'global'
+    ? Math.max(effectiveSnapshot, normalized.at(-1)?.sequence ?? 0)
+    : contiguousSequence(normalized, effectiveSnapshot);
   return {
+    sequenceScope,
     taskId,
     events: normalized,
     lastSequence: effectiveLast,
@@ -94,27 +100,29 @@ function stateFrom(
 }
 
 export function createTaskEventReplica(taskId: TaskId, snapshotSequence = 0): TaskEventReplicaState {
-  return stateFrom(taskId, [], snapshotSequence, snapshotSequence);
+  return stateFrom(taskId, [], snapshotSequence, snapshotSequence, 'task');
 }
 
 export function replaceTaskEventReplica(
   taskId: TaskId,
   events: readonly TaskEvent[],
   lastSequence: number,
+  sequenceScope: TaskSequenceScope = 'task',
 ): TaskEventReplicaState {
   const normalized = normalizeEvents(taskId, events);
   const effectiveLast = Math.max(lastSequence, normalized.at(-1)?.sequence ?? 0);
   const snapshotSequence = normalized.length === 0 ? effectiveLast : 0;
-  return stateFrom(taskId, normalized, effectiveLast, snapshotSequence);
+  return stateFrom(taskId, normalized, effectiveLast, snapshotSequence, sequenceScope);
 }
 
 export function mergeTaskEventReplica(
   current: TaskEventReplicaState,
   incoming: readonly TaskEvent[],
   lastSequence = current.lastSequence,
+  sequenceScope = current.sequenceScope,
 ): TaskEventReplicaState {
   const merged = [...current.events, ...incoming];
-  return stateFrom(current.taskId, merged, lastSequence, current.snapshotSequence);
+  return stateFrom(current.taskId, merged, lastSequence, current.snapshotSequence, sequenceScope);
 }
 
 export function compactTaskEventReplica(
@@ -129,7 +137,7 @@ export function compactTaskEventReplica(
   const firstRetained = retained[0];
   if (firstRetained === undefined) return current;
   const snapshotSequence = Math.max(current.snapshotSequence, firstRetained.sequence - 1);
-  return stateFrom(current.taskId, retained, current.lastSequence, snapshotSequence);
+  return stateFrom(current.taskId, retained, current.lastSequence, snapshotSequence, current.sequenceScope);
 }
 
 function cacheKey(taskId: TaskId): string {
@@ -141,6 +149,7 @@ export function writeTaskEventReplicaCache(
   storage: Storage = window.localStorage,
 ): void {
   storage.setItem(cacheKey(replica.taskId), JSON.stringify({
+    sequence_scope: replica.sequenceScope,
     task_id: replica.taskId,
     events: replica.events,
     last_sequence: replica.lastSequence,
@@ -164,6 +173,7 @@ export function readTaskEventReplicaCache(
       persisted.data.events,
       persisted.data.last_sequence,
       persisted.data.snapshot_sequence,
+      persisted.data.sequence_scope,
     );
   } catch (error: unknown) {
     if (error instanceof SyntaxError) return null;

@@ -14,7 +14,11 @@ export const TaskStatusSchema = z.enum([
   'cancelled',
 ]);
 
+export const TaskSequenceScopeSchema = z.enum(['task', 'global']);
+export type TaskSequenceScope = z.infer<typeof TaskSequenceScopeSchema>;
+
 export const TaskEventSchema = z.object({
+  sequence_scope: TaskSequenceScopeSchema.optional(),
   sequence: z.number().int().nonnegative(),
   schema_version: z.number().int().positive(),
   task_id: TaskIdSchema,
@@ -31,6 +35,7 @@ export const TaskEventSchema = z.object({
 }).readonly();
 
 export const TaskEventsResponseSchema = z.object({
+  sequence_scope: TaskSequenceScopeSchema.optional(),
   task_id: TaskIdSchema,
   events: z.array(TaskEventSchema).readonly(),
   last_sequence: z.number().int().nonnegative(),
@@ -65,6 +70,7 @@ export const TaskListResponseSchema = z.object({
 }).readonly();
 
 export const TaskStreamEndSchema = z.object({
+  sequence_scope: TaskSequenceScopeSchema.optional(),
   task_id: TaskIdSchema,
   last_sequence: z.number().int().nonnegative(),
   status: z.string().min(1),

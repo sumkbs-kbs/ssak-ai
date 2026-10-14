@@ -26,7 +26,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { TaskSummarySchema } from './taskExecutionSchema';
+import { TaskEventSchema, TaskSummarySchema, type TaskEvent } from './taskExecutionSchema';
 import { useProjectStore } from '../../stores/projectStore';
 
 const api = vi.hoisted(() => ({
@@ -82,6 +82,34 @@ beforeEach(() => {
 });
 
 describe('useTaskExecutionEvents — idempotent task operation retry', () => {
+  it('completes a sparse global replay and refreshes the terminal task once without redispatch', async () => {
+    const failed = TaskSummarySchema.parse({ ...LIVE, status: 'failed', execution_owner: 'none', error: 'provider unavailable' });
+    api.fetchTaskList.mockResolvedValueOnce([LIVE]).mockResolvedValueOnce([failed]);
+    api.fetchTaskEvents.mockResolvedValue({ events: [], lastSequence: 0, sequenceScope: 'global' });
+    api.streamTaskEvents.mockImplementation(async (
+      _taskId: string, _cursor: number, _signal: AbortSignal,
+      handlers: Readonly<{ onEvent: (event: TaskEvent) => void }>,
+    ) => {
+      await new Promise((resolve) => window.setTimeout(resolve, 10));
+      for (const sequence of [24, 27, 35]) handlers.onEvent(TaskEventSchema.parse({
+        sequence, sequence_scope: 'global', schema_version: 2, task_id: LIVE.task_id,
+        step_id: null, agent_id: null, parent_id: null, tool_call_id: null, approval_id: null,
+        resource_job_id: null, correlation_id: null, event_type: 'task.status',
+        payload: { status: sequence === 35 ? 'failed' : 'running' }, created_at: LIVE.created_at,
+      }));
+      return { lastSequence: 35, sequenceScope: 'global', status: 'failed' };
+    });
+    const { result } = renderHook(() => useTaskExecutionEvents());
+    await waitFor(() => expect(result.current.connectionState).toBe('complete'));
+    expect(result.current.tasks[0]?.status).toBe('failed');
+    expect(result.current.error).toBeNull();
+    expect(result.current.events.map((event) => event.sequence)).toEqual([24, 27, 35]);
+    expect(api.fetchTaskEvents).toHaveBeenCalledTimes(1);
+    expect(api.fetchTaskList).toHaveBeenCalledTimes(2);
+    expect(api.streamTaskEvents).toHaveBeenCalledTimes(1);
+    expect(api.submitTask).not.toHaveBeenCalled();
+  });
+
   it('reuses the original submit operation after an ambiguous response loss and selects the server task', async () => {
     // Given: the server might have committed the first POST, but its response never reaches the browser.
     const committedTask = TaskSummarySchema.parse({

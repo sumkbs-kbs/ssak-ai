@@ -58,6 +58,16 @@ describe('parseSseChunk', () => {
 });
 
 describe('fetchTaskEvents', () => {
+  it('retains the declared global cursor scope on a sparse authoritative replay', async () => {
+    getMock.mockReturnValueOnce({ json: async () => ({
+      task_id: taskId, sequence_scope: 'global', events: [event(24), event(35)],
+      last_sequence: 35, has_more: false,
+    }) });
+    const result = await fetchTaskEvents(taskId, 0, new AbortController().signal);
+    expect(result.sequenceScope).toBe('global');
+    expect(result.events.map((item) => item.sequence)).toEqual([24, 35]);
+  });
+
   it('fetches every authoritative replay page before returning events', async () => {
     // Given: the server reports that the first replay page has more events.
     getMock

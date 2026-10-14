@@ -108,6 +108,7 @@ class TaskBenchmarkRequest(BaseModel):
 
 
 class TaskEvent(BaseModel):
+    sequence_scope: Literal["global"] = "global"
     sequence: int
     schema_version: int
     task_id: str
@@ -142,6 +143,7 @@ class TaskEvent(BaseModel):
 
 
 class TaskEventsResponse(BaseModel):
+    sequence_scope: Literal["global"] = "global"
     task_id: str
     events: list[TaskEvent]
     last_sequence: int
@@ -149,6 +151,7 @@ class TaskEventsResponse(BaseModel):
 
 
 class TaskStreamEnd(BaseModel):
+    sequence_scope: Literal["global"] = "global"
     task_id: str
     last_sequence: int
     status: str

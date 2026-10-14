@@ -153,8 +153,8 @@ export function useTaskExecutionEvents(): TaskExecutionState {
       const replay = await fetchTaskEvents(selectedTaskId, replayCursor, controller.signal);
       if (controller.signal.aborted) return;
       replica = cachedReplica === null
-        ? replaceTaskEventReplica(selectedTaskId, replay.events, replay.lastSequence)
-        : mergeTaskEventReplica(replica, replay.events, replay.lastSequence);
+        ? replaceTaskEventReplica(selectedTaskId, replay.events, replay.lastSequence, replay.sequenceScope)
+        : mergeTaskEventReplica(replica, replay.events, replay.lastSequence, replay.sequenceScope);
       replica = compactTaskEventReplica(replica);
       replicaRef.current = replica;
       writeTaskEventReplicaCache(replica);
@@ -173,7 +173,7 @@ export function useTaskExecutionEvents(): TaskExecutionState {
       const recoverGap = async (afterSequence: number): Promise<void> => {
         const missed = await fetchTaskEvents(selectedTaskId, afterSequence, controller.signal);
         if (controller.signal.aborted) return;
-        replica = compactTaskEventReplica(mergeTaskEventReplica(replica, missed.events, missed.lastSequence));
+        replica = compactTaskEventReplica(mergeTaskEventReplica(replica, missed.events, missed.lastSequence, missed.sequenceScope));
         replicaRef.current = replica;
         sequence = replica.contiguousSequence;
         writeTaskEventReplicaCache(replica);
@@ -185,7 +185,7 @@ export function useTaskExecutionEvents(): TaskExecutionState {
         try {
           const end = await streamTaskEvents(selectedTaskId, sequence, controller.signal, {
             onEvent: (event) => {
-              const next = compactTaskEventReplica(mergeTaskEventReplica(replica, [event]));
+              const next = compactTaskEventReplica(mergeTaskEventReplica(replica, [event], replica.lastSequence, event.sequence_scope ?? replica.sequenceScope));
               replica = next;
               replicaRef.current = next;
               sequence = next.contiguousSequence;
@@ -202,6 +202,7 @@ export function useTaskExecutionEvents(): TaskExecutionState {
           if (controller.signal.aborted) return;
           const pendingGapRecovery = gapRecovery;
           if (pendingGapRecovery !== null) await pendingGapRecovery;
+          replica = mergeTaskEventReplica(replica, [], end.lastSequence, end.sequenceScope);
           if (end.lastSequence > replica.contiguousSequence) {
             setConnectionState('reconnecting');
             await recoverGap(replica.contiguousSequence);
@@ -210,6 +211,10 @@ export function useTaskExecutionEvents(): TaskExecutionState {
             setError(`Task event replay is incomplete at sequence ${replica.contiguousSequence}.`);
             setConnectionState('error');
             return;
+          }
+          if (end.status === 'done' || end.status === 'failed' || end.status === 'cancelled') {
+            await refreshTaskList(controller.signal);
+            if (controller.signal.aborted) return;
           }
           setConnectionState('complete');
           sequence = Math.max(sequence, end.lastSequence);

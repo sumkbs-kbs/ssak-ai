@@ -31,6 +31,34 @@ function event(sequence: number, payload: string = `event-${sequence}`): TaskEve
 }
 
 describe('task event replica', () => {
+  it('advances a task-filtered global cursor across other tasks without a false gap', () => {
+    const globalEvent = (sequence: number): TaskEvent => TaskEventSchema.parse({
+      ...event(sequence), sequence_scope: 'global',
+    });
+    const initial = replaceTaskEventReplica(taskId, [globalEvent(24), globalEvent(27)], 27, 'global');
+    const result = mergeTaskEventReplica(initial, [globalEvent(35)]);
+    expect(result.contiguousSequence).toBe(35);
+    expect(result.gap).toBeNull();
+    expect(result.events.map((item) => item.sequence)).toEqual([24, 27, 35]);
+  });
+
+  it('keeps an unseen global terminal cursor incomplete until replay supplies it', () => {
+    const initial = replaceTaskEventReplica(taskId, [event(24)], 35, 'global');
+    expect(initial.contiguousSequence).toBe(24);
+    expect(initial.gap).toEqual({ from: 25, to: 35 });
+    const result = mergeTaskEventReplica(initial, [event(35)]);
+    expect(result.gap).toBeNull();
+  });
+
+  it('preserves global scope when cached and still rejects conflicting event payloads', () => {
+    const initial = replaceTaskEventReplica(taskId, [event(24), event(35)], 35, 'global');
+    writeTaskEventReplicaCache(initial);
+    const restored = readTaskEventReplicaCache(taskId);
+    expect(restored?.contiguousSequence).toBe(35);
+    expect(restored?.sequenceScope).toBe('global');
+    expect(() => mergeTaskEventReplica(initial, [event(35, 'conflict')])).toThrow(TaskEventReplicaConflictError);
+  });
+
   it('deduplicates replay overlap without changing event order', () => {
     // Given: the replica has the first two authoritative events.
     const initial = replaceTaskEventReplica(taskId, [event(1), event(2)], 2);

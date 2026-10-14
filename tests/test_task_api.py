@@ -232,9 +232,11 @@ def test_task_event_replay_is_task_scoped_and_decodes_payload(client: TestClient
 
     assert response.status_code == 200
     assert response.json() == {
+        "sequence_scope": "global",
         "task_id": "task-123",
         "events": [
             {
+                "sequence_scope": "global",
                 "sequence": 7,
                 "schema_version": 2,
                 "task_id": "task-123",
@@ -360,7 +362,7 @@ def test_task_event_sse_replays_then_ends_for_terminal_task(
     assert event["payload"] == {"result": "ok"}
     assert frames[1].startswith("event: stream.end\ndata: ")
     end = typing.cast(dict[str, object], json.loads(frames[1].split("data: ", 1)[1]))
-    assert end == {"task_id": "task-123", "last_sequence": 7, "status": "done"}
+    assert end == {"task_id": "task-123", "last_sequence": 7, "status": "done", "sequence_scope": "global"}
 
 
 def test_task_event_sse_resumes_from_last_event_id_header(
@@ -386,6 +388,7 @@ def test_task_event_websocket_replays_task_scoped_events_and_ends(
         stream_end = typing.cast(dict[str, object], websocket.receive_json())
 
     assert replay == {
+        "sequence_scope": "global",
         "sequence": 7,
         "schema_version": 2,
         "task_id": "task-123",
@@ -401,6 +404,7 @@ def test_task_event_websocket_replays_task_scoped_events_and_ends(
         "created_at": "2026-08-20T00:00:00+00:00",
     }
     assert stream_end == {
+        "sequence_scope": "global",
         "type": "stream.end",
         "task_id": "task-123",
         "last_sequence": 7,
