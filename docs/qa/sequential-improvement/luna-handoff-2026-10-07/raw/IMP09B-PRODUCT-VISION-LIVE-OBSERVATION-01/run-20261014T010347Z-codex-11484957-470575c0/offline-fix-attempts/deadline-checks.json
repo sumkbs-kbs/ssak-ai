@@ -1,0 +1,78 @@
+{
+  "status": "PASS_FOCUSED_OFFLINE_ABSOLUTE_DEADLINE",
+  "source_sha256": {
+    "runtime_adapter.py": "4ebfd286d01661cfc4f8c028a340ceb7c2668fa3e94a0af22a988cf9115ac472",
+    "test_absolute_deadline_contract.py": "9de3016f092494596c231c526967e10a2dd6f8e1f1751308f1bb531ddca1f359"
+  },
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T010347Z-codex-11484957-470575c0",
+  "pre_fix": {
+    "exit_code": 1,
+    "passed": 5,
+    "failed": 5,
+    "source": "before-20261014-deadline/runtime_adapter.py",
+    "junit": "before-20261014-deadline/junit.xml",
+    "stdout": "before-20261014-deadline/stdout.txt",
+    "stderr": "before-20261014-deadline/stderr.txt"
+  },
+  "post_fix": {
+    "exit_code": 0,
+    "passed": 10,
+    "failed": 0,
+    "source": "after-20261014-deadline/runtime_adapter.py",
+    "junit": "after-20261014-deadline/junit.xml",
+    "stdout": "after-20261014-deadline/stdout.txt",
+    "stderr": "after-20261014-deadline/stderr.txt"
+  },
+  "pytest_command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/mr.k/miniforge3/bin/python -m pytest -q -o addopts= -o testpaths= test_absolute_deadline_contract.py --junitxml=<attempt>/junit.xml",
+  "static": [
+    {
+      "command": "ruff check runtime_adapter.py test_absolute_deadline_contract.py > offline-fix-attempts/after-20261014-deadline/ruff.txt 2>&1",
+      "exit_code": 0
+    },
+    {
+      "command": "ruff format --check runtime_adapter.py test_absolute_deadline_contract.py > offline-fix-attempts/after-20261014-deadline/format.txt 2>&1",
+      "exit_code": 0
+    },
+    {
+      "command": "basedpyright --level error runtime_adapter.py test_absolute_deadline_contract.py > offline-fix-attempts/after-20261014-deadline/types.txt 2>&1",
+      "exit_code": 0
+    },
+    {
+      "command": "/Users/mr.k/miniforge3/bin/python -c 'from pathlib import Path; files=(\"runtime_adapter.py\", \"test_absolute_deadline_contract.py\"); [compile(Path(name).read_bytes(), name, \"exec\") for name in files]; print(\"COMPILE_OK\", len(files))' > offline-fix-attempts/after-20261014-deadline/compile.txt 2>&1",
+      "exit_code": 0
+    }
+  ],
+  "scenarios": [
+    {
+      "case": "absolute header/body deadline",
+      "observable": "both blocking cases interrupted under 0.25s against 0.04s deadline; body prefix persists; close observes timer already disabled"
+    },
+    {
+      "case": "successful 200 and HTTPError400, real-alarm and mock modes",
+      "observable": "exact status and body; closed; handler restored; timer0"
+    },
+    {
+      "case": "existing timer",
+      "observable": "refused before fake opener; existing timer remains >4seconds"
+    },
+    {
+      "case": "wrong thread",
+      "observable": "one RuntimeError, zero opener calls, joined thread"
+    },
+    {
+      "case": "mock resources",
+      "observable": "setitimer replaced by fail-on-call function and exchange succeeds"
+    },
+    {
+      "case": "positive SocketResponse read",
+      "observable": "read4096 returns only first2bytes via read1; read-1 returns remaining4"
+    }
+  ],
+  "execution_scope": "Only in-memory HTTP fakes, real POSIX signal timer, local test thread, local artifact I/O. No live HTTP, socket, listener, subprocess product, Uvicorn, Ollama, inference.",
+  "notes": [
+    "Existing asyncio_mode warning retained.",
+    "Initial static diagnostics: import layout and Optional response access corrected before final checks; original diagnostic details preserved separately.",
+    "No old45/18/22 selectors executed.",
+    "Root must freeze new source binding before any live run."
+  ]
+}

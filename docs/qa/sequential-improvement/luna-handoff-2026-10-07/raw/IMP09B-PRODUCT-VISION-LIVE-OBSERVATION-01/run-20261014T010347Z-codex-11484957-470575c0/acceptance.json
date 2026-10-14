@@ -1,0 +1,29 @@
+{
+  "product_http": 200,
+  "product_media_type": "application/json",
+  "provider_http": 200,
+  "provider_done": true,
+  "product_provider_assistant_content_equal": true,
+  "strict_expected_json": {
+    "red_circles": 2,
+    "blue_squares": 1
+  },
+  "product_post": 1,
+  "provider_chat_wire": 1,
+  "retry": 0,
+  "redirect": 0,
+  "native": 0,
+  "tool": 0,
+  "source_binding_unchanged": true,
+  "cleanup_owned_worker_reaped": true,
+  "readiness": {
+    "anonymous_http": 401,
+    "bearer_http": 200,
+    "deadline_seconds": 15
+  },
+  "overall_deadline_seconds": 120,
+  "cleanup_seconds": 5,
+  "lifespan": "off",
+  "keep_alive": "30m",
+  "source": "existing frozen supervise_once contract; no acceptance edited after response"
+}

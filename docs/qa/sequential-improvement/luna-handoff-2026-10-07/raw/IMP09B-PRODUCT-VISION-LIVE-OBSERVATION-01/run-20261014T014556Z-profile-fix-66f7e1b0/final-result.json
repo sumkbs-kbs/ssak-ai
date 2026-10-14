@@ -1,0 +1,263 @@
+{
+  "task_id": "IMP-09-B-PRODUCT-VISION-LIVE-OBSERVATION-01",
+  "status": "COMPLETE_OBSERVATION_WITH_STRICT_OUTPUT_FAILURE",
+  "acceptance": "FAIL_SEMANTIC",
+  "overall_imp09": "PARTIAL",
+  "historical_ledger": "NOT_RECOVERED",
+  "product_live_vision": "OBSERVED_TRANSPORT_PASS_STRICT_JSON_FAIL",
+  "scope": "Authenticated external loopback Uvicorn, lifespan off; one fixed image/question; one actual local Ollama inference",
+  "candidate": "codex-final-gate-candidate-5",
+  "execution_binding_sha256": "445f327b46d1393e3dbce34520caf0cf053e313a738234a4fe2606cab0f9996a",
+  "model": {
+    "repo": "qwen3.8:latest",
+    "digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+    "ollama_version": "0.40.3"
+  },
+  "fourth_case": {
+    "product_http": 200,
+    "provider_http": 200,
+    "provider_done": true,
+    "assistant_content_exactly_equal": true,
+    "assistant_content": "```json\n{\"red_circles\": 2, \"blue_squares\": 1}\n```",
+    "assistant_utf8_sha256": "a43abea2885c9d30f27b7676e0cb454ce32302c1df1b8d9f9c5cb410ffd347c0",
+    "supplemental_cardinality_observation": {
+      "red_circles": 2,
+      "blue_squares": 1,
+      "expected_counts_match": true,
+      "does_not_override_strict_acceptance": true
+    },
+    "strict_failure": "Markdown code fence prevents direct strict JSON decoding",
+    "gates": {
+      "source_request_authorization": "PASS",
+      "auth_unauthorized_401": "PASS",
+      "auth_bearer_200": "PASS",
+      "readiness": "PASS",
+      "model_version_tags_show_digest_capability": "PASS",
+      "product_status_content_type": "PASS",
+      "upstream_status_done_content_type": "PASS",
+      "input_options_think_format": "PASS",
+      "raw_response_equality": "PASS",
+      "semantic_counts": "FAIL_SEMANTIC",
+      "accounting_lineage": "PASS",
+      "no_retry_redirect_native_tool": "PASS",
+      "cleanup_owned_exit": "PASS",
+      "protected_before_after": "PASS",
+      "execution_binding_immutable": "PASS",
+      "deadline_stage_contract": "PASS",
+      "postflight_deadline": "PASS",
+      "cleanup_deadline": "PASS"
+    },
+    "external_supervisor_exit_code": 4,
+    "internal_supervisor_exit": "NOT_OBSERVED",
+    "worker_cleanup": {
+      "source": "RUNTIME_OBSERVATION",
+      "owned_cleanup": true,
+      "worker_started": true,
+      "exit_observation": "OBSERVED",
+      "exit_code": 0,
+      "reaped": true,
+      "released_handles": true,
+      "worker_shutdown_report": "WORKER_DONE",
+      "os_exit_observation": "OBSERVED",
+      "supervisor_exit_observation": "NOT_OBSERVED",
+      "errors": [],
+      "callback_calls": 1,
+      "elapsed_seconds": 0.42999520793091506,
+      "timed_out": false,
+      "timeout_seconds": 5
+    },
+    "postflight": {
+      "status": "OBSERVED",
+      "source": "RUNTIME_OBSERVATION",
+      "ps": {
+        "models": [
+          {
+            "name": "qwen3.8:latest",
+            "model": "qwen3.8:latest",
+            "size": 18398807325,
+            "digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "qwen35",
+              "families": [
+                "qwen35"
+              ],
+              "parameter_size": "27.3B",
+              "quantization_level": "Q4_K_M"
+            },
+            "expires_at": "2026-10-14T11:22:47.396318+09:00",
+            "size_vram": 18398807325,
+            "context_length": 32768,
+            "runner": "llamacpp"
+          }
+        ]
+      }
+    }
+  },
+  "aggregate": {
+    "actual_cases": 4,
+    "worker_starts": 4,
+    "workers_reaped": 4,
+    "auth_readiness_gets": 8,
+    "metadata_preflight_http": 16,
+    "metadata_postflight_http": 3,
+    "product_posts": 3,
+    "provider_chat_inferences": 1,
+    "parent_http_opens": 30,
+    "worker_provider_wire": 1,
+    "recorded_http_total": 31,
+    "retry": 0,
+    "redirect": 0,
+    "native_inference": 0,
+    "tool": 0,
+    "original_one_product_post_plan": "NOT_MET",
+    "original_single_preflight_plan": "NOT_MET",
+    "source_of_counters": "Stored runtime-observations http-open events plus distinct worker provider wire_entered; read events are not requests"
+  },
+  "cases": [
+    {
+      "run": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T010347Z-codex-11484957-470575c0",
+      "raw_verdict": "INCONCLUSIVE_PREPARATION",
+      "product_posts": 0,
+      "provider_inferences": 0,
+      "parent_http_open_events": 6,
+      "external_supervisor_exit_code": 4,
+      "worker_exit_code": 0,
+      "worker_reaped": true,
+      "cleanup_pass": true,
+      "launch_receipt_path": "launches/live-cd2cea4cf8114207910ea262337b534c/launch-receipt.json"
+    },
+    {
+      "run": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T012838Z-recovery-ab23eee4",
+      "raw_verdict": "INCONCLUSIVE_MANDATORY_GATE_UNKNOWN",
+      "product_posts": 1,
+      "provider_inferences": 0,
+      "parent_http_open_events": 8,
+      "external_supervisor_exit_code": 4,
+      "worker_exit_code": 0,
+      "worker_reaped": true,
+      "cleanup_pass": true,
+      "launch_receipt_path": "launches/live-556a0e208cbf4778b798a181ec8330bf/launch-receipt.json"
+    },
+    {
+      "run": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T013431Z-workspace-fix-8c6d1943",
+      "raw_verdict": "FAIL_MANDATORY_GATE",
+      "product_posts": 1,
+      "provider_inferences": 0,
+      "parent_http_open_events": 8,
+      "external_supervisor_exit_code": 4,
+      "worker_exit_code": 0,
+      "worker_reaped": true,
+      "cleanup_pass": true,
+      "launch_receipt_path": "launches/live-0580a517408a4a2b98c94651bd3cd0ab/launch-receipt.json"
+    },
+    {
+      "run": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T014556Z-profile-fix-66f7e1b0",
+      "raw_verdict": "FAIL_SEMANTIC",
+      "product_posts": 1,
+      "provider_inferences": 1,
+      "parent_http_open_events": 8,
+      "external_supervisor_exit_code": 4,
+      "worker_exit_code": 0,
+      "worker_reaped": true,
+      "cleanup_pass": true,
+      "launch_receipt_path": "launches/live-51f36c800a7646bcb47adbcb8127bbbf/launch-receipt.json"
+    }
+  ],
+  "repairs": [
+    {
+      "kind": "absolute parent HTTP deadline",
+      "evidence": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T010347Z-codex-11484957-470575c0/offline-fix-attempts/deadline-checks.json",
+      "focused_after_passed": 10
+    },
+    {
+      "kind": "owned workspace inside unchanged allowed root",
+      "evidence": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T013431Z-workspace-fix-8c6d1943/offline-workspace-fix/checks.json",
+      "focused_after_passed": 6
+    },
+    {
+      "kind": "source-bound non-stream sampling profile",
+      "evidence": "offline-profile-fix/checks.json",
+      "focused_after_passed": 15,
+      "repeat_penalty": 1.3,
+      "min_p": 0.05
+    }
+  ],
+  "static_checks": "Each repair final Ruff/format/basedpyright/memory-compile exit0; successful historical selectors not rerun or attributed to changed candidate",
+  "source_protection": {
+    "protected_source": {
+      "checked": 24,
+      "mismatches": []
+    },
+    "implementation": {
+      "checked": 6,
+      "mismatches": []
+    },
+    "shared_files": {
+      "checked": 7,
+      "mismatches": []
+    },
+    "binding_sha256": "445f327b46d1393e3dbce34520caf0cf053e313a738234a4fe2606cab0f9996a"
+  },
+  "approved_parent_inventory": {
+    "manifest_sha256": "31461ec427b02cc2ff53b6f022e9f9adc4276513d796034f327aeb1707a04650",
+    "files": 1922,
+    "symlinks": 34,
+    "mismatches": []
+  },
+  "patch": {
+    "path": "delivery-harness.patch",
+    "files": 2,
+    "reconstruction": "delivery-patch-verification.json",
+    "byte_identical": true
+  },
+  "prior_closed_manifests": [
+    {
+      "run": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T010347Z-codex-11484957-470575c0",
+      "status": "PASS",
+      "files": 81,
+      "symlinks": 0,
+      "file_mismatches": [],
+      "symlink_mismatches": [],
+      "manifest_sha256": "c318cfc054fc87e8425a6defcfb13214f12a2cb0f477885ed389a2bc449034dc"
+    },
+    {
+      "run": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T012838Z-recovery-ab23eee4",
+      "status": "PASS",
+      "files": 59,
+      "symlinks": 0,
+      "file_mismatches": [],
+      "symlink_mismatches": [],
+      "manifest_sha256": "ce45b77711415888170b9bdac44f706852322607ccc340615ef2fd7a83356c10"
+    },
+    {
+      "run": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T013431Z-workspace-fix-8c6d1943",
+      "status": "PASS",
+      "files": 113,
+      "symlinks": 0,
+      "file_mismatches": [],
+      "symlink_mismatches": [],
+      "manifest_sha256": "d5d678e805a6b789e8659469219f632eec92de74bb3e735e3270f1290a0c801f"
+    }
+  ],
+  "independent_review": {
+    "code": "ACCEPTED_OFFLINE_RUNTIME_BRIDGE",
+    "reviewer": "closeout_code_audit",
+    "stored_execution_evidence": "VERIFIED_WITH_STRICT_ACCEPTANCE_FAILURE",
+    "evidence_reviewer": "closeout_evidence_audit"
+  },
+  "limitations": [
+    "Strict output quality has not passed; correct cardinalities in fenced JSON are supplemental only",
+    "Original one-product-POST/preflight workflow was not met; separate known-failure repair cases increased totals",
+    "lifespan off: full lifespan/startup and broad reliability/quality are unverified",
+    "No product-source or common-ledger updates; historical ledger remains NOT_RECOVERED",
+    "Initial operator-created acceptance collision and two harness contract defects remain separately recorded failures",
+    "Worker stderr discarded by existing bootstrap; raw response/journal evidence retained",
+    "Initial editor diagnostics were transcribed for two fixes; final command logs/source snapshots preserved",
+    "Existing pytest asyncio_mode and Starlette TestClient deprecation warnings retained"
+  ],
+  "model_memory": "keep_alive=30m unchanged; loaded postflight model retained; no forced unload",
+  "next_task": "IMP-09-C-PRODUCT-VISION-OUTPUT-CONTRACT-01",
+  "commit_push": false
+}

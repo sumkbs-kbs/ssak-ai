@@ -1,0 +1,121 @@
+--- a/run_harness.py
++++ b/run_harness.py
+@@ -84,7 +84,7 @@
+     "test_runtime_final_gate_contract.py",
+ )
+ EXECUTION_BINDING_SCHEMA_VERSION = 2
+-EXECUTION_BINDING_ATTEMPT_ID = "codex-final-gate-candidate-3"
++EXECUTION_BINDING_ATTEMPT_ID = "codex-final-gate-candidate-4"
+ ADDITIONAL_RUNTIME_SOURCES = {
+     "src/antigravity_k/api/routes/system_api.py": "610334086c50b0b0e0ff09b57d3ae45e7b46739be8316baa7627ade67d35c7a6",
+     "src/antigravity_k/api/auth_policy.py": "d99b35ca9a6ab458d1bf70879b92b1591d765cd09cc80e2d91e72bb46e69ef8c",
+@@ -2699,7 +2699,7 @@
+     image, encoded = load_image(run)
+     owned_state = run / "offline-state"
+     registry_path = owned_state / "registry/projects.json"
+-    workspace = owned_state / "workspace"
++    workspace = run / "runtime-state" / "workspace"
+     workspace.mkdir(parents=True, exist_ok=True)
+     if registry_path.exists():
+         projects = strict_json_loads(registry_path.read_bytes())
+--- /dev/null
++++ b/test_workspace_layout_contract.py
+@@ -0,0 +1,98 @@
++from __future__ import annotations
++
++import importlib
++import json
++import shutil
++from pathlib import Path
++from typing import Final
++
++import pytest
++
++from antigravity_k.api.contracts.errors import ProjectRootInvalidError
++from antigravity_k.engine import request_execution_context as context
++from antigravity_k.engine.project_registry import ProjectRegistry
++
++h = importlib.import_module("run_harness")
++RUN: Final = Path(__file__).resolve().parent
++ROOT: Final = h.resolve_repository_root()
++
++
++def prepared_run(tmp_path: Path) -> Path:
++    run = tmp_path / "owned-run"
++    run.mkdir()
++    for name in (
++        *h.IMPLEMENTATION_SOURCE_NAMES,
++        "endpoint-contract.json",
++        "runtime-bridge-contract.json",
++        "budgets.json",
++    ):
++        shutil.copyfile(RUN / name, run / name)
++    shutil.copytree(RUN / "fixture", run / "fixture")
++    h.prepare_owned_request(ROOT, run, run / "offline-state")
++    return run
++
++
++def test_prepared_project_matches_worker_workspace(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
++    run = prepared_run(tmp_path)
++    state = run / "runtime-state"
++    env = h.isolate_worker_environment(state, ROOT)
++    binding = json.loads((run / "request.binding.json").read_bytes())
++    workspace = (run / binding["project_workspace"]).resolve()
++    assert workspace == Path(env["AGK_WORKSPACE_ROOT"])
++    assert workspace.is_relative_to(Path(env["AGK_ALLOWED_ROOTS"]))
++    assert env["AGK_ALLOWED_ROOTS"] == str(state.resolve())
++    assert env["AGK_PATH_PROJECT_ROOT"] == str(state.resolve())
++    assert binding["project_registry_path"] == "offline-state/registry/projects.json"
++    monkeypatch.setattr(context, "configured_allowed_bases", lambda: (Path(env["AGK_ALLOWED_ROOTS"]),))
++    registry = ProjectRegistry(run / binding["project_registry_path"])
++    _, canonical = context.resolve_canonical_project_root(binding["project_id"], registry=registry)
++    assert canonical == str(workspace)
++
++
++@pytest.mark.parametrize(
++    ("target", "create_link"),
++    [("old-offline", False), ("sibling", False), ("prefix-sibling", False), ("symlink", True)],
++)
++def test_outside_projects_remain_rejected(
++    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, target: str, create_link: bool
++) -> None:
++    run = prepared_run(tmp_path)
++    state = run / "runtime-state"
++    env = h.isolate_worker_environment(state, ROOT)
++    external = tmp_path / "external-user-project"
++    external.mkdir()
++    outside = {
++        "old-offline": run / "offline-state/workspace",
++        "sibling": external,
++        "prefix-sibling": run / "runtime-state-other/workspace",
++        "symlink": state / "workspace-link",
++    }[target]
++    if create_link:
++        outside.symlink_to(external, target_is_directory=True)
++    else:
++        outside.mkdir(parents=True, exist_ok=True)
++    binding = json.loads((run / "request.binding.json").read_bytes())
++    registry_path = run / binding["project_registry_path"]
++    records = json.loads(registry_path.read_bytes())
++    records[0]["path"] = str(outside)
++    registry_path.write_text(json.dumps(records))
++    monkeypatch.setattr(context, "configured_allowed_bases", lambda: (Path(env["AGK_ALLOWED_ROOTS"]),))
++    with pytest.raises(ProjectRootInvalidError):
++        context.resolve_canonical_project_root(binding["project_id"], registry=ProjectRegistry(registry_path))
++
++
++def test_read_validation_keeps_frozen_inputs_byte_identical(tmp_path: Path) -> None:
++    run = prepared_run(tmp_path)
++    paths = [
++        run / name
++        for name in (
++            "request.json",
++            "request.binding.json",
++            "execution-binding.json",
++            "offline-state/registry/projects.json",
++        )
++    ]
++    before = {path: path.read_bytes() for path in paths}
++    gate = h.request_gate(run, ROOT)
++    assert gate["request_sha256"] == h.sha256(before[run / "request.json"])
++    assert {path: path.read_bytes() for path in paths} == before

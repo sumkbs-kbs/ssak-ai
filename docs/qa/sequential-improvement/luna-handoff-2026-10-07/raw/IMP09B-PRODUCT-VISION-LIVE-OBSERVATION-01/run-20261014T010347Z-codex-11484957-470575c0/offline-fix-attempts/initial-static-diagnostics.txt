@@ -1,0 +1,6 @@
+Initial local static check findings, before final source snapshot:
+ruff: I001 test_absolute_deadline_contract.py import block ordering.
+format: test_absolute_deadline_contract.py needs blank line and line wrapping.
+basedpyright: runtime_adapter.py lines796 and797 optional response status/headers access, 2 errors.
+Editor diagnostics during initial test authoring: implicit relative runtime_adapter import; BytesIO.read1 size int|None override mismatch.
+These are a diagnostic transcription from tool output, not raw subprocess stdout. Final static command stdout/stderr is captured in after-20261014-deadline.

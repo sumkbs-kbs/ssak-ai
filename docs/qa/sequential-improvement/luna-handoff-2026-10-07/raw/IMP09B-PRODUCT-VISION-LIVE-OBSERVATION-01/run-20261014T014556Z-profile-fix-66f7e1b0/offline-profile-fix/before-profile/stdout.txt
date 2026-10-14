@@ -1,0 +1,97 @@
+F........                                                                [100%]
+=================================== FAILURES ===================================
+______________ test_actual_product_payload_matches_exact_profile _______________
+
+actual_payload = CapturedRequest(url='http://localhost:11434/api/chat', method='POST', raw=b'{"model": "qwen3.8", "stream": false, "kee...ICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABH5X/ADMNzhPCSdocAAAAAElFTkSuQmCC"]}]}')
+
+    def test_actual_product_payload_matches_exact_profile(actual_payload: CapturedRequest) -> None:
+        payload = json.loads(actual_payload.raw)
+        request = json.loads(SAVED_REQUEST.read_bytes())
+        expected = {
+            "model": "qwen3.8", "stream": False, "keep_alive": "30m", "think": False,
+            "options": {"num_ctx": 32768, "num_predict": 128, "temperature": 0, "min_p": 0.05, "repeat_penalty": 1.3},
+            "messages": [
+                {"role": "system", "content": h.EXPECTED_UPSTREAM_SYSTEM},
+                {"role": "user", "content": request["messages"][0]["content"][0]["text"],
+                 "images": [request["messages"][0]["content"][1]["image_url"]["url"].split(",", 1)[1]]},
+            ],
+        }
+        assert payload == expected
+>       assert h.classify_upstream_request(actual_payload.url, actual_payload.method, actual_payload.raw) == "ollama_chat_inference_wire"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T014556Z-profile-fix-66f7e1b0/test_actual_product_payload_contract.py:136: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+url = 'http://localhost:11434/api/chat', method = 'POST'
+body = b'{"model": "qwen3.8", "stream": false, "keep_alive": "30m", "think": false, "options": {"num_ctx": 32768, "num_predic...gICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABH5X/ADMNzhPCSdocAAAAAElFTkSuQmCC"]}]}'
+
+    def classify_upstream_request(
+        url: str, method: str, body: bytes, *, expected_origin: str = PROVIDER_ORIGIN_EXPECTATION
+    ) -> str:
+        parsed = urlsplit(url)
+        if (
+            canonical_provider_origin(expected_origin) != canonical_provider_origin(url)
+            or parsed.query
+            or parsed.fragment
+            or parsed.username is not None
+            or parsed.password is not None
+        ):
+            raise ValueError("provider request origin is not the frozen local Ollama origin")
+        if method != "POST" or parsed.path != "/api/chat":
+            raise ValueError("only the product's one /api/chat inference may reach provider wire")
+        try:
+            payload_obj = strict_json_loads(body)
+        except (json.JSONDecodeError, UnicodeDecodeError, ValueError) as exc:
+            raise ValueError("provider body is not strict JSON") from exc
+        if not isinstance(payload_obj, dict):
+            raise ValueError("provider body must be an object")
+        payload = cast(dict[str, object], payload_obj)
+        if set(payload) != {"model", "stream", "keep_alive", "think", "options", "messages"}:
+            raise ValueError("provider payload keys differ from the bound native request shape")
+        if (
+            payload.get("model") != MODEL_ALIAS
+            or type(payload.get("model")) is not str
+            or payload.get("stream") is not False
+            or type(payload.get("stream")) is not bool
+        ):
+            raise ValueError("provider model or stream differs from fixed profile")
+        if payload.get("think") is not False or type(payload.get("think")) is not bool:
+            raise ValueError("provider think must remain explicit false")
+        if payload.get("keep_alive") != "30m" or type(payload.get("keep_alive")) is not str:
+            raise ValueError("provider keep_alive differs from source-bound default")
+        if "format" in payload or "tools" in payload:
+            raise ValueError("format/tools are forbidden for this vision observation")
+        options = payload.get("options")
+        if (
+            not isinstance(options, dict)
+            or not {"num_ctx", "num_predict", "temperature", "repeat_penalty", "min_p"}.issubset(options)
+            or set(options) - {"num_ctx", "num_predict", "temperature", "repeat_penalty", "min_p"}
+        ):
+            raise ValueError("provider options do not match the currently source-bound Ollama builder")
+        if type(options.get("num_predict")) is not int or options.get("num_predict") != 128:
+            raise ValueError("provider num_predict must be strict integer 128")
+        temperature = options.get("temperature")
+        if type(temperature) not in {int, float} or temperature != 0:
+            raise ValueError("provider temperature must be numeric zero, not bool")
+        if type(options.get("num_ctx")) is not int or options.get("num_ctx") != 32768:
+            raise ValueError("provider num_ctx must be the source-bound strict integer 32768")
+        if type(options.get("repeat_penalty")) not in {int, float} or options.get("repeat_penalty") != 1.0:
+>           raise ValueError("provider repeat_penalty differs from the frozen profile")
+E           ValueError: provider repeat_penalty differs from the frozen profile
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T014556Z-profile-fix-66f7e1b0/run_harness.py:382: ValueError
+=============================== warnings summary ===============================
+../../../../../../../../../../../miniforge3/lib/python3.13/site-packages/_pytest/config/__init__.py:1434
+  /Users/mr.k/miniforge3/lib/python3.13/site-packages/_pytest/config/__init__.py:1434: PytestConfigWarning: Unknown config option: asyncio_mode
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T014556Z-profile-fix-66f7e1b0/test_actual_product_payload_contract.py::test_actual_product_payload_matches_exact_profile
+  /Users/mr.k/miniforge3/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED test_actual_product_payload_contract.py::test_actual_product_payload_matches_exact_profile
+1 failed, 8 passed, 2 warnings in 1.40s

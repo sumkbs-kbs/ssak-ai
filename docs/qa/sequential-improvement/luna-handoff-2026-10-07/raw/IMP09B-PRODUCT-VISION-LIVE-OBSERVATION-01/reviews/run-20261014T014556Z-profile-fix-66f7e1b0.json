@@ -1,0 +1,38 @@
+{
+  "verdict": "PASS_PACKAGE_INTEGRITY_AND_TRUTHFUL_REPORTING",
+  "acceptance": "FAIL_SEMANTIC",
+  "reviewer": "closeout_evidence_audit",
+  "reviewed_run": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T014556Z-profile-fix-66f7e1b0",
+  "reviewed_manifest_sha256": "366cbfdf81117adb96c58283a0905be896bb92a0925d502132539d1fa7ef6d71",
+  "files_verified": 125,
+  "uncovered_files": 0,
+  "source_hashes_verified": {
+    "product": 24,
+    "implementation": 6
+  },
+  "prior_manifests_verified": {
+    "file_counts": [
+      81,
+      59,
+      113
+    ],
+    "match": true
+  },
+  "patch_reconstruction_hashes_match": true,
+  "links_resolve": true,
+  "confirmed_counts": {
+    "product_post": 3,
+    "provider_inference": 1,
+    "parent_http_open": 30,
+    "worker_provider_wire": 1,
+    "total_recorded_http": 31,
+    "readiness": 8,
+    "preflight": 16,
+    "postflight": 3
+  },
+  "reviewer_correction": "Earlier32 HTTP total was arithmetic error; actual case totals6/8/8/9 sum31. No extra internal capability-show wire established.",
+  "scope": "Stored artifacts only; no tests/network/patch execution/live replay.",
+  "overall_imp09": "PARTIAL",
+  "initial_one_post_plan": "NOT_MET",
+  "reviewed_at_utc": "2026-10-14 02:00:49 UTC"
+}

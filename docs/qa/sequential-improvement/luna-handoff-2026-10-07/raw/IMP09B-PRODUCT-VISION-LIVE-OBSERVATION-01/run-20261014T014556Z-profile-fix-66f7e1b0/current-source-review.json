@@ -1,0 +1,45 @@
+{
+  "verdict": "ACCEPTED_OFFLINE_RUNTIME_BRIDGE",
+  "execution_binding_sha256": "445f327b46d1393e3dbce34520caf0cf053e313a738234a4fe2606cab0f9996a",
+  "reviewer": "closeout_code_audit",
+  "reviewed_at_utc": "2026-10-14T01:52:31Z",
+  "codeQualityStatus": "CLEAR",
+  "blockers": [],
+  "kind": "INDEPENDENT_CANDIDATE5_EXACT_NON_STREAM_PROFILE",
+  "implementation_source_sha256": {
+    "run_harness.py": "a94e401c8707251d22db1478d642c23c3d8f631966ef4ed7154691380e1fa35f",
+    "runtime_adapter.py": "4ebfd286d01661cfc4f8c028a340ceb7c2668fa3e94a0af22a988cf9115ac472",
+    "test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+    "test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+    "run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a",
+    "test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb"
+  },
+  "protected_source_count": 24,
+  "protected_request_contract_hashes_match": true,
+  "profile_contract_sha256": "32790038f8bdab94e5bc0d4285910d448ad2bd8fb9060c306201b502adfbc75f",
+  "profile": {
+    "repeat_penalty": 1.3,
+    "min_p": 0.05
+  },
+  "conflicting_runtime_reducer_values": false,
+  "deadline_adapter_unchanged": true,
+  "focused_red": {
+    "passed": 8,
+    "failed": 1
+  },
+  "focused_final": {
+    "passed": 15,
+    "failed": 0
+  },
+  "static_exit_codes": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "evidence": "offline-profile-fix/checks.json",
+  "historical_selector_coverage_not_promoted": true,
+  "original_single_post_budget": "NOT_MET",
+  "reviewer_statement": "Exact classifier/synthetic fixture consistent; no old profile values conflict in runtime acceptance/reduction; all24 protected sources and newbinding match.",
+  "live_outcome_inferred": false
+}

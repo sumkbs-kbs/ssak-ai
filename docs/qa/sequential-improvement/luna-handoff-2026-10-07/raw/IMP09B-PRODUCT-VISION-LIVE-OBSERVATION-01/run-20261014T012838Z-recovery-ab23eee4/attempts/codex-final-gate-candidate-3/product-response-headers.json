@@ -1,0 +1,6 @@
+{
+  "status": 403,
+  "safe_headers": {
+    "content-type": "application/json"
+  }
+}

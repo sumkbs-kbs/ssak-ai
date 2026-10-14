@@ -1,0 +1,86 @@
+{
+  "status": "PASS_OFFLINE_ACTUAL_PRODUCT_PROFILE_CONTRACT",
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T014556Z-profile-fix-66f7e1b0",
+  "source_sha256": {
+    "run_harness.py": "a94e401c8707251d22db1478d642c23c3d8f631966ef4ed7154691380e1fa35f",
+    "test_actual_product_payload_contract.py": "f5afe703519afd3087f73c2ce110c78902bfca2db96078a08efc65792d9cba18",
+    "profile-contract.json": "32790038f8bdab94e5bc0d4285910d448ad2bd8fb9060c306201b502adfbc75f"
+  },
+  "pytest_invocation": "PROFILE_CAPTURE_ROOT=<absolute attempt>/captures PYTHONPATH=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/mr.k/miniforge3/bin/python -m pytest -q -o addopts= -o testpaths= test_actual_product_payload_contract.py --junitxml=<attempt>/junit.xml",
+  "attempts": [
+    {
+      "path": "before-profile",
+      "exit_code": 1,
+      "passed": 8,
+      "failed": 1,
+      "reason": "complete actual product payload equals independent expected profile; old strict classifier rejects repeat_penalty1.3"
+    },
+    {
+      "path": "final-profile",
+      "exit_code": 0,
+      "passed": 15,
+      "failed": 0
+    }
+  ],
+  "static": [
+    {
+      "command": "ruff check run_harness.py test_actual_product_payload_contract.py > offline-profile-fix/final-profile/ruff.txt 2>&1",
+      "exit_code": 0
+    },
+    {
+      "command": "ruff format --check run_harness.py test_actual_product_payload_contract.py > offline-profile-fix/final-profile/format.txt 2>&1",
+      "exit_code": 0
+    },
+    {
+      "command": "basedpyright --level error run_harness.py test_actual_product_payload_contract.py > offline-profile-fix/final-profile/types.txt 2>&1",
+      "exit_code": 0
+    },
+    {
+      "command": "/Users/mr.k/miniforge3/bin/python -c 'from pathlib import Path; files=(\"run_harness.py\", \"test_actual_product_payload_contract.py\"); [compile(Path(name).read_bytes(), name, \"exec\") for name in files]; print(\"COMPILE_OK\", len(files))' > offline-profile-fix/final-profile/compile.txt 2>&1",
+      "exit_code": 0
+    }
+  ],
+  "per_attempt_counts": {
+    "asgi_posts": 1,
+    "fake_provider_calls": 1,
+    "socket_attempts": 0
+  },
+  "aggregate_counts": {
+    "asgi_posts": 2,
+    "fake_provider_calls": 2,
+    "socket_attempts": 0,
+    "live_model_inference": 0
+  },
+  "scenarios": [
+    {
+      "name": "exact saved product input",
+      "observable": "route-request.bin byte copy of prior savedrequest; realchat/translator/manager/OllamaProvider emits full JSON equal to independent1.3/.05 options and exact model/message/image; terminal capture occurs beforeclassification",
+      "artifacts": [
+        "final-profile/captures/route-request.bin",
+        "final-profile/captures/provider-request.bin",
+        "final-profile/captures/provider-request.json",
+        "final-profile/captures/route-response.bin",
+        "final-profile/captures/counts.json"
+      ]
+    },
+    {
+      "name": "strict negative input mutations",
+      "observable": "all5optiondrifts,3unexpectedtopfields,wrongmodel/stream/think/keepalive,image fail typed ValueError",
+      "artifact": "final-profile/junit.xml"
+    },
+    {
+      "name": "profile/source binding",
+      "observable": "3protectedsourcehashes matchcurrent sources andexecutionbinding; profile-contract SHA frozen; latercontractmutation fails request_gate",
+      "artifact": "final-profile/junit.xml"
+    }
+  ],
+  "caveats": [
+    "ASGI-only offline fixture excludes externalauth/listener/lifespan/realmodelquality.",
+    "Actual product route/translator/manager/provider run; mutable registry/session/audit/telemetry redirected or controlled in test fixtures.",
+    "Socket connect/connect_ex/bind/listen/create_connection blocked before product imports.",
+    "Old selectors45/22/18 not rerun and not credited to changed profile.",
+    "Old failed run retained; explicit new profile contract is not retrospective PASS.",
+    "Existing asyncio_mode warning andStarlette TestClient httpx deprecation retained.",
+    "Initial editorArgumentType(request.data) corrected by bytes assertion; initialRuffI001 andformat failures corrected. These initialdiagnostics are tool-output transcription, not archived rawstdout."
+  ]
+}

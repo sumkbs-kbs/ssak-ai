@@ -1,0 +1,7 @@
+{
+  "case": "POST_REPAIR_PROJECT_WORKSPACE_INSIDE_CONFIGURED_ROOT",
+  "per_case_product_post": 1,
+  "per_case_provider_inference": 1,
+  "scope_note": "New explicitly identified post-repair case under continuous user instruction; prior failed product POST403 retained. Aggregate product POST count will be2 if this case is executed. Provider inference remains max1 across all attempts.",
+  "allowlist_policy": "Unchanged runtime-state root; move declared test project inside it, never widen permissions after403."
+}

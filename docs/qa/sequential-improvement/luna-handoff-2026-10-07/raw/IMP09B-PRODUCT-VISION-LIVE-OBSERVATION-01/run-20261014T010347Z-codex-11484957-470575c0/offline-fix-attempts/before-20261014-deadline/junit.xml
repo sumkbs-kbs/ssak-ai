@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="10" time="0.822" timestamp="2026-10-14T10:19:39.777514+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="docs.qa.sequential-improvement.luna-handoff-2026-10-07.raw.IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01.run-20261014T010347Z-codex-11484957-470575c0.test_absolute_deadline_contract" name="test_exchange_interrupts_absolute_deadline[True]" time="0.364"><failure message="assert (861326.895955958 - 861326.534706708) &lt; 0.25&#10; +  where 861326.895955958 = &lt;built-in function monotonic&gt;()&#10; +    where &lt;built-in function monotonic&gt; = time.monotonic">tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-420/test_exchange_interrupts_absol0')
+block_headers = True
+
+    @pytest.mark.parametrize("block_headers", [True, False])
+    def test_exchange_interrupts_absolute_deadline(tmp_path: Path, block_headers: bool) -&gt; None:
+        response = Response(delay=0.35 if not block_headers else 0)
+        opener = Opener(response, delay=0.35 if block_headers else 0)
+        runtime = adapter(tmp_path, opener)
+        handler = signal.getsignal(signal.SIGALRM)
+        start = time.monotonic()
+        with pytest.raises(TimeoutError):
+            runtime._exchange(urllib.request.Request("http://127.0.0.1/unused"), start + 0.04, "bounded")
+&gt;       assert time.monotonic() - start &lt; 0.25
+E       assert (861326.895955958 - 861326.534706708) &lt; 0.25
+E        +  where 861326.895955958 = &lt;built-in function monotonic&gt;()
+E        +    where &lt;built-in function monotonic&gt; = time.monotonic
+
+test_absolute_deadline_contract.py:101: AssertionError</failure></testcase><testcase classname="docs.qa.sequential-improvement.luna-handoff-2026-10-07.raw.IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01.run-20261014T010347Z-codex-11484957-470575c0.test_absolute_deadline_contract" name="test_exchange_interrupts_absolute_deadline[False]" time="0.361"><failure message="assert (861327.267806625 - 861326.907503791) &lt; 0.25&#10; +  where 861327.267806625 = &lt;built-in function monotonic&gt;()&#10; +    where &lt;built-in function monotonic&gt; = time.monotonic">tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-420/test_exchange_interrupts_absol1')
+block_headers = False
+
+    @pytest.mark.parametrize("block_headers", [True, False])
+    def test_exchange_interrupts_absolute_deadline(tmp_path: Path, block_headers: bool) -&gt; None:
+        response = Response(delay=0.35 if not block_headers else 0)
+        opener = Opener(response, delay=0.35 if block_headers else 0)
+        runtime = adapter(tmp_path, opener)
+        handler = signal.getsignal(signal.SIGALRM)
+        start = time.monotonic()
+        with pytest.raises(TimeoutError):
+            runtime._exchange(urllib.request.Request("http://127.0.0.1/unused"), start + 0.04, "bounded")
+&gt;       assert time.monotonic() - start &lt; 0.25
+E       assert (861327.267806625 - 861326.907503791) &lt; 0.25
+E        +  where 861327.267806625 = &lt;built-in function monotonic&gt;()
+E        +    where &lt;built-in function monotonic&gt; = time.monotonic
+
+test_absolute_deadline_contract.py:101: AssertionError</failure></testcase><testcase classname="docs.qa.sequential-improvement.luna-handoff-2026-10-07.raw.IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01.run-20261014T010347Z-codex-11484957-470575c0.test_absolute_deadline_contract" name="test_completed_response_restores_timer_and_error_status[True-True]" time="0.001" /><testcase classname="docs.qa.sequential-improvement.luna-handoff-2026-10-07.raw.IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01.run-20261014T010347Z-codex-11484957-470575c0.test_absolute_deadline_contract" name="test_completed_response_restores_timer_and_error_status[True-False]" time="0.001" /><testcase classname="docs.qa.sequential-improvement.luna-handoff-2026-10-07.raw.IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01.run-20261014T010347Z-codex-11484957-470575c0.test_absolute_deadline_contract" name="test_completed_response_restores_timer_and_error_status[False-True]" time="0.001" /><testcase classname="docs.qa.sequential-improvement.luna-handoff-2026-10-07.raw.IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01.run-20261014T010347Z-codex-11484957-470575c0.test_absolute_deadline_contract" name="test_completed_response_restores_timer_and_error_status[False-False]" time="0.001" /><testcase classname="docs.qa.sequential-improvement.luna-handoff-2026-10-07.raw.IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01.run-20261014T010347Z-codex-11484957-470575c0.test_absolute_deadline_contract" name="test_existing_timer_is_preserved_before_sink" time="0.001"><failure message="Failed: DID NOT RAISE &lt;class 'RuntimeError'&gt;">tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-420/test_existing_timer_is_preserv0')
+
+    def test_existing_timer_is_preserved_before_sink(tmp_path: Path) -&gt; None:
+        opener = Opener(Response())
+        runtime = adapter(tmp_path, opener)
+        signal.setitimer(signal.ITIMER_REAL, 5.0)
+        try:
+&gt;           with pytest.raises(RuntimeError):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE &lt;class 'RuntimeError'&gt;
+
+test_absolute_deadline_contract.py:129: Failed</failure></testcase><testcase classname="docs.qa.sequential-improvement.luna-handoff-2026-10-07.raw.IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01.run-20261014T010347Z-codex-11484957-470575c0.test_absolute_deadline_contract" name="test_wrong_thread_refuses_before_sink" time="0.001"><failure message="assert 0 == 1&#10; +  where 0 = len([])">tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-420/test_wrong_thread_refuses_befo0')
+
+    def test_wrong_thread_refuses_before_sink(tmp_path: Path) -&gt; None:
+        opener = Opener(Response())
+        runtime = adapter(tmp_path, opener)
+        errors: list[RuntimeError] = []
+    
+        def exchange() -&gt; None:
+            try:
+                runtime._exchange(urllib.request.Request("http://127.0.0.1/unused"), time.monotonic() + 1, "thread")
+            except RuntimeError as exc:
+                errors.append(exc)
+    
+        thread = threading.Thread(target=exchange)
+        thread.start()
+        thread.join(timeout=1)
+        assert not thread.is_alive()
+&gt;       assert len(errors) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+test_absolute_deadline_contract.py:152: AssertionError</failure></testcase><testcase classname="docs.qa.sequential-improvement.luna-handoff-2026-10-07.raw.IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01.run-20261014T010347Z-codex-11484957-470575c0.test_absolute_deadline_contract" name="test_mock_does_not_install_kernel_timer" time="0.001" /><testcase classname="docs.qa.sequential-improvement.luna-handoff-2026-10-07.raw.IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01.run-20261014T010347Z-codex-11484957-470575c0.test_absolute_deadline_contract" name="test_positive_socket_read_uses_single_buffer_read" time="0.000"><failure message="AssertionError: assert b'abcdef' == b'ab'&#10;  &#10;  Use -v to get more diff">def test_positive_socket_read_uses_single_buffer_read() -&gt; None:
+        owner = ReadOwner(b"abcdef")
+        response = r.SocketResponse(owner)
+&gt;       assert response.read(4096) == b"ab"
+E       AssertionError: assert b'abcdef' == b'ab'
+E         
+E         Use -v to get more diff
+
+test_absolute_deadline_contract.py:178: AssertionError</failure></testcase></testsuite></testsuites>

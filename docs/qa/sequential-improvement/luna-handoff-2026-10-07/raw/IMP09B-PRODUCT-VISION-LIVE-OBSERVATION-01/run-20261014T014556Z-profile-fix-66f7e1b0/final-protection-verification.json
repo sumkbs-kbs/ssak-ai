@@ -1,0 +1,15 @@
+{
+  "protected_source": {
+    "checked": 24,
+    "mismatches": []
+  },
+  "implementation": {
+    "checked": 6,
+    "mismatches": []
+  },
+  "shared_files": {
+    "checked": 7,
+    "mismatches": []
+  },
+  "binding_sha256": "445f327b46d1393e3dbce34520caf0cf053e313a738234a4fe2606cab0f9996a"
+}

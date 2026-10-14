@@ -1,0 +1,154 @@
+--- a/runtime_adapter.py
++++ b/runtime_adapter.py
+@@ -4,6 +4,7 @@
+ import os
+ import secrets
+ import select
++import signal
+ import socket
+ import subprocess
+ import sys
+@@ -11,10 +12,12 @@
+ import time
+ import urllib.error
+ import urllib.request
+-from collections.abc import Callable, Mapping, Sequence
++from collections.abc import Callable, Iterator, Mapping, Sequence
++from contextlib import contextmanager
+ from dataclasses import dataclass
+ from pathlib import Path
+-from typing import IO, Any, Protocol, cast
++from types import FrameType
++from typing import IO, Any, Never, Protocol, cast
+ from urllib.parse import urlsplit
+ 
+ h = importlib.import_module("run_harness")
+@@ -126,6 +129,45 @@
+     return h.canonical_provider_origin(url)
+ 
+ 
++class ExchangeDeadlineExceeded(TimeoutError):
++    def __init__(self, deadline: float) -> None:
++        self.deadline = deadline
++        super().__init__(f"HTTP exchange absolute deadline exhausted: {deadline}")
++
++
++class ExchangeTimerUnavailable(RuntimeError):
++    def __init__(self, reason: str) -> None:
++        self.reason = reason
++        super().__init__(f"HTTP exchange timer unavailable: {reason}")
++
++
++@contextmanager
++def exchange_deadline(resources: Resources, deadline: float) -> Iterator[None]:
++    """Own SIGALRM only during parent I/O; release it before supervisor cleanup."""
++    if resources.mock:
++        yield
++        return
++    if threading.current_thread() is not threading.main_thread():
++        raise ExchangeTimerUnavailable("main thread required")
++    if signal.getitimer(signal.ITIMER_REAL) != (0.0, 0.0):
++        raise ExchangeTimerUnavailable("ITIMER_REAL already owned")
++    duration = remaining(resources.clock, deadline)
++    previous = signal.getsignal(signal.SIGALRM)
++    if previous is None:
++        raise ExchangeTimerUnavailable("unknown SIGALRM handler cannot be restored")
++
++    def expired(signum: int, frame: FrameType | None) -> Never:
++        raise ExchangeDeadlineExceeded(deadline)
++
++    signal.signal(signal.SIGALRM, expired)
++    try:
++        signal.setitimer(signal.ITIMER_REAL, duration)
++        yield
++    finally:
++        signal.setitimer(signal.ITIMER_REAL, 0.0)
++        signal.signal(signal.SIGALRM, previous)
++
++
+ def provider_url_key(url: str) -> str:
+     """Compare provider origins while preserving (but not normalizing) the actual request URL."""
+     parsed = urlsplit(url)
+@@ -185,6 +227,9 @@
+         raise RuntimeError("HTTP response has no bounded socket read boundary")
+ 
+     def read(self, amount: int = -1) -> bytes:
++        if amount > 0 and callable(getattr(self.body_owner, "read1", None)):
++            chunk: bytes = self.body_owner.read1(amount)
++            return chunk
+         return cast(bytes, self.body_owner.read(amount))
+ 
+     def readline(self, amount: int = -1) -> bytes:
+@@ -714,40 +759,42 @@
+     ) -> tuple[int, Mapping[str, str], bytes]:
+         captures = self.state / "parent-captures"
+         captures.mkdir(parents=True, exist_ok=True)
+-        response: HttpResponse
++        response: HttpResponse | None = None
+         error: urllib.error.HTTPError | None = None
+-        duration = remaining(self.resources.clock, deadline)
+-        self.event("http-open", method=request.get_method(), url=request.full_url, timeout=duration)
+-        try:
+-            response = self.resources.http.open(request, timeout=duration)
+-        except urllib.error.HTTPError as exc:
+-            error = exc
+-            response = cast(HttpResponse, cast(object, exc))
+         raw = bytearray()
+         path = captures / (stem + "-response.bin")
+-        with path.open("xb") as stream:
+-            h.write_once(
+-                captures / (stem + "-headers.json"),
+-                h.canonical_json({"status": response.status, "safe_headers": safe_headers(response.headers)}),
+-            )
+-            try:
+-                while True:
+-                    duration = remaining(self.resources.clock, deadline)
+-                    response.set_timeout(duration)
+-                    self.event("http-read", stem=stem, timeout=duration)
+-                    chunk = response.read(4096)
+-                    if chunk:
+-                        raw.extend(chunk)
+-                        stream.write(chunk)
+-                        stream.flush()
+-                        os.fsync(stream.fileno())
+-                    remaining(self.resources.clock, deadline)
+-                    if not chunk:
+-                        break
+-            finally:
++        try:
++            with exchange_deadline(self.resources, deadline):
++                duration = remaining(self.resources.clock, deadline)
++                self.event("http-open", method=request.get_method(), url=request.full_url, timeout=duration)
++                try:
++                    response = self.resources.http.open(request, timeout=duration)
++                except urllib.error.HTTPError as exc:
++                    error = exc
++                    response = cast(HttpResponse, cast(object, exc))
++                with path.open("xb") as stream:
++                    h.write_once(
++                        captures / (stem + "-headers.json"),
++                        h.canonical_json({"status": response.status, "safe_headers": safe_headers(response.headers)}),
++                    )
++                    while True:
++                        duration = remaining(self.resources.clock, deadline)
++                        response.set_timeout(duration)
++                        self.event("http-read", stem=stem, timeout=duration)
++                        chunk = response.read(4096)
++                        if chunk:
++                            raw.extend(chunk)
++                            stream.write(chunk)
++                            stream.flush()
++                            os.fsync(stream.fileno())
++                        remaining(self.resources.clock, deadline)
++                        if not chunk:
++                            break
++                status = error.code if error is not None else response.status
++                return status, safe_headers(response.headers), bytes(raw)
++        finally:
++            if response is not None:
+                 response.close()
+-        status = error.code if error is not None else response.status
+-        return status, safe_headers(response.headers), bytes(raw)
+ 
+     def readiness(self, context: Mapping[str, object]) -> Mapping[str, object]:
+         if self.listener_handle is None:

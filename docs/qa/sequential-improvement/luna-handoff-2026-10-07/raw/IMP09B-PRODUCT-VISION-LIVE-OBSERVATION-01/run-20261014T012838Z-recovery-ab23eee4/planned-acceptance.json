@@ -1,0 +1,10 @@
+{
+  "source": "original fixed supervise_once gates",
+  "max_total_product_post_across_attempts": 1,
+  "max_total_provider_inference_across_attempts": 1,
+  "strict_semantic_counts": {
+    "red_circles": 2,
+    "blue_squares": 1
+  },
+  "preflight_query_budget_note": "Initial attempt consumed metadata/readiness; recovery counts cumulatively disclosed."
+}

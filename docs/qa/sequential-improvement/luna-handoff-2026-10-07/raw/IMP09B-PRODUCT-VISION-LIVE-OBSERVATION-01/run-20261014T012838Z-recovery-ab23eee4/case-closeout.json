@@ -1,0 +1,63 @@
+{
+  "run": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T012838Z-recovery-ab23eee4",
+  "raw_verdict": "INCONCLUSIVE_MANDATORY_GATE_UNKNOWN",
+  "dispatches": 1,
+  "provider_wires": 0,
+  "wire_entered": {
+    "ollama_get_version_preflight": 1,
+    "ollama_get_tags_preflight": 1,
+    "ollama_get_ps_preflight": 1,
+    "ollama_post_show_preflight": 1,
+    "product_authenticated_chat_post": 1,
+    "ollama_get_ps_postflight": 1
+  },
+  "actual_http_open_events": 8,
+  "cleanup": {
+    "source": "RUNTIME_OBSERVATION",
+    "owned_cleanup": true,
+    "worker_started": true,
+    "exit_observation": "OBSERVED",
+    "exit_code": 0,
+    "reaped": true,
+    "released_handles": true,
+    "worker_shutdown_report": "WORKER_DONE",
+    "os_exit_observation": "OBSERVED",
+    "supervisor_exit_observation": "NOT_OBSERVED",
+    "errors": [],
+    "callback_calls": 1,
+    "elapsed_seconds": 0.2871192500460893,
+    "timed_out": false,
+    "timeout_seconds": 5
+  },
+  "external_supervisor_exit_code": 4,
+  "launch_receipt_path": "launches/live-556a0e208cbf4778b798a181ec8330bf/launch-receipt.json",
+  "elapsed_seconds": 1.641257332987152,
+  "source_launch_before_after_match": true,
+  "binding_before_after_match": true,
+  "files": {
+    "runtime-cli-result.json": {
+      "bytes": 46390,
+      "sha256": "1266e57dbf261dc96ed8613e2aac06fbcaa2cce28b8ff3087f580b238bc1fe70"
+    },
+    "task-wire-journal.jsonl": {
+      "bytes": 6156,
+      "sha256": "6907f50327c7a68c42a322944210e1cb0a99fc4ce2e1ec9f106274519cb0e8a9"
+    },
+    "runtime-observations.jsonl": {
+      "bytes": 6154,
+      "sha256": "4ff2b4a9f6397d057d1d20a8c19db29ef698ab50d4bd86eda2022885e344d17e"
+    }
+  },
+  "case_no": 2,
+  "normalized_status": "FAILED_PRODUCT_PROJECT_ROOT_INVALID",
+  "observed_provider_inference": 0,
+  "authentication_raw_observed": {
+    "anonymous": 401,
+    "bearer": 200
+  },
+  "historical_status": {
+    "overall_imp09": "PARTIAL",
+    "ledger": "NOT_RECOVERED"
+  },
+  "scope_note": "Existing raw result, acceptance, captures, journals and binding preserved. This additive receipt does not supersede raw verdict."
+}

@@ -1,0 +1,55 @@
+{
+  "task_id": "IMP-09-C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01",
+  "status": "OWNED_NEW_CANDIDATE_READY",
+  "project_id": "proj_2f9a58a2",
+  "request_sha256": "e2753fbea10e1aa17dd23e8185dc905f192c9053d392ab71c7eed35749b9f98b",
+  "execution_binding_id": "477f60886cf0048c82cadfcd",
+  "execution_binding_sha256": "477f60886cf0048c82cadfcdf39d6af8e3521614d8cda4a5ea12732aa148939e",
+  "previous_binding_archived": true,
+  "implementation_manifest": {
+    "task_id": "IMP-09-C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01",
+    "run_id": "run-20261014T010347Z-codex-11484957-470575c0",
+    "execution_binding_id": "477f60886cf0048c82cadfcd",
+    "execution_binding_sha256": "477f60886cf0048c82cadfcdf39d6af8e3521614d8cda4a5ea12732aa148939e",
+    "sources": {
+      "run_harness.py": {
+        "path": "run_harness.py",
+        "bytes": 156600,
+        "sha256": "683f0093cbe5898e9fffef308f2ad413a17addb50b72bdaa235dbc177cf5f9ec"
+      },
+      "runtime_adapter.py": {
+        "path": "runtime_adapter.py",
+        "bytes": 48869,
+        "sha256": "4ebfd286d01661cfc4f8c028a340ceb7c2668fa3e94a0af22a988cf9115ac472"
+      },
+      "test_runtime_bridge_contract.py": {
+        "path": "test_runtime_bridge_contract.py",
+        "bytes": 32967,
+        "sha256": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486"
+      },
+      "test_runtime_compatibility_contract.py": {
+        "path": "test_runtime_compatibility_contract.py",
+        "bytes": 23932,
+        "sha256": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894"
+      },
+      "run_offline_prechecks.py": {
+        "path": "run_offline_prechecks.py",
+        "bytes": 73911,
+        "sha256": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "test_runtime_final_gate_contract.py": {
+        "path": "test_runtime_final_gate_contract.py",
+        "bytes": 45873,
+        "sha256": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb"
+      }
+    }
+  },
+  "actual_calls": {
+    "http": 0,
+    "socket": 0,
+    "worker": 0,
+    "uvicorn": 0,
+    "ollama": 0,
+    "inference": 0
+  }
+}

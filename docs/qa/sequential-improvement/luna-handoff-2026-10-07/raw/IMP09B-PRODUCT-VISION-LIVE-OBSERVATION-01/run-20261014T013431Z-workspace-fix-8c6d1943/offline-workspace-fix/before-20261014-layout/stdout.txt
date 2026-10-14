@@ -1,0 +1,28 @@
+F.....                                                                   [100%]
+=================================== FAILURES ===================================
+________________ test_prepared_project_matches_worker_workspace ________________
+
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-422/test_prepared_project_matches_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1062c1e00>
+
+    def test_prepared_project_matches_worker_workspace(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        run = prepared_run(tmp_path)
+        state = run / "runtime-state"
+        env = h.isolate_worker_environment(state, ROOT)
+        binding = json.loads((run / "request.binding.json").read_bytes())
+        workspace = (run / binding["project_workspace"]).resolve()
+>       assert workspace == Path(env["AGK_WORKSPACE_ROOT"])
+E       AssertionError: assert PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-422/test_prepared_project_matches_0/owned-run/offline-state/workspace') == PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-422/test_prepared_project_matches_0/owned-run/runtime-state/workspace')
+E        +  where PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-422/test_prepared_project_matches_0/owned-run/runtime-state/workspace') = Path('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-422/test_prepared_project_matches_0/owned-run/runtime-state/workspace')
+
+test_workspace_layout_contract.py:36: AssertionError
+=============================== warnings summary ===============================
+../../../../../../../../../../../miniforge3/lib/python3.13/site-packages/_pytest/config/__init__.py:1434
+  /Users/mr.k/miniforge3/lib/python3.13/site-packages/_pytest/config/__init__.py:1434: PytestConfigWarning: Unknown config option: asyncio_mode
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED test_workspace_layout_contract.py::test_prepared_project_matches_worker_workspace
+1 failed, 5 passed, 1 warning in 0.34s

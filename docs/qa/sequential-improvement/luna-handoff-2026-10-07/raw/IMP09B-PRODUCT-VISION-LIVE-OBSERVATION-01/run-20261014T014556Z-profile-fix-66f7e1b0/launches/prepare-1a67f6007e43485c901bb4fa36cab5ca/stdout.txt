@@ -1,0 +1,56 @@
+{
+  "task_id": "IMP-09-C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01",
+  "status": "OWNED_PREPARATION_READY",
+  "project_id": "proj_8feb9adb",
+  "request_sha256": "855055dc6844b44577ffd5779061e014f0fb7e45491efbff9b39f6a035d4cbac",
+  "execution_binding_id": "445f327b46d1393e3dbce345",
+  "execution_binding_sha256": "445f327b46d1393e3dbce34520caf0cf053e313a738234a4fe2606cab0f9996a",
+  "implementation_manifest": {
+    "task_id": "IMP-09-C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01",
+    "run_id": "run-20261014T014556Z-profile-fix-66f7e1b0",
+    "execution_binding_id": "445f327b46d1393e3dbce345",
+    "execution_binding_sha256": "445f327b46d1393e3dbce34520caf0cf053e313a738234a4fe2606cab0f9996a",
+    "sources": {
+      "run_harness.py": {
+        "path": "run_harness.py",
+        "bytes": 157052,
+        "sha256": "a94e401c8707251d22db1478d642c23c3d8f631966ef4ed7154691380e1fa35f"
+      },
+      "runtime_adapter.py": {
+        "path": "runtime_adapter.py",
+        "bytes": 48869,
+        "sha256": "4ebfd286d01661cfc4f8c028a340ceb7c2668fa3e94a0af22a988cf9115ac472"
+      },
+      "test_runtime_bridge_contract.py": {
+        "path": "test_runtime_bridge_contract.py",
+        "bytes": 32967,
+        "sha256": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486"
+      },
+      "test_runtime_compatibility_contract.py": {
+        "path": "test_runtime_compatibility_contract.py",
+        "bytes": 23932,
+        "sha256": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894"
+      },
+      "run_offline_prechecks.py": {
+        "path": "run_offline_prechecks.py",
+        "bytes": 73911,
+        "sha256": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "test_runtime_final_gate_contract.py": {
+        "path": "test_runtime_final_gate_contract.py",
+        "bytes": 45873,
+        "sha256": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb"
+      }
+    }
+  },
+  "execution_binding_immutable": true,
+  "product_observation": "NOT_RUN",
+  "actual_calls": {
+    "http": 0,
+    "socket": 0,
+    "worker": 0,
+    "uvicorn": 0,
+    "ollama": 0,
+    "inference": 0
+  }
+}

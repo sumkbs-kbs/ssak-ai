@@ -1,0 +1,61 @@
+{
+  "run": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T010347Z-codex-11484957-470575c0",
+  "raw_verdict": "INCONCLUSIVE_PREPARATION",
+  "dispatches": 0,
+  "provider_wires": 0,
+  "wire_entered": {
+    "ollama_get_version_preflight": 1,
+    "ollama_get_tags_preflight": 1,
+    "ollama_get_ps_preflight": 1,
+    "ollama_post_show_preflight": 1
+  },
+  "actual_http_open_events": 6,
+  "cleanup": {
+    "source": "RUNTIME_OBSERVATION",
+    "owned_cleanup": true,
+    "worker_started": true,
+    "exit_observation": "OBSERVED",
+    "exit_code": 0,
+    "reaped": true,
+    "released_handles": true,
+    "worker_shutdown_report": "WORKER_DONE",
+    "os_exit_observation": "OBSERVED",
+    "supervisor_exit_observation": "NOT_OBSERVED",
+    "errors": [],
+    "callback_calls": 1,
+    "elapsed_seconds": 0.4396812909981236,
+    "timed_out": false,
+    "timeout_seconds": 5
+  },
+  "external_supervisor_exit_code": 4,
+  "launch_receipt_path": "launches/live-cd2cea4cf8114207910ea262337b534c/launch-receipt.json",
+  "elapsed_seconds": 2.2030473749618977,
+  "source_launch_before_after_match": true,
+  "binding_before_after_match": true,
+  "files": {
+    "runtime-cli-result.json": {
+      "bytes": 4657,
+      "sha256": "31e5cbcce6d2fefec9d3241d532d934b982368f1b7ef33ee3e8cecfc5da06a8b"
+    },
+    "task-wire-journal.jsonl": {
+      "bytes": 4089,
+      "sha256": "46b7be606893c7da4b57fc8dca6947ad0e94d743eddbccb66a9deb0cc71ea81e"
+    },
+    "runtime-observations.jsonl": {
+      "bytes": 4749,
+      "sha256": "d7c94bde9eafcba6fc5c03388ac6ed2f897e8cc51a38a3daad3af8ac83d18672"
+    }
+  },
+  "case_no": 1,
+  "normalized_status": "FAILED_PREPARATION_ACCEPTANCE_FILE_COLLISION",
+  "observed_provider_inference": 0,
+  "authentication_raw_observed": {
+    "anonymous": 401,
+    "bearer": 200
+  },
+  "historical_status": {
+    "overall_imp09": "PARTIAL",
+    "ledger": "NOT_RECOVERED"
+  },
+  "scope_note": "Existing raw result, acceptance, captures, journals and binding preserved. This additive receipt does not supersede raw verdict."
+}

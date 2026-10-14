@@ -1,0 +1,56 @@
+{
+  "task_id": "IMP-09-C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01",
+  "status": "OWNED_PREPARATION_READY",
+  "project_id": "proj_a1887815",
+  "request_sha256": "e300241e6d41ce63e29eec75d2e50fc7d3458d79dd2544d33ddb6a8cb910a864",
+  "execution_binding_id": "4e6f558d889e485d942a66ed",
+  "execution_binding_sha256": "4e6f558d889e485d942a66edf5ba1592c7cf8a7771397111365707a473b4c4a8",
+  "implementation_manifest": {
+    "task_id": "IMP-09-C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01",
+    "run_id": "run-20261014T012838Z-recovery-ab23eee4",
+    "execution_binding_id": "4e6f558d889e485d942a66ed",
+    "execution_binding_sha256": "4e6f558d889e485d942a66edf5ba1592c7cf8a7771397111365707a473b4c4a8",
+    "sources": {
+      "run_harness.py": {
+        "path": "run_harness.py",
+        "bytes": 156600,
+        "sha256": "683f0093cbe5898e9fffef308f2ad413a17addb50b72bdaa235dbc177cf5f9ec"
+      },
+      "runtime_adapter.py": {
+        "path": "runtime_adapter.py",
+        "bytes": 48869,
+        "sha256": "4ebfd286d01661cfc4f8c028a340ceb7c2668fa3e94a0af22a988cf9115ac472"
+      },
+      "test_runtime_bridge_contract.py": {
+        "path": "test_runtime_bridge_contract.py",
+        "bytes": 32967,
+        "sha256": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486"
+      },
+      "test_runtime_compatibility_contract.py": {
+        "path": "test_runtime_compatibility_contract.py",
+        "bytes": 23932,
+        "sha256": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894"
+      },
+      "run_offline_prechecks.py": {
+        "path": "run_offline_prechecks.py",
+        "bytes": 73911,
+        "sha256": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "test_runtime_final_gate_contract.py": {
+        "path": "test_runtime_final_gate_contract.py",
+        "bytes": 45873,
+        "sha256": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb"
+      }
+    }
+  },
+  "execution_binding_immutable": true,
+  "product_observation": "NOT_RUN",
+  "actual_calls": {
+    "http": 0,
+    "socket": 0,
+    "worker": 0,
+    "uvicorn": 0,
+    "ollama": 0,
+    "inference": 0
+  }
+}

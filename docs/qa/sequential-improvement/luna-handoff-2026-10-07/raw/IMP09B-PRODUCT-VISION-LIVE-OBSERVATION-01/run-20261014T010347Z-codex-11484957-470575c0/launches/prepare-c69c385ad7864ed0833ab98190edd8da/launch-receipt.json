@@ -1,0 +1,41 @@
+{
+  "mode": "prepare",
+  "argv": [
+    "/Users/mr.k/miniforge3/bin/python",
+    "-B",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T010347Z-codex-11484957-470575c0/run_harness.py",
+    "--owned-prepare"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "started_at_utc": "2026-10-14T01:05:55.109751+00:00",
+  "finished_at_utc": "2026-10-14T01:05:55.186389+00:00",
+  "elapsed_seconds": 0.07649020804092288,
+  "exit_code": 0,
+  "source_sha256_before": {
+    "run_harness.py": "3c63ec4f6446323d9cba8d222728c8a9431df385b408728c2de1194f4073e186",
+    "runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+    "run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a",
+    "test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+    "test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+    "test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894"
+  },
+  "source_sha256_after": {
+    "run_harness.py": "3c63ec4f6446323d9cba8d222728c8a9431df385b408728c2de1194f4073e186",
+    "runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+    "run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a",
+    "test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+    "test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+    "test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894"
+  },
+  "execution_binding_sha256_before": null,
+  "execution_binding_sha256_after": "b822c36ce99032446ceda4b1c93b49a8e4139fc455e8e7eeff970b239f60aa57",
+  "launcher_sha256": "22313cd0448633b522ecc89eedf86ca865efd307dce381af90abd4b75228041d",
+  "stdout": {
+    "path": "stdout.txt",
+    "sha256": "8452524469179d9fa36d4da798d57a8392c875a977fef54021dcd6804ae2e5e9"
+  },
+  "stderr": {
+    "path": "stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "status": "APPROVED_FOR_SEPARATE_LIVE_OBSERVATION",
+  "scope": "IMP-09-B-PRODUCT-VISION-LIVE-OBSERVATION-01",
+  "preparation_task": "IMP-09-C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01",
+  "candidate_id": "codex-final-gate-candidate-3",
+  "binding_sha256": "477f60886cf0048c82cadfcdf39d6af8e3521614d8cda4a5ea12732aa148939e",
+  "request_sha256": "e2753fbea10e1aa17dd23e8185dc905f192c9053d392ab71c7eed35749b9f98b",
+  "fixture_png_sha256": "f51d7d266d67b6458916a32ef610c83feddbacbfad72146bf94e29e7cf077098",
+  "model": "qwen3.8:latest",
+  "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+  "budget_sha256": "a612dd34763fa84d393bb990baa49f3e2dc51a740f9e2a71c82b92f28054a577",
+  "independent_review": "ACCEPTED_OFFLINE_RUNTIME_BRIDGE",
+  "revoked": false,
+  "fixture_only": false,
+  "issued_at": "2026-10-14T01:24:29.000Z",
+  "expires_at": "2026-10-14T02:24:29.000Z",
+  "review_sha256": "836e5f72ba77bc8081b6fe49ca980a93d8417775b6a3e65ee404a0a74c5c361e",
+  "authorized_by": "human user direct message: 그럼 인제 다음작업도 진행해줘",
+  "recorded_by": "root",
+  "human_request_path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T010347Z-codex-11484957-470575c0/human-request-scope.json",
+  "human_request_sha256": "c4a5140b13f69df6ae34f5d86e862e3337ddb12ef0d4d7a6dcf13b82c99f65dc",
+  "execution_limit": "ONE_PRODUCT_POST_ONE_PROVIDER_CHAT_NO_RETRY"
+}

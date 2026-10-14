@@ -1,0 +1,207 @@
+--- a/run_harness.py
++++ b/run_harness.py
+@@ -84,8 +84,11 @@
+     "test_runtime_final_gate_contract.py",
+ )
+ EXECUTION_BINDING_SCHEMA_VERSION = 2
+-EXECUTION_BINDING_ATTEMPT_ID = "codex-final-gate-candidate-2"
++EXECUTION_BINDING_ATTEMPT_ID = "codex-final-gate-candidate-5"
+ ADDITIONAL_RUNTIME_SOURCES = {
++    "src/antigravity_k/engine/sampling_config.py": "4db29f894006525c1a028c2564b5ced2e8d63ca2893bb0a36e9c96532abdba67",
++    "src/antigravity_k/engine/context_budget.py": "4658ec1d338b154ae18d80cbec49324d103f27feabe70de02b2ca9cbd1a04136",
++    "src/antigravity_k/engine/multimodal.py": "d57fb2c55bd155373b582e8c119b627da037d7de4b8e984f120f96becb48ee60",
+     "src/antigravity_k/api/routes/system_api.py": "610334086c50b0b0e0ff09b57d3ae45e7b46739be8316baa7627ade67d35c7a6",
+     "src/antigravity_k/api/auth_policy.py": "d99b35ca9a6ab458d1bf70879b92b1591d765cd09cc80e2d91e72bb46e69ef8c",
+     "src/antigravity_k/tools/egress_policy.py": "c1b36445d9e906b1cb8b999bd772bf58d83b29d766d396fc1e0698f5d991a699",
+@@ -378,9 +381,9 @@
+         raise ValueError("provider temperature must be numeric zero, not bool")
+     if type(options.get("num_ctx")) is not int or options.get("num_ctx") != 32768:
+         raise ValueError("provider num_ctx must be the source-bound strict integer 32768")
+-    if type(options.get("repeat_penalty")) not in {int, float} or options.get("repeat_penalty") != 1.0:
++    if type(options.get("repeat_penalty")) not in {int, float} or options.get("repeat_penalty") != 1.3:
+         raise ValueError("provider repeat_penalty differs from the frozen profile")
+-    if type(options.get("min_p")) not in {int, float} or options.get("min_p") != 0.0:
++    if type(options.get("min_p")) not in {int, float} or options.get("min_p") != 0.05:
+         raise ValueError("provider min_p differs from the frozen profile")
+     messages = payload.get("messages")
+     if not isinstance(messages, list):
+@@ -546,6 +549,7 @@
+         "endpoint_contract_sha256": sha256((run / "endpoint-contract.json").read_bytes()),
+         "origin_contract_sha256": sha256((run / "runtime-bridge-contract.json").read_bytes()),
+         "budgets_file_sha256": sha256((run / "budgets.json").read_bytes()),
++        "profile_contract_sha256": sha256((run / "profile-contract.json").read_bytes()),
+         "fixture_contract_sha256": sha256(
+             canonical_json(
+                 {
+@@ -2209,7 +2213,7 @@
+             "stream": False,
+             "keep_alive": "30m",
+             "think": False,
+-            "options": {"num_ctx": 32768, "num_predict": 128, "temperature": 0.0, "repeat_penalty": 1.0, "min_p": 0.0},
++            "options": {"num_ctx": 32768, "num_predict": 128, "temperature": 0.0, "repeat_penalty": 1.3, "min_p": 0.05},
+             "messages": [
+                 {"role": "system", "content": EXPECTED_UPSTREAM_SYSTEM},
+                 {
+@@ -2699,7 +2703,7 @@
+     image, encoded = load_image(run)
+     owned_state = run / "offline-state"
+     registry_path = owned_state / "registry/projects.json"
+-    workspace = owned_state / "workspace"
++    workspace = run / "runtime-state" / "workspace"
+     workspace.mkdir(parents=True, exist_ok=True)
+     if registry_path.exists():
+         projects = strict_json_loads(registry_path.read_bytes())
+--- a/runtime_adapter.py
++++ b/runtime_adapter.py
+@@ -4,6 +4,7 @@
+ import os
+ import secrets
+ import select
++import signal
+ import socket
+ import subprocess
+ import sys
+@@ -11,10 +12,12 @@
+ import time
+ import urllib.error
+ import urllib.request
+-from collections.abc import Callable, Mapping, Sequence
++from collections.abc import Callable, Iterator, Mapping, Sequence
++from contextlib import contextmanager
+ from dataclasses import dataclass
+ from pathlib import Path
+-from typing import IO, Any, Protocol, cast
++from types import FrameType
++from typing import IO, Any, Never, Protocol, cast
+ from urllib.parse import urlsplit
+ 
+ h = importlib.import_module("run_harness")
+@@ -124,6 +127,45 @@
+ 
+ def origin_key(url: str) -> str:
+     return h.canonical_provider_origin(url)
++
++
++class ExchangeDeadlineExceeded(TimeoutError):
++    def __init__(self, deadline: float) -> None:
++        self.deadline = deadline
++        super().__init__(f"HTTP exchange absolute deadline exhausted: {deadline}")
++
++
++class ExchangeTimerUnavailable(RuntimeError):
++    def __init__(self, reason: str) -> None:
++        self.reason = reason
++        super().__init__(f"HTTP exchange timer unavailable: {reason}")
++
++
++@contextmanager
++def exchange_deadline(resources: Resources, deadline: float) -> Iterator[None]:
++    """Own SIGALRM only during parent I/O; release it before supervisor cleanup."""
++    if resources.mock:
++        yield
++        return
++    if threading.current_thread() is not threading.main_thread():
++        raise ExchangeTimerUnavailable("main thread required")
++    if signal.getitimer(signal.ITIMER_REAL) != (0.0, 0.0):
++        raise ExchangeTimerUnavailable("ITIMER_REAL already owned")
++    duration = remaining(resources.clock, deadline)
++    previous = signal.getsignal(signal.SIGALRM)
++    if previous is None:
++        raise ExchangeTimerUnavailable("unknown SIGALRM handler cannot be restored")
++
++    def expired(signum: int, frame: FrameType | None) -> Never:
++        raise ExchangeDeadlineExceeded(deadline)
++
++    signal.signal(signal.SIGALRM, expired)
++    try:
++        signal.setitimer(signal.ITIMER_REAL, duration)
++        yield
++    finally:
++        signal.setitimer(signal.ITIMER_REAL, 0.0)
++        signal.signal(signal.SIGALRM, previous)
+ 
+ 
+ def provider_url_key(url: str) -> str:
+@@ -185,6 +227,9 @@
+         raise RuntimeError("HTTP response has no bounded socket read boundary")
+ 
+     def read(self, amount: int = -1) -> bytes:
++        if amount > 0 and callable(getattr(self.body_owner, "read1", None)):
++            chunk: bytes = self.body_owner.read1(amount)
++            return chunk
+         return cast(bytes, self.body_owner.read(amount))
+ 
+     def readline(self, amount: int = -1) -> bytes:
+@@ -714,40 +759,42 @@
+     ) -> tuple[int, Mapping[str, str], bytes]:
+         captures = self.state / "parent-captures"
+         captures.mkdir(parents=True, exist_ok=True)
+-        response: HttpResponse
++        response: HttpResponse | None = None
+         error: urllib.error.HTTPError | None = None
+-        duration = remaining(self.resources.clock, deadline)
+-        self.event("http-open", method=request.get_method(), url=request.full_url, timeout=duration)
+-        try:
+-            response = self.resources.http.open(request, timeout=duration)
+-        except urllib.error.HTTPError as exc:
+-            error = exc
+-            response = cast(HttpResponse, cast(object, exc))
+         raw = bytearray()
+         path = captures / (stem + "-response.bin")
+-        with path.open("xb") as stream:
+-            h.write_once(
+-                captures / (stem + "-headers.json"),
+-                h.canonical_json({"status": response.status, "safe_headers": safe_headers(response.headers)}),
+-            )
+-            try:
+-                while True:
+-                    duration = remaining(self.resources.clock, deadline)
+-                    response.set_timeout(duration)
+-                    self.event("http-read", stem=stem, timeout=duration)
+-                    chunk = response.read(4096)
+-                    if chunk:
+-                        raw.extend(chunk)
+-                        stream.write(chunk)
+-                        stream.flush()
+-                        os.fsync(stream.fileno())
+-                    remaining(self.resources.clock, deadline)
+-                    if not chunk:
+-                        break
+-            finally:
++        try:
++            with exchange_deadline(self.resources, deadline):
++                duration = remaining(self.resources.clock, deadline)
++                self.event("http-open", method=request.get_method(), url=request.full_url, timeout=duration)
++                try:
++                    response = self.resources.http.open(request, timeout=duration)
++                except urllib.error.HTTPError as exc:
++                    error = exc
++                    response = cast(HttpResponse, cast(object, exc))
++                with path.open("xb") as stream:
++                    h.write_once(
++                        captures / (stem + "-headers.json"),
++                        h.canonical_json({"status": response.status, "safe_headers": safe_headers(response.headers)}),
++                    )
++                    while True:
++                        duration = remaining(self.resources.clock, deadline)
++                        response.set_timeout(duration)
++                        self.event("http-read", stem=stem, timeout=duration)
++                        chunk = response.read(4096)
++                        if chunk:
++                            raw.extend(chunk)
++                            stream.write(chunk)
++                            stream.flush()
++                            os.fsync(stream.fileno())
++                        remaining(self.resources.clock, deadline)
++                        if not chunk:
++                            break
++                status = error.code if error is not None else response.status
++                return status, safe_headers(response.headers), bytes(raw)
++        finally:
++            if response is not None:
+                 response.close()
+-        status = error.code if error is not None else response.status
+-        return status, safe_headers(response.headers), bytes(raw)
+ 
+     def readiness(self, context: Mapping[str, object]) -> Mapping[str, object]:
+         if self.listener_handle is None:

@@ -1,0 +1,18 @@
+{
+  "method": "pure in-memory unified patch application; no source writes or execution",
+  "files": {
+    "run_harness.py": {
+      "before_sha256": "3c63ec4f6446323d9cba8d222728c8a9431df385b408728c2de1194f4073e186",
+      "reconstructed_sha256": "a94e401c8707251d22db1478d642c23c3d8f631966ef4ed7154691380e1fa35f",
+      "current_sha256": "a94e401c8707251d22db1478d642c23c3d8f631966ef4ed7154691380e1fa35f",
+      "byte_identical": true
+    },
+    "runtime_adapter.py": {
+      "before_sha256": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+      "reconstructed_sha256": "4ebfd286d01661cfc4f8c028a340ceb7c2668fa3e94a0af22a988cf9115ac472",
+      "current_sha256": "4ebfd286d01661cfc4f8c028a340ceb7c2668fa3e94a0af22a988cf9115ac472",
+      "byte_identical": true
+    }
+  },
+  "status": "PASS"
+}

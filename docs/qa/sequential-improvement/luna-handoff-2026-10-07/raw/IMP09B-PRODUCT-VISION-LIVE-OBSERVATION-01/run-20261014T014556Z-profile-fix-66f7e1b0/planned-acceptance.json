@@ -1,0 +1,27 @@
+{
+  "case": "CORRECTED_SOURCE_BOUND_NON_STREAM_SAMPLING_PROFILE",
+  "purpose": "One actual product image observation after complete offline payload equality verification",
+  "past_case_statuses": [
+    "acceptance file collision; product0/provider0",
+    "403 project root invalid; product1/provider0",
+    "200 error string; frozen sampling mismatch; product1/provider0"
+  ],
+  "per_case_product_post": 1,
+  "per_case_provider_inference": 1,
+  "aggregate_product_posts_after_execution": 3,
+  "aggregate_provider_inference_max": 1,
+  "initial_one_post_workflow_status": "NOT_MET",
+  "profile_contract": "exact current non-stream GENERAL defaults repeat_penalty1.3/min_p0.05, no arbitrary ranges; other profile fields unchanged",
+  "production_allowlist_policy": "unchanged; project inside runtime-state/workspace",
+  "constraints": {
+    "retry": 0,
+    "redirect": 0,
+    "native_inference": 0,
+    "tool": 0,
+    "worker_lifespan": "off",
+    "keep_alive": "30m",
+    "deadline_seconds": 120,
+    "cleanup_seconds": 5
+  },
+  "operator_note": "This new case is planned before request dispatch. Previous failures are not rewritten. Each run permits one POST; original task-wide single POST/preflight limit is exceeded by scoped repair cases and must not be claimedPASS."
+}

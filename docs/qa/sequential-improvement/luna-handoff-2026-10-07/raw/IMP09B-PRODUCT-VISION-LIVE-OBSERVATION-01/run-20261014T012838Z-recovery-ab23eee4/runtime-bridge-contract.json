@@ -1,0 +1,101 @@
+{
+  "schema": "ssak.runtime-bridge-compatibility.v1",
+  "preparation_task": "IMP-09-C-PRODUCT-VISION-RUNTIME-COMPATIBILITY-01",
+  "future_observation_task": "IMP-09-B-PRODUCT-VISION-LIVE-OBSERVATION-01",
+  "entrypoint": "run_harness.py",
+  "worker_entrypoint": "runtime_adapter.py --worker",
+  "modes": [
+    "PREPARE_OFFLINE",
+    "OFFLINE_MOCK",
+    "LIVE"
+  ],
+  "current_live_authorization": "SEPARATE_SOURCE_BOUND_AUTHORIZATION_FILE",
+  "independent_review": "SOURCE_BOUND_REVIEW_FILE",
+  "source_gate": "stdlib source/request/fixture/binding before factory and imports; no automatic rebind",
+  "worker_boundary": "private inherited IPC challenge checked before imports; child owns environment; direct flag is insufficient",
+  "resources": [
+    "clock",
+    "http opener/response",
+    "process handle",
+    "private pipe IPC",
+    "loopback listener",
+    "module loader"
+  ],
+  "listener": {
+    "host": "127.0.0.1",
+    "port": 0,
+    "workers": 1,
+    "reload": false,
+    "lifespan": "off"
+  },
+  "provider_origin_contract": {
+    "configured_base_url": "http://localhost:11434",
+    "resolved_api_base_expected": "http://localhost:11434/v1",
+    "scheme": "http",
+    "port": 11434,
+    "allowed_exact_hosts": [
+      "localhost",
+      "127.0.0.1"
+    ],
+    "canonical_comparison_origin": "http://127.0.0.1:11434",
+    "userinfo_query_fragment": "REJECT",
+    "other_hosts_ports_schemes": "REJECT",
+    "dns_resolution": false,
+    "preserve_actual_request_url_and_body": true,
+    "metadata_origin_spelling": "127.0.0.1 is compared under the same exact host equivalence"
+  },
+  "http_error_contract": {
+    "preserve_http_error_type_and_metadata": true,
+    "body_owner": "HTTPError.fp (HTTPResponse), read lazily through delegated SocketResponse",
+    "socket_owner": "HTTPResponse.fp.raw._sock",
+    "readline_timeout_close_delegated": true,
+    "retry_redirect_fallback": false,
+    "response_observed": "only after consumed body/EOF or explicit close"
+  },
+  "compatibility_findings": {
+    "RBC-01": "configured http://localhost:11434 and literal http://127.0.0.1:11434 compare equal only for exact HTTP loopback hosts on port 11434; preserve actual request URL and bytes",
+    "RBC-02": "HTTPError metadata remains outermost; fp remains the original HTTPResponse and bounded body/socket operations delegate without eager consumption"
+  },
+  "selector_acceptance": {
+    "RC-01": "source-bound actual resolver and configured localhost bootstrap",
+    "RC-02": "localhost/127.0.0.1 origin equivalence with unchanged request URL/body and journal classification",
+    "RC-03": "forbidden origins and URL variants fail before sink",
+    "RC-04": "genuine HTTPError readiness 401/403/429 then bearer 200 with bounded timeouts",
+    "RC-05": "lazy genuine HTTPError 503 provider body capture and response accounting",
+    "RC-06": "genuine error/success body read, timeout, EOF and close delegation",
+    "RC-07": "no live authorization; live CLI denies before adapter factory"
+  },
+  "live_authorization": "NOT_ISSUED",
+  "wire_ownership": "common provider reservation/entry guard and same durable journal in child; parent reconciliation is read-only",
+  "transmission_state": "wire_entered=MAY_HAVE_TRANSMITTED; response_observed separate; no retry/redirect/native",
+  "deadline": {
+    "total_seconds": 120,
+    "readiness_seconds": 15,
+    "cleanup_seconds": 5
+  },
+  "shutdown": [
+    "request shutdown",
+    "bounded wait",
+    "owned terminate",
+    "bounded wait",
+    "owned kill",
+    "bounded reap",
+    "close handles",
+    "protection comparison",
+    "final reducer"
+  ],
+  "observations": {
+    "auth": "NOT_OBSERVED",
+    "metadata": "NOT_OBSERVED",
+    "os_wait_reap": "NOT_OBSERVED"
+  },
+  "historical_status": {
+    "overall_imp09": "PARTIAL",
+    "product_live_vision": "NOT_RUN",
+    "historical_ledger": "NOT_RECOVERED",
+    "historical_initial_protection": "UNVERIFIED",
+    "historical_actual_calls": "UNKNOWN"
+  },
+  "approval_file": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T012838Z-recovery-ab23eee4/live-authorization.json",
+  "review_file": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T012838Z-recovery-ab23eee4/current-source-review.json"
+}

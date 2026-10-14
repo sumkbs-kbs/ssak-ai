@@ -1,0 +1,152 @@
+{
+  "captured_at_utc": "2026-10-12T21:59:05.873661+00:00",
+  "files": [
+    {
+      "path": "src/antigravity_k/api/routes/chat.py",
+      "bytes": 61723,
+      "sha256": "21c07609c0fbd5d5cbe15f2704e56c5bb9cba9d7ec7b089af1780183b9e6cbe1",
+      "expected_sha256": "21c07609c0fbd5d5cbe15f2704e56c5bb9cba9d7ec7b089af1780183b9e6cbe1",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/engine/conversation_store.py",
+      "bytes": 73900,
+      "sha256": "98dcbe3890dc4e1481ae2fa5a35cefeea328925a5d61e7572e60cb749c2db496",
+      "expected_sha256": "98dcbe3890dc4e1481ae2fa5a35cefeea328925a5d61e7572e60cb749c2db496",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/engine/protocol_translator.py",
+      "bytes": 18266,
+      "sha256": "891144e6311bac6764e9f139cd235ce5e706ad00abc179e2c238266668af500e",
+      "expected_sha256": "891144e6311bac6764e9f139cd235ce5e706ad00abc179e2c238266668af500e",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/engine/model_manager.py",
+      "bytes": 85133,
+      "sha256": "cf0867a8b8a934eddfad3ffcfc204781089f5960e30765c8cba6c26802bf1b7a",
+      "expected_sha256": "cf0867a8b8a934eddfad3ffcfc204781089f5960e30765c8cba6c26802bf1b7a",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+      "bytes": 59973,
+      "sha256": "a23ce7e0f6a0f3e65d25831f7a1bd92b2dc1ddea9e18264a67c80eae7d619c1a",
+      "expected_sha256": "a23ce7e0f6a0f3e65d25831f7a1bd92b2dc1ddea9e18264a67c80eae7d619c1a",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/api/server.py",
+      "bytes": 33763,
+      "sha256": "2cf6b4e5808b3228878ddd7da07c864c80c223d503963a842e3daa9fef3379fb",
+      "expected_sha256": "2cf6b4e5808b3228878ddd7da07c864c80c223d503963a842e3daa9fef3379fb",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/api/dependencies.py",
+      "bytes": 35216,
+      "sha256": "64bcea9f345cce3ba85da4329bc83443720621b24e3ff6f0061adda0440eb1de",
+      "expected_sha256": "64bcea9f345cce3ba85da4329bc83443720621b24e3ff6f0061adda0440eb1de",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/config.py",
+      "bytes": 28920,
+      "sha256": "6721ba3d22f9eb9ce509caf06fcca966f4605f3134d2c4a249aceea803549346",
+      "expected_sha256": "6721ba3d22f9eb9ce509caf06fcca966f4605f3134d2c4a249aceea803549346",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/engine/project_registry.py",
+      "bytes": 18594,
+      "sha256": "f97c4d2f04f45dc7a8ca545aac05d24ce1fe445c4e4230f149c4a5b8e882df18",
+      "expected_sha256": "f97c4d2f04f45dc7a8ca545aac05d24ce1fe445c4e4230f149c4a5b8e882df18",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/engine/model_registry.py",
+      "bytes": 29103,
+      "sha256": "8febe07ec3e0b00c87b83afd31475727c893885c97f760aadcf3f1409e0e6bda",
+      "expected_sha256": "8febe07ec3e0b00c87b83afd31475727c893885c97f760aadcf3f1409e0e6bda",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/api/project_binding.py",
+      "bytes": 15269,
+      "sha256": "a73892bc1027d88b38aa4fc2ac2bc9cbb502941e8a208611b080326bf93697c7",
+      "expected_sha256": "a73892bc1027d88b38aa4fc2ac2bc9cbb502941e8a208611b080326bf93697c7",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/api/auth_routes.py",
+      "bytes": 24921,
+      "sha256": "280327194371a88baa7cc7c3840f400357014060571203a27a6352fdd469e46c",
+      "expected_sha256": "280327194371a88baa7cc7c3840f400357014060571203a27a6352fdd469e46c",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/engine/session_manager.py",
+      "bytes": 52349,
+      "sha256": "a6fefeaba5d6c62d6bde13fa696987835925cd61bda59a6f8937598bf4720e22",
+      "expected_sha256": "a6fefeaba5d6c62d6bde13fa696987835925cd61bda59a6f8937598bf4720e22",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/engine/usage_tracker.py",
+      "bytes": 15817,
+      "sha256": "66ac28231d2e852a99f62cfd39273846d2475bb32ecbc522499da02b0640a2de",
+      "expected_sha256": "66ac28231d2e852a99f62cfd39273846d2475bb32ecbc522499da02b0640a2de",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/engine/audit_logger.py",
+      "bytes": 8491,
+      "sha256": "a9000330a45a647a981615ea0bf8124295215221b4b324260054bc9dcef24f41",
+      "expected_sha256": "a9000330a45a647a981615ea0bf8124295215221b4b324260054bc9dcef24f41",
+      "match": true
+    },
+    {
+      "path": "tests/test_chat_vision_routing_contract.py",
+      "bytes": 23349,
+      "sha256": "558857bb7a8b9a6a21f55d5d6552b4cdc6f90e2df2001732208c7bb83c85138c",
+      "expected_sha256": "558857bb7a8b9a6a21f55d5d6552b4cdc6f90e2df2001732208c7bb83c85138c",
+      "match": true
+    },
+    {
+      "path": "tests/fixtures/vision_shapes_384x256.png.b64",
+      "bytes": 1785,
+      "sha256": "b37f9f02d1ad805f5004cc78ce9f5fd2da0a2780fbe6a2af591d57cd18abee31",
+      "expected_sha256": "b37f9f02d1ad805f5004cc78ce9f5fd2da0a2780fbe6a2af591d57cd18abee31",
+      "match": true
+    },
+    {
+      "path": "config.yaml",
+      "bytes": 21191,
+      "sha256": "3948867a6b9ef51fc392e07d0015c45b7f881095942c4cbf64c503fdc08d8025",
+      "expected_sha256": "3948867a6b9ef51fc392e07d0015c45b7f881095942c4cbf64c503fdc08d8025",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/api/routes/system_api.py",
+      "bytes": 96252,
+      "sha256": "610334086c50b0b0e0ff09b57d3ae45e7b46739be8316baa7627ade67d35c7a6",
+      "expected_sha256": "610334086c50b0b0e0ff09b57d3ae45e7b46739be8316baa7627ade67d35c7a6",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/api/auth_policy.py",
+      "bytes": 9872,
+      "sha256": "d99b35ca9a6ab458d1bf70879b92b1591d765cd09cc80e2d91e72bb46e69ef8c",
+      "expected_sha256": "d99b35ca9a6ab458d1bf70879b92b1591d765cd09cc80e2d91e72bb46e69ef8c",
+      "match": true
+    },
+    {
+      "path": "src/antigravity_k/tools/egress_policy.py",
+      "bytes": 4913,
+      "sha256": "c1b36445d9e906b1cb8b999bd772bf58d83b29d766d396fc1e0698f5d991a699",
+      "expected_sha256": "c1b36445d9e906b1cb8b999bd772bf58d83b29d766d396fc1e0698f5d991a699",
+      "match": true
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "request_text": "그럼 인제 다음작업도 진행해줘",
+  "interpreted_scope": "The next work identified to the user is one scoped real Product-Vision observation after offline gate approval.",
+  "source": "direct human user message in this conversation",
+  "observed_date": "2026-10-14",
+  "observation_task": "IMP-09-B-PRODUCT-VISION-LIVE-OBSERVATION-01",
+  "scope": {
+    "product_authenticated_chat_post": 1,
+    "ollama_chat_inference_wire": 1,
+    "native_inference": 0,
+    "retry": 0,
+    "redirect": 0,
+    "tool_execution": 0,
+    "listener": "owned loopback port0",
+    "lifespan": "off",
+    "model": "qwen3.8:latest",
+    "keep_alive": "30m",
+    "total_deadline_seconds": 120,
+    "readiness_seconds": 15,
+    "cleanup_seconds": 5
+  },
+  "approval_status": "USER_AUTHORIZED_NEXT_SCOPED_WORK; source-bound runtime descriptor pending binding"
+}

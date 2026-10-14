@@ -1,0 +1,21 @@
+{
+  "scope": "SAME_ONE_PRODUCT_ONE_INFERENCE_OBSERVATION_RECOVERY",
+  "previous_run": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-LIVE-OBSERVATION-01/run-20261014T010347Z-codex-11484957-470575c0",
+  "previous_external_exit": 4,
+  "previous_verdict": "INCONCLUSIVE_PREPARATION",
+  "cause": "Operator precreated acceptance.json colliding with immutable supervise_once freeze output.",
+  "known_product_post_before_recovery": 0,
+  "known_provider_inference_before_recovery": 0,
+  "previous_cleanup_owned_exit_gate": "PASS",
+  "prior_metadata_reads_consumed": {
+    "version": 1,
+    "tags": 1,
+    "ps_preflight": 1,
+    "show": 1
+  },
+  "prior_readiness": {
+    "anonymous": 1,
+    "bearer": 1
+  },
+  "recovery_policy": "New isolated source-identical run; no old request retransmitted. Aggregate preflight queries across both attempts separately; do not claim original one-query budget was met globally."
+}

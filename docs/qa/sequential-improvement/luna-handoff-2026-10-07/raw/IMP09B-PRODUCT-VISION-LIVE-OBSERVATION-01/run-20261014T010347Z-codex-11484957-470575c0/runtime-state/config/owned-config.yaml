@@ -1,0 +1,598 @@
+model:
+  main_model: qwen3.8
+  code_model: qwen3.8
+  embedding_model: mlx-community/bge-m3-4bit
+  vision_model: qwen3.8
+  api_engine: ollama
+  max_tokens: 8192
+  temperature: 0.7
+  top_p: 0.9
+  # 복잡도 게이트 thinking: is_complex_task 통과 태스크에만 qwen3 추론(think)을
+  # 켠다. 2026-09-01 실측(scripts/measure_thinking_ab.py, 검증 가능한 8문제,
+  # qwen3.8:27b): OFF 5/8 → ON 8/8 정답, 지연 3.32x — 정확도 2배급 향상.
+  # 단순 대화(simple_chat)는 이 게이트를 통과하지 않아 속도 유지.
+  complex_task_thinking: true
+models:
+  reasoning:
+  - name: qwen3.8
+    repo: qwen3.8:latest
+    role: reasoning
+    parameter_count_b: 27.0
+    estimated_memory_gb: 18.0
+    context_length: 262144
+    description: Qwen3.8 27B (Ollama / Local, 고성능 단일 메인 모델)
+  - name: qwen3.6:latest
+    repo: qwen3.6:latest
+    role: reasoning
+    parameter_count_b: 36.0
+    estimated_memory_gb: 24.0
+    context_length: 262144
+    description: Qwen3.6 36B MoE (Ollama 로컬, vision/tools/thinking 지원)
+  - name: lmstudio/qwen3.6
+    repo: qwen3.6:latest
+    role: reasoning
+    provider: lmstudio
+    api_base: http://127.0.0.1:1234/v1
+    api_key_env: LM_STUDIO_API_KEY
+    parameter_count_b: 36.0
+    estimated_memory_gb: 0.0
+    context_length: 262144
+    description: Qwen3.6 36B via LM Studio (repo is the loaded LM Studio model identifier)
+  - name: deepseek-r1:70b
+    repo: deepseek-r1:70b
+    role: reasoning
+    parameter_count_b: 70.0
+    estimated_memory_gb: 70.0
+    context_length: 32768
+    description: DeepSeek R1 70B (Ollama 로컬)
+  - name: openai/gpt-4o
+    repo: openai/gpt-4o
+    role: reasoning
+    estimated_memory_gb: 0.0
+    context_length: 128000
+    # 공개 가격 평균(입출력 1:1): $2.5/M in + $10/M out → $6.25/M — 비용 상한($5/M) 초과로 자동 라우팅 제외
+    cost_per_1k_tokens_usd: 0.00625
+    description: OpenAI GPT-4o (OpenRouter)
+  - name: openai/gpt-4o-mini
+    repo: openai/gpt-4o-mini
+    role: reasoning
+    estimated_memory_gb: 0.0
+    context_length: 128000
+    # 공개 가격 평균(입출력 1:1): $0.15/M in + $0.60/M out → $0.375/M
+    cost_per_1k_tokens_usd: 0.000375
+    description: OpenAI GPT-4o-mini (OpenRouter)
+  - name: qwen/qwen3-next-80b-a3b-instruct:free
+    repo: qwen/qwen3-next-80b-a3b-instruct:free
+    role: reasoning
+    estimated_memory_gb: 0.0
+    # MoE 활성 파라미터(3B) 기준 — 총 80B로 추정되면 parameter_cap_exceeded로
+    # 폴백 체인에서 조용히 제외된다
+    parameter_count_b: 3.0
+    context_length: 131072
+    description: Qwen3 Next 80B (OpenRouter 무료)
+  - name: qwen/qwen3-next-80b-a3b-instruct
+    repo: qwen/qwen3-next-80b-a3b-instruct
+    role: reasoning
+    estimated_memory_gb: 0.0
+    parameter_count_b: 3.0
+    context_length: 131072
+    # 공개 가격 평균(입출력 1:1): $0.18/M in + $0.72/M out → $0.45/M
+    cost_per_1k_tokens_usd: 0.00045
+    description: Qwen3 Next 80B (OpenRouter, 기본 선택)
+  - name: nvidia/nemotron-3-super-120b-a12b:free
+    repo: nvidia/nemotron-3-super-120b-a12b:free
+    role: reasoning
+    estimated_memory_gb: 0.0
+    parameter_count_b: 12.0
+    context_length: 131072
+    description: Nemotron 3 Super 120B (OpenRouter 무료)
+  - name: nvidia/nemotron-3-ultra-550b-a55b:free
+    repo: nvidia/nemotron-3-ultra-550b-a55b:free
+    role: reasoning
+    estimated_memory_gb: 0.0
+    parameter_count_b: 55.0
+    context_length: 131072
+    description: Nemotron 3 Ultra 550B (OpenRouter 무료)
+  - name: google/gemma-4-26b-a4b-it:free
+    repo: google/gemma-4-26b-a4b-it:free
+    role: reasoning
+    estimated_memory_gb: 0.0
+    parameter_count_b: 4.0
+    context_length: 262144
+    description: Gemma 4 26B (OpenRouter 무료, 빠름)
+  - name: hf.co/unsloth/gemma-4-31B-it-GGUF:Q5_K_M
+    repo: hf.co/unsloth/gemma-4-31B-it-GGUF
+    role: reasoning
+    # 이 이름은 로컬 Ollama 가 HF GGUF 를 당겨온 식별자다 — provider 를 비우면
+    # `_infer_provider` 가 슬래시를 원격 프리픽스로 읽어 클라우드로 보낸다.
+    provider: ollama
+    quantization: gguf-q5_k_m
+    estimated_memory_gb: 22.0
+    context_length: 32768
+    description: Gemma 4 31B IT (unsloth Q5_K_M) — Google Gemma 계열, 에이전틱 코딩/추론, 집단지성 핵심 참여자
+  - name: nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+    repo: nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+    role: reasoning
+    estimated_memory_gb: 0.0
+    parameter_count_b: 3.0
+    context_length: 131072
+    description: Nemotron 3 Nano Omni 30B (OpenRouter 무료, 추론)
+  - name: anthropic/claude-3.5-sonnet
+    repo: anthropic/claude-3.5-sonnet
+    role: reasoning
+    estimated_memory_gb: 0.0
+    context_length: 200000
+    description: Claude 3.5 Sonnet (OpenRouter)
+  - name: anthropic/claude-opus-4
+    repo: anthropic/claude-opus-4
+    role: reasoning
+    estimated_memory_gb: 0.0
+    context_length: 200000
+    # 공개 가격 평균(입출력 1:1): $15/M in + $75/M out → $45/M — 비용 상한($5/M) 크게 초과로 자동 라우팅 제외
+    cost_per_1k_tokens_usd: 0.045
+    description: Claude Opus 4 (OpenRouter)
+  - name: google/gemini-2.0-flash-001
+    repo: google/gemini-2.0-flash-001
+    role: reasoning
+    estimated_memory_gb: 0.0
+    context_length: 1000000
+    description: Gemini 2.0 Flash (OpenRouter)
+  - name: qwen/qwen3-72b
+    repo: qwen/qwen3-72b
+    role: reasoning
+    estimated_memory_gb: 0.0
+    context_length: 32768
+    description: Qwen3 72B (OpenRouter)
+  - name: qwen/qwen3-235b-a35b
+    repo: qwen/qwen3-235b-a35b
+    role: reasoning
+    estimated_memory_gb: 0.0
+    context_length: 32768
+    description: Qwen3 235B MoE (OpenRouter)
+  - name: nvidia/nemotron-3.5-content-safety:free
+    repo: nvidia/nemotron-3.5-content-safety:free
+    role: reasoning
+    estimated_memory_gb: 0.0
+    context_length: 131072
+    description: Nemotron 3.5 Content Safety (OpenRouter 무료)
+  - name: deepseek-ai/deepseek-r1
+    repo: deepseek-ai/deepseek-r1
+    role: reasoning
+    provider: nim
+    estimated_memory_gb: 0.0
+    context_length: 128000
+    description: DeepSeek-R1 (NIM 무료, 강력 추론)
+  - name: meta/llama-3.1-405b-instruct
+    repo: meta/llama-3.1-405b-instruct
+    role: reasoning
+    provider: nim
+    estimated_memory_gb: 0.0
+    context_length: 128000
+    description: Llama 3.1 405B Instruct (NIM 무료, 최대 규모)
+  - name: meta/llama-3.3-70b-instruct
+    repo: meta/llama-3.3-70b-instruct
+    role: reasoning
+    provider: nim
+    estimated_memory_gb: 0.0
+    context_length: 128000
+    description: Llama 3.3 70B Instruct (NIM 무료, 균형)
+  - name: nvidia/llama-3.1-nemotron-70b-instruct
+    repo: nvidia/llama-3.1-nemotron-70b-instruct
+    role: reasoning
+    provider: nim
+    estimated_memory_gb: 0.0
+    context_length: 128000
+    description: Nemotron 70B Instruct (NVIDIA 자체, NIM 무료)
+  - name: nvidia/nemotron-4-340b-instruct
+    repo: nvidia/nemotron-4-340b-instruct
+    role: reasoning
+    provider: nim
+    estimated_memory_gb: 0.0
+    context_length: 48000
+    description: Nemotron-4 340B Instruct (NVIDIA 자체, NIM 무료)
+  - name: o3-mini
+    repo: o3-mini
+    role: reasoning
+    provider: openai
+    estimated_memory_gb: 0.0
+    context_length: 200000
+    description: o3-mini (OpenAI 직접, 추론 특화)
+  - name: gemini-2.5-pro
+    repo: gemini-2.5-pro
+    role: reasoning
+    provider: gemini
+    estimated_memory_gb: 0.0
+    context_length: 1000000
+    description: Gemini 2.5 Pro (Google 직접, 대규모 컨텍스트)
+  - name: glm-4-air
+    repo: glm-4-air
+    role: reasoning
+    provider: zai
+    estimated_memory_gb: 0.0
+    context_length: 128000
+    description: GLM-4-Air (ZAI 직접, 경제적 추론)
+  coding:
+  - name: qwen3-coder-next:latest
+    repo: qwen3-coder-next:latest
+    role: coding
+    estimated_memory_gb: 35.0
+    context_length: 32768
+    description: Qwen3 Coder Next (Ollama 로컬)
+  - name: mlx-community/Qwen2.5-Coder-32B-Instruct-4bit
+    repo: mlx-community/Qwen2.5-Coder-32B-Instruct-4bit
+    role: coding
+    provider: mlx
+    parameter_count_b: 32.0
+    estimated_memory_gb: 24.0
+    context_length: 32768
+    description: Qwen2.5 Coder 32B direct MLX (Apple Silicon)
+  - name: openai/gpt-4o
+    repo: openai/gpt-4o
+    role: coding
+    estimated_memory_gb: 0.0
+    context_length: 128000
+    description: OpenAI GPT-4o (OpenRouter)
+  - name: anthropic/claude-3.5-sonnet
+    repo: anthropic/claude-3.5-sonnet
+    role: coding
+    estimated_memory_gb: 0.0
+    context_length: 200000
+    description: Claude 3.5 Sonnet (OpenRouter)
+  - name: cohere/north-mini-code:free
+    repo: cohere/north-mini-code:free
+    role: coding
+    estimated_memory_gb: 0.0
+    context_length: 131072
+    description: Cohere North Mini Code (OpenRouter 무료)
+  - name: poolside/laguna-m.1:free
+    repo: poolside/laguna-m.1:free
+    role: coding
+    estimated_memory_gb: 0.0
+    context_length: 131072
+    description: Laguna M.1 (OpenRouter 무료)
+  - name: qwen/qwen2.5-coder-32b-instruct
+    repo: qwen/qwen2.5-coder-32b-instruct
+    role: coding
+    provider: nim
+    estimated_memory_gb: 0.0
+    context_length: 128000
+    description: Qwen2.5 Coder 32B (NIM 무료, 코드 특화)
+  - name: meta/llama-3.3-70b-instruct
+    repo: meta/llama-3.3-70b-instruct
+    role: coding
+    provider: nim
+    estimated_memory_gb: 0.0
+    context_length: 128000
+    description: Llama 3.3 70B (NIM 무료, 범용 코딩)
+  - name: gpt-4o
+    repo: gpt-4o
+    role: coding
+    provider: openai
+    estimated_memory_gb: 0.0
+    context_length: 128000
+    description: GPT-4o (OpenAI 직접)
+  - name: gpt-4o-mini
+    repo: gpt-4o-mini
+    role: coding
+    provider: openai
+    estimated_memory_gb: 0.0
+    context_length: 128000
+    description: GPT-4o-mini (OpenAI 직접, 경제적)
+  - name: gemini-2.0-flash
+    repo: gemini-2.0-flash
+    role: coding
+    provider: gemini
+    estimated_memory_gb: 0.0
+    context_length: 1000000
+    description: Gemini 2.0 Flash (Google 직접, 빠름)
+  - name: glm-4-plus
+    repo: glm-4-plus
+    role: coding
+    provider: zai
+    estimated_memory_gb: 0.0
+    context_length: 128000
+    description: GLM-4-Plus (ZAI 직접, 한국어 강점)
+  embedding:
+  - name: nomic-embed-text:latest
+    repo: nomic-embed-text:latest
+    role: embedding
+    estimated_memory_gb: 0.5
+    context_length: 8192
+    description: Nomic Embed Text (Ollama)
+  vision:
+  - name: qwen3.6:latest
+    repo: qwen3.6:latest
+    role: vision
+    parameter_count_b: 36.0
+    estimated_memory_gb: 24.0
+    context_length: 262144
+    description: Qwen3.6 36B 로컬 멀티모달 모델 (Ollama)
+  - name: llama3.2-vision:11b
+    repo: llama3.2-vision:11b
+    role: vision
+    estimated_memory_gb: 11.0
+    context_length: 16384
+    description: Llama 3.2 Vision 11B (Ollama)
+  - name: openai/gpt-4o
+    repo: openai/gpt-4o
+    role: vision
+    estimated_memory_gb: 0.0
+    context_length: 128000
+    description: GPT-4o Vision (OpenRouter)
+  - name: meta/llama-3.2-90b-vision-instruct
+    repo: meta/llama-3.2-90b-vision-instruct
+    role: vision
+    provider: nim
+    estimated_memory_gb: 0.0
+    context_length: 128000
+    description: Llama 3.2 90B Vision (NIM 무료, 이미지 분석)
+  - name: microsoft/phi-3.5-vision-instruct
+    repo: microsoft/phi-3.5-vision-instruct
+    role: vision
+    provider: nim
+    estimated_memory_gb: 0.0
+    context_length: 131072
+    description: Phi-3.5 Vision (NIM 무료, 경량 비전)
+defaults:
+  reasoning: qwen3.8
+  coding: qwen3.8
+  embedding: nomic-embed-text:latest
+  vision: qwen3.8
+providers:
+  ollama:
+    base_url: http://localhost:11434
+    api_key_env: OLLAMA_API_KEY
+    description: 로컬 Ollama (무제한, 프라이버시 보장)
+  lmstudio:
+    base_url: http://127.0.0.1:1234/v1
+    api_key_env: LM_STUDIO_API_KEY
+    description: LM Studio local OpenAI-compatible server
+  unsloth:
+    api_key_env: UNSLOTH_API_KEY
+    description: Optional loopback-only Unsloth OpenAI-compatible process
+  mlx:
+    description: Direct MLX runtime on Apple Silicon
+  openrouter:
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY
+    description: OpenRouter (다중 모델聚合, 유료/무료 혼합)
+  nim:
+    base_url: https://integrate.api.nvidia.com/v1
+    api_key_env: NVIDIA_API_KEY
+    rate_limit: 40
+    description: NVIDIA NIM (build.nvidia.com 무료, 80+ 모델, 40rpm/1000req-day)
+  anthropic:
+    base_url: https://api.anthropic.com
+    api_key_env: ANTHROPIC_API_KEY
+    description: Anthropic 직접 SDK (Claude 전용)
+  openai:
+    base_url: https://api.openai.com/v1
+    api_key_env: OPENAI_API_KEY
+    description: OpenAI 직접 (GPT-4o, GPT-4o-mini, o1 등)
+  gemini:
+    base_url: https://generativelanguage.googleapis.com/v1beta/openai
+    api_key_env: GEMINI_API_KEY
+    description: Google Gemini 직접 (OpenAI 호환 엔드포인트)
+  zai:
+    base_url: https://open.bigmodel.cn/api/paas/v4
+    api_key_env: ZAI_API_KEY
+    description: ZAI/Zhipu 직접 (GLM-4, GLM-5 시리즈)
+agent_models:
+  default: orchestrator-swarm
+  CEO: orchestrator-swarm
+  WORKER: coding-swarm
+  QA: reasoning-swarm
+  ENG_MANAGER: reasoning-swarm
+  DESIGNER: reasoning-swarm
+combos:
+  # 집단지성 평의회 — `strategy: collective` 는 제안→비판→중재 합성을 뜻한다.
+  # 소비자는 둘: BenchmarkHarness._default_targets() 가 이 이름을 코드에 갖고 있고,
+  # `/benchmark run`(기본 실행)이 이 콤보를 단일 모델과 비교한다.
+  collective-council:
+    description: 집단지성 평의회 (Qwen3.8 27B + Gemma4-31B unsloth + DeepSeek-R1 70B — 제안/비판/중재)
+    strategy: collective
+    models:
+    - qwen3.8
+    - hf.co/unsloth/gemma-4-31B-it-GGUF:Q5_K_M
+    - deepseek-r1:70b
+  orchestrator-swarm:
+    description: CEO 분석/단순 대화 — Qwen3.8-27B 최우선 실행
+    strategy: fallback
+    models:
+    - qwen3.8
+    - qwen3.6:latest
+    - deepseek-r1:70b
+    - qwen/qwen3-next-80b-a3b-instruct:free
+    - openai/gpt-4o-mini
+  reasoning-swarm:
+    description: 추론/QA/분석 — Qwen3.8-27B 최우선 실행
+    strategy: fallback
+    models:
+    - qwen3.8
+    - qwen3.6:latest
+    - deepseek-r1:70b
+    - qwen/qwen3-next-80b-a3b-instruct:free
+    - google/gemini-2.0-flash-001
+  coding-swarm:
+    description: 코딩 — Qwen3.8-27B 단일 고효율 코더 최우선 실행
+    strategy: fallback
+    models:
+    - qwen3.8
+    - qwen3.6:latest
+    - qwen/qwen2.5-coder-32b-instruct
+    - anthropic/claude-3.5-sonnet
+    - openai/gpt-4o
+  vision-swarm:
+    description: 비전/이미지 — Qwen3.8-27B 최우선 실행
+    strategy: fallback
+    models:
+    - qwen3.8
+    - qwen3.6:latest
+    - llama3.2-vision:11b
+    - openai/gpt-4o
+  critic-swarm:
+    description: 비판/검증(CoV, 집단지성 critic) — DeepSeek-R1 70B 로컬 품질 에스컬레이션 우선
+    strategy: fallback
+    models:
+    - deepseek-r1:70b
+    - qwen3.8
+    - qwen3.6:latest
+    - qwen/qwen3-next-80b-a3b-instruct:free
+    - openai/gpt-4o-mini
+server:
+  host: 127.0.0.1
+  port: 8000
+security:
+  access_pin: ''
+  sandbox_enabled: true
+  sandbox_network: none
+  max_execution_time: 30
+  max_output_bytes: 1000000
+  max_memory_mb: 2048
+  max_processes: 64
+  audit_log_enabled: true
+paths:
+  models_dir: models
+  data_dir: data
+  logs_dir: logs
+workflow:
+  autopilot: false
+  auto_commit: false
+  auto_artifacts: false
+i18n:
+  locale: auto
+  fallback_locale: en
+router:
+  default_strategy: fallback
+  max_retries: 3
+  usage_tracking: true
+  model_policy:
+    enabled: true
+    prefer_local: true
+    max_parameter_count_b: 70.0
+    min_local_parameter_count_b: 20.0
+    allow_small_local_models: false
+    # 1k 토큰당 평균 비용 상한(USD) — 평균 $5/M(입출력 1:1) 초과 모델을 자동 라우팅에서 제외.
+    # 0.0이면 비용 기준 미적용. 비용 미설정(0.0) 모델은 오탐 방지를 위해 항상 통과.
+    max_cost_per_1k_tokens_usd: 0.005
+  cascade_on_low_confidence: false
+  confidence_evaluator_enabled: false
+  confidence_evaluator_model: qwen3.8
+  confidence_evaluator_min_params_b: 20.0
+  confidence_evaluator_max_tokens: 32
+  quality_calibration:
+    enabled: true
+    artifact_paths:
+    - data/benchmarks/local-model-stable-simple.json
+    - data/benchmarks/local-model-frontier.json
+    artifact_globs:
+    - data/benchmarks/task-calibration-*.json
+    min_mean_benchmark_score: 0.8
+    min_min_benchmark_score: 0.7
+    min_excellent_rate: 0.8
+    min_all_excellent_run_rate: 0.8
+    min_task_outcome_count: 3
+    min_task_success_rate: 0.8
+    min_task_tool_accuracy: 0.8
+    max_task_retry_rate: 0.5
+tool_loop:
+  native_function_calling: true
+quality_gate:
+  max_retries: 2
+
+amplification:
+  # 로컬 모델(qwen3.6:latest 등)의 성능 한계를 구조적 증폭으로 보완하는 서브시스템.
+  # 모델 자체 능력이 아닌 검증/자기개선 루프로 프론티어 근접을 목표로 한다.
+  # 각 서브시스템은 개별 토글 + 파라미터로 제어되며, model null이면 model.main_model을 따른다.
+  cov:
+    # Chain-of-Verification 자기검증. 작은 모델의 환각/논리오류를 잡는 1차 방어.
+    # model은 단일 모델명 또는 콤보 이름(critic-swarm 등) — 콤보면 ModelRouter fallback 체인 사용.
+    enabled: true
+    model: critic-swarm
+    min_response_length: 50
+    complexity_threshold: 0.4
+    max_revise_iterations: 2
+  self_evolution:
+    # 실행 궤적 기반 자기 개선. 비용/위험도가 높아 기본 off.
+    # 활성화 시 self_evolution.auto_modify보다 우선한다.
+    enabled: null
+  cognitive:
+    # Plan→Execute→Verify→Reflect→Adapt 인지 순환. 작은 모델의 추론 깊이를 보완한다.
+    # dialectic(정반합 자기 비판)과 max_retries를 qwen3.6에 맞춰 조절한다.
+    enabled: true
+    dialectic_enabled: true
+    max_retries: 2
+    enable_caveman: false
+  self_consistency:
+    # 단일 모델 N샘플링 → 유사도 클러스터링 → 다수결 선택. 추론/코드 정확도 보완.
+    # off 시 단일 생성. qwen3.6에서 비용 허용 시 on (N회 호출 증가).
+    enabled: false
+    n_samples: 5
+    base_temperature: 0.7
+    temperature_spread: 0.2
+    similarity_threshold: 0.5
+    selection: majority
+    # 복잡도 게이트: 작업 복잡도가 이 값 미만이면 N샘플링 스킵 (비용 절제).
+    # null=항상 N샘플링. 0.4 정도가 단순 인사/목록을 걸러내는 균형점.
+    complexity_threshold: null
+  task_decomposition:
+    # 순차 멀티스텝 작업(워크플로/마이그레이션/파이프라인)을 단계 분해 후 실행·통합.
+    # revision이 이미 답을 구원하면 품질 이득 없이 지연만 6-8배 증가하므로 기본 off.
+    # revision 없이 순수 생성만 쓰거나, 재생성 후에도 장기 워크플로가 반복 실패할 때 on.
+    enabled: false
+    # 재생성 후에도 점수가 오르지 않은 순차 과제만 분해로 승격 (비용 후발 트리거).
+    escalate_on_revision_failure: true
+    min_steps: 2
+    max_steps: 6
+  best_of_n:
+    # 실행 검증 기반 Best-of-N. N개 후보를 샘플링해 검증자를 통과한 첫 답변 선택.
+    # 유사도 다수결(self_consistency)과 달리 실행 가능성을 실제로 검증하므로
+    # 코딩 과제에서 더 강한 신호다. 통과 즉시 반환해 나머지 샘플 비용을 생략한다.
+    # verifier: "syntax"(구문 검사, 기본) 또는 외부에서 주입한 실행 검증 함수.
+    enabled: false
+    n_samples: 3
+    # use_compute_budget: true면 TestTimeComputeScaler 복잡도 티어가 n_samples를
+    # 덮어쓴다 (SIMPLE=1 ~ EXTREME=5). 어려운 작업일수록 검증 시도를 늘린다.
+    use_compute_budget: false
+    # verifier: "syntax"(구문 검사) 또는 "worktree_tests"(답변의 ```lang path 펜스를
+    # git worktree 스냅샷에 적용하고 test_command로 실제 통과 판정 — 더 강한 신호).
+    verifier: syntax
+    test_command: pytest -q
+    test_timeout_sec: 120
+    base_temperature: 0.7
+    temperature_spread: 0.3
+    language_hint: python
+    feedback_loop: true
+    max_feedback_rounds: 1
+    complexity_threshold: null
+self_evolution:
+  auto_modify: false
+cost:
+  enabled: true
+  daily_budget_usd: 50.0
+  hourly_action_limit: 100
+computer_use:
+  enabled: true
+  hitl_required: true
+# 검색 경로 (task 13). 기본은 꺼짐 — 켜기 전까지 기존 4-engine web_search 가 그대로 돈다.
+# 켜려면 artifact_path 를 신뢰된 루트 아래의 번들 바이너리 경로로 지정한다.
+search:
+  ssak:
+    enabled: false
+    mode: bundled_stdio
+    fallback: legacy_on_transient
+    artifact_path: null
+    manifest_path: null
+# 브라우저 작업 기억 (task 21). 기본은 꺼짐 — 켜지 않은 브라우징 이력은 수집하지 않는다.
+# 꺼져 있어도 삭제·만료는 동작한다. 켤 때는 보관 기간과 동의 범위를 함께 정한다.
+browser_task_memory:
+  enabled: false
+  retention_days: 30
+  allow_sites: []
+  max_body_chars: 1200
+  require_consent: true
+agent:
+  default_entry: unified
+  headroom: true
+  max_repairs: 2
+  adaptive: true

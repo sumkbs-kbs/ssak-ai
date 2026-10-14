@@ -1,0 +1,20 @@
+{
+  "id": "LIVE-PREFLIGHT-DEADLINE-01",
+  "severity": "HIGH",
+  "status": "REPAIR_IN_PROGRESS",
+  "actual_live_calls": 0,
+  "source": "independent pre-execution code review",
+  "problem": "Socket timeout limits inactivity, not total urllib open/header/buffered-read duration. A slowly delivering peer can keep a call beyond frozen absolute deadline.",
+  "locations": [
+    {
+      "file": "runtime_adapter.py",
+      "original_line": 173
+    },
+    {
+      "file": "runtime_adapter.py",
+      "original_line": 735
+    }
+  ],
+  "repair_scope": "Owned QA runtime_adapter parent exchange only, existing supervisor retains all cleanup ownership; focused offline POSIX-signal/fake-HTTP regression. No second supervisor or provider retries.",
+  "identity_note": "Initial byte-identical snapshot is retained in provenance; runtime adapter fix creates a new source-bound candidate before any live call."
+}

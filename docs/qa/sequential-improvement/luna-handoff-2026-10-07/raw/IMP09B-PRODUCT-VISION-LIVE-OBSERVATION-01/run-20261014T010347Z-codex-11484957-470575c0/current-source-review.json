@@ -1,0 +1,32 @@
+{
+  "verdict": "ACCEPTED_OFFLINE_RUNTIME_BRIDGE",
+  "execution_binding_sha256": "477f60886cf0048c82cadfcdf39d6af8e3521614d8cda4a5ea12732aa148939e",
+  "reviewer": "closeout_code_audit",
+  "review_mode": "READ_ONLY_OFFLINE_SOURCE_AND_SAVED_EVIDENCE",
+  "reviewed_at_utc": "2026-10-14T01:24:29.000Z",
+  "code_quality": "CLEAR",
+  "blockers": [],
+  "implementation_source_sha256": {
+    "run_harness.py": "683f0093cbe5898e9fffef308f2ad413a17addb50b72bdaa235dbc177cf5f9ec",
+    "runtime_adapter.py": "4ebfd286d01661cfc4f8c028a340ceb7c2668fa3e94a0af22a988cf9115ac472",
+    "test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+    "test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+    "run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a",
+    "test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb"
+  },
+  "source_review": "baseline/approved-source-inheritance.json",
+  "deadline_fix": {
+    "source_sha256": "4ebfd286d01661cfc4f8c028a340ceb7c2668fa3e94a0af22a988cf9115ac472",
+    "checks": "offline-fix-attempts/deadline-checks.json",
+    "before": {
+      "passed": 5,
+      "failed": 5
+    },
+    "after": {
+      "passed": 10,
+      "failed": 0
+    },
+    "static_exit_zero": true
+  },
+  "live_execution_observed": false
+}
