@@ -4,16 +4,20 @@ legacy에서 추출·귀속된 엔드포인트의 응답 구조와 권한 게이
 """
 
 import asyncio
+import hashlib
+import json
 from collections.abc import Iterator
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Callable, Protocol, cast, final
 
+import httpx
 import psutil
 import pytest
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
+from antigravity_k.api import dependencies
 from antigravity_k.api.routes import models_api, system_api
 from antigravity_k.api.server import app
 from antigravity_k.config import config
@@ -88,20 +92,53 @@ class _FakeRuntime:
 class _FakeEmbeddingEngine:
     def __init__(self) -> None:
         self.error: Exception | None = None
+        self.allow_fallback_calls: list[bool] = []
 
-    def embed(self, values: list[str], model: str) -> list[list[float]]:
+    def embed(self, values: list[str], model: str, *, allow_fallback: bool = True) -> list[list[float]]:
         _ = (values, model)
+        self.allow_fallback_calls.append(allow_fallback)
         if self.error is not None:
             raise self.error
         return [[0.1, 0.2], [0.3, 0.4]]
 
 
 @pytest.fixture
-def client() -> Iterator[TestClient]:
+def client(
+    record_property: Callable[[str, object], None], monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> Iterator[TestClient]:
+    monkeypatch.setenv("ANTIGRAVITY_VAULT_PATH", str(tmp_path / "owned-vault"))
+    monkeypatch.setattr(dependencies, "vault_engine", None)
     headers = {"X-Access-Pin": config.security.access_pin}
+    posts: list[dict[str, object]] = []
+
+    def record_post(response: httpx.Response) -> None:
+        if response.request.method != "POST":
+            return
+        body = response.read()
+        index = len(posts)
+        record_property(f"impact_request_raw_{index}", response.request.content.decode("utf-8"))
+        record_property(f"impact_response_raw_{index}", body.decode("utf-8"))
+        posts.append(
+            {
+                "path": response.request.url.path,
+                "status_code": response.status_code,
+                "request_bytes": len(response.request.content),
+                "request_sha256": hashlib.sha256(response.request.content).hexdigest(),
+                "response_bytes": len(body),
+                "response_sha256": hashlib.sha256(body).hexdigest(),
+            }
+        )
+
     with TestClient(app, raise_server_exceptions=False) as test_client:
         test_client.headers.update(headers)
+        test_client.event_hooks["response"].append(record_post)
         yield test_client
+    vault = dependencies.vault_engine
+    if vault is not None and vault.sync_rag:
+        assert Path(vault.vector_store.persist_directory).is_relative_to(tmp_path)
+        record_property("owned_vector_persist_directory", vault.vector_store.persist_directory)
+        vault.vector_store.close()
+    record_property("impact_post_observations", json.dumps(posts, separators=(",", ":")))
 
 
 def _fake_manager() -> _FakeManager:
@@ -183,6 +220,7 @@ class TestModelsApi:
         embeddings = cast(list[object], ok["data"])
         assert usage["prompt_tokens"] == 1  # 4//4 + 2//4
         assert cast(JsonObject, embeddings[1])["index"] == 1
+        assert engine.allow_fallback_calls == [False]
 
         engine.error = ValueError("차원 불일치")
         try:
@@ -190,6 +228,7 @@ class TestModelsApi:
         finally:
             app.dependency_overrides.clear()
         assert err.status_code == 500
+        assert engine.allow_fallback_calls == [False, False]
 
 
 # ─── System status/restart (system_api 귀속분) ───────────────────

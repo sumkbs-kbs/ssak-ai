@@ -24,7 +24,11 @@ from antigravity_k.build_info import get_build_info
 from antigravity_k.config import config
 from antigravity_k.engine.agent_runtime import AgentRuntime
 from antigravity_k.engine.audit_logger import get_audit_logger
-from antigravity_k.engine.embeddings import EmbeddingEngine
+from antigravity_k.engine.embeddings import (
+    EmbeddingEngine,
+    EmbeddingModelUnavailableError,
+    EmbeddingProviderInvalidResponseError,
+)
 from antigravity_k.engine.model_manager import ModelManager
 from antigravity_k.engine.model_registry import ModelRegistry
 from antigravity_k.engine.provider_capabilities import ProviderCapability
@@ -348,7 +352,7 @@ async def create_embeddings(
 
     try:
         # Generate embeddings
-        embeddings = engine.embed(request.input, request.model)
+        embeddings = engine.embed(request.input, request.model, allow_fallback=False)
 
         # Format response
         data: list[EmbeddingData] = []
@@ -363,6 +367,24 @@ async def create_embeddings(
             model=request.model,
             usage=UsageStats(prompt_tokens=tokens, total_tokens=tokens),
         )
+    except EmbeddingProviderInvalidResponseError as exc:
+        raise HTTPException(
+            status_code=502,
+            detail={
+                "code": "embedding_provider_invalid_response",
+                "model": exc.model_name,
+                "message": "Embedding provider returned an invalid response.",
+            },
+        ) from exc
+    except EmbeddingModelUnavailableError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "code": "embedding_model_unavailable",
+                "model": exc.model_name,
+                "message": str(exc),
+            },
+        ) from exc
     except (ValueError, RuntimeError, KeyError) as e:
         logger.error("Embedding error: %s", e)
         raise HTTPException(status_code=500, detail=str(e))

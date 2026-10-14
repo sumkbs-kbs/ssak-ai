@@ -837,7 +837,8 @@ def get_embedding_engine() -> EmbeddingEngine:
         EmbeddingEngine: The embeddingengine result.
 
     """
-    engine = EmbeddingEngine()
+    registry = ModelRegistry()
+    engine = EmbeddingEngine(registry=registry)
     engine.initialize()
     return engine
 
@@ -892,7 +893,13 @@ def require_request_execution_context():
     return ctx
 
 
-def _attach_cognitive_surface(agent_runtime: AgentRuntime, model_manager: object) -> None:
+class _CognitiveModelManagerLike(Protocol):
+    def get_target_for_role(self, role_name: str, default_role: str = "reasoning") -> str: ...
+
+    def generate(self, prompt: str, target: str, *, temperature: float, max_tokens: int) -> str: ...
+
+
+def _attach_cognitive_surface(agent_runtime: AgentRuntime, model_manager: _CognitiveModelManagerLike) -> None:
     """P11 opt-in 배선: 설정(cognitive_core)이 SHADOW면 대화·과제 완료를 shadow로 관찰한다.
 
     설정이 없거나 OFF면 surface를 붙이지 않는다(legacy 그대로). think port는 실제 모델
@@ -913,8 +920,8 @@ def _attach_cognitive_surface(agent_runtime: AgentRuntime, model_manager: object
         return
 
     def generate(prompt: str) -> str:
-        target = model_manager.get_target_for_role("default", default_role="default")  # type: ignore[attr-defined]
-        return str(model_manager.generate(prompt=prompt, target=target, temperature=0.2, max_tokens=512))  # type: ignore[attr-defined]
+        target = model_manager.get_target_for_role("default", default_role="default")
+        return str(model_manager.generate(prompt=prompt, target=target, temperature=0.2, max_tokens=512))
 
     agent_runtime.attach_cognitive_surface(CognitiveSurfaceAdapter(settings, think=SurfaceBrainPort(generate)))
 

@@ -496,7 +496,7 @@ class ModelRegistry:
 
         """
         if config_path is None:
-            config_path = str(_default_config_path())
+            config_path = os.environ.get("AGK_CONFIG_FILE") or str(_default_config_path())
         self._config_path: str = config_path
         self._models: dict[str, ModelProfile] = {}
         self._defaults = DefaultModels()

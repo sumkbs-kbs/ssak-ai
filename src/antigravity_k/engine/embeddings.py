@@ -6,6 +6,13 @@ import math
 from collections.abc import Sequence
 from typing import Final, Protocol, runtime_checkable
 
+from antigravity_k.engine.model_registry import ModelRegistry
+from antigravity_k.engine.provider_adapters.embedding_providers import (
+    OllamaEmbeddingProtocolError,
+    OllamaEmbeddingProvider,
+    OllamaEmbeddingUnavailableError,
+)
+
 logger = logging.getLogger("antigravity_k.engine.embeddings")
 
 
@@ -19,13 +26,36 @@ class _EmbeddingFactory(Protocol):
     def __call__(self, model_name: str) -> _EmbeddingModel: ...
 
 
+class EmbeddingProviderInvalidResponseError(RuntimeError):
+    """Selected embedding provider returned an invalid successful response."""
+
+    def __init__(self, model_name: str) -> None:
+        self.model_name = model_name
+        super().__init__("Embedding provider returned an invalid response.")
+
+
+class EmbeddingModelUnavailableError(RuntimeError):
+    """Requested embedding model could not be loaded without a fallback."""
+
+    def __init__(self, model_name: str) -> None:
+        self.model_name = model_name
+        super().__init__(f"Embedding model '{model_name}' could not be loaded.")
+
+
 class EmbeddingEngine:
-    """Generates vector embeddings for text (sentence-transformers or hash fallback)."""
+    """Generates vectors through a registered provider or local fallback."""
 
     fallback_dimensions: Final[int] = 1536
 
-    def __init__(self) -> None:
-        """Initialize the EmbeddingEngine."""
+    def __init__(
+        self,
+        *,
+        registry: ModelRegistry | None = None,
+        ollama_provider: OllamaEmbeddingProvider | None = None,
+    ) -> None:
+        """Initialize the embedding engine with optional model/provider routing."""
+        self.registry = registry
+        self.ollama_provider = ollama_provider
         self.current_model: str | None = None
         self.model: _EmbeddingModel | None = None
         self.tokenizer: None = None
@@ -73,9 +103,23 @@ class EmbeddingEngine:
             self.model = None
             self.current_model = target_model
 
-    def embed(self, text: str | list[str], model_name: str) -> list[list[float]]:
-        """Generate embeddings for the given text(s)."""
+    def embed(self, text: str | list[str], model_name: str, *, allow_fallback: bool = True) -> list[list[float]]:
+        """Generate embeddings, optionally requiring the requested model to load."""
+        profile = self.registry.get_model(model_name) if self.registry is not None else None
+        roles = {role.strip().casefold() for role in profile.supported_roles if role.strip()} if profile else set()
+        if profile is not None and profile.provider.casefold() == "ollama" and "embedding" in roles:
+            wire_model = profile.repo or profile.name
+            provider = self.ollama_provider or OllamaEmbeddingProvider()
+            try:
+                return provider.embed(profile, self.registry, text, wire_model)
+            except OllamaEmbeddingUnavailableError as exc:
+                raise EmbeddingModelUnavailableError(model_name) from exc
+            except OllamaEmbeddingProtocolError as exc:
+                raise EmbeddingProviderInvalidResponseError(model_name) from exc
+
         self.load_model(model_name)
+        if self.model is None and not allow_fallback:
+            raise EmbeddingModelUnavailableError(model_name)
 
         if isinstance(text, str):
             text = [text]

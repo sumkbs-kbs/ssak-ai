@@ -4,9 +4,21 @@ Covers initialization, model loading (test/mock prefix), fallback embedding
 determinism/dimensionality/normalization, and the singleton accessor.
 """
 
-import numpy as np
+import hashlib
+import json
+import sys
+from collections.abc import Callable
+from types import ModuleType
 
-from antigravity_k.engine.embeddings import EmbeddingEngine, get_embedding_engine
+import numpy as np
+import pytest
+
+from antigravity_k.engine.embeddings import (
+    EmbeddingEngine,
+    EmbeddingModelUnavailableError,
+    _EmbeddingModel,
+    get_embedding_engine,
+)
 
 # ---------------------------------------------------------------------------
 # Initialization
@@ -132,3 +144,68 @@ def test_embed_empty_list():
     engine = EmbeddingEngine()
     result = engine.embed([], model_name="test-model")
     assert result == []
+
+
+@pytest.mark.parametrize("model_name", ["test-embed", "mock-embed", "dummy-embed"])
+def test_strict_fallback_only_targets_raise_before_hashing(model_name: str, monkeypatch: pytest.MonkeyPatch) -> None:
+    engine = EmbeddingEngine()
+    fallback_calls: list[str] = []
+    original_fallback = engine._fallback_embedding
+
+    def counted_fallback(text: str) -> list[float]:
+        fallback_calls.append(text)
+        return original_fallback(text)
+
+    monkeypatch.setattr(engine, "_fallback_embedding", counted_fallback)
+    with pytest.raises(EmbeddingModelUnavailableError) as caught:
+        engine.embed("probe", model_name, allow_fallback=False)
+    assert caught.value.model_name == model_name
+    assert str(caught.value) == f"Embedding model '{model_name}' could not be loaded."
+    assert engine.current_model == model_name and engine.model is None
+    assert fallback_calls == []
+
+
+def test_loader_failure_preserves_default_deterministic_fallback(
+    monkeypatch: pytest.MonkeyPatch, record_property: Callable[[str, object], None]
+) -> None:
+    engine = EmbeddingEngine()
+    model_name = "nomic-embed-text:latest"
+    text = "SSAK_EM01_MODEL_IDENTITY_PROBE"
+    factory_models: list[str] = []
+    fallback_calls: list[str] = []
+    original_fallback = engine._fallback_embedding
+
+    def failing_factory(requested_model: str) -> _EmbeddingModel:
+        factory_models.append(requested_model)
+        raise RuntimeError("controlled-loader-failure")
+
+    def counted_fallback(value: str) -> list[float]:
+        fallback_calls.append(value)
+        return original_fallback(value)
+
+    module = ModuleType("sentence_transformers")
+    setattr(module, "SentenceTransformer", failing_factory)
+    monkeypatch.setitem(sys.modules, "sentence_transformers", module)
+    monkeypatch.setattr(engine, "_fallback_embedding", counted_fallback)
+    first = engine.embed(text, model_name)
+    second = engine.embed(text, model_name)
+    assert factory_models == [model_name, model_name]
+    assert fallback_calls == [text, text]
+    assert first == second == [original_fallback(text)]
+    assert len(first[0]) == engine.fallback_dimensions
+    assert np.isfinite(first[0]).all()
+    assert abs(np.linalg.norm(first[0]) - 1.0) < 1e-12
+    record_property(
+        "default_fallback_observation",
+        json.dumps(
+            {
+                "factory_calls": len(factory_models),
+                "fallback_calls": len(fallback_calls),
+                "dimension": len(first[0]),
+                "deterministic": first == second,
+                "vector_sha256": hashlib.sha256(json.dumps(first[0], separators=(",", ":")).encode()).hexdigest(),
+                "post_count": 0,
+            },
+            separators=(",", ":"),
+        ),
+    )
