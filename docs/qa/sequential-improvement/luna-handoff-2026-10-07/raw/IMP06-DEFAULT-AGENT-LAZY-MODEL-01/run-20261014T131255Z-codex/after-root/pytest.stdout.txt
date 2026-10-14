@@ -1,0 +1,107 @@
+................................F.........F............................. [ 67%]
+..................................                                       [100%]
+=================================== FAILURES ===================================
+_ TestToolLoopEnginePostLoopChecks.test_quality_gate_revision_replaces_output_and_outcome _
+
+self = <tests.test_tool_loop.TestToolLoopEnginePostLoopChecks object at 0x118d58250>
+mock_orch = <MagicMock id='4774257936'>
+
+    def test_quality_gate_revision_replaces_output_and_outcome(self, mock_orch: MagicMock):
+        initial = MagicMock(user_message="", should_retry=True, feedback="보완 필요", score=0.3)
+        revised = MagicMock(user_message="", should_retry=False, feedback="", score=0.9)
+        _set_mock_side_effect(mock_orch, ("ctx", "quality_gate", "evaluate"), [initial, revised])
+        _set_mock_return(mock_orch, ("_get_model_for_role",), "qwen3.6:latest")
+        _set_mock_return(mock_orch, ("manager", "stream_generate"), iter(["초안"]))
+        _set_mock_return(mock_orch, ("manager", "generate"), "보완된 최종 답변")
+        outcomes: list[TaskOutcome] = []
+    
+        with patch("antigravity_k.engine.event_bus.global_event_bus") as event_bus:
+            engine = ToolLoopEngine(mock_orch, outcome_recorder=_outcome_recorder(outcomes))
+            result = list(engine.run_loop([{"role": "user", "content": "요청"}], "CODER", "chat"))
+    
+        assert any("보완된 최종 답변" in chunk for chunk in result)
+        assert cast(str, engine.last_output) == "보완된 최종 답변"
+        assert outcomes[0].retry_count == 1
+        # 토큰 집계는 단일 추정기(CJK 인식) 기준 — 하드코딩 공식이 아니다
+        from antigravity_k.engine.tokenizer import TokenEstimator
+    
+        assert outcomes[0].tokens_out == TokenEstimator.estimate_text("보완된 최종 답변")
+        # AgentTurnCompleted가 정확히 1회 발행됐는지 확인 — 다른 이벤트
+        # (ToolLoopProtocolStats 등)와 무관하게 해당 인자로 호출된 경우만 센다.
+        publish_calls = [c for c in event_bus.publish.call_args_list if c.args and c.args[0] == "AgentTurnCompleted"]
+        assert len(publish_calls) == 1
+>       assert publish_calls[0].kwargs == {
+            "user_message": "요청",
+            "assistant_response": "보완된 최종 답변",
+            "project_root": "/tmp/test",
+        }
+E       AssertionError: assert {'user_messag...project_root'} == {'user_messag...: '/tmp/test'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'project_root': '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-DEFAULT-AGENT-LAZY-MODEL-01/run-20261014T131255Z-codex/after-root/project_root'} != {'project_root': '/tmp/test'}
+E         Use -v to get more diff
+
+../../../../../../../../tests/test_tool_loop.py:725: AssertionError
+__________ TestToolLoopEnginePostLoopChecks.test_event_bus_published ___________
+
+self = <tests.test_tool_loop.TestToolLoopEnginePostLoopChecks object at 0x118d7adf0>
+mock_orch = <MagicMock id='4766937312'>
+
+    def test_event_bus_published(self, mock_orch: MagicMock):
+        with patch("antigravity_k.engine.event_bus.global_event_bus") as mock_bus:
+            engine = _engine(mock_orch)
+            messages = [{"role": "user", "content": "do something"}]
+            _ = list(_post_loop_checks(engine, messages, "code", "output", "do something"))
+>           _assert_mock_called_once_with(
+                mock_bus,
+                ("publish",),
+                "AgentTurnCompleted",
+                user_message="do something",
+                assistant_response="output",
+                project_root="/tmp/test",
+            )
+
+../../../../../../../../tests/test_tool_loop.py:970: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../../../../../tests/test_tool_loop.py:192: in _assert_mock_called_once_with
+    _ = method(*args, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/unittest/mock.py:991: in assert_called_once_with
+    return self.assert_called_with(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <MagicMock name='global_event_bus.publish' id='4775927424'>
+args = ('AgentTurnCompleted',)
+kwargs = {'user_message': 'do something', 'assistant_response': 'output', 'project_root': '/tmp/test'}
+
+    def assert_called_with(self, /, *args, **kwargs):
+        """assert that the last call was made with the specified arguments.
+    
+        Raises an AssertionError if the args and keyword args passed in are
+        different to the last call to the mock."""
+        if self.call_args is None:
+            expected = self._format_mock_call_signature(args, kwargs)
+            actual = 'not called.'
+            error_message = ('expected call not found.\nExpected: %s\n  Actual: %s'
+                    % (expected, actual))
+            raise AssertionError(error_message)
+    
+        def _error_message():
+            msg = self._format_mock_failure_message(args, kwargs)
+            return msg
+        expected = self._call_matcher(_Call((args, kwargs), two=True))
+        actual = self._call_matcher(self.call_args)
+        if actual != expected:
+            cause = expected if isinstance(expected, Exception) else None
+>           raise AssertionError(_error_message()) from cause
+E           AssertionError: expected call not found.
+E           Expected: publish('AgentTurnCompleted', user_message='do something', assistant_response='output', project_root='/tmp/test')
+E             Actual: publish('AgentTurnCompleted', user_message='do something', assistant_response='output', project_root='/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-DEFAULT-AGENT-LAZY-MODEL-01/run-20261014T131255Z-codex/after-root/project_root')
+
+/Users/mr.k/miniforge3/lib/python3.13/unittest/mock.py:979: AssertionError
+=========================== short test summary info ============================
+FAILED ../../../../../../../../tests/test_tool_loop.py::TestToolLoopEnginePostLoopChecks::test_quality_gate_revision_replaces_output_and_outcome
+FAILED ../../../../../../../../tests/test_tool_loop.py::TestToolLoopEnginePostLoopChecks::test_event_bus_published
+2 failed, 104 passed in 5.79s

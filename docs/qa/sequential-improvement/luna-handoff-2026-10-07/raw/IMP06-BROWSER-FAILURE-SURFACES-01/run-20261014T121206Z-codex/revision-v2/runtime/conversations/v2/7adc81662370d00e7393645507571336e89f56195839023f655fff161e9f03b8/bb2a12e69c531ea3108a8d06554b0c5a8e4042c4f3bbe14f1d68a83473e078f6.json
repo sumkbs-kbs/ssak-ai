@@ -1,0 +1,31 @@
+{
+  "conversation_id": "mv8477tch6ewvoyj",
+  "project_id": "proj_1bf61c65",
+  "revision": 1,
+  "messages": [
+    {
+      "id": "msg_68ce59b63575",
+      "role": "user",
+      "content": "브라우저 제어 오류 검증: 이 요청은 fixture 실패를 표시해야 합니다.",
+      "created_at": 1791982647.17069,
+      "provenance": "append"
+    }
+  ],
+  "summary": null,
+  "retained_message_ids": [
+    "msg_68ce59b63575"
+  ],
+  "forked_from": null,
+  "created_at": 1791982647.170666,
+  "updated_at": 1791982647.1707149,
+  "memory": {
+    "schema": "agk.summary.v1",
+    "generation": 0,
+    "constraints": [],
+    "summarized_ranges": [],
+    "carried_summary": ""
+  },
+  "journal_seq": 1,
+  "history_incomplete": false,
+  "view_schema": "agk.conv-view.v1"
+}

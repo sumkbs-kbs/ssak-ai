@@ -1,0 +1,18 @@
+{
+  "owned": [
+    "src/antigravity_k/api/task_models.py",
+    "dashboard/src/features/task-execution/taskEventReplica.ts",
+    "dashboard/src/features/task-execution/taskExecutionSchema.ts",
+    "dashboard/src/features/task-execution/taskExecutionApi.ts",
+    "dashboard/src/features/task-execution/useTaskExecutionEvents.ts",
+    "dashboard/src/features/task-execution/taskEventReplica.test.ts",
+    "dashboard/src/features/task-execution/taskExecutionApi.test.ts",
+    "dashboard/src/features/task-execution/useTaskExecutionEvents.test.ts",
+    "src/antigravity_k/api/routes/task_api.py",
+    "tests/test_task_api.py",
+    "tests/test_task_global_cursor_contract.py"
+  ],
+  "independent_checked": 1837,
+  "independent_drift": [],
+  "staged_unchanged": true
+}

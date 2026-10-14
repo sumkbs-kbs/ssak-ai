@@ -1,0 +1,46 @@
+{
+  "dashboard/src/features/task-execution/taskEventReplica.test.ts": {
+    "sha256": "5d5252b2496779131728a5ce7c69626c922a340361d9709e190d2b2c1e0d6f59",
+    "byte_identical": true
+  },
+  "dashboard/src/features/task-execution/taskEventReplica.ts": {
+    "sha256": "592c2f48a8fe68754d01f7de28889b219aa3648458d1c19be2528fb0c57ebaa1",
+    "byte_identical": true
+  },
+  "dashboard/src/features/task-execution/taskExecutionApi.test.ts": {
+    "sha256": "e917b176cadda0d1bccd21f64b370d47f71bf6e448e58b036e7fd1316c5ca9f0",
+    "byte_identical": true
+  },
+  "dashboard/src/features/task-execution/taskExecutionApi.ts": {
+    "sha256": "2f137bfee893dac796ad6fe9a756102b7c103281e46d37ab5760d72f85ffcf0f",
+    "byte_identical": true
+  },
+  "dashboard/src/features/task-execution/taskExecutionSchema.ts": {
+    "sha256": "4486e3a8446a8b02ff469b089b3ef42d069c916a2ebeaec8693606780ce1251c",
+    "byte_identical": true
+  },
+  "dashboard/src/features/task-execution/useTaskExecutionEvents.test.ts": {
+    "sha256": "6499248e7368e57543abbaad18b1d6d3c3ffe0a878ed251ee17eb46c06b31ce9",
+    "byte_identical": true
+  },
+  "dashboard/src/features/task-execution/useTaskExecutionEvents.ts": {
+    "sha256": "b6945d871202450756ed43243d2439d42390173bb2a6d0980396076fd8d2bb90",
+    "byte_identical": true
+  },
+  "src/antigravity_k/api/routes/task_api.py": {
+    "sha256": "1bd7bb98aad23064a4ef84b411d279c6ec5b4647a30adb659df8c2463f3def92",
+    "byte_identical": true
+  },
+  "src/antigravity_k/api/task_models.py": {
+    "sha256": "26ee9e8d9ae67569b2bf80a17c1f54fe681ac751a9113ac302f69d71959bf127",
+    "byte_identical": true
+  },
+  "tests/test_task_api.py": {
+    "sha256": "b9dd429889567a8137d4451b6d0a2bc621f3b63d56f036458611457688979938",
+    "byte_identical": true
+  },
+  "tests/test_task_global_cursor_contract.py": {
+    "sha256": "1bdc59652833e9cab2f34c821f27a48f87504494b8569b752fbd418d4ae269bb",
+    "byte_identical": true
+  }
+}

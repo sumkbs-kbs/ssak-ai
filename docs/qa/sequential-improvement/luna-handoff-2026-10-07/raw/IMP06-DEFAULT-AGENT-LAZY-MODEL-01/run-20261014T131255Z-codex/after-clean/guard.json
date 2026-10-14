@@ -1,0 +1,13 @@
+{
+  "violations": [
+    "Nonowned filesystem mutation: /tmp/test/.antigravity/context_artifacts",
+    "Nonowned filesystem mutation: /tmp/test/.antigravity/context_artifacts",
+    "Nonowned filesystem mutation: /tmp/test/.antigravity/context_artifacts",
+    "Nonowned filesystem mutation: /tmp/test/.antigravity/context_artifacts",
+    "Nonowned filesystem mutation: /tmp/test/.antigravity/context_artifacts"
+  ],
+  "binds": 0,
+  "model_calls": 0,
+  "scheduled_ticks": 0,
+  "subprocesses": []
+}

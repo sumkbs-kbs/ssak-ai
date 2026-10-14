@@ -1,0 +1,256 @@
+.........FFF.F.......................................................... [ 67%]
+............F........F............                                       [100%]
+=================================== FAILURES ===================================
+_ TestToolLoopEngineInit.test_compacts_large_tool_result_with_source_provenance _
+
+self = <tests.test_tool_loop.TestToolLoopEngineInit object at 0x10ac57e10>
+mock_orch = <MagicMock id='4555309472'>
+
+    def test_compacts_large_tool_result_with_source_provenance(self, mock_orch: MagicMock):
+        raw_result = "BEGIN\n" + ("x" * 20_000) + "\nEND"
+>       formatted = _format_tool_response(
+            _engine(mock_orch),
+            ToolCall(name="read_file", arguments={"file_path": "README.md"}),
+            raw_result,
+        )
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py:336: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py:38: in _format_tool_response
+    return method(tool_call, tool_result, focus_terms)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/tool_loop.py:539: in _format_tool_response
+    store = self._artifact_store()
+            ^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/tool_loop.py:463: in _artifact_store
+    self._context_artifact_store = ContextArtifactStore(
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/context_artifact_store.py:111: in __init__
+    self.root.mkdir(parents=True, exist_ok=True)
+/Users/mr.k/miniforge3/lib/python3.13/pathlib/_local.py:722: in mkdir
+    os.mkdir(self, mode)
+../../../IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/startup_probe/guard.py:62: in audit
+    self.deny("Nonowned filesystem mutation: " + path)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = Guard(owned=PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-1...ystem mutation: /tmp/test/.antigravity/context_artifacts'], binds=0, model_calls=0, scheduled_ticks=0, subprocesses=[])
+reason = 'Nonowned filesystem mutation: /tmp/test/.antigravity/context_artifacts'
+
+    def deny(self, reason: str) -> None:
+        self.violations.append(reason)
+>       raise ProbeError(reason)
+E       startup_probe.contract.ProbeError: Nonowned filesystem mutation: /tmp/test/.antigravity/context_artifacts
+
+../../../IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/startup_probe/guard.py:41: ProbeError
+__________ TestToolLoopEngineInit.test_restores_stored_tool_artifact ___________
+
+self = <tests.test_tool_loop.TestToolLoopEngineInit object at 0x10f014050>
+mock_orch = <MagicMock id='4555321904'>
+
+    def test_restores_stored_tool_artifact(self, mock_orch: MagicMock):
+        engine = _engine(mock_orch)
+>       formatted = _format_tool_response(
+            engine,
+            ToolCall(name="read_file", arguments={"file_path": "README.md"}),
+            "A" * 20_000,
+        )
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py:352: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py:38: in _format_tool_response
+    return method(tool_call, tool_result, focus_terms)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/tool_loop.py:539: in _format_tool_response
+    store = self._artifact_store()
+            ^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/tool_loop.py:463: in _artifact_store
+    self._context_artifact_store = ContextArtifactStore(
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/context_artifact_store.py:111: in __init__
+    self.root.mkdir(parents=True, exist_ok=True)
+/Users/mr.k/miniforge3/lib/python3.13/pathlib/_local.py:722: in mkdir
+    os.mkdir(self, mode)
+../../../IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/startup_probe/guard.py:62: in audit
+    self.deny("Nonowned filesystem mutation: " + path)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = Guard(owned=PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-1...ystem mutation: /tmp/test/.antigravity/context_artifacts'], binds=0, model_calls=0, scheduled_ticks=0, subprocesses=[])
+reason = 'Nonowned filesystem mutation: /tmp/test/.antigravity/context_artifacts'
+
+    def deny(self, reason: str) -> None:
+        self.violations.append(reason)
+>       raise ProbeError(reason)
+E       startup_probe.contract.ProbeError: Nonowned filesystem mutation: /tmp/test/.antigravity/context_artifacts
+
+../../../IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/startup_probe/guard.py:41: ProbeError
+_ TestToolLoopEngineInit.test_preserves_query_matched_middle_evidence_when_compacting _
+
+self = <tests.test_tool_loop.TestToolLoopEngineInit object at 0x10ac5b770>
+mock_orch = <MagicMock id='4555316528'>
+
+    def test_preserves_query_matched_middle_evidence_when_compacting(self, mock_orch: MagicMock):
+        raw_result = "header\n" + ("x" * 8_000) + "\nagent_models:\n  default: qwen3.6:latest\n" + ("y" * 8_000)
+>       formatted = _format_tool_response(
+            _engine(mock_orch),
+            ToolCall(name="read_file", arguments={"file_path": "config.yaml"}),
+            raw_result,
+            focus_terms=("agent_models",),
+        )
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py:364: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py:38: in _format_tool_response
+    return method(tool_call, tool_result, focus_terms)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/tool_loop.py:539: in _format_tool_response
+    store = self._artifact_store()
+            ^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/tool_loop.py:463: in _artifact_store
+    self._context_artifact_store = ContextArtifactStore(
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/context_artifact_store.py:111: in __init__
+    self.root.mkdir(parents=True, exist_ok=True)
+/Users/mr.k/miniforge3/lib/python3.13/pathlib/_local.py:722: in mkdir
+    os.mkdir(self, mode)
+../../../IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/startup_probe/guard.py:62: in audit
+    self.deny("Nonowned filesystem mutation: " + path)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = Guard(owned=PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-1...ystem mutation: /tmp/test/.antigravity/context_artifacts'], binds=0, model_calls=0, scheduled_ticks=0, subprocesses=[])
+reason = 'Nonowned filesystem mutation: /tmp/test/.antigravity/context_artifacts'
+
+    def deny(self, reason: str) -> None:
+        self.violations.append(reason)
+>       raise ProbeError(reason)
+E       startup_probe.contract.ProbeError: Nonowned filesystem mutation: /tmp/test/.antigravity/context_artifacts
+
+../../../IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/startup_probe/guard.py:41: ProbeError
+_ TestToolLoopEngineInit.test_redacts_secrets_even_when_large_tool_result_is_truncated _
+
+self = <tests.test_tool_loop.TestToolLoopEngineInit object at 0x10ac75f20>
+mock_orch = <MagicMock id='4554878528'>
+
+    def test_redacts_secrets_even_when_large_tool_result_is_truncated(self, mock_orch: MagicMock):
+        # Secret sits near the head so it lands in the truncated head slice.
+        raw_result = "OPENAI_API_KEY=sk-proj-ZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + chr(10) + ("x" * 20_000) + chr(10) + "END"
+>       formatted = _format_tool_response(
+            _engine(mock_orch),
+            ToolCall(name="read_file", arguments={"file_path": "big.env"}),
+            raw_result,
+        )
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py:389: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py:38: in _format_tool_response
+    return method(tool_call, tool_result, focus_terms)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/tool_loop.py:539: in _format_tool_response
+    store = self._artifact_store()
+            ^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/tool_loop.py:463: in _artifact_store
+    self._context_artifact_store = ContextArtifactStore(
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/context_artifact_store.py:111: in __init__
+    self.root.mkdir(parents=True, exist_ok=True)
+/Users/mr.k/miniforge3/lib/python3.13/pathlib/_local.py:722: in mkdir
+    os.mkdir(self, mode)
+../../../IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/startup_probe/guard.py:62: in audit
+    self.deny("Nonowned filesystem mutation: " + path)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = Guard(owned=PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-1...ystem mutation: /tmp/test/.antigravity/context_artifacts'], binds=0, model_calls=0, scheduled_ticks=0, subprocesses=[])
+reason = 'Nonowned filesystem mutation: /tmp/test/.antigravity/context_artifacts'
+
+    def deny(self, reason: str) -> None:
+        self.violations.append(reason)
+>       raise ProbeError(reason)
+E       startup_probe.contract.ProbeError: Nonowned filesystem mutation: /tmp/test/.antigravity/context_artifacts
+
+../../../IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/startup_probe/guard.py:41: ProbeError
+_ TestToolLoopEngineRunLoop.test_explicit_target_model_overrides_delegate_role _
+
+self = <tests.test_tool_loop.TestToolLoopEngineRunLoop object at 0x10f009810>
+
+    def test_explicit_target_model_overrides_delegate_role(self):
+        _set_mock_return(self._orch(), ("_get_model_for_role",), "role-default")
+        _set_mock_return(self._orch(), ("manager", "stream_generate"), iter(["completed"]))
+    
+        _ = list(
+            _engine(self._orch()).run_loop(
+                [{"role": "user", "content": "complete this"}],
+                "CODER",
+                "code",
+                target_model="qwen3.6:latest",
+            )
+        )
+    
+>       _assert_mock_called_once_with(self._orch(), ("manager", "is_loaded"), "qwen3.6:latest")
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py:1858: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py:192: in _assert_mock_called_once_with
+    _ = method(*args, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <MagicMock name='mock.manager.is_loaded' id='4657571088'>
+args = ('qwen3.6:latest',), kwargs = {}
+
+    def assert_called_once_with(self, /, *args, **kwargs):
+        """assert that the mock was called exactly once and that that call was
+        with the specified arguments."""
+        if not self.call_count == 1:
+            msg = ("Expected '%s' to be called once. Called %s times.%s"
+                   % (self._mock_name or 'mock',
+                      self.call_count,
+                      self._calls_repr()))
+>           raise AssertionError(msg)
+E           AssertionError: Expected 'is_loaded' to be called once. Called 2 times.
+E           Calls: [call('qwen3.6:latest'), call('qwen3.6:latest')].
+
+/Users/mr.k/miniforge3/lib/python3.13/unittest/mock.py:990: AssertionError
+_ TestToolLoopEngineContextCompression.test_reinjects_relevant_artifact_after_compression _
+
+self = <tests.test_tool_loop.TestToolLoopEngineContextCompression object at 0x10ac46fd0>
+mock_orch = <MagicMock id='4662185328'>
+
+    def test_reinjects_relevant_artifact_after_compression(self, mock_orch: MagicMock):
+        engine = _engine(mock_orch)
+        raw_result = "header\n" + ("x" * 8_000) + "\nagent_models:\n  default: qwen3.6:latest\n" + ("y" * 8_000)
+>       formatted = _format_tool_response(
+            engine,
+            ToolCall(name="read_file", arguments={"file_path": "config.yaml"}),
+            raw_result,
+        )
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py:2076: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py:38: in _format_tool_response
+    return method(tool_call, tool_result, focus_terms)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/tool_loop.py:539: in _format_tool_response
+    store = self._artifact_store()
+            ^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/tool_loop.py:463: in _artifact_store
+    self._context_artifact_store = ContextArtifactStore(
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/context_artifact_store.py:111: in __init__
+    self.root.mkdir(parents=True, exist_ok=True)
+/Users/mr.k/miniforge3/lib/python3.13/pathlib/_local.py:722: in mkdir
+    os.mkdir(self, mode)
+../../../IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/startup_probe/guard.py:62: in audit
+    self.deny("Nonowned filesystem mutation: " + path)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = Guard(owned=PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-1...ystem mutation: /tmp/test/.antigravity/context_artifacts'], binds=0, model_calls=0, scheduled_ticks=0, subprocesses=[])
+reason = 'Nonowned filesystem mutation: /tmp/test/.antigravity/context_artifacts'
+
+    def deny(self, reason: str) -> None:
+        self.violations.append(reason)
+>       raise ProbeError(reason)
+E       startup_probe.contract.ProbeError: Nonowned filesystem mutation: /tmp/test/.antigravity/context_artifacts
+
+../../../IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/startup_probe/guard.py:41: ProbeError
+=========================== short test summary info ============================
+FAILED ../../../../../../../../../../../../.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py::TestToolLoopEngineInit::test_compacts_large_tool_result_with_source_provenance
+FAILED ../../../../../../../../../../../../.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py::TestToolLoopEngineInit::test_restores_stored_tool_artifact
+FAILED ../../../../../../../../../../../../.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py::TestToolLoopEngineInit::test_preserves_query_matched_middle_evidence_when_compacting
+FAILED ../../../../../../../../../../../../.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py::TestToolLoopEngineInit::test_redacts_secrets_even_when_large_tool_result_is_truncated
+FAILED ../../../../../../../../../../../../.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py::TestToolLoopEngineRunLoop::test_explicit_target_model_overrides_delegate_role
+FAILED ../../../../../../../../../../../../.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py::TestToolLoopEngineContextCompression::test_reinjects_relevant_artifact_after_compression
+6 failed, 100 passed in 7.63s

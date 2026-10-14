@@ -1,0 +1,20 @@
+{
+  "violations": [
+    "Unexpected provider request",
+    "Nonfixture outbound socket"
+  ],
+  "binds": 2,
+  "model_calls": 0,
+  "fixture_production_delegations": [
+    {
+      "module": "model_manager.py",
+      "method": "stream_generate"
+    },
+    {
+      "module": "inference_providers.py",
+      "method": "stream_generate"
+    }
+  ],
+  "scheduled_ticks": 27,
+  "provider_thread_stopped": true
+}

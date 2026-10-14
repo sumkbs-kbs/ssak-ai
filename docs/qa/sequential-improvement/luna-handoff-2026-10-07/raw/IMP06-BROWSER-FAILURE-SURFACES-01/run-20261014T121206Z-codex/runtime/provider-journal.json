@@ -1,0 +1,17 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/show",
+    "kind": "metadata"
+  },
+  {
+    "method": "POST",
+    "path": "/api/show",
+    "kind": "metadata"
+  },
+  {
+    "method": "POST",
+    "path": "/api/show",
+    "kind": "metadata"
+  }
+]

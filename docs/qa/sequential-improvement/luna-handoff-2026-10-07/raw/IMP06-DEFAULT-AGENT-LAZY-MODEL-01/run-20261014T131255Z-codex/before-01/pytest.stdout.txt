@@ -1,0 +1,85 @@
+F..FFFF                                                                  [100%]
+=================================== FAILURES ===================================
+________ test_registered_unloaded_target_is_prepared_before_generation _________
+
+    def test_registered_unloaded_target_is_prepared_before_generation():
+        engine, state = setup_engine()
+        consume_to_generation(engine, state)
+>       assert state["loads"] == ["selected-model"]
+E       AssertionError: assert [] == ['selected-model']
+E         
+E         Right contains one more item: 'selected-model'
+E         Use -v to get more diff
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py:73: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.engine.tool_loop:tool_loop.py:1303 No model selected-model is loaded to execute.
+__ test_preparation_failure_preserves_original_error_without_retry[failure0] ___
+
+failure = RuntimeError('load failed')
+
+    @pytest.mark.parametrize(
+        "failure", [RuntimeError("load failed"), PermissionError("denied"), MemoryError("budget exhausted")]
+    )
+    def test_preparation_failure_preserves_original_error_without_retry(failure):
+        engine, state = setup_engine(failure=failure)
+>       with pytest.raises(type(failure), match=str(failure)):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py:89: Failed
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.engine.tool_loop:tool_loop.py:1303 No model selected-model is loaded to execute.
+__ test_preparation_failure_preserves_original_error_without_retry[failure1] ___
+
+failure = PermissionError('denied')
+
+    @pytest.mark.parametrize(
+        "failure", [RuntimeError("load failed"), PermissionError("denied"), MemoryError("budget exhausted")]
+    )
+    def test_preparation_failure_preserves_original_error_without_retry(failure):
+        engine, state = setup_engine(failure=failure)
+>       with pytest.raises(type(failure), match=str(failure)):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE PermissionError
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py:89: Failed
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.engine.tool_loop:tool_loop.py:1303 No model selected-model is loaded to execute.
+__ test_preparation_failure_preserves_original_error_without_retry[failure2] ___
+
+failure = MemoryError('budget exhausted')
+
+    @pytest.mark.parametrize(
+        "failure", [RuntimeError("load failed"), PermissionError("denied"), MemoryError("budget exhausted")]
+    )
+    def test_preparation_failure_preserves_original_error_without_retry(failure):
+        engine, state = setup_engine(failure=failure)
+>       with pytest.raises(type(failure), match=str(failure)):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE MemoryError
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py:89: Failed
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.engine.tool_loop:tool_loop.py:1303 No model selected-model is loaded to execute.
+____________ test_preparation_that_does_not_load_is_still_a_failure ____________
+
+    def test_preparation_that_does_not_load_is_still_a_failure():
+        engine, state = setup_engine(stays_unloaded=True)
+        consume_to_generation(engine, state)
+>       assert state["loads"] == ["selected-model"] and state["generation"] == []
+E       AssertionError: assert ([] == ['selected-model']
+E         
+E         Right contains one more item: 'selected-model'
+E         Use -v to get more diff)
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py:97: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.engine.tool_loop:tool_loop.py:1303 No model selected-model is loaded to execute.
+=========================== short test summary info ============================
+FAILED ../../../../../../../../../../../../.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py::test_registered_unloaded_target_is_prepared_before_generation
+FAILED ../../../../../../../../../../../../.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py::test_preparation_failure_preserves_original_error_without_retry[failure0]
+FAILED ../../../../../../../../../../../../.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py::test_preparation_failure_preserves_original_error_without_retry[failure1]
+FAILED ../../../../../../../../../../../../.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py::test_preparation_failure_preserves_original_error_without_retry[failure2]
+FAILED ../../../../../../../../../../../../.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py::test_preparation_that_does_not_load_is_still_a_failure
+5 failed, 2 passed in 3.59s

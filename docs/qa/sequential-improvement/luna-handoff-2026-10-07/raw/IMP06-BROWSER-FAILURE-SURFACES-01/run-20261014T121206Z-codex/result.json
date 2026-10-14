@@ -1,0 +1,485 @@
+{
+  "status": "DONE_SCOPED_PIN_CHAT_FAILURE_TASK_TERMINAL",
+  "review": "MAIN_AGENT_COMPLETED",
+  "independent_visual_review": "NOT_RUN",
+  "candidate": "c12830506c50d887606aebfd5d54351133101463 plus preserved unrelated ROOT source edits",
+  "attempts": {
+    "v1": {
+      "supervisor": {
+        "pid": 53100,
+        "exit_code": 0,
+        "reaped": true,
+        "forced": false,
+        "group_empty": true,
+        "elapsed_sec": 422.5407762909308
+      },
+      "guard": {
+        "violations": [
+          "Nonfixture outbound socket"
+        ],
+        "binds": 2,
+        "model_calls": 0,
+        "fixture_production_delegations": [],
+        "scheduled_ticks": 27,
+        "provider_thread_stopped": true
+      },
+      "product_mutations": [],
+      "provider_inference": [],
+      "browser_closed": true,
+      "captures": [
+        {
+          "n": 2,
+          "action": "screenshot",
+          "name": "desktop-pin.png",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "scrollWidth": 1280,
+            "scrollHeight": 900
+          }
+        },
+        {
+          "n": 7,
+          "action": "screenshot",
+          "name": "desktop-invalid-pin.png",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "scrollWidth": 1280,
+            "scrollHeight": 900
+          }
+        },
+        {
+          "n": 12,
+          "action": "screenshot",
+          "name": "desktop-authenticated.png",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "scrollWidth": 1280,
+            "scrollHeight": 900
+          }
+        },
+        {
+          "n": 17,
+          "action": "screenshot",
+          "name": "desktop-model-catalog-empty.png",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "scrollWidth": 1280,
+            "scrollHeight": 900
+          }
+        }
+      ]
+    },
+    "v2": {
+      "supervisor": {
+        "pid": 59890,
+        "exit_code": 0,
+        "reaped": true,
+        "forced": false,
+        "group_empty": true,
+        "elapsed_sec": 427.76766141701955
+      },
+      "guard": {
+        "violations": [
+          "Unexpected provider request",
+          "Nonfixture outbound socket"
+        ],
+        "binds": 2,
+        "model_calls": 0,
+        "fixture_production_delegations": [
+          {
+            "module": "model_manager.py",
+            "method": "stream_generate"
+          },
+          {
+            "module": "inference_providers.py",
+            "method": "stream_generate"
+          }
+        ],
+        "scheduled_ticks": 27,
+        "provider_thread_stopped": true
+      },
+      "product_mutations": [
+        {
+          "n": 62,
+          "method": "POST",
+          "path": "/v1/chat/completions",
+          "status": 200,
+          "content_type": "text/event-stream; charset=utf-8",
+          "request_bytes": 561,
+          "response_bytes": 881,
+          "request_sha256": "34c9ea1dda970ab087a3ee75371e9640ace57813854103f76b0e1a50392bc3e5",
+          "response_sha256": "8d7e7883e8e3f05083cde8f6324089c965f4dfc4b4b1d9bab3c8587530e19802"
+        }
+      ],
+      "provider_inference": [],
+      "browser_closed": false,
+      "captures": [
+        {
+          "n": 2,
+          "action": "screenshot",
+          "name": "desktop-pin.png",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "scrollWidth": 1280,
+            "scrollHeight": 900
+          }
+        },
+        {
+          "n": 8,
+          "action": "screenshot",
+          "name": "desktop-authenticated.png",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "scrollWidth": 1280,
+            "scrollHeight": 900
+          }
+        },
+        {
+          "n": 13,
+          "action": "screenshot",
+          "name": "desktop-unloaded-model-failure.png",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "scrollWidth": 1280,
+            "scrollHeight": 900
+          }
+        }
+      ]
+    },
+    "v3": {
+      "supervisor": {
+        "pid": 65708,
+        "exit_code": 0,
+        "reaped": true,
+        "forced": false,
+        "group_empty": true,
+        "elapsed_sec": 364.52471404208336
+      },
+      "guard": {
+        "violations": [
+          "Unexpected fixture inference target"
+        ],
+        "binds": 2,
+        "model_calls": 0,
+        "fixture_production_delegations": [
+          {
+            "module": "model_manager.py",
+            "method": "stream_generate"
+          },
+          {
+            "module": "inference_providers.py",
+            "method": "stream_generate"
+          },
+          {
+            "module": "model_manager.py",
+            "method": "stream_generate"
+          },
+          {
+            "module": "model_manager.py",
+            "method": "stream_generate"
+          },
+          {
+            "module": "model_manager.py",
+            "method": "stream_generate"
+          },
+          {
+            "module": "model_manager.py",
+            "method": "stream_generate"
+          },
+          {
+            "module": "model_manager.py",
+            "method": "stream_generate"
+          },
+          {
+            "module": "model_manager.py",
+            "method": "stream_generate"
+          },
+          {
+            "module": "model_manager.py",
+            "method": "stream_generate"
+          },
+          {
+            "module": "model_manager.py",
+            "method": "stream_generate"
+          },
+          {
+            "module": "model_manager.py",
+            "method": "stream_generate"
+          },
+          {
+            "module": "model_manager.py",
+            "method": "stream_generate"
+          },
+          {
+            "module": "model_manager.py",
+            "method": "stream_generate"
+          },
+          {
+            "module": "model_manager.py",
+            "method": "stream_generate"
+          },
+          {
+            "module": "model_manager.py",
+            "method": "stream_generate"
+          },
+          {
+            "module": "model_manager.py",
+            "method": "stream_generate"
+          }
+        ],
+        "scheduled_ticks": 23,
+        "provider_thread_stopped": true
+      },
+      "product_mutations": [
+        {
+          "n": 72,
+          "method": "POST",
+          "path": "/v1/chat/completions",
+          "status": 200,
+          "content_type": "text/event-stream; charset=utf-8",
+          "request_bytes": 531,
+          "response_bytes": 2628,
+          "request_sha256": "89f58f179afc68e1730919bb42510c93843e894290fd31596898be042b21110e",
+          "response_sha256": "b781b7cb3efe98d3adddcb19177c7a43b15209752015b621a0f6771b4a3d456d"
+        },
+        {
+          "n": 241,
+          "method": "POST",
+          "path": "/api/tasks/submit",
+          "status": 202,
+          "content_type": "application/json",
+          "request_bytes": 208,
+          "response_bytes": 48,
+          "request_sha256": "42d914758d5e893328d2b836c8b13b193ed49591ec2dba649413ba7301d48f77",
+          "response_sha256": "7a7965928c7a29af711bd1df073bee9b6914263be17b84bac33547dc67e9bcb7"
+        }
+      ],
+      "provider_inference": [
+        {
+          "method": "POST",
+          "path": "/api/chat",
+          "kind": "controlled_failure",
+          "request_bytes": 1921,
+          "request_sha256": "695f41ab3c8e2e35741053583a95f461e21287c0f01b78e2b58a3c05a30703b5",
+          "status": 503
+        }
+      ],
+      "browser_closed": true,
+      "captures": [
+        {
+          "n": 2,
+          "action": "screenshot",
+          "name": "desktop-pin.png",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "scrollWidth": 1280,
+            "scrollHeight": 900
+          }
+        },
+        {
+          "n": 8,
+          "action": "screenshot",
+          "name": "desktop-authenticated.png",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "scrollWidth": 1280,
+            "scrollHeight": 900
+          }
+        },
+        {
+          "n": 13,
+          "action": "screenshot",
+          "name": "desktop-chat-failed.png",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "scrollWidth": 1280,
+            "scrollHeight": 900
+          }
+        },
+        {
+          "n": 16,
+          "action": "screenshot",
+          "name": "mobile-chat-failed.png",
+          "viewport": {
+            "width": 460,
+            "height": 900,
+            "scrollWidth": 460,
+            "scrollHeight": 900
+          }
+        },
+        {
+          "n": 25,
+          "action": "screenshot",
+          "name": "task-status-replay-error.png",
+          "viewport": {
+            "width": 1440,
+            "height": 900,
+            "scrollWidth": 1440,
+            "scrollHeight": 900
+          }
+        },
+        {
+          "n": 28,
+          "action": "screenshot",
+          "name": "desktop-task-replay-error.png",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "scrollWidth": 1280,
+            "scrollHeight": 900
+          }
+        },
+        {
+          "n": 30,
+          "action": "screenshot",
+          "name": "mobile-task-replay-error.png",
+          "viewport": {
+            "width": 460,
+            "height": 900,
+            "scrollWidth": 460,
+            "scrollHeight": 900
+          }
+        }
+      ]
+    },
+    "v4": {
+      "supervisor": {
+        "pid": 74600,
+        "exit_code": 0,
+        "reaped": true,
+        "forced": false,
+        "group_empty": true,
+        "elapsed_sec": 140.89810945803765
+      },
+      "guard": {
+        "violations": [],
+        "binds": 2,
+        "model_calls": 0,
+        "fixture_production_delegations": [
+          {
+            "module": "model_manager.py",
+            "method": "generate"
+          },
+          {
+            "module": "inference_providers.py",
+            "method": "generate"
+          },
+          {
+            "module": "model_manager.py",
+            "method": "generate"
+          }
+        ],
+        "scheduled_ticks": 8,
+        "provider_thread_stopped": true
+      },
+      "product_mutations": [
+        {
+          "n": 120,
+          "method": "POST",
+          "path": "/api/tasks/submit",
+          "status": 202,
+          "content_type": "application/json",
+          "request_bytes": 184,
+          "response_bytes": 48,
+          "request_sha256": "0d9755d25f96cef0df6508857a5bff9a435e8d472ab1e985b12068e0daa2118f",
+          "response_sha256": "50f2dfb118b4e8bf7f095b82b49d4b1409ae93d23a737d44b9b97fbaa2b31f4c"
+        }
+      ],
+      "provider_inference": [
+        {
+          "method": "POST",
+          "path": "/v1/chat/completions",
+          "kind": "controlled_failure",
+          "request_bytes": 590,
+          "request_sha256": "bb6a667d558d8042f765dd4da5276ef8dee4c95878cb9a2be490bca7d2d5ac88",
+          "status": 503
+        }
+      ],
+      "browser_closed": true,
+      "captures": [
+        {
+          "n": 2,
+          "action": "screenshot",
+          "name": "desktop-pin.png",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "scrollWidth": 1280,
+            "scrollHeight": 900
+          }
+        },
+        {
+          "n": 6,
+          "action": "screenshot",
+          "name": "desktop-invalid-pin.png",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "scrollWidth": 1280,
+            "scrollHeight": 900
+          }
+        },
+        {
+          "n": 17,
+          "action": "screenshot",
+          "name": "desktop-task-terminal.png",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "scrollWidth": 1280,
+            "scrollHeight": 900
+          }
+        },
+        {
+          "n": 20,
+          "action": "screenshot",
+          "name": "mobile-task-terminal.png",
+          "viewport": {
+            "width": 460,
+            "height": 900,
+            "scrollWidth": 460,
+            "scrollHeight": 900
+          }
+        },
+        {
+          "n": 24,
+          "action": "screenshot",
+          "name": "desktop-task-terminal-focused.png",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "scrollWidth": 1280,
+            "scrollHeight": 900
+          }
+        },
+        {
+          "n": 26,
+          "action": "screenshot",
+          "name": "mobile-task-terminal-focused.png",
+          "viewport": {
+            "width": 460,
+            "height": 900,
+            "scrollWidth": 460,
+            "scrollHeight": 900
+          }
+        }
+      ]
+    }
+  },
+  "v3_driver_exit_code": 0,
+  "v4_driver_exit_code": 0,
+  "v1_v2_driver_exit_code": 1,
+  "v4_sparse_cursor": "Not observed in browser: own global 1..3. Sparse 24/27/35 is proven by focused unit tests; v3 historical sparse replay failed.",
+  "actual_neural_inference": 0,
+  "earlier_attempts": "v1/v2/v3 failures remain failures; individual observed PIN/chat states are scoped."
+}

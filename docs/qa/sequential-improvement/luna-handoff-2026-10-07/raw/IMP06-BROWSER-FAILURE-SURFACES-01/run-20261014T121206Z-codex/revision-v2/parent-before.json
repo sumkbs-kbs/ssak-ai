@@ -1,0 +1,9 @@
+{
+  "browser_entry.py": "975b43c610cb06a0478252d1e5dd870afba20234de6774ca1173783efc2077bb",
+  "supervise_browser.py": "e2ac58b326ef7d35ca7d3226ec69ffb09d6022d7870581f0b4cdfd9443986be8",
+  "browser_cli.mjs": "81cd6c3ef30bf1df0d77989b2ed4b7bfb97fd5ef38b1d3dc3c8e29cfdf010b56",
+  "scope.md": "43d78916391dcfc012db76d2a1d3039793490e65c246cc24631748168611a90c",
+  "runtime/guard-final.json": "658efd4eb8481194b7672bfcd898e4eb3ad5fd3aab9869e3b8a596c3a63bd6fc",
+  "runtime/supervisor-receipt.json": "bd419fd6f5457414c2f1879c31254dc15ecef10bf57a1a7f947a9ebc94934e32",
+  "browser-actions.jsonl": "be8b08d8bfff680f144e91c49a29ad0624852df479a5853a4848d9c60aa69600"
+}

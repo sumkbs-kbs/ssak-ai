@@ -1,0 +1,88 @@
+[
+  {
+    "name": "lint",
+    "argv": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+      "check",
+      "--config",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/pyproject.toml",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/tool_loop.py",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py"
+    ],
+    "exit_code": 0,
+    "source_hashes": {
+      "src/antigravity_k/engine/tool_loop.py": "d19a8468206a9fa976ed8b346100cb44f5fb0f572b679ce1914c745485f724cf",
+      "tests/test_tool_loop_lazy_model_contract.py": "ac3927d2166964c53520a517ae2b0ad12af9290f944afb625789bb7d033cbd06"
+    }
+  },
+  {
+    "name": "format",
+    "argv": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+      "format",
+      "--check",
+      "--config",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/pyproject.toml",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/tool_loop.py",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py"
+    ],
+    "exit_code": 0,
+    "source_hashes": {
+      "src/antigravity_k/engine/tool_loop.py": "d19a8468206a9fa976ed8b346100cb44f5fb0f572b679ce1914c745485f724cf",
+      "tests/test_tool_loop_lazy_model_contract.py": "ac3927d2166964c53520a517ae2b0ad12af9290f944afb625789bb7d033cbd06"
+    }
+  },
+  {
+    "name": "types",
+    "argv": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+      "--level",
+      "error",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/tool_loop.py",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py"
+    ],
+    "exit_code": 0,
+    "source_hashes": {
+      "src/antigravity_k/engine/tool_loop.py": "d19a8468206a9fa976ed8b346100cb44f5fb0f572b679ce1914c745485f724cf",
+      "tests/test_tool_loop_lazy_model_contract.py": "ac3927d2166964c53520a517ae2b0ad12af9290f944afb625789bb7d033cbd06"
+    }
+  },
+  {
+    "name": "compile",
+    "argv": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+      "-B",
+      "-c",
+      "from pathlib import Path;import sys;[compile(Path(p).read_bytes(),p,'exec') for p in sys.argv[1:]]",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/tool_loop.py",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py"
+    ],
+    "exit_code": 0,
+    "source_hashes": {
+      "src/antigravity_k/engine/tool_loop.py": "d19a8468206a9fa976ed8b346100cb44f5fb0f572b679ce1914c745485f724cf",
+      "tests/test_tool_loop_lazy_model_contract.py": "ac3927d2166964c53520a517ae2b0ad12af9290f944afb625789bb7d033cbd06"
+    }
+  },
+  {
+    "name": "pytest",
+    "argv": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+      "-B",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-DEFAULT-AGENT-LAZY-MODEL-01/run-20261014T131255Z-codex/pytest_guard.py",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-DEFAULT-AGENT-LAZY-MODEL-01/run-20261014T131255Z-codex/after-clean",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop.py",
+      "-q",
+      "--basetemp=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-DEFAULT-AGENT-LAZY-MODEL-01/run-20261014T131255Z-codex/after-clean/tmp/pytest",
+      "-o",
+      "cache_dir=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-DEFAULT-AGENT-LAZY-MODEL-01/run-20261014T131255Z-codex/after-clean/cache/pytest",
+      "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-DEFAULT-AGENT-LAZY-MODEL-01/run-20261014T131255Z-codex/after-clean/junit.xml"
+    ],
+    "exit_code": 1,
+    "source_hashes": {
+      "src/antigravity_k/engine/tool_loop.py": "d19a8468206a9fa976ed8b346100cb44f5fb0f572b679ce1914c745485f724cf",
+      "tests/test_tool_loop_lazy_model_contract.py": "ac3927d2166964c53520a517ae2b0ad12af9290f944afb625789bb7d033cbd06"
+    }
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "raw": "build-current/0.stderr",
+    "published": "build-current/0.stderr.txt",
+    "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "published_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "raw": "build-current/0.stdout",
+    "published": "build-current/0.stdout.txt",
+    "raw_sha256": "ed57aa4cfccfbde05e6a3f2fffd0511118b9580a8c3e8f3f65d423fa144d7cb1",
+    "published_sha256": "ed57aa4cfccfbde05e6a3f2fffd0511118b9580a8c3e8f3f65d423fa144d7cb1"
+  },
+  {
+    "raw": "build-current/1.stderr",
+    "published": "build-current/1.stderr.txt",
+    "raw_sha256": "ccb6bf354a0674eeb1e49df9a880a000b75240079fdb849282bb899d81eeb58c",
+    "published_sha256": "ccb6bf354a0674eeb1e49df9a880a000b75240079fdb849282bb899d81eeb58c"
+  },
+  {
+    "raw": "build-current/1.stdout",
+    "published": "build-current/1.stdout.txt",
+    "raw_sha256": "0b9ff88f9b68b85240fcf33ac97a2ceda2b4429561e13135ae09be499dc5fbc5",
+    "published_sha256": "0b9ff88f9b68b85240fcf33ac97a2ceda2b4429561e13135ae09be499dc5fbc5"
+  },
+  {
+    "raw": "revision-v4/build-current/0.stderr",
+    "published": "revision-v4/build-current/0.stderr.txt",
+    "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "published_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "raw": "revision-v4/build-current/0.stdout",
+    "published": "revision-v4/build-current/0.stdout.txt",
+    "raw_sha256": "bc4f123f915a05e170fbb848b926f42ebcffc88dc21f03d8b9e716964c39e9f3",
+    "published_sha256": "bc4f123f915a05e170fbb848b926f42ebcffc88dc21f03d8b9e716964c39e9f3"
+  },
+  {
+    "raw": "revision-v4/build-current/1.stderr",
+    "published": "revision-v4/build-current/1.stderr.txt",
+    "raw_sha256": "ccb6bf354a0674eeb1e49df9a880a000b75240079fdb849282bb899d81eeb58c",
+    "published_sha256": "ccb6bf354a0674eeb1e49df9a880a000b75240079fdb849282bb899d81eeb58c"
+  },
+  {
+    "raw": "revision-v4/build-current/1.stdout",
+    "published": "revision-v4/build-current/1.stdout.txt",
+    "raw_sha256": "fba83e4923c17e709d565830a29db59292d36085945e5dde28a70907ec6b3577",
+    "published_sha256": "fba83e4923c17e709d565830a29db59292d36085945e5dde28a70907ec6b3577"
+  }
+]

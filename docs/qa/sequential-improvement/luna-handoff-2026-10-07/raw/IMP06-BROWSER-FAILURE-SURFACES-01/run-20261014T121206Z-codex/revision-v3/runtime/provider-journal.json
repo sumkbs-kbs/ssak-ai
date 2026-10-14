@@ -1,0 +1,45 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/show",
+    "kind": "metadata"
+  },
+  {
+    "method": "GET",
+    "path": "/api/tags",
+    "kind": "metadata"
+  },
+  {
+    "method": "GET",
+    "path": "/api/ps",
+    "kind": "metadata"
+  },
+  {
+    "method": "POST",
+    "path": "/api/chat",
+    "kind": "controlled_failure",
+    "request_bytes": 1921,
+    "request_sha256": "695f41ab3c8e2e35741053583a95f461e21287c0f01b78e2b58a3c05a30703b5",
+    "status": 503
+  },
+  {
+    "method": "POST",
+    "path": "/api/show",
+    "kind": "metadata"
+  },
+  {
+    "method": "POST",
+    "path": "/api/show",
+    "kind": "metadata"
+  },
+  {
+    "method": "POST",
+    "path": "/api/show",
+    "kind": "metadata"
+  },
+  {
+    "method": "POST",
+    "path": "/api/show",
+    "kind": "metadata"
+  }
+]

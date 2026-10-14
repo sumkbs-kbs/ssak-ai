@@ -1,6 +1,6 @@
 {
   "current_snapshot": {
-    "as_of_utc": "2026-10-14T12:09:21Z",
+    "as_of_utc": "2026-10-14T14:14:00Z",
     "scope": "Listed IMP-09 scoped evidence and active priority queue only; other parent acceptance not re-audited",
     "authority": "This current_snapshot and STATUS.md current section take precedence for listed rows; original recorded_at/summary/tasks/subtasks below remain historical",
     "parent_status": {
@@ -207,6 +207,26 @@
         "candidate_commit": "6f0bd05d84506ab9435bbc4866f2acf2cb49585b",
         "independent_review": "NOT_RUN",
         "limits": "Before real authenticated API500/Agraph0/project-vector2; after authAPI200/Aall0, Bgraph/vector/files andglobalGBrain preserved; freshprocess A0/B2-1-2. Clean9+adjacent47, finalfixture9, root56/static4. ASGI/lifespanOFF/precomputed3D; not concurrent session selection or NNquality; originalfailure retained."
+      },
+      {
+        "id": "IMP-06-DEFAULT-AGENT-LAZY-MODEL-01",
+        "status": "DONE_SCOPED_MAIN_REVIEW",
+        "feature_commit": "0e49b627db4351c5aaf51abaa6465da3fcfdc8f5",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-DEFAULT-AGENT-LAZY-MODEL-01/run-20261014T131255Z-codex/result.json",
+        "limits": "New7 pass; unmodified impact104 pass/2 path fixture failures; separate two path-only overlays pass; no full suite claim"
+      },
+      {
+        "id": "IMP-06-TASK-GLOBAL-CURSOR-01",
+        "status": "DONE_SCOPED_MAIN_REVIEW",
+        "feature_commit": "c12830506c50d887606aebfd5d54351133101463",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-TASK-GLOBAL-CURSOR-01/run-20261014T135632Z-codex/result.json",
+        "limits": "Clean/root UI60 and Python24; explicit global cursor, unseen terminal cursor and conflicts checked; not proof of missing middle IDs"
+      },
+      {
+        "id": "IMP-06-BROWSER-FAILURE-SURFACES-01",
+        "status": "DONE_SCOPED_PIN_CHAT_FAILURE_TASK_TERMINAL",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-BROWSER-FAILURE-SURFACES-01/run-20261014T121206Z-codex/result.json",
+        "limits": "Current ROOT bundle with prior user UI edits; real Uvicorn/auth/HTTP controlled503, physicalNN0; prior failures kept; independent visual review NOT_RUN"
       }
     ],
     "current_capability_boundary": {
@@ -226,7 +246,8 @@
       "rag_keyword_provider_calls": "ZERO_FOR_PUBLIC_CHROMA_EXPORT_HYBRID_EXISTING1_OR2",
       "rag_semantic_quality": "PASS_SCOPED_CONTROLLED10_EXPLORATORY9_REAL27_EMBEDDING_REQUESTS",
       "project_rag_management_api_purge": "PASS_SCOPED_AUTH_ASGI_ACTIVE_A_NATIVE_GRAPH_VECTOR_PURGE_B_PRESERVED_FRESH_PROCESS_REOPEN",
-      "startup_storage_roots": "EXPLICIT_GBRAIN_GLOBAL_MEMORY_CONTEXT_STORE_OVERRIDES_AND_CONFIGURED_AGENCY_ROOT"
+      "startup_storage_roots": "EXPLICIT_GBRAIN_GLOBAL_MEMORY_CONTEXT_STORE_OVERRIDES_AND_CONFIGURED_AGENCY_ROOT",
+      "browser_failure_states": "PASS_SCOPED_PIN_CHAT503_TASK_FAILED_CURRENT_ROOT_CONTROLLED_PROVIDER_PHYSICAL_NN0"
     },
     "priority_queue": [
       {
@@ -339,7 +360,7 @@
       {
         "priority": 6,
         "id": "EXPANDED_PRODUCT_ACCEPTANCE",
-        "status": "IN_PROGRESS_EXTERNAL_STARTUP_AUTH_PASSED_BROWSER_PENDING",
+        "status": "DONE_SCOPED_CURRENT_BROWSER_TARGETS",
         "scope": "Full startup/lifespan, vision corpus, UI/performance, integration; consult latest independent evidence before execution",
         "completed_subtasks": [
           {
@@ -356,19 +377,40 @@
             "id": "IMP-06-CURRENT-CANDIDATE-STARTUP-AUTH-01",
             "status": "PASS_SCOPED_EXTERNAL_AUTH_LIFESPAN_ON_MAIN_BYTE_VERIFIED",
             "candidate_commit": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1"
+          },
+          {
+            "id": "IMP-06-DEFAULT-AGENT-LAZY-MODEL-01",
+            "status": "DONE_SCOPED_MAIN_REVIEW",
+            "feature_commit": "0e49b627db4351c5aaf51abaa6465da3fcfdc8f5",
+            "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-DEFAULT-AGENT-LAZY-MODEL-01/run-20261014T131255Z-codex/result.json",
+            "limits": "New7 pass; unmodified impact104 pass/2 path fixture failures; separate two path-only overlays pass; no full suite claim"
+          },
+          {
+            "id": "IMP-06-TASK-GLOBAL-CURSOR-01",
+            "status": "DONE_SCOPED_MAIN_REVIEW",
+            "feature_commit": "c12830506c50d887606aebfd5d54351133101463",
+            "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-TASK-GLOBAL-CURSOR-01/run-20261014T135632Z-codex/result.json",
+            "limits": "Clean/root UI60 and Python24; explicit global cursor, unseen terminal cursor and conflicts checked; not proof of missing middle IDs"
+          },
+          {
+            "id": "IMP-06-BROWSER-FAILURE-SURFACES-01",
+            "status": "DONE_SCOPED_PIN_CHAT_FAILURE_TASK_TERMINAL",
+            "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-BROWSER-FAILURE-SURFACES-01/run-20261014T121206Z-codex/result.json",
+            "limits": "Current ROOT bundle with prior user UI edits; real Uvicorn/auth/HTTP controlled503, physicalNN0; prior failures kept; independent visual review NOT_RUN"
           }
         ],
-        "next_concrete_task": "REAL_BROWSER_LOGIN_TYPED_SSE_FAILURE_AND_QUEUED_TASK_FAILED_TERMINAL_NN0",
-        "current_task": "IMP-06-BROWSER-FAILURE-SURFACES-01"
+        "next_concrete_task": "PRIORITY7_RELEASE_PREREQUISITES",
+        "current_task": "IMP-06-BROWSER-FAILURE-SURFACES-01",
+        "remaining": "Whole expanded vision corpus, performance and release acceptance are not closed by these scoped browser states"
       },
       {
         "priority": 7,
         "id": "INTEGRATED_RELEASE_ACCEPTANCE",
-        "status": "PREPARATION_REQUIRED_NOT_RUN",
+        "status": "IN_PROGRESS_PORTABLE_RUNNER_AND_CANDIDATE_FREEZE",
         "scope": "IMP-01/02 integration, IMP-19 packaging, IMP-20 newcandidate8hsoak; release distinct",
         "preconditions": [
           "Soak runner uses hardcoded main checkout; fix candidate/output/interpreter path contract before run",
-          "Docker local desktop daemon unavailable at last read-only preflight",
+          "Docker daemon started; docker info29.8.1 observed at current preflight",
           "Freeze generated dashboard/SBOM before full23gate and new8hsoak; older evidence not reused as current"
         ]
       }
@@ -389,7 +431,7 @@
       "status_commit": "8ed827654cb608c55b22fe75b295abf3365114f4",
       "direct_transport_feature_commit": "8b22847730f5419307dda66f5ca6ab57fc1b023f",
       "direct_transport_qa_commit": "50437f0ccbb0dd512204ce38b640bd5c238eb97a",
-      "latest_remote_sha_verified": "6f0bd05d84506ab9435bbc4866f2acf2cb49585b",
+      "latest_remote_sha_verified": "c12830506c50d887606aebfd5d54351133101463",
       "native_stream_feature_commit": "97f898661195623ba87eb826e94b03538aecb38f",
       "native_stream_qa_commit": "d2aed8c1f7237f08f7b497e6760b792754c61b1e",
       "compatible_transport_feature_commit": "bad768d9bf07a805446edac98861d0a2f596b124",
@@ -410,11 +452,13 @@
       "rag_keyword_qa_commit": "7802aa1b3043d66a80f6f891c6cf3db039b393a0",
       "startup_storage_feature_commit": "7482ebb8b76c7c686e729e68c48f7258e2cc7e66",
       "lifespan_agency_feature_commit": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1",
-      "current_followup_qa": "SEARCH_STARTUP_PUBLISHED_04BA8592_PURGE_VERIFIED_LOCAL_PUBLICATION_PENDING",
+      "current_followup_qa": "PURGE_PUBLISHED_A09_BROWSER_LAZY_CURSOR_MAIN_REVIEW_LOCAL_QA_PUBLICATION",
       "search_startup_qa_commit": "04ba85924fd79bde9d92052b86b2925506e15f03",
-      "project_memory_purge_feature_commit": "6f0bd05d84506ab9435bbc4866f2acf2cb49585b"
+      "project_memory_purge_feature_commit": "6f0bd05d84506ab9435bbc4866f2acf2cb49585b",
+      "agent_lazy_feature_commit": "0e49b627db4351c5aaf51abaa6465da3fcfdc8f5",
+      "task_global_cursor_feature_commit": "c12830506c50d887606aebfd5d54351133101463"
     },
-    "next_task": "IMP-06-BROWSER-FAILURE-SURFACES-01",
+    "next_task": "IMP-20-SOAK-CANDIDATE-PATH-CONTRACT-01",
     "do_not_repeat": "Use saved successful receipts unless source, environment or a new failure hypothesis changes; do not replay old inference or reconstruct lost ledgers"
   },
   "recorded_at": "2026-10-07T13:16:06.378463+00:00",

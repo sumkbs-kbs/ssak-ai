@@ -1,0 +1,52 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/show",
+    "kind": "metadata"
+  },
+  {
+    "method": "GET",
+    "path": "/api/tags",
+    "kind": "metadata"
+  },
+  {
+    "method": "GET",
+    "path": "/api/ps",
+    "kind": "metadata"
+  },
+  {
+    "method": "POST",
+    "path": "/api/show",
+    "kind": "metadata"
+  },
+  {
+    "method": "POST",
+    "path": "/api/show",
+    "kind": "metadata"
+  },
+  {
+    "method": "POST",
+    "path": "/api/show",
+    "kind": "metadata"
+  },
+  {
+    "method": "POST",
+    "path": "/api/show",
+    "kind": "metadata"
+  },
+  {
+    "method": "GET",
+    "path": "/api/tags",
+    "kind": "metadata"
+  },
+  {
+    "method": "GET",
+    "path": "/api/ps",
+    "kind": "metadata"
+  },
+  {
+    "method": "POST",
+    "path": "/api/show",
+    "kind": "metadata"
+  }
+]

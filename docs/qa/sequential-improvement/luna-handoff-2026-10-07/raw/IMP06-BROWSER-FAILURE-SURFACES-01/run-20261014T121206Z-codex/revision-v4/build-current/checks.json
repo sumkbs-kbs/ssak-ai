@@ -1,0 +1,34 @@
+[
+  {
+    "argv": [
+      "pnpm",
+      "exec",
+      "tsc",
+      "--noEmit",
+      "--incremental",
+      "false",
+      "--project",
+      "tsconfig.json"
+    ],
+    "exit_code": 0,
+    "reaped": true,
+    "group_empty": true,
+    "forced": false,
+    "elapsed_sec": 3.865228374954313
+  },
+  {
+    "argv": [
+      "pnpm",
+      "exec",
+      "vite",
+      "build",
+      "--outDir",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-BROWSER-FAILURE-SURFACES-01/run-20261014T121206Z-codex/revision-v4/build-current/bundle"
+    ],
+    "exit_code": 0,
+    "reaped": true,
+    "group_empty": true,
+    "forced": false,
+    "elapsed_sec": 21.5874990420416
+  }
+]

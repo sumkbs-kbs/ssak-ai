@@ -1,0 +1,232 @@
+{
+  "status": "DONE_SCOPED",
+  "review": "MAIN_AGENT_COMPLETED",
+  "independent_review": "NOT_RUN",
+  "commit": "c12830506c50d887606aebfd5d54351133101463",
+  "checks": {
+    "clean-v1": {
+      "checks": [
+        {
+          "name": "dashboard-tests",
+          "command": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "src/features/task-execution",
+            "--reporter=json",
+            "--outputFile=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-TASK-GLOBAL-CURSOR-01/run-20261014T135632Z-codex/clean-v1/vitest.json"
+          ],
+          "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard",
+          "exit_code": 0,
+          "started": 1791986536.261976,
+          "elapsed": 8.30898380279541
+        },
+        {
+          "name": "dashboard-types",
+          "command": [
+            "pnpm",
+            "exec",
+            "tsc",
+            "--noEmit",
+            "--incremental",
+            "false",
+            "--project",
+            "tsconfig.json"
+          ],
+          "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard",
+          "exit_code": 0,
+          "started": 1791986544.571125,
+          "elapsed": 3.534764051437378
+        },
+        {
+          "name": "python-tests",
+          "command": [
+            "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_task_api.py",
+            "tests/test_task_global_cursor_contract.py",
+            "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-TASK-GLOBAL-CURSOR-01/run-20261014T135632Z-codex/clean-v1/junit.xml"
+          ],
+          "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+          "exit_code": 0,
+          "started": 1791986548.1061099,
+          "elapsed": 1.927267074584961
+        },
+        {
+          "name": "ruff",
+          "command": [
+            "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+            "check",
+            "src/antigravity_k/api/task_models.py",
+            "src/antigravity_k/api/routes/task_api.py",
+            "tests/test_task_api.py",
+            "tests/test_task_global_cursor_contract.py"
+          ],
+          "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+          "exit_code": 0,
+          "started": 1791986550.033567,
+          "elapsed": 0.01394200325012207
+        },
+        {
+          "name": "format",
+          "command": [
+            "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+            "format",
+            "--check",
+            "src/antigravity_k/api/task_models.py",
+            "src/antigravity_k/api/routes/task_api.py",
+            "tests/test_task_api.py",
+            "tests/test_task_global_cursor_contract.py"
+          ],
+          "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+          "exit_code": 0,
+          "started": 1791986550.047679,
+          "elapsed": 0.01169729232788086
+        },
+        {
+          "name": "python-types",
+          "command": [
+            "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+            "--project",
+            "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-TASK-GLOBAL-CURSOR-01/run-20261014T135632Z-codex/clean-v1/basedpyright.json",
+            "--level",
+            "error",
+            "src/antigravity_k/api/task_models.py",
+            "src/antigravity_k/api/routes/task_api.py"
+          ],
+          "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+          "exit_code": 0,
+          "started": 1791986550.059556,
+          "elapsed": 0.6396288871765137
+        }
+      ],
+      "dashboard_passed": 60,
+      "dashboard_failed": 0,
+      "python": {
+        "tests": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "source_binding_current": true
+    },
+    "root-v1": {
+      "checks": [
+        {
+          "name": "dashboard-tests",
+          "command": [
+            "pnpm",
+            "exec",
+            "vitest",
+            "run",
+            "src/features/task-execution",
+            "--reporter=json",
+            "--outputFile=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-TASK-GLOBAL-CURSOR-01/run-20261014T135632Z-codex/root-v1/vitest.json"
+          ],
+          "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard",
+          "exit_code": 0,
+          "started": 1791986608.4727738,
+          "elapsed": 11.367702007293701
+        },
+        {
+          "name": "dashboard-types",
+          "command": [
+            "pnpm",
+            "exec",
+            "tsc",
+            "--noEmit",
+            "--incremental",
+            "false",
+            "--project",
+            "tsconfig.json"
+          ],
+          "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard",
+          "exit_code": 0,
+          "started": 1791986619.840649,
+          "elapsed": 4.2130701541900635
+        },
+        {
+          "name": "python-tests",
+          "command": [
+            "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_task_api.py",
+            "tests/test_task_global_cursor_contract.py",
+            "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-TASK-GLOBAL-CURSOR-01/run-20261014T135632Z-codex/root-v1/junit.xml"
+          ],
+          "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+          "exit_code": 0,
+          "started": 1791986624.053907,
+          "elapsed": 1.8421869277954102
+        },
+        {
+          "name": "ruff",
+          "command": [
+            "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+            "check",
+            "src/antigravity_k/api/task_models.py",
+            "src/antigravity_k/api/routes/task_api.py",
+            "tests/test_task_api.py",
+            "tests/test_task_global_cursor_contract.py"
+          ],
+          "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+          "exit_code": 0,
+          "started": 1791986625.896277,
+          "elapsed": 0.011779069900512695
+        },
+        {
+          "name": "format",
+          "command": [
+            "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+            "format",
+            "--check",
+            "src/antigravity_k/api/task_models.py",
+            "src/antigravity_k/api/routes/task_api.py",
+            "tests/test_task_api.py",
+            "tests/test_task_global_cursor_contract.py"
+          ],
+          "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+          "exit_code": 0,
+          "started": 1791986625.9082198,
+          "elapsed": 0.010431051254272461
+        },
+        {
+          "name": "python-types",
+          "command": [
+            "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+            "--project",
+            "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-TASK-GLOBAL-CURSOR-01/run-20261014T135632Z-codex/root-v1/basedpyright.json",
+            "--level",
+            "error",
+            "src/antigravity_k/api/task_models.py",
+            "src/antigravity_k/api/routes/task_api.py"
+          ],
+          "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+          "exit_code": 0,
+          "started": 1791986625.918806,
+          "elapsed": 0.6188328266143799
+        }
+      ],
+      "dashboard_passed": 60,
+      "dashboard_failed": 0,
+      "python": {
+        "tests": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "source_binding_current": true
+    }
+  },
+  "eslint": {
+    "files": 7,
+    "exit_code": 0,
+    "observation": "Unified tool command completed exit 0; no standalone stdout receipt was created."
+  },
+  "global_cursor_limit": "Numerical gaps cannot distinguish other tasks from missing intermediate events; unseen terminal cursor and conflicting payload detection retained."
+}

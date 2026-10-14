@@ -1,0 +1,30 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/show",
+    "kind": "metadata"
+  },
+  {
+    "method": "GET",
+    "path": "/api/tags",
+    "kind": "metadata"
+  },
+  {
+    "method": "GET",
+    "path": "/api/ps",
+    "kind": "metadata"
+  },
+  {
+    "method": "POST",
+    "path": "/v1/chat/completions",
+    "kind": "controlled_failure",
+    "request_bytes": 590,
+    "request_sha256": "bb6a667d558d8042f765dd4da5276ef8dee4c95878cb9a2be490bca7d2d5ac88",
+    "status": 503
+  },
+  {
+    "method": "POST",
+    "path": "/api/show",
+    "kind": "metadata"
+  }
+]

@@ -31,9 +31,11 @@
 구조화 실관측 원본의 `format=omitted` 표기는 별도정정 기록으로 보존했습니다. 후속 writer 수정은 새 사본에서만 수행했고 원본144개는 불변입니다. 모의 writer회귀의 `INCONCLUSIVE_CLEANUP_NOT_CONFIRMED`는 OS cleanup PASS로 승격하지 않습니다. 과거 format생략 vision FAIL도 유지합니다.
 
 
-**현재 순서:** 1 기록생성기·2 상태통합·3 기능 게시·4 provider/agent 실패 경계는 검증한 범위에서 완료했습니다. **5 실제 검색과 인증 관리 API의 active-project 삭제·격리는 검증한 범위에서 완료했습니다.** 6 실제 인증·lifespan ON은 통과했으며 브라우저의 실패 상태·대기열 표시를 이어 확인합니다. 7 전체 gate·패키징·새8시간 soak는 아직 실행하지 않았습니다. 옵션 IMP-16/18은 자동착수하지 않습니다.
+**현재 순서:** 1 기록생성기·2 상태통합·3 기능 게시·4 provider/agent 실패 경계·5 실제 검색과 인증 관리 API purge는 검증한 범위에서 완료했습니다. **6 실제 인증/lifespan ON 및 PIN·chat503 오류·작업 failed 표시를 검증한 범위에서 완료했습니다.** 7 이식 가능한 soak 경로와 후보 동결부터 진행합니다. 전체 게이트·패키징·새8시간 soak의 완료는 아직 아닙니다. 옵션 IMP-16/18은 자동착수하지 않습니다.
 
-**NEXT_TASK=IMP-06-BROWSER-FAILURE-SURFACES-01.** 실제 의미검색은 clean 후보 `7802aa1b`에 묶인 단회 관측입니다. 30A/2B 문서와 초기20질의, 추가 변경·격리질의를 포함해 embedding27회/입력57개와 신규metadata3회를 확인했습니다. 필수10개는 모두1위, 탐색9/10이며 한국어Q16 미적중은 그대로 남겼습니다. A 수정·삭제·재개방과 VectorStore.clear 잔여0, B벡터 hash·내용·외부 sentinel, 8클라이언트 두주기를 통과했습니다. 비교 baseline·기본hybrid품질·B graph·관리API purge는 이 관측의 범위 밖입니다. 설정차원0/UNKNOWN·weights revision UNVERIFIED도 유지합니다.
+[기본 모델 준비](raw/IMP06-DEFAULT-AGENT-LAZY-MODEL-01/run-20261014T131255Z-codex/handoff-ko.md)는 신규7개 통과이며 원본 영향 selector104통과/경로 fixture2실패와 별도 경로 사본2통과를 구분합니다. [작업 글로벌 커서](raw/IMP06-TASK-GLOBAL-CURSOR-01/run-20261014T135632Z-codex/handoff-ko.md)는 clean/root 각각 UI60·Python24 통과 및 기존 task 연속번호/충돌/종료 커서 검사를 유지합니다. [실제 브라우저](raw/IMP06-BROWSER-FAILURE-SURFACES-01/run-20261014T121206Z-codex/handoff-ko.md)는 v3 chat503 오류·입력 복구, v4 작업 제출1회→provider503 1회→failed/스트림 완료를 확인했고 backend/driver 종료0·guard0·물리 NN0입니다. 기존 v1/v2/v3 실패는 보존합니다. ROOT 기존 UI 수정38개가 포함된 검증이며 해당 수정 전체의 게시·GA 검증은 아닙니다. 별도 독립 검수는 NOT_RUN입니다.
+
+**NEXT_TASK=IMP-20-SOAK-CANDIDATE-PATH-CONTRACT-01.** 실제 의미검색은 clean 후보 `7802aa1b`에 묶인 단회 관측입니다. 30A/2B 문서와 초기20질의, 추가 변경·격리질의를 포함해 embedding27회/입력57개와 신규metadata3회를 확인했습니다. 필수10개는 모두1위, 탐색9/10이며 한국어Q16 미적중은 그대로 남겼습니다. A 수정·삭제·재개방과 VectorStore.clear 잔여0, B벡터 hash·내용·외부 sentinel, 8클라이언트 두주기를 통과했습니다. 비교 baseline·기본hybrid품질·B graph·관리API purge는 이 관측의 범위 밖입니다. 설정차원0/UNKNOWN·weights revision UNVERIFIED도 유지합니다.
 
 기동 경로 수정 `7482ebb8`과 agency caller 수정 `e3ef8354`는 커밋·푸시하고 ROOT에 최소 차이로 반영했습니다. ROOT의 기존 Chroma lifecycle lock/close와 staged97은 보존했습니다. ROOT agency fixture의 최초 직접3FAIL/2PASS는 기존 RAG/IDE 구성과 clean fixture의 차이로 남겼고, 명시된 인접 fixture overlay의5PASS를 전체 ROOT suite 성공으로 부르지 않습니다. 역사 source-overlay symlink가 현재 소스를 가리켜 바뀐 dereferenced hash도 별도로 기록했습니다.
 

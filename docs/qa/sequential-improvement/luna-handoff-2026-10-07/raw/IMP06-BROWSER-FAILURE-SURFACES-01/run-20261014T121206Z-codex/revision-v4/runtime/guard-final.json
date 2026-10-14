@@ -1,0 +1,21 @@
+{
+  "violations": [],
+  "binds": 2,
+  "model_calls": 0,
+  "fixture_production_delegations": [
+    {
+      "module": "model_manager.py",
+      "method": "generate"
+    },
+    {
+      "module": "inference_providers.py",
+      "method": "generate"
+    },
+    {
+      "module": "model_manager.py",
+      "method": "generate"
+    }
+  ],
+  "scheduled_ticks": 8,
+  "provider_thread_stopped": true
+}

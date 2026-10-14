@@ -1,0 +1,1 @@
+{"schema":"agk.conv-journal.v1","seq":1,"revision":1,"event_type":"append","project_id":"proj_1bf61c65","conversation_id":"mv8477tch6ewvoyj","created_at":1791982647.17069,"message_id":"msg_68ce59b63575","role":"user","content":"브라우저 제어 오류 검증: 이 요청은 fixture 실패를 표시해야 합니다.","provenance":"append"}

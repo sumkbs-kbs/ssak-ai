@@ -1,0 +1,272 @@
+{"n": 1, "method": "GET", "path": "/chat", "status": 200, "content_type": "text/html; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 4, "method": "GET", "path": "/assets/query-A7IZoX4L.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 2, "method": "GET", "path": "/assets/index-DmypPUVE.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 3, "method": "GET", "path": "/assets/vendor-DGepVjUc.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 6, "method": "GET", "path": "/assets/api-client-CqP3qBtM.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 8, "method": "GET", "path": "/assets/markdown-highlight-BOrLfbqO.css", "status": 200, "content_type": "text/css; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 7, "method": "GET", "path": "/assets/monaco-CB2SckMT.css", "status": 200, "content_type": "text/css; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 9, "method": "GET", "path": "/assets/index-C-MSeO28.css", "status": 200, "content_type": "text/css; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 11, "method": "GET", "path": "/assets/markdown-highlight-BJzv_rz9.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 10, "method": "GET", "path": "/assets/markdown-core-By2QBcMA.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 5, "method": "GET", "path": "/assets/monaco-BFTLt2th.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 12, "method": "GET", "path": "/api/session/info", "status": 401, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 13, "method": "GET", "path": "/assets/PinModal-DvoyMOD6.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 14, "method": "POST", "path": "/api/auth/login", "status": 401, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 15, "method": "POST", "path": "/api/auth/login", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 17, "method": "GET", "path": "/assets/Sidebar-BcBT8FwQ.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 16, "method": "GET", "path": "/assets/SystemTelemetricsBar-csSXs-U5.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 21, "method": "GET", "path": "/assets/useModalDialog-BDPTTdGe.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 18, "method": "GET", "path": "/assets/fileStore-BCMobNxK.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 19, "method": "GET", "path": "/assets/gitStore-Bo_ljlvO.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 20, "method": "GET", "path": "/assets/gitApi-C1re3z8B.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 22, "method": "GET", "path": "/assets/ChatPage-Bd8wQWrD.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 24, "method": "GET", "path": "/assets/DiffViewer-Bwc75Z_e.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 25, "method": "GET", "path": "/assets/wsTicket-DM6Fs73A.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 23, "method": "GET", "path": "/assets/utils-SELG1YgQ.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 27, "method": "GET", "path": "/assets/dompurify-5AjVNlXF.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 26, "method": "GET", "path": "/assets/monacoRuntime-Abf8-6rg.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 29, "method": "GET", "path": "/assets/diffParser-CCnX8YVz.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 30, "method": "GET", "path": "/assets/CommandPalette-Dx8Z4qnM.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 28, "method": "GET", "path": "/assets/modelAmount-DT8sMiMx.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 31, "method": "GET", "path": "/assets/wikiStore-CYkxOvnt.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 33, "method": "GET", "path": "/api/session/disclosure", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 32, "method": "GET", "path": "/assets/FolderBrowser-DZ1nrqju.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 34, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 36, "method": "GET", "path": "/api/git/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 37, "method": "GET", "path": "/api/projects", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 35, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 39, "method": "GET", "path": "/v1/models", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 40, "method": "GET", "path": "/api/workspace/context", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 41, "method": "GET", "path": "/api/system/access-mode", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 42, "method": "GET", "path": "/api/mcp/servers", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 38, "method": "GET", "path": "/api/models/local", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 44, "method": "GET", "path": "/api/projects", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 43, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 45, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 46, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 47, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 48, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 49, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 50, "method": "GET", "path": "/agent", "status": 200, "content_type": "text/html; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 51, "method": "GET", "path": "/assets/index-DmypPUVE.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 52, "method": "GET", "path": "/assets/vendor-DGepVjUc.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 54, "method": "GET", "path": "/assets/monaco-CB2SckMT.css", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 55, "method": "GET", "path": "/assets/markdown-highlight-BOrLfbqO.css", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 53, "method": "GET", "path": "/assets/query-A7IZoX4L.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 56, "method": "GET", "path": "/assets/index-C-MSeO28.css", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 57, "method": "GET", "path": "/assets/monaco-BFTLt2th.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 58, "method": "GET", "path": "/assets/api-client-CqP3qBtM.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 59, "method": "GET", "path": "/assets/markdown-core-By2QBcMA.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 60, "method": "GET", "path": "/assets/markdown-highlight-BJzv_rz9.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 61, "method": "GET", "path": "/api/session/info", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 66, "method": "GET", "path": "/assets/useModalDialog-BDPTTdGe.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 62, "method": "GET", "path": "/assets/Sidebar-BcBT8FwQ.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 63, "method": "GET", "path": "/assets/fileStore-BCMobNxK.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 64, "method": "GET", "path": "/assets/gitStore-Bo_ljlvO.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 67, "method": "GET", "path": "/assets/SystemTelemetricsBar-csSXs-U5.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 65, "method": "GET", "path": "/assets/gitApi-C1re3z8B.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 68, "method": "GET", "path": "/assets/AgentPage-DLoFCsC4.css", "status": 200, "content_type": "text/css; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 71, "method": "GET", "path": "/assets/wsTicket-DM6Fs73A.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 70, "method": "GET", "path": "/assets/DiffViewer-Bwc75Z_e.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 72, "method": "GET", "path": "/assets/monacoRuntime-Abf8-6rg.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 73, "method": "GET", "path": "/assets/wikiStore-CYkxOvnt.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 69, "method": "GET", "path": "/assets/AgentPage-C4CHw2zJ.js", "status": 200, "content_type": "text/javascript; charset=utf-8", "request_bytes": 0, "response_bytes": 0}
+{"n": 75, "method": "GET", "path": "/assets/FolderBrowser-DZ1nrqju.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 74, "method": "GET", "path": "/assets/CommandPalette-Dx8Z4qnM.js", "status": 304, "content_type": "", "request_bytes": 0, "response_bytes": 0}
+{"n": 76, "method": "GET", "path": "/api/session/disclosure", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 77, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 79, "method": "GET", "path": "/api/git/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 80, "method": "GET", "path": "/api/projects", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 78, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 81, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 84, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 85, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 86, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 82, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 83, "method": "GET", "path": "/api/tasks", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 87, "method": "GET", "path": "/api/agency/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 88, "method": "GET", "path": "/api/agency/objectives", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 89, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 90, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 91, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 92, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 93, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 94, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 95, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 96, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 97, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 98, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 99, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 100, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 101, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 102, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 103, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 104, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 105, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 106, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 107, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 108, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 109, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 110, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 111, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 114, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 115, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 116, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 113, "method": "GET", "path": "/api/agency/objectives", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 112, "method": "GET", "path": "/api/agency/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 117, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 118, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 119, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 120, "method": "POST", "path": "/api/tasks/submit", "status": 202, "content_type": "application/json", "request_bytes": 184, "response_bytes": 48, "request_sha256": "0d9755d25f96cef0df6508857a5bff9a435e8d472ab1e985b12068e0daa2118f", "response_sha256": "50f2dfb118b4e8bf7f095b82b49d4b1409ae93d23a737d44b9b97fbaa2b31f4c"}
+{"n": 121, "method": "GET", "path": "/api/tasks", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 122, "method": "GET", "path": "/api/tasks/task_6c3b6645/events", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 123, "method": "GET", "path": "/api/tasks/task_6c3b6645/events/stream", "status": 200, "content_type": "text/event-stream; charset=utf-8", "request_bytes": 0, "response_bytes": 977, "request_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "response_sha256": "30fb2011b14a21aa88cff23d38145680d3946a2992a8084e3eb143320c12526e"}
+{"n": 124, "method": "GET", "path": "/api/tasks", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 125, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 126, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 127, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 128, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 129, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 130, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 131, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 132, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 133, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 134, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 135, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 136, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 137, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 138, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 139, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 140, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 141, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 142, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 143, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 144, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 145, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 146, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 148, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 147, "method": "GET", "path": "/api/session/disclosure", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 149, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 152, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 153, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 154, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 151, "method": "GET", "path": "/api/agency/objectives", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 150, "method": "GET", "path": "/api/agency/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 155, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 156, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 157, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 158, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 159, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 160, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 161, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 162, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 163, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 164, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 165, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 166, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 167, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 168, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 169, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 170, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 171, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 172, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 173, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 174, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 175, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 176, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 177, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 178, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 179, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 182, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 183, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 184, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 181, "method": "GET", "path": "/api/agency/objectives", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 185, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 180, "method": "GET", "path": "/api/agency/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 186, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 187, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 188, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 189, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 190, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 191, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 192, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 193, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 194, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 195, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 196, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 197, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 198, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 199, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 200, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 201, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 202, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 203, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 204, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 205, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 206, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 207, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 208, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 209, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 211, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 210, "method": "GET", "path": "/api/session/disclosure", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 212, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 215, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 216, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 217, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 214, "method": "GET", "path": "/api/agency/objectives", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 213, "method": "GET", "path": "/api/agency/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 218, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 219, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 220, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 221, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 222, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 223, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 224, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 225, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 226, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 227, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 228, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 229, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 230, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 231, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 232, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 233, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 234, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 235, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 236, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 237, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 238, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 239, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 240, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 241, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 242, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 245, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 246, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 247, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 244, "method": "GET", "path": "/api/agency/objectives", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 248, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 243, "method": "GET", "path": "/api/agency/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 249, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 250, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 251, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 252, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 253, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 254, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 255, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 256, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 257, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 258, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 259, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 260, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 261, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 262, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 263, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 264, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 265, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 266, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 267, "method": "GET", "path": "/v1/health", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 268, "method": "GET", "path": "/api/system/status", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 269, "method": "GET", "path": "/api/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 270, "method": "GET", "path": "/api/approval/always-allowed", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 271, "method": "GET", "path": "/api/agent/tools/browser/approval/pending", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}
+{"n": 272, "method": "POST", "path": "/api/auth/ws-ticket", "status": 200, "content_type": "application/json", "request_bytes": 0, "response_bytes": 0}

@@ -1,0 +1,9 @@
+{
+  "root_source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/server.py",
+  "project_id": "proj_37cf09dd",
+  "project_root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-BROWSER-FAILURE-SURFACES-01/run-20261014T121206Z-codex/revision-v4/runtime/project_root",
+  "bundle": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-BROWSER-FAILURE-SURFACES-01/run-20261014T121206Z-codex/revision-v4/build-current/bundle",
+  "provider_fixture_port": 64598,
+  "dependency_overrides": 0,
+  "lifespan": "on"
+}

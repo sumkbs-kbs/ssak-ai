@@ -1,0 +1,124 @@
+{
+  "source_sha256": {
+    "src/antigravity_k/api/task_models.py": "26ee9e8d9ae67569b2bf80a17c1f54fe681ac751a9113ac302f69d71959bf127",
+    "src/antigravity_k/api/routes/task_api.py": "1bd7bb98aad23064a4ef84b411d279c6ec5b4647a30adb659df8c2463f3def92",
+    "tests/test_task_api.py": "b9dd429889567a8137d4451b6d0a2bc621f3b63d56f036458611457688979938",
+    "tests/test_task_global_cursor_contract.py": "1bdc59652833e9cab2f34c821f27a48f87504494b8569b752fbd418d4ae269bb",
+    "dashboard/src/features/task-execution/useTaskExecutionEvents.ts": "b6945d871202450756ed43243d2439d42390173bb2a6d0980396076fd8d2bb90",
+    "dashboard/src/features/task-execution/executionBlocks.ts": "f71ffd31078bca1e32082b022bba174150ab27619c9b3eb1a9be5f1849946ee4",
+    "dashboard/src/features/task-execution/useTaskExecutionEvents.test.ts": "6499248e7368e57543abbaad18b1d6d3c3ffe0a878ed251ee17eb46c06b31ce9",
+    "dashboard/src/features/task-execution/taskExecutionProjection.ts": "a0a10dc7ec0efe64d97a87676a2f23360c5e8e8d02741d88d6ba10dad7c4cf27",
+    "dashboard/src/features/task-execution/taskOperation.test.ts": "6d2d174bc7188840acb21dade996bddf738ee44fd8bf822fcdd0c64bb4f8e6bc",
+    "dashboard/src/features/task-execution/taskEventReplica.ts": "592c2f48a8fe68754d01f7de28889b219aa3648458d1c19be2528fb0c57ebaa1",
+    "dashboard/src/features/task-execution/taskExecutionApi.test.ts": "e917b176cadda0d1bccd21f64b370d47f71bf6e448e58b036e7fd1316c5ca9f0",
+    "dashboard/src/features/task-execution/useApprovalQueue.ts": "984310d8e78c40e9924682b11549915e96d06b86d0263a4a0636e1985e8e1a8e",
+    "dashboard/src/features/task-execution/taskEventReplica.test.ts": "5d5252b2496779131728a5ce7c69626c922a340361d9709e190d2b2c1e0d6f59",
+    "dashboard/src/features/task-execution/taskExecutionProjection.test.ts": "47d2fe1e99a6f31a174b8937bb9032a3881b67845834ab0a36fda3c116550b59",
+    "dashboard/src/features/task-execution/taskExecutionApiFailure.test.ts": "fbde78c9dcc5cd96487990ba1b22879d86e1ac92358529f746e5a5a01cb4089a",
+    "dashboard/src/features/task-execution/approvalApi.test.ts": "9bbfb641b1c812e7ec9f8597a1ef1831c1212b6f90aa8f12fe81feed3b41d9f9",
+    "dashboard/src/features/task-execution/taskLifecycleActions.ts": "db5dad2becda431d8e9677531f1714920a792672ddc8c3be5a0f3cd1bfd30b57",
+    "dashboard/src/features/task-execution/taskExecutionApi.ts": "2f137bfee893dac796ad6fe9a756102b7c103281e46d37ab5760d72f85ffcf0f",
+    "dashboard/src/features/task-execution/taskLifecycleActions.test.ts": "a297ae5cb3a3269756ea4dfbdd8b81944c79fa58a26fd2ea3930a311ae59065c",
+    "dashboard/src/features/task-execution/approvalApi.ts": "b82c3d633004104b3775028fabd835b7145a20a899e197b066fac827a50dfafc",
+    "dashboard/src/features/task-execution/taskOperation.ts": "7abb6f4c21b4b339c8d6501b3e0cafecc05cc6821b848f28435bf9d97e1f9d83",
+    "dashboard/src/features/task-execution/taskExecutionSchema.ts": "4486e3a8446a8b02ff469b089b3ef42d069c916a2ebeaec8693606780ce1251c"
+  },
+  "checks": [
+    {
+      "name": "dashboard-tests",
+      "command": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "src/features/task-execution",
+        "--reporter=json",
+        "--outputFile=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-TASK-GLOBAL-CURSOR-01/run-20261014T135632Z-codex/clean-v1/vitest.json"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard",
+      "exit_code": 0,
+      "started": 1791986536.261976,
+      "elapsed": 8.30898380279541
+    },
+    {
+      "name": "dashboard-types",
+      "command": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "--noEmit",
+        "--incremental",
+        "false",
+        "--project",
+        "tsconfig.json"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/dashboard",
+      "exit_code": 0,
+      "started": 1791986544.571125,
+      "elapsed": 3.534764051437378
+    },
+    {
+      "name": "python-tests",
+      "command": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_task_api.py",
+        "tests/test_task_global_cursor_contract.py",
+        "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-TASK-GLOBAL-CURSOR-01/run-20261014T135632Z-codex/clean-v1/junit.xml"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+      "exit_code": 0,
+      "started": 1791986548.1061099,
+      "elapsed": 1.927267074584961
+    },
+    {
+      "name": "ruff",
+      "command": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "check",
+        "src/antigravity_k/api/task_models.py",
+        "src/antigravity_k/api/routes/task_api.py",
+        "tests/test_task_api.py",
+        "tests/test_task_global_cursor_contract.py"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+      "exit_code": 0,
+      "started": 1791986550.033567,
+      "elapsed": 0.01394200325012207
+    },
+    {
+      "name": "format",
+      "command": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "format",
+        "--check",
+        "src/antigravity_k/api/task_models.py",
+        "src/antigravity_k/api/routes/task_api.py",
+        "tests/test_task_api.py",
+        "tests/test_task_global_cursor_contract.py"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+      "exit_code": 0,
+      "started": 1791986550.047679,
+      "elapsed": 0.01169729232788086
+    },
+    {
+      "name": "python-types",
+      "command": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+        "--project",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-TASK-GLOBAL-CURSOR-01/run-20261014T135632Z-codex/clean-v1/basedpyright.json",
+        "--level",
+        "error",
+        "src/antigravity_k/api/task_models.py",
+        "src/antigravity_k/api/routes/task_api.py"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+      "exit_code": 0,
+      "started": 1791986550.059556,
+      "elapsed": 0.6396288871765137
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "original_source_sha": "97d5716803b1d34218149a683a3c0891788882af5a687ea50c1ac73b1cbcefc9",
+  "overlay_sha": "3e37e4378f74a7e67679cf3ac278231d5959976c6bc54d8b87df6ad8c760364c",
+  "only_change": "/tmp/test substituted in fixture inputs and expected metadata with owned workspace",
+  "cases": [
+    "TestToolLoopEnginePostLoopChecks::test_quality_gate_revision_replaces_output_and_outcome",
+    "TestToolLoopEnginePostLoopChecks::test_event_bus_published"
+  ]
+}

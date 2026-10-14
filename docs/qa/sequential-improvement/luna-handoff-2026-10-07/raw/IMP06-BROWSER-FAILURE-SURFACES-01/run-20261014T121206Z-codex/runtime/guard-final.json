@@ -1,0 +1,10 @@
+{
+  "violations": [
+    "Nonfixture outbound socket"
+  ],
+  "binds": 2,
+  "model_calls": 0,
+  "fixture_production_delegations": [],
+  "scheduled_ticks": 27,
+  "provider_thread_stopped": true
+}

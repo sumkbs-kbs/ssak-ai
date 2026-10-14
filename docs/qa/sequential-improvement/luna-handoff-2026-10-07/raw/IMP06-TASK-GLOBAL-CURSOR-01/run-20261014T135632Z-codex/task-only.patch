@@ -1,0 +1,454 @@
+diff --git a/dashboard/src/features/task-execution/taskEventReplica.test.ts b/dashboard/src/features/task-execution/taskEventReplica.test.ts
+index 474f512a..c06fd6d8 100644
+--- a/dashboard/src/features/task-execution/taskEventReplica.test.ts
++++ b/dashboard/src/features/task-execution/taskEventReplica.test.ts
+@@ -31,6 +31,34 @@ function event(sequence: number, payload: string = `event-${sequence}`): TaskEve
+ }
+ 
+ describe('task event replica', () => {
++  it('advances a task-filtered global cursor across other tasks without a false gap', () => {
++    const globalEvent = (sequence: number): TaskEvent => TaskEventSchema.parse({
++      ...event(sequence), sequence_scope: 'global',
++    });
++    const initial = replaceTaskEventReplica(taskId, [globalEvent(24), globalEvent(27)], 27, 'global');
++    const result = mergeTaskEventReplica(initial, [globalEvent(35)]);
++    expect(result.contiguousSequence).toBe(35);
++    expect(result.gap).toBeNull();
++    expect(result.events.map((item) => item.sequence)).toEqual([24, 27, 35]);
++  });
++
++  it('keeps an unseen global terminal cursor incomplete until replay supplies it', () => {
++    const initial = replaceTaskEventReplica(taskId, [event(24)], 35, 'global');
++    expect(initial.contiguousSequence).toBe(24);
++    expect(initial.gap).toEqual({ from: 25, to: 35 });
++    const result = mergeTaskEventReplica(initial, [event(35)]);
++    expect(result.gap).toBeNull();
++  });
++
++  it('preserves global scope when cached and still rejects conflicting event payloads', () => {
++    const initial = replaceTaskEventReplica(taskId, [event(24), event(35)], 35, 'global');
++    writeTaskEventReplicaCache(initial);
++    const restored = readTaskEventReplicaCache(taskId);
++    expect(restored?.contiguousSequence).toBe(35);
++    expect(restored?.sequenceScope).toBe('global');
++    expect(() => mergeTaskEventReplica(initial, [event(35, 'conflict')])).toThrow(TaskEventReplicaConflictError);
++  });
++
+   it('deduplicates replay overlap without changing event order', () => {
+     // Given: the replica has the first two authoritative events.
+     const initial = replaceTaskEventReplica(taskId, [event(1), event(2)], 2);
+diff --git a/dashboard/src/features/task-execution/taskEventReplica.ts b/dashboard/src/features/task-execution/taskEventReplica.ts
+index 8d734996..3336f61d 100644
+--- a/dashboard/src/features/task-execution/taskEventReplica.ts
++++ b/dashboard/src/features/task-execution/taskEventReplica.ts
+@@ -1,6 +1,6 @@
+ import { z } from 'zod';
+ 
+-import { TaskEventSchema, TaskIdSchema, type TaskEvent, type TaskId } from './taskExecutionSchema';
++import { TaskEventSchema, TaskIdSchema, TaskSequenceScopeSchema, type TaskEvent, type TaskId, type TaskSequenceScope } from './taskExecutionSchema';
+ 
+ export const TASK_EVENT_REPLICA_DEFAULT_LIMIT = 1_000;
+ 
+@@ -10,6 +10,7 @@ export type TaskEventGap = Readonly<{
+ }>;
+ 
+ export type TaskEventReplicaState = Readonly<{
++  sequenceScope: TaskSequenceScope;
+   taskId: TaskId;
+   events: readonly TaskEvent[];
+   lastSequence: number;
+@@ -35,6 +36,7 @@ export class TaskEventReplicaTaskMismatchError extends Error {
+ }
+ 
+ const PersistedReplicaSchema = z.object({
++  sequence_scope: TaskSequenceScopeSchema.optional().default('task'),
+   task_id: TaskIdSchema,
+   events: z.array(TaskEventSchema).readonly(),
+   last_sequence: z.number().int().nonnegative(),
+@@ -78,12 +80,16 @@ function stateFrom(
+   events: readonly TaskEvent[],
+   lastSequence: number,
+   snapshotSequence: number,
++  sequenceScope: TaskSequenceScope,
+ ): TaskEventReplicaState {
+   const normalized = normalizeEvents(taskId, events);
+   const effectiveLast = Math.max(lastSequence, normalized.at(-1)?.sequence ?? 0);
+   const effectiveSnapshot = Math.min(snapshotSequence, effectiveLast);
+-  const contiguous = contiguousSequence(normalized, effectiveSnapshot);
++  const contiguous = sequenceScope === 'global'
++    ? Math.max(effectiveSnapshot, normalized.at(-1)?.sequence ?? 0)
++    : contiguousSequence(normalized, effectiveSnapshot);
+   return {
++    sequenceScope,
+     taskId,
+     events: normalized,
+     lastSequence: effectiveLast,
+@@ -94,27 +100,29 @@ function stateFrom(
+ }
+ 
+ export function createTaskEventReplica(taskId: TaskId, snapshotSequence = 0): TaskEventReplicaState {
+-  return stateFrom(taskId, [], snapshotSequence, snapshotSequence);
++  return stateFrom(taskId, [], snapshotSequence, snapshotSequence, 'task');
+ }
+ 
+ export function replaceTaskEventReplica(
+   taskId: TaskId,
+   events: readonly TaskEvent[],
+   lastSequence: number,
++  sequenceScope: TaskSequenceScope = 'task',
+ ): TaskEventReplicaState {
+   const normalized = normalizeEvents(taskId, events);
+   const effectiveLast = Math.max(lastSequence, normalized.at(-1)?.sequence ?? 0);
+   const snapshotSequence = normalized.length === 0 ? effectiveLast : 0;
+-  return stateFrom(taskId, normalized, effectiveLast, snapshotSequence);
++  return stateFrom(taskId, normalized, effectiveLast, snapshotSequence, sequenceScope);
+ }
+ 
+ export function mergeTaskEventReplica(
+   current: TaskEventReplicaState,
+   incoming: readonly TaskEvent[],
+   lastSequence = current.lastSequence,
++  sequenceScope = current.sequenceScope,
+ ): TaskEventReplicaState {
+   const merged = [...current.events, ...incoming];
+-  return stateFrom(current.taskId, merged, lastSequence, current.snapshotSequence);
++  return stateFrom(current.taskId, merged, lastSequence, current.snapshotSequence, sequenceScope);
+ }
+ 
+ export function compactTaskEventReplica(
+@@ -129,7 +137,7 @@ export function compactTaskEventReplica(
+   const firstRetained = retained[0];
+   if (firstRetained === undefined) return current;
+   const snapshotSequence = Math.max(current.snapshotSequence, firstRetained.sequence - 1);
+-  return stateFrom(current.taskId, retained, current.lastSequence, snapshotSequence);
++  return stateFrom(current.taskId, retained, current.lastSequence, snapshotSequence, current.sequenceScope);
+ }
+ 
+ function cacheKey(taskId: TaskId): string {
+@@ -141,6 +149,7 @@ export function writeTaskEventReplicaCache(
+   storage: Storage = window.localStorage,
+ ): void {
+   storage.setItem(cacheKey(replica.taskId), JSON.stringify({
++    sequence_scope: replica.sequenceScope,
+     task_id: replica.taskId,
+     events: replica.events,
+     last_sequence: replica.lastSequence,
+@@ -164,6 +173,7 @@ export function readTaskEventReplicaCache(
+       persisted.data.events,
+       persisted.data.last_sequence,
+       persisted.data.snapshot_sequence,
++      persisted.data.sequence_scope,
+     );
+   } catch (error: unknown) {
+     if (error instanceof SyntaxError) return null;
+diff --git a/dashboard/src/features/task-execution/taskExecutionApi.test.ts b/dashboard/src/features/task-execution/taskExecutionApi.test.ts
+index d09b6ce8..20c7d0b7 100644
+--- a/dashboard/src/features/task-execution/taskExecutionApi.test.ts
++++ b/dashboard/src/features/task-execution/taskExecutionApi.test.ts
+@@ -58,6 +58,16 @@ describe('parseSseChunk', () => {
+ });
+ 
+ describe('fetchTaskEvents', () => {
++  it('retains the declared global cursor scope on a sparse authoritative replay', async () => {
++    getMock.mockReturnValueOnce({ json: async () => ({
++      task_id: taskId, sequence_scope: 'global', events: [event(24), event(35)],
++      last_sequence: 35, has_more: false,
++    }) });
++    const result = await fetchTaskEvents(taskId, 0, new AbortController().signal);
++    expect(result.sequenceScope).toBe('global');
++    expect(result.events.map((item) => item.sequence)).toEqual([24, 35]);
++  });
++
+   it('fetches every authoritative replay page before returning events', async () => {
+     // Given: the server reports that the first replay page has more events.
+     getMock
+diff --git a/dashboard/src/features/task-execution/taskExecutionApi.ts b/dashboard/src/features/task-execution/taskExecutionApi.ts
+index 10ae5027..ac69e892 100644
+--- a/dashboard/src/features/task-execution/taskExecutionApi.ts
++++ b/dashboard/src/features/task-execution/taskExecutionApi.ts
+@@ -19,6 +19,7 @@ import {
+   type TaskEvent,
+   type TaskId,
+   type TaskSummary,
++  type TaskSequenceScope,
+ } from './taskExecutionSchema';
+ import type { TaskForkOperation, TaskSubmitOperation } from './taskOperation';
+ 
+@@ -34,6 +35,7 @@ export type ParsedSseChunk = Readonly<{
+ }>;
+ 
+ export type TaskStreamResult = Readonly<{
++  sequenceScope?: TaskSequenceScope;
+   status: string;
+   lastSequence: number;
+ }>;
+@@ -171,7 +173,7 @@ export async function fetchTaskEvents(
+   taskId: TaskId,
+   afterSequence: number,
+   signal: AbortSignal,
+-): Promise<Readonly<{ events: readonly TaskEvent[]; lastSequence: number }>> {
++): Promise<Readonly<{ events: readonly TaskEvent[]; lastSequence: number; sequenceScope?: TaskSequenceScope }>> {
+   const events: TaskEvent[] = [];
+   let sequence = afterSequence;
+ 
+@@ -186,7 +188,7 @@ export async function fetchTaskEvents(
+     const response = TaskEventsResponseSchema.parse(raw);
+     events.push(...response.events);
+     if (!response.has_more) {
+-      return { events, lastSequence: response.last_sequence };
++      return { events, lastSequence: response.last_sequence, ...(response.sequence_scope === undefined ? {} : { sequenceScope: response.sequence_scope }) };
+     }
+     if (response.last_sequence <= sequence) {
+       throw new TaskEventStreamError('invalid-event', 'Task event replay cursor did not advance.');
+@@ -199,7 +201,7 @@ function frameResult(frame: SseFrame): TaskStreamResult | TaskEvent {
+   const raw: unknown = JSON.parse(frame.data);
+   if (frame.event === 'stream.end') {
+     const end = TaskStreamEndSchema.parse(raw);
+-    return { status: end.status, lastSequence: end.last_sequence };
++    return { status: end.status, lastSequence: end.last_sequence, ...(end.sequence_scope === undefined ? {} : { sequenceScope: end.sequence_scope }) };
+   }
+   return TaskEventSchema.parse(raw);
+ }
+diff --git a/dashboard/src/features/task-execution/taskExecutionSchema.ts b/dashboard/src/features/task-execution/taskExecutionSchema.ts
+index b6ac7cf9..409fd72b 100644
+--- a/dashboard/src/features/task-execution/taskExecutionSchema.ts
++++ b/dashboard/src/features/task-execution/taskExecutionSchema.ts
+@@ -14,7 +14,11 @@ export const TaskStatusSchema = z.enum([
+   'cancelled',
+ ]);
+ 
++export const TaskSequenceScopeSchema = z.enum(['task', 'global']);
++export type TaskSequenceScope = z.infer<typeof TaskSequenceScopeSchema>;
++
+ export const TaskEventSchema = z.object({
++  sequence_scope: TaskSequenceScopeSchema.optional(),
+   sequence: z.number().int().nonnegative(),
+   schema_version: z.number().int().positive(),
+   task_id: TaskIdSchema,
+@@ -31,6 +35,7 @@ export const TaskEventSchema = z.object({
+ }).readonly();
+ 
+ export const TaskEventsResponseSchema = z.object({
++  sequence_scope: TaskSequenceScopeSchema.optional(),
+   task_id: TaskIdSchema,
+   events: z.array(TaskEventSchema).readonly(),
+   last_sequence: z.number().int().nonnegative(),
+@@ -65,6 +70,7 @@ export const TaskListResponseSchema = z.object({
+ }).readonly();
+ 
+ export const TaskStreamEndSchema = z.object({
++  sequence_scope: TaskSequenceScopeSchema.optional(),
+   task_id: TaskIdSchema,
+   last_sequence: z.number().int().nonnegative(),
+   status: z.string().min(1),
+diff --git a/dashboard/src/features/task-execution/useTaskExecutionEvents.test.ts b/dashboard/src/features/task-execution/useTaskExecutionEvents.test.ts
+index d666604d..25fa7c89 100644
+--- a/dashboard/src/features/task-execution/useTaskExecutionEvents.test.ts
++++ b/dashboard/src/features/task-execution/useTaskExecutionEvents.test.ts
+@@ -26,7 +26,7 @@
+ import { act, renderHook, waitFor } from '@testing-library/react';
+ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+ 
+-import { TaskSummarySchema } from './taskExecutionSchema';
++import { TaskEventSchema, TaskSummarySchema, type TaskEvent } from './taskExecutionSchema';
+ import { useProjectStore } from '../../stores/projectStore';
+ 
+ const api = vi.hoisted(() => ({
+@@ -82,6 +82,34 @@ beforeEach(() => {
+ });
+ 
+ describe('useTaskExecutionEvents — idempotent task operation retry', () => {
++  it('completes a sparse global replay and refreshes the terminal task once without redispatch', async () => {
++    const failed = TaskSummarySchema.parse({ ...LIVE, status: 'failed', execution_owner: 'none', error: 'provider unavailable' });
++    api.fetchTaskList.mockResolvedValueOnce([LIVE]).mockResolvedValueOnce([failed]);
++    api.fetchTaskEvents.mockResolvedValue({ events: [], lastSequence: 0, sequenceScope: 'global' });
++    api.streamTaskEvents.mockImplementation(async (
++      _taskId: string, _cursor: number, _signal: AbortSignal,
++      handlers: Readonly<{ onEvent: (event: TaskEvent) => void }>,
++    ) => {
++      await new Promise((resolve) => window.setTimeout(resolve, 10));
++      for (const sequence of [24, 27, 35]) handlers.onEvent(TaskEventSchema.parse({
++        sequence, sequence_scope: 'global', schema_version: 2, task_id: LIVE.task_id,
++        step_id: null, agent_id: null, parent_id: null, tool_call_id: null, approval_id: null,
++        resource_job_id: null, correlation_id: null, event_type: 'task.status',
++        payload: { status: sequence === 35 ? 'failed' : 'running' }, created_at: LIVE.created_at,
++      }));
++      return { lastSequence: 35, sequenceScope: 'global', status: 'failed' };
++    });
++    const { result } = renderHook(() => useTaskExecutionEvents());
++    await waitFor(() => expect(result.current.connectionState).toBe('complete'));
++    expect(result.current.tasks[0]?.status).toBe('failed');
++    expect(result.current.error).toBeNull();
++    expect(result.current.events.map((event) => event.sequence)).toEqual([24, 27, 35]);
++    expect(api.fetchTaskEvents).toHaveBeenCalledTimes(1);
++    expect(api.fetchTaskList).toHaveBeenCalledTimes(2);
++    expect(api.streamTaskEvents).toHaveBeenCalledTimes(1);
++    expect(api.submitTask).not.toHaveBeenCalled();
++  });
++
+   it('reuses the original submit operation after an ambiguous response loss and selects the server task', async () => {
+     // Given: the server might have committed the first POST, but its response never reaches the browser.
+     const committedTask = TaskSummarySchema.parse({
+diff --git a/dashboard/src/features/task-execution/useTaskExecutionEvents.ts b/dashboard/src/features/task-execution/useTaskExecutionEvents.ts
+index 1989e0c6..bccc67bc 100644
+--- a/dashboard/src/features/task-execution/useTaskExecutionEvents.ts
++++ b/dashboard/src/features/task-execution/useTaskExecutionEvents.ts
+@@ -153,8 +153,8 @@ export function useTaskExecutionEvents(): TaskExecutionState {
+       const replay = await fetchTaskEvents(selectedTaskId, replayCursor, controller.signal);
+       if (controller.signal.aborted) return;
+       replica = cachedReplica === null
+-        ? replaceTaskEventReplica(selectedTaskId, replay.events, replay.lastSequence)
+-        : mergeTaskEventReplica(replica, replay.events, replay.lastSequence);
++        ? replaceTaskEventReplica(selectedTaskId, replay.events, replay.lastSequence, replay.sequenceScope)
++        : mergeTaskEventReplica(replica, replay.events, replay.lastSequence, replay.sequenceScope);
+       replica = compactTaskEventReplica(replica);
+       replicaRef.current = replica;
+       writeTaskEventReplicaCache(replica);
+@@ -173,7 +173,7 @@ export function useTaskExecutionEvents(): TaskExecutionState {
+       const recoverGap = async (afterSequence: number): Promise<void> => {
+         const missed = await fetchTaskEvents(selectedTaskId, afterSequence, controller.signal);
+         if (controller.signal.aborted) return;
+-        replica = compactTaskEventReplica(mergeTaskEventReplica(replica, missed.events, missed.lastSequence));
++        replica = compactTaskEventReplica(mergeTaskEventReplica(replica, missed.events, missed.lastSequence, missed.sequenceScope));
+         replicaRef.current = replica;
+         sequence = replica.contiguousSequence;
+         writeTaskEventReplicaCache(replica);
+@@ -185,7 +185,7 @@ export function useTaskExecutionEvents(): TaskExecutionState {
+         try {
+           const end = await streamTaskEvents(selectedTaskId, sequence, controller.signal, {
+             onEvent: (event) => {
+-              const next = compactTaskEventReplica(mergeTaskEventReplica(replica, [event]));
++              const next = compactTaskEventReplica(mergeTaskEventReplica(replica, [event], replica.lastSequence, event.sequence_scope ?? replica.sequenceScope));
+               replica = next;
+               replicaRef.current = next;
+               sequence = next.contiguousSequence;
+@@ -202,6 +202,7 @@ export function useTaskExecutionEvents(): TaskExecutionState {
+           if (controller.signal.aborted) return;
+           const pendingGapRecovery = gapRecovery;
+           if (pendingGapRecovery !== null) await pendingGapRecovery;
++          replica = mergeTaskEventReplica(replica, [], end.lastSequence, end.sequenceScope);
+           if (end.lastSequence > replica.contiguousSequence) {
+             setConnectionState('reconnecting');
+             await recoverGap(replica.contiguousSequence);
+@@ -211,6 +212,10 @@ export function useTaskExecutionEvents(): TaskExecutionState {
+             setConnectionState('error');
+             return;
+           }
++          if (end.status === 'done' || end.status === 'failed' || end.status === 'cancelled') {
++            await refreshTaskList(controller.signal);
++            if (controller.signal.aborted) return;
++          }
+           setConnectionState('complete');
+           sequence = Math.max(sequence, end.lastSequence);
+           return;
+diff --git a/src/antigravity_k/api/routes/task_api.py b/src/antigravity_k/api/routes/task_api.py
+index 736ea991..7b8b2a3f 100644
+--- a/src/antigravity_k/api/routes/task_api.py
++++ b/src/antigravity_k/api/routes/task_api.py
+@@ -332,6 +332,7 @@ async def stream_task_events_websocket(
+                         "type": "stream.end",
+                         "task_id": end.task_id,
+                         "last_sequence": end.last_sequence,
++                        "sequence_scope": end.sequence_scope,
+                         "status": end.status,
+                     },
+                 )
+diff --git a/src/antigravity_k/api/task_models.py b/src/antigravity_k/api/task_models.py
+index 2a2b64d1..dd01f639 100644
+--- a/src/antigravity_k/api/task_models.py
++++ b/src/antigravity_k/api/task_models.py
+@@ -108,6 +108,7 @@ class TaskBenchmarkRequest(BaseModel):
+ 
+ 
+ class TaskEvent(BaseModel):
++    sequence_scope: Literal["global"] = "global"
+     sequence: int
+     schema_version: int
+     task_id: str
+@@ -142,6 +143,7 @@ class TaskEvent(BaseModel):
+ 
+ 
+ class TaskEventsResponse(BaseModel):
++    sequence_scope: Literal["global"] = "global"
+     task_id: str
+     events: list[TaskEvent]
+     last_sequence: int
+@@ -149,6 +151,7 @@ class TaskEventsResponse(BaseModel):
+ 
+ 
+ class TaskStreamEnd(BaseModel):
++    sequence_scope: Literal["global"] = "global"
+     task_id: str
+     last_sequence: int
+     status: str
+diff --git a/tests/test_task_api.py b/tests/test_task_api.py
+index 69d2d703..181bf952 100644
+--- a/tests/test_task_api.py
++++ b/tests/test_task_api.py
+@@ -232,9 +232,11 @@ def test_task_event_replay_is_task_scoped_and_decodes_payload(client: TestClient
+ 
+     assert response.status_code == 200
+     assert response.json() == {
++        "sequence_scope": "global",
+         "task_id": "task-123",
+         "events": [
+             {
++                "sequence_scope": "global",
+                 "sequence": 7,
+                 "schema_version": 2,
+                 "task_id": "task-123",
+@@ -360,7 +362,7 @@ def test_task_event_sse_replays_then_ends_for_terminal_task(
+     assert event["payload"] == {"result": "ok"}
+     assert frames[1].startswith("event: stream.end\ndata: ")
+     end = typing.cast(dict[str, object], json.loads(frames[1].split("data: ", 1)[1]))
+-    assert end == {"task_id": "task-123", "last_sequence": 7, "status": "done"}
++    assert end == {"task_id": "task-123", "last_sequence": 7, "status": "done", "sequence_scope": "global"}
+ 
+ 
+ def test_task_event_sse_resumes_from_last_event_id_header(
+@@ -386,6 +388,7 @@ def test_task_event_websocket_replays_task_scoped_events_and_ends(
+         stream_end = typing.cast(dict[str, object], websocket.receive_json())
+ 
+     assert replay == {
++        "sequence_scope": "global",
+         "sequence": 7,
+         "schema_version": 2,
+         "task_id": "task-123",
+@@ -401,6 +404,7 @@ def test_task_event_websocket_replays_task_scoped_events_and_ends(
+         "created_at": "2026-08-20T00:00:00+00:00",
+     }
+     assert stream_end == {
++        "sequence_scope": "global",
+         "type": "stream.end",
+         "task_id": "task-123",
+         "last_sequence": 7,
+diff --git a/tests/test_task_global_cursor_contract.py b/tests/test_task_global_cursor_contract.py
+new file mode 100644
+index 00000000..0fdfb13f
+--- /dev/null
++++ b/tests/test_task_global_cursor_contract.py
+@@ -0,0 +1,24 @@
++import json
++from pathlib import Path
++
++from antigravity_k.api.task_models import TaskEvent, TaskEventsResponse, TaskStreamEnd
++from antigravity_k.engine.task_state_store import TaskStateStore
++
++
++def test_filtered_replay_declares_global_cursor_and_preserves_other_tasks(tmp_path: Path) -> None:
++    store = TaskStateStore(str(tmp_path / "tasks.db"))
++    for task_id in ("selected", "other"):
++        _ = store.create_task(task_id, task_id, "pending", "2026-10-14T00:00:00Z")
++    first = store.append_execution_event("selected", "task.status", json.dumps({"status": "running"}))
++    _ = store.append_execution_event("other", "task.progress", "{}")
++    last = store.append_execution_event("selected", "task.status", json.dumps({"status": "failed"}))
++    records = store.list_execution_events("selected")
++    events = [TaskEvent.from_record(record) for record in records]
++    response = TaskEventsResponse(task_id="selected", events=events, last_sequence=last, has_more=False)
++    assert [event.sequence for event in response.events] == [first, last]
++    assert last == first + 2
++    assert response.sequence_scope == "global"
++    assert all(event.sequence_scope == "global" for event in events)
++    assert TaskStreamEnd(task_id="selected", last_sequence=last, status="failed").sequence_scope == "global"
++    assert len(store.list_execution_events("other")) == 1
++    assert [record["sequence"] for record in store.list_execution_events("selected", after_sequence=first)] == [last]

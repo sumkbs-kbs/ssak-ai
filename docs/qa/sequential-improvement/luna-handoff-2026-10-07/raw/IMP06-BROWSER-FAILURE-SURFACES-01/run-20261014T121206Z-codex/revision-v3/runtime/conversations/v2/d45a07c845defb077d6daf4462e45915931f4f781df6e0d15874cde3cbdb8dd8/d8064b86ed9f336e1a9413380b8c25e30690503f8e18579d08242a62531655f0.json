@@ -1,0 +1,31 @@
+{
+  "conversation_id": "mv85odbywxaeuucz",
+  "project_id": "proj_80aa951d",
+  "revision": 1,
+  "messages": [
+    {
+      "id": "msg_f1764e1b8bfa",
+      "role": "user",
+      "content": "브라우저 제어 오류 검증: provider fixture 503을 표시하세요.",
+      "created_at": 1791985127.0811021,
+      "provenance": "append"
+    }
+  ],
+  "summary": null,
+  "retained_message_ids": [
+    "msg_f1764e1b8bfa"
+  ],
+  "forked_from": null,
+  "created_at": 1791985127.0810812,
+  "updated_at": 1791985127.08112,
+  "memory": {
+    "schema": "agk.summary.v1",
+    "generation": 0,
+    "constraints": [],
+    "summarized_ranges": [],
+    "carried_summary": ""
+  },
+  "journal_seq": 1,
+  "history_incomplete": false,
+  "view_schema": "agk.conv-view.v1"
+}

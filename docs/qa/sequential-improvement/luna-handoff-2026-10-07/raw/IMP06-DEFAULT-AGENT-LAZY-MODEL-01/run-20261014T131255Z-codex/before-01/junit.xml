@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="7" time="3.592" timestamp="2026-10-14T22:24:39.003015+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_tool_loop_lazy_model_contract" name="test_registered_unloaded_target_is_prepared_before_generation" time="0.562"><failure message="AssertionError: assert [] == ['selected-model']&#10;  &#10;  Right contains one more item: 'selected-model'&#10;  Use -v to get more diff">def test_registered_unloaded_target_is_prepared_before_generation():
+        engine, state = setup_engine()
+        consume_to_generation(engine, state)
+&gt;       assert state["loads"] == ["selected-model"]
+E       AssertionError: assert [] == ['selected-model']
+E         
+E         Right contains one more item: 'selected-model'
+E         Use -v to get more diff
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py:73: AssertionError</failure></testcase><testcase classname="tests.test_tool_loop_lazy_model_contract" name="test_already_loaded_or_combo_does_not_force_preparation[True-False]" time="0.016" /><testcase classname="tests.test_tool_loop_lazy_model_contract" name="test_already_loaded_or_combo_does_not_force_preparation[False-True]" time="0.009" /><testcase classname="tests.test_tool_loop_lazy_model_contract" name="test_preparation_failure_preserves_original_error_without_retry[failure0]" time="0.009"><failure message="Failed: DID NOT RAISE RuntimeError">failure = RuntimeError('load failed')
+
+    @pytest.mark.parametrize(
+        "failure", [RuntimeError("load failed"), PermissionError("denied"), MemoryError("budget exhausted")]
+    )
+    def test_preparation_failure_preserves_original_error_without_retry(failure):
+        engine, state = setup_engine(failure=failure)
+&gt;       with pytest.raises(type(failure), match=str(failure)):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py:89: Failed</failure></testcase><testcase classname="tests.test_tool_loop_lazy_model_contract" name="test_preparation_failure_preserves_original_error_without_retry[failure1]" time="0.009"><failure message="Failed: DID NOT RAISE PermissionError">failure = PermissionError('denied')
+
+    @pytest.mark.parametrize(
+        "failure", [RuntimeError("load failed"), PermissionError("denied"), MemoryError("budget exhausted")]
+    )
+    def test_preparation_failure_preserves_original_error_without_retry(failure):
+        engine, state = setup_engine(failure=failure)
+&gt;       with pytest.raises(type(failure), match=str(failure)):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE PermissionError
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py:89: Failed</failure></testcase><testcase classname="tests.test_tool_loop_lazy_model_contract" name="test_preparation_failure_preserves_original_error_without_retry[failure2]" time="0.009"><failure message="Failed: DID NOT RAISE MemoryError">failure = MemoryError('budget exhausted')
+
+    @pytest.mark.parametrize(
+        "failure", [RuntimeError("load failed"), PermissionError("denied"), MemoryError("budget exhausted")]
+    )
+    def test_preparation_failure_preserves_original_error_without_retry(failure):
+        engine, state = setup_engine(failure=failure)
+&gt;       with pytest.raises(type(failure), match=str(failure)):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE MemoryError
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py:89: Failed</failure></testcase><testcase classname="tests.test_tool_loop_lazy_model_contract" name="test_preparation_that_does_not_load_is_still_a_failure" time="0.016"><failure message="AssertionError: assert ([] == ['selected-model']&#10;  &#10;  Right contains one more item: 'selected-model'&#10;  Use -v to get more diff)">def test_preparation_that_does_not_load_is_still_a_failure():
+        engine, state = setup_engine(stays_unloaded=True)
+        consume_to_generation(engine, state)
+&gt;       assert state["loads"] == ["selected-model"] and state["generation"] == []
+E       AssertionError: assert ([] == ['selected-model']
+E         
+E         Right contains one more item: 'selected-model'
+E         Use -v to get more diff)
+
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_tool_loop_lazy_model_contract.py:97: AssertionError</failure></testcase></testsuite></testsuites>

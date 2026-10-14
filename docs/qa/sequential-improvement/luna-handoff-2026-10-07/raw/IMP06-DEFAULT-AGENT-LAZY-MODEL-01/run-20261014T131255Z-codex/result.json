@@ -1,0 +1,37 @@
+{
+  "status": "DONE_SCOPED",
+  "review": "MAIN_AGENT_COMPLETED",
+  "independent_review": "NOT_RUN",
+  "commit": "0e49b627db4351c5aaf51abaa6465da3fcfdc8f5",
+  "before": {
+    "tests": 7,
+    "failures": 5,
+    "errors": 0,
+    "skipped": 0
+  },
+  "after_clean": {
+    "tests": 106,
+    "failures": 2,
+    "errors": 0,
+    "skipped": 0
+  },
+  "after_root": {
+    "tests": 106,
+    "failures": 2,
+    "errors": 0,
+    "skipped": 0
+  },
+  "path_only_overlay_clean": {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "path_only_overlay_root": {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "limitation": "Unmodified original 106 selector remains 104 pass / 2 path-fixture failures; separate exact path-only overlay tests passed. No full suite PASS."
+}
