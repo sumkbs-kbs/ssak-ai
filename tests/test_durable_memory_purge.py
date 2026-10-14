@@ -1,8 +1,8 @@
+from contextlib import closing
 from pathlib import Path
 from typing import Protocol, cast
 from unittest.mock import MagicMock
 
-import networkx as nx
 import pytest
 from fastapi import Request as FastAPIRequest
 from starlette.datastructures import State
@@ -36,24 +36,27 @@ def test_memory_service_clear_all_removes_rows_and_embeddings(tmp_path: Path):
     cast(_CallMock, vector_store.clear).assert_called_once_with()
 
 
-def test_vector_store_clear_deletes_all_collection_ids():
-    class Collection:
-        def __init__(self) -> None:
-            self.deleted: list[str] = []
+@pytest.mark.parametrize("closed", [False, True], ids=["open", "closed"])
+def test_vector_store_clear_deletes_all_collection_ids(tmp_path: Path, closed: bool) -> None:
+    from chromadb import Collection
 
-        def get(self) -> dict[str, list[str]]:
-            return {"ids": ["one", "two"]}
+    storage = str(tmp_path / "vectors")
+    with closing(VectorStore(storage)) as store:
+        assert isinstance(store.collection, Collection)
+        store.collection.upsert(ids=["one", "two"], embeddings=[[1.0, 0.0], [0.0, 1.0]])
+        assert set(store.collection.get()["ids"]) == {"one", "two"}
+        if closed:
+            store.close()
+            with pytest.raises(RuntimeError, match="VectorStore is closed"):
+                store.clear()
+        else:
+            assert store.clear() == 2
+            assert store.collection.get()["ids"] == []
+            assert store.clear() == 0
 
-        def delete(self, ids: list[str]) -> None:
-            self.deleted = ids
-
-    store = object.__new__(VectorStore)
-    setattr(store, "collection", Collection())
-    setattr(store, "_closed", True)
-
-    assert store.clear() == 2
-    collection = cast(Collection, getattr(store, "collection"))
-    assert collection.deleted == ["one", "two"]
+    with closing(VectorStore(storage)) as reopened:
+        assert isinstance(reopened.collection, Collection)
+        assert set(reopened.collection.get()["ids"]) == ({"one", "two"} if closed else set())
 
 
 def test_wiki_clear_all_removes_entries_and_generated_markdown(
@@ -71,28 +74,48 @@ def test_wiki_clear_all_removes_entries_and_generated_markdown(
     assert list((tmp_path / "wiki").rglob("*.md")) == []
 
 
-def test_gbrain_clear_all_removes_graph_and_vectors():
-    class Collection:
-        def __init__(self) -> None:
-            self.deleted: list[str] = []
+@pytest.mark.parametrize("closed", [False, True], ids=["open", "closed"])
+def test_gbrain_clear_all_removes_graph_and_vectors(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, closed: bool
+) -> None:
+    import numpy as np
+    from chromadb import Collection
+    from chromadb.api.types import DefaultEmbeddingFunction, Documents, Embeddings
 
-        def get(self) -> dict[str, list[str]]:
-            return {"ids": ["one", "two"]}
+    def synthetic_embedding(self: DefaultEmbeddingFunction, input: Documents) -> Embeddings:
+        return [np.array([1.0, 0.0], dtype=np.float32) for _ in input]
 
-        def delete(self, ids: list[str]) -> None:
-            self.deleted = ids
+    # Exercise real locks, GraphML and Chroma persistence without model inference.
+    monkeypatch.setattr(DefaultEmbeddingFunction, "__call__", synthetic_embedding)
+    storage = str(tmp_path / "gbrain")
+    with closing(GBrain(storage_dir=storage)) as brain:
+        assert isinstance(brain.collection, Collection)
+        brain.add_node("one", "note", "private knowledge one")
+        brain.add_node("two", "note", "private knowledge two")
+        brain.add_edge("one", "two", "related")
+        assert brain.graph.number_of_nodes() == 2
+        assert brain.graph.number_of_edges() == 1
+        assert set(brain.collection.get()["ids"]) == {"one", "two"}
+        assert brain.reward_tick == 3
+        if closed:
+            brain.close()
+            with pytest.raises(RuntimeError, match="Cannot clear a closed GBrain instance"):
+                brain.clear_all()
+        else:
+            assert brain.clear_all() == 2
+            assert brain.graph.number_of_nodes() == 0
+            assert brain.graph.number_of_edges() == 0
+            assert brain.collection.get()["ids"] == []
+            assert brain.reward_tick == 0
+            assert brain.clear_all() == 0
 
-    brain = object.__new__(GBrain)
-    brain.graph = nx.DiGraph()
-    brain.graph.add_nodes_from(["one", "two"])
-    brain.collection = Collection()
-    setattr(brain, "_closed", True)
-    setattr(brain, "_save_graph", MagicMock())
-
-    assert brain.clear_all() == 2
-    assert brain.graph.number_of_nodes() == 0
-    assert brain.collection.deleted == ["one", "two"]
-    cast(_CallMock, getattr(brain, "_save_graph")).assert_called_once_with()
+    with closing(GBrain(storage_dir=storage)) as reopened:
+        assert isinstance(reopened.collection, Collection)
+        expected_ids = {"one", "two"} if closed else set()
+        assert {node["id"] for node in reopened.export_all()} == expected_ids
+        assert set(reopened.collection.get()["ids"]) == expected_ids
+        assert reopened.graph.number_of_edges() == int(closed)
+        assert reopened.reward_tick == (3 if closed else 0)
 
 
 def test_durable_provider_runs_purge_only_for_all_scope() -> None:

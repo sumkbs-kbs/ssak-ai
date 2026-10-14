@@ -300,8 +300,10 @@ class TestFinalPromptPayload:
 
         payload = after.prompt_messages()
         serialized = "\n".join(m["content"] for m in payload)
-        # ordering: summary-first then retained tail
-        assert payload[0]["role"] == "system"
+        # Summary stays first without elevating user/tool prose to system authority.
+        assert after.messages[0].provenance == "summary"
+        assert payload[0] == {"role": "assistant", "content": after.summary}
+        assert payload[1:] == [{"role": m.role, "content": m.content} for m in after.messages[1:]]
         assert "NEVER-EDIT-CONSTRAINT" in serialized
         assert "[TOOL_EVIDENCE]" in serialized
         assert LATEST_INSTRUCTION in serialized
