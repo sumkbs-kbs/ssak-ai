@@ -29,8 +29,10 @@ from __future__ import annotations
 import os
 import re
 import shutil
+import signal
 import subprocess
 import sys
+import uuid
 from pathlib import Path
 
 import pytest
@@ -71,6 +73,7 @@ def _control_path() -> Path:
 def _run_ctl(*args: str, out_dir: Path | None = None, timeout: int = 300) -> subprocess.CompletedProcess[str]:
     env = dict(os.environ)
     env["NX10_REPO"] = str(REPO_ROOT)
+    env.setdefault("NX10_PYTHON", sys.executable)
     if out_dir is not None:
         env["NX10_OUT"] = str(out_dir)
     env.setdefault("NX10_PREFLIGHT_SKIP_THROUGHPUT", "1")
@@ -106,9 +109,16 @@ def test_script_parses():
     assert result.returncode == 0, f"bash -n 실패:\n{result.stderr[-800:]}"
 
 
-def test_selftest_covers_the_lifecycle():
+def test_selftest_covers_the_lifecycle(tmp_path: Path, monkeypatch):
     """자기시험이 실제로 수명주기를 돌리고 초록인가(진짜 soak 이 도는 중에도 통과해야 한다)."""
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    sentinel = outside / "soak-exit.txt"
+    sentinel.write_text("outside sentinel\n")
+    monkeypatch.setenv("NX10_SOAK_OUT_DIR", str(outside))
     result = _run_ctl("selftest", timeout=600)
+    assert sentinel.read_text() == "outside sentinel\n"
+    assert sorted(path.name for path in outside.iterdir()) == ["soak-exit.txt"]
     match = re.search(r"SOAK_CONTROL_SELFTEST: (\d+)/(\d+) passed", result.stdout)
     assert result.returncode == 0, f"자기시험 실패(exit {result.returncode}):\n{result.stdout[-1500:]}"
     assert match is not None, f"자기시험 요약줄이 없다:\n{result.stdout[-800:]}"
@@ -211,3 +221,35 @@ def test_run_refuses_when_a_soak_is_already_live(tmp_path: Path):
     assert "다른 soak 실행 없음" in combined and str(decoy.pid) in combined, combined[-800:]
     assert "거부" in combined, combined[-500:]
     assert not (tmp_path / ".soak-run.lock").exists(), "거절했는데 실행 잠금을 잡았다"
+
+
+def test_no_wait_returns_without_waiting_for_incomplete_run(tmp_path: Path) -> None:
+    environment = {
+        **os.environ,
+        "NX10_REPO": str(REPO_ROOT),
+        "NX10_OUT": str(tmp_path / "out"),
+        "NX10_SOAK_OUT_DIR": str(tmp_path / "out"),
+        "NX10_PYTHON": sys.executable,
+        "NX10_SOAK_PROC_PATTERN": "no-live-soak-" + uuid.uuid4().hex,
+        "NX10_HARVEST_SETTLE": "3600",
+    }
+    process = subprocess.Popen(
+        ["bash", str(_control_path()), "harvest", "--no-wait"],
+        env=environment,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        start_new_session=True,
+    )
+    try:
+        _, stderr = process.communicate(timeout=5)
+    except subprocess.TimeoutExpired:
+        os.killpg(process.pid, signal.SIGTERM)
+        process.communicate(timeout=5)
+        pytest.fail("--no-wait waited for an incomplete run")
+    finally:
+        if process.poll() is None:
+            os.killpg(process.pid, signal.SIGKILL)
+            process.wait(timeout=5)
+    assert process.returncode == NO_RUN_TO_HARVEST, stderr
+    assert not (tmp_path / "out").exists()

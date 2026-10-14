@@ -956,6 +956,7 @@ cmd_harvest() {
   # 잠금·프로세스가 사라졌다고 해서 블록이 완성된 것은 아니다(러너가 마지막 필드를 쓰는 중일 수 있다).
   # `NX10_HARVEST_SETTLE`(기본 120초)은 그 플러시를 기다리는 시간 — 자기시험은 짧게 준다.
   local settle=0 settle_max="${NX10_HARVEST_SETTLE:-120}"
+  [ "$no_wait" = 1 ] && settle_max=0
   while [ "$settle" -lt "$settle_max" ] && ! _block_complete; do
     sleep 5
     settle=$((settle + 5))
@@ -1040,6 +1041,7 @@ _fake_sched() { # $1=경로 $2=본문
 
 cmd_selftest() {
   local tmp d rc at fp
+  unset NX10_SOAK_OUT_DIR
   tmp="$(mktemp -d "${TMPDIR:-/tmp}/nx10-ctl-selftest-XXXXXX")"
   printf 'NX-10 soak 통제 자기시험 — 임시 루트 %s\n' "$tmp"
 

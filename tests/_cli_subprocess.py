@@ -7,10 +7,11 @@ macOS CLT 등)로 실행되면 `sys.executable`이 `antigravity_k`가 설치되�
 이 헬퍼는 다음 순서로 서브프로세스에 사용할 인터프리터를 고른다:
 
 1. ``AGK_TEST_PYTHON`` 환경변수 (명시적 지정 — CI에서 사용 가능)
-2. ``uv run`` 가능 여부 (프로젝트의 표준 실행 경로 — 의존성까지 보장)
-3. ``sys.executable``이 실제로 ``antigravity_k``를 임포트할 수 있는지 확인 후 사용
-4. 모두 실패하면 프로젝트 ``.venv/bin/python``이 존재할 때 사용
-5. 그래도 없으면 ``sys.executable`` (기존 동작 — 실패하더라도 기존과 동일)
+2. 활성 venv의 ``sys.executable``이 패키지를 임포트하면 그 환경 재사용
+3. ``uv run`` 가능 여부 (프로젝트 환경이 필요한 경우)
+4. ``sys.executable``이 실제로 ``antigravity_k``를 임포트할 수 있는지 확인 후 사용
+5. 모두 실패하면 프로젝트 ``.venv/bin/python``이 존재할 때 사용
+6. 그래도 없으면 ``sys.executable`` (기존 동작 — 실패하더라도 기존과 동일)
 
 함수는 (argv 접두어, 환경 덮어쓰기) 튜플을 반환한다.
 """
@@ -65,6 +66,9 @@ def resolve_interpreter(*, project: bool = False) -> tuple[list[str], dict[str, 
     explicit = os.environ.get("AGK_TEST_PYTHON")
     if explicit and Path(explicit).exists():
         return [explicit], {}
+
+    if sys.prefix != sys.base_prefix and _sys_executable_can_import_package():
+        return [sys.executable], {}
 
     if _has_uv():
         # uv run은 프로젝트 pyproject/uv.lock 기준 환경을 보장한다.
