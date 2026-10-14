@@ -131,6 +131,38 @@ class RAGIndexer:
         self._long_context_fusion: LongContextFusion = LongContextFusion()
         self._load_manifest()
 
+    def _uses_bound_vectors(self) -> bool:
+        return getattr(self.vector_store, "embedding_binding", None) is not None
+
+    def _check_bound_path(self, path: str) -> None:
+        if self._uses_bound_vectors():
+            root = Path(self.project_root).resolve()
+            if not Path(path).resolve().is_relative_to(root):
+                raise ValueError("Bound project RAG cannot access paths outside its project root.")
+
+    def _replace_bound_chunks(self, chunks: list[CodeChunk], sources: list[str]) -> None:
+        groups: dict[str, list[Mapping[str, object]]] = {source: [] for source in sources}
+        for chunk in chunks:
+            groups[chunk.file_path].append(
+                {
+                    "id": chunk.chunk_id,
+                    "text": chunk.content,
+                    "metadata": {
+                        "source": chunk.file_path,
+                        "node_type": chunk.node_type,
+                        "node_name": chunk.node_name,
+                        "start_line": chunk.start_line,
+                        "end_line": chunk.end_line,
+                        **chunk.metadata,
+                    },
+                }
+            )
+        replace = cast(
+            Callable[[Mapping[str, Sequence[Mapping[str, object]]]], None],
+            getattr(self.vector_store, "replace_sources"),
+        )
+        replace(groups)
+
     def _load_manifest(self) -> None:
         if self._manifest_path is None or not self._store_has_chunks() or not self._manifest_path.is_file():
             return
@@ -167,6 +199,9 @@ class RAGIndexer:
             logger.warning("[RAGIndexer] Could not persist manifest: %s", self._manifest_path)
 
     def index_project(self, subdirs: list[str] | None = None) -> int:
+        return self._index_project(subdirs, [])
+
+    def _index_project(self, subdirs: list[str] | None, removed_sources: list[str]) -> int:
         """프로젝트 전체 또는 지정된 하위 디렉토리를 인덱싱합니다.
 
         Returns:
@@ -178,8 +213,11 @@ class RAGIndexer:
         else:
             scan_dirs = [self.project_root]
 
+        for scan_dir in scan_dirs:
+            self._check_bound_path(scan_dir)
         all_chunks: list[CodeChunk] = []
         changed_files: list[str] = []
+        pending_hashes: dict[str, str] = {}
 
         for scan_dir in scan_dirs:
             if not os.path.isdir(scan_dir):
@@ -194,6 +232,7 @@ class RAGIndexer:
                         continue
 
                     fpath = os.path.join(root, fname)
+                    self._check_bound_path(fpath)
                     rel_path = os.path.relpath(fpath, self.project_root)
 
                     try:
@@ -207,7 +246,10 @@ class RAGIndexer:
                     content_hash = hashlib.md5(content.encode(), usedforsecurity=False).hexdigest()
                     if self._file_hashes.get(rel_path) == content_hash:
                         continue  # 변경 없음 → 스킵
-                    self._file_hashes[rel_path] = content_hash
+                    if self._uses_bound_vectors():
+                        pending_hashes[rel_path] = content_hash
+                    else:
+                        self._file_hashes[rel_path] = content_hash
                     changed_files.append(rel_path)
 
                     # 파일 유형별 청킹
@@ -220,6 +262,16 @@ class RAGIndexer:
 
                     self._annotate_chunks(chunks, content_hash)
                     all_chunks.extend(chunks)
+
+        if self._uses_bound_vectors():
+            for source in removed_sources:
+                self._check_bound_path(os.path.join(self.project_root, source))
+            self._replace_bound_chunks(all_chunks, [*changed_files, *removed_sources])
+            self._file_hashes.update(pending_hashes)
+            for source in removed_sources:
+                self._file_hashes.pop(source, None)
+            self._persist_manifest()
+            return len(all_chunks)
 
         if self.vector_store:
             delete_chunks = getattr(self.vector_store, "delete_file_chunks", None)
@@ -258,6 +310,8 @@ class RAGIndexer:
         else:
             scan_dirs = [self.project_root]
 
+        for scan_dir in scan_dirs:
+            self._check_bound_path(scan_dir)
         current_files: set[str] = set()
         for scan_dir in scan_dirs:
             if not os.path.isdir(scan_dir):
@@ -268,6 +322,7 @@ class RAGIndexer:
                     ext = Path(fname).suffix.lower()
                     if ext in INDEXABLE_EXTENSIONS:
                         fpath = os.path.join(root, fname)
+                        self._check_bound_path(fpath)
                         rel_path = os.path.relpath(fpath, self.project_root)
                         current_files.add(rel_path)
 
@@ -286,6 +341,8 @@ class RAGIndexer:
         else:
             manifest_files = set(self._file_hashes)
         deleted_files = manifest_files - current_files
+        if self._uses_bound_vectors():
+            return self._index_project(subdirs, sorted(deleted_files))
         for rel_path in deleted_files:
             del self._file_hashes[rel_path]
             if self.vector_store:
@@ -301,6 +358,7 @@ class RAGIndexer:
         if not os.path.isabs(file_path):
             abs_path = os.path.join(self.project_root, file_path)
 
+        self._check_bound_path(abs_path)
         if not os.path.isfile(abs_path):
             return 0
 
@@ -318,10 +376,12 @@ class RAGIndexer:
         # (원본 파일은 수정하지 않고, 청킹/라인 계산에만 정규화된 텍스트를 쓴다.)
         content = content.replace("\r\n", "\n").replace("\r", "\n")
 
-        self._file_hashes[rel_path] = hashlib.md5(content.encode(), usedforsecurity=False).hexdigest()
+        content_hash = hashlib.md5(content.encode(), usedforsecurity=False).hexdigest()
+        if not self._uses_bound_vectors():
+            self._file_hashes[rel_path] = content_hash
 
         # 기존 청크 삭제
-        if self.vector_store:
+        if self.vector_store and not self._uses_bound_vectors():
             self.vector_store.delete_file_chunks(rel_path)
 
         # 재청킹
@@ -332,7 +392,12 @@ class RAGIndexer:
         else:
             chunks = self._chunk_generic(rel_path, content)
 
-        self._annotate_chunks(chunks, self._file_hashes[rel_path])
+        self._annotate_chunks(chunks, content_hash)
+        if self._uses_bound_vectors():
+            self._replace_bound_chunks(chunks, [rel_path])
+            self._file_hashes[rel_path] = content_hash
+            self._persist_manifest()
+            return len(chunks)
         if self.vector_store and chunks:
             store_chunks = [
                 {

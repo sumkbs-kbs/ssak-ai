@@ -39,6 +39,7 @@ if TYPE_CHECKING:
     from fastapi import FastAPI
 
     from antigravity_k.engine.mode_manager import ModeManager
+    from antigravity_k.engine.project_embedding_binding import ProjectEmbeddingBinding
 
 
 type JsonPrimitive = str | int | float | bool | None
@@ -228,7 +229,9 @@ def _build_project_vault(project_root: str) -> VaultEngine | None:
             return None
 
 
-def _attach_project_rag_indexer(orchestrator: OrchestratorAgent, project_root: str) -> None:
+def _attach_project_rag_indexer(
+    orchestrator: OrchestratorAgent, project_root: str, *, embedding_binding: ProjectEmbeddingBinding | None = None
+) -> None:
     """Wire a real per-project RAGIndexer with vectors under the project root."""
     from antigravity_k.engine.project_memory_paths import project_rag_vector_dir
     from antigravity_k.engine.rag_indexer import RAGIndexer
@@ -236,8 +239,16 @@ def _attach_project_rag_indexer(orchestrator: OrchestratorAgent, project_root: s
 
     rag_dir = project_rag_vector_dir(project_root)
     try:
-        vector_store: object | None = VectorStore(str(rag_dir), collection_name="project_code")
+        vector_store: object | None
+        if embedding_binding is None:
+            vector_store = VectorStore(str(rag_dir), collection_name="project_code")
+        else:
+            vector_store = VectorStore(
+                str(rag_dir), collection_name="project_code", embedding_binding=embedding_binding
+            )
     except Exception:
+        if embedding_binding is not None:
+            raise
         logger.exception("Project RAG VectorStore init failed for %s", project_root)
         vector_store = None
     setattr(orchestrator, "_rag_indexer", RAGIndexer(project_root=project_root, vector_store=vector_store))

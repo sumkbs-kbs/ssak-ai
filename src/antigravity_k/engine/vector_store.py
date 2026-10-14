@@ -5,6 +5,13 @@ from collections.abc import Callable, Mapping, Sequence
 from types import TracebackType
 from typing import Protocol, cast, final
 
+from antigravity_k.engine.project_embedding_binding import (
+    DIMENSIONS_METADATA_KEY,
+    IDENTITY_METADATA_KEY,
+    ProjectEmbeddingBinding,
+    ProjectEmbeddingBindingError,
+)
+
 # 선택적 의존성. import 실패 시 전체 런타임 부팅을 막지 않도록 방어 로드.
 # chromadb는 VectorStore 인스턴스 생성 시점에만 필요하다.
 chromadb: object | None = None
@@ -32,17 +39,25 @@ MetadataValue = str | int | float | bool
 
 
 class _CollectionLike(Protocol):
+    @property
+    def metadata(self) -> Mapping[str, object] | None: ...
+
+    def modify(self, *, metadata: dict[str, MetadataValue]) -> object: ...
+
     def upsert(
         self,
         *,
         ids: list[str],
         documents: list[str],
         metadatas: list[dict[str, MetadataValue]],
+        embeddings: list[list[float]] | None = None,
     ) -> object: ...
 
-    def query(self, *, query_texts: list[str], n_results: int) -> dict[str, object]: ...
+    def query(
+        self, *, n_results: int, query_texts: list[str] | None = None, query_embeddings: list[list[float]] | None = None
+    ) -> dict[str, object]: ...
 
-    def get(self, include: list[str] | None = None) -> dict[str, object]: ...
+    def get(self, include: list[str] | None = None, *, limit: int | None = None) -> dict[str, object]: ...
 
     def delete(
         self,
@@ -57,12 +72,24 @@ class _CollectionLike(Protocol):
 class _ClientLike(Protocol):
     def get_or_create_collection(self, *, name: str) -> _CollectionLike: ...
 
+    def get_collection(self, *, name: str, embedding_function: None) -> _CollectionLike: ...
+
+    def create_collection(
+        self, *, name: str, embedding_function: None, metadata: dict[str, MetadataValue]
+    ) -> _CollectionLike: ...
+
 
 @final
 class VectorStore:
     """ChromaDB-backed vector store for RAG chunk storage and retrieval."""
 
-    def __init__(self, persist_directory: str, collection_name: str = "vault_notes"):
+    def __init__(
+        self,
+        persist_directory: str,
+        collection_name: str = "vault_notes",
+        *,
+        embedding_binding: ProjectEmbeddingBinding | None = None,
+    ):
         """Initialize the VectorStore.
 
         Args:
@@ -72,6 +99,12 @@ class VectorStore:
         """
         import os
 
+        self.embedding_binding = embedding_binding
+        self._preserve_shared_clients = embedding_binding is not None
+        self._collection_name = collection_name
+        self._write_uncertain = False
+        if embedding_binding is not None:
+            embedding_binding.revalidate()
         self.persist_directory = persist_directory
         os.makedirs(persist_directory, exist_ok=True)
         self._closed = False
@@ -89,6 +122,8 @@ class VectorStore:
         try:
             self.client = persistent_client(path=self.persist_directory)
         except KeyError:
+            if embedding_binding is not None:
+                raise
             # ChromaDB SharedSystemClient 캐시 충돌 시 Settings 으로 재시도
             logger.warning("ChromaDB 캐시 충돌 감지, Settings 모드로 재초기화합니다.")
             settings_factory = cast(Callable[..., object], Settings)
@@ -108,9 +143,35 @@ class VectorStore:
                 client_factory = cast(Callable[[], _ClientLike], getattr(chroma_module, "Client"))
                 self.client = client_factory()
 
-        # Get or create the collection.
         client = self.client
-        self.collection = client.get_or_create_collection(name=collection_name)
+        from chromadb.errors import NotFoundError
+
+        try:
+            existing = client.get_collection(name=collection_name, embedding_function=None)
+        except NotFoundError:
+            existing = None
+        if existing is not None:
+            metadata = existing.metadata or {}
+            if IDENTITY_METADATA_KEY in metadata:
+                self._preserve_shared_clients = True
+            if embedding_binding is None:
+                if IDENTITY_METADATA_KEY in metadata:
+                    raise ProjectEmbeddingBindingError("An explicit embedding binding is required for this collection.")
+            else:
+                self._validate_bound_collection(existing)
+        if embedding_binding is None:
+            self.collection = client.get_or_create_collection(name=collection_name)
+        elif existing is not None:
+            self.collection = existing
+        else:
+            self.collection = client.create_collection(
+                name=collection_name,
+                embedding_function=None,
+                metadata={
+                    IDENTITY_METADATA_KEY: embedding_binding.identity.serialized(),
+                    DIMENSIONS_METADATA_KEY: 0,
+                },
+            )
         logger.info(
             "Initialized ChromaDB VectorStore at %s, collection: %s",
             persist_directory,
@@ -131,11 +192,12 @@ class VectorStore:
         finally:
             try:
                 clear_system_cache = getattr(SharedSystemClient, "clear_system_cache", None)
-                if callable(clear_system_cache):
+                if not self._preserve_shared_clients and callable(clear_system_cache):
                     _ = clear_system_cache()
             except Exception:
                 logger.exception("VectorStore: clear_system_cache 실패")
             self.client = None
+            self.collection = None
 
     def __del__(self) -> None:
         self.close()
@@ -151,7 +213,39 @@ class VectorStore:
     ) -> None:
         self.close()
 
+    def _validate_bound_collection(self, collection: _CollectionLike) -> int:
+        binding = self.embedding_binding
+        if binding is None:
+            raise ProjectEmbeddingBindingError("An explicit embedding binding is required.")
+        binding.revalidate()
+        metadata = collection.metadata or {}
+        if metadata.get(IDENTITY_METADATA_KEY) != binding.identity.serialized():
+            raise ProjectEmbeddingBindingError(
+                "Collection embedding identity mismatch; no automatic migration is allowed."
+            )
+        observed = metadata.get(DIMENSIONS_METADATA_KEY)
+        if type(observed) is not int or observed < 0:
+            raise ProjectEmbeddingBindingError("Collection embedding dimension metadata is invalid.")
+        declared = binding.identity.configured_dimensions
+        if declared and observed and declared != observed:
+            raise ProjectEmbeddingBindingError("Collection embedding dimensions disagree with the binding.")
+        if collection.count():
+            if not observed:
+                raise ProjectEmbeddingBindingError("Collection embedding dimension commit is uncertain.")
+            stored = collection.get(include=["embeddings"], limit=1).get("embeddings")
+            rows = cast(Sequence[Sequence[float]], stored)
+            if stored is None or len(rows) != 1 or len(rows[0]) != observed:
+                raise ProjectEmbeddingBindingError("Persisted embedding dimensions disagree with collection metadata.")
+        return observed
+
     def _require_collection(self) -> _CollectionLike:
+        if self._closed:
+            raise RuntimeError("VectorStore is closed")
+        if self._write_uncertain:
+            raise ProjectEmbeddingBindingError("VectorStore embedding write outcome is uncertain; reopen before use.")
+        if self.embedding_binding is not None and self.client is not None:
+            self.collection = self.client.get_collection(name=self._collection_name, embedding_function=None)
+            _ = self._validate_bound_collection(self.collection)
         collection = self.collection
         if collection is None:
             raise RuntimeError("VectorStore collection is unavailable")
@@ -162,6 +256,7 @@ class VectorStore:
 
         Each chunk should have 'id', 'text', and 'metadata'.
         """
+        collection = self._require_collection()
         if not chunks:
             return
 
@@ -187,8 +282,59 @@ class VectorStore:
                 else:
                     safe_meta[k] = str(v)
             metadatas.append(safe_meta)
-        _ = self._require_collection().upsert(ids=ids, documents=documents, metadatas=metadatas)
+        self._upsert(collection, ids, documents, metadatas)
         logger.info("Upserted %s chunks into ChromaDB.", len(chunks))
+
+    def _upsert(
+        self,
+        collection: _CollectionLike,
+        ids: list[str],
+        documents: list[str],
+        metadatas: list[dict[str, MetadataValue]],
+    ) -> None:
+        binding = self.embedding_binding
+        if binding is None:
+            _ = collection.upsert(ids=ids, documents=documents, metadatas=metadatas)
+            return
+        observed = self._validate_bound_collection(collection)
+        vectors = binding.embed(documents, observed_dimensions=observed)
+        _ = collection.upsert(ids=ids, documents=documents, metadatas=metadatas, embeddings=vectors)
+        if not observed:
+            try:
+                metadata = dict(cast(Mapping[str, MetadataValue], collection.metadata or {}))
+                metadata[DIMENSIONS_METADATA_KEY] = len(vectors[0])
+                _ = collection.modify(metadata=metadata)
+            except Exception:
+                self._write_uncertain = True
+                raise
+
+    def replace_sources(self, sources: Mapping[str, Sequence[Mapping[str, object]]]) -> None:
+        """Validate/embed one complete source replacement before any native write or deletion."""
+        collection = self._require_collection()
+        if self.embedding_binding is None:
+            raise ProjectEmbeddingBindingError("Source replacement requires an explicit binding.")
+        chunks = [chunk for group in sources.values() for chunk in group]
+        for source, group in sources.items():
+            for chunk in group:
+                metadata = chunk.get("metadata")
+                if not isinstance(metadata, Mapping) or metadata.get("source") != source:
+                    raise ProjectEmbeddingBindingError("Replacement chunk source does not match its source group.")
+        new_ids = {str(chunk["id"]) for chunk in chunks}
+        old_rows = self.export_all()
+        if any(
+            row["id"] in new_ids and cast(Mapping[str, object], row["metadata"]).get("source") not in sources
+            for row in old_rows
+        ):
+            raise ProjectEmbeddingBindingError("Replacement IDs collide with another source.")
+        stale_ids = [
+            str(row["id"])
+            for row in old_rows
+            if cast(Mapping[str, object], row["metadata"]).get("source") in sources and row["id"] not in new_ids
+        ]
+        if chunks:
+            self.upsert_chunks(chunks)
+        if stale_ids:
+            _ = collection.delete(ids=stale_ids)
 
     def store_embedding(self, source_table: str, source_id: int, text: str) -> bool:
         self.upsert_chunks(
@@ -250,7 +396,7 @@ class VectorStore:
         return None
 
     def get_stats(self) -> dict[str, object]:
-        count = self.collection.count() if self.collection is not None else 0
+        count = self._require_collection().count()
         return {"available": True, "persist_directory": self.persist_directory, "count": count}
 
     def delete_file_chunks(self, file_path: str) -> None:
@@ -302,11 +448,7 @@ class VectorStore:
         changed = sum(old != new for old, new in zip(documents, safe_documents, strict=False))
         if ids:
             collection = self._require_collection()
-            _ = collection.upsert(
-                ids=ids,
-                documents=safe_documents,
-                metadatas=cast(list[dict[str, MetadataValue]], safe_metadatas),
-            )
+            self._upsert(collection, ids, safe_documents, cast(list[dict[str, MetadataValue]], safe_metadatas))
         return changed
 
     def apply_retention(self, max_age_days: int) -> int:
@@ -316,7 +458,15 @@ class VectorStore:
 
     def search(self, query: str, n_results: int = 5) -> list[dict[str, object]]:
         """Search for the most relevant chunks given a query string."""
-        results = self._require_collection().query(query_texts=[query], n_results=n_results)
+        collection = self._require_collection()
+        if self.embedding_binding is None:
+            results = collection.query(query_texts=[query], n_results=n_results)
+        else:
+            if not collection.count():
+                return []
+            observed = self._validate_bound_collection(collection)
+            vectors = self.embedding_binding.embed([query], query=True, observed_dimensions=observed)
+            results = collection.query(query_embeddings=vectors, n_results=n_results)
 
         # Format results
         formatted_results: list[dict[str, object]] = []
