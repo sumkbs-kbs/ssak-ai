@@ -596,8 +596,25 @@ class RAGIndexer:
 
         all_chunks = cast(Sequence[Mapping[str, object]] | None, getattr(self.vector_store, "_chunks", None))
         if all_chunks is None:
-            # VectorStore가 내부 청크 목록을 노출하지 않으면 시맨틱으로 폴백
-            return self.vector_store.search(query, n_results=n_results)
+            missing = object()
+            exporter = getattr(self.vector_store, "export_all", missing)
+            if exporter is missing:
+                return self.vector_store.search(query, n_results=n_results)
+            if not callable(exporter):
+                raise ValueError("Keyword corpus export must be callable.")
+            exported = cast(Callable[[], object], exporter)()
+            if not isinstance(exported, list):
+                raise ValueError("Keyword corpus export must be a list of records.")
+            records: list[Mapping[str, object]] = []
+            for raw_record in cast(list[object], exported):
+                if not isinstance(raw_record, dict):
+                    raise ValueError("Keyword corpus contains an invalid record.")
+                record = _as_record(raw_record)
+                identifier, document, metadata = record.get("id"), record.get("document"), record.get("metadata")
+                if not isinstance(identifier, str) or not isinstance(document, str) or not isinstance(metadata, dict):
+                    raise ValueError("Keyword corpus requires string IDs/documents and metadata records.")
+                records.append({"id": identifier, "text": document, "metadata": metadata})
+            all_chunks = records
 
         query_tokens = self._query_tokens(query)
         query_token_set = set(query_tokens)
