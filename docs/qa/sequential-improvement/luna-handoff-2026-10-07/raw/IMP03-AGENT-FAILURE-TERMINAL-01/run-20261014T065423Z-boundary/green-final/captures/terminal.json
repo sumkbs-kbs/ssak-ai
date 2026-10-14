@@ -1,0 +1,36 @@
+{
+  "mode": "terminal",
+  "request": {
+    "model": "qwen3.8",
+    "project_id": "default",
+    "messages": [
+      {
+        "role": "user",
+        "content": "안녕"
+      }
+    ],
+    "stream": true,
+    "agent_mode": true,
+    "max_tokens": 128
+  },
+  "sse": "event: error\ndata: {\"error\": {\"type\": \"agent_execution_error\", \"code\": \"task_failed\", \"message\": \"The agent execution failed. Please review the task before retrying.\"}}\n\n",
+  "tasks": [
+    {
+      "task_id": "direct_1ef3f7b1241a",
+      "prompt": "안녕",
+      "status": "failed",
+      "output": "",
+      "error": "The model provider returned an invalid or incomplete stream.",
+      "created_at": "2026-10-14T06:58:00.514083+00:00",
+      "updated_at": "2026-10-14T06:58:00.612205+00:00",
+      "completed_at": "2026-10-14T06:58:00.612205+00:00",
+      "version": 3,
+      "owner_pid": null
+    }
+  ],
+  "provider_calls": 1,
+  "retries": [],
+  "tool_dispatch": [],
+  "session_persistence": 0,
+  "conversation_persistence": 0
+}

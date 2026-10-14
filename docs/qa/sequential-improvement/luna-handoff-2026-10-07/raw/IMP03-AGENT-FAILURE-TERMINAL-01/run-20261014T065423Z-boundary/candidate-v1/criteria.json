@@ -1,0 +1,92 @@
+[
+  {
+    "scenario": "escaping",
+    "artifact": "scoped/captures/escaping.json",
+    "task_failed": true,
+    "error_event_count": 1,
+    "DONE_count": 0,
+    "final_count": 0,
+    "session_persistence": 0,
+    "conversation_persistence": 0,
+    "provider_attempts": 0,
+    "provider_retries": 0,
+    "tool_dispatch": 0,
+    "active_session": {
+      "done": false,
+      "error": "The model provider returned an invalid or incomplete stream.",
+      "is_active": false
+    }
+  },
+  {
+    "scenario": "generic",
+    "artifact": "scoped/captures/generic.json",
+    "task_failed": true,
+    "error_event_count": 1,
+    "DONE_count": 0,
+    "final_count": 0,
+    "session_persistence": 0,
+    "conversation_persistence": 0,
+    "provider_attempts": 0,
+    "provider_retries": 0,
+    "tool_dispatch": 0,
+    "active_session": {
+      "done": false,
+      "error": "The agent execution failed. Please review the task before retrying.",
+      "is_active": false
+    }
+  },
+  {
+    "scenario": "late",
+    "artifact": "scoped/captures/late.json",
+    "task_failed": true,
+    "error_event_count": 1,
+    "DONE_count": 0,
+    "final_count": 0,
+    "session_persistence": 0,
+    "conversation_persistence": 0,
+    "provider_attempts": 1,
+    "provider_retries": 0,
+    "tool_dispatch": 0,
+    "active_session": {
+      "done": false,
+      "error": "The agent execution failed. Please review the task before retrying.",
+      "is_active": false
+    }
+  },
+  {
+    "scenario": "terminal",
+    "artifact": "scoped/captures/terminal.json",
+    "task_failed": true,
+    "error_event_count": 1,
+    "DONE_count": 0,
+    "final_count": 0,
+    "session_persistence": 0,
+    "conversation_persistence": 0,
+    "provider_attempts": 1,
+    "provider_retries": 0,
+    "tool_dispatch": 0,
+    "active_session": {
+      "done": false,
+      "error": "The agent execution failed. Please review the task before retrying.",
+      "is_active": false
+    }
+  },
+  {
+    "scenario": "transport",
+    "artifact": "scoped/captures/transport.json",
+    "task_failed": true,
+    "error_event_count": 1,
+    "DONE_count": 0,
+    "final_count": 0,
+    "session_persistence": 0,
+    "conversation_persistence": 0,
+    "provider_attempts": 1,
+    "provider_retries": 0,
+    "tool_dispatch": 0,
+    "active_session": {
+      "done": false,
+      "error": "The agent execution failed. Please review the task before retrying.",
+      "is_active": false
+    }
+  }
+]

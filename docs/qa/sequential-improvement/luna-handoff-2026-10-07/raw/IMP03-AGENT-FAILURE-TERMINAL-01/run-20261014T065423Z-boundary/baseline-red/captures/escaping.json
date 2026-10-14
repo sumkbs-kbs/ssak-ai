@@ -1,0 +1,36 @@
+{
+  "mode": "escaping",
+  "request": {
+    "model": "qwen3.8",
+    "project_id": "default",
+    "messages": [
+      {
+        "role": "user",
+        "content": "안녕"
+      }
+    ],
+    "stream": true,
+    "agent_mode": true,
+    "max_tokens": 128
+  },
+  "sse": "data: {\"id\": \"chatcmpl-stream\", \"object\": \"chat.completion.chunk\", \"model\": \"qwen3.8\", \"choices\": [{\"delta\": {\"content\": \"partial-answer\"}, \"index\": 0, \"finish_reason\": null}]}\n\ndata: {\"choices\": [{\"delta\": {\"content\": \"\\n\\n[Error: The model provider returned an invalid or incomplete stream.]\"}, \"index\": 0, \"finish_reason\": \"error\"}]}\n\ndata: [DONE]\n\n",
+  "tasks": [
+    {
+      "task_id": "direct_c9f86c71a3af",
+      "prompt": "안녕",
+      "status": "failed",
+      "output": "partial-answer",
+      "error": "The model provider returned an invalid or incomplete stream.",
+      "created_at": "2026-10-14T07:02:02.511925+00:00",
+      "updated_at": "2026-10-14T07:02:02.517410+00:00",
+      "completed_at": "2026-10-14T07:02:02.517410+00:00",
+      "version": 2,
+      "owner_pid": null
+    }
+  ],
+  "provider_calls": 0,
+  "retries": [],
+  "tool_dispatch": [],
+  "session_persistence": 0,
+  "conversation_persistence": 0
+}

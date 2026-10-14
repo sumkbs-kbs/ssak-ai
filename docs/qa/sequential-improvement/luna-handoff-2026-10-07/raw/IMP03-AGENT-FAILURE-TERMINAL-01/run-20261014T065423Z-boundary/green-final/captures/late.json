@@ -1,0 +1,36 @@
+{
+  "mode": "late",
+  "request": {
+    "model": "qwen3.8",
+    "project_id": "default",
+    "messages": [
+      {
+        "role": "user",
+        "content": "안녕"
+      }
+    ],
+    "stream": true,
+    "agent_mode": true,
+    "max_tokens": 128
+  },
+  "sse": "data: {\"id\": \"chatcmpl-stream\", \"object\": \"chat.completion.chunk\", \"model\": \"qwen3.8\", \"choices\": [{\"delta\": {\"content\": \"partial-answer xxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}, \"index\": 0, \"finish_reason\": null}]}\n\nevent: error\ndata: {\"error\": {\"type\": \"agent_execution_error\", \"code\": \"task_failed\", \"message\": \"The agent execution failed. Please review the task before retrying.\"}}\n\n",
+  "tasks": [
+    {
+      "task_id": "direct_6f86f9153a08",
+      "prompt": "안녕",
+      "status": "failed",
+      "output": "partial-answer xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "error": "The model provider returned an invalid or incomplete stream.",
+      "created_at": "2026-10-14T06:58:00.649726+00:00",
+      "updated_at": "2026-10-14T06:58:00.660075+00:00",
+      "completed_at": "2026-10-14T06:58:00.660075+00:00",
+      "version": 3,
+      "owner_pid": null
+    }
+  ],
+  "provider_calls": 1,
+  "retries": [],
+  "tool_dispatch": [],
+  "session_persistence": 0,
+  "conversation_persistence": 0
+}

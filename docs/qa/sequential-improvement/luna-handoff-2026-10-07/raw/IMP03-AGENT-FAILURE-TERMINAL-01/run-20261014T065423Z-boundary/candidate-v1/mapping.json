@@ -1,0 +1,27 @@
+{
+  "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+  "head": "58ca7e3339759b26f7ed4d38f850c13e219a19a1",
+  "argv": [
+    "git",
+    "apply",
+    "--check",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/task-only-v2.patch"
+  ],
+  "returncode": 1,
+  "preimage_sha256": {
+    "dashboard/src/api/client.streamChannels.test.ts": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f",
+    "dashboard/src/api/client.ts": "38d036ff7b373dcda4275f9d7b640220c458fa640ef0965ca1898248fb8adb03",
+    "dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d",
+    "src/antigravity_k/api/routes/chat.py": "f6579addf31283be7f8d59f00841455b8e53a580b541de6a864b4fe210227ee5",
+    "src/antigravity_k/engine/agent_execution_error.py": null,
+    "src/antigravity_k/engine/direct_task_execution.py": "522a52c075e860532f1e2b243602c56a982b2f6baa725ad4fe90f8728efed275",
+    "src/antigravity_k/engine/tool_loop.py": "01042b76bfca7a2391ed1882005820078248c15b23ea548c320db7956fd76560",
+    "tests/test_agent_failure_terminal_contract.py": null,
+    "tests/test_agent_runtime.py": "5b41ed3a79a8bdae2b7dbf9afae2d9050a0ae8f8d72cebc0f7a2e73e1b90e4c7"
+  },
+  "adaptation_required": [
+    "chat catch hunk surrounding finally cleanup context only",
+    "tool_loop Native error import neighbor context only"
+  ],
+  "state": "awaiting root mapping authorization; no clean source edits"
+}

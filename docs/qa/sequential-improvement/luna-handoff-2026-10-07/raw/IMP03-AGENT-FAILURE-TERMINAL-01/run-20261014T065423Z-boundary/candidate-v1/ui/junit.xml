@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="45" failures="0" errors="0" time="0.849252959">
+    <testsuite name="src/api/client.streamChannels.test.ts" timestamp="2026-10-14T07:18:40.669Z" hostname="MrKui-MacBookPro.local" tests="25" failures="0" errors="0" skipped="0" time="0.009708625">
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; reports agent_execution_error/task_failed once after partial content without completing at EOF" time="0.003575792">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; reports provider_protocol_error/incomplete_stream once after partial content without completing at EOF" time="0.000762083">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; reports provider_protocol_error/invalid_stream once after partial content without completing at EOF" time="0.000578208">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; reports provider_protocol_error/upstream_stream_error once after partial content without completing at EOF" time="0.000321542">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; reports provider_transport_error/upstream_http_error once after partial content without completing at EOF" time="0.000473625">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; reports provider_transport_error/provider_unavailable once after partial content without completing at EOF" time="0.000264625">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; reports provider_transport_error/provider_timeout once after partial content without completing at EOF" time="0.000233209">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; stops on a typed stream error with split framing" time="0.000335583">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; stops on a typed stream error with unterminated framing" time="0.000745333">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; stops on a typed stream error with trailing-success framing" time="0.000217542">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; keeps legitimate content when an unrelated or malformed error field is &quot;error&quot;" time="0.000164125">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; keeps legitimate content when an unrelated or malformed error field is null" time="0.000075458">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; keeps legitimate content when an unrelated or malformed error field is {&quot;type&quot;:&quot;other_error&quot;,&quot;code&quot;:&quot;incomplete_stream&quot;,&quot;message&quot;:&quot;not recognized&quot;}" time="0.00008225">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; keeps legitimate content when an unrelated or malformed error field is {&quot;type&quot;:&quot;provider_protocol_error&quot;,&quot;code&quot;:&quot;other_code&quot;,&quot;message&quot;:&quot;not recognized&quot;}" time="0.000107875">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; keeps legitimate content when an unrelated or malformed error field is {&quot;type&quot;:&quot;provider_protocol_error&quot;,&quot;code&quot;:&quot;incomplete_stream&quot;,&quot;message&quot;:42}" time="0.000082375">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; keeps legitimate content when an unrelated or malformed error field is {&quot;type&quot;:&quot;provider_protocol_error&quot;,&quot;code&quot;:&quot;incomplete_stream&quot;,&quot;message&quot;:&quot;&quot;}" time="0.000138709">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; keeps legitimate content when an unrelated or malformed error field is {&quot;type&quot;:&quot;provider_protocol_error&quot;,&quot;message&quot;:&quot;missing code&quot;}" time="0.000074875">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; delivers status through its own handler without appending answer content" time="0.000162125">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; delivers an authoritative final independently while preserving legacy delta compatibility" time="0.000134542">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; ignores malformed channel data {&quot;agk_status&quot;:null}" time="0.0001275">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; ignores malformed channel data {&quot;agk_status&quot;:{&quot;text&quot;:42}}" time="0.000068917">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; ignores malformed channel data {&quot;agk_status&quot;:{}}" time="0.000060125">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; ignores malformed channel data {&quot;agk_final_content&quot;:null}" time="0.000064209">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; ignores malformed channel data {&quot;agk_final_content&quot;:{&quot;text&quot;:&quot;invalid&quot;}}" time="0.000056375">
+        </testcase>
+        <testcase classname="src/api/client.streamChannels.test.ts" name="chat stream status and final channels &gt; ignores malformed channel data {&quot;agk_final_content&quot;:42}" time="0.000126917">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx" timestamp="2026-10-14T07:18:40.671Z" hostname="MrKui-MacBookPro.local" tests="15" failures="0" errors="0" skipped="0" time="0.555206459">
+        <testcase classname="src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx" name="ChatPage conversation run ownership &gt; renders two chunks progressively in the single assistant message before completion" time="0.115260458">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx" name="ChatPage conversation run ownership &gt; keeps the reading position when scrolled away and offers a latest-response action" time="0.060993833">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx" name="ChatPage conversation run ownership &gt; does not reacquire ownership after switching away and back before late events arrive" time="0.028212917">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx" name="ChatPage conversation run ownership &gt; does not resurrect a deleted running conversation when late events arrive" time="0.026543208">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx" name="ChatPage conversation run ownership &gt; does not write a running response into a newly created conversation" time="0.026230583">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx" name="ChatPage conversation run ownership &gt; keeps a new run authoritative after Stop even when the stopped stream finishes late" time="0.050808833">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx" name="ChatPage conversation run ownership &gt; keeps each queued image with the prompt that owned it" time="0.072648625">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx" name="ChatPage conversation run ownership &gt; keeps an attachment-owned dependent turn editable when its parent stream fails" time="0.040642833">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx" name="ChatPage conversation run ownership &gt; does not drain the dependent queue after a conversation revision conflict" time="0.025083833">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx" name="ChatPage conversation run ownership &gt; does not drain the dependent queue after an Adaptive failure" time="0.026234">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx" name="ChatPage conversation run ownership &gt; deletes one queued turn and clears the remaining turns without sending them" time="0.034558209">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx" name="ChatPage conversation run ownership &gt; ignores a stale compaction result after navigating away and back" time="0.01728175">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx" name="ChatPage conversation run ownership &gt; ignores stale server history after navigating away and back" time="0.006619125">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx" name="ChatPage conversation run ownership &gt; does not start a history refresh while a new conversation run is streaming" time="0.014401417">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx" name="ChatPage conversation run ownership &gt; does not apply an idle history response after the source revision advances" time="0.008393333">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx" timestamp="2026-10-14T07:18:40.672Z" hostname="MrKui-MacBookPro.local" tests="5" failures="0" errors="0" skipped="0" time="0.284337875">
+        <testcase classname="src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx" name="ChatPage stream channel ownership &gt; preserves the queue and partial answer for provider_protocol_error with the real parser" time="0.119894">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx" name="ChatPage stream channel ownership &gt; preserves the queue and partial answer for agent_execution_error with the real parser" time="0.041484209">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx" name="ChatPage stream channel ownership &gt; shows progress as accessible working status without adding it to the assistant body" time="0.029207125">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx" name="ChatPage stream channel ownership &gt; replaces the streaming draft with the authoritative final and clears working status" time="0.035712459">
+        </testcase>
+        <testcase classname="src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx" name="ChatPage stream channel ownership &gt; ignores late final and status events from a stopped run while the next run owns the conversation" time="0.056780166">
+        </testcase>
+    </testsuite>
+</testsuites>

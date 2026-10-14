@@ -1,0 +1,83 @@
+{
+  "mode": "terminal",
+  "request": {
+    "model": "qwen3.8",
+    "project_id": "default",
+    "messages": [
+      {
+        "role": "user",
+        "content": "안녕"
+      }
+    ],
+    "stream": true,
+    "agent_mode": true,
+    "max_tokens": 128
+  },
+  "sse": "event: error\ndata: {\"error\": {\"type\": \"agent_execution_error\", \"code\": \"task_failed\", \"message\": \"The agent execution failed. Please review the task before retrying.\"}}\n\n",
+  "tasks": [
+    {
+      "task_id": "direct_c08231a3c105",
+      "prompt": "안녕",
+      "status": "failed",
+      "output": "",
+      "error": "The model provider returned an invalid or incomplete stream.",
+      "created_at": "2026-10-14T07:03:54.484947+00:00",
+      "updated_at": "2026-10-14T07:03:54.516490+00:00",
+      "completed_at": "2026-10-14T07:03:54.516490+00:00",
+      "version": 3,
+      "owner_pid": null
+    }
+  ],
+  "provider_calls": 1,
+  "provider_attempts": [
+    "stream_generate"
+  ],
+  "wire_requests": [
+    {
+      "model": "qwen3.8",
+      "stream": true,
+      "keep_alive": "30m",
+      "think": false,
+      "options": {
+        "num_ctx": 32768,
+        "num_predict": 4096,
+        "temperature": 0.2,
+        "repeat_penalty": 1.1,
+        "min_p": 0.0
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "/no_think\nAnswer directly. Do not output hidden reasoning, thinking traces, <think>, or <thought> blocks."
+        },
+        {
+          "role": "user",
+          "content": "Read sentinel"
+        }
+      ],
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "parameters": {
+              "type": "object"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "upstream_raw_hex_or_error_type": [
+    "7b226d657373616765223a207b22746f6f6c5f63616c6c73223a205b7b2266756e6374696f6e223a207b226e616d65223a2022726561645f66696c65222c2022617267756d656e7473223a207b2266696c655f70617468223a202273656e74696e656c227d7d7d5d7d2c2022646f6e65223a2066616c73657d0a7b226572726f72223a2022505249564154455f4147454e545f534543524554227d0a"
+  ],
+  "active_session": {
+    "done": false,
+    "error": "The agent execution failed. Please review the task before retrying.",
+    "is_active": false
+  },
+  "retries": [],
+  "tool_dispatch": [],
+  "session_persistence": 0,
+  "conversation_persistence": 0
+}

@@ -1,0 +1,6 @@
+{
+  "head": "58ca7e3339759b26f7ed4d38f850c13e219a19a1",
+  "git_status": " M dashboard/src/api/client.streamChannels.test.ts\n M dashboard/src/api/client.ts\n M dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx\n M src/antigravity_k/api/routes/chat.py\n M src/antigravity_k/engine/direct_task_execution.py\n M src/antigravity_k/engine/tool_loop.py\n M tests/test_agent_runtime.py\n?? src/antigravity_k/engine/agent_execution_error.py\n?? tests/test_agent_failure_terminal_contract.py\n",
+  "only_owned9_changed": true,
+  "python_source_stable_through_tests": true
+}

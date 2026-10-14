@@ -1,0 +1,3862 @@
+{
+  "scope": "Published owned agent failure boundary QA subset; original sealed worker manifests describe larger local scopes",
+  "feature_commit": "fa31135b1d2a97ce721d60c13c050ae087810117",
+  "files": [
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-final-red/captures/escaping.json",
+      "bytes": 1476,
+      "sha256": "84b5499627d9350496493eb491823ef1c11a4bbb93bc6f31c8f3fb18c516978e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-final-red/captures/generic.json",
+      "bytes": 1355,
+      "sha256": "37bfd97519c3f6027147b53acf19ed33c7d2340dfb071e3f13cb8564106a786a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-final-red/captures/late.json",
+      "bytes": 2662,
+      "sha256": "67192770ae6bd3f994a3206808a2d585d0e6d0684705d3069d38f01bce4b2c98"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-final-red/captures/terminal.json",
+      "bytes": 2765,
+      "sha256": "9d77a75957376460dbf58861ef2c4cb3f81f2680a53abd44a4291320dd0766cd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-final-red/captures/transport.json",
+      "bytes": 2471,
+      "sha256": "9630511ce9c7c27974ca3926cddaf30958abb4cf7ca0d0fe29aebf8223b6e8b1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-final-red/effective-source-overrides.json",
+      "bytes": 507,
+      "sha256": "990f1170b3a1de6b153cd6023a45a1b95c0b6d0ca6eef33687ae6fc25a4f1586"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-final-red/exit.json",
+      "bytes": 21,
+      "sha256": "0b2eabe584457faab9ce76edc31b4090730dbb54f1deb2a88179f1794516275e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-final-red/invocation.json",
+      "bytes": 144604,
+      "sha256": "81aa77dada581a39dc31cc0123ef971580dd9196d287f9d39ac884511433ffc1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-final-red/junit.xml",
+      "bytes": 10843,
+      "sha256": "c20fa6cd863accaabdaeebb7c25e7fa7798f2cbc728838451798dcdc474065e1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-overlay/src/antigravity_k/api/routes/chat.py",
+      "bytes": 64229,
+      "sha256": "79cb99a0ece7bffee7c85b7bd7e1444a77b6b5934fab8e5a80ba38e9e38b1100"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-overlay/src/antigravity_k/engine/direct_task_execution.py",
+      "bytes": 19299,
+      "sha256": "604c47f1877ca90e7717c6d411c2c8b2175749071a6358cdd7fac95819771a40"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-overlay/src/antigravity_k/engine/tool_loop.py",
+      "bytes": 153587,
+      "sha256": "93a2d83861faaecc8c378f1b56598bd716f1e7d8083be1ee890db8b57e10a625"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-red/captures/escaping.json",
+      "bytes": 1240,
+      "sha256": "2f1a5ab895ade9c26c0bbd5e10dc8581f647a20f63a25bb2efa77cb92234df64"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-red/captures/generic.json",
+      "bytes": 1159,
+      "sha256": "cbcadaae875e8672ba25863b6f123dc4bdd460dc3aa962dae598461303b5034c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-red/captures/late.json",
+      "bytes": 1664,
+      "sha256": "3f223ef3a01c52e04dc15d31abbf922fa502e2a2925abacb4ec7ee80c0a51cb6"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-red/captures/terminal.json",
+      "bytes": 1435,
+      "sha256": "3c26b4e73f399e94e4035f12534b3f654a1ca416030f864c17c3021f60b4ed2f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-red/captures/transport.json",
+      "bytes": 1441,
+      "sha256": "45de0237fcd2f519a131b66fe4635b769ec4f2e07e660ff202693964c0762eb4"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-red/effective-source-overrides.json",
+      "bytes": 507,
+      "sha256": "990f1170b3a1de6b153cd6023a45a1b95c0b6d0ca6eef33687ae6fc25a4f1586"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-red/exit.json",
+      "bytes": 21,
+      "sha256": "0b2eabe584457faab9ce76edc31b4090730dbb54f1deb2a88179f1794516275e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-red/invocation.json",
+      "bytes": 144592,
+      "sha256": "30d031602b3b72916d456b71a25c697c6aaae38911871702e57be01dfda14239"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-red/junit.xml",
+      "bytes": 10838,
+      "sha256": "3ae05502266f4ef2ae832e58edd48831876402e0c4903d11e2b9c25baacb66ee"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-segfault/effective-source-overrides.json",
+      "bytes": 507,
+      "sha256": "990f1170b3a1de6b153cd6023a45a1b95c0b6d0ca6eef33687ae6fc25a4f1586"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-segfault/exit.json",
+      "bytes": 23,
+      "sha256": "6f52a3e44363f202b674823cdca1e99199eb7ca4b13347870c5270e6900d78b5"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-segfault/invocation.json",
+      "bytes": 144631,
+      "sha256": "ef5a0e295b123add36500abf2b529bde03f67624ea4b2bd344214dfc1b69b3f1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline.json",
+      "bytes": 527,
+      "sha256": "29bc104b6f8fe1a58c1069982d98e1dfa44c22bde3489608cc372baf5f7c73bb"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-segfault/exit.json",
+      "bytes": 23,
+      "sha256": "6f52a3e44363f202b674823cdca1e99199eb7ca4b13347870c5270e6900d78b5"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-segfault/invocation.json",
+      "bytes": 144267,
+      "sha256": "ccb59564bcbeec7d046ef26b0aa24a0ed5bac1d9ab88a73d1016cb57ef40eefc"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/criteria.json",
+      "bytes": 2427,
+      "sha256": "1b89ee25d85b4a29280881f12ec10ab78f55d30c859811dd7a914b3233425dd9"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/handoff-ko.md",
+      "bytes": 2891,
+      "sha256": "faf12e8ebae68ac16c7e2a61e4cc3fb3d6e5a115a2489dbd0c2950ff4f2ffcc5"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/mapping.json",
+      "bytes": 1603,
+      "sha256": "c30e769a4cdab90816872e9453bd861b4165eb73e05c1d5132a3cfd8c60b89af"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/offline_guard.py",
+      "bytes": 1103,
+      "sha256": "6c731d53e9478789eb5bb37cc70f581928ea4b55d2b7436b5f9328d6c8a3d898"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/preimage/dashboard/src/api/client.streamChannels.test.ts",
+      "bytes": 6568,
+      "sha256": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/preimage/dashboard/src/api/client.ts",
+      "bytes": 33195,
+      "sha256": "38d036ff7b373dcda4275f9d7b640220c458fa640ef0965ca1898248fb8adb03"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/preimage/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "bytes": 6994,
+      "sha256": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/preimage/src/antigravity_k/api/routes/chat.py",
+      "bytes": 65382,
+      "sha256": "f6579addf31283be7f8d59f00841455b8e53a580b541de6a864b4fe210227ee5"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/preimage/src/antigravity_k/engine/direct_task_execution.py",
+      "bytes": 19161,
+      "sha256": "522a52c075e860532f1e2b243602c56a982b2f6baa725ad4fe90f8728efed275"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/preimage/src/antigravity_k/engine/tool_loop.py",
+      "bytes": 136030,
+      "sha256": "01042b76bfca7a2391ed1882005820078248c15b23ea548c320db7956fd76560"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/preimage/tests/test_agent_runtime.py",
+      "bytes": 38963,
+      "sha256": "5b41ed3a79a8bdae2b7dbf9afae2d9050a0ae8f8d72cebc0f7a2e73e1b90e4c7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/protected-check.json",
+      "bytes": 586,
+      "sha256": "c25508acfe50ea866bf4fe6797a7302639b1f003d287833962d591dcd5c6bbdb"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/reconstruction/dashboard/src/api/client.streamChannels.test.ts",
+      "bytes": 6614,
+      "sha256": "4b03be24f53c31e7f2f53e2025cbb4afd468319f4663b5e216a4e3c19f5f583e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/reconstruction/dashboard/src/api/client.ts",
+      "bytes": 33345,
+      "sha256": "f3362f88f6979897501f52e1216e2bcb4b4d44ea4cea635bf9cf5609b548d2c6"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/reconstruction/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "bytes": 7060,
+      "sha256": "fa9a5e22e83d1eac52dd0c7ac33200c808db28933d21d077023f6b7f3257df7e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/reconstruction/src/antigravity_k/api/routes/chat.py",
+      "bytes": 65398,
+      "sha256": "e21e9fa93d92aae9e90c4d975cf42e51c5d8b821a755ed57694ff592d0e2a7f3"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/reconstruction/src/antigravity_k/engine/agent_execution_error.py",
+      "bytes": 355,
+      "sha256": "52262dac95ad5b67ddc9aaea1689f37019454b7d610b0e8a0e644987d3dbfb30"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/reconstruction/src/antigravity_k/engine/direct_task_execution.py",
+      "bytes": 19333,
+      "sha256": "bcf222bee7c208f84dc24457b36580b61e54cc97299030840b00ef82959c2db2"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/reconstruction/src/antigravity_k/engine/tool_loop.py",
+      "bytes": 136734,
+      "sha256": "500b3fb7302845f5abd37b602ff99129783a5362653314a6f4985b6d2cee28f2"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/reconstruction/tests/test_agent_failure_terminal_contract.py",
+      "bytes": 5193,
+      "sha256": "274f5fb79cd9f4d73bd6877b15c189c51b5b06c420dba0dda36f36b0d9337490"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/reconstruction/tests/test_agent_runtime.py",
+      "bytes": 39698,
+      "sha256": "610f529f4a756f873418bcc309831c82c13ac2d42bd57dc1df2379caa22191eb"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/reconstruction.json",
+      "bytes": 1019,
+      "sha256": "fb0bd70058d6b72223773493d0bd184f437845d1748ae66e6c09a072932b318c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/run_check.py",
+      "bytes": 1294,
+      "sha256": "df79d7ebd191e56639cb8b4d4185fa4224f5249fae0a22b310d00958b9c994ae"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/scoped/captures/escaping.json",
+      "bytes": 1470,
+      "sha256": "71eb6bb2610ca419c90cb484173b31f6213c0de851862c0ffeb941f25ccaae3c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/scoped/captures/generic.json",
+      "bytes": 1435,
+      "sha256": "29d6704a4a0de1ae35457c44ae63c2ac747558afeb3ef539e2c7b9acc0481519"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/scoped/captures/late.json",
+      "bytes": 2328,
+      "sha256": "13c1fdc942fc24e75f45db62970cd32696a941c71ab208669050de59bec72337"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/scoped/captures/terminal.json",
+      "bytes": 2388,
+      "sha256": "d1f20765cd838c4b8e11c49ba2d270c40efb31136a3bb58f9627ee1af89e09e1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/scoped/captures/transport.json",
+      "bytes": 2066,
+      "sha256": "ae455606fa3d622ca3baabe4518421ffd29dd7b60c1f823125f0ec8698e2f37b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/scoped/exit.json",
+      "bytes": 17,
+      "sha256": "c365161d39236fe0f1d32937fbc549796b8487d8faf65ed3879b96897c78ea5d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/scoped/invocation.json",
+      "bytes": 142221,
+      "sha256": "82f0502daf7b806293ab7c8fdab13ca8b5e4bba0fca5e7a962718e6d5242e21e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/scoped/junit.xml",
+      "bytes": 30882,
+      "sha256": "a5e1308b820e96bcfb17acdffd755783704a1bc0d4c9937e5fee9b66ab9bff39"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/scoped/module-socket-binding.json",
+      "bytes": 99252,
+      "sha256": "7b1463e2b77216716e929327a90c72f6aadcfb5c4a8fc83765bfd7565c642edb"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/sealed-manifest.json",
+      "bytes": 5730,
+      "sha256": "643627bf57d6d1f663b216c57a99b544e90e070b1a9b8a74de6e059e0cc19833"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/seven-files.patch",
+      "bytes": 11157,
+      "sha256": "01ac5f04c48948419c729f030c35b933d5a740207db7983325c06e74bc9ae69b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/source/dashboard/src/api/client.streamChannels.test.ts",
+      "bytes": 6614,
+      "sha256": "4b03be24f53c31e7f2f53e2025cbb4afd468319f4663b5e216a4e3c19f5f583e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/source/dashboard/src/api/client.ts",
+      "bytes": 33345,
+      "sha256": "f3362f88f6979897501f52e1216e2bcb4b4d44ea4cea635bf9cf5609b548d2c6"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/source/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "bytes": 7060,
+      "sha256": "fa9a5e22e83d1eac52dd0c7ac33200c808db28933d21d077023f6b7f3257df7e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/source/src/antigravity_k/api/routes/chat.py",
+      "bytes": 65398,
+      "sha256": "e21e9fa93d92aae9e90c4d975cf42e51c5d8b821a755ed57694ff592d0e2a7f3"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/source/src/antigravity_k/engine/agent_execution_error.py",
+      "bytes": 355,
+      "sha256": "52262dac95ad5b67ddc9aaea1689f37019454b7d610b0e8a0e644987d3dbfb30"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/source/src/antigravity_k/engine/direct_task_execution.py",
+      "bytes": 19333,
+      "sha256": "bcf222bee7c208f84dc24457b36580b61e54cc97299030840b00ef82959c2db2"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/source/src/antigravity_k/engine/tool_loop.py",
+      "bytes": 136734,
+      "sha256": "500b3fb7302845f5abd37b602ff99129783a5362653314a6f4985b6d2cee28f2"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/source/tests/test_agent_failure_terminal_contract.py",
+      "bytes": 5193,
+      "sha256": "274f5fb79cd9f4d73bd6877b15c189c51b5b06c420dba0dda36f36b0d9337490"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/source/tests/test_agent_runtime.py",
+      "bytes": 39698,
+      "sha256": "610f529f4a756f873418bcc309831c82c13ac2d42bd57dc1df2379caa22191eb"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/source-binding.json",
+      "bytes": 1841,
+      "sha256": "fe649993f91e3bc86d702aa5580948336c91962fab3cc0ab7355624e7a018399"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/static/basedpyright/receipt.json",
+      "bytes": 1146,
+      "sha256": "af0178d6918a99c08355f8934e1524bfabc1305096365aacbfca7acd803d6bed"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/static/format/receipt.json",
+      "bytes": 1227,
+      "sha256": "a36885d45c30274d8a1f4b3f9fb5f422ed0bb51e894d6fab294e971fffd2ff09"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/static/memory-compile/receipt.json",
+      "bytes": 1350,
+      "sha256": "4daae493ac6211a1c3a5f52722f18e2df10a9c8a6b8ce45f804e5eeaf3a61344"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/static/ruff/receipt.json",
+      "bytes": 1211,
+      "sha256": "9657057e16ab0f5f9c8d6a60b72f6477e96afe05cde33294c1345ca5a2f85762"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/task-only.patch",
+      "bytes": 14804,
+      "sha256": "d7753b6f4eb2e44312769a622e4adfe847ce9ec622e4e531da8a3fe2bb866799"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/ui/exit.json",
+      "bytes": 17,
+      "sha256": "c365161d39236fe0f1d32937fbc549796b8487d8faf65ed3879b96897c78ea5d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/ui/invocation.json",
+      "bytes": 41246,
+      "sha256": "e29c2000a1384431c7006e782ca71bdaf8fe62ee5f616a52c2367fd8d7527ab1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/ui/junit.xml",
+      "bytes": 12507,
+      "sha256": "72dd88ded674a3cd503ca088465455afe3ad9665ddad25ac76a364a585d6b0d0"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/criteria.json",
+      "bytes": 3198,
+      "sha256": "e3ceb69e301fc10b3f064e70c4f95461d7122b0d4dd33c0d12522bed4a96416d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-bound-green/captures/escaping.json",
+      "bytes": 1470,
+      "sha256": "5f7e851dcc34f8eb7e28a27a9988873f9d1098832486fdcbca82f4ff07c8fd67"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-bound-green/captures/generic.json",
+      "bytes": 1435,
+      "sha256": "e4a41c7afeda72a1e86bbc6d0aa0e3a428429a9422617660e2f0f1b415fedc6d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-bound-green/captures/late.json",
+      "bytes": 2328,
+      "sha256": "2cdb587ac27c5c993cfb678c778b04e77244392e0e681121dcabc7caa7ace3d9"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-bound-green/captures/terminal.json",
+      "bytes": 2388,
+      "sha256": "2383763a278029770f7039c5427b9f550560fe462b3b4c66c23f16e8a062fa72"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-bound-green/captures/transport.json",
+      "bytes": 2066,
+      "sha256": "c9eb11088d647ac30265d376006831eba90f8be413cb52b3a0d2f350ba68c4bc"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-bound-green/exit.json",
+      "bytes": 21,
+      "sha256": "a02d222e1be4a3d356cac5372aa177b9048c9baaa90b42f86d8cfae4569f1286"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-bound-green/invocation.json",
+      "bytes": 144535,
+      "sha256": "2e785cecfde7ba9c8f578831cb0c888423a21bb7fe9a6521d0d23fe4b3d319d9"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-bound-green/junit.xml",
+      "bytes": 26808,
+      "sha256": "4c43641760afdf9d1d041d64f674d2f9f3171c19895ae2f8e44120f54a32f369"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-bound-red/captures/escaping.json",
+      "bytes": 1470,
+      "sha256": "0e83d9e7fe5dd73dd8880445eac8121ec3d49ad9dd6a129ef6ab6621e6a9932b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-bound-red/captures/generic.json",
+      "bytes": 1435,
+      "sha256": "4ad105dd079176f64b991e29fb36dc7e764469ab558098253b314a4ed3f4440d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-bound-red/captures/late.json",
+      "bytes": 2328,
+      "sha256": "c72401d7f7e56fb70b2f5762529e8c31d95830938390654219ed1bd79cae77ab"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-bound-red/captures/terminal.json",
+      "bytes": 2388,
+      "sha256": "9d43c04a100fd659e0d1a7828e714c99a77c3c90da28be65075d26b30bdcef61"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-bound-red/captures/transport.json",
+      "bytes": 2066,
+      "sha256": "42c2cc0d4d9ec7a9879b8ce14090f9c2c21995e2ddabe6adefe03c8ca3e7594f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-bound-red/exit.json",
+      "bytes": 21,
+      "sha256": "a02d222e1be4a3d356cac5372aa177b9048c9baaa90b42f86d8cfae4569f1286"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-bound-red/invocation.json",
+      "bytes": 144232,
+      "sha256": "810408cc29f8aa394ff2cff094f433bbd21f42b3b6b1a8b6087a7d2c12bcaaf3"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-bound-red/junit.xml",
+      "bytes": 1044,
+      "sha256": "c567233dac9083fd0492a8a29b2469259088d33ff7f150b951aa735dda4a9635"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-regression/captures/escaping.json",
+      "bytes": 1234,
+      "sha256": "6ad3293e9e336addb984d245701a029d67301ee9f900e478ead0b324f3efa2c8"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-regression/captures/generic.json",
+      "bytes": 1192,
+      "sha256": "ea121e5d9c5a9d7f60ad7037f43cec40766a9110484c4becd067dcbe43e092fe"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-regression/captures/late.json",
+      "bytes": 1287,
+      "sha256": "b1121a71f32604b2ba6c6102edca96f0b8679783dad1e5681d96c035b9c0d334"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-regression/captures/terminal.json",
+      "bytes": 1015,
+      "sha256": "36706ed585fd1bdd1955d65d878d3c4283cf48846f09994b2d6141ad7c8818ac"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-regression/captures/transport.json",
+      "bytes": 993,
+      "sha256": "0f35d2147f73c6fe42651c9041cfb7152c2f2404e677ec6c0b11247dd547b55c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-regression/exit.json",
+      "bytes": 21,
+      "sha256": "a02d222e1be4a3d356cac5372aa177b9048c9baaa90b42f86d8cfae4569f1286"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-regression/invocation.json",
+      "bytes": 144533,
+      "sha256": "bee352410d11de186f7cf51a8503ed9518674114dcd736a6103257b636d320db"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-regression/junit.xml",
+      "bytes": 26808,
+      "sha256": "42d1d4f0b97b5a85fc623c0c0339bacc0ab20078268a017053d329436e45fef4"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source/dashboard/src/api/client.streamChannels.test.ts",
+      "bytes": 6614,
+      "sha256": "4b03be24f53c31e7f2f53e2025cbb4afd468319f4663b5e216a4e3c19f5f583e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source/dashboard/src/api/client.ts",
+      "bytes": 33274,
+      "sha256": "a6fcab1e0892dccce853711109099b3803811237c266aaea219458acc519e613"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "bytes": 7060,
+      "sha256": "fa9a5e22e83d1eac52dd0c7ac33200c808db28933d21d077023f6b7f3257df7e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source/src/antigravity_k/api/routes/chat.py",
+      "bytes": 64245,
+      "sha256": "76552607978893a6ec142b909d5eb071ccc67c1282a0c36685fd65e7189cf999"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source/src/antigravity_k/engine/agent_execution_error.py",
+      "bytes": 355,
+      "sha256": "52262dac95ad5b67ddc9aaea1689f37019454b7d610b0e8a0e644987d3dbfb30"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source/src/antigravity_k/engine/direct_task_execution.py",
+      "bytes": 19471,
+      "sha256": "fde05d1ef05cad512b3b51af7550b1ddfae00d677362a815597f363d98000f67"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source/src/antigravity_k/engine/tool_loop.py",
+      "bytes": 154291,
+      "sha256": "7a62c4fa32d8a92a2922bb21a56650fee324618f608cbd8664b72b7788f16951"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source/tests/test_agent_failure_terminal_contract.py",
+      "bytes": 5193,
+      "sha256": "274f5fb79cd9f4d73bd6877b15c189c51b5b06c420dba0dda36f36b0d9337490"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source/tests/test_agent_runtime.py",
+      "bytes": 39142,
+      "sha256": "7fb50ef6da3a703461d000d44eca459778b0a51d00bffe3b9766c26a9c24e8ff"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source-v2/dashboard/src/api/client.streamChannels.test.ts",
+      "bytes": 6614,
+      "sha256": "4b03be24f53c31e7f2f53e2025cbb4afd468319f4663b5e216a4e3c19f5f583e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source-v2/dashboard/src/api/client.ts",
+      "bytes": 33274,
+      "sha256": "a6fcab1e0892dccce853711109099b3803811237c266aaea219458acc519e613"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source-v2/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "bytes": 7060,
+      "sha256": "fa9a5e22e83d1eac52dd0c7ac33200c808db28933d21d077023f6b7f3257df7e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source-v2/src/antigravity_k/api/routes/chat.py",
+      "bytes": 64245,
+      "sha256": "76552607978893a6ec142b909d5eb071ccc67c1282a0c36685fd65e7189cf999"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source-v2/src/antigravity_k/engine/agent_execution_error.py",
+      "bytes": 355,
+      "sha256": "52262dac95ad5b67ddc9aaea1689f37019454b7d610b0e8a0e644987d3dbfb30"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source-v2/src/antigravity_k/engine/direct_task_execution.py",
+      "bytes": 19471,
+      "sha256": "fde05d1ef05cad512b3b51af7550b1ddfae00d677362a815597f363d98000f67"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source-v2/src/antigravity_k/engine/tool_loop.py",
+      "bytes": 154291,
+      "sha256": "7a62c4fa32d8a92a2922bb21a56650fee324618f608cbd8664b72b7788f16951"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source-v2/tests/test_agent_failure_terminal_contract.py",
+      "bytes": 5193,
+      "sha256": "274f5fb79cd9f4d73bd6877b15c189c51b5b06c420dba0dda36f36b0d9337490"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/final-source-v2/tests/test_agent_runtime.py",
+      "bytes": 39698,
+      "sha256": "610f529f4a756f873418bcc309831c82c13ac2d42bd57dc1df2379caa22191eb"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/green/captures/escaping.json",
+      "bytes": 1234,
+      "sha256": "a7d25f3e7d8cfae629ff7cfb865e4908403611619523a5296fd1a915cea61742"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/green/captures/generic.json",
+      "bytes": 1192,
+      "sha256": "5ee0e5fffac66bdbfbcd19cc5a0440b68cdd01b4138a8466a430f6ed48d2e5c2"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/green/captures/late.json",
+      "bytes": 1205,
+      "sha256": "58915b32bce6ea6a12d2d374052d9eae66796db3b7ce8d417527c7aa08dbe8ee"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/green/captures/terminal.json",
+      "bytes": 1015,
+      "sha256": "e2528f52e24319625745a94802a3d619c8911cab51ed8a4303ef7e9bb99a281b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/green/captures/transport.json",
+      "bytes": 993,
+      "sha256": "81b0720d3b74aedf53559786d2a0aa3cc2a65e61091e8026a353801ce575b8a6"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/green/junit.xml",
+      "bytes": 2661,
+      "sha256": "eaf3442bc314309a917b1e30756cf58acbbdb3b44537c7808f702fe3824914f1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/green-final/captures/escaping.json",
+      "bytes": 1234,
+      "sha256": "9d3254fe99e3c99eac951d7a9a0e679bd0773f63d15a1270b469da104d9ab3df"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/green-final/captures/generic.json",
+      "bytes": 1192,
+      "sha256": "51982cec880fa5ffffbad06b46d89667444fc6a2f8842aa127c2236bd7d3041f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/green-final/captures/late.json",
+      "bytes": 1287,
+      "sha256": "a8bbc5bd95dac23816e6b73e296f15ef27b34b2034738ff725487eb98316a930"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/green-final/captures/terminal.json",
+      "bytes": 1015,
+      "sha256": "7bfa48a470cc98715acbd6e8cd840916f9fcafa1d9a548f7043b070e0ee353ca"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/green-final/captures/transport.json",
+      "bytes": 993,
+      "sha256": "7484efa947fc4b21b304b25631b046bb202735a737e0878003923b02d94feabe"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/handoff-ko-v2.md",
+      "bytes": 6192,
+      "sha256": "30f8b4fc73525be73f47b1aecf821e74a7d1d89c269424d1b6ff82adfed642fb"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/handoff-ko.md",
+      "bytes": 4732,
+      "sha256": "c8f874317258054d35b923bdaaf34e4e802d30437c7f3b8dbf5cc619093ed424"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/offline_guard.py",
+      "bytes": 277,
+      "sha256": "f519fdc8773655e508f54bc7ffdbba87d68e486f313bd8bef2342345670031f1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/preimage/dashboard/src/api/client.streamChannels.test.ts",
+      "bytes": 6568,
+      "sha256": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/preimage/dashboard/src/api/client.ts",
+      "bytes": 33124,
+      "sha256": "657fe50011f9f070194f41b2afb7fb6093bf2d8567dd25d2baa49021e50ad9ea"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/preimage/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "bytes": 6994,
+      "sha256": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/preimage/src/antigravity_k/api/routes/chat.py",
+      "bytes": 64229,
+      "sha256": "79cb99a0ece7bffee7c85b7bd7e1444a77b6b5934fab8e5a80ba38e9e38b1100"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/preimage/src/antigravity_k/engine/direct_task_execution.py",
+      "bytes": 19299,
+      "sha256": "604c47f1877ca90e7717c6d411c2c8b2175749071a6358cdd7fac95819771a40"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/preimage/src/antigravity_k/engine/tool_loop.py",
+      "bytes": 153587,
+      "sha256": "93a2d83861faaecc8c378f1b56598bd716f1e7d8083be1ee890db8b57e10a625"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/preimage/tests/test_agent_runtime.py",
+      "bytes": 38963,
+      "sha256": "5b41ed3a79a8bdae2b7dbf9afae2d9050a0ae8f8d72cebc0f7a2e73e1b90e4c7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/prepare_publication.py",
+      "bytes": 2661,
+      "sha256": "735c431cad3bb71c48a1603155dd58579995e548fa513df9242b00d1c42b4749"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/product-green/captures/escaping.json",
+      "bytes": 1234,
+      "sha256": "889343d32671cd07f17269f65cea6e07e9ed2da9a9d0f52455eaa3173a8ceb58"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/product-green/captures/generic.json",
+      "bytes": 1192,
+      "sha256": "9d000a81717e0d8e3ca200f39582d701896639d6b5390cf5e245fad0278ac85f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/product-green/captures/late.json",
+      "bytes": 1287,
+      "sha256": "43ca73dee1ab0e698caf186cb7ebaf05bb958e396b1fbb946eac2c27182447fd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/product-green/captures/terminal.json",
+      "bytes": 1015,
+      "sha256": "0b5f9dd804c399335c7fe48b547b36b65ffe25c6be55987e7a14627a86f5eea1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/product-green/captures/transport.json",
+      "bytes": 993,
+      "sha256": "9675284a9cf644259749090c7694cbf2892a185388b7176224dd00837c8fefa0"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/product-green/junit.xml",
+      "bytes": 26657,
+      "sha256": "db87c4f3d41e9a094fc2f2d3e4c495e31b6023b85cfce5f47ef5e67176064f07"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction/dashboard/src/api/client.streamChannels.test.ts",
+      "bytes": 6614,
+      "sha256": "4b03be24f53c31e7f2f53e2025cbb4afd468319f4663b5e216a4e3c19f5f583e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction/dashboard/src/api/client.ts",
+      "bytes": 33274,
+      "sha256": "a6fcab1e0892dccce853711109099b3803811237c266aaea219458acc519e613"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "bytes": 7060,
+      "sha256": "fa9a5e22e83d1eac52dd0c7ac33200c808db28933d21d077023f6b7f3257df7e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction/src/antigravity_k/api/routes/chat.py",
+      "bytes": 64245,
+      "sha256": "76552607978893a6ec142b909d5eb071ccc67c1282a0c36685fd65e7189cf999"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction/src/antigravity_k/engine/agent_execution_error.py",
+      "bytes": 355,
+      "sha256": "52262dac95ad5b67ddc9aaea1689f37019454b7d610b0e8a0e644987d3dbfb30"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction/src/antigravity_k/engine/direct_task_execution.py",
+      "bytes": 19471,
+      "sha256": "fde05d1ef05cad512b3b51af7550b1ddfae00d677362a815597f363d98000f67"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction/src/antigravity_k/engine/tool_loop.py",
+      "bytes": 154291,
+      "sha256": "7a62c4fa32d8a92a2922bb21a56650fee324618f608cbd8664b72b7788f16951"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction/tests/test_agent_failure_terminal_contract.py",
+      "bytes": 5193,
+      "sha256": "274f5fb79cd9f4d73bd6877b15c189c51b5b06c420dba0dda36f36b0d9337490"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction/tests/test_agent_runtime.py",
+      "bytes": 39142,
+      "sha256": "7fb50ef6da3a703461d000d44eca459778b0a51d00bffe3b9766c26a9c24e8ff"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction-v2/dashboard/src/api/client.streamChannels.test.ts",
+      "bytes": 6614,
+      "sha256": "4b03be24f53c31e7f2f53e2025cbb4afd468319f4663b5e216a4e3c19f5f583e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction-v2/dashboard/src/api/client.ts",
+      "bytes": 33274,
+      "sha256": "a6fcab1e0892dccce853711109099b3803811237c266aaea219458acc519e613"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction-v2/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+      "bytes": 7060,
+      "sha256": "fa9a5e22e83d1eac52dd0c7ac33200c808db28933d21d077023f6b7f3257df7e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction-v2/src/antigravity_k/api/routes/chat.py",
+      "bytes": 64245,
+      "sha256": "76552607978893a6ec142b909d5eb071ccc67c1282a0c36685fd65e7189cf999"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction-v2/src/antigravity_k/engine/agent_execution_error.py",
+      "bytes": 355,
+      "sha256": "52262dac95ad5b67ddc9aaea1689f37019454b7d610b0e8a0e644987d3dbfb30"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction-v2/src/antigravity_k/engine/direct_task_execution.py",
+      "bytes": 19471,
+      "sha256": "fde05d1ef05cad512b3b51af7550b1ddfae00d677362a815597f363d98000f67"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction-v2/src/antigravity_k/engine/tool_loop.py",
+      "bytes": 154291,
+      "sha256": "7a62c4fa32d8a92a2922bb21a56650fee324618f608cbd8664b72b7788f16951"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction-v2/tests/test_agent_failure_terminal_contract.py",
+      "bytes": 5193,
+      "sha256": "274f5fb79cd9f4d73bd6877b15c189c51b5b06c420dba0dda36f36b0d9337490"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction-v2/tests/test_agent_runtime.py",
+      "bytes": 39698,
+      "sha256": "610f529f4a756f873418bcc309831c82c13ac2d42bd57dc1df2379caa22191eb"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction-v2.json",
+      "bytes": 999,
+      "sha256": "89e28a925caea5139a76a5137e1e980a10d3a398f0b30d6b2ea73e50f0fd98b3"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction.json",
+      "bytes": 993,
+      "sha256": "c84c95c3a32f5073b5e000fc1b397fead8f0740932b466f5f20527c7f6989b91"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/red/captures/escaping.json",
+      "bytes": 1240,
+      "sha256": "141d05c8167b107e0c02f6737e92a9aece47cb2c92bfecbdd48e941f01659bfd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/red/captures/generic.json",
+      "bytes": 1159,
+      "sha256": "96cf9d73d1f67406c99551b80fc5f23dbd6aa646a4cf64f5aa186e01d88ced35"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/red/captures/late.json",
+      "bytes": 1431,
+      "sha256": "79ec81efc162e1a9bf5ee830c3b4f9e7f4a715e326209c5c0566e18ac49ab416"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/red/captures/terminal.json",
+      "bytes": 1435,
+      "sha256": "232d5df61e48a4f564c68fac0360c4f760860deb5540b645cb61e44ca0c17500"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/red/captures/transport.json",
+      "bytes": 1441,
+      "sha256": "c692ae0ad8eb7306b947af9afbc35ebd0d47e9de8a236a844e6564a11e5672fd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/red/junit.xml",
+      "bytes": 10890,
+      "sha256": "627cbf28af7a847f7c7a1e3bf94c014469961ccdfe3885dfc0ea90a09483a9b3"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/red-final/captures/escaping.json",
+      "bytes": 1240,
+      "sha256": "ba86538a3c3d057f07d2f61c3ee2b8394c629f0e22a0095bb42494d92aef4fd5"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/red-final/captures/generic.json",
+      "bytes": 1159,
+      "sha256": "0353888c1281864271d65dc8ff0f64b68ea68f4e26af73fed41755aed20b9e7e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/red-final/captures/late.json",
+      "bytes": 1623,
+      "sha256": "e6160ecbd1220de61549f6a357902c86b19bf4008e51438c753ce7a36897934b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/red-final/captures/terminal.json",
+      "bytes": 1435,
+      "sha256": "bdfe235e913c5e501e13b44550891b850be5e80a0e454816629630417353d6ba"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/red-final/captures/transport.json",
+      "bytes": 1441,
+      "sha256": "5323a02febdec1ae6a570222ad5a10ba7579de14c35f2a955f237cfe3418a65d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/red-final/junit.xml",
+      "bytes": 10838,
+      "sha256": "c8c36c3e157cc4fc04267e403e1d7651ae0f7163bbdae95c4eff9ba51a376e17"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/review/clean-approved.md",
+      "bytes": 948,
+      "sha256": "cda8c22ee8022977df307d5c3f3adc9f66f808a7213e4b2b4d68543a22edfd6c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/review/root-approved.md",
+      "bytes": 1325,
+      "sha256": "5a8be71d758c0b455ec335d1b9f2777acde789c1d2ffd9d6b852729aaed4bf64"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/run_checks.py",
+      "bytes": 1314,
+      "sha256": "8c76c44d4d175e60afb4c698e87cb23f14491f53131c25c66e369b1b4ff69fca"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/runtime/junit.xml",
+      "bytes": 2729,
+      "sha256": "bf2df5036dcbe9f36b98e9813830bfae68db8c65bf8fa464c1e3050dd8052a9f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/runtime-isolated/exit.json",
+      "bytes": 21,
+      "sha256": "a02d222e1be4a3d356cac5372aa177b9048c9baaa90b42f86d8cfae4569f1286"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/runtime-isolated/invocation.json",
+      "bytes": 144413,
+      "sha256": "0c311abadd45db5946b897d3065c2679d4ad331ebc9fed63a488919f23e354b8"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/runtime-isolated/junit.xml",
+      "bytes": 4484,
+      "sha256": "fbb36a3c5422054ddaf21f04572744292fb9125fe2d6a2db1fce8e9893878a0a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/sealed-manifest-v2.json",
+      "bytes": 8163,
+      "sha256": "2dae0ccd977c67b393df4ecbf50cd28db3c540e3da23a0f32b3a8795d8804104"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/sealed-manifest.json",
+      "bytes": 7487,
+      "sha256": "828b6fb1e9f536848744bbf15daa5d01968fb1e662fb37bf1dcc84836fcbd053"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/source-binding-v2.json",
+      "bytes": 1841,
+      "sha256": "1a208c40e0a10957ac44acefa1590c4b6028952537d645796dde28d0b6a58219"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/source-binding.json",
+      "bytes": 1841,
+      "sha256": "63b4070e07dfa9bb932567b507faec6155a929b6c0114d92d967b8488ffa038c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/static/basedpyright/receipt.json",
+      "bytes": 1124,
+      "sha256": "d9b024bdae521278e249cf0980a8bfeb0d221b211fca1727fdb11d156e593457"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/static/format/receipt.json",
+      "bytes": 1205,
+      "sha256": "39c58f25c3c94ea3bda9c8ffd04384dd332c273c164eb6374aea1f38412bbb39"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/static/memory-compile/receipt.json",
+      "bytes": 1334,
+      "sha256": "3512beeaabc9916ecbd1a44e51db1f3319d4b38170109c58ac7b57c4a94b8b53"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/static/ruff/receipt.json",
+      "bytes": 1189,
+      "sha256": "8c4b03f54ae5d68b2cf5188a4d0a12e8f4c6408808b0b240e5f785ef786815a8"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/static-v2/basedpyright/receipt.json",
+      "bytes": 1124,
+      "sha256": "8699441a720ee0a776328b6c91d205d25c7f0a33f800071489d5946e7646ffea"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/static-v2/format/receipt.json",
+      "bytes": 1205,
+      "sha256": "ce9bd4a4bbbeadd9a5d74987c67e4ea62a728ada889f8df19616fd312b07d52d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/static-v2/memory-compile/receipt.json",
+      "bytes": 1334,
+      "sha256": "17d01fcb56c7aeefbfddff615f4b9ec2ab4fa2aa7c3addddbe8e7c80b8bc8bdc"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/static-v2/ruff/receipt.json",
+      "bytes": 1189,
+      "sha256": "b58950bd42ce6a7a9d7bed553d7ead5c56d901a7e504516044405a76cbcbb394"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/task-only-v2.patch",
+      "bytes": 14837,
+      "sha256": "260ce9ad4ba165ad70ebc7ef1e60b271fe487dbc11315fb71559bad298130e93"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/task-only.patch",
+      "bytes": 13387,
+      "sha256": "77510c64a19461e0cb1b58ae0214d2898cd2d91b06159cbeacf6c243f0aee595"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/ui-invocation.json",
+      "bytes": 1167,
+      "sha256": "5db55ced7028062ce22c47ebfb62a396fbb9add2de5a690fc1d4873896d249a4"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/ui-junit.xml",
+      "bytes": 12759,
+      "sha256": "132eb94035eba5a5a6d2a8eafa6037c9e04e835771544654a03fcceb0050aca8"
+    }
+  ],
+  "omitted_local_files": [
+    {
+      "path": "__pycache__/offline_guard.cpython-313-pytest-9.1.1.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-final-red/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "baseline-final-red/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "baseline-overlay/src/.coverage",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/.env",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/.restart_trigger",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/__init__.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/__pycache__/__init__.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/__pycache__/build_info.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/__pycache__/config.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/__pycache__/runtime_paths.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/__pycache__/auth_policy.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/__pycache__/auth_routes.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/__pycache__/browser_session_state.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/__pycache__/chat_agent_stream_generator.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/__pycache__/dependencies.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/__pycache__/error_handler.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/__pycache__/models.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/__pycache__/path_security.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/__pycache__/project_binding.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/__pycache__/startup_security.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/__pycache__/task_models.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/auth_policy.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/auth_routes.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/browser_session_state.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/chat_agent_stream_generator.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/dependencies.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/error_handler.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/models.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/path_security.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/project_binding.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__init__.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/__init__.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/agency_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/agent_activity.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/agent_ask.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/agent_stream_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/agent_tools.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/approval_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/artifact_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/chat.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/code_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/code_intel_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/cognitive_active_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/cognitive_surface_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/conversation_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/decision_evaluation_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/disclosure_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/events.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/evolution_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/filesystem.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/gateway_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/git_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/job_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/kanban_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/messages_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/models_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/network_access_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/operational_alerts.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/recipes_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/remote_pairing_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/responses_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/search_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/security_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/session_state.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/system_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/task_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/training_jobs_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/unsloth_studio_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/unsloth_training_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/vault_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/vault_privacy.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/voice_api.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/workspace_links.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/workspace_services.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/__pycache__/workspace_websocket.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/agency_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/agent_activity.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/agent_ask.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/agent_stream_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/agent_tools.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/approval_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/artifact_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/code_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/code_intel_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/cognitive_active_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/cognitive_surface_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/conversation_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/decision_evaluation_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/disclosure_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/events.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/evolution_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/filesystem.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/gateway_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/git_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/job_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/kanban_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/messages_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/models_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/network_access_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/operational_alerts.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/recipes_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/remote_pairing_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/responses_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/search_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/security_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/session_state.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/system_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/task_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/training_jobs_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/unsloth_studio_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/unsloth_training_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/vault_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/vault_privacy.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/voice_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/workspace_links.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/workspace_services.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/routes/workspace_websocket.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/server.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/sse_revocation.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/startup_security.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/api/task_models.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/build_info.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/cli.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/config.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/config.yaml",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/decision_evaluation_cli.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__init__.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/__init__.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/access_mode.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/agent_definition.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/agent_runtime.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/anthropic_tool_bridge.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/api_cache.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/approval_manager.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/approval_review.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/artifact_engine.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/artifact_provenance.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/atomic_write.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/audit_db.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/audit_logger.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/auth.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/autonomous_learner.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/benchmark_cases.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/benchmark_harness.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/capability_policy.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/capacity_flow.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/ceo_analyzer.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/chat_stream_events.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/chroma_lifecycle.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/chunker.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/citation_table_contract.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/code_tree_indexer_models.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/codebase_file_selection.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/cognitive_loop.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/cognitive_surface.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/cognitive_surface_brain.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/cognitive_surface_legacy_brain.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/cognitive_surface_measurement.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/cognitive_surface_types.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/collective_intelligence.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/context_artifact_recall.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/context_artifact_retention.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/context_artifact_store.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/context_budget.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/context_budget_enforcer.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/context_compress_observability.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/context_shaper.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/context_summary.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/conversation_journal.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/conversation_retention.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/conversation_store.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/cost_guard.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/data_recipes.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/decision_anchor.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/decision_evaluation.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/decision_evaluation_models.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/direct_task_execution.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/durable_memory.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/embeddings.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/engine_context.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/error_classifier.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/event_bus.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/execution_mode.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/external_brain.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/fact_appender.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/failure_classifier.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/failure_memory.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/gate_pipeline.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/gbrain.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/global_memory_provider.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/goal_runner.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/hook_event_bus.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/ide_sync.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/identity_memory.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/immune_system.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/knowledge.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/language_normalizer.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/limited_process_runner.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/llm_task_decomposer.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/local_model_discovery.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/local_runtime.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/log_level_manager.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/long_context_capabilities.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/long_context_fusion.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/long_context_metadata.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/long_context_policy.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/memory_conflicts.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/memory_contracts.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/memory_importance.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/memory_policy.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/memory_provider.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/memory_recall_budget.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/memory_recorder.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/metrics.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/mode_manager.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/model_calibration.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/model_manager.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/model_memory_calibration.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/model_policy.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/model_registry.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/model_router.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/multimodal.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/ollama_process_snapshot.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/openai_responses_bridge.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/operational_alert_store.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/operational_metrics.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/orchestrator_analysis_handlers.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/orchestrator_context_handlers.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/orchestrator_execution_handlers.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/orchestrator_handler_config.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/orchestrator_handler_graph.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/orchestrator_handlers.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/orchestrator_memory_handler.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/orchestrator_review_handler.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/orchestrator_verification_handlers.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/pdf_source_options.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/persistent_agency.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/persistent_agency_store.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/plan_guard.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/preference_memory.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/project_memory.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/project_memory_keys.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/project_memory_paths.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/project_registry.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/project_runtime.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/prompt_builder.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/prompt_injection_guard.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/protocol_translator.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/provider_capabilities.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/provider_capability_models.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/provider_capability_probe.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/provider_capability_probe_runtime.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/provider_capability_probe_utils.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/quality_gate.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/rag_indexer.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/remote_pairing.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/remote_pairing_types.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/request_execution_context.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/required_tool_recovery.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/robust_tool_parser.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/runtime_recovery.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/sampling_config.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/sandbox.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/scheduled_job_models.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/scheduled_job_operations.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/scheduled_job_service.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/scheduled_job_store.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/secret_scanner.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/secret_scanner_patterns.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/secret_settings.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/self_capability.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/self_evolution_coordinator.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/self_repair.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/session_disclosure.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/session_manager.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/shields.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/skill_loader.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/slash_commands.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/slash_commands_base.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/slash_commands_session.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/slash_commands_skills.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/slash_commands_workflow.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/state_graph.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/stream_processor.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/structured_output.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/subagent_execution.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/summary_memory.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/task_context_snapshot.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/task_events.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/task_execution_context.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/task_process_ownership.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/task_process_supervisor.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/task_runner.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/task_state_store.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/task_state_types.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/task_steering.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/tokenizer.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/tool_call_parser.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/tool_evidence_compactor.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/tool_executor.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/tool_guardrails.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/tool_loop.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/tool_policy.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/toolset_manager.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/tracing.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/turn_tool_constraints.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/uncertainty.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/usage_tracker.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/user_model.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/vault.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/vault_git.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/vault_privacy_contracts.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/vector_store.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/voice_audio.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/voice_service.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/working_memory_compactor.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/workspace_service_registry.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/workspace_service_runtime.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/__pycache__/worktree_manager.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/access_mode.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/adaptive_context_compaction.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/agent_archive.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/agent_bridges.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/agent_definition.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/agent_error_journal.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/agent_execution_error.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/agent_runtime.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/agentic_tech_radar.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/algorithmic_skeleton_synthesizer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/ambient_watchdog.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/anthropic_tool_bridge.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/api_cache.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/approval_manager.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/approval_review.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/artifact_engine.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/artifact_provenance.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/ast_drift_reconciler.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/atomic_transaction_engine.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/atomic_write.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/attention_guard_sharder.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/audit_db.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/audit_exceptions.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/audit_logger.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/auth.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/autonomous_learner.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/autonomous_qa.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/bayesian_prompt_tuner.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/benchmark_cases.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/benchmark_harness.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/best_of_n_verifier.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/call_hierarchy_graph.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/capability_policy.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/capacity_flow.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/ceo_analyzer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/chain_of_verification.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/chain_of_verification_models.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/chat_stream_events.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/chroma_lifecycle.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/chunker.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/citation_table_contract.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/claude_deny_patterns.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/code_tree_indexer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/code_tree_indexer_models.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/code_tree_symbol_extractor.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/code_verifier.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/codebase_file_selection.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/codex_transfer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/cognitive_active_composition.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/cognitive_active_heads.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/cognitive_active_requests.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/cognitive_loop.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/cognitive_surface.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/cognitive_surface_brain.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/cognitive_surface_legacy_brain.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/cognitive_surface_measurement.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/cognitive_surface_recovery.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/cognitive_surface_types.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/collective_intelligence.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/context_artifact_recall.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/context_artifact_retention.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/context_artifact_store.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/context_budget.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/context_budget_enforcer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/context_compress_observability.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/context_compressor.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/context_compressor_policy.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/context_shaper.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/context_summary.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/conversation_journal.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/conversation_retention.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/conversation_store.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/cost_guard.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/curriculum_generator.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/data_extractor.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/data_recipes.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/decision_anchor.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/decision_evaluation.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/decision_evaluation_models.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/deep_code_indexer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/deterministic_worker.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/diagnostics_export.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/dialectic_engine.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/diff_engine.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/diff_models.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/diff_parser.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/durable_memory.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/embeddings.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/engine_context.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/engine_profile.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/error_classifier.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/error_distiller.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/event_bus.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/evolution.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/execution_mode.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/external_brain.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/extraction_ab_test.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/fact_appender.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/failure_classifier.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/failure_memory.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/fast_path_kernel.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/file_summarizer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/financial_numbers.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/flight_controller.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/flight_deck_renderer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/frontier_evidence.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/gate_pipeline.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/gbrain.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/global_memory_provider.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/goal_runner.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/growth_fixture_tools.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/harness.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/harness_enforcer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/harness_models.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/healing_loop.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/heartbeat.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/hook_event_bus.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/hybrid_reranker.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/ide_server.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/ide_sync.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/identity_memory.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/immune_system.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/incremental_code_graph.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/kanban_engine.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/knowledge.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/language_normalizer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/limited_process_runner.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/llm_task_decomposer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/local_live_model.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/local_model_discovery.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/local_runtime.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/log_level_manager.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/logger.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/long_context_capabilities.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/long_context_fusion.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/long_context_metadata.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/long_context_policy.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/lora_pipeline.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/max_engine.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/mcp_capability.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/mcp_capability_catalog.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/mcp_capability_models.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/mcp_capability_parsing.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/mcp_health_cache.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/mcp_oauth.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/mcts_code_explorer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/memory_conflicts.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/memory_contracts.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/memory_importance.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/memory_policy.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/memory_provider.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/memory_recall_budget.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/memory_recorder.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/meta_architect.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/metrics.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/mock_sandbox_interceptor.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/mode_manager.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/model_calibration.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/model_manager.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/model_memory_calibration.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/model_policy.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/model_registry.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/model_router.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/multimodal.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/multiplexer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/next_action_recommender.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/ollama_process_snapshot.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/openai_responses_bridge.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/openai_tool_bridge.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/operational_alert_store.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/operational_metrics.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/orchestrator_analysis_handlers.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/orchestrator_context_handlers.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/orchestrator_execution_handlers.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/orchestrator_handler_config.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/orchestrator_handler_graph.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/orchestrator_handlers.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/orchestrator_memory_handler.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/orchestrator_review_handler.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/orchestrator_verification_handlers.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/output_quality_comparator.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/panel_activity_tracker.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/pdf_source_options.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/persistent_agency.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/persistent_agency_store.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/pipeline_timer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/plan_guard.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/plan_to_build.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/preference_memory.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/preflight_validator.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/project_memory.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/project_memory_keys.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/project_memory_paths.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/project_registry.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/project_runtime.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/prompt_builder.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/prompt_compiler.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/prompt_evolver.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/prompt_injection_guard.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/protocol_translator.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/provider_capabilities.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/provider_capability_models.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/provider_capability_probe.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/provider_capability_probe_runtime.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/provider_capability_probe_utils.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/provider_manager.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/quality_gate.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/quant_quality.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/rag_indexer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/rag_quality.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/reflection.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/reflexion_memory.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/registered_live_cli.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/release_baseline.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/release_dependencies.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/release_metadata.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/release_sbom.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/remote_pairing.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/remote_pairing_types.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/request_execution_context.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/required_tool_recovery.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/robust_tool_parser.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/rsi_engine.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/rsi_sandbox.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/rule_engine.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/runtime_recovery.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/sampling_config.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/sandbox.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/scheduled_job_models.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/scheduled_job_operations.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/scheduled_job_service.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/scheduled_job_store.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/secret_scanner.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/secret_scanner_patterns.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/secret_settings.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/secure_key.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/security_policy.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/self_capability.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/self_consistency.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/self_consistency_voter.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/self_evolution_coordinator.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/self_healing_doctor.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/self_improvement.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/self_repair.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/semantic_qa_engine.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/session_disclosure.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/session_manager.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/shields.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/skill_auto_learner.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/skill_generator.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/skill_installer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/skill_loader.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/skill_market_client.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/skill_market_registry.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/skill_publisher.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/slash_commands.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/slash_commands_base.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/slash_commands_session.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/slash_commands_skills.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/slash_commands_workflow.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/smart_breakpoint.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/speculative_branching.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/state_graph.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/static_type_security_gate.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/stock_code_validator.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/stream_processor.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/structural_snapshot.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/structured_output.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/subagent_execution.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/subagent_spawner.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/subgoal_graph.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/summary_memory.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/surgical_patcher.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/symbol_navigator.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/task_context_snapshot.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/task_events.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/task_execution_context.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/task_process_ownership.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/task_process_supervisor.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/task_runner.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/task_state_projection.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/task_state_store.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/task_state_types.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/task_steering.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/tdd_engine.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/tdd_verifier.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/test_time_compute_scaler.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/tokenizer.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/tool_call_parser.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/tool_evidence_compactor.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/tool_executor.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/tool_guardrails.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/tool_masker.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/tool_policy.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/toolset_manager.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/tracing.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/trajectory_compressor.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/turn_tool_constraints.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/uncertainty.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/unified_agent.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/universal_compiler_bridge.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/unsloth_script_api.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/usage_tracker.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/user_model.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/vault.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/vault_git.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/vault_privacy.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/vault_privacy_contracts.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/vault_privacy_derivatives.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/vault_privacy_git.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/vector_store.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/voice_audio.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/voice_service.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/vram_kv_throttler.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/working_memory_compactor.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/workspace_service_registry.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/workspace_service_runtime.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/worktree_manager.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/engine/zero_waste_compressor.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/i18n.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/py.typed",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/antigravity_k/runtime_paths.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/restart_trigger.py",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/server_debug.log",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-overlay/src/server_startup.log",
+      "reason": "local_symlink"
+    },
+    {
+      "path": "baseline-red/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "baseline-red/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "baseline-segfault/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "baseline-segfault/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-segfault/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-segfault/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/__pycache__/offline_guard.cpython-313-pytest-9.1.1.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "candidate-v1/original-apply-check.stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/original-apply-check.stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/reconstruction.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/scoped/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/scoped/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/static/basedpyright/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/static/basedpyright/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/static/format/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/static/format/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/static/memory-compile/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/static/memory-compile/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/static/ruff/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/static/ruff/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/ui/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/ui/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "final-bound-green/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "final-bound-green/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "final-bound-red/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "final-bound-red/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "final-regression/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "final-regression/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "format.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "green-final.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "green.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "lint-final.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "lint-fix.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "lint.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "product-green.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "reconstruction-v2.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "reconstruction.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "red-final.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "red.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "runtime-final.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "runtime-isolated/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "runtime-isolated/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "runtime.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static/basedpyright/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static/basedpyright/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static/format/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static/format/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static/memory-compile/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static/memory-compile/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static/ruff/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static/ruff/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v2/basedpyright/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v2/basedpyright/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v2/format/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v2/format/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v2/memory-compile/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v2/memory-compile/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v2/ruff/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v2/ruff/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "typecheck.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "ui-typecheck.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "ui.log",
+      "reason": "gitignored"
+    }
+  ],
+  "omitted_files_preserved_locally": true
+}

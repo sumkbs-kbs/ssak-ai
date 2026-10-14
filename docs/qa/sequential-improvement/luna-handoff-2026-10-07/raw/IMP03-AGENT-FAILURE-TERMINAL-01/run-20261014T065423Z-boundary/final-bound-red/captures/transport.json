@@ -1,0 +1,83 @@
+{
+  "mode": "transport",
+  "request": {
+    "model": "qwen3.8",
+    "project_id": "default",
+    "messages": [
+      {
+        "role": "user",
+        "content": "안녕"
+      }
+    ],
+    "stream": true,
+    "agent_mode": true,
+    "max_tokens": 128
+  },
+  "sse": "event: error\ndata: {\"error\": {\"type\": \"agent_execution_error\", \"code\": \"task_failed\", \"message\": \"The agent execution failed. Please review the task before retrying.\"}}\n\n",
+  "tasks": [
+    {
+      "task_id": "direct_a45e91431c8d",
+      "prompt": "안녕",
+      "status": "failed",
+      "output": "",
+      "error": "The model provider request timed out.",
+      "created_at": "2026-10-14T07:03:54.585648+00:00",
+      "updated_at": "2026-10-14T07:03:54.595607+00:00",
+      "completed_at": "2026-10-14T07:03:54.595607+00:00",
+      "version": 3,
+      "owner_pid": null
+    }
+  ],
+  "provider_calls": 1,
+  "provider_attempts": [
+    "stream_generate"
+  ],
+  "wire_requests": [
+    {
+      "model": "qwen3.8",
+      "stream": true,
+      "keep_alive": "30m",
+      "think": false,
+      "options": {
+        "num_ctx": 32768,
+        "num_predict": 4096,
+        "temperature": 0.2,
+        "repeat_penalty": 1.1,
+        "min_p": 0.0
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "/no_think\nAnswer directly. Do not output hidden reasoning, thinking traces, <think>, or <thought> blocks."
+        },
+        {
+          "role": "user",
+          "content": "Read sentinel"
+        }
+      ],
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "parameters": {
+              "type": "object"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "upstream_raw_hex_or_error_type": [
+    "TimeoutError"
+  ],
+  "active_session": {
+    "done": false,
+    "error": "The agent execution failed. Please review the task before retrying.",
+    "is_active": false
+  },
+  "retries": [],
+  "tool_dispatch": [],
+  "session_persistence": 0,
+  "conversation_persistence": 0
+}

@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+    "format",
+    "--check",
+    "src/antigravity_k/api/routes/chat.py",
+    "src/antigravity_k/engine/agent_execution_error.py",
+    "src/antigravity_k/engine/direct_task_execution.py",
+    "src/antigravity_k/engine/tool_loop.py",
+    "tests/test_agent_failure_terminal_contract.py",
+    "tests/test_agent_runtime.py"
+  ],
+  "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+  "returncode": 0,
+  "source_sha256": {
+    "src/antigravity_k/api/routes/chat.py": "e21e9fa93d92aae9e90c4d975cf42e51c5d8b821a755ed57694ff592d0e2a7f3",
+    "src/antigravity_k/engine/agent_execution_error.py": "52262dac95ad5b67ddc9aaea1689f37019454b7d610b0e8a0e644987d3dbfb30",
+    "src/antigravity_k/engine/direct_task_execution.py": "bcf222bee7c208f84dc24457b36580b61e54cc97299030840b00ef82959c2db2",
+    "src/antigravity_k/engine/tool_loop.py": "500b3fb7302845f5abd37b602ff99129783a5362653314a6f4985b6d2cee28f2",
+    "tests/test_agent_failure_terminal_contract.py": "274f5fb79cd9f4d73bd6877b15c189c51b5b06c420dba0dda36f36b0d9337490",
+    "tests/test_agent_runtime.py": "610f529f4a756f873418bcc309831c82c13ac2d42bd57dc1df2379caa22191eb"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "mode": "terminal",
+  "request": {
+    "model": "qwen3.8",
+    "project_id": "default",
+    "messages": [
+      {
+        "role": "user",
+        "content": "안녕"
+      }
+    ],
+    "stream": true,
+    "agent_mode": true,
+    "max_tokens": 128
+  },
+  "sse": "data: {\"agk_status\": {\"text\": \"\\n\\n⚠️ **일시적 오류** (unknown) — 재시도합니다...\\n\"}}\n\ndata: {\"id\": \"chatcmpl-stream\", \"object\": \"chat.completion.chunk\", \"model\": \"qwen3.8\", \"choices\": [{\"delta\": {\"content\": \"\\n\\n\\u274c **\\uc5d0\\uc774\\uc804\\ud2b8 \\uc2e4\\ud589 \\uc624\\ub958**: \\ucf64\\ubcf4 'single:qwen3.8' \\ub0b4 \\ubaa8\\ub4e0 \\ubaa8\\ub378\\uc774 \\uc0ac\\uc6a9 \\ubd88\\uac00: ['qwen3.8 (\\ucfe8\\ub2e4\\uc6b4 60\\ucd08 \\ub0a8\\uc74c)']\\n\"}, \"index\": 0, \"finish_reason\": null}]}\n\ndata: [DONE]\n\n",
+  "tasks": [
+    {
+      "task_id": "direct_9bcf95c5bde3",
+      "prompt": "안녕",
+      "status": "failed",
+      "output": "",
+      "error": "콤보 'single:qwen3.8' 내 모든 모델이 사용 불가: ['qwen3.8 (쿨다운 60초 남음)']",
+      "created_at": "2026-10-14T07:04:12.798008+00:00",
+      "updated_at": "2026-10-14T07:04:12.832622+00:00",
+      "completed_at": "2026-10-14T07:04:12.832622+00:00",
+      "version": 3,
+      "owner_pid": null
+    }
+  ],
+  "provider_calls": 1,
+  "provider_attempts": [
+    "stream_generate",
+    "stream_generate"
+  ],
+  "wire_requests": [
+    {
+      "model": "qwen3.8",
+      "stream": true,
+      "keep_alive": "30m",
+      "think": false,
+      "options": {
+        "num_ctx": 32768,
+        "num_predict": 4096,
+        "temperature": 0.2,
+        "repeat_penalty": 1.1,
+        "min_p": 0.0
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "/no_think\nAnswer directly. Do not output hidden reasoning, thinking traces, <think>, or <thought> blocks."
+        },
+        {
+          "role": "user",
+          "content": "Read sentinel"
+        }
+      ],
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "parameters": {
+              "type": "object"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "upstream_raw_hex_or_error_type": [
+    "7b226d657373616765223a207b22746f6f6c5f63616c6c73223a205b7b2266756e6374696f6e223a207b226e616d65223a2022726561645f66696c65222c2022617267756d656e7473223a207b2266696c655f70617468223a202273656e74696e656c227d7d7d5d7d2c2022646f6e65223a2066616c73657d0a7b226572726f72223a2022505249564154455f4147454e545f534543524554227d0a"
+  ],
+  "active_session": {
+    "done": true,
+    "error": null,
+    "is_active": false
+  },
+  "retries": [],
+  "tool_dispatch": [],
+  "session_persistence": 1,
+  "conversation_persistence": 1
+}

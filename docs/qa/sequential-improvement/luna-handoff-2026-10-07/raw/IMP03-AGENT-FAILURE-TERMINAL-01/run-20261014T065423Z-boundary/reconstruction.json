@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "patch",
+    "-p1",
+    "-i",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/task-only.patch"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/reconstruction",
+  "returncode": 0,
+  "byte_identical": {
+    "dashboard/src/api/client.streamChannels.test.ts": true,
+    "dashboard/src/api/client.ts": true,
+    "dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx": true,
+    "src/antigravity_k/api/routes/chat.py": true,
+    "src/antigravity_k/engine/agent_execution_error.py": true,
+    "src/antigravity_k/engine/direct_task_execution.py": true,
+    "src/antigravity_k/engine/tool_loop.py": true,
+    "tests/test_agent_failure_terminal_contract.py": true,
+    "tests/test_agent_runtime.py": true
+  }
+}

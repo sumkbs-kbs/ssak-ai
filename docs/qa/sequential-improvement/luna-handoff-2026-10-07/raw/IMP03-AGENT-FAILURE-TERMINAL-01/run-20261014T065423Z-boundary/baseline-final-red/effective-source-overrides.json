@@ -1,0 +1,8 @@
+{
+  "note": "invocation source_sha256 describes shared root; these preimage overlay modules replace the same paths in baseline execution",
+  "sha256": {
+    "src/antigravity_k/engine/direct_task_execution.py": "604c47f1877ca90e7717c6d411c2c8b2175749071a6358cdd7fac95819771a40",
+    "src/antigravity_k/engine/tool_loop.py": "93a2d83861faaecc8c378f1b56598bd716f1e7d8083be1ee890db8b57e10a625",
+    "src/antigravity_k/api/routes/chat.py": "79cb99a0ece7bffee7c85b7bd7e1444a77b6b5934fab8e5a80ba38e9e38b1100"
+  }
+}

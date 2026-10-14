@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "npm",
+    "test",
+    "--",
+    "src/api/client.streamChannels.test.ts",
+    "src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx",
+    "src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx",
+    "--reporter=default",
+    "--reporter=junit",
+    "--outputFile=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/ui-junit.xml"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard",
+  "observable": "ui-junit.xml: 46 tests, zero errors/failures; raw ui.log",
+  "source_sha256": {
+    "dashboard/src/api/client.ts": "a6fcab1e0892dccce853711109099b3803811237c266aaea219458acc519e613",
+    "dashboard/src/api/client.streamChannels.test.ts": "4b03be24f53c31e7f2f53e2025cbb4afd468319f4663b5e216a4e3c19f5f583e",
+    "dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx": "fa9a5e22e83d1eac52dd0c7ac33200c808db28933d21d077023f6b7f3257df7e",
+    "dashboard/src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx": "b84e2d2c1d05c8e07723739216b36c74d4ef30320beb2d05706c989971e46468"
+  }
+}

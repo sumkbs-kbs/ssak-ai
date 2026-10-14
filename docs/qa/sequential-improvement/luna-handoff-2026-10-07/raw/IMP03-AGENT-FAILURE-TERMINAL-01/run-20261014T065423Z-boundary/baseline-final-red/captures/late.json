@@ -1,0 +1,73 @@
+{
+  "mode": "late",
+  "request": {
+    "model": "qwen3.8",
+    "project_id": "default",
+    "messages": [
+      {
+        "role": "user",
+        "content": "안녕"
+      }
+    ],
+    "stream": true,
+    "agent_mode": true,
+    "max_tokens": 128
+  },
+  "sse": "data: {\"id\": \"chatcmpl-stream\", \"object\": \"chat.completion.chunk\", \"model\": \"qwen3.8\", \"choices\": [{\"delta\": {\"content\": \"partial-answer xxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}, \"index\": 0, \"finish_reason\": null}]}\n\ndata: {\"agk_status\": {\"text\": \"\\n\\n⚠️ **일시적 오류** (unknown) — 재시도합니다...\\n\"}}\n\ndata: {\"id\": \"chatcmpl-stream\", \"object\": \"chat.completion.chunk\", \"model\": \"qwen3.8\", \"choices\": [{\"delta\": {\"content\": \"\\n\\n\\u274c **\\uc5d0\\uc774\\uc804\\ud2b8 \\uc2e4\\ud589 \\uc624\\ub958**: \\ucf64\\ubcf4 'single:qwen3.8' \\ub0b4 \\ubaa8\\ub4e0 \\ubaa8\\ub378\\uc774 \\uc0ac\\uc6a9 \\ubd88\\uac00: ['qwen3.8 (\\ucfe8\\ub2e4\\uc6b4 60\\ucd08 \\ub0a8\\uc74c)']\\n\"}, \"index\": 0, \"finish_reason\": null}]}\n\ndata: [DONE]\n\n",
+  "tasks": [
+    {
+      "task_id": "direct_989c80efa657",
+      "prompt": "안녕",
+      "status": "failed",
+      "output": "",
+      "error": "콤보 'single:qwen3.8' 내 모든 모델이 사용 불가: ['qwen3.8 (쿨다운 60초 남음)']",
+      "created_at": "2026-10-14T07:04:12.937487+00:00",
+      "updated_at": "2026-10-14T07:04:12.945896+00:00",
+      "completed_at": "2026-10-14T07:04:12.945896+00:00",
+      "version": 3,
+      "owner_pid": null
+    }
+  ],
+  "provider_calls": 1,
+  "provider_attempts": [
+    "stream_generate",
+    "stream_generate"
+  ],
+  "wire_requests": [
+    {
+      "model": "qwen3.8",
+      "stream": true,
+      "keep_alive": "30m",
+      "think": false,
+      "options": {
+        "num_ctx": 32768,
+        "num_predict": 4096,
+        "temperature": 0.2,
+        "repeat_penalty": 1.1,
+        "min_p": 0.0
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "/no_think\nAnswer directly. Do not output hidden reasoning, thinking traces, <think>, or <thought> blocks."
+        },
+        {
+          "role": "user",
+          "content": "Read sentinel"
+        }
+      ]
+    }
+  ],
+  "upstream_raw_hex_or_error_type": [
+    "7b226d657373616765223a207b22636f6e74656e74223a20227061727469616c2d616e737765722078787878787878787878787878787878787878787878787878787878787878787878787878787878227d2c2022646f6e65223a2066616c73657d0a"
+  ],
+  "active_session": {
+    "done": true,
+    "error": null,
+    "is_active": false
+  },
+  "retries": [],
+  "tool_dispatch": [],
+  "session_persistence": 1,
+  "conversation_persistence": 1
+}

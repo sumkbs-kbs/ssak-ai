@@ -1,0 +1,328 @@
+--- a/dashboard/src/api/client.streamChannels.test.ts
++++ b/dashboard/src/api/client.streamChannels.test.ts
+@@ -26,6 +26,7 @@
+   afterEach(() => vi.unstubAllGlobals());
+ 
+   it.each([
++    ['agent_execution_error', 'task_failed'],
+     ['provider_protocol_error', 'incomplete_stream'],
+     ['provider_protocol_error', 'invalid_stream'],
+     ['provider_protocol_error', 'upstream_stream_error'],
+--- a/dashboard/src/api/client.ts
++++ b/dashboard/src/api/client.ts
+@@ -297,6 +297,11 @@
+ const ChatProviderErrorFrameSchema = z.object({
+   error: z.discriminatedUnion('type', [
+     z.object({
++      type: z.literal('agent_execution_error'),
++      code: z.literal('task_failed'),
++      message: z.string().trim().min(1),
++    }),
++    z.object({
+       type: z.literal('provider_protocol_error'),
+       code: z.enum(['invalid_stream', 'upstream_stream_error', 'incomplete_stream']),
+       message: z.string().trim().min(1),
+--- a/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx
++++ b/dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx
+@@ -56,7 +56,10 @@
+     await waitFor(() => expect(client.streamChatCompletion).toHaveBeenCalled());
+   }
+ 
+-  it('preserves the queued turn and partial answer when the real parser receives a typed stream error', async () => {
++  it.each([
++    ['provider_protocol_error', 'incomplete_stream'],
++    ['agent_execution_error', 'task_failed'],
++  ])('preserves the queue and partial answer for %s with the real parser', async (type, code) => {
+     // Given
+     vi.mocked(client.streamChatCompletion).mockRestore();
+     const encoder = new TextEncoder();
+@@ -82,7 +85,7 @@
+ 
+     // When
+     await act(async () => {
+-      await writer.write(encoder.encode('event: error\ndata: {"error":{"type":"provider_protocol_error","code":"incomplete_stream","message":"Incomplete stream"}}\n\n'));
++      await writer.write(encoder.encode(`event: error\ndata: ${JSON.stringify({ error: { type, code, message: 'Incomplete stream' } })}\n\n`));
+       await writer.close();
+     });
+     await waitFor(() => expect(useChatStore.getState().isStreaming).toBe(false));
+--- a/src/antigravity_k/api/routes/chat.py
++++ b/src/antigravity_k/api/routes/chat.py
+@@ -18,6 +18,7 @@
+     get_model_manager,
+     get_translator,
+ )
++from antigravity_k.engine.agent_execution_error import AgentExecutionError
+ from antigravity_k.engine.audit_logger import get_audit_logger
+ from antigravity_k.engine.model_manager import ModelManager
+ from antigravity_k.engine.protocol_translator import APIFormat, ProtocolTranslator
+@@ -1357,20 +1358,14 @@
+                         ]
+                     )
+                 raise
+-            except Exception as e:
+-                logger.error("Stream error: %s", e, exc_info=True)
+-                active_session.error = str(e)
+-                data = {
+-                    "choices": [
+-                        {
+-                            "delta": {"content": f"\n\n[Error: {str(e)}]"},
+-                            "index": 0,
+-                            "finish_reason": "error",
+-                        }
+-                    ]
+-                }
+-                yield f"data: {json.dumps(data)}\n\n"
+-                yield "data: [DONE]\n\n"
++            except (AgentExecutionError, NativeTransportError, NativeProtocolError) as exc:
++                active_session.error = str(exc)
++                yield f"event: error\ndata: {json.dumps({'error': exc.detail()})}\n\n"
++            except Exception:
++                logger.exception("Agent stream failed")
++                failure = AgentExecutionError()
++                active_session.error = str(failure)
++                yield f"event: error\ndata: {json.dumps({'error': failure.detail()})}\n\n"
+             finally:
+                 reset_chat_stream_events(event_token)
+                 # 요청 단위 도구 정책 해제
+--- /dev/null
++++ b/src/antigravity_k/engine/agent_execution_error.py
+@@ -0,0 +1,9 @@
++"""Public failure contract for a terminal agent execution."""
++
++
++class AgentExecutionError(RuntimeError):
++    def __str__(self) -> str:
++        return "The agent execution failed. Please review the task before retrying."
++
++    def detail(self) -> dict[str, str]:
++        return {"type": "agent_execution_error", "code": "task_failed", "message": str(self)}
+--- a/src/antigravity_k/engine/direct_task_execution.py
++++ b/src/antigravity_k/engine/direct_task_execution.py
+@@ -11,6 +11,7 @@
+ from typing import Final, Protocol, assert_never, final, runtime_checkable
+ 
+ from antigravity_k.engine import multimodal
++from antigravity_k.engine.agent_execution_error import AgentExecutionError
+ from antigravity_k.engine.benchmark_harness import TaskOutcome
+ from antigravity_k.engine.chat_stream_events import FinalChunk, ProgressChunk
+ from antigravity_k.engine.language_normalizer import normalize_streaming_chunks
+@@ -391,6 +392,8 @@
+                     f"{execution_type}_{record['status']}",
+                     json.dumps({"output_length": len(output), "error": record["error"]}, sort_keys=True),
+                 )
++                if record["status"] == "failed":
++                    raise AgentExecutionError()
+             else:
+                 final_agent_output = str(getattr(self._orchestrator, "_last_agent_output", "") or "")
+                 if not final_seen and final_agent_output and final_agent_output != initial_agent_output:
+--- a/src/antigravity_k/engine/tool_loop.py
++++ b/src/antigravity_k/engine/tool_loop.py
+@@ -30,6 +30,7 @@
+ 
+ # NX-10: 패키지 루트 임포트는 `engine/__init__` 순환을 만든다 — leaf 모듈에서 이름을 직접 가져온다.
+ from antigravity_k.engine.multimodal import collect_images
++from antigravity_k.engine.provider_adapters.transport_errors import NativeProtocolError, NativeTransportError
+ from antigravity_k.engine.quality_gate import QualityGrade, QualityScore
+ from antigravity_k.engine.task_context_snapshot import (
+     ContextSnapshotStoreError,
+@@ -1831,6 +1832,20 @@
+ 
+                 # ── 스트림 오류 처리 (try 밖 — 제어 메시지 yield 안전) ──
+                 stream_exc = stream_error
++                if isinstance(stream_exc, (NativeTransportError, NativeProtocolError)):
++                    self._record_task_outcome(
++                        task_id,
++                        delegate_model,
++                        expected_tools,
++                        used_tools,
++                        retry_count,
++                        started_at,
++                        False,
++                        "error",
++                        str(stream_exc),
++                        output=full_output,
++                    )
++                    return
+                 classified = classify_api_error(
+                     stream_exc,
+                     provider="ollama",
+@@ -1903,7 +1918,7 @@
+                     break
+                 else:
+                     error_text = str(stream_exc)
+-                    yield f"\n\n❌ **에이전트 실행 오류**: {stream_exc!s}\n"
++                    yield ProgressChunk("\n\n❌ **에이전트 실행 오류**: 작업을 완료하지 못했습니다.\n")
+                     self._record_task_outcome(
+                         task_id,
+                         delegate_model,
+--- /dev/null
++++ b/tests/test_agent_failure_terminal_contract.py
+@@ -0,0 +1,118 @@
++"""Offline product path: real runtime, direct execution and tool loop fail closed."""
++
++import json
++import os
++from contextlib import contextmanager
++from pathlib import Path
++
++import pytest
++
++from tests.test_chat_structured_output_contract import product as product
++from tests.test_native_stream_terminal_contract import CALL, TOOLS, ndjson
++from tests.test_native_stream_terminal_contract import stream_case as stream_case
++
++
++@pytest.mark.parametrize("mode", ["terminal", "late", "transport", "escaping", "generic"])
++def test_agent_failure_is_terminal_without_assistant_persistence(stream_case, monkeypatch, tmp_path, mode):
++    from antigravity_k.api.routes import chat
++    from antigravity_k.api.routes.session_state import get_active_session
++    from antigravity_k.engine.agent_runtime import AgentRuntime
++    from antigravity_k.engine.provider_adapters.transport_errors import NativeProtocolError
++    from antigravity_k.engine.task_runner import BackgroundTaskRunner
++    from antigravity_k.engine.task_state_store import TaskExecutionContext
++    from antigravity_k.engine.tool_loop import ToolLoopEngine
++    from tests.test_tool_loop import mock_orch
++
++    client, body, manager, state = stream_case
++    body["agent_mode"] = True
++    orch = mock_orch._get_wrapped_function()()
++    orch.manager = manager
++    orch.project_root = str(tmp_path)
++    orch.task_execution_context = None
++    orch._prepare_agent_prompt.return_value = (body["model"], "", "", "", "Read sentinel", body["messages"])
++    runner = BackgroundTaskRunner(db_path=str(tmp_path / "tasks.db"))
++    dispatch = []
++    provider_attempts = []
++    original_stream = manager.stream_generate
++
++    def stream_generate(*args, **kwargs):
++        provider_attempts.append("stream_generate")
++        return original_stream(*args, **kwargs)
++
++    monkeypatch.setattr(manager, "stream_generate", stream_generate)
++    persistence = []
++    engine = ToolLoopEngine(orch)
++    monkeypatch.setattr(engine, "_native_tools_kwargs", lambda *a, **kw: {} if mode == "late" else {"tools": TOOLS})
++    manager.get(body["model"])
++
++    @contextmanager
++    def bind(task_id, store):
++        orch.task_execution_context = TaskExecutionContext(task_id=task_id, state_store=store)
++        try:
++            yield
++        finally:
++            orch.task_execution_context = None
++
++    def run(messages, target_model, **kwargs):
++        if mode in {"escaping", "generic"}:
++            yield "partial-answer"
++            if mode == "escaping":
++                raise NativeProtocolError("incomplete_stream")
++            raise RuntimeError("PRIVATE_AGENT_SECRET")
++        yield from engine.run_loop(messages, "CODER", "code", 3, target_model)
++
++    async def execute(*args, **kwargs):
++        dispatch.append("unexpected")
++        return "unexpected"
++
++    orch.bind_task_execution = bind
++    orch.run_stream = run
++    orch.ctx.tool_executor.execute_async = execute
++    runtime = AgentRuntime(orch, task_runner=runner)
++    monkeypatch.setattr(chat, "get_agent_runtime", lambda: runtime)
++    monkeypatch.setattr(chat, "_persist_assistant_to_conversation_store", lambda *a: persistence.append(a))
++    state["responses"] = [
++        TimeoutError("PRIVATE_AGENT_SECRET")
++        if mode == "transport"
++        else ndjson({"message": {"content": "partial-answer " + "x" * 40}, "done": False})
++        if mode == "late"
++        else ndjson(CALL, {"error": "PRIVATE_AGENT_SECRET"})
++    ]
++    response = client.post("/v1/chat/completions", json=body)
++    rows = runner.state_store.list_tasks(10)
++    active_session = get_active_session()
++    receipt = {
++        "mode": mode,
++        "request": body,
++        "sse": response.text,
++        "tasks": [dict(r) for r in rows],
++        "provider_calls": len(state["wire"]),
++        "provider_attempts": provider_attempts,
++        "wire_requests": state["wire"],
++        "upstream_raw_hex_or_error_type": state["raw"],
++        "active_session": {
++            "done": active_session.done,
++            "error": active_session.error,
++            "is_active": active_session.is_active,
++        },
++        "retries": state["sleeps"],
++        "tool_dispatch": dispatch,
++        "session_persistence": len(state["persisted"]),
++        "conversation_persistence": len(persistence),
++    }
++    export = os.environ.get("AGENT_FAILURE_CAPTURE_ROOT")
++    if export:
++        target = Path(export)
++        target.mkdir(parents=True, exist_ok=True)
++        (target / (mode + ".json")).write_text(json.dumps(receipt, ensure_ascii=False, indent=2))
++    assert len(rows) == 1 and rows[0]["status"] == "failed"
++    assert response.text.count("event: error\n") == 1
++    assert "[DONE]" not in response.text and "agk_final_content" not in response.text
++    assert "PRIVATE_AGENT_SECRET" not in response.text
++    assert not state["persisted"] and not persistence
++    assert not active_session.done and not active_session.is_active and active_session.error
++    assert not dispatch and not state["sleeps"]
++    assert "재시도합니다" not in response.text
++    assert len(state["wire"]) == len(provider_attempts) == (0 if mode in {"escaping", "generic"} else 1)
++    if mode in {"late", "escaping", "generic"}:
++        assert "partial-answer" in response.text
+--- a/tests/test_agent_runtime.py
++++ b/tests/test_agent_runtime.py
+@@ -454,7 +454,12 @@
+ 
+     # Then: it keeps the inner failure rather than incorrectly forcing the task to done.
+     assert tracked.task_id is not None
+-    assert list(tracked.chunks) == ["quality rejected"]
++    from antigravity_k.engine.agent_execution_error import AgentExecutionError
++
++    emitted: list[str] = []
++    with pytest.raises(AgentExecutionError):
++        emitted.extend(tracked.chunks)
++    assert emitted == ["quality rejected"]
+     record = store.get_task(tracked.task_id)
+     assert record is not None
+     assert record["status"] == "failed"
+@@ -895,9 +900,14 @@
+ 
+ 
+ @pytest.mark.asyncio
+-async def test_chat_stream_route_uses_canonical_runtime(monkeypatch: pytest.MonkeyPatch):
++async def test_chat_stream_route_uses_canonical_runtime(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
++    from antigravity_k.api import dependencies
+     from antigravity_k.api.routes import chat
+     from antigravity_k.engine.protocol_translator import ProtocolTranslator
++    from antigravity_k.engine.session_manager import SessionManager
++
++    sessions = SessionManager(base_dir=str(tmp_path / "sessions"))
++    monkeypatch.setattr(dependencies, "get_session_manager", lambda: sessions)
+ 
+     calls: list[dict[str, object]] = []
+ 
+@@ -940,11 +950,16 @@
+ 
+ 
+ @pytest.mark.asyncio
+-async def test_chat_stream_keeps_generator_context_across_threadpool(monkeypatch: pytest.MonkeyPatch):
++async def test_chat_stream_keeps_generator_context_across_threadpool(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+     import contextvars
+ 
++    from antigravity_k.api import dependencies
+     from antigravity_k.api.routes import chat
+     from antigravity_k.engine.protocol_translator import ProtocolTranslator
++    from antigravity_k.engine.session_manager import SessionManager
++
++    sessions = SessionManager(base_dir=str(tmp_path / "sessions"))
++    monkeypatch.setattr(dependencies, "get_session_manager", lambda: sessions)
+ 
+     marker = contextvars.ContextVar("chat_stream_marker", default="unset")
+ 

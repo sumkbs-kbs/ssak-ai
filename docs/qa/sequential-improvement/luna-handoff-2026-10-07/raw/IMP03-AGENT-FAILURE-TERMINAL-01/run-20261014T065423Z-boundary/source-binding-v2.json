@@ -1,0 +1,38 @@
+{
+  "dashboard/src/api/client.streamChannels.test.ts": {
+    "before": "d0cd1082e736421a4e812e47e19586dbdb8c063b1c0980f9a849e25bee91603f",
+    "after": "4b03be24f53c31e7f2f53e2025cbb4afd468319f4663b5e216a4e3c19f5f583e"
+  },
+  "dashboard/src/api/client.ts": {
+    "before": "657fe50011f9f070194f41b2afb7fb6093bf2d8567dd25d2baa49021e50ad9ea",
+    "after": "a6fcab1e0892dccce853711109099b3803811237c266aaea219458acc519e613"
+  },
+  "dashboard/src/components/Chat/__tests__/ChatPageStreamChannels.test.tsx": {
+    "before": "89797e0d1e85aa90781721e9d831c02471f125923f3d85de73048d1135b64b1d",
+    "after": "fa9a5e22e83d1eac52dd0c7ac33200c808db28933d21d077023f6b7f3257df7e"
+  },
+  "src/antigravity_k/api/routes/chat.py": {
+    "before": "79cb99a0ece7bffee7c85b7bd7e1444a77b6b5934fab8e5a80ba38e9e38b1100",
+    "after": "76552607978893a6ec142b909d5eb071ccc67c1282a0c36685fd65e7189cf999"
+  },
+  "src/antigravity_k/engine/agent_execution_error.py": {
+    "before": null,
+    "after": "52262dac95ad5b67ddc9aaea1689f37019454b7d610b0e8a0e644987d3dbfb30"
+  },
+  "src/antigravity_k/engine/direct_task_execution.py": {
+    "before": "604c47f1877ca90e7717c6d411c2c8b2175749071a6358cdd7fac95819771a40",
+    "after": "fde05d1ef05cad512b3b51af7550b1ddfae00d677362a815597f363d98000f67"
+  },
+  "src/antigravity_k/engine/tool_loop.py": {
+    "before": "93a2d83861faaecc8c378f1b56598bd716f1e7d8083be1ee890db8b57e10a625",
+    "after": "7a62c4fa32d8a92a2922bb21a56650fee324618f608cbd8664b72b7788f16951"
+  },
+  "tests/test_agent_failure_terminal_contract.py": {
+    "before": null,
+    "after": "274f5fb79cd9f4d73bd6877b15c189c51b5b06c420dba0dda36f36b0d9337490"
+  },
+  "tests/test_agent_runtime.py": {
+    "before": "5b41ed3a79a8bdae2b7dbf9afae2d9050a0ae8f8d72cebc0f7a2e73e1b90e4c7",
+    "after": "610f529f4a756f873418bcc309831c82c13ac2d42bd57dc1df2379caa22191eb"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "mode": "generic",
+  "request": {
+    "model": "qwen3.8",
+    "project_id": "default",
+    "messages": [
+      {
+        "role": "user",
+        "content": "안녕"
+      }
+    ],
+    "stream": true,
+    "agent_mode": true,
+    "max_tokens": 128
+  },
+  "sse": "data: {\"id\": \"chatcmpl-stream\", \"object\": \"chat.completion.chunk\", \"model\": \"qwen3.8\", \"choices\": [{\"delta\": {\"content\": \"partial-answer\"}, \"index\": 0, \"finish_reason\": null}]}\n\ndata: {\"choices\": [{\"delta\": {\"content\": \"\\n\\n[Error: PRIVATE_AGENT_SECRET]\"}, \"index\": 0, \"finish_reason\": \"error\"}]}\n\ndata: [DONE]\n\n",
+  "tasks": [
+    {
+      "task_id": "direct_d8e7471055e0",
+      "prompt": "안녕",
+      "status": "failed",
+      "output": "partial-answer",
+      "error": "PRIVATE_AGENT_SECRET",
+      "created_at": "2026-10-14T06:55:35.959634+00:00",
+      "updated_at": "2026-10-14T06:55:35.965498+00:00",
+      "completed_at": "2026-10-14T06:55:35.965498+00:00",
+      "version": 2,
+      "owner_pid": null
+    }
+  ],
+  "provider_calls": 0,
+  "retries": [],
+  "tool_dispatch": [],
+  "session_persistence": 0,
+  "conversation_persistence": 0
+}
