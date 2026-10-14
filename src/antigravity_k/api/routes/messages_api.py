@@ -454,6 +454,8 @@ async def create_message(
         text = await run_in_threadpool(_generate)
     except NativeTransportError as exc:
         return JSONResponse({"error": exc.detail()}, status_code=exc.status_code)
+    except NativeProtocolError as exc:
+        return JSONResponse({"error": exc.detail()}, status_code=502)
     except Exception as exc:  # noqa: BLE001
         logger.exception("generate failed")
         gen_err, gen_status = _error(529, "api_error", f"Model generation failed: {exc}")

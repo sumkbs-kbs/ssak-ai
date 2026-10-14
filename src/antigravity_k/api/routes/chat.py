@@ -1467,6 +1467,8 @@ async def chat_completions(
         raise HTTPException(status_code=502, detail={"type": "structured_output_error", "message": str(exc)}) from exc
     except NativeTransportError as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.detail()) from exc
+    except NativeProtocolError as exc:
+        raise HTTPException(status_code=502, detail=exc.detail()) from exc
     except Exception as e:
         logger.error("Generation error: %s", e, exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))

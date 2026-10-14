@@ -10,8 +10,21 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterator
 from importlib import import_module
 from types import SimpleNamespace
-from typing import TYPE_CHECKING, Any, ContextManager, Protocol, TypeAlias, cast, override, runtime_checkable
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ContextManager,
+    Final,
+    Literal,
+    Protocol,
+    TypeAlias,
+    cast,
+    override,
+    runtime_checkable,
+)
 from urllib.error import HTTPError, URLError
+
+from pydantic import BaseModel, ConfigDict, Field, JsonValue, TypeAdapter, ValidationError
 
 from antigravity_k.engine.context_budget import context_budget_for_context_length
 
@@ -318,6 +331,114 @@ class AnthropicProvider(BaseInferenceProvider):
             yield f"[API Error for {model_name}] {e}"
 
 
+class _CompatibleFunctionDelta(BaseModel):
+    model_config = ConfigDict(frozen=True, strict=True)
+    name: str = ""
+    arguments: str = ""
+
+
+class _CompatibleToolDelta(BaseModel):
+    model_config = ConfigDict(frozen=True, strict=True)
+    index: int = Field(ge=0)
+    id: str = ""
+    type: Literal["function"] = "function"
+    function: _CompatibleFunctionDelta = Field(default_factory=_CompatibleFunctionDelta)
+
+
+class _CompatibleDelta(BaseModel):
+    model_config = ConfigDict(frozen=True, strict=True)
+    content: str | None = None
+    tool_calls: list[_CompatibleToolDelta] | None = None
+
+
+class _CompatibleChoice(BaseModel):
+    model_config = ConfigDict(frozen=True, strict=True)
+    delta: _CompatibleDelta = Field(default_factory=_CompatibleDelta)
+    finish_reason: str | None = None
+
+
+class _CompatibleChunk(BaseModel):
+    model_config = ConfigDict(frozen=True, strict=True)
+    choices: list[_CompatibleChoice] = Field(default_factory=list)
+    error: JsonValue = None
+
+
+_COMPATIBLE_ARGUMENTS: Final = TypeAdapter(dict[str, JsonValue])
+
+
+def _compatible_events(response: Iterator[bytes]) -> Iterator[_CompatibleChunk | Literal["[DONE]"]]:
+    """Parse SSE data, including multiline JSON and legacy complete JSON lines."""
+    pending: list[str] = []
+    try:
+        for raw in response:
+            line = raw.decode("utf-8").rstrip("\r\n")
+            if not line:
+                if pending:
+                    raise NativeProtocolError("invalid_stream")
+                continue
+            if line.startswith(":") or line.startswith(("event:", "id:", "retry:")):
+                continue
+            data = line[5:].removeprefix(" ") if line.startswith("data:") else line
+            if not pending and data == "[DONE]":
+                yield "[DONE]"
+                return
+            pending.append(data)
+            payload = "\n".join(pending)
+            try:
+                json.loads(payload)
+            except json.JSONDecodeError:
+                continue
+            yield _CompatibleChunk.model_validate_json(payload)
+            pending.clear()
+    except (UnicodeDecodeError, ValidationError) as exc:
+        raise NativeProtocolError("invalid_stream") from exc
+    if pending:
+        raise NativeProtocolError("invalid_stream")
+
+
+def _compatible_output(response: Iterator[bytes], *, hold_content: bool) -> Iterator[str]:
+    """Withhold tool-capable output until the compatible stream completes."""
+    pending: dict[int, tuple[str, str]] = {}
+    content: list[str] = []
+    tool_finish = False
+    for chunk in _compatible_events(response):
+        if chunk == "[DONE]":
+            if pending and not tool_finish:
+                raise NativeProtocolError("incomplete_stream")
+            events: list[str] = []
+            for index in sorted(pending):
+                name, arguments = pending[index]
+                if not name:
+                    raise NativeProtocolError("invalid_stream")
+                try:
+                    parsed = _COMPATIBLE_ARGUMENTS.validate_json(arguments or "{}")
+                except ValidationError as exc:
+                    raise NativeProtocolError("invalid_stream") from exc
+                events.append(
+                    "\n<tool_call>\n"
+                    + json.dumps({"name": name, "arguments": parsed}, ensure_ascii=False)
+                    + "\n</tool_call>\n"
+                )
+            yield from content
+            yield from events
+            return
+        if "error" in chunk.model_fields_set or any(choice.finish_reason == "error" for choice in chunk.choices):
+            raise NativeProtocolError("upstream_stream_error")
+        if not chunk.choices:
+            continue
+        choice = chunk.choices[0]
+        for tool in choice.delta.tool_calls or []:
+            name, arguments = pending.get(tool.index, ("", ""))
+            pending[tool.index] = (name + tool.function.name, arguments + tool.function.arguments)
+        if choice.delta.content:
+            if hold_content or pending:
+                content.append(choice.delta.content)
+            else:
+                yield choice.delta.content
+        tool_finish = tool_finish or choice.finish_reason == "tool_calls"
+    raise NativeProtocolError("incomplete_stream")
+
+
 class OpenRouterProvider(BaseInferenceProvider):
     """Openrouterprovider.
 
@@ -435,52 +556,7 @@ class OpenRouterProvider(BaseInferenceProvider):
         )
         try:
             with safe_urlopen(req, timeout=300, max_retries=0) as response:
-                # 네이티브 tool_call 누적 버퍼 (스트리밍 tool_calls 조립용)
-                pending_tool_calls: dict[int, JsonMap] = {}
-                for line in response:
-                    line_text = line.decode("utf-8").strip()
-                    if not line_text or line_text == "data: [DONE]":
-                        continue
-                    if line_text.startswith("data: "):
-                        line_text = line_text[6:]
-                    try:
-                        chunk = _as_json_map(cast(object, json.loads(line_text)))
-                        choice = _first_choice(chunk)
-                        if choice:
-                            delta = cast(JsonMap, choice.get("delta", {}))
-                            # 1. 일반 텍스트 content
-                            if "content" in delta and delta["content"]:
-                                yield delta["content"]
-                            # 2. 네이티브 tool_calls 누적 (P1-1)
-                            if "tool_calls" in delta:
-                                for tc in _as_json_maps(cast(object, delta["tool_calls"])):
-                                    idx = cast(int, tc.get("index", 0))
-                                    if idx not in pending_tool_calls:
-                                        pending_tool_calls[idx] = {
-                                            "id": tc.get("id", ""),
-                                            "type": "function",
-                                            "function": {"name": "", "arguments": ""},
-                                        }
-                                    func = _as_json_map(cast(object, tc.get("function", {})))
-                                    if func.get("name"):
-                                        pending_tool_calls[idx]["function"]["name"] += func["name"]
-                                    if func.get("arguments"):
-                                        pending_tool_calls[idx]["function"]["arguments"] += func["arguments"]
-                            # 3. finish_reason이 tool_calls면 조립된 tool_call을 이벤트로 yield
-                            finish_reason = choice.get("finish_reason")
-                            if finish_reason == "tool_calls" and pending_tool_calls:
-                                for idx in sorted(pending_tool_calls):
-                                    tc = pending_tool_calls[idx]
-                                    # 표준 XML 도구 호출 포맷으로 변환하여 ToolCallParser가 처리하도록
-                                    tool_event = (
-                                        f"\n<tool_call>\n"
-                                        f"{json.dumps({'name': tc['function']['name'], 'arguments': json.loads(tc['function']['arguments'] or '{}')}, ensure_ascii=False)}\n"
-                                        f"</tool_call>\n"
-                                    )
-                                    yield tool_event
-                                pending_tool_calls.clear()
-                    except json.JSONDecodeError:
-                        continue
+                yield from _compatible_output(iter(response), hold_content=bool(tools_schema))
         except HTTPError as exc:
             raise NativeTransportError(TransportFailure.HTTP, upstream_status=exc.code) from exc
         except TimeoutError as exc:
