@@ -13,19 +13,23 @@ attempt-013 에서 실제로 일어난 일 (F-22)
 
 이 파일이 만드는 탐지기
 =======================
+ARCHIVED 선언은 기록된 후보 커밋에만 결박한다. ACTIVE 선언은 현재 HEAD와 작업 트리까지 요구한다.
+과거 C14-F23-2의 docs-only 기록 규율은 아래 합성·실제 이력 이빨로 계속 검증한다.
+
 작업 트리를 건드리지 않고 **git 객체만으로** 커밋의 코드 지문을 계산해, 선언된 값과 울타리의
 위치를 대조한다. 그래서 미커밋 상태와 무관하게 과거·현재를 같은 규칙으로 잴 수 있다.
 
   C14-F23-1  선언된 지문 == 후보 커밋 트리 지문        → 그 값은 실제로 그 커밋의 것이다
-  C14-F23-2  후보..HEAD 사이에 코드 스코프 변경 0건     → **울타리가 움직이지 않았다**(R-1 의 탐지기)
+  C14-F23-2  ACTIVE 선언은 후보 == HEAD · 작업 트리 지문 일치     → **울타리가 움직이지 않았다**(R-1 의 탐지기)
   C14-F23-3  지문과 `git status` 가 청결에 대해 같은 말 → 지문 함수의 사각지대가 없다
   C14-F23-4  측정 보고서가 이름 붙인 커밋의 트리 == 보고서의 지문 → 보고서가 다른 트리의 초록이 아니다
 
-`C14-F23-2` 가 F-22 의 탐지기다. 기록 커밋이 `docs/` 전용이면 통과하고, `README.md`·`tests/**`·
+아래는 활성 후보 측정·기록 당시의 F-22 규율이다. `C14-F23-2` 가 탐지기이며 기록 커밋이 `docs/` 전용이면 통과하고, `README.md`·`tests/**`·
 설정·lock 을 건드리면 **그 경로를 이름으로 대며** 실패한다. 진행 중(미커밋 코드 편집)은 커밋
 이력과 무관하므로 이 계약을 깨지 않는다 — R-1 이 "진행 중 상태와 구분해야 해서 단순 동등
 비교로는 만들 수 없다"고 한 지점이 여기서 성립한다: 이 계약이 보는 것은 **커밋된 이력**이고,
-미커밋 진행분은 커밋되는 순간 후보가 되어 C14-F23-1 이 값을 요구한다.
+미커밋 진행분을 새 활성 후보로 선언할 때 C14-F23-1 이 값을 요구한다. 보관된 선언에 이 규율을
+현재 HEAD까지 연장하지 않는다.
 
 `C14-F23-3` 은 다른 각도에서 같은 경계를 본다: 지문 함수가 어떤 파일을 **조용히 무시**하면
 (예: 제외 목록을 늘려 `README.md` 를 빼면) `git status` 는 그 파일을 보고하는데 지문은 "같다"고
@@ -190,6 +194,29 @@ def declared_values(card_text: str) -> tuple[str, str]:
     return candidates[0], fingerprints[0]
 
 
+def declaration_violations(card_text: str, root: Path) -> list[str]:
+    """Bind archives to their recorded commit; active declarations also bind to HEAD."""
+    candidate, declared = declared_values(card_text)
+    statuses = re.findall(r"^- release declaration status: \*\*([A-Z]+)\*\*$", card_text, re.M)
+    assert len(statuses) == 1 and statuses[0] in {"ARCHIVED", "ACTIVE"}, "Explicit declaration status required"
+    violations: list[str] = []
+    if commit_fingerprint(root, candidate) != declared:
+        violations.append("Recorded candidate fingerprint mismatch")
+    if statuses == ["ARCHIVED"]:
+        current = re.findall(r"^- Current HEAD release status: \*\*([A-Z_]+)\*\*$", card_text, re.M)
+        if current != ["NOT_APPROVED"]:
+            violations.append("Archive must not certify current HEAD")
+    else:
+        head = git_bytes(root, "rev-parse", "HEAD").decode().strip()
+        if candidate != head:
+            violations.append("Active candidate must equal current HEAD")
+        if commit_fingerprint(root, head) != declared:
+            violations.append("Active HEAD fingerprint mismatch")
+        if _worktree_fingerprint(root) != declared:
+            violations.append("Active worktree fingerprint mismatch")
+    return violations
+
+
 def report_violations(
     evidence_root: Path, declared: str, root: Path = REPO_ROOT, prefixes: tuple[str, ...] | None = None
 ) -> list[str]:
@@ -266,38 +293,66 @@ def test_declared_fingerprint_is_the_declared_candidates_own_tree() -> None:
     )
 
 
-def test_no_code_scope_commit_after_the_declared_candidate() -> None:
-    """C14-F23-2 — **울타리 이동 탐지기**: 후보 뒤에 코드 스코프를 건드린 커밋이 없어야 한다.
+def test_release_declaration_binds_to_its_explicit_status() -> None:
+    violations = declaration_violations(_CARD.read_text(encoding="utf-8"), REPO_ROOT)
+    assert not violations, " / ".join(violations)
 
-    기록 커밋이 `docs/` 전용이면 통과한다. `README.md`·`tests/**`·설정·lock 을 건드리면
-    그 순간 gate 증거가 후보가 아닌 트리를 가리키게 되므로 **그 경로를 이름으로 대며** 실패한다
-    (attempt-013 의 기록 커밋 `f95f22b9` 가 `README.md` 하나로 이 상태를 만들었다).
-    """
-    candidate, _declared = declared_values(_CARD.read_text(encoding="utf-8"))
-    moved = code_scope_changes(REPO_ROOT, candidate, _head())
-    assert not moved, (
-        "후보 커밋 뒤에 코드 스코프가 움직였다 — 그 커밋들의 초록은 이 후보의 것이 아니다: "
-        + ", ".join(moved)
-        + " (지문에서 제외되는 것은 `docs/`·`.omo/` 뿐이다. 기록은 거기서만 해야 한다)"
+
+@pytest.mark.parametrize("status", ["ARCHIVED", "ACTIVE"])
+def test_teeth_declaration_scope_preserves_archive_and_rejects_active_drift(tmp_path: Path, status: str) -> None:
+    # Given: a recorded candidate and its exact fingerprint.
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "app.py").write_text("value = 1\n", encoding="utf-8")
+    _init_repo(repo)
+    candidate = git_bytes(repo, "rev-parse", "HEAD").decode().strip()
+    fingerprint = commit_fingerprint(repo, candidate)
+    card = (
+        f"- release declaration status: **{status}**\n"
+        "- Current HEAD release status: **NOT_APPROVED**\n"
+        f"code candidate full SHA: **`{candidate}`**\n코드 지문 **`{fingerprint}`**\n"
     )
+    assert declaration_violations(card, repo) == []
+    # When: the source moves, first uncommitted and then committed.
+    (repo / "app.py").write_text("value = 2\n", encoding="utf-8")
+    dirty = declaration_violations(card, repo)
+    _commit_all(repo, "next candidate")
+    moved = declaration_violations(card, repo)
+    # Then: archives retain historical binding; active claims reject both drifts.
+    assert bool(dirty) == (status == "ACTIVE")
+    assert bool(moved) == (status == "ACTIVE")
+    wrong = card.replace(fingerprint, commit_fingerprint(repo, "HEAD"))
+    assert "Recorded candidate fingerprint mismatch" in declaration_violations(wrong, repo)
+    for malformed in (
+        card.replace(f"**{status}**", "**UNKNOWN**"),
+        card.replace(f"- release declaration status: **{status}**\n", ""),
+        card + f"- release declaration status: **{status}**\n",
+    ):
+        with pytest.raises(AssertionError, match="Explicit declaration status required"):
+            declaration_violations(malformed, repo)
+    if status == "ARCHIVED":
+        assert declaration_violations(card.replace("**NOT_APPROVED**", "**APPROVED**"), repo)
+        assert declaration_violations(card + "- Current HEAD release status: **APPROVED**\n", repo)
 
 
-def test_declared_fingerprint_is_the_fingerprint_of_head_within_the_fence() -> None:
-    """C14-F23-2 보강 — 후보~HEAD 가 docs 전용이면 **HEAD 의 코드 트리 == 선언값**이어야 한다."""
-    candidate, declared = declared_values(_CARD.read_text(encoding="utf-8"))
-    assert commit_fingerprint(REPO_ROOT, _head()) == commit_fingerprint(REPO_ROOT, candidate)
-    assert commit_fingerprint(REPO_ROOT, _head()) == declared
-
-
-def test_worktree_matches_the_declared_fingerprint_when_the_code_scope_is_settled() -> None:
-    """C14-F23-4 — 미커밋 코드 편집이 없으면 **지금 이 작업 트리**가 선언된 값의 것이다."""
-    _candidate, declared = declared_values(_CARD.read_text(encoding="utf-8"))
-    if _worktree_fingerprint(REPO_ROOT) != commit_fingerprint(REPO_ROOT, _head()):
-        pytest.skip(
-            "미커밋 코드 편집이 진행 중이다 — 이 계약은 커밋된 이력만 본다"
-            "(진행 중분은 커밋되는 순간 후보가 되고 C14-F23-1 이 값을 요구한다)"
-        )
-    assert _worktree_fingerprint(REPO_ROOT) == declared
+def test_teeth_active_declaration_requires_head_even_after_docs_only_commit(tmp_path: Path) -> None:
+    # Given: an active declaration at a clean candidate.
+    repo = tmp_path / "repo"
+    (repo / "docs").mkdir(parents=True)
+    (repo / "app.py").write_text("value = 1\n", encoding="utf-8")
+    _init_repo(repo)
+    candidate = git_bytes(repo, "rev-parse", "HEAD").decode().strip()
+    card = (
+        "- release declaration status: **ACTIVE**\n"
+        f"code candidate full SHA: **`{candidate}`**\n"
+        f"코드 지문 **`{commit_fingerprint(repo, candidate)}`**\n"
+    )
+    assert declaration_violations(card, repo) == []
+    # When: even a docs-only commit moves HEAD.
+    (repo / "docs" / "note.md").write_text("record\n", encoding="utf-8")
+    _commit_all(repo, "record")
+    # Then: an active declaration must name the current HEAD explicitly.
+    assert declaration_violations(card, repo) == ["Active candidate must equal current HEAD"]
 
 
 def test_fingerprint_function_and_git_status_agree_on_the_working_tree() -> None:

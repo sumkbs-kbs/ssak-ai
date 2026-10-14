@@ -1,0 +1,1556 @@
+{
+  "capabilities": {
+    "platform": "darwin",
+    "F_FULLFSYNC": true,
+    "os.fdatasync": false
+  },
+  "reference": {
+    "soak_ops_per_second": 605.0,
+    "per_op_budget_us": 1652.9,
+    "line_bytes": 271,
+    "note": "측정 시각에 4차 soak 이 같은 디스크에 쓰고 있었다 — 절대값이 아니라 비율·계단을 읽는다."
+  },
+  "accumulation_curve": {
+    "note": "커밋 k개를 sync 없이 쌓고 sync 1회(교차 반복 → 최소값). 주기·체크포인트가 지불하는 값이다.",
+    "points": [
+      {
+        "commits": 1,
+        "bytes": 271,
+        "reps": 4,
+        "media_min_us": 6300.7,
+        "media_median_us": 6972.7,
+        "media_max_us": 9968.5,
+        "media_us_per_commit_min": 6300.75,
+        "cache_min_us": 25.9,
+        "cache_median_us": 26.8,
+        "cache_max_us": 29.5,
+        "cache_us_per_commit_min": 25.917,
+        "media_over_cache_min": 243.27,
+        "media_min_share_of_budget_percent": 381.195
+      },
+      {
+        "commits": 8,
+        "bytes": 2168,
+        "reps": 4,
+        "media_min_us": 4738.7,
+        "media_median_us": 5226.4,
+        "media_max_us": 21111.2,
+        "media_us_per_commit_min": 592.344,
+        "cache_min_us": 21.5,
+        "cache_median_us": 25.3,
+        "cache_max_us": 29.7,
+        "cache_us_per_commit_min": 2.682,
+        "media_over_cache_min": 220.4,
+        "media_min_share_of_budget_percent": 35.837
+      },
+      {
+        "commits": 32,
+        "bytes": 8672,
+        "reps": 4,
+        "media_min_us": 7569.1,
+        "media_median_us": 9666.9,
+        "media_max_us": 38239.8,
+        "media_us_per_commit_min": 236.534,
+        "cache_min_us": 80.0,
+        "cache_median_us": 208.1,
+        "cache_max_us": 225.7,
+        "cache_us_per_commit_min": 2.5,
+        "media_over_cache_min": 94.61,
+        "media_min_share_of_budget_percent": 14.31
+      },
+      {
+        "commits": 128,
+        "bytes": 34688,
+        "reps": 4,
+        "media_min_us": 4124.2,
+        "media_median_us": 4583.3,
+        "media_max_us": 10318.1,
+        "media_us_per_commit_min": 32.22,
+        "cache_min_us": 39.8,
+        "cache_median_us": 49.3,
+        "cache_max_us": 79.8,
+        "cache_us_per_commit_min": 0.311,
+        "media_over_cache_min": 103.62,
+        "media_min_share_of_budget_percent": 1.949
+      },
+      {
+        "commits": 512,
+        "bytes": 138752,
+        "reps": 4,
+        "media_min_us": 3569.7,
+        "media_median_us": 3698.9,
+        "media_max_us": 5781.2,
+        "media_us_per_commit_min": 6.972,
+        "cache_min_us": 67.3,
+        "cache_median_us": 72.0,
+        "cache_max_us": 79.1,
+        "cache_us_per_commit_min": 0.131,
+        "media_over_cache_min": 53.04,
+        "media_min_share_of_budget_percent": 0.422
+      },
+      {
+        "commits": 2048,
+        "bytes": 555008,
+        "reps": 4,
+        "media_min_us": 3693.7,
+        "media_median_us": 4500.1,
+        "media_max_us": 4855.9,
+        "media_us_per_commit_min": 1.804,
+        "cache_min_us": 81.7,
+        "cache_median_us": 96.9,
+        "cache_max_us": 112.9,
+        "cache_us_per_commit_min": 0.04,
+        "media_over_cache_min": 45.21,
+        "media_min_share_of_budget_percent": 0.109
+      },
+      {
+        "commits": 8192,
+        "bytes": 2220032,
+        "reps": 4,
+        "media_min_us": 4383.5,
+        "media_median_us": 5251.5,
+        "media_max_us": 5837.4,
+        "media_us_per_commit_min": 0.535,
+        "cache_min_us": 237.5,
+        "cache_median_us": 251.1,
+        "cache_max_us": 267.6,
+        "cache_us_per_commit_min": 0.029,
+        "media_over_cache_min": 18.46,
+        "media_min_share_of_budget_percent": 0.032
+      },
+      {
+        "commits": 32768,
+        "bytes": 8880128,
+        "reps": 4,
+        "media_min_us": 6530.7,
+        "media_median_us": 7219.9,
+        "media_max_us": 7805.0,
+        "media_us_per_commit_min": 0.199,
+        "cache_min_us": 75.8,
+        "cache_median_us": 86.7,
+        "cache_max_us": 99.6,
+        "cache_us_per_commit_min": 0.002,
+        "media_over_cache_min": 86.16,
+        "media_min_share_of_budget_percent": 0.012
+      }
+    ]
+  },
+  "call_model": {
+    "floor_us": 4383.5,
+    "floor_spread_us": [
+      3569.7,
+      7569.1
+    ],
+    "floor_basis": "k>=8 의 최소값 중앙값",
+    "floor_share_of_largest_call": 0.671,
+    "volume_slope_upper_bound_us_per_kb": 0.3301,
+    "bandwidth_gb_per_s": null,
+    "implied_bandwidth_if_volume_were_the_cause_gb_per_s": 3.1,
+    "volume_term_observable": false,
+    "plausible_write_bandwidth_gb_per_s": 3.0,
+    "model": "c(k) ≈ c_floor (부피 무관 배리어) — 커밋당 상각 = c_floor / k",
+    "linear_fit": {
+      "fixed_us": 4892.8,
+      "per_commit_us": 0.04047,
+      "implied_bandwidth_gb_per_s": 6.7
+    },
+    "linear_fit_verdict": "**식별되지 않는다**: 이 판정(`volume_term_observable`)은 실행마다 뒤집혔다(A 미관측 / B 관측) — 큰 두 점의 차이가 잡음 띠와 같은 크기이기 때문이다. 그래서 모델로 쓰지 않고, 바닥값 + **상한**(`volume_slope_upper_bound_us_per_kb`) 으로 적는다."
+  },
+  "idle_and_neighbor": {
+    "note": "이 파일은 두 경우 모두 깨끗하다 — 차이는 **다른 파일의 dirty 64 MB** 뿐이다.",
+    "clean_median_us": 4118.6,
+    "clean_p95_us": 51372.0,
+    "neighbor_dirty_median_us": 4096.6,
+    "neighbor_dirty_p95_us": 5042.7,
+    "neighbor_dirty_over_clean": 0.99,
+    "neighbor_cleanup_us": 1938.8,
+    "neighbor_cleanup_note": "남의 dirty 를 남기지 않는다 — 첫 시도에서는 이 64 MB 가 뒤의 간섭 실측을 밀었다."
+  },
+  "interference": {
+    "note": "매 라운드 `기준선 → 같은 파일 200 ms → 다른 파일 200 ms`. 델타는 **그 라운드의 기준선과 짝지은** 값이다.",
+    "commits_per_block": 600,
+    "rounds": 10,
+    "summary": [
+      {
+        "case": "baseline",
+        "interval_s": 0.0,
+        "rounds": 10,
+        "median_ops_per_second": 604.5,
+        "paired_delta_percent_median": 0.0,
+        "paired_delta_percent_worst": 0.0,
+        "gap_p99_us_max": 4243.5,
+        "gap_max_us": 6345.4,
+        "stalls_over_100ms": 0,
+        "over_2x_budget_total": 77,
+        "background_calls_total": 0,
+        "background_max_us": 0.0,
+        "background_unfinished_us": 0.0,
+        "background_thread_errors": 0,
+        "background_sync_errors": 0,
+        "slow_gaps_total": 0,
+        "slow_gaps_overlapping_a_media_call": 0,
+        "max_overlap_us": 0.0
+      },
+      {
+        "case": "media_self_200ms",
+        "interval_s": 0.2,
+        "rounds": 10,
+        "median_ops_per_second": 438.9,
+        "paired_delta_percent_median": -27.39,
+        "paired_delta_percent_worst": -78.18,
+        "gap_p99_us_max": 27877.4,
+        "gap_max_us": 3113816.5,
+        "stalls_over_100ms": 5,
+        "over_2x_budget_total": 75,
+        "background_calls_total": 50,
+        "background_max_us": 3206211.2,
+        "background_unfinished_us": 0.0,
+        "background_thread_errors": 0,
+        "background_sync_errors": 0,
+        "slow_gaps_total": 8,
+        "slow_gaps_overlapping_a_media_call": 8,
+        "max_overlap_us": 3113483.5
+      },
+      {
+        "case": "media_self_1000ms",
+        "interval_s": 1.0,
+        "rounds": 10,
+        "median_ops_per_second": 601.8,
+        "paired_delta_percent_median": -0.44,
+        "paired_delta_percent_worst": -18.51,
+        "gap_p99_us_max": 5380.4,
+        "gap_max_us": 82499.2,
+        "stalls_over_100ms": 0,
+        "over_2x_budget_total": 53,
+        "background_calls_total": 12,
+        "background_max_us": 2794542.6,
+        "background_unfinished_us": 0.0,
+        "background_thread_errors": 0,
+        "background_sync_errors": 0,
+        "slow_gaps_total": 0,
+        "slow_gaps_overlapping_a_media_call": 0,
+        "max_overlap_us": 0.0
+      },
+      {
+        "case": "media_other_200ms",
+        "interval_s": 0.2,
+        "rounds": 10,
+        "median_ops_per_second": 576.6,
+        "paired_delta_percent_median": -4.57,
+        "paired_delta_percent_worst": -77.69,
+        "gap_p99_us_max": 11846.8,
+        "gap_max_us": 3086557.1,
+        "stalls_over_100ms": 3,
+        "over_2x_budget_total": 56,
+        "background_calls_total": 50,
+        "background_max_us": 3236416.5,
+        "background_unfinished_us": 0.0,
+        "background_thread_errors": 0,
+        "background_sync_errors": 0,
+        "slow_gaps_total": 6,
+        "slow_gaps_overlapping_a_media_call": 6,
+        "max_overlap_us": 3081239.4
+      }
+    ],
+    "blocks": [
+      {
+        "case": "baseline",
+        "round": 0,
+        "interval_s": 0.0,
+        "mode": "none",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 0.992,
+        "ops_per_second": 604.9,
+        "throughput_vs_pace_percent": 99.99,
+        "gap_median_us": 1651.2,
+        "gap_p99_us": 2411.0,
+        "gap_max_us": 2448.9,
+        "overshoot_count": 282,
+        "overshoot_over_budget_count": 0,
+        "overshoot_max_us": 796.0,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 0,
+          "total_us": 0.0,
+          "max_us": 0.0,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "baseline",
+        "round": 1,
+        "interval_s": 0.0,
+        "mode": "none",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 0.993,
+        "ops_per_second": 604.4,
+        "throughput_vs_pace_percent": 99.9,
+        "gap_median_us": 1648.9,
+        "gap_p99_us": 2407.7,
+        "gap_max_us": 2481.8,
+        "overshoot_count": 283,
+        "overshoot_over_budget_count": 0,
+        "overshoot_max_us": 828.9,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 0,
+          "total_us": 0.0,
+          "max_us": 0.0,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "baseline",
+        "round": 2,
+        "interval_s": 0.0,
+        "mode": "none",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 0.993,
+        "ops_per_second": 604.2,
+        "throughput_vs_pace_percent": 99.87,
+        "gap_median_us": 1647.5,
+        "gap_p99_us": 2450.6,
+        "gap_max_us": 2491.5,
+        "overshoot_count": 281,
+        "overshoot_over_budget_count": 0,
+        "overshoot_max_us": 838.6,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 0,
+          "total_us": 0.0,
+          "max_us": 0.0,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "baseline",
+        "round": 3,
+        "interval_s": 0.0,
+        "mode": "none",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 0.992,
+        "ops_per_second": 604.7,
+        "throughput_vs_pace_percent": 99.95,
+        "gap_median_us": 1647.0,
+        "gap_p99_us": 2437.2,
+        "gap_max_us": 2729.9,
+        "overshoot_count": 273,
+        "overshoot_over_budget_count": 0,
+        "overshoot_max_us": 1077.0,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 0,
+          "total_us": 0.0,
+          "max_us": 0.0,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "baseline",
+        "round": 4,
+        "interval_s": 0.0,
+        "mode": "none",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.195,
+        "ops_per_second": 501.9,
+        "throughput_vs_pace_percent": 82.97,
+        "gap_median_us": 1695.4,
+        "gap_p99_us": 4243.5,
+        "gap_max_us": 4547.2,
+        "overshoot_count": 349,
+        "overshoot_over_budget_count": 73,
+        "overshoot_max_us": 2894.3,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 0,
+          "total_us": 0.0,
+          "max_us": 0.0,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "baseline",
+        "round": 5,
+        "interval_s": 0.0,
+        "mode": "none",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.006,
+        "ops_per_second": 596.2,
+        "throughput_vs_pace_percent": 98.54,
+        "gap_median_us": 1651.0,
+        "gap_p99_us": 2484.0,
+        "gap_max_us": 6345.4,
+        "overshoot_count": 293,
+        "overshoot_over_budget_count": 4,
+        "overshoot_max_us": 4692.5,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 0,
+          "total_us": 0.0,
+          "max_us": 0.0,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "baseline",
+        "round": 6,
+        "interval_s": 0.0,
+        "mode": "none",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 0.992,
+        "ops_per_second": 604.7,
+        "throughput_vs_pace_percent": 99.95,
+        "gap_median_us": 1647.9,
+        "gap_p99_us": 2392.5,
+        "gap_max_us": 2470.9,
+        "overshoot_count": 276,
+        "overshoot_over_budget_count": 0,
+        "overshoot_max_us": 818.0,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 0,
+          "total_us": 0.0,
+          "max_us": 0.0,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "baseline",
+        "round": 7,
+        "interval_s": 0.0,
+        "mode": "none",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 0.992,
+        "ops_per_second": 604.6,
+        "throughput_vs_pace_percent": 99.93,
+        "gap_median_us": 1647.6,
+        "gap_p99_us": 2424.2,
+        "gap_max_us": 2481.7,
+        "overshoot_count": 275,
+        "overshoot_over_budget_count": 0,
+        "overshoot_max_us": 828.9,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 0,
+          "total_us": 0.0,
+          "max_us": 0.0,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "baseline",
+        "round": 8,
+        "interval_s": 0.0,
+        "mode": "none",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 0.992,
+        "ops_per_second": 604.7,
+        "throughput_vs_pace_percent": 99.96,
+        "gap_median_us": 1647.4,
+        "gap_p99_us": 2423.1,
+        "gap_max_us": 2475.5,
+        "overshoot_count": 281,
+        "overshoot_over_budget_count": 0,
+        "overshoot_max_us": 822.6,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 0,
+          "total_us": 0.0,
+          "max_us": 0.0,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "baseline",
+        "round": 9,
+        "interval_s": 0.0,
+        "mode": "none",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 0.993,
+        "ops_per_second": 604.0,
+        "throughput_vs_pace_percent": 99.83,
+        "gap_median_us": 1646.4,
+        "gap_p99_us": 2432.7,
+        "gap_max_us": 2493.8,
+        "overshoot_count": 281,
+        "overshoot_over_budget_count": 0,
+        "overshoot_max_us": 840.9,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 0,
+          "total_us": 0.0,
+          "max_us": 0.0,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_self_200ms",
+        "round": 0,
+        "interval_s": 0.2,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 4.546,
+        "ops_per_second": 132.0,
+        "throughput_vs_pace_percent": 21.81,
+        "gap_median_us": 1652.2,
+        "gap_p99_us": 20110.5,
+        "gap_max_us": 3113816.5,
+        "overshoot_count": 296,
+        "overshoot_over_budget_count": 14,
+        "overshoot_max_us": 3112163.6,
+        "slow_gaps_us": [
+          [
+            9145.2,
+            113487.4
+          ],
+          [
+            319073.5,
+            438307.7
+          ],
+          [
+            653427.2,
+            771178.4
+          ],
+          [
+            1334245.4,
+            4448063.1
+          ]
+        ],
+        "background": {
+          "calls": 5,
+          "total_us": 3626617.2,
+          "max_us": 3206211.2,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": [
+            [
+              318.6,
+              113417.4
+            ],
+            [
+              315019.1,
+              438256.2
+            ],
+            [
+              646841.6,
+              771144.3
+            ],
+            [
+              1241519.4,
+              4447728.9
+            ]
+          ]
+        }
+      },
+      {
+        "case": "media_self_200ms",
+        "round": 1,
+        "interval_s": 0.2,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.418,
+        "ops_per_second": 423.1,
+        "throughput_vs_pace_percent": 69.94,
+        "gap_median_us": 1650.6,
+        "gap_p99_us": 5270.6,
+        "gap_max_us": 115831.0,
+        "overshoot_count": 290,
+        "overshoot_over_budget_count": 6,
+        "overshoot_max_us": 114178.1,
+        "slow_gaps_us": [
+          [
+            1165247.9,
+            1281077.3
+          ]
+        ],
+        "background": {
+          "calls": 5,
+          "total_us": 454298.6,
+          "max_us": 122937.1,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": [
+            [
+              1158065.3,
+              1281001.4
+            ]
+          ]
+        }
+      },
+      {
+        "case": "media_self_200ms",
+        "round": 2,
+        "interval_s": 0.2,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.395,
+        "ops_per_second": 430.0,
+        "throughput_vs_pace_percent": 71.08,
+        "gap_median_us": 1650.4,
+        "gap_p99_us": 2504.9,
+        "gap_max_us": 111616.0,
+        "overshoot_count": 287,
+        "overshoot_over_budget_count": 5,
+        "overshoot_max_us": 109963.1,
+        "slow_gaps_us": [
+          [
+            8051.2,
+            119665.2
+          ]
+        ],
+        "background": {
+          "calls": 5,
+          "total_us": 434910.5,
+          "max_us": 119421.4,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": [
+            [
+              176.2,
+              119596.0
+            ]
+          ]
+        }
+      },
+      {
+        "case": "media_self_200ms",
+        "round": 3,
+        "interval_s": 0.2,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.34,
+        "ops_per_second": 447.8,
+        "throughput_vs_pace_percent": 74.02,
+        "gap_median_us": 1650.1,
+        "gap_p99_us": 2753.7,
+        "gap_max_us": 77587.5,
+        "overshoot_count": 292,
+        "overshoot_over_budget_count": 5,
+        "overshoot_max_us": 75934.6,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 5,
+          "total_us": 377899.7,
+          "max_us": 85670.5,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_self_200ms",
+        "round": 4,
+        "interval_s": 0.2,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 3.246,
+        "ops_per_second": 184.9,
+        "throughput_vs_pace_percent": 30.55,
+        "gap_median_us": 1653.5,
+        "gap_p99_us": 27877.4,
+        "gap_max_us": 1882125.4,
+        "overshoot_count": 307,
+        "overshoot_over_budget_count": 14,
+        "overshoot_max_us": 1880472.5,
+        "slow_gaps_us": [
+          [
+            192672.2,
+            2074796.3
+          ]
+        ],
+        "background": {
+          "calls": 5,
+          "total_us": 2405514.1,
+          "max_us": 2073687.5,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": [
+            [
+              117.2,
+              2073801.8
+            ]
+          ]
+        }
+      },
+      {
+        "case": "media_self_200ms",
+        "round": 5,
+        "interval_s": 0.2,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 4.129,
+        "ops_per_second": 145.3,
+        "throughput_vs_pace_percent": 24.02,
+        "gap_median_us": 1653.0,
+        "gap_p99_us": 6631.2,
+        "gap_max_us": 3040031.0,
+        "overshoot_count": 302,
+        "overshoot_over_budget_count": 21,
+        "overshoot_max_us": 3038378.1,
+        "slow_gaps_us": [
+          [
+            316650.9,
+            3356681.7
+          ]
+        ],
+        "background": {
+          "calls": 5,
+          "total_us": 3175631.9,
+          "max_us": 3110058.5,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": [
+            [
+              246282.8,
+              3356336.1
+            ]
+          ]
+        }
+      },
+      {
+        "case": "media_self_200ms",
+        "round": 6,
+        "interval_s": 0.2,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.006,
+        "ops_per_second": 596.2,
+        "throughput_vs_pace_percent": 98.54,
+        "gap_median_us": 1648.5,
+        "gap_p99_us": 2490.3,
+        "gap_max_us": 4190.1,
+        "overshoot_count": 283,
+        "overshoot_over_budget_count": 1,
+        "overshoot_max_us": 2537.2,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 5,
+          "total_us": 48825.4,
+          "max_us": 10704.4,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_self_200ms",
+        "round": 7,
+        "interval_s": 0.2,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.01,
+        "ops_per_second": 594.1,
+        "throughput_vs_pace_percent": 98.19,
+        "gap_median_us": 1650.1,
+        "gap_p99_us": 2539.7,
+        "gap_max_us": 4813.3,
+        "overshoot_count": 283,
+        "overshoot_over_budget_count": 2,
+        "overshoot_max_us": 3160.4,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 5,
+          "total_us": 52323.0,
+          "max_us": 12988.8,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_self_200ms",
+        "round": 8,
+        "interval_s": 0.2,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.008,
+        "ops_per_second": 595.4,
+        "throughput_vs_pace_percent": 98.41,
+        "gap_median_us": 1646.2,
+        "gap_p99_us": 2661.9,
+        "gap_max_us": 4118.1,
+        "overshoot_count": 287,
+        "overshoot_over_budget_count": 2,
+        "overshoot_max_us": 2465.2,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 5,
+          "total_us": 47323.2,
+          "max_us": 10344.6,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_self_200ms",
+        "round": 9,
+        "interval_s": 0.2,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.011,
+        "ops_per_second": 593.2,
+        "throughput_vs_pace_percent": 98.05,
+        "gap_median_us": 1647.9,
+        "gap_p99_us": 3040.4,
+        "gap_max_us": 4718.2,
+        "overshoot_count": 281,
+        "overshoot_over_budget_count": 5,
+        "overshoot_max_us": 3065.4,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 5,
+          "total_us": 51094.5,
+          "max_us": 11299.4,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_self_1000ms",
+        "round": 0,
+        "interval_s": 1.0,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.139,
+        "ops_per_second": 526.9,
+        "throughput_vs_pace_percent": 87.1,
+        "gap_median_us": 1648.3,
+        "gap_p99_us": 2496.0,
+        "gap_max_us": 70242.7,
+        "overshoot_count": 282,
+        "overshoot_over_budget_count": 5,
+        "overshoot_max_us": 68589.8,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 2,
+          "total_us": 73171.5,
+          "max_us": 64127.0,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_self_1000ms",
+        "round": 1,
+        "interval_s": 1.0,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.218,
+        "ops_per_second": 492.5,
+        "throughput_vs_pace_percent": 81.41,
+        "gap_median_us": 1660.9,
+        "gap_p99_us": 5380.4,
+        "gap_max_us": 82499.2,
+        "overshoot_count": 324,
+        "overshoot_over_budget_count": 42,
+        "overshoot_max_us": 80846.3,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 2,
+          "total_us": 2881917.5,
+          "max_us": 2794542.6,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": [
+            [
+              1095389.6,
+              3889930.2
+            ]
+          ]
+        }
+      },
+      {
+        "case": "media_self_1000ms",
+        "round": 2,
+        "interval_s": 1.0,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.065,
+        "ops_per_second": 563.4,
+        "throughput_vs_pace_percent": 93.12,
+        "gap_median_us": 1647.5,
+        "gap_p99_us": 2450.5,
+        "gap_max_us": 70782.3,
+        "overshoot_count": 279,
+        "overshoot_over_budget_count": 1,
+        "overshoot_max_us": 69129.4,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 1,
+          "total_us": 76801.2,
+          "max_us": 76801.2,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_self_1000ms",
+        "round": 3,
+        "interval_s": 1.0,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.035,
+        "ops_per_second": 579.6,
+        "throughput_vs_pace_percent": 95.8,
+        "gap_median_us": 1645.7,
+        "gap_p99_us": 2472.9,
+        "gap_max_us": 42144.0,
+        "overshoot_count": 279,
+        "overshoot_over_budget_count": 1,
+        "overshoot_max_us": 40491.1,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 1,
+          "total_us": 46199.9,
+          "max_us": 46199.9,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_self_1000ms",
+        "round": 4,
+        "interval_s": 1.0,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 0.995,
+        "ops_per_second": 602.8,
+        "throughput_vs_pace_percent": 99.64,
+        "gap_median_us": 1647.5,
+        "gap_p99_us": 2425.0,
+        "gap_max_us": 3013.5,
+        "overshoot_count": 281,
+        "overshoot_over_budget_count": 0,
+        "overshoot_max_us": 1360.6,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 1,
+          "total_us": 5911.6,
+          "max_us": 5911.6,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_self_1000ms",
+        "round": 5,
+        "interval_s": 1.0,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 0.996,
+        "ops_per_second": 602.6,
+        "throughput_vs_pace_percent": 99.61,
+        "gap_median_us": 1649.1,
+        "gap_p99_us": 2449.4,
+        "gap_max_us": 3871.6,
+        "overshoot_count": 285,
+        "overshoot_over_budget_count": 1,
+        "overshoot_max_us": 2218.7,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 1,
+          "total_us": 9929.2,
+          "max_us": 9929.2,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_self_1000ms",
+        "round": 6,
+        "interval_s": 1.0,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 0.997,
+        "ops_per_second": 601.9,
+        "throughput_vs_pace_percent": 99.5,
+        "gap_median_us": 1648.9,
+        "gap_p99_us": 2419.0,
+        "gap_max_us": 3272.2,
+        "overshoot_count": 283,
+        "overshoot_over_budget_count": 0,
+        "overshoot_max_us": 1619.4,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 1,
+          "total_us": 9232.3,
+          "max_us": 9232.3,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_self_1000ms",
+        "round": 7,
+        "interval_s": 1.0,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 0.997,
+        "ops_per_second": 602.1,
+        "throughput_vs_pace_percent": 99.52,
+        "gap_median_us": 1648.8,
+        "gap_p99_us": 2451.6,
+        "gap_max_us": 4542.5,
+        "overshoot_count": 281,
+        "overshoot_over_budget_count": 1,
+        "overshoot_max_us": 2889.6,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 1,
+          "total_us": 9239.3,
+          "max_us": 9239.3,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_self_1000ms",
+        "round": 8,
+        "interval_s": 1.0,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 0.996,
+        "ops_per_second": 602.2,
+        "throughput_vs_pace_percent": 99.54,
+        "gap_median_us": 1646.5,
+        "gap_p99_us": 2421.8,
+        "gap_max_us": 3942.8,
+        "overshoot_count": 280,
+        "overshoot_over_budget_count": 1,
+        "overshoot_max_us": 2289.9,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 1,
+          "total_us": 8688.0,
+          "max_us": 8688.0,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_self_1000ms",
+        "round": 9,
+        "interval_s": 1.0,
+        "mode": "self",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 0.997,
+        "ops_per_second": 601.8,
+        "throughput_vs_pace_percent": 99.47,
+        "gap_median_us": 1648.5,
+        "gap_p99_us": 2429.6,
+        "gap_max_us": 4250.3,
+        "overshoot_count": 280,
+        "overshoot_over_budget_count": 1,
+        "overshoot_max_us": 2597.4,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 1,
+          "total_us": 10409.2,
+          "max_us": 10409.2,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_other_200ms",
+        "round": 0,
+        "interval_s": 0.2,
+        "mode": "other",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.308,
+        "ops_per_second": 458.8,
+        "throughput_vs_pace_percent": 75.83,
+        "gap_median_us": 1645.8,
+        "gap_p99_us": 2489.5,
+        "gap_max_us": 99794.2,
+        "overshoot_count": 277,
+        "overshoot_over_budget_count": 4,
+        "overshoot_max_us": 98141.4,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 5,
+          "total_us": 345133.1,
+          "max_us": 107218.0,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": [
+            [
+              1064713.6,
+              1171929.9
+            ]
+          ]
+        }
+      },
+      {
+        "case": "media_other_200ms",
+        "round": 1,
+        "interval_s": 0.2,
+        "mode": "other",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.062,
+        "ops_per_second": 564.7,
+        "throughput_vs_pace_percent": 93.35,
+        "gap_median_us": 1651.4,
+        "gap_p99_us": 2623.5,
+        "gap_max_us": 53906.0,
+        "overshoot_count": 292,
+        "overshoot_over_budget_count": 2,
+        "overshoot_max_us": 52253.1,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 5,
+          "total_us": 103237.7,
+          "max_us": 61015.2,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_other_200ms",
+        "round": 2,
+        "interval_s": 0.2,
+        "mode": "other",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 4.451,
+        "ops_per_second": 134.8,
+        "throughput_vs_pace_percent": 22.28,
+        "gap_median_us": 1652.8,
+        "gap_p99_us": 11846.8,
+        "gap_max_us": 3086557.1,
+        "overshoot_count": 299,
+        "overshoot_over_budget_count": 21,
+        "overshoot_max_us": 3084904.2,
+        "slow_gaps_us": [
+          [
+            12028.8,
+            133485.6
+          ],
+          [
+            793200.2,
+            3879758.6
+          ]
+        ],
+        "background": {
+          "calls": 5,
+          "total_us": 3557905.2,
+          "max_us": 3236416.5,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": [
+            [
+              214.2,
+              133420.8
+            ],
+            [
+              638025.4,
+              3874439.6
+            ]
+          ]
+        }
+      },
+      {
+        "case": "media_other_200ms",
+        "round": 3,
+        "interval_s": 0.2,
+        "mode": "other",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.468,
+        "ops_per_second": 408.8,
+        "throughput_vs_pace_percent": 67.57,
+        "gap_median_us": 1649.5,
+        "gap_p99_us": 3858.0,
+        "gap_max_us": 125682.5,
+        "overshoot_count": 285,
+        "overshoot_over_budget_count": 7,
+        "overshoot_max_us": 124029.6,
+        "slow_gaps_us": [
+          [
+            9875.8,
+            135555.7
+          ],
+          [
+            615291.2,
+            732926.9
+          ],
+          [
+            950169.8,
+            1061285.5
+          ]
+        ],
+        "background": {
+          "calls": 5,
+          "total_us": 505979.0,
+          "max_us": 135317.4,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": [
+            [
+              191.0,
+              135507.2
+            ],
+            [
+              607820.4,
+              732845.0
+            ],
+            [
+              942928.6,
+              1061312.6
+            ]
+          ]
+        }
+      },
+      {
+        "case": "media_other_200ms",
+        "round": 4,
+        "interval_s": 0.2,
+        "mode": "other",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.362,
+        "ops_per_second": 440.4,
+        "throughput_vs_pace_percent": 72.8,
+        "gap_median_us": 1650.6,
+        "gap_p99_us": 2487.5,
+        "gap_max_us": 157592.0,
+        "overshoot_count": 290,
+        "overshoot_over_budget_count": 4,
+        "overshoot_max_us": 155939.1,
+        "slow_gaps_us": [
+          [
+            1075677.9,
+            1233265.6
+          ]
+        ],
+        "background": {
+          "calls": 5,
+          "total_us": 402065.3,
+          "max_us": 163521.3,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": [
+            [
+              1069708.6,
+              1233228.9
+            ]
+          ]
+        }
+      },
+      {
+        "case": "media_other_200ms",
+        "round": 5,
+        "interval_s": 0.2,
+        "mode": "other",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.01,
+        "ops_per_second": 594.1,
+        "throughput_vs_pace_percent": 98.21,
+        "gap_median_us": 1650.5,
+        "gap_p99_us": 2479.9,
+        "gap_max_us": 4501.6,
+        "overshoot_count": 290,
+        "overshoot_over_budget_count": 3,
+        "overshoot_max_us": 2848.7,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 5,
+          "total_us": 49033.8,
+          "max_us": 11237.8,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_other_200ms",
+        "round": 6,
+        "interval_s": 0.2,
+        "mode": "other",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.009,
+        "ops_per_second": 594.7,
+        "throughput_vs_pace_percent": 98.3,
+        "gap_median_us": 1651.3,
+        "gap_p99_us": 2483.8,
+        "gap_max_us": 4401.6,
+        "overshoot_count": 290,
+        "overshoot_over_budget_count": 3,
+        "overshoot_max_us": 2748.7,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 5,
+          "total_us": 49442.0,
+          "max_us": 10685.5,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_other_200ms",
+        "round": 7,
+        "interval_s": 0.2,
+        "mode": "other",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.01,
+        "ops_per_second": 594.0,
+        "throughput_vs_pace_percent": 98.19,
+        "gap_median_us": 1648.5,
+        "gap_p99_us": 2911.3,
+        "gap_max_us": 4547.0,
+        "overshoot_count": 285,
+        "overshoot_over_budget_count": 4,
+        "overshoot_max_us": 2894.1,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 5,
+          "total_us": 49160.3,
+          "max_us": 10997.3,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_other_200ms",
+        "round": 8,
+        "interval_s": 0.2,
+        "mode": "other",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.011,
+        "ops_per_second": 593.2,
+        "throughput_vs_pace_percent": 98.05,
+        "gap_median_us": 1650.4,
+        "gap_p99_us": 2665.0,
+        "gap_max_us": 4409.4,
+        "overshoot_count": 287,
+        "overshoot_over_budget_count": 4,
+        "overshoot_max_us": 2756.5,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 5,
+          "total_us": 52832.2,
+          "max_us": 11969.3,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      },
+      {
+        "case": "media_other_200ms",
+        "round": 9,
+        "interval_s": 0.2,
+        "mode": "other",
+        "commits": 600,
+        "pace_us": 1652.9,
+        "elapsed_s": 1.019,
+        "ops_per_second": 588.5,
+        "throughput_vs_pace_percent": 97.28,
+        "gap_median_us": 1651.5,
+        "gap_p99_us": 2840.4,
+        "gap_max_us": 13888.3,
+        "overshoot_count": 293,
+        "overshoot_over_budget_count": 4,
+        "overshoot_max_us": 12235.4,
+        "slow_gaps_us": [],
+        "background": {
+          "calls": 5,
+          "total_us": 57448.0,
+          "max_us": 21708.8,
+          "unfinished_us": 0.0,
+          "thread_error": 0,
+          "errors": [],
+          "slow_intervals_us": []
+        }
+      }
+    ]
+  },
+  "schedule_arithmetic": {
+    "note": "call_model 로 주기 T초 정책의 커밋당 상각을 계산. 창 = T초의 이력(커밋 수·바이트).",
+    "rows": [
+      {
+        "window_s": 1.0,
+        "window_commits_at_605ops": 605,
+        "window_bytes": 163955,
+        "media_call_us": 4383.5,
+        "amortized_us_per_commit": 7.2455,
+        "amortized_us_per_commit_at_bandwidth": {
+          "0.5": 7.7875,
+          "2.0": 7.381,
+          "10.0": 7.2726
+        },
+        "share_of_budget_percent": 0.4383,
+        "calls_per_8h": 28800
+      },
+      {
+        "window_s": 10.0,
+        "window_commits_at_605ops": 6050,
+        "window_bytes": 1639550,
+        "media_call_us": 4383.5,
+        "amortized_us_per_commit": 0.7245,
+        "amortized_us_per_commit_at_bandwidth": {
+          "0.5": 1.2665,
+          "2.0": 0.86,
+          "10.0": 0.7516
+        },
+        "share_of_budget_percent": 0.0438,
+        "calls_per_8h": 2880
+      },
+      {
+        "window_s": 60.0,
+        "window_commits_at_605ops": 36300,
+        "window_bytes": 9837300,
+        "media_call_us": 4383.5,
+        "amortized_us_per_commit": 0.1208,
+        "amortized_us_per_commit_at_bandwidth": {
+          "0.5": 0.6628,
+          "2.0": 0.2563,
+          "10.0": 0.1479
+        },
+        "share_of_budget_percent": 0.0073,
+        "calls_per_8h": 480
+      },
+      {
+        "window_s": 600.0,
+        "window_commits_at_605ops": 363000,
+        "window_bytes": 98373000,
+        "media_call_us": 4383.5,
+        "amortized_us_per_commit": 0.0121,
+        "amortized_us_per_commit_at_bandwidth": {
+          "0.5": 0.5541,
+          "2.0": 0.1476,
+          "10.0": 0.0392
+        },
+        "share_of_budget_percent": 0.0007,
+        "calls_per_8h": 48
+      },
+      {
+        "window_s": 3600.0,
+        "window_commits_at_605ops": 2178000,
+        "window_bytes": 590238000,
+        "media_call_us": 4383.5,
+        "amortized_us_per_commit": 0.002,
+        "amortized_us_per_commit_at_bandwidth": {
+          "0.5": 0.544,
+          "2.0": 0.1375,
+          "10.0": 0.0291
+        },
+        "share_of_budget_percent": 0.0001,
+        "calls_per_8h": 8
+      }
+    ]
+  },
+  "limits": [
+    "크래시 유실은 실측할 수 없다(전원 손실 필요) — 창은 규칙으로 정의하고 시험으로 간접 검증한다.",
+    "4차 soak 이 같은 디스크에 쓰는 중 — 절대 지연은 그 조건의 값이다.",
+    "F_FULLFSYNC 의 ‘미디어 보장’ 자체는 플랫폼 문서 근거이고, 실측된 것은 비용 차이다."
+  ]
+}

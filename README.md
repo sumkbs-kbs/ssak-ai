@@ -14,6 +14,10 @@ The core separates **Brain** planning and reasoning from **Body** execution. It 
 
 For release and support status, see the [status document](docs/20_CURRENT_STATUS.md). Dated improvements and their verification limits are recorded in the [core execution plan](docs/ssak-ai-core/EXECUTION_PLAN_2026-10-03.md), [full feature live-validation plan](docs/ssak-ai-core/FULL_FUNCTION_LIVE_PLAN_2026-10-04.md), and [decision-diagnostics results](docs/qa/2026-10-04-oh-my-jev-followup/RESULT.md). Test results apply to the source and scope recorded in each report.
 
+**Historical CR candidate status:** RP-01 through RP-14 and GA-100 33/33 are implementation history, not release approval. CR-01 ~ CR-14 remains **REVIEW**: the candidate is committed (커밋됨); **GA 승인 없음**. The candidate SHA and code fingerprint are owned by the [CR-14 verdict](docs/ga/CR14_FINAL_CANDIDATE_VERDICT.md); third-party independent review remains unassigned, and the assigned release owner recorded **NO-GO**. Technical TODOs remain in the [current status](docs/20_CURRENT_STATUS.md); 사람 축도 이 후보의 별도 차단 사유이며, 기술 TODO 역시 남아 있다. GA-100 33/33 is **구현 이력**, not an approval or release verdict.
+
+These statements describe the documented CR candidate and do not certify the current working tree or a new candidate.
+
 ## What you can use
 
 - **Local inference:** a shared model registry, local model discovery, provider adapters, and explicit model selection.

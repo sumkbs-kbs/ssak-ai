@@ -10,7 +10,7 @@
   2. 문서의 `AGK_*` 환경변수가 코드에 있거나, pydantic `env_prefix` + 필드명으로 파생되는가
   3. 문서가 참조하는 경로가 실재하는가
   4. 문서의 로컬 상대 링크가 실재하는 파일을 가리키는가
-  5. 커밋 대상(dirty+untracked)에 비밀 패턴이 섞이지 않았는가(자리표시자는 제외)
+  5. 커밋 대상(dirty+untracked), 또는 clean 트리의 tracked production/config에 비밀 패턴이 없는가
 
 승격 상태: 이 파일은 `tests/test_docs_toolchain_contract.py` 로 옮겨지고, `verify_docs_commands.py` 는
 `scripts/verify_docs_commands.py` 로 옮겨진다. 그 전에도 통과하도록 도구를 **탐색**해서 찾는다.
@@ -21,8 +21,10 @@ from __future__ import annotations
 import importlib.util
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
+from typing import Final
 
 import pytest
 
@@ -145,33 +147,71 @@ def test_local_relative_links_resolve() -> None:
     assert not broken, "깨진 로컬 상대 링크: " + " | ".join(broken[:8])
 
 
-@pytest.mark.skipif(
-    not (REPO / ".git").exists(),
-    reason="git 작업 트리가 아니다(승격 리허설의 미러 트리) — 스캔 대상(dirty+untracked)이 정의되지 않는다.",
+# Clean-tree baseline: tracked production and deployment/package configuration.
+# Historical evidence and fixture corpora are not this baseline; every dirty/untracked
+# text candidate still uses the original content rules, regardless of its directory.
+_BASELINE_PATHS: Final = (
+    "src/",
+    "scripts/",
+    "config/",
+    "dashboard/src/",
+    ".github/",
+    "deploy/",
+    "desktop/",
+    "vscode-extension/src/",
+    "pyproject.toml",
+    "setup.py",
+    "requirements.txt",
+    "uv.lock",
+    "config.yaml",
+    "policy.yaml",
+    "Dockerfile",
+    "docker-compose.vllm.yml",
+    "docker-entrypoint.sh",
+    "Makefile",
+    "run.sh",
+    "setup_env.sh",
+    ".pre-commit-config.yaml",
+    "dashboard/package.json",
+    "dashboard/pnpm-lock.yaml",
+    "dashboard/vite.config.ts",
+    "dashboard/tsconfig*.json",
+    "vscode-extension/package.json",
+    "vscode-extension/package-lock.json",
 )
-def test_commit_set_has_no_secret_patterns() -> None:
-    """커밋 대상(dirty+untracked)에 비밀 패턴이 섞이지 않았는가.
 
-    `git add -A` 로 인증 해시 사본이 커밋될 수 있는 상태를 이 카드에서 실제로 확인했다
-    (`data/auth_hash.bak.pre-0000` 이 무시되지 않은 채 untracked). 값은 절대 출력하지 않고
-    파일:줄만 보고한다.
 
-    리허설 미러 트리에는 `.git` 이 없다 — 그래서 여기서만 건너뛴다. 이 시험이 실제로 문다는
-    것은 본 트리(=릴리스 게이트가 도는 곳)의 몫이고, 스캔 대상이 0건이면 그때는 실패한다.
-    """
-    import subprocess
-
+def _scan_secret_candidates(root: Path) -> tuple[int, list[str]]:
+    """Scan the commit set, falling back to tracked production/config on clean trees."""
     status = subprocess.run(
-        ["git", "status", "--porcelain"], cwd=REPO, capture_output=True, text=True, check=True
+        ["git", "status", "--porcelain"], cwd=root, capture_output=True, text=True, check=True
     ).stdout.splitlines()
-    text_suffixes = {".py", ".ts", ".tsx", ".js", ".json", ".md", ".sh", ".yaml", ".yml", ".toml", ".txt", ""}
-    hits: list[str] = []
-    scanned = 0
+    candidates = []
     for line in status:
         path = line[3:].strip().strip('"')
         if " -> " in path:
             path = path.split(" -> ")[-1]
-        target = REPO / path
+        candidates.append(path)
+    scanned, hits = _scan_secret_paths(root, candidates)
+    if scanned == 0:
+        tracked = subprocess.run(
+            ["git", "ls-files", "-z", "--", *_BASELINE_PATHS],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.split("\0")
+        scanned, hits = _scan_secret_paths(root, tracked)
+    return scanned, hits
+
+
+def _scan_secret_paths(root: Path, candidates: list[str]) -> tuple[int, list[str]]:
+    """Apply the documentation scanner's unchanged text and placeholder rules."""
+    text_suffixes = {".py", ".ts", ".tsx", ".js", ".json", ".md", ".sh", ".yaml", ".yml", ".toml", ".txt", ""}
+    hits: list[str] = []
+    scanned = 0
+    for path in candidates:
+        target = root / path
         if not path or not target.is_file() or target.suffix not in text_suffixes:
             continue
         if target.stat().st_size > 2_000_000:
@@ -184,8 +224,55 @@ def test_commit_set_has_no_secret_patterns() -> None:
                 if quoted and all(TOOL.PLACEHOLDER_RE.match(q) or len(q) < 12 for q in quoted):  # type: ignore[attr-defined]
                     continue
                 hits.append(f"{path}:{body[: match.start()].count(chr(10)) + 1} ({label})")
-    assert scanned > 0, "커밋 대상 파일을 하나도 스캔하지 못했다(작업 트리가 비었거나 git 이 실패)"
+    return scanned, hits
+
+
+@pytest.mark.skipif(not (REPO / ".git").exists(), reason="No git worktree for commit-set/production scan")
+def test_commit_set_has_no_secret_patterns() -> None:
+    scanned, hits = _scan_secret_candidates(REPO)
+    assert scanned > 0, "No eligible commit-set or tracked production/config files scanned"
     assert not hits, "커밋 대상에서 비밀 패턴 의심: " + ", ".join(hits[:8])
+
+
+@pytest.mark.parametrize("planted", [False, True])
+def test_clean_tracked_production_baseline_detects_synthetic_secret(tmp_path: Path, planted: bool) -> None:
+    # Given: a clean tracked production source, with an optional deliberately fake pattern.
+    (tmp_path / "src").mkdir()
+    body = "value = 1\n"
+    if planted:
+        body += 'token = "' + "sk-" + "0" * 24 + '"\n'
+    (tmp_path / "src" / "app.py").write_text(body, encoding="utf-8")
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True, capture_output=True)
+    subprocess.run(["git", "add", "src/app.py"], cwd=tmp_path, check=True, capture_output=True)
+    subprocess.run(
+        [
+            "git",
+            "-c",
+            "user.name=contract",
+            "-c",
+            "user.email=contract@example.invalid",
+            "-c",
+            "commit.gpgsign=false",
+            "commit",
+            "-qm",
+            "synthetic baseline",
+        ],
+        cwd=tmp_path,
+        check=True,
+        capture_output=True,
+    )
+    assert subprocess.check_output(["git", "status", "--porcelain"], cwd=tmp_path) == b""
+    # When: the clean tree has no dirty or untracked scan targets.
+    scanned, hits = _scan_secret_candidates(tmp_path)
+    # Then: production is scanned and the planted pattern cannot pass.
+    assert scanned == 1
+    assert hits == (["src/app.py:2 (openai_key)"] if planted else [])
+    # Changed fixture/evidence paths retain the original scan rules, without exclusions.
+    (tmp_path / "tests").mkdir()
+    fixture = tmp_path / "tests" / "fixture.py"
+    fixture.write_text('token = "' + "sk-" + "0" * 24 + '"\n', encoding="utf-8")
+    subprocess.run(["git", "add", "tests/fixture.py"], cwd=tmp_path, check=True, capture_output=True)
+    assert _scan_secret_candidates(tmp_path) == (1, ["tests/fixture.py:1 (openai_key)"])
 
 
 def test_tool_docs_manifest_is_json_serialisable() -> None:

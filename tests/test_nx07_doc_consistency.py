@@ -62,9 +62,9 @@ SUPPORT_LEVELS = ("**Supported**", "**Experimental**", "**Unsupported**", "**Not
 SOAK_MARKERS = ("SC-6 FAIL", "1654.9", "all_pass", "UNVERIFIED", "exit:141")
 
 _LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
-_ENV_ROW_RE = re.compile(r"^\|\s*`AGK_SERVER_PORT`\s*\|\s*`(\d+)`", re.M)
+_ENV_ROW_RE = re.compile(r"^\|[^|]*`AGK_SERVER_PORT`[^|]*\|[^|\n]*`(\d+)`", re.M)
 _SERVE_PORT_RE = re.compile(r"--port\s+(\d+)")
-_DOC_URL_RE = re.compile(r"\*\*(?:Swagger UI|ReDoc|OpenAPI JSON)\*\*:\s*https?://[^:]+:(\d+)")
+_DOC_URL_RE = re.compile(r"https?://(?:localhost|127\.0\.0\.1):(\d+)/(?:docs|redoc|openapi\.json)(?=[)\s`#]|$)")
 _OPEN_CARD_RE = re.compile(r"^\|\s*(NX-\d+(?:-F\d+)?)\s*\|([^|]*)\|", re.M)
 _DMG_ROW_MARKER = "Ssak-Ai-0.1.0.dmg"
 
@@ -333,12 +333,16 @@ def test_teeth_readme_port_drift_is_detected() -> None:
     healthy = _read(README)
     port = code_default_port()
     cases = {
-        "serve 예시를 레거시로 되돌림": healthy.replace(f"--port {port}", "--port 8400"),
-        "문서 주소만 남겨 둠": healthy.replace(f"localhost:{port}/docs", "localhost:8400/docs"),
-        "환경변수 기본값만 어긋남": healthy.replace(f"| `{port}` |", "| `8400` |"),
+        "serve 포트 불일치": healthy.replace(f"--port {port}", "--port 9999"),
+        "Swagger 포트 불일치": healthy.replace(f":{port}/docs", ":9999/docs"),
+        "OpenAPI 포트 불일치": healthy.replace(f":{port}/openapi.json", ":9999/openapi.json"),
+        "환경변수 기본값 불일치": healthy.replace(f"`{port}`", "`9999`"),
+        "문서 주소 누락": _DOC_URL_RE.sub("", healthy),
+        "환경변수 기본값 누락": _ENV_ROW_RE.sub("", healthy),
     }
     assert not readme_port_violations(healthy, port, dev_ui_port()), "기준 README 가 이미 어긋난다"
     for label, text in cases.items():
+        assert text != healthy, f"변이 적용 실패 — {label}"
         assert readme_port_violations(text, port, dev_ui_port()), f"이빨 없음 — {label}"
 
 

@@ -42,7 +42,7 @@ _PLAN = REPO_ROOT / "docs" / "16_COMMERCIAL_RELIABILITY_DEVELOPMENT_PLAN.md"
 _GATE_SCRIPT = REPO_ROOT / "scripts" / "ga_gate.py"
 
 _HEX64 = re.compile(r"\b[0-9a-f]{64}\b")
-# 판정 카드가 **현재** 지문을 선언하는 자리. 이 표기가 값의 유일한 소유자다.
+# 판정 카드가 기록된 후보 지문을 선언하는 자리. 이 표기가 값의 유일한 소유자다.
 _DECLARED = re.compile(r"코드 지문 \*\*`([0-9a-f]{64})`\*\*")
 _EXCLUDED = re.compile(r"FINGERPRINT_EXCLUDED_PREFIXES[^=\n]*=\s*\(([^)]*)\)")
 _OWNER_POINTER = "CR14_FINAL_CANDIDATE_VERDICT"
@@ -62,7 +62,7 @@ def _read(path: Path) -> str:
 
 
 def declared_fingerprint(text: str) -> str:
-    """판정 카드가 선언한 **현재** 코드 지문. 0개거나 2개 이상이면 실패시킨다."""
+    """판정 카드가 선언한 기록된 후보의 코드 지문. 0개거나 2개 이상이면 실패시킨다."""
     matches = _DECLARED.findall(text)
     if len(matches) != 1:
         raise AssertionError(
@@ -134,8 +134,8 @@ def excluded_prefixes(script_text: str) -> tuple[str, ...]:
 # ---------------------------------------------------------------------------
 
 
-def test_owner_document_declares_exactly_one_current_fingerprint() -> None:
-    """값의 소유자는 하나다 — 판정 카드가 현재 지문을 선언한다(C14-F15-2 의 전제)."""
+def test_owner_document_declares_exactly_one_recorded_fingerprint() -> None:
+    """값의 소유자는 하나다 — 판정 카드가 기록된 후보 지문을 선언한다(C14-F15-2 의 전제)."""
     declared = declared_fingerprint(_read(_OWNER_DOC))
     assert len(declared) == 64
 

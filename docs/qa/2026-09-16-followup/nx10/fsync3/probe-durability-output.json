@@ -1,0 +1,141 @@
+{
+  "capabilities": {
+    "os.fdatasync": false,
+    "fcntl.F_FULLFSYNC": true,
+    "os.sync": true,
+    "platform": "darwin"
+  },
+  "soak_reference": {
+    "ops_per_second": 605.0,
+    "per_op_budget_us": 1652.9
+  },
+  "clean_cache": {
+    "os.fsync": {
+      "n": 25,
+      "min_us": 36.7,
+      "median_us": 44.2,
+      "p95_us": 57.5,
+      "max_us": 105.2
+    },
+    "F_FULLFSYNC": {
+      "n": 25,
+      "min_us": 3672.4,
+      "median_us": 4163.4,
+      "p95_us": 26155.7,
+      "max_us": 44293.5
+    },
+    "full_overflow_ratio": 94.19
+  },
+  "dirty_cache_64mb_context": {
+    "note": "다른 파일로 캐시를 더럽힌 상태 — 자기 파일의 dirty 페이지는 안 늘어나므로 거의 안 비싸진다.",
+    "os.fsync": {
+      "n": 25,
+      "min_us": 43.1,
+      "median_us": 56.9,
+      "p95_us": 87.3,
+      "max_us": 286.4
+    },
+    "F_FULLFSYNC": {
+      "n": 25,
+      "min_us": 3732.8,
+      "median_us": 4099.7,
+      "p95_us": 6760.1,
+      "max_us": 7086.2
+    },
+    "full_overflow_ratio": 72.05,
+    "dirty_over_clean_ratio": 1.29
+  },
+  "batch_flush_single_call": {
+    "note": "같은 파일에 8 MB 를 sync 없이 쌓고 sync 1회 — 배치가 flush 1회에 지불하는 값.",
+    "run_bytes": 8388608,
+    "commits_in_run_271B": 30954,
+    "os.fsync_us": 1709.9,
+    "os.fsync_us_per_commit": 0.06,
+    "F_FULLFSYNC_us": 7029.2,
+    "F_FULLFSYNC_us_per_commit": 0.23
+  },
+  "sustained_load": {
+    "note": "2,000 커밋 · 같은 파일 · `sync_every` 마다 fsync 1회 · 마지막 flush 포함(유휴 단발 측정보다 이 값이 근거다).",
+    "runs": [
+      {
+        "level": "cache(os.fsync)",
+        "commits": 2000,
+        "sync_every": 1,
+        "total_ms": 90.7,
+        "us_per_commit": 45.37,
+        "sync_calls": 2000,
+        "relative_to_always": 1.0,
+        "share_of_per_op_budget_percent": 2.74
+      },
+      {
+        "level": "cache(os.fsync)",
+        "commits": 2000,
+        "sync_every": 8,
+        "total_ms": 19.6,
+        "us_per_commit": 9.82,
+        "sync_calls": 250,
+        "relative_to_always": 0.216,
+        "share_of_per_op_budget_percent": 0.59
+      },
+      {
+        "level": "cache(os.fsync)",
+        "commits": 2000,
+        "sync_every": 32,
+        "total_ms": 10.1,
+        "us_per_commit": 5.06,
+        "sync_calls": 62,
+        "relative_to_always": 0.112,
+        "share_of_per_op_budget_percent": 0.31
+      },
+      {
+        "level": "media(F_FULLFSYNC)",
+        "commits": 2000,
+        "sync_every": 1,
+        "total_ms": 8016.3,
+        "us_per_commit": 4008.13,
+        "sync_calls": 2000,
+        "relative_to_always": 88.343,
+        "share_of_per_op_budget_percent": 242.49
+      },
+      {
+        "level": "media(F_FULLFSYNC)",
+        "commits": 2000,
+        "sync_every": 8,
+        "total_ms": 1055.8,
+        "us_per_commit": 527.91,
+        "sync_calls": 250,
+        "relative_to_always": 11.636,
+        "share_of_per_op_budget_percent": 31.94
+      }
+    ]
+  },
+  "share_of_per_op_budget_percent": {
+    "os.fsync_clean": 2.7,
+    "os.fsync_dirty": 3.4,
+    "F_FULLFSYNC_dirty": 248.0
+  },
+  "batching_arithmetic": {
+    "note": "배치 k회당 1회 sync 로 묶으면 커밋당 sync 비용이 약 1/k 이 된다(유실 창은 k회).",
+    "options": [
+      {
+        "policy": "always(=A)",
+        "sync_per_commit": "1",
+        "window_commits": 0
+      },
+      {
+        "policy": "batched(k=8)",
+        "sync_per_commit": "1/8",
+        "window_commits": 8
+      },
+      {
+        "policy": "batched(k=32)",
+        "sync_per_commit": "1/32",
+        "window_commits": 32
+      }
+    ]
+  },
+  "limits": [
+    "크래시 유실은 실측할 수 없다(전원 손실 필요) — 유실 창은 규칙으로 정의한다(초안 §3).",
+    "지연은 디스크 상태·파일시스템·동시 부하에 흔들린다 — 절대값이 아니라 **비율과 계단**을 읽는다."
+  ]
+}
