@@ -201,12 +201,13 @@ class GBrain:
         """Initialize the GBrain.
 
         Args:
-            storage_dir (str | None): str | None storage dir.
+            storage_dir: Explicit path, ahead of AGK_GBRAIN_DIR and the default home path.
 
         """
         self._mutation_lock = threading.RLock()
         self._closed = False
-        self.storage_dir = Path(storage_dir) if storage_dir else Path.home() / ".antigravity" / "gbrain"
+        configured_dir = storage_dir or os.environ.get("AGK_GBRAIN_DIR")
+        self.storage_dir = Path(configured_dir) if configured_dir else Path.home() / ".antigravity" / "gbrain"
         self.storage_dir.mkdir(parents=True, exist_ok=True)
         self._storage_lock = SoftFileLock(str(self.storage_dir / ".gbrain.lock"), timeout=30)
 

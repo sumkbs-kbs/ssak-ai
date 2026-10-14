@@ -77,16 +77,20 @@ class ContextShaper:
             max_tokens (int): int max tokens.
             reserve_tokens (int): int reserve tokens.
             collapse_threshold (int): int collapse threshold.
-            storage_dir (str | None): str | None storage dir.
+            storage_dir: Explicit path, ahead of AGK_CONTEXT_STORE_DIR and the default home path.
 
         """
         self.max_tokens: int = max_tokens
         self.reserve_tokens: int = reserve_tokens
         self.collapse_threshold: int = collapse_threshold
-        self.storage_dir: str = storage_dir or os.path.join(
-            os.path.expanduser("~"),
-            ".antigravity",
-            "context_store",
+        self.storage_dir: str = (
+            storage_dir
+            or os.environ.get("AGK_CONTEXT_STORE_DIR")
+            or os.path.join(
+                os.path.expanduser("~"),
+                ".antigravity",
+                "context_store",
+            )
         )
         os.makedirs(self.storage_dir, exist_ok=True)
 

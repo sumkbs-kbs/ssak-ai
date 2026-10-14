@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import time
 from pathlib import Path
 from typing import final, override
@@ -36,7 +37,8 @@ _CATEGORY_ADAPTER = TypeAdapter(list[str])
 class GlobalMemoryProvider(MemoryProvider):
     def __init__(self, memory_dir: str | None = None, max_entries: int = 200) -> None:
         default_dir = Path.home() / ".antigravity-k" / "memory"
-        self._memory_dir = Path(memory_dir) if memory_dir else default_dir
+        configured_dir = memory_dir or os.environ.get("AGK_GLOBAL_MEMORY_DIR")
+        self._memory_dir = Path(configured_dir) if configured_dir else default_dir
         self._max_entries = max_entries
         self._memory_dir.mkdir(parents=True, exist_ok=True)
         self._memory = self._load_categories()
