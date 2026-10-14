@@ -1,0 +1,12 @@
+{
+  "from": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/vault_data/.chroma",
+  "to": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/isolated/chroma-from-candidate-v1",
+  "files": {
+    "chroma.sqlite3": {
+      "bytes": 188416,
+      "sha256": "14df91e00b789bb347c154b389bb87dfdc882ef2fd0d2f6dff6773332fdefc40",
+      "mtime_ns": 1791963474480527819
+    }
+  },
+  "reason": "Worktree initially clean. Cache created during candidate-v1 TestClient dependency initialization; moved without deleting evidence."
+}

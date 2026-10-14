@@ -1,0 +1,87 @@
+{
+  "status": "READY_FOR_REVIEW_WITH_UNCHANGED_TYPE_BASELINE",
+  "base_head": "23708fe45cfb9140f9934bec88ec487913e3f7f6",
+  "source_binding": {
+    "src/antigravity_k/engine/embeddings.py": {
+      "before": "d5aaf9a5d0af148a8d95d40a9293735ba5d5df2b15c41681612579aed078dcd5",
+      "after": "3522ff04d2df755bfeab8dadc1eaa9339b309db46b7c927efba50b9ad998b0cb"
+    },
+    "src/antigravity_k/engine/provider_adapters/embedding_providers.py": {
+      "before": null,
+      "after": "7a4655a8135a9c1c94ff8a9db5edd8d0075c9e8fbd8661ed23412c66fbed5e6f"
+    },
+    "src/antigravity_k/api/routes/models_api.py": {
+      "before": "6ef55819126ce691d975320f87b970608fc3d6cafa0318176177d9ff3763111a",
+      "after": "9a381eaad83443b3becaf60d36f1fd87f2b989930766095c24596b6936e2b69d"
+    },
+    "src/antigravity_k/api/dependencies.py": {
+      "before": "274a057b06492e9f4ca1c09bbb6da72a48430aa22fdc75f0fcccce47c20e77c0",
+      "after": "f49635d503ab82690b6bd23dd1bc6c597eb0a503c8dd16ac07dc24b9b1436b01"
+    },
+    "src/antigravity_k/engine/model_registry.py": {
+      "before": "40e825eb0b0ba933aa571053c8c43ea5e06dd8958d541f74af5e8dec832029e5",
+      "after": "8febe07ec3e0b00c87b83afd31475727c893885c97f760aadcf3f1409e0e6bda"
+    },
+    "tests/test_embeddings.py": {
+      "before": "ba6620770caa88766161e4446849d43de47a928292c90cdc06ceac683a7fbe1a",
+      "after": "fe8a51b3c423697cf70a5422784825fc7381d63e13a8bb867072148449179037"
+    },
+    "tests/test_embeddings_model_contract.py": {
+      "before": null,
+      "after": "8cc10be711d036cda641f02f2b82fdd2d4b4f32880cd1e8a2b18500115cfab41"
+    },
+    "tests/test_models_system_api.py": {
+      "before": "ec220817a36333cf923a1930b1834fc866b023e11ac9d019e77f8cb616f755b5",
+      "after": "8bf0587c66ac1b8038329eec574233091b857e3053ea84976c53ac19dad9e911"
+    },
+    "tests/test_ollama_embedding_routing.py": {
+      "before": null,
+      "after": "f1eee99ca0e3a34e7426795a0a5aac6112693ff5bbe25acc1594eef506c60b81"
+    },
+    "tests/test_model_registry_config_precedence.py": {
+      "before": null,
+      "after": "413d9ebe96386f637ace7562ec213e49f506ef48e43831f2651c300399b7c199"
+    }
+  },
+  "tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "65",
+    "time": "0.556",
+    "timestamp": "2026-10-14T16:37:54.097457+09:00",
+    "hostname": "MrKui-MacBookPro.local"
+  },
+  "checks": "candidate-v1/checks.json",
+  "type_status": {
+    "full_owned_exit": 1,
+    "baseline_dependencies_exit": 1,
+    "same_baseline_errors": 2,
+    "other_nine_owned_files_exit": 0,
+    "evidence": "type-comparison-checks.json"
+  },
+  "guards": {
+    "attempts": [],
+    "pytest_exit": 0,
+    "model_attempts": [],
+    "lifespan": "offline_noop_fixture"
+  },
+  "patch_byte_identical": true,
+  "historical_patches": {
+    "strict": "41784c194f6ff9d2f134bd453f11a92d03eb9c7cacda29278b83992239714ff2",
+    "routing": "28c9d43e0946512c120ef6436898e0c660d0ce0ad77a50e3995ca18dba43e078"
+  },
+  "excluded": [
+    "dependencies cognitive Protocol/generate edits",
+    "vector_store/chroma_lifecycle/config.yaml",
+    "user default embedding activation",
+    "RAG identity/precompute implementation"
+  ],
+  "new_tests": "4 registry configuration precedence cases; red1failed3passed, candidate4passed",
+  "test_fixture_typing_only": "routing _ClientOptions TypedDict/Unpack and tuple annotation matching existing default",
+  "committed": false,
+  "pushed": false,
+  "root_sources_edited": false,
+  "remaining": "independent review/publication and subsequent explicit RAG embedding identity implementation"
+}

@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "git",
+    "apply",
+    "--unsafe-paths",
+    "--directory=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction-v2",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate.patch"
+  ],
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "byte_identical": {
+    "src/antigravity_k/engine/embeddings.py": true,
+    "src/antigravity_k/engine/provider_adapters/embedding_providers.py": true,
+    "src/antigravity_k/api/routes/models_api.py": true,
+    "src/antigravity_k/api/dependencies.py": true,
+    "src/antigravity_k/engine/model_registry.py": true,
+    "tests/test_embeddings.py": true,
+    "tests/test_embeddings_model_contract.py": true,
+    "tests/test_models_system_api.py": true,
+    "tests/test_ollama_embedding_routing.py": true,
+    "tests/test_model_registry_config_precedence.py": true
+  }
+}

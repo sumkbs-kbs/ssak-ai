@@ -1,126 +1,272 @@
 {
   "current_snapshot": {
-    "as_of_utc": "2026-10-14T04:53:13Z",
-      "scope": "Listed IMP-09 scoped evidence and active priority queue only; other parent acceptance not re-audited",
-      "authority": "This current_snapshot and STATUS.md current section take precedence for listed rows; original recorded_at/summary/tasks/subtasks below remain historical",
-      "parent_status": {
-        "IMP-09": "PARTIAL",
-        "historical_ledger": "NOT_RECOVERED",
-        "global_parent_counts": "NOT_RECOMPUTED"
+    "as_of_utc": "2026-10-14T07:54:00Z",
+    "scope": "Listed IMP-09 scoped evidence and active priority queue only; other parent acceptance not re-audited",
+    "authority": "This current_snapshot and STATUS.md current section take precedence for listed rows; original recorded_at/summary/tasks/subtasks below remain historical",
+    "parent_status": {
+      "IMP-09": "PARTIAL",
+      "historical_ledger": "NOT_RECOVERED",
+      "global_parent_counts": "NOT_RECOMPUTED"
+    },
+    "historical_snapshot_preservation": {
+      "source_preimage": "raw/IMP09C-STATUS-RECONCILIATION-2026-10-14/run-20261014T043024Z-codex-86e22b4940/source-preimage",
+      "historical_fields_unchanged": true,
+      "runs_changes_ledgers": "UNCHANGED_NOT_RECOVERED"
+    },
+    "scoped_results": [
+      {
+        "id": "IMP-09-C-STREAM-OPTIONS-01",
+        "status": "ACCEPTED_SCOPED_OFFLINE",
+        "review": "docs/qa/sequential-improvement/luna-review-2026-10-08-stream-options/review.md",
+        "limits": "Historical offline37+16; no full-suite claim"
       },
-      "historical_snapshot_preservation": {
-        "source_preimage": "raw/IMP09C-STATUS-RECONCILIATION-2026-10-14/run-20261014T043024Z-codex-86e22b4940/source-preimage",
-        "historical_fields_unchanged": true,
-        "runs_changes_ledgers": "UNCHANGED_NOT_RECOVERED"
+      {
+        "id": "IMP-09-B-TOOL-03-UVICORN-AUTH",
+        "status": "APPROVED_SCOPED_LIVE",
+        "review": "docs/qa/sequential-improvement/luna-review-2026-10-10-tool03-live/review.md",
+        "limits": "Single authenticated SSE/tool-bridge request; lifespan off; native tool execution not proven"
       },
-      "scoped_results": [
-        {
-          "id": "IMP-09-C-STREAM-OPTIONS-01",
-          "status": "ACCEPTED_SCOPED_OFFLINE",
-          "review": "docs/qa/sequential-improvement/luna-review-2026-10-08-stream-options/review.md",
-          "limits": "Historical offline37+16; no full-suite claim"
-        },
-        {
-          "id": "IMP-09-B-TOOL-03-UVICORN-AUTH",
-          "status": "APPROVED_SCOPED_LIVE",
-          "review": "docs/qa/sequential-improvement/luna-review-2026-10-10-tool03-live/review.md",
-          "limits": "Single authenticated SSE/tool-bridge request; lifespan off; native tool execution not proven"
-        },
-        {
-          "id": "IMP-09-C-MESSAGES-IMAGE-CONTRACT-01",
-          "status": "APPROVED_SCOPED_OFFLINE",
-          "review": "docs/qa/sequential-improvement/luna-review-2026-10-10-messages-image-contract/review.md",
-          "limits": "Typed400 for unsupported image positions; not Messages vision support"
-        },
-        {
-          "id": "IMP-09-C-PRODUCT-VISION-OUTPUT-CONTRACT-01",
-          "status": "COMPLETE_OFFLINE_REVIEWED",
-          "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/code-review-v5.md",
-          "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/final-result.json",
-          "limits": "Direct native Ollama qwen3 nonstream; focused36/adjacent50 at recorded source; current publication candidate separate"
-        },
-        {
-          "id": "IMP-09-B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01",
-          "status": "PASS_SCOPED_STRUCTURED_VISION_UVICORN_AUTH_LIFESPAN_OFF",
-          "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/final-evidence-review.json",
-          "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/final-result.json",
-          "limits": "Fixed image/model/schema; actual product1/provider1; stale acceptance format label corrected separately; no broad quality claim"
-        },
-        {
-          "id": "IMP-09-C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01",
-          "status": "APPROVED_SCOPED_OFFLINE",
-          "review": "docs/qa/sequential-improvement/luna-review-2026-10-14-acceptance-metadata/review.md",
-          "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01/run-20261014T043024Z-codex-86e22b4940/result.json",
-          "limits": "Actual writer-path red1/green1; static4pass; fakecleanup inconclusive remains; actualinference0"
-        }
-      ],
-      "current_capability_boundary": {
-        "json_schema": "EXPLICIT_NATIVE_OLLAMA_QWEN3_NON_STREAM_ONLY",
-        "streaming_structured_requests": "EXPLICIT400_OUTSIDE_CURRENT_SUPPORT",
-        "general_model_quality": "NOT_ESTABLISHED",
-        "full_lifespan_on": "NOT_VERIFIED_BY_SCOPED_LIFESPAN_OFF_CASES",
-        "installed_model_matrix": "INCOMPLETE",
-        "historical_format_omitted_vision": "FAIL_SEMANTIC_UNCHANGED"
+      {
+        "id": "IMP-09-C-MESSAGES-IMAGE-CONTRACT-01",
+        "status": "APPROVED_SCOPED_OFFLINE",
+        "review": "docs/qa/sequential-improvement/luna-review-2026-10-10-messages-image-contract/review.md",
+        "limits": "Typed400 for unsupported image positions; not Messages vision support"
       },
-      "priority_queue": [
-        {
-          "priority": 1,
-          "id": "IMP-09-C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01",
-          "status": "DONE_SCOPED_OFFLINE"
-        },
-        {
-          "priority": 2,
-          "id": "IMP-09-C-STATUS-RECONCILIATION-2026-10-14",
-          "status": "DONE_DOCUMENT_RECONCILIATION"
-        },
-        {
-          "priority": 3,
-          "id": "IMP-09-C-STRUCTURED-OUTPUT-PUBLICATION-01",
+      {
+        "id": "IMP-09-C-PRODUCT-VISION-OUTPUT-CONTRACT-01",
+        "status": "COMPLETE_OFFLINE_REVIEWED",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/code-review-v5.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/final-result.json",
+        "limits": "Direct native Ollama qwen3 nonstream; focused36/adjacent50 at recorded source; current publication candidate separate"
+      },
+      {
+        "id": "IMP-09-B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01",
+        "status": "PASS_SCOPED_STRUCTURED_VISION_UVICORN_AUTH_LIFESPAN_OFF",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/final-evidence-review.json",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/final-result.json",
+        "limits": "Fixed image/model/schema; actual product1/provider1; stale acceptance format label corrected separately; no broad quality claim"
+      },
+      {
+        "id": "IMP-09-C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01",
+        "status": "APPROVED_SCOPED_OFFLINE",
+        "review": "docs/qa/sequential-improvement/luna-review-2026-10-14-acceptance-metadata/review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01/run-20261014T043024Z-codex-86e22b4940/result.json",
+        "limits": "Actual writer-path red1/green1; static4pass; fakecleanup inconclusive remains; actualinference0"
+      },
+      {
+        "id": "IMP-03-NATIVE-TRANSPORT-ERROR-01",
+        "status": "APPROVED_SCOPED_ASGI_PROVIDER_HTTP503_AND_PUBLISHED",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-TRANSPORT-ERROR-01/run-20261014T050221Z-codex-de8fd0191c/review/independent-review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-TRANSPORT-ERROR-01/run-20261014T050221Z-codex-de8fd0191c/controlled-wire-v2/result.json",
+        "limits": "Clean76/static4/mypy572; controlledHTTP503 provider1 retry0 successusage0 failedusage1 persistence0; liveLLM/auth/lifespan not claimed"
+      },
+      {
+        "id": "IMP-03-NATIVE-STREAM-TERMINAL-01",
+        "status": "APPROVED_SCOPED_AND_PUSHED",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-STREAM-TERMINAL-01/run-20261014T052114Z-codex-71e679399e/review/approved-v4.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-STREAM-TERMINAL-01/run-20261014T052114Z-codex-71e679399e/controlled-wire/result.json",
+        "limits": "Root120/clean111/static4; malformed-wire independent finding repaired and reapproved; controlled incomplete-stream observation binds earlier source, not newly added wire-type checks"
+      },
+      {
+        "id": "IMP-03-COMPATIBLE-TRANSPORT-ERROR-01",
+        "status": "APPROVED_SCOPED_AND_PUSHED",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-COMPATIBLE-TRANSPORT-ERROR-01/run-20261014T054350Z-codex-36f57e55c2/review/independent-review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-COMPATIBLE-TRANSPORT-ERROR-01/run-20261014T054350Z-codex-36f57e55c2/controlled-wire-v2/result.json",
+        "limits": "Root109/clean109/static4; controlled LMStudio-format HTTP503 once, not real LMStudio service/auth/lifespan; candidate-v1 metadata fixture failure preserved"
+      },
+      {
+        "id": "IMP-03-CHAT-SSE-ERROR-CONSUMER-01",
+        "status": "APPROVED_SCOPED_OFFLINE_AND_PUSHED",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/review/clean-approved.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/publication-candidate/candidate-v1/result.json",
+        "limits": "Parser/jsdom59; typed provider error blocks queued next request and preserves partial answer; no browser/live app claim; clean baseline lint warning retained"
+      },
+      {
+        "id": "IMP-03-COMPATIBLE-STREAM-TERMINAL-01",
+        "status": "APPROVED_SCOPED_AND_PUSHED",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-COMPATIBLE-STREAM-TERMINAL-01/run-20261014T062243Z-codex-9c138c4e/review/clean-approved.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-COMPATIBLE-STREAM-TERMINAL-01/run-20261014T062243Z-codex-9c138c4e/controlled-wire/result.json",
+        "limits": "Root187/clean187/static4; typed SSE protocol/EOF/nonstream502 and held tools; controlled HTTP200 SSE error once, no real model/auth/lifespan or all SDK override claim"
+      },
+      {
+        "id": "IMP-03-TASK-PROCESS-RESTART-01",
+        "status": "APPROVED_SCOPED_ROOT_PROCESS_RESTART",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f/review/independent-review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f/result.json",
+        "limits": "Existing root-source selector1pass; deliberately killed owner exit-9/new owner exit0/checkpoint10→11..12/effects1..12 once/physicalnetwork0; not arbitrary-crash exactly-once or semantic context/approval proof",
+        "qa_commit": "58ca7e3339759b26f7ed4d38f850c13e219a19a1"
+      },
+      {
+        "id": "IMP-03-AGENT-FAILURE-TERMINAL-01",
+        "status": "APPROVED_SCOPED_AND_PUSHED",
+        "limits": "Clean202Python/45UI/static4; failed task typed error/no persistence/DONE/queued dispatch; baseline/candidate Chroma fixture -11 retained and routing units isolated; no live/default-service or full startup claim",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/review/clean-approved.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/candidate-v1/criteria.json"
+      },
+      {
+        "id": "IMP-07-CHROMA-STARTUP-DIAGNOSTIC-01",
+        "status": "APPROVED_SCOPED_NATIVE_LIFECYCLE",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/review/independent-review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/result.json",
+        "limits": "Fresh owned root-source count0→0→1→1 close/reopen/precomputed3D/no embeddings/network; does not explain earlier fixture SIGSEGV or prove full startup"
+      },
+      {
+        "id": "IMP-07-RAG-EMBEDDING-PREREQUISITES-01",
+        "status": "APPROVED_SCOPED_CLEAN_CANDIDATE_COMMITTED",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/review/independent-review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/result.json",
+        "limits": "Clean66/static4 and annotation-only Protocol/config-path closure; socket/model0; no RAG quality/defaultactivation",
+        "feature_commit": "b9709defca9576df604e4c41674a51551ce27c09"
+      }
+    ],
+    "current_capability_boundary": {
+      "json_schema": "EXPLICIT_NATIVE_OLLAMA_QWEN3_NON_STREAM_ONLY",
+      "streaming_structured_requests": "EXPLICIT400_OUTSIDE_CURRENT_SUPPORT",
+      "general_model_quality": "NOT_ESTABLISHED",
+      "full_lifespan_on": "NOT_VERIFIED_BY_SCOPED_LIFESPAN_OFF_CASES",
+      "installed_model_matrix": "INCOMPLETE",
+      "historical_format_omitted_vision": "FAIL_SEMANTIC_UNCHANGED",
+      "native_direct_failure": "TYPED502_503_504_NO_AUTOMATIC_NATIVE_RETRY",
+      "native_stream_failure": "TYPED_PROTOCOL_ERROR_AND_TOOL_BUFFERING_APPROVED_SCOPED",
+      "project_rag_embedding": "IMPLICIT_CHROMA_DEFAULT_MODEL_NOT_VERIFIED",
+      "compatible_transport_failure": "TYPED502_503_504_SHARED_OPENROUTER_LMSTUDIO_AND_OLLAMA_COMPATIBLE",
+      "compatible_stream_failure": "TYPED_PROTOCOL_ERROR_REQUIRES_DONE_BEFORE_TOOLS",
+      "default_agent_failure": "TYPED_FAILED_TASK_TERMINAL_NO_ASSISTANT_SUCCESS_OR_QUEUE",
+      "native_startup_fixture_sigsegv": "BASELINE_AND_CANDIDATE_MINUS11_PRESERVED_ROUTING_FIXTURES_ISOLATED_NOT_PRODUCTION_FIX"
+    },
+    "priority_queue": [
+      {
+        "priority": 1,
+        "id": "IMP-09-C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01",
+        "status": "DONE_SCOPED_OFFLINE"
+      },
+      {
+        "priority": 2,
+        "id": "IMP-09-C-STATUS-RECONCILIATION-2026-10-14",
+        "status": "DONE_DOCUMENT_RECONCILIATION"
+      },
+      {
+        "priority": 3,
+        "id": "IMP-09-C-STRUCTURED-OUTPUT-PUBLICATION-01",
         "status": "DONE_COMMITTED_AND_PUSHED",
-          "scope": "Feature-only clean commit candidate, source/test prerequisite closure, owned evidence and current status publication"
-        },
-        {
-          "priority": 4,
-          "id": "IMP-03-NATIVE-TRANSPORT-ERROR-01",
+        "scope": "Feature-only clean commit candidate, source/test prerequisite closure, owned evidence and current status publication"
+      },
+      {
+        "priority": 4,
+        "id": "PROVIDER_FAILURE_AGENT_LIFECYCLE_CONTRACTS",
+        "status": "DONE_SCOPED_SUPPORTED_BOUNDARIES",
+        "scope": "Selected native/common-compatible and default-agent failure boundaries, scoped cancellation/ownership/approval and deliberate process checkpoint restart. Other SDK overrides/full startup/quality remain separate acceptance.",
+        "completed_subtasks": [
+          {
+            "id": "IMP-03-NATIVE-TRANSPORT-ERROR-01",
+            "status": "DONE_SCOPED_REVIEWED_AND_PUSHED",
+            "feature_commit": "8b22847730f5419307dda66f5ca6ab57fc1b023f",
+            "qa_commit": "50437f0ccbb0dd512204ce38b640bd5c238eb97a"
+          },
+          {
+            "id": "EXISTING_CANCEL_OWNERSHIP_APPROVAL_STORE_REOPEN",
+            "status": "SCOPED6_PASS_NO_PHYSICAL_NETWORK",
+            "limits": "Existing mocked models and real runtime/thread/SQLite; not full OS restart"
+          },
+          {
+            "id": "IMP-03-NATIVE-STREAM-TERMINAL-01",
+            "status": "DONE_SCOPED_REVIEWED_AND_PUSHED",
+            "feature_commit": "97f898661195623ba87eb826e94b03538aecb38f",
+            "qa_commit": "d2aed8c1f7237f08f7b497e6760b792754c61b1e"
+          },
+          {
+            "id": "IMP-03-COMPATIBLE-TRANSPORT-ERROR-01",
+            "status": "DONE_SCOPED_REVIEWED_AND_PUSHED",
+            "feature_commit": "bad768d9bf07a805446edac98861d0a2f596b124",
+            "qa_commit": "b345bbb7601f1611e6de639161f9fbd241ac1eba"
+          },
+          {
+            "id": "IMP-03-CHAT-SSE-ERROR-CONSUMER-01",
+            "status": "DONE_SCOPED_REVIEWED_AND_PUSHED",
+            "feature_commit": "a7445b6b94ad11a2e159e518b380f416f9a51bf6",
+            "qa_commit": "32c21ef7ac15199d039610b4555afc3d7bbb5711"
+          },
+          {
+            "id": "IMP-03-COMPATIBLE-STREAM-TERMINAL-01",
+            "status": "DONE_SCOPED_REVIEWED_AND_PUSHED",
+            "feature_commit": "465f026c0515434e09b381fd60e5e231108e7232",
+            "qa_commit": "49cd03b93a1486c04ead02156c0243d2a642d669"
+          },
+          {
+            "id": "IMP-03-TASK-PROCESS-RESTART-01",
+            "status": "APPROVED_SCOPED_ROOT_SOURCE_CHECKPOINT_RESTART",
+            "limits": "Saved root source and deliberate checkpoint crash; not clean release or arbitrary external exactly-once"
+          },
+          {
+            "id": "IMP-03-AGENT-FAILURE-TERMINAL-01",
+            "status": "DONE_SCOPED_REVIEWED_AND_PUSHED",
+            "feature_commit": "fa31135b1d2a97ce721d60c13c050ae087810117",
+            "qa_commit": "23708fe45cfb9140f9934bec88ec487913e3f7f6"
+          }
+        ]
+      },
+      {
+        "priority": 5,
+        "id": "MEMORY_SEARCH_QUALITY",
         "status": "IN_PROGRESS",
-          "scope": "Provider transport errors must not become HTTP200 assistant/success usage; then existing cancel/permission/restart paths"
-        },
-        {
-          "priority": 5,
-          "id": "MEMORY_SEARCH_QUALITY",
-          "status": "NOT_REASSESSED",
-          "scope": "IMP-04/06/07 actual quality acceptance"
-        },
-        {
-          "priority": 6,
-          "id": "EXPANDED_PRODUCT_ACCEPTANCE",
-          "status": "NOT_REASSESSED",
-          "scope": "Full startup/lifespan, vision corpus, UI/performance, integration; consult latest independent evidence before execution"
-        },
-        {
-          "priority": 7,
-          "id": "INTEGRATED_RELEASE_ACCEPTANCE",
-          "status": "NOT_REASSESSED",
-          "scope": "IMP-01/02 integration, IMP-19 packaging, IMP-20 newcandidate8hsoak; release distinct"
-        }
-      ],
-      "optional_not_automatically_selected": [
-        "IMP-16",
-        "IMP-18"
-      ],
-      "publication": {
-        "preceding_qa_pushed_head": "3ed591244d801344d7ba468d1afa7faba7f64ec0",
+        "scope": "Publish approved strict/native embedding dependency closure, then explicit opt-in RAG embedding identity and source-bound retrieval quality",
+        "next_concrete_task": "IMP-07-RAG-EMBEDDING-IDENTITY-01",
+        "current_task": "IMP-07-RAG-EMBEDDING-IDENTITY-01",
+        "completed_subtasks": [
+          {
+            "id": "IMP-07-RAG-EMBEDDING-PREREQUISITES-01",
+            "status": "APPROVED_SCOPED_CLEAN_COMMITTED",
+            "feature_commit": "b9709defca9576df604e4c41674a51551ce27c09"
+          }
+        ]
+      },
+      {
+        "priority": 6,
+        "id": "EXPANDED_PRODUCT_ACCEPTANCE",
+        "status": "NOT_REASSESSED",
+        "scope": "Full startup/lifespan, vision corpus, UI/performance, integration; consult latest independent evidence before execution"
+      },
+      {
+        "priority": 7,
+        "id": "INTEGRATED_RELEASE_ACCEPTANCE",
+        "status": "NOT_REASSESSED",
+        "scope": "IMP-01/02 integration, IMP-19 packaging, IMP-20 newcandidate8hsoak; release distinct"
+      }
+    ],
+    "optional_not_automatically_selected": [
+      "IMP-16",
+      "IMP-18"
+    ],
+    "publication": {
+      "preceding_qa_pushed_head": "3ed591244d801344d7ba468d1afa7faba7f64ec0",
       "current_structured_feature": "COMMITTED_CLEAN_TREE_VERIFIED_AND_PUSHED",
       "feature_commit": "d3c107b04624ec2a655f5e3dee19e58c8856bab6",
       "qa_commit": "aab1a39475743ea1fac413b2d3b12400ed7ec610",
       "push_remote": "ssak-ai/codex/m1-task-events",
       "remote_sha_verified": "aab1a39475743ea1fac413b2d3b12400ed7ec610",
       "clean_candidate_tests": 79,
-      "commit_hook_mypy_source_files": 571
-      },
-    "next_task": "IMP-03-NATIVE-TRANSPORT-ERROR-01",
-      "do_not_repeat": "Use saved successful receipts unless source, environment or a new failure hypothesis changes; do not replay old inference or reconstruct lost ledgers"
+      "commit_hook_mypy_source_files": 571,
+      "status_commit": "8ed827654cb608c55b22fe75b295abf3365114f4",
+      "direct_transport_feature_commit": "8b22847730f5419307dda66f5ca6ab57fc1b023f",
+      "direct_transport_qa_commit": "50437f0ccbb0dd512204ce38b640bd5c238eb97a",
+      "latest_remote_sha_verified": "23708fe45cfb9140f9934bec88ec487913e3f7f6",
+      "native_stream_feature_commit": "97f898661195623ba87eb826e94b03538aecb38f",
+      "native_stream_qa_commit": "d2aed8c1f7237f08f7b497e6760b792754c61b1e",
+      "compatible_transport_feature_commit": "bad768d9bf07a805446edac98861d0a2f596b124",
+      "compatible_transport_qa_commit": "b345bbb7601f1611e6de639161f9fbd241ac1eba",
+      "ui_stream_error_feature_commit": "a7445b6b94ad11a2e159e518b380f416f9a51bf6",
+      "ui_stream_error_qa_commit": "32c21ef7ac15199d039610b4555afc3d7bbb5711",
+      "compatible_stream_feature_commit": "465f026c0515434e09b381fd60e5e231108e7232",
+      "compatible_stream_qa_commit": "49cd03b93a1486c04ead02156c0243d2a642d669",
+      "process_restart_qa_commit": "58ca7e3339759b26f7ed4d38f850c13e219a19a1",
+      "agent_failure_feature_commit": "fa31135b1d2a97ce721d60c13c050ae087810117",
+      "agent_failure_qa_commit": "23708fe45cfb9140f9934bec88ec487913e3f7f6",
+      "commit_hook_mypy_source_files_latest": 574,
+      "embedding_prerequisites_feature_commit": "b9709defca9576df604e4c41674a51551ce27c09"
     },
+    "next_task": "IMP-07-RAG-EMBEDDING-IDENTITY-01",
+    "do_not_repeat": "Use saved successful receipts unless source, environment or a new failure hypothesis changes; do not replay old inference or reconstruct lost ledgers"
+  },
   "recorded_at": "2026-10-07T13:16:06.378463+00:00",
   "source_status_document": "docs/ssak-ai-core/SEQUENTIAL_IMPROVEMENT_STATUS_2026-10-07.md",
   "summary": {

@@ -1,0 +1,29 @@
+{"phase": "before_import", "pid": 76383}
+{"phase": "imports_complete", "pid": 76383, "chromadb_version": "1.5.9"}
+{"phase": "fresh_empty:before_vector_store", "pid": 76383}
+{"phase": "fresh_empty:constructed", "pid": 76383, "client_id": 4421579984, "collection_id": 4421581664, "closed": false}
+{"phase": "fresh_empty:before_rag_indexer", "pid": 76383}
+{"phase": "fresh_empty:rag_indexer_constructed", "pid": 76383, "indexer_id": 4421582336}
+{"phase": "fresh_empty:before_get_stats", "pid": 76383}
+{"phase": "fresh_empty:count_verified", "pid": 76383, "count": 0, "client_id": 4421579984, "collection_id": 4421581664, "closed": false}
+{"phase": "fresh_empty:before_close", "pid": 76383, "client_id": 4421579984, "collection_id": 4421581664, "closed": false}
+{"phase": "fresh_empty:closed", "pid": 76383, "closed": true, "client_is_none": true, "collection_id": 4421581664}
+{"phase": "reopened_empty:before_vector_store", "pid": 76383}
+{"phase": "reopened_empty:constructed", "pid": 76383, "client_id": 4425420944, "collection_id": 4425422224, "closed": false}
+{"phase": "reopened_empty:before_rag_indexer", "pid": 76383}
+{"phase": "reopened_empty:rag_indexer_constructed", "pid": 76383, "indexer_id": 4425422864}
+{"phase": "reopened_empty:before_get_stats", "pid": 76383}
+{"phase": "reopened_empty:count_verified", "pid": 76383, "count": 0, "client_id": 4425420944, "collection_id": 4425422224, "closed": false}
+{"phase": "before_precomputed_upsert", "pid": 76383}
+{"phase": "precomputed_count_verified", "pid": 76383, "count": 1}
+{"phase": "reopened_empty:before_close", "pid": 76383, "client_id": 4425420944, "collection_id": 4425422224, "closed": false}
+{"phase": "reopened_empty:closed", "pid": 76383, "closed": true, "client_is_none": true, "collection_id": 4425422224}
+{"phase": "reopened_persisted:before_vector_store", "pid": 76383}
+{"phase": "reopened_persisted:constructed", "pid": 76383, "client_id": 4425422544, "collection_id": 4425422864, "closed": false}
+{"phase": "reopened_persisted:before_rag_indexer", "pid": 76383}
+{"phase": "reopened_persisted:rag_indexer_constructed", "pid": 76383, "indexer_id": 4425423504}
+{"phase": "reopened_persisted:before_get_stats", "pid": 76383}
+{"phase": "reopened_persisted:count_verified", "pid": 76383, "count": 1, "client_id": 4425422544, "collection_id": 4425422864, "closed": false}
+{"phase": "reopened_persisted:before_close", "pid": 76383, "client_id": 4425422544, "collection_id": 4425422864, "closed": false}
+{"phase": "reopened_persisted:closed", "pid": 76383, "closed": true, "client_is_none": true, "collection_id": 4425422864}
+{"phase": "PASS_FRESH_OWNED_NATIVE_LIFECYCLE", "pid": 76383}

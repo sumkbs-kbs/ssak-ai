@@ -1,0 +1,462 @@
+[
+  {
+    "name": {
+      "classname": "tests.test_embeddings",
+      "name": "test_loader_failure_preserves_default_deterministic_fallback",
+      "time": "0.002"
+    },
+    "properties": {
+      "default_fallback_observation": "{\"factory_calls\":2,\"fallback_calls\":2,\"dimension\":1536,\"deterministic\":true,\"vector_sha256\":\"f8274d343e29885affb1d82cae7843b2187f5a2622274a0895cd479db5ebae8c\",\"post_count\":0}"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_embeddings_model_contract",
+      "name": "test_explicit_model_load_failure_does_not_return_hash_fallback_as_success[default-handler]",
+      "time": "0.008"
+    },
+    "properties": {
+      "embedding_request_raw": "{\"model\":\"nomic-embed-text:latest\",\"input\":[\"SSAK_EM01_MODEL_IDENTITY_PROBE\"]}",
+      "embedding_response_raw": "{\"detail\":{\"code\":\"embedding_model_unavailable\",\"model\":\"nomic-embed-text:latest\",\"message\":\"Embedding model 'nomic-embed-text:latest' could not be loaded.\"}}",
+      "embedding_observation": "{\"case\":\"runtime_default\",\"post_count\":1,\"status_code\":503,\"content_type\":\"application/json\",\"request_bytes\":78,\"request_sha256\":\"e7e60e1797c361eb9d5bcafce0e831ce7018252f1398de2c2520cc0402bf815f\",\"response_bytes\":158,\"response_sha256\":\"cccbfc05bba6ab8f4251a20c5e01066e34ff3e06911682b340574557d37af27d\",\"factory_calls\":1,\"encode_calls\":0,\"fallback_calls\":0,\"network_attempts\":0,\"live_embedding\":\"NOT_RUN\"}"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_embeddings_model_contract",
+      "name": "test_explicit_model_load_failure_does_not_return_hash_fallback_as_success[shared-handler]",
+      "time": "0.005"
+    },
+    "properties": {
+      "embedding_request_raw": "{\"model\":\"nomic-embed-text:latest\",\"input\":[\"SSAK_EM01_MODEL_IDENTITY_PROBE\"]}",
+      "embedding_response_raw": "{\"ok\":false,\"error\":\"http_503\",\"detail\":{\"code\":\"embedding_model_unavailable\",\"model\":\"nomic-embed-text:latest\",\"message\":\"Embedding model 'nomic-embed-text:latest' could not be loaded.\"},\"correlation_id\":\"fc8bf69d6706\"}",
+      "embedding_observation": "{\"case\":\"runtime_shared\",\"post_count\":1,\"status_code\":503,\"content_type\":\"application/json\",\"request_bytes\":78,\"request_sha256\":\"e7e60e1797c361eb9d5bcafce0e831ce7018252f1398de2c2520cc0402bf815f\",\"response_bytes\":220,\"response_sha256\":\"e3c1261a90d922e2faceb8d68ebbb9ffeb1c7cee7942482a25c372a0fe5dfd5c\",\"factory_calls\":1,\"encode_calls\":0,\"fallback_calls\":0,\"network_attempts\":0,\"live_embedding\":\"NOT_RUN\"}"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_embeddings_model_contract",
+      "name": "test_dependency_import_failure_has_same_strict_contract",
+      "time": "0.004"
+    },
+    "properties": {
+      "embedding_request_raw": "{\"model\":\"nomic-embed-text:latest\",\"input\":[\"SSAK_EM01_MODEL_IDENTITY_PROBE\"]}",
+      "embedding_response_raw": "{\"detail\":{\"code\":\"embedding_model_unavailable\",\"model\":\"nomic-embed-text:latest\",\"message\":\"Embedding model 'nomic-embed-text:latest' could not be loaded.\"}}",
+      "embedding_observation": "{\"case\":\"import_default\",\"post_count\":1,\"status_code\":503,\"content_type\":\"application/json\",\"request_bytes\":78,\"request_sha256\":\"e7e60e1797c361eb9d5bcafce0e831ce7018252f1398de2c2520cc0402bf815f\",\"response_bytes\":158,\"response_sha256\":\"cccbfc05bba6ab8f4251a20c5e01066e34ff3e06911682b340574557d37af27d\",\"factory_calls\":0,\"encode_calls\":0,\"fallback_calls\":0,\"network_attempts\":0,\"live_embedding\":\"NOT_RUN\"}"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_embeddings_model_contract",
+      "name": "test_external_encoder_success_preserves_inputs_vectors_and_indexes",
+      "time": "0.004"
+    },
+    "properties": {
+      "embedding_request_raw": "{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first input\",\"second input\"]}",
+      "embedding_response_raw": "{\"object\":\"list\",\"data\":[{\"object\":\"embedding\",\"embedding\":[0.25,-0.5],\"index\":0},{\"object\":\"embedding\",\"embedding\":[0.75,1.0],\"index\":1}],\"model\":\"nomic-embed-text:latest\",\"usage\":{\"prompt_tokens\":5,\"completion_tokens\":0,\"total_tokens\":5}}",
+      "embedding_observation": "{\"case\":\"backend_success\",\"post_count\":1,\"status_code\":200,\"content_type\":\"application/json\",\"request_bytes\":74,\"request_sha256\":\"bc53d45a5ed826ec9d79c8d8f19cfa171053038a84d68e3a26c746a99ed1a904\",\"response_bytes\":240,\"response_sha256\":\"cc9755a8f27d8a1435b9bfe20c0d8bdbd66730000f7f4912c0546f0e2179e0de\",\"factory_calls\":1,\"encode_calls\":1,\"fallback_calls\":0,\"network_attempts\":0,\"live_embedding\":\"NOT_RUN\"}"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_models_system_api.TestModelsApi",
+      "name": "test_health_reports_version_and_backend_shape",
+      "time": "0.003"
+    },
+    "properties": {
+      "impact_post_observations": "[]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_models_system_api.TestModelsApi",
+      "name": "test_wake_submits_background_task",
+      "time": "0.131"
+    },
+    "properties": {
+      "impact_request_raw_0": "{\"event_type\":\"lint_error\",\"payload\":{\"file\":\"a.py\"}}",
+      "impact_response_raw_0": "{\"status\":\"woken\",\"task_id\":\"task_777\",\"message\":\"Agent woken by 'lint_error' event and assigned background task task_777.\"}",
+      "owned_vector_persist_directory": "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-485/test_wake_submits_background_t0/owned-vault/.chroma",
+      "impact_post_observations": "[{\"path\":\"/api/agent/wake\",\"status_code\":200,\"request_bytes\":53,\"request_sha256\":\"9dd6329496f453ff27db84f5b73fe99cc5eec5f4100c3d2b40351396080175e1\",\"response_bytes\":124,\"response_sha256\":\"9bf889813695c613182103876670332b778b386b562a69e665257690b2516909\"}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_models_system_api.TestModelsApi",
+      "name": "test_v1_models_openai_shape",
+      "time": "0.004"
+    },
+    "properties": {
+      "impact_post_observations": "[]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_models_system_api.TestModelsApi",
+      "name": "test_model_operations_refresh_passthrough",
+      "time": "0.003"
+    },
+    "properties": {
+      "impact_post_observations": "[]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_models_system_api.TestModelsApi",
+      "name": "test_embeddings_usage_and_error",
+      "time": "0.005"
+    },
+    "properties": {
+      "impact_request_raw_0": "{\"input\":[\"aaaa\",\"bb\"],\"model\":\"e\"}",
+      "impact_response_raw_0": "{\"object\":\"list\",\"data\":[{\"object\":\"embedding\",\"embedding\":[0.1,0.2],\"index\":0},{\"object\":\"embedding\",\"embedding\":[0.3,0.4],\"index\":1}],\"model\":\"e\",\"usage\":{\"prompt_tokens\":1,\"completion_tokens\":0,\"total_tokens\":1}}",
+      "impact_request_raw_1": "{\"input\":[\"x\"],\"model\":\"e\"}",
+      "impact_response_raw_1": "{\"ok\":false,\"error\":\"http_500\",\"detail\":\"\ucc28\uc6d0 \ubd88\uc77c\uce58\",\"correlation_id\":\"ad658a8a07d4\"}",
+      "impact_post_observations": "[{\"path\":\"/v1/embeddings\",\"status_code\":200,\"request_bytes\":35,\"request_sha256\":\"e688f3849b4018082c12058495008cf8b12a896ffa451f0bd9a7eaa31a283097\",\"response_bytes\":215,\"response_sha256\":\"59807edfdb1d2948fb995c34a609c5ee85d8c2233518a3462fb7f8ee311b9849\"},{\"path\":\"/v1/embeddings\",\"status_code\":500,\"request_bytes\":27,\"request_sha256\":\"8c8642122558cf05bd29dddb6d506b85d08158b203c6ed69fa0461224a5bf66c\",\"response_bytes\":91,\"response_sha256\":\"6255c0e5be27cf778e63d7cb23ffa442c2c53709d45c62db5fe4c2f1d2dc6a93\"}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_models_system_api.TestSystemStatusRestart",
+      "name": "test_status_measures_cpu_off_event_loop",
+      "time": "0.003"
+    },
+    "properties": {
+      "impact_post_observations": "[]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_models_system_api.TestSystemStatusRestart",
+      "name": "test_status_reports_uptime_and_tokens",
+      "time": "0.003"
+    },
+    "properties": {
+      "impact_post_observations": "[]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_models_system_api.TestSystemStatusRestart",
+      "name": "test_restart_requires_critical_permission",
+      "time": "0.003"
+    },
+    "properties": {
+      "impact_request_raw_0": "",
+      "impact_response_raw_0": "{\"ok\":false,\"error\":\"http_403\",\"detail\":\"denied\",\"correlation_id\":\"08d5eb148024\"}",
+      "impact_post_observations": "[{\"path\":\"/api/system/restart\",\"status_code\":403,\"request_bytes\":0,\"request_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"response_bytes\":81,\"response_sha256\":\"0cd8f9a6f05339eb3682100bf78124707eaf96e6701090562bc641b213697673\"}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_models_system_api.TestSystemStatusRestart",
+      "name": "test_restart_schedules_trigger_file",
+      "time": "0.009"
+    },
+    "properties": {
+      "impact_request_raw_0": "",
+      "impact_response_raw_0": "{\"ok\":true,\"message\":\"Restart triggered. The server will reboot in a moment.\"}",
+      "impact_post_observations": "[{\"path\":\"/api/system/restart\",\"status_code\":200,\"request_bytes\":0,\"request_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"response_bytes\":78,\"response_sha256\":\"de1fb45139c7e522b32e4f1d1b505f6967597247a965b2228fea15ca73be1f61\"}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_real_dependency_registry_engine_route_uses_one_native_batch",
+      "time": "0.007"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":200,\"api_response\":\"{\\\"object\\\":\\\"list\\\",\\\"data\\\":[{\\\"object\\\":\\\"embedding\\\",\\\"embedding\\\":[0.25,-0.5],\\\"index\\\":0},{\\\"object\\\":\\\"embedding\\\",\\\"embedding\\\":[0.75,1.0],\\\"index\\\":1}],\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"usage\\\":{\\\"prompt_tokens\\\":2,\\\"completion_tokens\\\":0,\\\"total_tokens\\\":2}}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":240,\"api_response_sha256\":\"21869dfc7dfbc680462b6e4c446ff2a323c3fdbf1e173773dd165c00fbf96eba\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":200,\"response_body\":\"{\\\"model\\\": \\\"nomic-embed-text:v1\\\", \\\"embeddings\\\": [[0.25, -0.5], [0.75, 1.0]]}\",\"response_sha256\":\"bdfb97709f19efed63be187e8b9cffda25c2c98a73822538ce1e370d2a1b83ca\",\"response_bytes\":75}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_registered_repo_alias_single_string_and_embedding_among_roles",
+      "time": "0.006"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:v1\",\"input\":\"single input\"},\"api_status\":200,\"api_response\":\"{\\\"object\\\":\\\"list\\\",\\\"data\\\":[{\\\"object\\\":\\\"embedding\\\",\\\"embedding\\\":[0.25,-0.5],\\\"index\\\":0}],\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"usage\\\":{\\\"prompt_tokens\\\":3,\\\"completion_tokens\\\":0,\\\"total_tokens\\\":3}}\",\"api_request_bytes\":54,\"api_request_sha256\":\"219fb25e1c3a55db70ffba283426fff81c0e887e27382e75736fc11e195ecb2d\",\"api_response_bytes\":180,\"api_response_sha256\":\"b8192fcf4ef66a711d02b424dc03fbd2a5e2b3afa81838f35f0d3fe11846ea38\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"single input\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"1d68a476cbd6abb26c5dfa7ce0dddcee1bff1dce7b83c5dbe151c75d5e76a57a\",\"request_bytes\":73,\"has_authorization_header\":false,\"response_status\":200,\"response_body\":\"{\\\"model\\\": \\\"nomic-embed-text:v1\\\", \\\"embeddings\\\": [[0.25, -0.5]]}\",\"response_sha256\":\"f0c5ba3c6b8d5562eb81c0a5b2949925afdf99e42fa45a9786093ca8ea10182d\",\"response_bytes\":62}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_endpoint_resolution_and_normalization[profile-priority]",
+      "time": "0.001"
+    },
+    "properties": {
+      "endpoint_case": "{\"expected\": \"http://profile-host:9000/api/embed\", \"actual\": \"http://profile-host:9000/api/embed\", \"post_count\": 1}"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_endpoint_resolution_and_normalization[provider-v1-proxy]",
+      "time": "0.001"
+    },
+    "properties": {
+      "endpoint_case": "{\"expected\": \"http://proxy-host:9999/proxy/api/embed\", \"actual\": \"http://proxy-host:9999/proxy/api/embed\", \"post_count\": 1}"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_endpoint_resolution_and_normalization[default]",
+      "time": "0.001"
+    },
+    "properties": {
+      "endpoint_case": "{\"expected\": \"http://localhost:11434/api/embed\", \"actual\": \"http://localhost:11434/api/embed\", \"post_count\": 1}"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_endpoint_resolution_and_normalization[proxy-prefix]",
+      "time": "0.001"
+    },
+    "properties": {
+      "endpoint_case": "{\"expected\": \"http://proxy-host:9999/prefix/api/embed\", \"actual\": \"http://proxy-host:9999/prefix/api/embed\", \"post_count\": 1}"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_non_matching_registry_profiles_do_not_select_native[wrong-provider]",
+      "time": "0.002"
+    },
+    "properties": {
+      "nonmatch_observation": "{\"registry_match\": true, \"native_post_count\": 0, \"legacy_factory_calls\": 1}"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_non_matching_registry_profiles_do_not_select_native[wrong-role]",
+      "time": "0.002"
+    },
+    "properties": {
+      "nonmatch_observation": "{\"registry_match\": true, \"native_post_count\": 0, \"legacy_factory_calls\": 1}"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_non_matching_registry_profiles_do_not_select_native[unregistered-tag]",
+      "time": "0.001"
+    },
+    "properties": {
+      "nonmatch_observation": "{\"registry_match\": false, \"native_post_count\": 0, \"legacy_factory_calls\": 1}"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_invalid_base_url_is_unavailable_without_network_or_fallback",
+      "time": "0.007"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":503,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_503\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_model_unavailable\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding model 'nomic-embed-text:latest' could not be loaded.\\\"},\\\"correlation_id\\\":\\\"c4ba00abc216\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":220,\"api_response_sha256\":\"88a224edc5ab84c7e5111a193058405ab3ea75f91f4d42849a4e413f18ee091c\",\"api_post_count\":1,\"mock_native_post_count\":0,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":0,\"mock_native_post_count_this_call\":0,\"api_post_count_this_call\":1,\"httpx_options\":null}",
+      "routing_transport_raw": "[]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_transport_failures_are_single_attempt_503_without_fallback[timeout-503]",
+      "time": "0.005"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":503,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_503\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_model_unavailable\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding model 'nomic-embed-text:latest' could not be loaded.\\\"},\\\"correlation_id\\\":\\\"49498c201231\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":220,\"api_response_sha256\":\"d1c27f95c7fc5e4e856ff092b53db5043979d4a455e02cbcaefc3f5223dde0c7\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":null,\"transport_error\":\"ReadTimeout\",\"response_body\":\"\"}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_transport_failures_are_single_attempt_503_without_fallback[connection-503]",
+      "time": "0.006"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":503,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_503\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_model_unavailable\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding model 'nomic-embed-text:latest' could not be loaded.\\\"},\\\"correlation_id\\\":\\\"38825742e452\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":220,\"api_response_sha256\":\"64e0950efa1fe90e4d09c804be3c8736c49a5cdcf78b0cd5eb9ba19a7bf0037a\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":null,\"transport_error\":\"ConnectError\",\"response_body\":\"\"}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_transport_failures_are_single_attempt_503_without_fallback[redirect-503]",
+      "time": "0.006"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":503,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_503\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_model_unavailable\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding model 'nomic-embed-text:latest' could not be loaded.\\\"},\\\"correlation_id\\\":\\\"44cb5b211c14\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":220,\"api_response_sha256\":\"eb725dcf5ddf64b8f477342a0ea66ac1a87b215554c574d7a60e02497d2ffa38\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":307,\"response_body\":\"\",\"response_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"response_bytes\":0}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_transport_failures_are_single_attempt_503_without_fallback[http400-503]",
+      "time": "0.005"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":503,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_503\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_model_unavailable\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding model 'nomic-embed-text:latest' could not be loaded.\\\"},\\\"correlation_id\\\":\\\"49aadafb4306\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":220,\"api_response_sha256\":\"92b29d5638d53e619b543963291f95574c90f2ad171d3ae3bac907a18065961e\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":400,\"response_body\":\"{\\\"error\\\": \\\"controlled\\\"}\",\"response_sha256\":\"789fe1c0d0841df35d839e3446829ce1f77790f1362bcb9224b68b12e605e860\",\"response_bytes\":23}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_transport_failures_are_single_attempt_503_without_fallback[http500-503]",
+      "time": "0.005"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":503,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_503\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_model_unavailable\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding model 'nomic-embed-text:latest' could not be loaded.\\\"},\\\"correlation_id\\\":\\\"b6b9f08e2a7a\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":220,\"api_response_sha256\":\"a6affb7f20b0dbd7b0354f492fade4d250f63053a29cc5d2406abcaf854e7cea\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":500,\"response_body\":\"{\\\"error\\\": \\\"controlled\\\"}\",\"response_sha256\":\"789fe1c0d0841df35d839e3446829ce1f77790f1362bcb9224b68b12e605e860\",\"response_bytes\":23}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_invalid_upstream_protocol_maps_only_to_structured_502[invalid-json]",
+      "time": "0.005"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":502,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_502\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_provider_invalid_response\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding provider returned an invalid response.\\\"},\\\"correlation_id\\\":\\\"777110d7b770\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":214,\"api_response_sha256\":\"9d58ec596d770b77569f642de618226b1ba402c9673dcf91793affad760d4d7a\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":200,\"response_body\":\"not json\",\"response_sha256\":\"7ccfa1fbf3940e6f0c0375d87c0f9235a50514e14cb427bdfaf5077987b26ccf\",\"response_bytes\":8}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_invalid_upstream_protocol_maps_only_to_structured_502[content-type]",
+      "time": "0.005"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":502,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_502\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_provider_invalid_response\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding provider returned an invalid response.\\\"},\\\"correlation_id\\\":\\\"93d52dfa97f0\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":214,\"api_response_sha256\":\"3ce518842a5b80620cd6f3f2b5ed8a771d7832b6f07c334e2dccb7fc94842e1c\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":200,\"response_body\":\"{\\\"model\\\": \\\"nomic-embed-text:v1\\\", \\\"embeddings\\\": [[0.25, -0.5], [0.75, 1.0]]}\",\"response_sha256\":\"bdfb97709f19efed63be187e8b9cffda25c2c98a73822538ce1e370d2a1b83ca\",\"response_bytes\":75}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_invalid_upstream_protocol_maps_only_to_structured_502[model]",
+      "time": "0.005"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":502,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_502\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_provider_invalid_response\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding provider returned an invalid response.\\\"},\\\"correlation_id\\\":\\\"27aef25663ce\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":214,\"api_response_sha256\":\"cc794ae34e190213a8bfa68b3adacfa29b6e2a5dc029feba6519e2abfd70324c\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":200,\"response_body\":\"{\\\"model\\\": \\\"other-model\\\", \\\"embeddings\\\": [[0.25, -0.5], [0.75, 1.0]]}\",\"response_sha256\":\"b412d1cb2e24446ab9c32059f3d0059a1e129052058e3f68b6c27040caf7e8d3\",\"response_bytes\":67}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_invalid_upstream_protocol_maps_only_to_structured_502[count]",
+      "time": "0.005"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":502,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_502\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_provider_invalid_response\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding provider returned an invalid response.\\\"},\\\"correlation_id\\\":\\\"ea44dacb6df3\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":214,\"api_response_sha256\":\"901a7fb1a17b4c9cc15eeec9fa66cd702f5775094d9cafe1fa985e646fd2b78f\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":200,\"response_body\":\"{\\\"model\\\": \\\"nomic-embed-text:v1\\\", \\\"embeddings\\\": [[0.25, -0.5]]}\",\"response_sha256\":\"f0c5ba3c6b8d5562eb81c0a5b2949925afdf99e42fa45a9786093ca8ea10182d\",\"response_bytes\":62}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_invalid_upstream_protocol_maps_only_to_structured_502[empty]",
+      "time": "0.006"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":502,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_502\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_provider_invalid_response\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding provider returned an invalid response.\\\"},\\\"correlation_id\\\":\\\"b7012ce764ba\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":214,\"api_response_sha256\":\"d501d16c8e4ea276de969ffd7134af690625fc094fb4a04d5f7e30aa0221c6e5\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":200,\"response_body\":\"{\\\"model\\\": \\\"nomic-embed-text:v1\\\", \\\"embeddings\\\": [[], [0.75, 1.0]]}\",\"response_sha256\":\"b84665098fbdc88ea68b5a7b62bb53d4a2df33bc4916faef330fcfcb001341ef\",\"response_bytes\":65}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_invalid_upstream_protocol_maps_only_to_structured_502[unequal]",
+      "time": "0.005"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":502,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_502\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_provider_invalid_response\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding provider returned an invalid response.\\\"},\\\"correlation_id\\\":\\\"56586328e3d3\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":214,\"api_response_sha256\":\"b163ca0396a531bc22b009416840635f9a3c09ad6e7f3587863b5fadc0d2a048\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":200,\"response_body\":\"{\\\"model\\\": \\\"nomic-embed-text:v1\\\", \\\"embeddings\\\": [[1.0, 2.0], [1.0]]}\",\"response_sha256\":\"cec841aa511e1bb4a465f7f758077cffebbe61758ff5347bf94ae00d57656a13\",\"response_bytes\":67}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_invalid_upstream_protocol_maps_only_to_structured_502[dimension]",
+      "time": "0.005"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":502,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_502\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_provider_invalid_response\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding provider returned an invalid response.\\\"},\\\"correlation_id\\\":\\\"1dfbaf928149\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":214,\"api_response_sha256\":\"515ab36dea8c2db88ccf05bff14d779364edc7ff109871b8ec7a0273bd0b3fcc\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":200,\"response_body\":\"{\\\"model\\\": \\\"nomic-embed-text:v1\\\", \\\"embeddings\\\": [[1.0, 2.0, 3.0], [2.0, 3.0, 4.0]]}\",\"response_sha256\":\"1953d8d992c1982d59601e7e16a9d03e4e6040a586e822b13f6291ac7406ea59\",\"response_bytes\":82}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_invalid_upstream_protocol_maps_only_to_structured_502[bool]",
+      "time": "0.005"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":502,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_502\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_provider_invalid_response\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding provider returned an invalid response.\\\"},\\\"correlation_id\\\":\\\"a537836f4d33\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":214,\"api_response_sha256\":\"42728222f0413c660c566cd2b4cf4ea588bd9da931c4cd0467b64f4ab0d6502e\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":200,\"response_body\":\"{\\\"model\\\": \\\"nomic-embed-text:v1\\\", \\\"embeddings\\\": [[true, 0.5], [0.75, 1.0]]}\",\"response_sha256\":\"bc4da0078e78ca3098ba20f321f2dc82dc630df211815868d3207c009b83dc4c\",\"response_bytes\":74}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_invalid_upstream_protocol_maps_only_to_structured_502[string]",
+      "time": "0.005"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":502,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_502\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_provider_invalid_response\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding provider returned an invalid response.\\\"},\\\"correlation_id\\\":\\\"e16aaf78f790\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":214,\"api_response_sha256\":\"97adeb1434c9d61a5d67e447bc9b8b1d2c124ce99a0440ba735e58406a07237d\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":200,\"response_body\":\"{\\\"model\\\": \\\"nomic-embed-text:v1\\\", \\\"embeddings\\\": [[\\\"0.25\\\", 0.5], [0.75, 1.0]]}\",\"response_sha256\":\"24c1cfd139d8f9abbaffddeddc307aa28d955e5be67cf072a5a5e097c4df28e8\",\"response_bytes\":76}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_invalid_upstream_protocol_maps_only_to_structured_502[nan]",
+      "time": "0.005"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":502,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_502\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_provider_invalid_response\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding provider returned an invalid response.\\\"},\\\"correlation_id\\\":\\\"58f151a09747\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":214,\"api_response_sha256\":\"9389a40c83a47607d4f6c81965570e48c3a49d1cd33b4751fe1d9d7a8fb5c5a4\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":200,\"response_body\":\"{\\\"model\\\": \\\"nomic-embed-text:v1\\\", \\\"embeddings\\\": [[NaN, 0.5], [0.75, 1.0]]}\",\"response_sha256\":\"a313af7a48bad566049e79f36803a8522d208337019b9ad8bc577bee87dc750c\",\"response_bytes\":73}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_invalid_upstream_protocol_maps_only_to_structured_502[infinity]",
+      "time": "0.005"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":502,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_502\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_provider_invalid_response\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding provider returned an invalid response.\\\"},\\\"correlation_id\\\":\\\"ff75081702b1\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":214,\"api_response_sha256\":\"cbf5b27fbdbd28fc44720da83cbfdb3c35951bc868886ce8090d8ade4ce0cfe2\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":200,\"response_body\":\"{\\\"model\\\": \\\"nomic-embed-text:v1\\\", \\\"embeddings\\\": [[Infinity, 0.5], [0.75, 1.0]]}\",\"response_sha256\":\"d47ae9b7fec74566a13589a7534c713ea36c0cfaa21c9f337ae8ed5622858079\",\"response_bytes\":78}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_invalid_upstream_protocol_maps_only_to_structured_502[overflow]",
+      "time": "0.005"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":502,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_502\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_provider_invalid_response\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding provider returned an invalid response.\\\"},\\\"correlation_id\\\":\\\"d6acfd3385d8\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":214,\"api_response_sha256\":\"dcb0c73b36cd76fa9247175bc34cd7dcd0cb3d7733332b7b3ad35ed07b284816\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":200,\"response_body\":\"{\\\"model\\\": \\\"nomic-embed-text:v1\\\", \\\"embeddings\\\": [[10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, 0.5], [0.75, 1.0]]}\",\"response_sha256\":\"91f0156396f5f7207cde7f7bf8a548e23802d6dd3d2777dbf1b4c83aa30e3dcf\",\"response_bytes\":471}]"
+    }
+  },
+  {
+    "name": {
+      "classname": "tests.test_ollama_embedding_routing",
+      "name": "test_invalid_upstream_protocol_maps_only_to_structured_502[zero]",
+      "time": "0.005"
+    },
+    "properties": {
+      "routing_case_raw": "{\"request\":{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first\",\"second\"]},\"api_status\":502,\"api_response\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"http_502\\\",\\\"detail\\\":{\\\"code\\\":\\\"embedding_provider_invalid_response\\\",\\\"model\\\":\\\"nomic-embed-text:latest\\\",\\\"message\\\":\\\"Embedding provider returned an invalid response.\\\"},\\\"correlation_id\\\":\\\"52d01d55f628\\\"}\",\"api_request_bytes\":62,\"api_request_sha256\":\"eb567ae2dcffaa70ef22f71796ab1054d61536170d65053334e4c8a626545a11\",\"api_response_bytes\":214,\"api_response_sha256\":\"4c0e11eab23fc19d4af2624441290b367cbd801245014399c2a06913b5a30316\",\"api_post_count\":1,\"mock_native_post_count\":1,\"live_network_attempts\":0,\"live_network_addresses\":[],\"transport_attempt_count\":1,\"mock_native_post_count_this_call\":1,\"api_post_count_this_call\":1,\"httpx_options\":{\"timeout\":55.0,\"follow_redirects\":false,\"trust_env\":false}}",
+      "routing_transport_raw": "[{\"method\":\"POST\",\"url\":\"http://provider-host:11434/api/embed\",\"request_body\":\"{\\\"model\\\":\\\"nomic-embed-text:v1\\\",\\\"input\\\":[\\\"first\\\",\\\"second\\\"],\\\"truncate\\\":false}\",\"request_sha256\":\"6b034f922b27855d2ad1252a34fc8654079e6dd1a3a5011a95df7925b7205381\",\"request_bytes\":75,\"has_authorization_header\":false,\"response_status\":200,\"response_body\":\"{\\\"model\\\": \\\"nomic-embed-text:v1\\\", \\\"embeddings\\\": [[0.0, 0.0], [0.75, 1.0]]}\",\"response_sha256\":\"11470488c3c090f6261d31de8cf9bd76ea0b8d77622c26a334dfc4a66af6d46e\",\"response_bytes\":73}]"
+    }
+  }
+]

@@ -1,0 +1,43 @@
+{
+  "executable": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+  "args": [
+    "-X",
+    "faulthandler",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/probe.py"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime",
+  "started": "2026-10-14T07:11:00.353Z",
+  "ended": "2026-10-14T07:11:00.874Z",
+  "pid": 76383,
+  "pgid": 76383,
+  "code": 0,
+  "signal": null,
+  "timedOut": false,
+  "deadlineSeconds": 30,
+  "remainingOwnedProcesses": [],
+  "reapedBy": "node child_process close event",
+  "environment": {
+    "CHROMA_QA_RUN": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a",
+    "PYTHONPATH": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/bootstrap:/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONFAULTHANDLER": "1",
+    "TMPDIR": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/tmp",
+    "XDG_CACHE_HOME": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/cache",
+    "AGK_ENV_FILE": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/missing.env",
+    "AGK_CONFIG_FILE": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/missing.yaml",
+    "AGK_PATH_PROJECT_ROOT": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/project",
+    "AGK_PATH_MODELS_DIR": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/models",
+    "AGK_PATH_DATA_DIR": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/data",
+    "AGK_PATH_DOCUMENTS_DIR": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/documents",
+    "AGK_PATH_VECTORS_DIR": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/vectors",
+    "AGK_PATH_LOGS_DIR": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/logs",
+    "AGK_PATH_WIKI_DIR": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/wiki",
+    "AGK_STATE_DIR": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/state",
+    "AGK_USER_BRAIN_DIR": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/userbrain",
+    "AGK_TASK_DB_PATH": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/data/tasks.db",
+    "HF_HOME": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/models/hf",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "ANONYMIZED_TELEMETRY": "False"
+  }
+}

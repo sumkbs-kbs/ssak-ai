@@ -1,0 +1,7 @@
+{
+  "antigravity_k.engine.embeddings": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/embeddings.py",
+  "antigravity_k.engine.provider_adapters.embedding_providers": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/provider_adapters/embedding_providers.py",
+  "antigravity_k.api.dependencies": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py",
+  "antigravity_k.api.routes.models_api": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/routes/models_api.py",
+  "antigravity_k.engine.model_registry": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/model_registry.py"
+}

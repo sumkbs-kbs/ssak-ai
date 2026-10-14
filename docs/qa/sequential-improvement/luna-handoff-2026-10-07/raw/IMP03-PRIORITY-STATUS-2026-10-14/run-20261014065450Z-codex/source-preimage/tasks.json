@@ -1,0 +1,784 @@
+{
+  "current_snapshot": {
+    "as_of_utc": "2026-10-14T05:35:48Z",
+    "scope": "Listed IMP-09 scoped evidence and active priority queue only; other parent acceptance not re-audited",
+    "authority": "This current_snapshot and STATUS.md current section take precedence for listed rows; original recorded_at/summary/tasks/subtasks below remain historical",
+    "parent_status": {
+      "IMP-09": "PARTIAL",
+      "historical_ledger": "NOT_RECOVERED",
+      "global_parent_counts": "NOT_RECOMPUTED"
+    },
+    "historical_snapshot_preservation": {
+      "source_preimage": "raw/IMP09C-STATUS-RECONCILIATION-2026-10-14/run-20261014T043024Z-codex-86e22b4940/source-preimage",
+      "historical_fields_unchanged": true,
+      "runs_changes_ledgers": "UNCHANGED_NOT_RECOVERED"
+    },
+    "scoped_results": [
+      {
+        "id": "IMP-09-C-STREAM-OPTIONS-01",
+        "status": "ACCEPTED_SCOPED_OFFLINE",
+        "review": "docs/qa/sequential-improvement/luna-review-2026-10-08-stream-options/review.md",
+        "limits": "Historical offline37+16; no full-suite claim"
+      },
+      {
+        "id": "IMP-09-B-TOOL-03-UVICORN-AUTH",
+        "status": "APPROVED_SCOPED_LIVE",
+        "review": "docs/qa/sequential-improvement/luna-review-2026-10-10-tool03-live/review.md",
+        "limits": "Single authenticated SSE/tool-bridge request; lifespan off; native tool execution not proven"
+      },
+      {
+        "id": "IMP-09-C-MESSAGES-IMAGE-CONTRACT-01",
+        "status": "APPROVED_SCOPED_OFFLINE",
+        "review": "docs/qa/sequential-improvement/luna-review-2026-10-10-messages-image-contract/review.md",
+        "limits": "Typed400 for unsupported image positions; not Messages vision support"
+      },
+      {
+        "id": "IMP-09-C-PRODUCT-VISION-OUTPUT-CONTRACT-01",
+        "status": "COMPLETE_OFFLINE_REVIEWED",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/code-review-v5.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/final-result.json",
+        "limits": "Direct native Ollama qwen3 nonstream; focused36/adjacent50 at recorded source; current publication candidate separate"
+      },
+      {
+        "id": "IMP-09-B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01",
+        "status": "PASS_SCOPED_STRUCTURED_VISION_UVICORN_AUTH_LIFESPAN_OFF",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/final-evidence-review.json",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/final-result.json",
+        "limits": "Fixed image/model/schema; actual product1/provider1; stale acceptance format label corrected separately; no broad quality claim"
+      },
+      {
+        "id": "IMP-09-C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01",
+        "status": "APPROVED_SCOPED_OFFLINE",
+        "review": "docs/qa/sequential-improvement/luna-review-2026-10-14-acceptance-metadata/review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01/run-20261014T043024Z-codex-86e22b4940/result.json",
+        "limits": "Actual writer-path red1/green1; static4pass; fakecleanup inconclusive remains; actualinference0"
+      },
+      {
+        "id": "IMP-03-NATIVE-TRANSPORT-ERROR-01",
+        "status": "APPROVED_SCOPED_ASGI_PROVIDER_HTTP503_AND_PUBLISHED",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-TRANSPORT-ERROR-01/run-20261014T050221Z-codex-de8fd0191c/review/independent-review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-TRANSPORT-ERROR-01/run-20261014T050221Z-codex-de8fd0191c/controlled-wire-v2/result.json",
+        "limits": "Clean76/static4/mypy572; controlledHTTP503 provider1 retry0 successusage0 failedusage1 persistence0; liveLLM/auth/lifespan not claimed"
+      },
+      {
+        "id": "IMP-03-NATIVE-STREAM-TERMINAL-01",
+        "status": "OFFLINE_IMPLEMENTED_REPAIR_UNDER_REVIEW",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-STREAM-TERMINAL-01/run-20261014T052114Z-codex-71e679399e/review/request-changes-v3.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-STREAM-TERMINAL-01/run-20261014T052114Z-codex-71e679399e/controlled-wire/result.json",
+        "limits": "Root101/clean92 historical; malformedcontent BLOCK reproduced then new120 cases passed, pending fresh independent review; consolelabel correction preserved"
+      }
+    ],
+    "current_capability_boundary": {
+      "json_schema": "EXPLICIT_NATIVE_OLLAMA_QWEN3_NON_STREAM_ONLY",
+      "streaming_structured_requests": "EXPLICIT400_OUTSIDE_CURRENT_SUPPORT",
+      "general_model_quality": "NOT_ESTABLISHED",
+      "full_lifespan_on": "NOT_VERIFIED_BY_SCOPED_LIFESPAN_OFF_CASES",
+      "installed_model_matrix": "INCOMPLETE",
+      "historical_format_omitted_vision": "FAIL_SEMANTIC_UNCHANGED",
+      "native_direct_failure": "TYPED502_503_504_NO_AUTOMATIC_NATIVE_RETRY",
+      "native_stream_failure": "MALFORMED_CONTENT_REPAIR_UNDER_REVIEW",
+      "project_rag_embedding": "IMPLICIT_CHROMA_DEFAULT_MODEL_NOT_VERIFIED"
+    },
+    "priority_queue": [
+      {
+        "priority": 1,
+        "id": "IMP-09-C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01",
+        "status": "DONE_SCOPED_OFFLINE"
+      },
+      {
+        "priority": 2,
+        "id": "IMP-09-C-STATUS-RECONCILIATION-2026-10-14",
+        "status": "DONE_DOCUMENT_RECONCILIATION"
+      },
+      {
+        "priority": 3,
+        "id": "IMP-09-C-STRUCTURED-OUTPUT-PUBLICATION-01",
+        "status": "DONE_COMMITTED_AND_PUSHED",
+        "scope": "Feature-only clean commit candidate, source/test prerequisite closure, owned evidence and current status publication"
+      },
+      {
+        "priority": 4,
+        "id": "IMP-03-NATIVE-STREAM-TERMINAL-01",
+        "status": "IN_PROGRESS",
+        "scope": "Repair native stream protocol completion/tool dispatch and malformed content; full compatible/agent lifecycle acceptance remains separate",
+        "completed_subtasks": [
+          {
+            "id": "IMP-03-NATIVE-TRANSPORT-ERROR-01",
+            "status": "DONE_SCOPED_REVIEWED_AND_PUSHED",
+            "feature_commit": "8b22847730f5419307dda66f5ca6ab57fc1b023f",
+            "qa_commit": "50437f0ccbb0dd512204ce38b640bd5c238eb97a"
+          },
+          {
+            "id": "EXISTING_CANCEL_OWNERSHIP_APPROVAL_STORE_REOPEN",
+            "status": "SCOPED6_PASS_NO_PHYSICAL_NETWORK",
+            "limits": "Existing mocked models and real runtime/thread/SQLite; not full OS restart"
+          }
+        ]
+      },
+      {
+        "priority": 5,
+        "id": "MEMORY_SEARCH_QUALITY",
+        "status": "DISCOVERY_COMPLETE_NOT_STARTED",
+        "scope": "IMP-04/06/07 actual quality acceptance",
+        "next_concrete_task": "IMP-07-RAG-EMBEDDING-IDENTITY-01"
+      },
+      {
+        "priority": 6,
+        "id": "EXPANDED_PRODUCT_ACCEPTANCE",
+        "status": "NOT_REASSESSED",
+        "scope": "Full startup/lifespan, vision corpus, UI/performance, integration; consult latest independent evidence before execution"
+      },
+      {
+        "priority": 7,
+        "id": "INTEGRATED_RELEASE_ACCEPTANCE",
+        "status": "NOT_REASSESSED",
+        "scope": "IMP-01/02 integration, IMP-19 packaging, IMP-20 newcandidate8hsoak; release distinct"
+      }
+    ],
+    "optional_not_automatically_selected": [
+      "IMP-16",
+      "IMP-18"
+    ],
+    "publication": {
+      "preceding_qa_pushed_head": "3ed591244d801344d7ba468d1afa7faba7f64ec0",
+      "current_structured_feature": "COMMITTED_CLEAN_TREE_VERIFIED_AND_PUSHED",
+      "feature_commit": "d3c107b04624ec2a655f5e3dee19e58c8856bab6",
+      "qa_commit": "aab1a39475743ea1fac413b2d3b12400ed7ec610",
+      "push_remote": "ssak-ai/codex/m1-task-events",
+      "remote_sha_verified": "aab1a39475743ea1fac413b2d3b12400ed7ec610",
+      "clean_candidate_tests": 79,
+      "commit_hook_mypy_source_files": 571,
+      "status_commit": "8ed827654cb608c55b22fe75b295abf3365114f4",
+      "direct_transport_feature_commit": "8b22847730f5419307dda66f5ca6ab57fc1b023f",
+      "direct_transport_qa_commit": "50437f0ccbb0dd512204ce38b640bd5c238eb97a",
+      "latest_remote_sha_verified": "50437f0ccbb0dd512204ce38b640bd5c238eb97a"
+    },
+    "next_task": "IMP-03-NATIVE-STREAM-TERMINAL-01",
+    "do_not_repeat": "Use saved successful receipts unless source, environment or a new failure hypothesis changes; do not replay old inference or reconstruct lost ledgers"
+  },
+  "recorded_at": "2026-10-07T13:16:06.378463+00:00",
+  "source_status_document": "docs/ssak-ai-core/SEQUENTIAL_IMPROVEMENT_STATUS_2026-10-07.md",
+  "summary": {
+    "parent_counts": {
+      "DONE": 2,
+      "PARTIAL": 9,
+      "NOT_RUN": 8,
+      "BLOCKED_ENV": 0,
+      "BLOCKED_INPUT": 0,
+      "OPTIONAL_NOT_SELECTED": 2
+    },
+    "subtask_counts": {
+      "IN_PROGRESS": 1,
+      "PASS": 1,
+      "FAIL": 1,
+      "BLOCKED_ENV": 0,
+      "BLOCKED_INPUT": 0,
+      "NOT_RUN": 0,
+      "PARTIAL": 4
+    },
+    "review_status_counts": {
+      "NOT_REVIEWED": 28,
+      "CHANGES_REQUESTED": 0,
+      "APPROVED": 0
+    }
+  },
+  "tasks": [
+    {
+      "id": "IMP-00",
+      "status": "DONE",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "격리된 실행, manifest, cleanup 및 negative-control 기반 제공"
+      ],
+      "completed": [
+        "기존 완료 상태를 2026-10-07 status에서 보존"
+      ],
+      "remaining": [],
+      "blocker": null,
+      "next_action": "새 작업에서 기존 harness 계약을 사용; 재개발 금지."
+    },
+    {
+      "id": "IMP-01",
+      "status": "PARTIAL",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "backend/frontend 결과를 nodeid 기준으로 중복 제거하고 현행 source에 귀속",
+        "CI 명령 결과와 stale RUNNING receipt 조정"
+      ],
+      "completed": [
+        "분할 실행 및 기존 frontend/backend 증거가 status document에 기록됨"
+      ],
+      "remaining": [
+        "중복 제거·귀속·receipt/CI 통합"
+      ],
+      "blocker": null,
+      "next_action": "원 IMP-01 acceptance에서 미완료 부분만 수행."
+    },
+    {
+      "id": "IMP-02",
+      "status": "PARTIAL",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "selector/citation/추적 근거의 누락을 해결하고 release 의미와 일치"
+      ],
+      "completed": [
+        "9 selectors 중 7 PASS와 README/release 의미 정리"
+      ],
+      "remaining": [
+        "후보/fingerprint 2건(IMP-20), citation 2건, 미추적 4건"
+      ],
+      "blocker": null,
+      "next_action": "IMP-20 및 별도 citation/추적 정리와 의존 관계를 유지."
+    },
+    {
+      "id": "IMP-03",
+      "status": "PARTIAL",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "실제 provider 오류·도구 실행 후 실패·재시도/취소를 wire와 task 결과로 검증"
+      ],
+      "completed": [
+        "MAX fallback 원 요청 정책 수정 및 관련 mock 회귀 기록"
+      ],
+      "remaining": [
+        "실제 provider/wire/task 오류·재시도·취소"
+      ],
+      "blocker": null,
+      "next_action": "필요한 실제 오류 시나리오만 독립 수행."
+    },
+    {
+      "id": "IMP-04",
+      "status": "PARTIAL",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "독립 40문항과 실제 검색/model을 같은 예산 3회 paired 평가 및 false-DONE 채점"
+      ],
+      "completed": [
+        "mock 검색/citation 회귀 및 기존 fixture 단회 진단"
+      ],
+      "remaining": [
+        "새 corpus·실제 모델·paired 3회 평가"
+      ],
+      "blocker": null,
+      "next_action": "실제 모델 capability가 확인된 뒤 남은 계획 범위 수행."
+    },
+    {
+      "id": "IMP-05",
+      "status": "PARTIAL",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "현행 환경의 OS/read-only/approval/child 경계를 검증"
+      ],
+      "completed": [
+        "경계 subset 결과와 환경 원인이 기존 status에 기록됨"
+      ],
+      "remaining": [
+        "필요한 현행 권한·child 경계 시나리오"
+      ],
+      "blocker": null,
+      "next_action": "실패를 PASS나 자동 환경 탓으로 승격하지 말고 미검증 경계만 진행."
+    },
+    {
+      "id": "IMP-06",
+      "status": "PARTIAL",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "실모델 context 25/75/110%에서 사실·정정·제약 보존을 확인"
+      ],
+      "completed": [
+        "summary의 system 권한 승격 수정과 인접 회귀 기록"
+      ],
+      "remaining": [
+        "실모델 compression 경로 및 25/75/110% 보존 평가"
+      ],
+      "blocker": null,
+      "next_action": "실제 provider와 모델이 분명할 때 대상 검증."
+    },
+    {
+      "id": "IMP-07",
+      "status": "PARTIAL",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "실제 embedding 품질·차원/모델 교체 및 사용 흐름 검증"
+      ],
+      "completed": [
+        "실제 Chroma 저장소 lifecycle에 대한 synthetic embedding 진단"
+      ],
+      "remaining": [
+        "실제 embedding 품질 및 모델 변경/use flow"
+      ],
+      "blocker": null,
+      "next_action": "synthetic 결과와 실제 검색 정확도를 분리해 잔여 검증."
+    },
+    {
+      "id": "IMP-08",
+      "status": "PARTIAL",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "원 계획 및 명시된 lint/performance/visual/INC-BUNDLE 잔여를 근거에 따라 닫음"
+      ],
+      "completed": [
+        "lint·build·합성 UI 회귀 등 제한 범위 기록"
+      ],
+      "remaining": [
+        "lint disposition",
+        "실제 cold/warm 성능",
+        "독립 시각 검토",
+        "INC-BUNDLE"
+      ],
+      "blocker": null,
+      "next_action": "IMP-08 PARTIAL 유지; 재실행 입력이 생길 때만 해당 하위 검증."
+    },
+    {
+      "id": "IMP-09",
+      "status": "PARTIAL",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "현행 설치 capability를 inventory한 후 필요한 실제 capability matrix를 완료",
+        "관찰된 불일치만 수정"
+      ],
+      "completed": [
+        "IMP-09-A 현행 inventory 및 실제 text POST 1회 완료 (IMP09A-LIVE-PROBE-001; transport 성공, exact marker 불일치)",
+        "IMP-09-B 가설 분리 사례 1건 수행: num_predict 32→64에서도 marker 불일치, done_reason=length (IMP09B-TE-01-LIVE-001)",
+        "IMP-09-B-JS-01 structured JSON: native NDJSON and Ssak /v1/messages product SSE each independently passed their own schema/value/protocol acceptance; external Uvicorn lifecycle remains unverified.",
+        "IMP-09-B-JS-01 structured JSON: native Ollama NDJSON and separate Ssak product SSE each independently passed exact JSON/schema/protocol acceptance; product route was TestClient-only and full Uvicorn boundary remains unverified.",
+        "IMP-09-B-TOOL-01: native Ollama tool-call stream independently PASS; separate Ssak /v1/messages route emitted exact tool and arguments but failed SSE content-block lifecycle ordering. Product HTTP status/content-type were not recorded; no retry. See IMP09B-TOOL-01-LIVE-001.",
+        "IMP-09-B-ST-01 native stream PASS and separate Ssak product route SSE/semantic boundary PASS for arithmetic answer 5; product provider wire remains unverified. See IMP09B-ST-01-LIVE-001.",
+        "IMP09A-LIVE-PROBE-001 four historical artifact byte counts corrected by append-only supplemental receipt; raw files and original run row unchanged.",
+        "IMP-09-C-STREAM-OPTIONS-01 source fix completed; existing offline regression selector passed 37/37 after the same selector failed 3/37 before the change, impact tests passed 16/16, explicit temperature=0 preserved. See IMP09C-STREAM-OPTIONS-01-TEST-001."
+      ],
+      "remaining": [
+        "Restore the pre-existing 22 runs.jsonl and 21 changes.jsonl history rows from exact backups; their working copies were accidentally overwritten during closeout and local/Git recovery was unavailable.",
+        "IMP-09-B 설치 모델 capability matrix의 나머지 독립 사례",
+        "Real provider wire after the streaming fix and external Uvicorn/lifespan boundary remain unverified."
+      ],
+      "blocker": "Exact backup restoration of the two untracked history ledgers is pending; do not recreate historical rows from memory.",
+      "next_action": "After exact ledger backup restoration and verification, resume NEXT_TASK=IMP-09-B-US-01; then complete remaining B matrix. Keep IMP-09 PARTIAL.",
+      "updated_at": "2026-10-07T21:18:30+00:00"
+    },
+    {
+      "id": "IMP-10",
+      "status": "NOT_RUN",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "활성 agency/scheduler, process restart, 중복 실행 방지의 원 계획 기준 검증"
+      ],
+      "completed": [],
+      "remaining": [
+        "실제 lifecycle/중복 실행 검증"
+      ],
+      "blocker": null,
+      "next_action": "원 의존 관계대로 IMP-03/05의 필요한 경계 뒤에 수행."
+    },
+    {
+      "id": "IMP-11",
+      "status": "NOT_RUN",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "실제 STT/TTS 및 microphone 경로 확인"
+      ],
+      "completed": [],
+      "remaining": [
+        "실제 STT/TTS/microphone acceptance"
+      ],
+      "blocker": null,
+      "next_action": "IMP-00/09의 해당 capability가 요구될 때 수행."
+    },
+    {
+      "id": "IMP-12",
+      "status": "NOT_RUN",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "최소 실제 weight 학습·export·reload 또는 구체 BLOCKED_ENV"
+      ],
+      "completed": [],
+      "remaining": [
+        "실제 학습 lifecycle 또는 자원/지원 blocker"
+      ],
+      "blocker": null,
+      "next_action": "자원 조건과 선행 상태를 확인 후 실행."
+    },
+    {
+      "id": "IMP-13",
+      "status": "NOT_RUN",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "실제 MCP/plugin/remote/Git/browser lifecycle과 권한 경계 검증"
+      ],
+      "completed": [],
+      "remaining": [
+        "실제 integration lifecycle"
+      ],
+      "blocker": null,
+      "next_action": "IMP-05/09 선행 capability에 따라 진행."
+    },
+    {
+      "id": "IMP-14",
+      "status": "NOT_RUN",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "populated history, inline edit, terminal child, TUI 실제 시나리오 검증"
+      ],
+      "completed": [],
+      "remaining": [
+        "실제 populated UI/workflow acceptance"
+      ],
+      "blocker": null,
+      "next_action": "의존 작업이 준비될 때 실행."
+    },
+    {
+      "id": "IMP-15",
+      "status": "DONE",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "계산 미지원/스킬 자동 활성화 없음의 사용자 안내를 유지"
+      ],
+      "completed": [
+        "기존 완료 상태를 2026-10-07 status에서 보존; 계산기 구현으로 과장하지 않음"
+      ],
+      "remaining": [],
+      "blocker": null,
+      "next_action": "완료 범위를 유지하고 재개발하지 않음."
+    },
+    {
+      "id": "IMP-16",
+      "status": "OPTIONAL_NOT_SELECTED",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "별도 선택 시 deterministic DCF/comps 신규 구현"
+      ],
+      "completed": [],
+      "remaining": [
+        "선택 없음"
+      ],
+      "blocker": null,
+      "next_action": "명시적 선택 전 시작하지 않음."
+    },
+    {
+      "id": "IMP-17",
+      "status": "NOT_RUN",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "vision/extraction corpus와 숫자·단위·출처 정확도 확대 검증"
+      ],
+      "completed": [],
+      "remaining": [
+        "현행 vision capability 및 accuracy 범위"
+      ],
+      "blocker": null,
+      "next_action": "IMP-09 inventory 이후 해당 capability에 맞춰 수행."
+    },
+    {
+      "id": "IMP-18",
+      "status": "OPTIONAL_NOT_SELECTED",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "선택 시 cognitive/evaluation 효과 측정"
+      ],
+      "completed": [],
+      "remaining": [
+        "선택 없음"
+      ],
+      "blocker": null,
+      "next_action": "명시적 선택 전 시작하지 않음."
+    },
+    {
+      "id": "IMP-19",
+      "status": "NOT_RUN",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "wheel 설치·SBOM·provenance 실제 검증"
+      ],
+      "completed": [],
+      "remaining": [
+        "실제 packaging/supply-chain 검사"
+      ],
+      "blocker": null,
+      "next_action": "IMP-02/03/05/08/15 선행 후 수행."
+    },
+    {
+      "id": "IMP-20",
+      "status": "NOT_RUN",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "새 후보·통합검증·8h soak·최종 판정"
+      ],
+      "completed": [],
+      "remaining": [
+        "전체 acceptance와 새 승인 evidence"
+      ],
+      "blocker": null,
+      "next_action": "필수 선행이 충족된 후 시작; 과거 SHA/서명/fingerprint를 대체 증거로 삼지 않음."
+    }
+  ],
+  "subtasks": [
+    {
+      "id": "IMP-09-A",
+      "parent_id": "IMP-09",
+      "title": "현행 installed provider/model inventory와 실제 text 요청 1건",
+      "status": "PASS",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "현재 runtime/provider version 및 설치 목록을 현재 환경에서 식별한다.",
+        "사용 가능한 설치 model 하나에 격리한 live text 요청 1회만 보내고 model/version/digest, prompt, 기대·실제, wire 응답과 종료 상태를 기록한다.",
+        "다운로드, user runtime 재시작/종료, credential 출력 없이 요청 후 cleanup 상태를 확인한다."
+      ],
+      "completed": [
+        "Ollama 0.35.1 및 /api/tags의 현재 6개 model을 관찰; 작은 설치 모델 ssak-finetuned:qwen2.5-0.5b, digest bac64e9e331da16c10ffe68d54fe3569c72f92826c829f7a0c71f6ffc6c9ba1c 선택.",
+        "IMP09A-LIVE-PROBE-001: HTTP 200, response model 일치, non-empty text 응답, exit 0; inference POST 정확히 1회.",
+        "요청에서 keep_alive=0 사용, postflight /api/ps는 비어 있어 로드된 모델 없음.",
+        "Codebase-memory CLI에서 search_graph/trace_path/get_code_snippet 성공; 정확한 qualified_name 조회 증거 저장."
+      ],
+      "remaining": [],
+      "observed_result_caveat": "expected IMP09A_TEXT_PROBE_OK였으나 실제 출력은 일치하지 않고 done_reason=length (32 tokens). 이는 실응답이며 marker assertion 성공으로 주장하지 않는다; capability mismatch 후보를 IMP-09-B로 넘긴다.",
+      "evidence_ids": [
+        "IMP09A-INIT-001",
+        "IMP09A-INVENTORY-001",
+        "IMP09A-CODEGRAPH-002",
+        "IMP09A-LIVE-PROBE-001",
+        "IMP09A-FINAL-001-SUPERSEDED",
+        "IMP09B-FINAL-004",
+        "IMP09B-FINAL-005"
+      ],
+      "source_snapshot_ids": [
+        "IMP09A-START-20261007",
+        "IMP09A-AFTER-20261007"
+      ],
+      "dependencies": [
+        "IMP-00 existing isolation/request contracts",
+        "IMP-03 provider failure policy"
+      ],
+      "blocker": null,
+      "next_action": "하위 acceptance 완료. 실제 marker mismatch를 B에 이관; Codex 최종 검수 대기.",
+      "updated_at": "2026-10-07T08:36:44Z"
+    },
+    {
+      "id": "IMP-09-B",
+      "parent_id": "IMP-09",
+      "title": "현행 설치 모델 실제 capability matrix",
+      "status": "IN_PROGRESS",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "설치된 모델 별 필요한 capability를 사례별로 actual 결과로 기록"
+      ],
+      "completed": [
+        "IMP-09-A의 32-token length 종료 원인을 cap만으로 설명할 수 있는지 변경 가설 1회 검사: num_predict=64에서도 정확한 marker 미출력, eval_count=64 및 done_reason=length.",
+        "IMP-09-B-JS-01 structured-JSON case: native and Ssak product streams each independently passed their own schema/value/protocol acceptance (native + separate product request).",
+        "KGBinaryValidator.validate(): OK=True, integrity ok, no FK violations, DB bytes unchanged; validator-created WAL/SHM sidecars were removed after confirming no open handles (IMP09B-JS-01-KG-VALIDATE-001).",
+        "IMP-09-B-TOOL-01 native case independently PASS: one /api/chat stream, 2 NDJSON frames, done=true, exactly lookup_part({name:bolts}).",
+        "IMP-09-B-TOOL-01 product case independently PARTIAL/FAIL: one TestClient route inference, 27 parseable SSE frames, exact lookup_part arguments and stop_reason=tool_use, but text block 0 remained open when tool_use block 0 began; probe finalizer exited 1, HTTP status/content-type not captured. Raw response preserved; no retry.",
+        "KGBinaryValidator.validate(): OK=True after TOOL-01, DB SHA unchanged and validator-created sidecars removed after no-open-handle check.",
+        "IMP-09-B-ST-01: native arithmetic stream independently PASS (one live POST, answer 5, done=stop); Ssak TestClient product route independently PASS at its HTTP/SSE semantic boundary (one request, answer 5, end_turn/message_stop). Downstream provider wire/options remain UNVERIFIED; overall subtask PARTIAL. KG validator OK=True. See IMP09B-ST-01-LIVE-001.",
+        "IMP09A-LIVE-PROBE-001 artifact-byte discrepancy corrected in an append-only supplemental receipt; historical run/raw untouched."
+      ],
+      "remaining": [
+        "Additional distinct installed-model capability matrix cases, each with independent acceptance and expected/actual.",
+        "Full HTTP/Uvicorn product-path startup remains unverified for JS-01 because isolated lifespan server startup segfaulted.",
+        "IMP-09-C repair/no-repair decision after remaining B matrix cases.",
+        "Downstream provider adapter wire capture for ST-01 remains unverified; do not infer effective max_tokens/temperature from request body.",
+        "Additional distinct installed-model capability cases (US-01, EM-01, remaining matrix); IMP-09-C after B matrix."
+      ],
+      "blocker": null,
+      "next_action": "After restoring the exact pre-overwrite history ledgers from backup and verifying old rows are intact, resume NEXT_TASK=IMP-09-B-US-01. Freeze unsupported-chat typed-error acceptance on nomic-embed-text:latest before one independent native/product check as applicable; no ST-01 replay. Keep overall IMP-09 PARTIAL.",
+      "updated_at": "2026-10-07T21:18:30+00:00",
+      "evidence_ids": [
+        "IMP09B-GRAPH-001",
+        "IMP09B-TE-01-LIVE-001",
+        "IMP09B-FINAL-004",
+        "IMP09B-FINAL-005",
+        "IMP09B-JS-01-CAPABILITY-001",
+        "IMP09B-JS-01-KG-VALIDATE-001",
+        "IMP09B-TOOL-01-LIVE-001",
+        "IMP09B-ST-01-LIVE-001",
+        "IMP09B-ST-01-KG-VALIDATE-001",
+        "IMP09B-ST-01-KG-VALIDATE-002",
+        "IMP09B-ST-01-FINAL-CHECK-002",
+        "IMP09A-LIVE-PROBE-001-BYTES-CORRECTION-001"
+      ],
+      "source_snapshot_ids": [
+        "IMP09B-AFTER-20261007",
+        "IMP09B-FINAL-20261007"
+      ]
+    },
+    {
+      "id": "IMP-09-C",
+      "parent_id": "IMP-09",
+      "title": "관측된 capability mismatch만 수리",
+      "status": "PARTIAL",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "IMP-09-B가 재현한 불일치만 수리하거나 수정 불필요 근거 확정"
+      ],
+      "completed": [
+        "IMP-09-C-STREAM-OPTIONS-01 source fix and offline regressions completed: before 3 failures/34 passes; after same selector 37 passes; impact fixtures 16 passes; temperature=0 retained; static checks and KG validator passed."
+      ],
+      "remaining": [
+        "Exact restore of the pre-existing 22 run rows and 21 change rows from backup is required; current ledger contents were accidentally overwritten during closeout and local/Git recovery was not available.",
+        "Post-fix real provider wire and Uvicorn/lifespan/network behavior remain unverified."
+      ],
+      "blocker": "Await exact user-provided backup copies of the two untracked JSONL history ledgers; do not reconstruct old rows from memory.",
+      "next_action": "Restore and verify historical rows from exact backups. Then resume NEXT_TASK=IMP-09-B-US-01; keep parent IMP-09 PARTIAL.",
+      "evidence_ids": ["IMP09C-STREAM-OPTIONS-01-TEST-001"],
+      "updated_at": "2026-10-07T21:18:30+00:00"
+    },
+    {
+      "id": "IMP-09-B-TE-01",
+      "parent_id": "IMP-09-B",
+      "title": "32-token cap 단독 원인 가설의 exact-output 확인",
+      "status": "FAIL",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "동일한 현재 설치 모델/digest로 사전 preflight 통과",
+        "isolated localhost /api/chat POST 정확히 1회, num_predict=64, keep_alive=0",
+        "assistant content가 IMP09B_TEXT_PROBE_OK와 정확히 일치하고 done_reason이 length가 아님"
+      ],
+      "completed": [
+        "사전 inventory에서 Ollama 0.35.1, 선택 모델 digest bac64e9e331da16c10ffe68d54fe3569c72f92826c829f7a0c71f6ffc6c9ba1c 일치 및 /api/ps 비어 있음 확인",
+        "한 번 POST: HTTP 200, exit 0, response model 일치, 0.828초, eval_count=64",
+        "응답 본문은 기대 marker와 불일치; done_reason=length. num_predict 64에서도 전 토큰 소진되어 “32 cap만이 원인” 가설은 이 단일 사례에서 지지되지 않음",
+        "keep_alive=0 및 사후 /api/ps models=[]; 다운로드/서비스 제어/credential 사용 없음"
+      ],
+      "remaining": [
+        "다른 독립 capability acceptance case 및 전체 matrix는 미실행; 이 한 사례로 모델 전반을 판정하지 않음"
+      ],
+      "observed_result_caveat": "transport PASS (HTTP 200)와 exact output acceptance FAIL을 분리. 이는 64-token 출력까지의 한 prompt 결과이며 전반적 model capability conclusion이 아니다.",
+      "evidence_ids": [
+        "IMP09B-TE-01-LIVE-001",
+        "IMP09B-FINAL-004",
+        "IMP09B-FINAL-005"
+      ],
+      "source_snapshot_ids": [
+        "IMP09B-AFTER-20261007",
+        "IMP09B-FINAL-20261007"
+      ],
+      "dependencies": [
+        "IMP-09-A"
+      ],
+      "blocker": null,
+      "next_action": "다음 서로 다른 capability 사례의 acceptance를 먼저 고정; 이 사례는 반복하지 않음.",
+      "updated_at": "2026-10-07T08:36:44Z"
+    },
+    {
+      "id": "IMP-09-B-JS-01",
+      "parent_id": "IMP-09-B",
+      "title": "Native / Ssak product stream structured JSON capability",
+      "status": "PARTIAL",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "Structured JSON expected object/schema and stream completion frozen before provider requests.",
+        "Ollama native stream is independently classified; HTTP and semantic outcomes separated.",
+        "Ssak /v1/messages product SSE route independently executed; native status cannot satisfy product status.",
+        "No prior exact marker/token-cap replay, retries, source repair, or historical evidence backdating."
+      ],
+      "completed": [
+        "Native Ollama 0.40.0 qwen3.8:latest digest 22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643: one /api/chat stream; HTTP 200, 39 NDJSON frames, done=true, parsed object exactly bolts=2, washers=3, total=5; PASS.",
+        "Ssak actual FastAPI /v1/messages stream via TestClient and live ModelManager/OllamaProvider: one request; HTTP 200 event-stream, 43 valid ordered Anthropic SSE frames, parsed object exactly expected; PASS independently.",
+        "Original raw preflight-inventory.json file byte count recalculated from file bytes = 3,419; SHA-256=46d857c1a0d72d5a36821acba5c4dce934c891994b2ba273e892b0fa241e3898."
+      ],
+      "remaining": [
+        "Full ASGI/Uvicorn service lifespan/readiness/product wire path could not be run: two isolated startup attempts SIGSEGV 11 before ready; leave capability PARTIAL for that boundary.",
+        "Additional distinct IMP-09-B capability matrix cases; no exact-marker/token-cap repetitions."
+      ],
+      "blocker": null,
+      "observed_result_caveat": "Each live route’s own acceptance passed; do not generalize to other capabilities. Product route was real ASGI request through TestClient, but bypassed lifespan and network listener. The supported/available model remained loaded due Ssak OllamaProvider keep_alive=30m; not forcibly stopped.",
+      "evidence_ids": [
+        "IMP09B-JS-01-CAPABILITY-001",
+        "IMP09B-JS-01-KG-VALIDATE-001"
+      ],
+      "source_snapshot_ids": [
+        "IMP09B-JS-01-preflight-20261007",
+        "IMP09B-JS-01-after-20261007"
+      ],
+      "dependencies": [
+        "IMP-09-A"
+      ],
+      "next_action": "Keep this subtask PARTIAL: native and TestClient product-route JSON acceptance passed independently, but the full Uvicorn/lifespan/network product boundary is UNVERIFIED after two SIGSEGV startup attempts. Do not repeat this inference case.",
+      "updated_at": "2026-10-07T10:12:00Z"
+    },
+    {
+      "id": "IMP-09-B-TOOL-01",
+      "parent_id": "IMP-09-B",
+      "title": "Native and Ssak streaming tool-use capability",
+      "status": "PARTIAL",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "Freeze one distinct tool-use acceptance before inference.",
+        "One Ollama native /api/chat NDJSON request selects exactly lookup_part with arguments {name:bolts} and completes with done=true.",
+        "A separate Ssak /v1/messages streaming request returns HTTP 200 event-stream with well-formed ordered Anthropic SSE, one tool_use block, exact input_json_delta arguments, stop_reason=tool_use, and message_stop.",
+        "No retries, no cross-credit, no exact-marker/token-cap replay, and no production source edits."
+      ],
+      "completed": [
+        "Acceptance frozen at 2026-10-07T10:20:00Z; preflight verified Ollama 0.40.0, model digest 22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643, and no model loaded.",
+        "Native: exactly one POST, HTTP 200, two valid NDJSON frames, done=true, one lookup_part tool call with exact {name:bolts}; PASS.",
+        "Product: exactly one TestClient request and one UsageTracker inference record; raw 27-frame SSE contains one lookup_part block, exact arguments, stop_reason=tool_use, and message_stop.",
+        "KGBinaryValidator.validate(): OK=True, integrity ok, zero FK violations; DB hash unchanged and only validator-created WAL/SHM sidecars removed after confirming no open handles."
+      ],
+      "remaining": [
+        "Product SSE protocol FAIL: text block index 0 was left open when tool_use block index 0 started; two lifecycle violations recorded.",
+        "Product HTTP status/content-type not saved by probe finalizer; response envelope remains UNVERIFIED.",
+        "TestClient only; full Uvicorn/lifespan/network boundary not exercised."
+      ],
+      "blocker": null,
+      "observed_result_caveat": "The probe finalizer exited 1 with KeyError after raw response capture. This was an analysis failure after the single request, not an inference retry. Product acceptance is FAIL and overall case remains PARTIAL; native PASS does not satisfy product acceptance.",
+      "evidence_ids": [
+        "IMP09B-TOOL-01-LIVE-001"
+      ],
+      "dependencies": [
+        "IMP-09-B"
+      ],
+      "next_action": "Keep the captured Ssak tool-use block-lifecycle defect as an open static observation; do not repeat inference. Focus next on the distinct IMP-09-B-US-01 capability case.",
+      "updated_at": "2026-10-07T11:36:21Z"
+    },
+    {
+      "id": "IMP-09-B-ST-01",
+      "parent_id": "IMP-09-B",
+      "title": "Native Ollama and Ssak short arithmetic streaming",
+      "status": "PARTIAL",
+      "review_status": "NOT_REVIEWED",
+      "acceptance": [
+        "Freeze the exact Korean arithmetic input and qwen3.8:latest identity/resource before inference.",
+        "One native Ollama NDJSON request ends normally with nonempty user-facing answer 5.",
+        "One independent Ssak /v1/messages product route request returns valid HTTP/SSE ordered completion and user-facing answer 5.",
+        "Capture raw requests/responses, digest, timing, frame order, content vs thinking, no retry, and isolated product state.",
+        "Capture actual downstream provider request/response wire or keep that acceptance explicitly unverified; no production edits/retries."
+      ],
+      "completed": [
+        "Native Ollama: one live /api/chat POST, HTTP 200, 2 NDJSON frames, done=true/done_reason=stop, content 5; PASS.",
+        "KG validator returned OK=True, integrity_check=ok, foreign-key violations=0; data/wiki.db SHA unchanged; validator-created sidecars removed only after lsof no-handle check.",
+        "Historic IMP09A artifact byte mismatch corrected with append-only receipt; original row/raw evidence unchanged.",
+        "Ssak product TestClient route: one live /v1/messages request returned HTTP 200 event-stream, 6 correctly ordered SSE frames, end_turn/message_stop, and content 5; captured route-level framing/semantics PASS independently (full Uvicorn/provider wire remains unverified).",
+        "IMP-09-B-ST-01 repeat: native stream independently PASS; two product TestClient routes were actually invoked after harness repair, so exact-one product request acceptance remains PARTIAL. The preserved second route passed HTTP/SSE/semantic checks; captured downstream /api/chat used num_predict=4096, temperature=0.5, num_ctx=32768 instead of product request max_tokens=64, temperature=0. A first route response was overwritten/lost; see IMP09B-ST-01-REPEAT-CAPTURE-RECONCILIATION-001."
+      ],
+      "remaining": [
+        "Exact downstream provider HTTP request/response NDJSON/options and lower provider call count not captured; no retry to obtain them.",
+        "No source modification or associated tests/typecheck; independent Codex review pending.",
+        "Full external Uvicorn/lifespan/network request path remains unverified; this does not invalidate the observed TestClient route acceptance.",
+        "The repeat case violated its frozen one-product-route-request condition (two actual TestClient calls); first route raw response/status/metadata and provider attempt count are unrecoverable.",
+        "The captured second product route confirms request option forwarding mismatch; no production repair or tests/typecheck were performed.",
+        "Full Uvicorn/lifespan/network boundary remains unverified; independent Codex review pending."
+      ],
+      "blocker": null,
+      "observed_result_caveat": "Original LIVE-001 product route was one call with HTTP/SSE/semantic PASS but no provider wire. In the newly requested instrumented repeat, native PASS; product route was invoked twice because a harness finalizer failed after its first route response and the attempt was repeated; first raw response was overwritten/lost. The captured second route passed its own SSE/semantic acceptance and exposed actual /api/chat options, but the frozen one-route condition and full Uvicorn boundary remain unverified. Keep the overall subtask PARTIAL.",
+      "evidence_ids": [
+        "IMP09B-ST-01-LIVE-001",
+        "IMP09B-ST-01-KG-VALIDATE-002",
+        "IMP09A-LIVE-PROBE-001-BYTES-CORRECTION-001",
+        "IMP09B-ST-01-FINAL-CHECK-002",
+        "IMP09B-ST-01-REPEAT-LIVE-001",
+        "IMP09B-ST-01-REPEAT-KG-001",
+        "IMP09B-ST-01-REPEAT-CAPTURE-RECONCILIATION-001"
+      ],
+      "source_snapshot_ids": [
+        "IMP09B-ST-01-FROZEN-20261007T115500Z",
+        "IMP09B-ST-01-AFTER-20261007T121200Z",
+        "IMP09B-ST-01-REPEAT-FROZEN-20261007T125342Z",
+        "IMP09B-ST-01-REPEAT-AFTER-20261007T130000Z"
+      ],
+      "dependencies": [
+        "IMP-09-B"
+      ],
+      "next_action": "NEXT_TASK=IMP-09-B-US-01 after this ST-01 execution. Do not repeat ST-01. Freeze the embedding-only typed-error acceptance before US-01; carry the measured streaming-option forwarding mismatch as a candidate for IMP-09-C review after the remaining B matrix.",
+      "updated_at": "2026-10-07T13:16:06.378463+00:00"
+    }
+  ]
+}

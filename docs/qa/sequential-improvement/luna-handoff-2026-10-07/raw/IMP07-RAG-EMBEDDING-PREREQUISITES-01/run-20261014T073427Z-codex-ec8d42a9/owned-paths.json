@@ -1,0 +1,12 @@
+[
+  "src/antigravity_k/engine/embeddings.py",
+  "src/antigravity_k/engine/provider_adapters/embedding_providers.py",
+  "src/antigravity_k/api/routes/models_api.py",
+  "src/antigravity_k/api/dependencies.py",
+  "src/antigravity_k/engine/model_registry.py",
+  "tests/test_embeddings.py",
+  "tests/test_embeddings_model_contract.py",
+  "tests/test_models_system_api.py",
+  "tests/test_ollama_embedding_routing.py",
+  "tests/test_model_registry_config_precedence.py"
+]

@@ -12,12 +12,20 @@
 | 명시적 JSON 출력 계약 | native Ollama qwen3 direct/nonstream, 집중36+인접50, v5 승인 | [구현 결과](raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/final-result.json) |
 | 구조화 Product-Vision | 실제 제품POST1·추론1, strictschema/수량2·1/원문일치 승인 | [최종 실관측](raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/final-result.json) |
 | acceptance writer | 새사본 한줄수정, writer red1→green1, 정적4, 독립오프라인 승인 | [검수](../luna-review-2026-10-14-acceptance-metadata/review.md) |
+| Direct native 오류 | typed502/503/504·native재전송0, clean76·독립승인·제어HTTP503/취소6 scoped | [독립 검수](raw/IMP03-NATIVE-TRANSPORT-ERROR-01/run-20261014T050221Z-codex-de8fd0191c/review/independent-review.md) |
+| Native streaming 오류 | 필드·완료표식·toolbuffer, clean111·독립승인·푸시 | [재검수](raw/IMP03-NATIVE-STREAM-TERMINAL-01/run-20261014T052114Z-codex-71e679399e/review/approved-v4.md) |
+| Compatible 오류 | 전송109·스트림187 clean 승인, 제어 HTTP503/SSE 오류 각각 scoped 관측 | [검수](raw/IMP03-COMPATIBLE-STREAM-TERMINAL-01/run-20261014T062243Z-codex-9c138c4e/review/clean-approved.md) |
+| UI 오류 전달 | parser/jsdom59, 부분 답변·대기열 보존·후속 요청 차단, 푸시 | [검수](raw/IMP03-CHAT-SSE-ERROR-CONSUMER-01/run-20261014T062338225Z-290983ef/review/clean-approved.md) |
+| 실제 프로세스 재개 | root source에서 kill(-9)→새 owner(0), checkpoint10→11·12, effects 중복0 | [관측](raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f/result.json) |
+| 기본 agent 실패 | failed task→typed 오류·저장/DONE/대기열 차단, clean Python202/UI45·독립승인·푸시 | [검수](raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/review/clean-approved.md) |
+| 새 Chroma 소유 저장소 | 생성·종료·재개 count0→0→1→1, 모델생성0, scoped 승인 | [검수](raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/review/independent-review.md) |
+| Embedding 선행 게시 후보 | clean66·정적4·독립승인·기능 커밋, 공개 strict/provider 검증 | [검수](raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/review/independent-review.md) |
 
 구조화 실관측 원본의 `format=omitted` 표기는 별도정정 기록으로 보존했습니다. 후속 writer 수정은 새 사본에서만 수행했고 원본144개는 불변입니다. 모의 writer회귀의 `INCONCLUSIVE_CLEANUP_NOT_CONFIRMED`는 OS cleanup PASS로 승격하지 않습니다. 과거 format생략 vision FAIL도 유지합니다.
 
-**현재 순서:** 1 기록생성기 완료 → 2 상태통합 완료 → 3 기능·의존fixture·소유증거 커밋/푸시 완료 → **4 실제provider오류/취소/권한/재시작 진행** → 5 기억·검색품질 → 6 확대제품검증 → 7 통합/패키징/soak. 옵션 IMP-16/18은 자동착수하지 않습니다.
+**현재 순서:** 1 기록생성기 완료 → 2 상태통합 완료 → 3 기능·의존fixture·소유증거 커밋/푸시 완료 → 4 provider/agent 실패·취소·권한·checkpoint 재개 scoped 완료 → **5 기억·검색품질 진행** → 6 확대제품검증 → 7 통합/패키징/soak. 옵션 IMP-16/18은 자동착수하지 않습니다.
 
-**NEXT_TASK=IMP-03-NATIVE-TRANSPORT-ERROR-01.** 구조화기능 `d3c107b0`, 소유증거 `aab1a394`는 ssak-ai/codex/m1-task-events에 푸시하고 원격SHA를 확인했습니다. 다른 agent streaming refactor를 제외했으며, 이미지 content 보존 prerequisite와 PNG fixture를 포함한 clean 후보79개 및 전체mypy571source가 통과했습니다. 기존 staged97개는 보존합니다. 다음에는 upstream 실패가 성공 텍스트/usage로 기록되는 실제 결함을 수리합니다.
+**NEXT_TASK=IMP-07-RAG-EMBEDDING-IDENTITY-01.** 기본 agent 실패 전달은 clean Python202/UI45·정적4·독립 검수와 커밋/푸시를 완료했습니다. 확인한 원격 SHA는 `23708fe4`이며 staged97개를 보존합니다. Embedding 선행 후보는 clean66·정적4·독립 검수를 거쳐 `b9709def` 기능 커밋까지 완료했고 증거 게시를 진행합니다. 우선순위4는 검증한 provider와 실행 경계 범위에서 완료했고 다른 SDK 전체·full auth/startup/lifespan·임의 crash exactly-once·실모델 품질은 별도입니다. 과거 route fixture의 Chroma SIGSEGV(-11)는 baseline과 candidate 원문으로 보존했습니다. Routing 단위 테스트는 소유 SessionManager로 격리했고 별도 fresh Chroma 생성·재개는 승인됐으나 native 충돌의 원인을 해결한 것은 아닙니다. 이후 실제 startup gate에서 다시 구분합니다. 다음은 문서·질의 벡터의 등록 모델을 고정하는 명시적 RAG identity opt-in입니다. 현재 implicit Chroma 모델과 검색 품질은 미검증입니다.
 
 원장복구는 정확한백업을 필요로 하는 별도항목이며 독립기능 진행을 무기한 막지 않습니다. 이 통합은 실행·변경 JSONL의 유실행을 재구성하거나 기존21개 parent를 전수재승인한 것이 아닙니다. [기존상태 preimage](raw/IMP09C-STATUS-RECONCILIATION-2026-10-14/run-20261014T043024Z-codex-86e22b4940/source-preimage/STATUS.md), [기존tasks preimage](raw/IMP09C-STATUS-RECONCILIATION-2026-10-14/run-20261014T043024Z-codex-86e22b4940/source-preimage/tasks.json).
 

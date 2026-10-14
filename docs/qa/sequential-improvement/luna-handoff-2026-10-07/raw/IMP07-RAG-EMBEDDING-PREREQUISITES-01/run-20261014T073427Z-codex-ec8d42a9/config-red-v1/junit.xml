@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="4" time="0.085" timestamp="2026-10-14T16:36:29.103507+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_model_registry_config_precedence" name="test_explicit_config_path_precedes_environment" time="0.005" /><testcase classname="tests.test_model_registry_config_precedence" name="test_environment_config_is_used_when_path_omitted" time="0.001"><failure message="AssertionError: assert None is not None&#10; +  where None = get_model('environment-model')&#10; +    where get_model = &lt;antigravity_k.engine.model_registry.ModelRegistry object at 0x11dab3890&gt;.get_model">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x11e6b4af0&gt;
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-483/test_environment_config_is_use0')
+
+    def test_environment_config_is_used_when_path_omitted(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -&gt; None:
+        environment = write_registry(tmp_path / "environment.yaml", "environment-model")
+        default = write_registry(tmp_path / "default.yaml", "default-model")
+        monkeypatch.setenv("AGK_CONFIG_FILE", str(environment))
+        monkeypatch.setattr(model_registry, "_default_config_path", lambda: default)
+        registry = model_registry.ModelRegistry()
+&gt;       assert registry.get_model("environment-model") is not None
+E       AssertionError: assert None is not None
+E        +  where None = get_model('environment-model')
+E        +    where get_model = &lt;antigravity_k.engine.model_registry.ModelRegistry object at 0x11dab3890&gt;.get_model
+
+tests/test_model_registry_config_precedence.py:28: AssertionError</failure></testcase><testcase classname="tests.test_model_registry_config_precedence" name="test_missing_or_empty_environment_preserves_default_path[False]" time="0.001" /><testcase classname="tests.test_model_registry_config_precedence" name="test_missing_or_empty_environment_preserves_default_path[True]" time="0.001" /></testsuite></testsuites>

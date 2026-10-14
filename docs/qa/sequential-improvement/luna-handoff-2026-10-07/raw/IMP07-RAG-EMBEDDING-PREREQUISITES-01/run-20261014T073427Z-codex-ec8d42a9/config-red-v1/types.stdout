@@ -1,0 +1,96 @@
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py:917:32 - error: Cannot access attribute "get_target_for_role" for class "object"
+    Attribute "get_target_for_role" is unknown (reportAttributeAccessIssue)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py:918:34 - error: Cannot access attribute "generate" for class "object"
+    Attribute "generate" is unknown (reportAttributeAccessIssue)
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "auth" of type "AuthTypes | None" in function "__init__"
+    Type "object" is not assignable to type "AuthTypes | None"
+      "object" is not assignable to "Tuple[str | bytes, str | bytes]"
+      Type "object" is not assignable to type "(Request) -> Request"
+      "object" is not assignable to "Auth"
+      "object" is not assignable to "None" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "params" of type "QueryParamTypes | None" in function "__init__"
+    Type "object" is not assignable to type "QueryParamTypes | None"
+      "object" is not assignable to "QueryParams"
+      "object" is not assignable to "Mapping[str, PrimitiveData | Sequence[PrimitiveData]]"
+      "object" is not assignable to "List[Tuple[str, PrimitiveData]]"
+      "object" is not assignable to "Tuple[Tuple[str, PrimitiveData], ...]"
+      "object" is not assignable to "str"
+      "object" is not assignable to "bytes"
+      "object" is not assignable to "None" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "headers" of type "HeaderTypes | None" in function "__init__"
+    Type "object" is not assignable to type "HeaderTypes | None"
+      "object" is not assignable to "Headers"
+      "object" is not assignable to "Mapping[str, str]"
+      "object" is not assignable to "Mapping[bytes, bytes]"
+      "object" is not assignable to "Sequence[Tuple[str, str]]"
+      "object" is not assignable to "Sequence[Tuple[bytes, bytes]]"
+      "object" is not assignable to "None" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "cookies" of type "CookieTypes | None" in function "__init__"
+    Type "object" is not assignable to type "CookieTypes | None"
+      "object" is not assignable to "Cookies"
+      "object" is not assignable to "CookieJar"
+      "object" is not assignable to "Dict[str, str]"
+      "object" is not assignable to "List[Tuple[str, str]]"
+      "object" is not assignable to "None" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "verify" of type "SSLContext | str | bool" in function "__init__"
+    Type "object" is not assignable to type "SSLContext | str | bool"
+      "object" is not assignable to "SSLContext"
+      "object" is not assignable to "str"
+      "object" is not assignable to "bool" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "cert" of type "CertTypes | None" in function "__init__"
+    Type "object" is not assignable to type "CertTypes | None"
+      "object" is not assignable to "str"
+      "object" is not assignable to "Tuple[str, str]"
+      "object" is not assignable to "Tuple[str, str, str]"
+      "object" is not assignable to "None" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "trust_env" of type "bool" in function "__init__"
+    "object" is not assignable to "bool" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "http1" of type "bool" in function "__init__"
+    "object" is not assignable to "bool" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "http2" of type "bool" in function "__init__"
+    "object" is not assignable to "bool" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "proxy" of type "ProxyTypes | None" in function "__init__"
+    Type "object" is not assignable to type "ProxyTypes | None"
+      "object" is not assignable to "URL"
+      "object" is not assignable to "str"
+      "object" is not assignable to "Proxy"
+      "object" is not assignable to "None" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "mounts" of type "Mapping[str, BaseTransport | None] | None" in function "__init__"
+    Type "object" is not assignable to type "Mapping[str, BaseTransport | None] | None"
+      "object" is not assignable to "None"
+      "object" is not assignable to "Mapping[str, BaseTransport | None]" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "timeout" of type "TimeoutTypes" in function "__init__"
+    Type "object" is not assignable to type "TimeoutTypes"
+      "object" is not assignable to "float"
+      "object" is not assignable to "None"
+      "object" is not assignable to "Tuple[float | None, float | None, float | None, float | None]"
+      "object" is not assignable to "Timeout" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "follow_redirects" of type "bool" in function "__init__"
+    "object" is not assignable to "bool" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "limits" of type "Limits" in function "__init__"
+    "object" is not assignable to "Limits" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "max_redirects" of type "int" in function "__init__"
+    "object" is not assignable to "int" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "event_hooks" of type "Mapping[str, list[EventHook]] | None" in function "__init__"
+    Type "object" is not assignable to type "Mapping[str, list[EventHook]] | None"
+      "object" is not assignable to "None"
+      "object" is not assignable to "Mapping[str, list[EventHook]]" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "base_url" of type "URL | str" in function "__init__"
+    Type "object" is not assignable to type "URL | str"
+      "object" is not assignable to "URL"
+      "object" is not assignable to "str" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "transport" of type "BaseTransport | None" in function "__init__"
+    Type "object" is not assignable to type "BaseTransport | None"
+      "object" is not assignable to "BaseTransport"
+      "object" is not assignable to "None" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:122:27 - error: Argument of type "object" cannot be assigned to parameter "default_encoding" of type "str | ((bytes) -> str)" in function "__init__"
+    Type "object" is not assignable to type "str | ((bytes) -> str)"
+      "object" is not assignable to "str"
+      Type "object" is not assignable to type "(bytes) -> str" (reportArgumentType)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_ollama_embedding_routing.py:187:31 - error: Expression of type "tuple[Literal['first'], Literal['second']]" cannot be assigned to parameter of type "str | list[str]"
+    Type "tuple[Literal['first'], Literal['second']]" is not assignable to type "str | list[str]"
+      "tuple[Literal['first'], Literal['second']]" is not assignable to "str"
+      "tuple[Literal['first'], Literal['second']]" is not assignable to "list[str]" (reportArgumentType)
+22 errors, 0 warnings, 0 notes

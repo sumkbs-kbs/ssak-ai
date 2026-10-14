@@ -1,0 +1,36 @@
+[
+  {
+    "name": "type-baseline",
+    "argv": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+      "--pythonpath",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+      "--level",
+      "error",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/preimage/src/antigravity_k/api/dependencies.py"
+    ],
+    "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+    "exit_code": 1
+  },
+  {
+    "name": "type-owned-excluding-baseline-dependencies",
+    "argv": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+      "--pythonpath",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+      "--level",
+      "error",
+      "src/antigravity_k/engine/embeddings.py",
+      "src/antigravity_k/engine/provider_adapters/embedding_providers.py",
+      "src/antigravity_k/api/routes/models_api.py",
+      "src/antigravity_k/engine/model_registry.py",
+      "tests/test_embeddings.py",
+      "tests/test_embeddings_model_contract.py",
+      "tests/test_models_system_api.py",
+      "tests/test_ollama_embedding_routing.py",
+      "tests/test_model_registry_config_precedence.py"
+    ],
+    "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+    "exit_code": 0
+  }
+]

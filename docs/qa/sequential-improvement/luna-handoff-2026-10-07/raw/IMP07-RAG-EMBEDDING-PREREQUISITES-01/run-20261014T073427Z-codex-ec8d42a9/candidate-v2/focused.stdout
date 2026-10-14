@@ -1,0 +1,98 @@
+..................................................................       [100%]
+=============================== warnings summary ===============================
+../../../../program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/test_embeddings.py::test_loader_failure_preserves_default_deterministic_fallback
+  tests/test_embeddings.py:168: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_loader_failure_preserves_default_deterministic_fallback(
+
+tests/test_embeddings_model_contract.py::test_explicit_model_load_failure_does_not_return_hash_fallback_as_success[default-handler]
+tests/test_embeddings_model_contract.py::test_explicit_model_load_failure_does_not_return_hash_fallback_as_success[shared-handler]
+  tests/test_embeddings_model_contract.py:132: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    @pytest.mark.parametrize("shared_handler", [False, True], ids=["default-handler", "shared-handler"])
+
+tests/test_embeddings_model_contract.py::test_dependency_import_failure_has_same_strict_contract
+  tests/test_embeddings_model_contract.py:162: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_dependency_import_failure_has_same_strict_contract(
+
+tests/test_embeddings_model_contract.py::test_external_encoder_success_preserves_inputs_vectors_and_indexes
+  tests/test_embeddings_model_contract.py:173: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_external_encoder_success_preserves_inputs_vectors_and_indexes(
+
+tests/test_models_system_api.py::TestModelsApi::test_health_reports_version_and_backend_shape
+  tests/test_models_system_api.py:152: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_health_reports_version_and_backend_shape(
+
+tests/test_models_system_api.py::TestModelsApi::test_wake_submits_background_task
+  tests/test_models_system_api.py:166: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_wake_submits_background_task(self, client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+
+tests/test_models_system_api.py::TestModelsApi::test_v1_models_openai_shape
+  tests/test_models_system_api.py:181: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_v1_models_openai_shape(self, client: TestClient) -> None:
+
+tests/test_models_system_api.py::TestModelsApi::test_model_operations_refresh_passthrough
+  tests/test_models_system_api.py:198: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_model_operations_refresh_passthrough(self, client: TestClient) -> None:
+
+tests/test_models_system_api.py::TestModelsApi::test_embeddings_usage_and_error
+  tests/test_models_system_api.py:212: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_embeddings_usage_and_error(self, client: TestClient) -> None:
+
+tests/test_models_system_api.py::TestSystemStatusRestart::test_status_measures_cpu_off_event_loop
+  tests/test_models_system_api.py:238: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_status_measures_cpu_off_event_loop(self, client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+
+tests/test_models_system_api.py::TestSystemStatusRestart::test_status_reports_uptime_and_tokens
+  tests/test_models_system_api.py:255: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_status_reports_uptime_and_tokens(self, client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+
+tests/test_models_system_api.py::TestSystemStatusRestart::test_restart_requires_critical_permission
+  tests/test_models_system_api.py:277: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_restart_requires_critical_permission(
+
+tests/test_models_system_api.py::TestSystemStatusRestart::test_restart_schedules_trigger_file
+  tests/test_models_system_api.py:296: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_restart_schedules_trigger_file(
+
+tests/test_ollama_embedding_routing.py::test_real_dependency_registry_engine_route_uses_one_native_batch
+  tests/test_ollama_embedding_routing.py:237: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_real_dependency_registry_engine_route_uses_one_native_batch(
+
+tests/test_ollama_embedding_routing.py::test_registered_repo_alias_single_string_and_embedding_among_roles
+  tests/test_ollama_embedding_routing.py:278: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_registered_repo_alias_single_string_and_embedding_among_roles(
+
+tests/test_ollama_embedding_routing.py::test_endpoint_resolution_and_normalization[profile-priority]
+tests/test_ollama_embedding_routing.py::test_endpoint_resolution_and_normalization[provider-v1-proxy]
+tests/test_ollama_embedding_routing.py::test_endpoint_resolution_and_normalization[default]
+tests/test_ollama_embedding_routing.py::test_endpoint_resolution_and_normalization[proxy-prefix]
+  tests/test_ollama_embedding_routing.py:300: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    @pytest.mark.parametrize(
+
+tests/test_ollama_embedding_routing.py::test_non_matching_registry_profiles_do_not_select_native[wrong-provider]
+tests/test_ollama_embedding_routing.py::test_non_matching_registry_profiles_do_not_select_native[wrong-role]
+tests/test_ollama_embedding_routing.py::test_non_matching_registry_profiles_do_not_select_native[unregistered-tag]
+  tests/test_ollama_embedding_routing.py:335: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    @pytest.mark.parametrize(
+
+tests/test_ollama_embedding_routing.py::test_invalid_base_url_is_unavailable_without_network_or_fallback
+  tests/test_ollama_embedding_routing.py:375: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_invalid_base_url_is_unavailable_without_network_or_fallback(
+
+tests/test_ollama_embedding_routing.py::test_transport_failures_are_single_attempt_503_without_fallback[timeout-503]
+tests/test_ollama_embedding_routing.py::test_transport_failures_are_single_attempt_503_without_fallback[connection-503]
+tests/test_ollama_embedding_routing.py::test_transport_failures_are_single_attempt_503_without_fallback[redirect-503]
+tests/test_ollama_embedding_routing.py::test_transport_failures_are_single_attempt_503_without_fallback[http400-503]
+tests/test_ollama_embedding_routing.py::test_transport_failures_are_single_attempt_503_without_fallback[http500-503]
+  tests/test_ollama_embedding_routing.py:398: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    @pytest.mark.parametrize(
+
+tests/test_ollama_embedding_routing.py: 13 warnings
+  tests/test_ollama_embedding_routing.py:440: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    @pytest.mark.parametrize(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+66 passed, 43 warnings in 0.66s

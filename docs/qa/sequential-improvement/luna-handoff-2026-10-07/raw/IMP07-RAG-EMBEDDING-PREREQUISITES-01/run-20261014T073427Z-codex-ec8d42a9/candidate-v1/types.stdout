@@ -1,0 +1,6 @@
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py:917:32 - error: Cannot access attribute "get_target_for_role" for class "object"
+    Attribute "get_target_for_role" is unknown (reportAttributeAccessIssue)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py:918:34 - error: Cannot access attribute "generate" for class "object"
+    Attribute "generate" is unknown (reportAttributeAccessIssue)
+2 errors, 0 warnings, 0 notes

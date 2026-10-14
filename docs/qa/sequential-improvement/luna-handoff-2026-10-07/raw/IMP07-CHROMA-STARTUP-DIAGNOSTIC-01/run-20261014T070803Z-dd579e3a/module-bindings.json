@@ -1,0 +1,357 @@
+[
+  {
+    "module": "chromadb.errors",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/errors.py",
+    "sha256": "c78b7b5ea813eed4e4f0a43b50f86162f147b9ed9878f6ca11ce85ec2645f171"
+  },
+  {
+    "module": "chromadb.base_types",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/base_types.py",
+    "sha256": "7fe0982ff097eb6d3bd65e2ae541c5d4a1bde16b0c4ba0a7014136c2290a4273"
+  },
+  {
+    "module": "chromadb.api.types",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/types.py",
+    "sha256": "8d34f8b2aa5f4ce2d4f87f81693b6d4693f00d48388c3d2f38a81aed6c52fdbd"
+  },
+  {
+    "module": "chromadb.execution",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/execution/__init__.py",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "module": "chromadb.serde",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/serde.py",
+    "sha256": "84e4037a6cb8c73dcde6162393556fd163028f1c80a30f4d592bbebf22476d8d"
+  },
+  {
+    "module": "chromadb.api.configuration",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/configuration.py",
+    "sha256": "da5b60c7b225bd397a8b676edb7c8c9747fe62f898f4989bf7177b473e27fbcd"
+  },
+  {
+    "module": "chromadb.utils",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/__init__.py",
+    "sha256": "faddb9594e2844a5d4dc8e0f17c1bfb9533650dceed527e37d2d432f63f45954"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.schemas.schema_utils",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/schemas/schema_utils.py",
+    "sha256": "c9b483e6cecce94819d0f0397186e3e20bc97055c3694f7c1cbb916616097648"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.schemas.registry",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/schemas/registry.py",
+    "sha256": "179e3671ed79198000ceb6fdae6b84624ca90c47352ca15a84f826cca937f612"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.schemas",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/schemas/__init__.py",
+    "sha256": "dd700a0ee091728828dd6f909530c862651a93e54dd8d58b8ffb9eea1ccb0b88"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.cohere_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/cohere_embedding_function.py",
+    "sha256": "a4e94a3ac32202128ae6b25e9f2b871cf9d586f16913a422825aa830b270186d"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.openai_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/openai_embedding_function.py",
+    "sha256": "4687e628391c2677d8e5f1ff6e557df5130a03c4bb26fe961498ba474da8f61d"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.huggingface_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/huggingface_embedding_function.py",
+    "sha256": "999c0a99f60191bfaa923db4c9664e80e352d8c87b5e1d4788a5d75a16d9efb3"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.sentence_transformer_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/sentence_transformer_embedding_function.py",
+    "sha256": "2b7c4adcaeb2d8b91123322f3610177ca42563d03a00ff5ca5e53cfdb77789f9"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.google_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/google_embedding_function.py",
+    "sha256": "92c819d5a7e865cff7c380f5a4157af801bf4491c3a25ba766120251f871b080"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.ollama_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/ollama_embedding_function.py",
+    "sha256": "cedde9ca0578379a0dda2a06886d3c435e9e8f609d8b08e0f6aa666fdd6d5022"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.instructor_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/instructor_embedding_function.py",
+    "sha256": "002c1b750367ed6ce131cf3fcf54a062b9d9de4e420a785f0461005617638721"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.jina_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/jina_embedding_function.py",
+    "sha256": "c69312c4d71ca00c87b2d33ffa84c1d7f9aa049b70e5121ac9109834f4bc88bb"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.voyageai_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/voyageai_embedding_function.py",
+    "sha256": "6b7f1078071507da2ecdd348b335d4024257cb80811157a48a4cb5ec60daac1b"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.onnx_mini_lm_l6_v2",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/onnx_mini_lm_l6_v2.py",
+    "sha256": "3bee881392b56e7ec2dea1e9ddf1eb86a7cae2d56ab7131be1b3744108481d5e"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.open_clip_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/open_clip_embedding_function.py",
+    "sha256": "43f626043aafa7064a984ba3da0ecb54ebe2638ea30323ea57b2fbc4d9c86e27"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.roboflow_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/roboflow_embedding_function.py",
+    "sha256": "70fd91b9caa583d60198e72ca7432a4db88a41613bf03c18bc092c3f109b4640"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.text2vec_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/text2vec_embedding_function.py",
+    "sha256": "07a971550fd46e782fb6c21090eeec4d692065175a505eee51cca09240447d23"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.amazon_bedrock_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/amazon_bedrock_embedding_function.py",
+    "sha256": "a9a9734fe8d40e7ac46ae131b15950031db5b563f3d5061db53496ff51ed8641"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.chroma_langchain_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/chroma_langchain_embedding_function.py",
+    "sha256": "8e982f226f9ab90a24d3ab83ccda47b544397e53d5e1084b1293ff8459219964"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.baseten_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/baseten_embedding_function.py",
+    "sha256": "42a370764cd04cfffcebfd722d8a5b04bc7b56f338fe71b1ba2d205cdb1a5f46"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.cloudflare_workers_ai_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/cloudflare_workers_ai_embedding_function.py",
+    "sha256": "5e8bb371cf4ad42787484ed1d9cfb6bf4d9c8d8c18c7873f0ba66e0353725364"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.together_ai_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/together_ai_embedding_function.py",
+    "sha256": "30cac8b7c6353378bf0e1ce485928644a54b2e3c5cd0dfc302e098c4344fba66"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.mistral_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/mistral_embedding_function.py",
+    "sha256": "7f5ae7c7e2a120f9303ee4b4395c130ac6b767c6a56c8830470d6523d3a2a31f"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.morph_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/morph_embedding_function.py",
+    "sha256": "725406504d7a3caaed7576e407bc9df3f0776dc7735d83e2fdb304b5154f99f2"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.nomic_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/nomic_embedding_function.py",
+    "sha256": "fb69ba263c12abebd9ef7a44437f162fe55b29cd47e7393c05e527620d23e9c6"
+  },
+  {
+    "module": "chromadb.utils.sparse_embedding_utils",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/sparse_embedding_utils.py",
+    "sha256": "097ac69317743e5bfd05951700914f97269abccb3ac043772e214df8f6907282"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.huggingface_sparse_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/huggingface_sparse_embedding_function.py",
+    "sha256": "781c65d34f2a7f52d043ddafaeb80b7dcb2bb8d8494451876534db51587a7c51"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.fastembed_sparse_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/fastembed_sparse_embedding_function.py",
+    "sha256": "385b33f82baa3044bb570989ba12af830aac6e382d218ece9eef01e9f212f6e0"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.bm25_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/bm25_embedding_function.py",
+    "sha256": "9232575b5d67b51cc1307d486dbeed3f3377e49f215277e0920713463b18e2b6"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.utils",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/utils.py",
+    "sha256": "f1ffa3004bdd358c5023b1e0bc3d96b031ddead079eef2840ad3f30d4a408675"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.chroma_cloud_qwen_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/chroma_cloud_qwen_embedding_function.py",
+    "sha256": "69937ae1a33aef9b71607e8c8512045fc3bc01cc3572fa8ae3572d89625a2e9d"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.chroma_cloud_splade_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/chroma_cloud_splade_embedding_function.py",
+    "sha256": "797325f0d189d8be41c1d1fd71fcdbc764134bbcb99a64d0e6b87775f22ef580"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.schemas.bm25_tokenizer",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/schemas/bm25_tokenizer.py",
+    "sha256": "f5414e28d21381d4eb7793f887b9023c53414a8b002598d3286f488a3c40bb75"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.chroma_bm25_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/chroma_bm25_embedding_function.py",
+    "sha256": "e67aeac4d125f8759c352a673d658c4464f20418c4598f401558ffcf30654e91"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions.perplexity_embedding_function",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/perplexity_embedding_function.py",
+    "sha256": "b234be3cdb5cebd1381fe04e6f588f1ebfefbf95626cf7484e1f5c44df917c14"
+  },
+  {
+    "module": "chromadb.utils.embedding_functions",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/utils/embedding_functions/__init__.py",
+    "sha256": "efe6b56724f86a9aebaf5566788897de6dd4e9455a8e131e234c571808f96f96"
+  },
+  {
+    "module": "chromadb.api.collection_configuration",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/collection_configuration.py",
+    "sha256": "f57493390de09d2e79efb5925d37b171b03cded907b15d70fe28cd42e5281c38"
+  },
+  {
+    "module": "chromadb.types",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/types.py",
+    "sha256": "29530df2e469363d3f2e5a16d9e59322406a073f3c170afd15639fd17b7a91ee"
+  },
+  {
+    "module": "chromadb.execution.expression.operator",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/execution/expression/operator.py",
+    "sha256": "57fc7ea95ef7450b9c0e71abc5d1b59c49cb7bd75a722ef88c053a6759ab5c56"
+  },
+  {
+    "module": "chromadb.execution.expression.plan",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/execution/expression/plan.py",
+    "sha256": "5de19ad2e8f3c83220c87845d216e99f243f35cff180809bd96b854ea8cdd6e6"
+  },
+  {
+    "module": "chromadb.execution.expression",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/execution/expression/__init__.py",
+    "sha256": "44be429cd27aa58f10eee053486d19c245455fd00730e425b04a670150560e60"
+  },
+  {
+    "module": "chromadb.config",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/config.py",
+    "sha256": "3caee51e7efe2cbe23a36cf6499c0df23160c7b6a886ec20e37c023734f6a554"
+  },
+  {
+    "module": "chromadb.auth",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/auth/__init__.py",
+    "sha256": "fac03384d845bbfe3003bb826e43bafa7e6454df4c168d5bd43c52f4a3b6a1e8"
+  },
+  {
+    "module": "chromadb.api.models.CollectionCommon",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/models/CollectionCommon.py",
+    "sha256": "d17bf514620155905e9aa227567614c7acc1625ee0dde6a3a40b03cecada2df4"
+  },
+  {
+    "module": "chromadb.api.functions",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/functions.py",
+    "sha256": "fb4cd1ab10605a11c45d7a6f45165ef9efc76bf02dc6af05b4f234bb2cdd49da"
+  },
+  {
+    "module": "chromadb.api.models.Collection",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/models/Collection.py",
+    "sha256": "ce0f86fd66fab4fb8e5af8c60f300f9be4043e9d65c0b4db5580737692f9ec97"
+  },
+  {
+    "module": "chromadb.api.models.AttachedFunction",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/models/AttachedFunction.py",
+    "sha256": "d2c803986666b9e4ef17584133836c6abec230582d2a7de95686aac1f3c38a2c"
+  },
+  {
+    "module": "chromadb.api.models.AsyncCollection",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/models/AsyncCollection.py",
+    "sha256": "67491f9f79a7d2162b3db4a86cb292361e62fbbb615d8966193fef0d3df6186b"
+  },
+  {
+    "module": "chromadb.api.async_api",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/async_api.py",
+    "sha256": "7316087b96da7d1dd0d3c9a53c66c1cfc93ee92842223896db277cd0718953c1"
+  },
+  {
+    "module": "chromadb.api",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/__init__.py",
+    "sha256": "4aad6f0c18d47a593d1c078688a6e1febbabf8a20b6d47c2fec652b8bb51e1b4"
+  },
+  {
+    "module": "chromadb.api.base_http_client",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/base_http_client.py",
+    "sha256": "ae3776344aad7005222e4cd720f3d5134c9140113af8f426655be10c0a9ce300"
+  },
+  {
+    "module": "chromadb.telemetry",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/telemetry/__init__.py",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "module": "chromadb.telemetry.product",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/telemetry/product/__init__.py",
+    "sha256": "64fd8ca534d843e9e362da864053eb266e83eaa1961b427ce287bd2dc49c072a"
+  },
+  {
+    "module": "chromadb.telemetry.product.events",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/telemetry/product/events.py",
+    "sha256": "1ca0ef499eae2d313206d80557c55efb37840d0d592f87668718c5b155079f24"
+  },
+  {
+    "module": "chromadb.api.shared_system_client",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/shared_system_client.py",
+    "sha256": "363b78c872993b13b05e97af38bdca7dd6715911b83e3675aa012149069d4573"
+  },
+  {
+    "module": "chromadb.auth.utils",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/auth/utils/__init__.py",
+    "sha256": "9407a79944622f937f71e9bac54f75e6024fe3fd04bb5c80b565da24359b032c"
+  },
+  {
+    "module": "chromadb.api.client",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/client.py",
+    "sha256": "61f4b184ea1caa1c90c588c17d30c91a67e6c0cc109cad888ee4e0d0bba38500"
+  },
+  {
+    "module": "chromadb.api.async_client",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/async_client.py",
+    "sha256": "3beecfdf0b43119472e30772e712024e802c28419bcbc1f2b5e1d32472bebb3b"
+  },
+  {
+    "module": "chromadb.telemetry.opentelemetry",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/telemetry/opentelemetry/__init__.py",
+    "sha256": "e20b84a671463b2b0b13c591c382464f608013acde05ac24803448eb8529daf4"
+  },
+  {
+    "module": "chromadb.auth.token_authn",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/auth/token_authn/__init__.py",
+    "sha256": "153dd2f2472f17d2e9fe156fa4cc8cb07a89d4aad80f0d8ae9f91c14013dab13"
+  },
+  {
+    "module": "chromadb",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/__init__.py",
+    "sha256": "f116512bf27479d4b51bb4b229315cd117382fbad45dfbd7aa0c5adfcbfb78f6"
+  },
+  {
+    "module": "antigravity_k.engine.long_context_fusion",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/long_context_fusion.py",
+    "sha256": "fa1d42df8d3500a44ccabd0a493771a9e4c86d8805e42c3d73fb7186b4e39823"
+  },
+  {
+    "module": "antigravity_k.engine.rag_indexer",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/rag_indexer.py",
+    "sha256": "6177bd17e550fbf94d7ee22c8a16e9f4ecfaba6b1e6c2737c09bf35587acdfcb"
+  },
+  {
+    "module": "antigravity_k.engine.chroma_lifecycle",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/chroma_lifecycle.py",
+    "sha256": "538914ab4ace58eaa25257f6dc64771c1b4a298b50689bd2c5873738c441d562"
+  },
+  {
+    "module": "antigravity_k.engine.vector_store",
+    "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/vector_store.py",
+    "sha256": "147cea96911f438fa1c42086924988288651d5fbfa96d21d82b2361e9c194680"
+  }
+]

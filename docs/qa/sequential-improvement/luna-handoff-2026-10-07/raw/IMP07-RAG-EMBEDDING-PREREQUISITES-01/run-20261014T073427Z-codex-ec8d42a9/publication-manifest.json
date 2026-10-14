@@ -1,0 +1,854 @@
+{
+  "scope": "Owned embedding prerequisite, scoped Chroma diagnostic, and current-status publication; old ledgers unchanged",
+  "feature_commit": "b9709defca9576df604e4c41674a51551ce27c09",
+  "files": [
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/artifact-manifest.json",
+      "bytes": 16560,
+      "sha256": "71444e95cea6b54937760162a8fa2994071d3bbcbf0dd9ae1c68942d74805225"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/base-head.txt",
+      "bytes": 41,
+      "sha256": "304641cd8a6560ca4ce8cea7f160f0469f34e8f059623a8ca1296c5e028f4fb7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/checks.json",
+      "bytes": 6397,
+      "sha256": "49727e9449d814bdb42d26d0285dc0381c03df25380e6fb1e178b40cbbdbb195"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/closeout-artifact-manifest.json",
+      "bytes": 11564,
+      "sha256": "1f31223cdba6915abb06d13127936effe660d986f25339951e9162630af2035d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/closeout-candidate.patch",
+      "bytes": 50769,
+      "sha256": "c939762f1b73f4687a9aee29f30b5a12b3533c1a7947f85b3526a2981a09915d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/closeout-handoff-ko.md",
+      "bytes": 5903,
+      "sha256": "a4b18dde1bda7d7a92b92f84c4dc76c2d9b6eb60df060916158947b48a21ec7b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/closeout-patch-reconstruction.json",
+      "bytes": 1093,
+      "sha256": "34690a7683a73ed68740af7f734b4e144805d3485e095d3fc4b80b40027fa62a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/closeout-result.json",
+      "bytes": 3572,
+      "sha256": "26c25da18dcf12725fb4d22d5ee5bd5a2a0b312ad49e4d351fbb758f642bdda1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/closeout-source-binding.json",
+      "bytes": 1906,
+      "sha256": "f4dbe549977c9cfac51a69c58cbc01d8a915ee5fb6765eb13cb3222aefcd41b9"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/cold_verify.py",
+      "bytes": 2336,
+      "sha256": "d622992d515d426a5f843883f558826f97b2590d182bd361a2f5a57eb73da644"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/focused.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/focused.stdout",
+      "bytes": 7979,
+      "sha256": "390b723412bb6bf509489edb10f6248a6cdaeaa810d8ec7c5841ec5d7ae5f5c9"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/format.stdout",
+      "bytes": 27,
+      "sha256": "5b9f70ad96522f492ef846065642c069b5627379aff2ab3f74acd2e3b9ecfe34"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/import-bindings.json",
+      "bytes": 800,
+      "sha256": "cae104013746f73523ec6523a8dbf2c1e73cec24bb28a506c9d48467e2890c2b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/junit.xml",
+      "bytes": 63537,
+      "sha256": "2c4164d84563689e531ce2c6c51e96932cad51296451c390a59c648f5a2aaa49"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/lint.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/lint.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/socket-attempts.json",
+      "bytes": 102,
+      "sha256": "43a81dde0a80d2617ed41a9704a15a77c946ffb18bd7714044bdf188c0d4b859"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/source/src/antigravity_k/api/dependencies.py",
+      "bytes": 35018,
+      "sha256": "f49635d503ab82690b6bd23dd1bc6c597eb0a503c8dd16ac07dc24b9b1436b01"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/source/src/antigravity_k/api/routes/models_api.py",
+      "bytes": 16454,
+      "sha256": "9a381eaad83443b3becaf60d36f1fd87f2b989930766095c24596b6936e2b69d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/source/src/antigravity_k/engine/embeddings.py",
+      "bytes": 6540,
+      "sha256": "3522ff04d2df755bfeab8dadc1eaa9339b309db46b7c927efba50b9ad998b0cb"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/source/src/antigravity_k/engine/model_registry.py",
+      "bytes": 29103,
+      "sha256": "8febe07ec3e0b00c87b83afd31475727c893885c97f760aadcf3f1409e0e6bda"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/source/src/antigravity_k/engine/provider_adapters/embedding_providers.py",
+      "bytes": 6120,
+      "sha256": "7a4655a8135a9c1c94ff8a9db5edd8d0075c9e8fbd8661ed23412c66fbed5e6f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/source/tests/test_embeddings.py",
+      "bytes": 6895,
+      "sha256": "fe8a51b3c423697cf70a5422784825fc7381d63e13a8bb867072148449179037"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/source/tests/test_embeddings_model_contract.py",
+      "bytes": 7829,
+      "sha256": "8cc10be711d036cda641f02f2b82fdd2d4b4f32880cd1e8a2b18500115cfab41"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/source/tests/test_model_registry_config_precedence.py",
+      "bytes": 1962,
+      "sha256": "413d9ebe96386f637ace7562ec213e49f506ef48e43831f2651c300399b7c199"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/source/tests/test_models_system_api.py",
+      "bytes": 10572,
+      "sha256": "8bf0587c66ac1b8038329eec574233091b857e3053ea84976c53ac19dad9e911"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/source/tests/test_ollama_embedding_routing.py",
+      "bytes": 20837,
+      "sha256": "f1eee99ca0e3a34e7426795a0a5aac6112693ff5bbe25acc1594eef506c60b81"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/types.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/types.stdout",
+      "bytes": 645,
+      "sha256": "d3a42c1c95c75f05957f704730dbdb73f746f4ff6f0f2b8d0bf6a77ce72f2d7d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v1/verify.py",
+      "bytes": 2645,
+      "sha256": "9990e4f4f88413cf0fb5781ed8ad3f4266c195cd4839d644c930b35f900d4cd1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/checks.json",
+      "bytes": 6397,
+      "sha256": "45bbf44a8db5427782946ccc999d54d663c4e8b94a1648d82ef5be3cf5dcdbc5"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/cold_verify.py",
+      "bytes": 2423,
+      "sha256": "da4a7529179366b1148d8137b196265f7d5fcd3d02977c4352b68a9bdaf0b138"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/focused.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/focused.stdout",
+      "bytes": 7979,
+      "sha256": "bec3c584519b17a47370ef8436b0c34b529a43a4db2fdbe912dc5df76cc811f3"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/format.stdout",
+      "bytes": 27,
+      "sha256": "5b9f70ad96522f492ef846065642c069b5627379aff2ab3f74acd2e3b9ecfe34"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/import-bindings.json",
+      "bytes": 800,
+      "sha256": "cae104013746f73523ec6523a8dbf2c1e73cec24bb28a506c9d48467e2890c2b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/junit.xml",
+      "bytes": 63854,
+      "sha256": "fd765c4aa35ba7c7713984daece0d928621c972f792fa9e8b4256e9851eae9e6"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/lint.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/lint.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/socket-attempts.json",
+      "bytes": 102,
+      "sha256": "43a81dde0a80d2617ed41a9704a15a77c946ffb18bd7714044bdf188c0d4b859"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/source/src/antigravity_k/api/dependencies.py",
+      "bytes": 35221,
+      "sha256": "0b1f70551132cc7a4beae8d7dfa4360cf8fc5bf80614bfdf76e759b1fd3719d1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/source/src/antigravity_k/api/routes/models_api.py",
+      "bytes": 16454,
+      "sha256": "9a381eaad83443b3becaf60d36f1fd87f2b989930766095c24596b6936e2b69d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/source/src/antigravity_k/engine/embeddings.py",
+      "bytes": 6540,
+      "sha256": "3522ff04d2df755bfeab8dadc1eaa9339b309db46b7c927efba50b9ad998b0cb"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/source/src/antigravity_k/engine/model_registry.py",
+      "bytes": 29103,
+      "sha256": "8febe07ec3e0b00c87b83afd31475727c893885c97f760aadcf3f1409e0e6bda"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/source/src/antigravity_k/engine/provider_adapters/embedding_providers.py",
+      "bytes": 6120,
+      "sha256": "7a4655a8135a9c1c94ff8a9db5edd8d0075c9e8fbd8661ed23412c66fbed5e6f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/source/tests/test_embeddings.py",
+      "bytes": 6895,
+      "sha256": "fe8a51b3c423697cf70a5422784825fc7381d63e13a8bb867072148449179037"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/source/tests/test_embeddings_model_contract.py",
+      "bytes": 7829,
+      "sha256": "8cc10be711d036cda641f02f2b82fdd2d4b4f32880cd1e8a2b18500115cfab41"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/source/tests/test_model_registry_config_precedence.py",
+      "bytes": 1962,
+      "sha256": "413d9ebe96386f637ace7562ec213e49f506ef48e43831f2651c300399b7c199"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/source/tests/test_models_system_api.py",
+      "bytes": 11107,
+      "sha256": "21e89c2988758d52753e02370e6a17c97e1076440ba5c442d7616c75a293f419"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/source/tests/test_ollama_embedding_routing.py",
+      "bytes": 20837,
+      "sha256": "f1eee99ca0e3a34e7426795a0a5aac6112693ff5bbe25acc1594eef506c60b81"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/types.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/types.stdout",
+      "bytes": 30,
+      "sha256": "56882e01cb80173ef053c4096e4ee43e3123a15f5c0a06715f96988d48fbd91c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate-v2/verify.py",
+      "bytes": 2645,
+      "sha256": "9990e4f4f88413cf0fb5781ed8ad3f4266c195cd4839d644c930b35f900d4cd1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/candidate.patch",
+      "bytes": 52863,
+      "sha256": "f48072a4b646e5cd8f3b7b412edc881d966a4ecb15ad69faea1640a604fe3dde"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/cold_verify.py",
+      "bytes": 2423,
+      "sha256": "da4a7529179366b1148d8137b196265f7d5fcd3d02977c4352b68a9bdaf0b138"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/checks.json",
+      "bytes": 6398,
+      "sha256": "ea97d2e754526bfc94ae52035f45df3da3011687d9f119797cd41e1c4e9225d7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/cold_verify.py",
+      "bytes": 1745,
+      "sha256": "d31877042e79db03e840a844eea2fba0ee3d1914ff79d913cc450846f10b7c58"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/focused.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/focused.stdout",
+      "bytes": 1502,
+      "sha256": "2f97244df5405c5c2a9000c91cd83fde6756df4299e0e6289a156d9a403b2912"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/format.stdout",
+      "bytes": 27,
+      "sha256": "5b9f70ad96522f492ef846065642c069b5627379aff2ab3f74acd2e3b9ecfe34"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/import-bindings.json",
+      "bytes": 800,
+      "sha256": "cae104013746f73523ec6523a8dbf2c1e73cec24bb28a506c9d48467e2890c2b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/junit.xml",
+      "bytes": 2144,
+      "sha256": "db64ce0b55fb83e5a72871f61132a85d52adcff60a19b93e4af8edde9690caab"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/lint.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/lint.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/selector-environment.json",
+      "bytes": 69,
+      "sha256": "1ffaed419c6d8ebc42a3c3cfb64178b16aaa8705daf01d6e34ab850b80085c55"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/socket-attempts.json",
+      "bytes": 40,
+      "sha256": "f616fd03c1d171700f3fe70bb052d9d3c98989528b5099b72a9feb68343cff1f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/source/src/antigravity_k/api/dependencies.py",
+      "bytes": 35018,
+      "sha256": "f49635d503ab82690b6bd23dd1bc6c597eb0a503c8dd16ac07dc24b9b1436b01"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/source/src/antigravity_k/api/routes/models_api.py",
+      "bytes": 16454,
+      "sha256": "9a381eaad83443b3becaf60d36f1fd87f2b989930766095c24596b6936e2b69d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/source/src/antigravity_k/engine/embeddings.py",
+      "bytes": 6540,
+      "sha256": "3522ff04d2df755bfeab8dadc1eaa9339b309db46b7c927efba50b9ad998b0cb"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/source/src/antigravity_k/engine/model_registry.py",
+      "bytes": 29066,
+      "sha256": "40e825eb0b0ba933aa571053c8c43ea5e06dd8958d541f74af5e8dec832029e5"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/source/src/antigravity_k/engine/provider_adapters/embedding_providers.py",
+      "bytes": 6120,
+      "sha256": "7a4655a8135a9c1c94ff8a9db5edd8d0075c9e8fbd8661ed23412c66fbed5e6f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/source/tests/test_embeddings.py",
+      "bytes": 6895,
+      "sha256": "fe8a51b3c423697cf70a5422784825fc7381d63e13a8bb867072148449179037"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/source/tests/test_embeddings_model_contract.py",
+      "bytes": 7829,
+      "sha256": "8cc10be711d036cda641f02f2b82fdd2d4b4f32880cd1e8a2b18500115cfab41"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/source/tests/test_model_registry_config_precedence.py",
+      "bytes": 1962,
+      "sha256": "413d9ebe96386f637ace7562ec213e49f506ef48e43831f2651c300399b7c199"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/source/tests/test_models_system_api.py",
+      "bytes": 10572,
+      "sha256": "8bf0587c66ac1b8038329eec574233091b857e3053ea84976c53ac19dad9e911"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/source/tests/test_ollama_embedding_routing.py",
+      "bytes": 20644,
+      "sha256": "aa4f46763b8d4f0b939d28d5d88390e8e20ec45825bf9fb4c946dae6f8d08502"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/types.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/types.stdout",
+      "bytes": 10124,
+      "sha256": "6ddda7ee4e724383be53e1275a3e951608994654e1fdd380158194da9020f34e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/config-red-v1/verify.py",
+      "bytes": 2645,
+      "sha256": "9990e4f4f88413cf0fb5781ed8ad3f4266c195cd4839d644c930b35f900d4cd1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/ephemeral-cache-relocation.json",
+      "bytes": 662,
+      "sha256": "a40b9de27eca6b059d5de09c3f01ca80ef414b4d347ce3deecf61434c20288a2"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/handoff-ko.md",
+      "bytes": 6732,
+      "sha256": "84cb64113c008820fd1f355d3d435450bf05d2a2dc88086452cefd07b5a3e5f0"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/historical-reconstruction/tests/test_embeddings_model_contract.py",
+      "bytes": 7829,
+      "sha256": "8cc10be711d036cda641f02f2b82fdd2d4b4f32880cd1e8a2b18500115cfab41"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/historical-test.patch",
+      "bytes": 12454,
+      "sha256": "bb08463d1b667fba4ab7180b0b221c49433926d11285a0328925dea9a3bc1b00"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/junit-observations-v2.json",
+      "bytes": 49611,
+      "sha256": "bcc8bd6fc1f6d5f75ab0f8adc04e541b0c4e5cdf4b4e57dc495e5a0a3e77f198"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/junit-observations.json",
+      "bytes": 49433,
+      "sha256": "bd99a2dbdf3659eec569a6fbedc6e008880f49ab1043f28cef738e5dae7e82d1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/owned-paths.json",
+      "bytes": 464,
+      "sha256": "41532dbe1e493561c701caa06060a428f996d897c20b8f2cda80203e65cc3c32"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/patch-reconstruction.json",
+      "bytes": 1096,
+      "sha256": "fcd39b2b2fae3183132fd1533004db34ee1df1ef30e1050e5a06fcfffe542e61"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/preimage/src/antigravity_k/api/dependencies.py",
+      "bytes": 34970,
+      "sha256": "274a057b06492e9f4ca1c09bbb6da72a48430aa22fdc75f0fcccce47c20e77c0"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/preimage/src/antigravity_k/api/routes/models_api.py",
+      "bytes": 15695,
+      "sha256": "6ef55819126ce691d975320f87b970608fc3d6cafa0318176177d9ff3763111a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/preimage/src/antigravity_k/engine/embeddings.py",
+      "bytes": 4477,
+      "sha256": "d5aaf9a5d0af148a8d95d40a9293735ba5d5df2b15c41681612579aed078dcd5"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/preimage/src/antigravity_k/engine/model_registry.py",
+      "bytes": 29066,
+      "sha256": "40e825eb0b0ba933aa571053c8c43ea5e06dd8958d541f74af5e8dec832029e5"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/preimage/tests/test_embeddings.py",
+      "bytes": 3957,
+      "sha256": "ba6620770caa88766161e4446849d43de47a928292c90cdc06ceac683a7fbe1a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/preimage/tests/test_models_system_api.py",
+      "bytes": 9252,
+      "sha256": "ec220817a36333cf923a1930b1834fc866b023e11ac9d019e77f8cb616f755b5"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/prepare_publication.py",
+      "bytes": 4655,
+      "sha256": "1ae4e29da1154203a8d04695b899843eea3ce8b028cb1ec188631c4151c6d23c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction-v2/src/antigravity_k/api/dependencies.py",
+      "bytes": 35221,
+      "sha256": "0b1f70551132cc7a4beae8d7dfa4360cf8fc5bf80614bfdf76e759b1fd3719d1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction-v2/src/antigravity_k/api/routes/models_api.py",
+      "bytes": 16454,
+      "sha256": "9a381eaad83443b3becaf60d36f1fd87f2b989930766095c24596b6936e2b69d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction-v2/src/antigravity_k/engine/embeddings.py",
+      "bytes": 6540,
+      "sha256": "3522ff04d2df755bfeab8dadc1eaa9339b309db46b7c927efba50b9ad998b0cb"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction-v2/src/antigravity_k/engine/model_registry.py",
+      "bytes": 29103,
+      "sha256": "8febe07ec3e0b00c87b83afd31475727c893885c97f760aadcf3f1409e0e6bda"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction-v2/src/antigravity_k/engine/provider_adapters/embedding_providers.py",
+      "bytes": 6120,
+      "sha256": "7a4655a8135a9c1c94ff8a9db5edd8d0075c9e8fbd8661ed23412c66fbed5e6f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction-v2/tests/test_embeddings.py",
+      "bytes": 6895,
+      "sha256": "fe8a51b3c423697cf70a5422784825fc7381d63e13a8bb867072148449179037"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction-v2/tests/test_embeddings_model_contract.py",
+      "bytes": 7829,
+      "sha256": "8cc10be711d036cda641f02f2b82fdd2d4b4f32880cd1e8a2b18500115cfab41"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction-v2/tests/test_model_registry_config_precedence.py",
+      "bytes": 1962,
+      "sha256": "413d9ebe96386f637ace7562ec213e49f506ef48e43831f2651c300399b7c199"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction-v2/tests/test_models_system_api.py",
+      "bytes": 11107,
+      "sha256": "21e89c2988758d52753e02370e6a17c97e1076440ba5c442d7616c75a293f419"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction-v2/tests/test_ollama_embedding_routing.py",
+      "bytes": 20837,
+      "sha256": "f1eee99ca0e3a34e7426795a0a5aac6112693ff5bbe25acc1594eef506c60b81"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/result.json",
+      "bytes": 3829,
+      "sha256": "b5d3ca2c861de8293b68cd57b92289dfe6861d1a18abe71dfc9e705ce73a4401"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/review/independent-review.md",
+      "bytes": 1401,
+      "sha256": "9968654508a5e9d50c2c67d4cae29788e4223c2be638f02aec591385a48566f7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/routing-selected.patch",
+      "bytes": 32329,
+      "sha256": "2ab9b19aab8df3c4f63047b9eebcdafe0b4d02c726677407ae6b8a0ef4a38f68"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/source-binding.json",
+      "bytes": 1906,
+      "sha256": "cf78341a29b7fa5b640cd464e390866d268048a9c6384eee4abefffcd1ae6855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/strict-selected.patch",
+      "bytes": 9299,
+      "sha256": "837fedd381aef6e23fdb6f54319d059ea9bc1c3858f8705d6f2a79110a1abb29"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/type-baseline.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/type-baseline.stdout",
+      "bytes": 1002,
+      "sha256": "e0e905a18c9d991a8f715f4c0a21e70d31451e62db5d8cd110e5d34641616365"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/type-comparison-checks.json",
+      "bytes": 1439,
+      "sha256": "70571cd7a458501091b61e4fa1dc737b37044038efd3765bad1acac694e259ea"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/type-owned-excluding-baseline-dependencies.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/type-owned-excluding-baseline-dependencies.stdout",
+      "bytes": 30,
+      "sha256": "56882e01cb80173ef053c4096e4ee43e3123a15f5c0a06715f96988d48fbd91c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/verify.py",
+      "bytes": 2645,
+      "sha256": "9990e4f4f88413cf0fb5781ed8ad3f4266c195cd4839d644c930b35f900d4cd1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/after.json",
+      "bytes": 8491,
+      "sha256": "1649cb0547f45add49c90de3c3eeb7256dc810780622c8b5067f0678135e531e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/artifact-manifest.json",
+      "bytes": 3580,
+      "sha256": "792a3b668832e9cebc766ff2284d22f8065f9d62a01aa10903e7be31799f656c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/before.json",
+      "bytes": 8491,
+      "sha256": "1649cb0547f45add49c90de3c3eeb7256dc810780622c8b5067f0678135e531e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/bootstrap/sitecustomize.py",
+      "bytes": 2113,
+      "sha256": "26e5f40aa93e5a3f51f482a898ff746551f02385bb87f00fbc60ab4c98430eb0"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/guard-76383.jsonl",
+      "bytes": 88,
+      "sha256": "518f3fd69b37908d988ce67dbe1e9955957f155d7366aec725f88a6b90c57557"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/handoff.md",
+      "bytes": 3794,
+      "sha256": "834e8073f765ff25a2b905f264ffe030d1cc51a3935a6af8811df740ef127865"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/invocation.json",
+      "bytes": 4580,
+      "sha256": "f2536591b66f0f315d896eecca3c9fc61d9850a79fd2a63af98788296040f7e5"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/module-bindings.json",
+      "bytes": 20724,
+      "sha256": "06d7005bf64e4abbc04fe91f5493e620873555c65327d2eb6fa742fa74359788"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/probe.py",
+      "bytes": 3423,
+      "sha256": "c35af80263e152b8f76cee9b2e5cfb48c9795e53d60501feee8fafb20e948510"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/probe.stdout",
+      "bytes": 2651,
+      "sha256": "34e0fe313f70bc688ed14a4879009d878cf0f6f6f13ff9b70d5ab6e3252aaf7b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/result.json",
+      "bytes": 4350,
+      "sha256": "6e721a2a2d137deacfa585b13329d9130ff214e2a6e80ec4e8031de4a275f2ed"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/review/independent-review.md",
+      "bytes": 897,
+      "sha256": "68fb2d064e707324bdd24d5b4cf1c0ade7bc0bada4723d8177ced1fb23506afc"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/persist/a3cd7ecb-d90e-418e-a7f3-9ce0636ff181/data_level0.bin",
+      "bytes": 15200,
+      "sha256": "a6b5bd491f247f64222e96c0d04c0311816393c536e477006030691a52e04326"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/persist/a3cd7ecb-d90e-418e-a7f3-9ce0636ff181/header.bin",
+      "bytes": 100,
+      "sha256": "d8e58061428a9211ad4ca81d0977d60083adf89c4e6dafc735f09b6a3b2154ef"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/persist/a3cd7ecb-d90e-418e-a7f3-9ce0636ff181/length.bin",
+      "bytes": 400,
+      "sha256": "7a12e561363385e9dfeeab326368731c030ed4b374e7f5897ac819159d2884c5"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/persist/a3cd7ecb-d90e-418e-a7f3-9ce0636ff181/link_lists.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/seal.mjs",
+      "bytes": 1028,
+      "sha256": "33308d305f106c255324be066a001327ba9ccc7e2f5e1b3cc0a3c3233b8807ab"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/source/src/antigravity_k/api/dependencies.py",
+      "bytes": 35216,
+      "sha256": "64bcea9f345cce3ba85da4329bc83443720621b24e3ff6f0061adda0440eb1de"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/source/src/antigravity_k/engine/chroma_lifecycle.py",
+      "bytes": 262,
+      "sha256": "538914ab4ace58eaa25257f6dc64771c1b4a298b50689bd2c5873738c441d562"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/source/src/antigravity_k/engine/long_context_fusion.py",
+      "bytes": 6772,
+      "sha256": "fa1d42df8d3500a44ccabd0a493771a9e4c86d8805e42c3d73fb7186b4e39823"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/source/src/antigravity_k/engine/rag_indexer.py",
+      "bytes": 44433,
+      "sha256": "6177bd17e550fbf94d7ee22c8a16e9f4ecfaba6b1e6c2737c09bf35587acdfcb"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/source/src/antigravity_k/engine/vector_store.py",
+      "bytes": 12370,
+      "sha256": "147cea96911f438fa1c42086924988288651d5fbfa96d21d82b2361e9c194680"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/supervisor.mjs",
+      "bytes": 6026,
+      "sha256": "1fcbfb7ac87db8dda9e10a1fb60b129f3b5e4ce52faaa06677f6032b529f5374"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-PRIORITY-STATUS-2026-10-14/run-20261014065450Z-codex/capture_preimage.py",
+      "bytes": 1343,
+      "sha256": "5e70c576d658fc5c973f82e930828694b7d11161902710750ee1025edceae0ed"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-PRIORITY-STATUS-2026-10-14/run-20261014065450Z-codex/preservation-after.json",
+      "bytes": 593,
+      "sha256": "dd266de0ee8b22cfd8147bb25dae3f8f96103a25e11561beb16a3d40a8fd9eb7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-PRIORITY-STATUS-2026-10-14/run-20261014065450Z-codex/preservation-before.json",
+      "bytes": 345,
+      "sha256": "60b702ab64ef65b23302943641f8c4ede26447b7fc846bd2e1fc4edf9fede98b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-PRIORITY-STATUS-2026-10-14/run-20261014065450Z-codex/preservation-closeout.json",
+      "bytes": 598,
+      "sha256": "7a69e6f0d083ee5048d140d1958354216612f1d48ec1a5ef3bbce600cc4c4f78"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-PRIORITY-STATUS-2026-10-14/run-20261014065450Z-codex/source-preimage/STATUS.md",
+      "bytes": 13188,
+      "sha256": "7d4d58af0459129707a2988b04fec414f4850b32d87dfa3ff5869f202b03bedc"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-PRIORITY-STATUS-2026-10-14/run-20261014065450Z-codex/source-preimage/tasks.json",
+      "bytes": 40580,
+      "sha256": "00d6c76563c65b0696a1121383250cbf8435c040c9d61c186c97ff2b666e59a8"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-PRIORITY-STATUS-2026-10-14/run-20261014065450Z-codex/verify_closeout.py",
+      "bytes": 1977,
+      "sha256": "5bc4cd747ef0bd330d0d0099e55619fcb44a9426170c67359414f015c3fcc4f3"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-PRIORITY-STATUS-2026-10-14/run-20261014065450Z-codex/verify_saved_status.py",
+      "bytes": 1745,
+      "sha256": "32247e4d7cf6f06ed6743bd5a5c6f577ad913e95561d33fe2c937439a14978e8"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/STATUS.md",
+      "bytes": 14770,
+      "sha256": "0a4b0746729049d1beadb59851d0fff8dc808f8ce16b70354a30f752d7f30948"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/tasks.json",
+      "bytes": 48981,
+      "sha256": "cc0e49258d473073e016092837216d408dd54c933b6e6f5bff1437bbdd802dce"
+    }
+  ],
+  "omitted_local_files": [
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/isolated/chroma-from-candidate-v1/chroma.sqlite3",
+      "reason": "runtime_cache_or_reconstruction_preserved_locally"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction/src/antigravity_k/api/dependencies.py",
+      "reason": "runtime_cache_or_reconstruction_preserved_locally"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction/src/antigravity_k/api/routes/models_api.py",
+      "reason": "runtime_cache_or_reconstruction_preserved_locally"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction/src/antigravity_k/engine/embeddings.py",
+      "reason": "runtime_cache_or_reconstruction_preserved_locally"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction/src/antigravity_k/engine/model_registry.py",
+      "reason": "runtime_cache_or_reconstruction_preserved_locally"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction/src/antigravity_k/engine/provider_adapters/embedding_providers.py",
+      "reason": "runtime_cache_or_reconstruction_preserved_locally"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction/tests/test_embeddings.py",
+      "reason": "runtime_cache_or_reconstruction_preserved_locally"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction/tests/test_embeddings_model_contract.py",
+      "reason": "runtime_cache_or_reconstruction_preserved_locally"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction/tests/test_model_registry_config_precedence.py",
+      "reason": "runtime_cache_or_reconstruction_preserved_locally"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction/tests/test_models_system_api.py",
+      "reason": "runtime_cache_or_reconstruction_preserved_locally"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/reconstruction/tests/test_ollama_embedding_routing.py",
+      "reason": "runtime_cache_or_reconstruction_preserved_locally"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-CHROMA-STARTUP-DIAGNOSTIC-01/run-20261014T070803Z-dd579e3a/runtime/persist/chroma.sqlite3",
+      "reason": "private_auth_or_runtime_database"
+    }
+  ],
+  "omitted_files_preserved_locally": true,
+  "historical_tasks_and_status_equal": true,
+  "preserved_staged_sha256": "84297d5d47940af4560187d6b9f531b3b1eed5a7fa6cd1dca20c4da48fddab6f"
+}

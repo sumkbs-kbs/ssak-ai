@@ -1,0 +1,1230 @@
+--- a/src/antigravity_k/engine/embeddings.py
++++ b/src/antigravity_k/engine/embeddings.py
+@@ -5,6 +5,13 @@
+ import math
+ from collections.abc import Sequence
+ from typing import Final, Protocol, runtime_checkable
++
++from antigravity_k.engine.model_registry import ModelRegistry
++from antigravity_k.engine.provider_adapters.embedding_providers import (
++    OllamaEmbeddingProtocolError,
++    OllamaEmbeddingProvider,
++    OllamaEmbeddingUnavailableError,
++)
+ 
+ logger = logging.getLogger("antigravity_k.engine.embeddings")
+ 
+@@ -19,13 +26,36 @@
+     def __call__(self, model_name: str) -> _EmbeddingModel: ...
+ 
+ 
++class EmbeddingProviderInvalidResponseError(RuntimeError):
++    """Selected embedding provider returned an invalid successful response."""
++
++    def __init__(self, model_name: str) -> None:
++        self.model_name = model_name
++        super().__init__("Embedding provider returned an invalid response.")
++
++
++class EmbeddingModelUnavailableError(RuntimeError):
++    """Requested embedding model could not be loaded without a fallback."""
++
++    def __init__(self, model_name: str) -> None:
++        self.model_name = model_name
++        super().__init__(f"Embedding model '{model_name}' could not be loaded.")
++
++
+ class EmbeddingEngine:
+-    """Generates vector embeddings for text (sentence-transformers or hash fallback)."""
++    """Generates vectors through a registered provider or local fallback."""
+ 
+     fallback_dimensions: Final[int] = 1536
+ 
+-    def __init__(self) -> None:
+-        """Initialize the EmbeddingEngine."""
++    def __init__(
++        self,
++        *,
++        registry: ModelRegistry | None = None,
++        ollama_provider: OllamaEmbeddingProvider | None = None,
++    ) -> None:
++        """Initialize the embedding engine with optional model/provider routing."""
++        self.registry = registry
++        self.ollama_provider = ollama_provider
+         self.current_model: str | None = None
+         self.model: _EmbeddingModel | None = None
+         self.tokenizer: None = None
+@@ -73,9 +103,23 @@
+             self.model = None
+             self.current_model = target_model
+ 
+-    def embed(self, text: str | list[str], model_name: str) -> list[list[float]]:
+-        """Generate embeddings for the given text(s)."""
++    def embed(self, text: str | list[str], model_name: str, *, allow_fallback: bool = True) -> list[list[float]]:
++        """Generate embeddings, optionally requiring the requested model to load."""
++        profile = self.registry.get_model(model_name) if self.registry is not None else None
++        roles = {role.strip().casefold() for role in profile.supported_roles if role.strip()} if profile else set()
++        if profile is not None and profile.provider.casefold() == "ollama" and "embedding" in roles:
++            wire_model = profile.repo or profile.name
++            provider = self.ollama_provider or OllamaEmbeddingProvider()
++            try:
++                return provider.embed(profile, self.registry, text, wire_model)
++            except OllamaEmbeddingUnavailableError as exc:
++                raise EmbeddingModelUnavailableError(model_name) from exc
++            except OllamaEmbeddingProtocolError as exc:
++                raise EmbeddingProviderInvalidResponseError(model_name) from exc
++
+         self.load_model(model_name)
++        if self.model is None and not allow_fallback:
++            raise EmbeddingModelUnavailableError(model_name)
+ 
+         if isinstance(text, str):
+             text = [text]
+--- /dev/null
++++ b/src/antigravity_k/engine/provider_adapters/embedding_providers.py
+@@ -0,0 +1,126 @@
++"""Native provider adapters for embedding generation."""
++
++from __future__ import annotations
++
++import math
++from typing import cast
++from urllib.parse import SplitResult, urlsplit, urlunsplit
++
++import httpx
++from httpx import Client as HttpxClient
++
++from antigravity_k.engine.model_registry import ModelProfile, ModelRegistry
++
++
++class OllamaEmbeddingUnavailableError(RuntimeError):
++    """Ollama embedding request could not produce an HTTP 200 response."""
++
++
++class OllamaEmbeddingProtocolError(RuntimeError):
++    """Ollama returned a response that violates the embedding contract."""
++
++
++class OllamaEmbeddingProvider:
++    """One-shot synchronous adapter for Ollama's native ``/api/embed`` endpoint."""
++
++    timeout_seconds = 55.0
++    default_base_url = "http://localhost:11434"
++
++    def __init__(self, *, transport: httpx.BaseTransport | None = None) -> None:
++        self._transport = transport
++
++    @classmethod
++    def resolve_base_url(cls, profile: ModelProfile, registry: ModelRegistry | None) -> str:
++        base: object = profile.api_base
++        if not isinstance(base, str) or not base.strip():
++            provider_config = registry.get_provider_config("ollama") if registry else {}
++            candidate = provider_config.get("base_url")
++            base = candidate if isinstance(candidate, str) and candidate.strip() else cls.default_base_url
++        if not isinstance(base, str) or not base.strip():
++            raise OllamaEmbeddingUnavailableError("Ollama embedding base URL is unavailable")
++
++        try:
++            parsed = urlsplit(base.strip())
++            if parsed.scheme not in {"http", "https"} or not parsed.netloc or parsed.query or parsed.fragment:
++                raise ValueError("invalid HTTP base URL")
++            if parsed.username is not None or parsed.password is not None:
++                raise ValueError("credentials are not supported in the Ollama base URL")
++            _ = parsed.port
++            path = parsed.path.rstrip("/")
++            if path.endswith("/v1"):
++                path = path[:-3]
++            normalized = SplitResult(parsed.scheme, parsed.netloc, path, parsed.query, parsed.fragment)
++            result = urlunsplit(normalized).rstrip("/")
++        except (ValueError, UnicodeError) as exc:
++            raise OllamaEmbeddingUnavailableError("Ollama embedding base URL is invalid") from exc
++        return result
++
++    def embed(
++        self,
++        profile: ModelProfile,
++        registry: ModelRegistry | None,
++        text: str | list[str],
++        wire_model: str,
++    ) -> list[list[float]]:
++        inputs = [text] if isinstance(text, str) else list(text)
++        url = self.resolve_base_url(profile, registry) + "/api/embed"
++        payload = {"model": wire_model, "input": inputs, "truncate": False}
++        try:
++            with HttpxClient(
++                timeout=self.timeout_seconds,
++                follow_redirects=False,
++                trust_env=False,
++                transport=self._transport,
++            ) as client:
++                response = client.post(url, json=payload)
++        except (httpx.RequestError, httpx.InvalidURL) as exc:
++            raise OllamaEmbeddingUnavailableError("Ollama embedding request failed") from exc
++
++        if response.status_code != 200:
++            raise OllamaEmbeddingUnavailableError(f"Ollama embedding returned HTTP {response.status_code}")
++        content_type = response.headers.get("content-type", "").split(";", 1)[0].strip().casefold()
++        if content_type != "application/json":
++            raise OllamaEmbeddingProtocolError("Ollama embedding response content type is invalid")
++        try:
++            body = response.json()
++        except (ValueError, UnicodeDecodeError) as exc:
++            raise OllamaEmbeddingProtocolError("Ollama embedding response JSON is invalid") from exc
++        if not isinstance(body, dict):
++            raise OllamaEmbeddingProtocolError("Ollama embedding response must be a JSON object")
++        response_body = cast(dict[str, object], body)
++        if response_body.get("model") != wire_model:
++            raise OllamaEmbeddingProtocolError("Ollama embedding response model does not match the request")
++        rows = response_body.get("embeddings")
++        if not isinstance(rows, list):
++            raise OllamaEmbeddingProtocolError("Ollama embedding response vectors are invalid")
++        if len(rows) != len(inputs):
++            raise OllamaEmbeddingProtocolError("Ollama embedding response vector count is invalid")
++
++        dimensions = profile.dimensions
++        vectors: list[list[float]] = []
++        actual_dimensions: int | None = None
++        for row in rows:
++            if not isinstance(row, list) or not row:
++                raise OllamaEmbeddingProtocolError("Ollama embedding response vector is empty or invalid")
++            if actual_dimensions is None:
++                actual_dimensions = len(row)
++            elif len(row) != actual_dimensions:
++                raise OllamaEmbeddingProtocolError("Ollama embedding response dimensions are inconsistent")
++            if dimensions > 0 and len(row) != dimensions:
++                raise OllamaEmbeddingProtocolError("Ollama embedding response dimension does not match the model")
++            vector: list[float] = []
++            for value in row:
++                if type(value) not in (int, float):
++                    raise OllamaEmbeddingProtocolError("Ollama embedding response contains a non-number")
++                try:
++                    numeric = float(value)
++                except (OverflowError, ValueError) as exc:
++                    raise OllamaEmbeddingProtocolError("Ollama embedding response number is out of range") from exc
++                if not math.isfinite(numeric):
++                    raise OllamaEmbeddingProtocolError("Ollama embedding response contains a non-finite number")
++                vector.append(numeric)
++            norm = math.hypot(*vector)
++            if not math.isfinite(norm) or norm <= 0:
++                raise OllamaEmbeddingProtocolError("Ollama embedding response vector norm is invalid")
++            vectors.append(vector)
++        return vectors
+--- a/src/antigravity_k/api/routes/models_api.py
++++ b/src/antigravity_k/api/routes/models_api.py
+@@ -24,7 +24,11 @@
+ from antigravity_k.config import config
+ from antigravity_k.engine.agent_runtime import AgentRuntime
+ from antigravity_k.engine.audit_logger import get_audit_logger
+-from antigravity_k.engine.embeddings import EmbeddingEngine
++from antigravity_k.engine.embeddings import (
++    EmbeddingEngine,
++    EmbeddingModelUnavailableError,
++    EmbeddingProviderInvalidResponseError,
++)
+ from antigravity_k.engine.model_manager import ModelManager
+ from antigravity_k.engine.model_registry import ModelRegistry
+ from antigravity_k.engine.provider_capabilities import ProviderCapability
+@@ -348,7 +352,7 @@
+ 
+     try:
+         # Generate embeddings
+-        embeddings = engine.embed(request.input, request.model)
++        embeddings = engine.embed(request.input, request.model, allow_fallback=False)
+ 
+         # Format response
+         data: list[EmbeddingData] = []
+@@ -363,6 +367,24 @@
+             model=request.model,
+             usage=UsageStats(prompt_tokens=tokens, total_tokens=tokens),
+         )
++    except EmbeddingProviderInvalidResponseError as exc:
++        raise HTTPException(
++            status_code=502,
++            detail={
++                "code": "embedding_provider_invalid_response",
++                "model": exc.model_name,
++                "message": "Embedding provider returned an invalid response.",
++            },
++        ) from exc
++    except EmbeddingModelUnavailableError as exc:
++        raise HTTPException(
++            status_code=503,
++            detail={
++                "code": "embedding_model_unavailable",
++                "model": exc.model_name,
++                "message": str(exc),
++            },
++        ) from exc
+     except (ValueError, RuntimeError, KeyError) as e:
+         logger.error("Embedding error: %s", e)
+         raise HTTPException(status_code=500, detail=str(e))
+--- a/src/antigravity_k/api/dependencies.py
++++ b/src/antigravity_k/api/dependencies.py
+@@ -837,7 +837,8 @@
+         EmbeddingEngine: The embeddingengine result.
+ 
+     """
+-    engine = EmbeddingEngine()
++    registry = ModelRegistry()
++    engine = EmbeddingEngine(registry=registry)
+     engine.initialize()
+     return engine
+ 
+--- a/src/antigravity_k/engine/model_registry.py
++++ b/src/antigravity_k/engine/model_registry.py
+@@ -496,7 +496,7 @@
+ 
+         """
+         if config_path is None:
+-            config_path = str(_default_config_path())
++            config_path = os.environ.get("AGK_CONFIG_FILE") or str(_default_config_path())
+         self._config_path: str = config_path
+         self._models: dict[str, ModelProfile] = {}
+         self._defaults = DefaultModels()
+--- a/tests/test_embeddings.py
++++ b/tests/test_embeddings.py
+@@ -4,9 +4,21 @@
+ determinism/dimensionality/normalization, and the singleton accessor.
+ """
+ 
++import hashlib
++import json
++import sys
++from collections.abc import Callable
++from types import ModuleType
++
+ import numpy as np
+-
+-from antigravity_k.engine.embeddings import EmbeddingEngine, get_embedding_engine
++import pytest
++
++from antigravity_k.engine.embeddings import (
++    EmbeddingEngine,
++    EmbeddingModelUnavailableError,
++    _EmbeddingModel,
++    get_embedding_engine,
++)
+ 
+ # ---------------------------------------------------------------------------
+ # Initialization
+@@ -132,3 +144,68 @@
+     engine = EmbeddingEngine()
+     result = engine.embed([], model_name="test-model")
+     assert result == []
++
++
++@pytest.mark.parametrize("model_name", ["test-embed", "mock-embed", "dummy-embed"])
++def test_strict_fallback_only_targets_raise_before_hashing(model_name: str, monkeypatch: pytest.MonkeyPatch) -> None:
++    engine = EmbeddingEngine()
++    fallback_calls: list[str] = []
++    original_fallback = engine._fallback_embedding
++
++    def counted_fallback(text: str) -> list[float]:
++        fallback_calls.append(text)
++        return original_fallback(text)
++
++    monkeypatch.setattr(engine, "_fallback_embedding", counted_fallback)
++    with pytest.raises(EmbeddingModelUnavailableError) as caught:
++        engine.embed("probe", model_name, allow_fallback=False)
++    assert caught.value.model_name == model_name
++    assert str(caught.value) == f"Embedding model '{model_name}' could not be loaded."
++    assert engine.current_model == model_name and engine.model is None
++    assert fallback_calls == []
++
++
++def test_loader_failure_preserves_default_deterministic_fallback(
++    monkeypatch: pytest.MonkeyPatch, record_property: Callable[[str, object], None]
++) -> None:
++    engine = EmbeddingEngine()
++    model_name = "nomic-embed-text:latest"
++    text = "SSAK_EM01_MODEL_IDENTITY_PROBE"
++    factory_models: list[str] = []
++    fallback_calls: list[str] = []
++    original_fallback = engine._fallback_embedding
++
++    def failing_factory(requested_model: str) -> _EmbeddingModel:
++        factory_models.append(requested_model)
++        raise RuntimeError("controlled-loader-failure")
++
++    def counted_fallback(value: str) -> list[float]:
++        fallback_calls.append(value)
++        return original_fallback(value)
++
++    module = ModuleType("sentence_transformers")
++    setattr(module, "SentenceTransformer", failing_factory)
++    monkeypatch.setitem(sys.modules, "sentence_transformers", module)
++    monkeypatch.setattr(engine, "_fallback_embedding", counted_fallback)
++    first = engine.embed(text, model_name)
++    second = engine.embed(text, model_name)
++    assert factory_models == [model_name, model_name]
++    assert fallback_calls == [text, text]
++    assert first == second == [original_fallback(text)]
++    assert len(first[0]) == engine.fallback_dimensions
++    assert np.isfinite(first[0]).all()
++    assert abs(np.linalg.norm(first[0]) - 1.0) < 1e-12
++    record_property(
++        "default_fallback_observation",
++        json.dumps(
++            {
++                "factory_calls": len(factory_models),
++                "fallback_calls": len(fallback_calls),
++                "dimension": len(first[0]),
++                "deterministic": first == second,
++                "vector_sha256": hashlib.sha256(json.dumps(first[0], separators=(",", ":")).encode()).hexdigest(),
++                "post_count": 0,
++            },
++            separators=(",", ":"),
++        ),
++    )
+--- /dev/null
++++ b/tests/test_embeddings_model_contract.py
+@@ -0,0 +1,200 @@
++from __future__ import annotations
++
++import hashlib
++import json
++import socket
++import sys
++from collections.abc import Callable
++from dataclasses import dataclass, field
++from pathlib import Path
++from types import ModuleType
++
++import pytest
++from fastapi import FastAPI, HTTPException
++from fastapi.testclient import TestClient
++from httpx import Response
++
++from antigravity_k.api.dependencies import get_embedding_engine
++from antigravity_k.api.error_handler import http_exception_handler
++from antigravity_k.api.routes.models_api import router
++from antigravity_k.engine.audit_logger import AuditLogger
++from antigravity_k.engine.embeddings import EmbeddingEngine, _EmbeddingFactory, _EmbeddingModel
++
++MODEL = "nomic-embed-text:latest"
++PROBE = "SSAK_EM01_MODEL_IDENTITY_PROBE"
++DETAIL = {
++    "code": "embedding_model_unavailable",
++    "model": MODEL,
++    "message": f"Embedding model '{MODEL}' could not be loaded.",
++}
++RecordProperty = Callable[[str, object], None]
++
++
++@dataclass
++class _Boundary:
++    engine: EmbeddingEngine
++    factory_models: list[str] = field(default_factory=list)
++    encode_inputs: list[tuple[list[str], bool]] = field(default_factory=list)
++    fallback_calls: int = 0
++    network_attempts: int = 0
++    post_count: int = 0
++
++
++@pytest.fixture
++def boundary(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> _Boundary:
++    state = _Boundary(EmbeddingEngine())
++    original_fallback = state.engine._fallback_embedding
++
++    def counted_fallback(text: str) -> list[float]:
++        state.fallback_calls += 1
++        return original_fallback(text)
++
++    def blocked_connect(sock: socket.socket, address: object) -> None:
++        state.network_attempts += 1
++        raise AssertionError(f"unexpected external network request: {address!r}")
++
++    monkeypatch.setattr(state.engine, "_fallback_embedding", counted_fallback)
++    monkeypatch.setattr(socket.socket, "connect", blocked_connect)
++    audit = AuditLogger(tmp_path / "audit")
++    monkeypatch.setattr("antigravity_k.api.routes.models_api.get_audit_logger", lambda: audit)
++    return state
++
++
++def _install_factory(monkeypatch: pytest.MonkeyPatch, factory: _EmbeddingFactory) -> None:
++    assert isinstance(factory, _EmbeddingFactory)
++    module = ModuleType("sentence_transformers")
++    setattr(module, "SentenceTransformer", factory)
++    monkeypatch.setitem(sys.modules, "sentence_transformers", module)
++
++
++def _post(
++    state: _Boundary,
++    record_property: RecordProperty,
++    *,
++    case: str,
++    inputs: list[str],
++    shared_handler: bool = False,
++) -> Response:
++    app = FastAPI()
++    app.include_router(router)
++    if shared_handler:
++        app.add_exception_handler(HTTPException, http_exception_handler)
++    app.dependency_overrides[get_embedding_engine] = lambda: state.engine
++    assert state.factory_models == []
++    assert state.fallback_calls == state.network_attempts == state.post_count == 0
++    try:
++        with TestClient(app, raise_server_exceptions=False) as client:
++            state.post_count += 1
++            response = client.post("/v1/embeddings", json={"model": MODEL, "input": inputs})
++    finally:
++        app.dependency_overrides.clear()
++
++    # The audit runner exports JUnit, not arbitrary files in its disposable checkout.
++    # Preserve raw UTF-8 JSON there once; stdout and summaries contain hashes only.
++    record_property("embedding_request_raw", response.request.content.decode("utf-8"))
++    record_property("embedding_response_raw", response.content.decode("utf-8"))
++    record_property(
++        "embedding_observation",
++        json.dumps(
++            {
++                "case": case,
++                "post_count": state.post_count,
++                "status_code": response.status_code,
++                "content_type": response.headers.get("content-type"),
++                "request_bytes": len(response.request.content),
++                "request_sha256": hashlib.sha256(response.request.content).hexdigest(),
++                "response_bytes": len(response.content),
++                "response_sha256": hashlib.sha256(response.content).hexdigest(),
++                "factory_calls": len(state.factory_models),
++                "encode_calls": len(state.encode_inputs),
++                "fallback_calls": state.fallback_calls,
++                "network_attempts": state.network_attempts,
++                "live_embedding": "NOT_RUN",
++            },
++            separators=(",", ":"),
++        ),
++    )
++    return response
++
++
++def _assert_unavailable(response: Response, state: _Boundary) -> None:
++    assert response.status_code == 503
++    assert response.headers["content-type"] == "application/json"
++    body = response.json()
++    assert body["detail"] == DETAIL
++    assert "data" not in body and "embedding" not in body
++    assert "controlled-loader-failure" not in response.text
++    assert state.fallback_calls == state.network_attempts == 0
++    assert state.encode_inputs == []
++    assert state.post_count == 1
++
++
++@pytest.mark.parametrize("shared_handler", [False, True], ids=["default-handler", "shared-handler"])
++def test_explicit_model_load_failure_does_not_return_hash_fallback_as_success(
++    monkeypatch: pytest.MonkeyPatch,
++    boundary: _Boundary,
++    record_property: RecordProperty,
++    shared_handler: bool,
++) -> None:
++    def failing_factory(model_name: str) -> _EmbeddingModel:
++        boundary.factory_models.append(model_name)
++        raise RuntimeError("controlled-loader-failure")
++
++    _install_factory(monkeypatch, failing_factory)
++    response = _post(
++        boundary,
++        record_property,
++        case="runtime_shared" if shared_handler else "runtime_default",
++        inputs=[PROBE],
++        shared_handler=shared_handler,
++    )
++    _assert_unavailable(response, boundary)
++    assert boundary.factory_models == [MODEL]
++    if shared_handler:
++        body = response.json()
++        assert body["ok"] is False
++        assert body["error"] == "http_503"
++        assert isinstance(body["correlation_id"], str) and body["correlation_id"]
++    else:
++        assert response.json() == {"detail": DETAIL}
++
++
++def test_dependency_import_failure_has_same_strict_contract(
++    monkeypatch: pytest.MonkeyPatch, boundary: _Boundary, record_property: RecordProperty
++) -> None:
++    # A missing required external export causes ImportError in the real lazy import.
++    monkeypatch.setitem(sys.modules, "sentence_transformers", ModuleType("sentence_transformers"))
++    response = _post(boundary, record_property, case="import_default", inputs=[PROBE])
++    _assert_unavailable(response, boundary)
++    assert boundary.factory_models == []
++    assert boundary.engine.current_model == MODEL
++
++
++def test_external_encoder_success_preserves_inputs_vectors_and_indexes(
++    monkeypatch: pytest.MonkeyPatch, boundary: _Boundary, record_property: RecordProperty
++) -> None:
++    inputs = ["first input", "second input"]
++    vectors = ((0.25, -0.5), (0.75, 1.0))
++
++    class Encoder:
++        def encode(self, sentences: list[str], *, convert_to_numpy: bool) -> tuple[tuple[float, ...], ...]:
++            boundary.encode_inputs.append((list(sentences), convert_to_numpy))
++            return vectors
++
++    def factory(model_name: str) -> _EmbeddingModel:
++        boundary.factory_models.append(model_name)
++        return Encoder()
++
++    _install_factory(monkeypatch, factory)
++    response = _post(boundary, record_property, case="backend_success", inputs=inputs)
++    assert response.status_code == 200
++    body = response.json()
++    assert body["object"] == "list"
++    assert body["model"] == MODEL
++    assert body["data"] == [
++        {"object": "embedding", "embedding": list(vector), "index": index} for index, vector in enumerate(vectors)
++    ]
++    assert boundary.factory_models == [MODEL]
++    assert boundary.encode_inputs == [(inputs, True)]
++    assert boundary.fallback_calls == boundary.network_attempts == 0
++    assert boundary.post_count == 1
+--- a/tests/test_models_system_api.py
++++ b/tests/test_models_system_api.py
+@@ -4,11 +4,14 @@
+ """
+ 
+ import asyncio
++import hashlib
++import json
+ from collections.abc import Iterator
+ from pathlib import Path
+ from types import SimpleNamespace
+ from typing import Callable, Protocol, cast, final
+ 
++import httpx
+ import psutil
+ import pytest
+ from fastapi import HTTPException
+@@ -88,20 +91,44 @@
+ class _FakeEmbeddingEngine:
+     def __init__(self) -> None:
+         self.error: Exception | None = None
+-
+-    def embed(self, values: list[str], model: str) -> list[list[float]]:
++        self.allow_fallback_calls: list[bool] = []
++
++    def embed(self, values: list[str], model: str, *, allow_fallback: bool = True) -> list[list[float]]:
+         _ = (values, model)
++        self.allow_fallback_calls.append(allow_fallback)
+         if self.error is not None:
+             raise self.error
+         return [[0.1, 0.2], [0.3, 0.4]]
+ 
+ 
+ @pytest.fixture
+-def client() -> Iterator[TestClient]:
++def client(record_property: Callable[[str, object], None]) -> Iterator[TestClient]:
+     headers = {"X-Access-Pin": config.security.access_pin}
++    posts: list[dict[str, object]] = []
++
++    def record_post(response: httpx.Response) -> None:
++        if response.request.method != "POST":
++            return
++        body = response.read()
++        index = len(posts)
++        record_property(f"impact_request_raw_{index}", response.request.content.decode("utf-8"))
++        record_property(f"impact_response_raw_{index}", body.decode("utf-8"))
++        posts.append(
++            {
++                "path": response.request.url.path,
++                "status_code": response.status_code,
++                "request_bytes": len(response.request.content),
++                "request_sha256": hashlib.sha256(response.request.content).hexdigest(),
++                "response_bytes": len(body),
++                "response_sha256": hashlib.sha256(body).hexdigest(),
++            }
++        )
++
+     with TestClient(app, raise_server_exceptions=False) as test_client:
+         test_client.headers.update(headers)
++        test_client.event_hooks["response"].append(record_post)
+         yield test_client
++    record_property("impact_post_observations", json.dumps(posts, separators=(",", ":")))
+ 
+ 
+ def _fake_manager() -> _FakeManager:
+@@ -183,6 +210,7 @@
+         embeddings = cast(list[object], ok["data"])
+         assert usage["prompt_tokens"] == 1  # 4//4 + 2//4
+         assert cast(JsonObject, embeddings[1])["index"] == 1
++        assert engine.allow_fallback_calls == [False]
+ 
+         engine.error = ValueError("차원 불일치")
+         try:
+@@ -190,6 +218,7 @@
+         finally:
+             app.dependency_overrides.clear()
+         assert err.status_code == 500
++        assert engine.allow_fallback_calls == [False, False]
+ 
+ 
+ # ─── System status/restart (system_api 귀속분) ───────────────────
+--- /dev/null
++++ b/tests/test_ollama_embedding_routing.py
+@@ -0,0 +1,520 @@
++from __future__ import annotations
++
++import hashlib
++import json
++import math
++import socket
++import sys
++from collections.abc import Callable, Iterator
++from pathlib import Path
++from types import ModuleType
++from typing import TypedDict, Unpack, cast
++
++import httpx
++import pytest
++import yaml
++from fastapi import FastAPI, HTTPException
++from fastapi.testclient import TestClient
++
++from antigravity_k.api.error_handler import http_exception_handler
++from antigravity_k.api.routes.models_api import router
++from antigravity_k.engine.audit_logger import AuditLogger
++from antigravity_k.engine.embeddings import EmbeddingEngine, EmbeddingModelUnavailableError
++from antigravity_k.engine.model_registry import ModelRegistry
++from antigravity_k.engine.provider_adapters.embedding_providers import OllamaEmbeddingProvider
++
++RecordProperty = Callable[[str, object], None]
++MODEL_NAME = "nomic-embed-text:latest"
++MODEL_REPO = "nomic-embed-text:v1"
++VECTORS = [[0.25, -0.5], [0.75, 1.0]]
++PROTOCOL_DETAIL = {
++    "code": "embedding_provider_invalid_response",
++    "model": MODEL_NAME,
++    "message": "Embedding provider returned an invalid response.",
++}
++_LIVE_NETWORK_ATTEMPTS: list[str] = []
++
++
++class _Counter:
++    def __init__(self) -> None:
++        self.api_posts = 0
++        self.mock_posts = 0
++        self.live_network_attempts = 0
++        self.factory_calls = 0
++        self.encode_calls = 0
++        self.fallback_calls = 0
++        self.observations: list[dict[str, object]] = []
++
++
++def _registry_file(
++    path: Path,
++    *,
++    provider: str = "ollama",
++    roles: list[str] | None = None,
++    api_base: str = "",
++    dimensions: int = 2,
++    provider_base: object = "http://provider-host:11434/v1/",
++    include_model: bool = True,
++    role: str = "embedding",
++) -> Path:
++    profile: dict[str, object] = {
++        "name": MODEL_NAME,
++        "repo": MODEL_REPO,
++        "role": role,
++        "provider": provider,
++        "api_base": api_base,
++        "dimensions": dimensions,
++    }
++    if roles is not None:
++        profile["roles"] = roles
++    value: dict[str, object] = {"models": {role: [profile] if include_model else []}, "providers": {}}
++    providers: dict[str, object] = {}
++    if provider_base is not None:
++        providers["base_url"] = provider_base
++    value["providers"] = {"ollama": providers}
++    path.write_text(yaml.safe_dump(value, sort_keys=False), encoding="utf-8")
++    return path
++
++
++def _response(
++    request: httpx.Request, body: object, *, status: int = 200, content_type: str = "application/json"
++) -> httpx.Response:
++    content = body if isinstance(body, bytes) else json.dumps(body, allow_nan=True).encode()
++    return httpx.Response(status, content=content, headers={"content-type": content_type}, request=request)
++
++
++def _transport(
++    counter: _Counter,
++    handler: Callable[[httpx.Request], httpx.Response],
++    records: list[dict[str, object]],
++) -> httpx.MockTransport:
++    def serve(request: httpx.Request) -> httpx.Response:
++        counter.mock_posts += int(request.method == "POST")
++        raw = request.read()
++        record: dict[str, object] = {
++            "method": request.method,
++            "url": str(request.url),
++            "request_body": raw.decode("utf-8"),
++            "request_sha256": hashlib.sha256(raw).hexdigest(),
++            "request_bytes": len(raw),
++            "has_authorization_header": "authorization" in request.headers,
++        }
++        records.append(record)
++        try:
++            response = handler(request)
++        except httpx.RequestError as exc:
++            record.update(response_status=None, transport_error=type(exc).__name__, response_body="")
++            raise
++        record["response_status"] = response.status_code
++        record["response_body"] = response.content.decode("utf-8", errors="replace")
++        record["response_sha256"] = hashlib.sha256(response.content).hexdigest()
++        record["response_bytes"] = len(response.content)
++        return response
++
++    return httpx.MockTransport(serve)
++
++
++class _ClientOptions(TypedDict):
++    timeout: float
++    follow_redirects: bool
++    trust_env: bool
++    transport: httpx.BaseTransport | None
++
++
++def _record_httpx_options(kwargs: _ClientOptions, tmp_path: Path) -> httpx.Client:
++    options_path = tmp_path / "httpx-options.json"
++    options_path.write_text(
++        json.dumps({key: value for key, value in kwargs.items() if key != "transport"}, default=str), encoding="utf-8"
++    )
++    return httpx.Client(**kwargs)
++
++
++def _app(
++    monkeypatch: pytest.MonkeyPatch,
++    tmp_path: Path,
++    config_path: Path,
++    transport: httpx.MockTransport,
++    counter: _Counter,
++) -> FastAPI:
++    monkeypatch.setenv("AGK_CONFIG_FILE", str(config_path))
++    monkeypatch.setenv("OLLAMA_API_KEY", "sentinel-never-transmitted")
++
++    def provider_factory() -> OllamaEmbeddingProvider:
++        return OllamaEmbeddingProvider(transport=transport)
++
++    monkeypatch.setattr("antigravity_k.engine.embeddings.OllamaEmbeddingProvider", provider_factory)
++
++    def client_factory(**kwargs: Unpack[_ClientOptions]) -> httpx.Client:
++        return _record_httpx_options(kwargs, tmp_path)
++
++    monkeypatch.setattr("antigravity_k.engine.provider_adapters.embedding_providers.HttpxClient", client_factory)
++
++    def forbidden_factory(model_name: str) -> object:
++        counter.factory_calls += 1
++        raise RuntimeError(f"unexpected SentenceTransformer use for {model_name}")
++
++    module = ModuleType("sentence_transformers")
++    setattr(module, "SentenceTransformer", forbidden_factory)
++    monkeypatch.setitem(sys.modules, "sentence_transformers", module)
++    original_fallback = EmbeddingEngine._fallback_embedding
++
++    def counted_fallback(engine: EmbeddingEngine, text: str) -> list[float]:
++        counter.fallback_calls += 1
++        return original_fallback(engine, text)
++
++    monkeypatch.setattr(EmbeddingEngine, "_fallback_embedding", counted_fallback)
++    monkeypatch.setattr("antigravity_k.api.routes.models_api.get_audit_logger", lambda: AuditLogger(tmp_path / "audit"))
++    app = FastAPI()
++    app.include_router(router)
++    return app
++
++
++@pytest.fixture(autouse=True)
++def _block_any_real_socket(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
++    attempts: list[str] = []
++    monkeypatch.setattr(sys.modules[__name__], "_LIVE_NETWORK_ATTEMPTS", attempts)
++
++    def deny(sock: socket.socket, address: object) -> None:
++        attempts.append(repr(address))
++        raise AssertionError(f"live network is prohibited: {address!r}")
++
++    monkeypatch.setattr(socket.socket, "connect", deny)
++    yield
++
++
++def _call(
++    monkeypatch: pytest.MonkeyPatch,
++    tmp_path: Path,
++    config_path: Path,
++    counter: _Counter,
++    record_property: RecordProperty,
++    handler: Callable[[httpx.Request], httpx.Response],
++    *,
++    model: str = MODEL_NAME,
++    inputs: str | list[str] | tuple[str, ...] = ("first", "second"),
++    transport_records: list[dict[str, object]] | None = None,
++    shared_handler: bool = False,
++) -> tuple[httpx.Response, list[dict[str, object]]]:
++    records = transport_records if transport_records is not None else []
++    transport = _transport(counter, handler, records)
++    app = _app(monkeypatch, tmp_path, config_path, transport, counter)
++    if shared_handler:
++        app.add_exception_handler(HTTPException, http_exception_handler)
++    request_body = {"model": model, "input": inputs}
++    try:
++        with TestClient(app, raise_server_exceptions=False) as client:
++            counter.api_posts += 1
++            response = client.post("/v1/embeddings", json=request_body)
++    finally:
++        app.dependency_overrides.clear()
++    options_path = tmp_path / "httpx-options.json"
++    options = json.loads(options_path.read_text()) if options_path.is_file() else None
++    counter.live_network_attempts = len(_LIVE_NETWORK_ATTEMPTS)
++    counter.observations.append(
++        {
++            "request": request_body,
++            "api_status": response.status_code,
++            "api_response": response.text,
++            "api_request_bytes": len(response.request.content),
++            "api_request_sha256": hashlib.sha256(response.request.content).hexdigest(),
++            "api_response_bytes": len(response.content),
++            "api_response_sha256": hashlib.sha256(response.content).hexdigest(),
++            "api_post_count": 1,
++            "mock_native_post_count": counter.mock_posts,
++            "live_network_attempts": counter.live_network_attempts,
++            "live_network_addresses": list(_LIVE_NETWORK_ATTEMPTS),
++            "transport_attempt_count": len(records),
++            "mock_native_post_count_this_call": sum(record.get("method") == "POST" for record in records),
++            "api_post_count_this_call": 1,
++            "httpx_options": options,
++        }
++    )
++    record_property("routing_case_raw", json.dumps(counter.observations[-1], separators=(",", ":")))
++    record_property("routing_transport_raw", json.dumps(records, separators=(",", ":")))
++    return response, records
++
++
++def test_real_dependency_registry_engine_route_uses_one_native_batch(
++    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, record_property: RecordProperty
++) -> None:
++    config_path = _registry_file(tmp_path / "config.yaml", roles=["reasoning", "embedding"])
++    counter = _Counter()
++    transport_records: list[dict[str, object]] = []
++
++    def handler(request: httpx.Request) -> httpx.Response:
++        return _response(request, {"model": MODEL_REPO, "embeddings": VECTORS})
++
++    response, records = _call(
++        monkeypatch, tmp_path, config_path, counter, record_property, handler, transport_records=transport_records
++    )
++    body = response.json()
++    assert response.status_code == 200
++    assert body["model"] == MODEL_NAME
++    assert body["data"] == [
++        {"object": "embedding", "embedding": vector, "index": index} for index, vector in enumerate(VECTORS)
++    ]
++    assert body["usage"]["prompt_tokens"] == 2
++    assert body["usage"]["completion_tokens"] == 0
++    assert body["usage"]["total_tokens"] == 2
++    assert counter.api_posts == counter.mock_posts == 1
++    assert counter.live_network_attempts == counter.factory_calls == counter.encode_calls == counter.fallback_calls == 0
++    assert counter.observations[-1]["httpx_options"] == {
++        "timeout": 55.0,
++        "follow_redirects": False,
++        "trust_env": False,
++    }
++    assert json.loads(cast(str, records[0]["request_body"])) == {
++        "model": MODEL_REPO,
++        "input": ["first", "second"],
++        "truncate": False,
++    }
++    assert records[0]["url"] == "http://provider-host:11434/api/embed"
++    assert records[0]["has_authorization_header"] is False
++    assert "keep_alive" not in cast(str, records[0]["request_body"])
++    assert len(records) == 1
++    assert records[0]["method"] == "POST"
++
++
++def test_registered_repo_alias_single_string_and_embedding_among_roles(
++    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, record_property: RecordProperty
++) -> None:
++    path = _registry_file(tmp_path / "config.yaml", roles=["reasoning", "embedding"])
++    counter = _Counter()
++    response, records = _call(
++        monkeypatch,
++        tmp_path,
++        path,
++        counter,
++        record_property,
++        lambda request: _response(request, {"model": MODEL_REPO, "embeddings": [VECTORS[0]]}),
++        model=MODEL_REPO,
++        inputs="single input",
++    )
++    assert response.status_code == 200 and response.json()["model"] == MODEL_REPO
++    assert json.loads(cast(str, records[0]["request_body"]))["model"] == MODEL_REPO
++    assert response.json()["data"][0]["embedding"] == VECTORS[0]
++    assert json.loads(cast(str, records[0]["request_body"]))["input"] == ["single input"]
++    assert counter.api_posts == counter.mock_posts == 1
++
++
++@pytest.mark.parametrize(
++    ("api_base", "provider_base", "expected"),
++    [
++        ("http://profile-host:9000/v1/", "http://provider-host:11434/v1", "http://profile-host:9000/api/embed"),
++        ("", "http://proxy-host:9999/proxy/v1/", "http://proxy-host:9999/proxy/api/embed"),
++        ("", None, "http://localhost:11434/api/embed"),
++        ("", "http://proxy-host:9999/prefix/", "http://proxy-host:9999/prefix/api/embed"),
++    ],
++    ids=["profile-priority", "provider-v1-proxy", "default", "proxy-prefix"],
++)
++def test_endpoint_resolution_and_normalization(
++    api_base: str,
++    provider_base: object,
++    expected: str,
++    tmp_path: Path,
++    record_property: RecordProperty,
++) -> None:
++    registry_path = _registry_file(
++        tmp_path / f"{len(list(tmp_path.iterdir()))}.yaml", api_base=api_base, provider_base=provider_base
++    )
++    registry = ModelRegistry(str(registry_path))
++    profile = registry.get_model(MODEL_NAME)
++    assert profile is not None
++    records: list[dict[str, object]] = []
++    provider = OllamaEmbeddingProvider(
++        transport=_transport(
++            _Counter(), lambda request: _response(request, {"model": MODEL_REPO, "embeddings": [VECTORS[0]]}), records
++        )
++    )
++    result = provider.embed(profile, registry, "single", MODEL_REPO)
++    assert result == [VECTORS[0]]
++    assert records[0]["url"] == expected
++    record_property("endpoint_case", json.dumps({"expected": expected, "actual": records[0]["url"], "post_count": 1}))
++
++
++@pytest.mark.parametrize(
++    ("provider", "roles", "registered", "requested", "role"),
++    [
++        ("openai", ["embedding"], True, MODEL_NAME, "embedding"),
++        ("ollama", ["reasoning"], True, MODEL_NAME, "reasoning"),
++        ("ollama", ["embedding"], False, "unregistered:embedding", "embedding"),
++    ],
++    ids=["wrong-provider", "wrong-role", "unregistered-tag"],
++)
++def test_non_matching_registry_profiles_do_not_select_native(
++    provider: str,
++    roles: list[str],
++    registered: bool,
++    requested: str,
++    role: str,
++    monkeypatch: pytest.MonkeyPatch,
++    tmp_path: Path,
++    record_property: RecordProperty,
++) -> None:
++    path = _registry_file(tmp_path / "config.yaml", provider=provider, roles=roles, include_model=registered, role=role)
++    registry = ModelRegistry(str(path))
++    calls: list[str] = []
++
++    def factory(name: str) -> object:
++        calls.append(name)
++        raise RuntimeError("fixture-loader-unavailable")
++
++    module = ModuleType("sentence_transformers")
++    setattr(module, "SentenceTransformer", factory)
++    monkeypatch.setitem(sys.modules, "sentence_transformers", module)
++    engine = EmbeddingEngine(registry=registry)
++    with pytest.raises(EmbeddingModelUnavailableError):
++        engine.embed("input", requested, allow_fallback=False)
++    assert calls == [requested]
++    record_property(
++        "nonmatch_observation",
++        json.dumps({"registry_match": registered, "native_post_count": 0, "legacy_factory_calls": len(calls)}),
++    )
++
++
++def test_invalid_base_url_is_unavailable_without_network_or_fallback(
++    monkeypatch: pytest.MonkeyPatch,
++    tmp_path: Path,
++    record_property: RecordProperty,
++) -> None:
++    path = _registry_file(tmp_path / "config.yaml", api_base="http://profile-host:9000/?query=bad")
++    counter = _Counter()
++    response, records = _call(
++        monkeypatch,
++        tmp_path,
++        path,
++        counter,
++        record_property,
++        lambda request: _response(request, {"model": MODEL_REPO, "embeddings": VECTORS}),
++        shared_handler=True,
++    )
++    assert response.status_code == 503
++    assert response.json()["detail"]["code"] == "embedding_model_unavailable"
++    assert records == []
++    assert counter.api_posts == 1 and counter.mock_posts == 0
++    assert counter.fallback_calls == counter.factory_calls == counter.encode_calls == counter.live_network_attempts == 0
++
++
++@pytest.mark.parametrize(
++    ("failure", "status"),
++    [("timeout", 503), ("connection", 503), ("redirect", 503), ("http400", 503), ("http500", 503)],
++)
++def test_transport_failures_are_single_attempt_503_without_fallback(
++    failure: str,
++    status: int,
++    monkeypatch: pytest.MonkeyPatch,
++    tmp_path: Path,
++    record_property: RecordProperty,
++) -> None:
++    path = _registry_file(tmp_path / "config.yaml")
++    counter = _Counter()
++
++    def handler(request: httpx.Request) -> httpx.Response:
++        if failure == "timeout":
++            raise httpx.ReadTimeout("controlled timeout", request=request)
++        if failure == "connection":
++            raise httpx.ConnectError("controlled connection", request=request)
++        if failure == "redirect":
++            return httpx.Response(307, headers={"location": "http://must-not-follow/api/embed"}, request=request)
++        return _response(request, {"error": "controlled"}, status=400 if failure == "http400" else 500)
++
++    response, records = _call(monkeypatch, tmp_path, path, counter, record_property, handler, shared_handler=True)
++    body = response.json()
++    assert response.status_code == status
++    assert body["detail"] == {
++        "code": "embedding_model_unavailable",
++        "model": MODEL_NAME,
++        "message": f"Embedding model '{MODEL_NAME}' could not be loaded.",
++    }
++    assert counter.api_posts == counter.mock_posts == 1
++    assert len(records) == 1
++    assert counter.fallback_calls == counter.factory_calls == counter.encode_calls == counter.live_network_attempts == 0
++    assert response.json()["error"] == "http_503"
++    assert counter.observations[-1]["httpx_options"] == {
++        "timeout": 55.0,
++        "follow_redirects": False,
++        "trust_env": False,
++    }
++
++
++@pytest.mark.parametrize(
++    "case",
++    [
++        "invalid-json",
++        "content-type",
++        "model",
++        "count",
++        "empty",
++        "unequal",
++        "dimension",
++        "bool",
++        "string",
++        "nan",
++        "infinity",
++        "overflow",
++        "zero",
++    ],
++)
++def test_invalid_upstream_protocol_maps_only_to_structured_502(
++    case: str,
++    monkeypatch: pytest.MonkeyPatch,
++    tmp_path: Path,
++    record_property: RecordProperty,
++) -> None:
++    path = _registry_file(tmp_path / "config.yaml", dimensions=2)
++
++    def handler(request: httpx.Request) -> httpx.Response:
++        if case == "invalid-json":
++            return _response(request, b"not json")
++        if case == "content-type":
++            return _response(request, {"model": MODEL_REPO, "embeddings": VECTORS}, content_type="text/plain")
++        bodies: dict[str, object] = {
++            "model": {"model": "other-model", "embeddings": VECTORS},
++            "count": {"model": MODEL_REPO, "embeddings": [VECTORS[0]]},
++            "empty": {"model": MODEL_REPO, "embeddings": [[], VECTORS[1]]},
++            "unequal": {"model": MODEL_REPO, "embeddings": [[1.0, 2.0], [1.0]]},
++            "dimension": {"model": MODEL_REPO, "embeddings": [[1.0, 2.0, 3.0], [2.0, 3.0, 4.0]]},
++            "bool": {"model": MODEL_REPO, "embeddings": [[True, 0.5], VECTORS[1]]},
++            "string": {"model": MODEL_REPO, "embeddings": [["0.25", 0.5], VECTORS[1]]},
++            "nan": {"model": MODEL_REPO, "embeddings": [[float("nan"), 0.5], VECTORS[1]]},
++            "infinity": {"model": MODEL_REPO, "embeddings": [[float("inf"), 0.5], VECTORS[1]]},
++            "overflow": {"model": MODEL_REPO, "embeddings": [[10**400, 0.5], VECTORS[1]]},
++            "zero": {"model": MODEL_REPO, "embeddings": [[0.0, 0.0], VECTORS[1]]},
++        }
++        return _response(request, bodies[case])
++
++    counter = _Counter()
++    response, records = _call(monkeypatch, tmp_path, path, counter, record_property, handler, shared_handler=True)
++    body = response.json()
++    assert response.status_code == 502
++    assert body["detail"] == PROTOCOL_DETAIL
++    assert body["error"] == "http_502"
++    assert counter.observations[-1]["httpx_options"] == {
++        "timeout": 55.0,
++        "follow_redirects": False,
++        "trust_env": False,
++    }
++    assert counter.api_posts == counter.mock_posts == 1 and len(records) == 1
++    assert counter.fallback_calls == counter.factory_calls == counter.encode_calls == counter.live_network_attempts == 0
++
++
++def test_unregistered_dimensions_allow_other_consistent_positive_size(tmp_path: Path) -> None:
++    registry = ModelRegistry(str(_registry_file(tmp_path / "config.yaml", dimensions=0)))
++    profile = registry.get_model(MODEL_NAME)
++    assert profile is not None
++    provider = OllamaEmbeddingProvider(
++        transport=httpx.MockTransport(
++            lambda request: _response(request, {"model": MODEL_REPO, "embeddings": [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]})
++        )
++    )
++    result = provider.embed(profile, registry, ["a", "b"], MODEL_REPO)
++    assert len(result) == 2 and all(len(row) == 3 for row in result)
++    assert all(math.isclose(a, b) for a, b in zip(result[0], [0.1, 0.2, 0.3], strict=True))
++
++
++def test_profile_dimensions_rejects_non_integer_or_non_positive_configuration(tmp_path: Path) -> None:
++    path = _registry_file(tmp_path / "config.yaml")
++    registry = ModelRegistry(str(path))
++    profile = registry.get_model(MODEL_NAME)
++    assert profile is not None
++    assert type(profile.dimensions) is int and profile.dimensions == 2
+--- /dev/null
++++ b/tests/test_model_registry_config_precedence.py
+@@ -0,0 +1,42 @@
++from pathlib import Path
++
++import pytest
++
++from antigravity_k.engine import model_registry
++
++
++def write_registry(path: Path, name: str) -> Path:
++    path.write_text(f"models:\n  embedding:\n    - name: {name}\n      provider: ollama\n      repo: {name}\n")
++    return path
++
++
++def test_explicit_config_path_precedes_environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
++    explicit = write_registry(tmp_path / "explicit.yaml", "explicit-model")
++    environment = write_registry(tmp_path / "environment.yaml", "environment-model")
++    monkeypatch.setenv("AGK_CONFIG_FILE", str(environment))
++    registry = model_registry.ModelRegistry(str(explicit))
++    assert registry.get_model("explicit-model") is not None
++    assert registry.get_model("environment-model") is None
++
++
++def test_environment_config_is_used_when_path_omitted(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
++    environment = write_registry(tmp_path / "environment.yaml", "environment-model")
++    default = write_registry(tmp_path / "default.yaml", "default-model")
++    monkeypatch.setenv("AGK_CONFIG_FILE", str(environment))
++    monkeypatch.setattr(model_registry, "_default_config_path", lambda: default)
++    registry = model_registry.ModelRegistry()
++    assert registry.get_model("environment-model") is not None
++    assert registry.get_model("default-model") is None
++
++
++@pytest.mark.parametrize("empty_environment", [False, True])
++def test_missing_or_empty_environment_preserves_default_path(
++    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, empty_environment: bool
++) -> None:
++    default = write_registry(tmp_path / "default.yaml", "default-model")
++    monkeypatch.delenv("AGK_CONFIG_FILE", raising=False)
++    if empty_environment:
++        monkeypatch.setenv("AGK_CONFIG_FILE", "")
++    monkeypatch.setattr(model_registry, "_default_config_path", lambda: default)
++    registry = model_registry.ModelRegistry()
++    assert registry.get_model("default-model") is not None

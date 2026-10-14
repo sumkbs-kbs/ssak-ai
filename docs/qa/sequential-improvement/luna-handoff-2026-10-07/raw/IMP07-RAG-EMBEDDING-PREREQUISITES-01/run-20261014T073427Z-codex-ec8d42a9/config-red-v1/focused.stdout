@@ -1,0 +1,22 @@
+.F..                                                                     [100%]
+=================================== FAILURES ===================================
+______________ test_environment_config_is_used_when_path_omitted _______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11e6b4af0>
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-483/test_environment_config_is_use0')
+
+    def test_environment_config_is_used_when_path_omitted(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        environment = write_registry(tmp_path / "environment.yaml", "environment-model")
+        default = write_registry(tmp_path / "default.yaml", "default-model")
+        monkeypatch.setenv("AGK_CONFIG_FILE", str(environment))
+        monkeypatch.setattr(model_registry, "_default_config_path", lambda: default)
+        registry = model_registry.ModelRegistry()
+>       assert registry.get_model("environment-model") is not None
+E       AssertionError: assert None is not None
+E        +  where None = get_model('environment-model')
+E        +    where get_model = <antigravity_k.engine.model_registry.ModelRegistry object at 0x11dab3890>.get_model
+
+tests/test_model_registry_config_precedence.py:28: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_model_registry_config_precedence.py::test_environment_config_is_used_when_path_omitted
+1 failed, 3 passed in 0.13s
