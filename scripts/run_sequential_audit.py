@@ -118,10 +118,25 @@ def owned_checkout(root: Path, origin: Path = ROOT) -> dict[str, Any]:
                 "ls-files",
                 "-z",
                 "--cached",
+                "--",
+                *CHECKOUT_DIRECTORIES,
+                *CHECKOUT_FILES,
+            ],
+            cwd=origin,
+        )
+        .decode("utf-8", "surrogateescape")
+        .split("\0")
+    )
+    listing.extend(
+        subprocess.check_output(
+            [
+                "git",
+                "ls-files",
+                "-z",
                 "--others",
                 "--exclude-standard",
                 "--",
-                *CHECKOUT_DIRECTORIES,
+                *(name for name in CHECKOUT_DIRECTORIES if name not in ("docs", ".omo", "research")),
                 *CHECKOUT_FILES,
             ],
             cwd=origin,
@@ -475,7 +490,7 @@ def sandbox_profile(root: Path, *, checkout: bool = False) -> str:
         )
     ]
     if checkout:
-        reads = [ROOT / ".git", ROOT / ".venv"]
+        reads = [ROOT / ".venv"]
     # venv의 실제 Python/라이브러리는 HOME 아래의 conda 설치일 수 있다.
     reads.extend((Path(sys.prefix).resolve(), Path(sys.base_prefix).resolve(), root))
     exceptions = " ".join(f"(subpath {quote(path)})" for path in reads)

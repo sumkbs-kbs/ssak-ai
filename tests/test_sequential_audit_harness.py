@@ -471,3 +471,89 @@ def test_cli_help_is_usable() -> None:
     )
     assert result.returncode == 0
     assert "--evidence" in result.stdout and "--timeout" in result.stdout
+
+
+@pytest.mark.parametrize("layout", ["file", "directory"])
+def test_owned_os_boundary_denies_native_origin_git_reads(
+    harness: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, layout: str
+) -> None:
+    home = tmp_path / "personal-home"
+    origin = home / "origin"
+    owned = tmp_path / "owned"
+    origin.mkdir(parents=True)
+    owned.mkdir()
+    git_path = origin / ".git"
+    if layout == "directory":
+        git_path.mkdir()
+        target = git_path / "config"
+    else:
+        target = git_path
+    target.write_text("synthetic-origin-git-marker\n")
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setattr(harness, "ROOT", origin)
+    environment = {**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"}
+    subprocess.run(["git", "init", "--quiet", str(owned)], env=environment, check=True, timeout=10)
+    profile = harness.sandbox_profile(owned, checkout=True)
+    denied = subprocess.run(
+        ["/usr/bin/sandbox-exec", "-p", profile, "/bin/cat", str(target)],
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    assert denied.returncode != 0
+    assert "synthetic-origin-git-marker" not in denied.stdout
+    local = subprocess.run(
+        ["/usr/bin/sandbox-exec", "-p", profile, "git", "-C", str(owned), "rev-parse", "--git-dir"],
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    assert local.returncode == 0, local.stderr
+    assert local.stdout.strip() == ".git"
+
+
+def test_owned_checkout_omits_untracked_private_evidence(
+    harness: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    origin = tmp_path / "origin"
+    origin.mkdir()
+    packaged = origin / "src/antigravity_k/config.yaml"
+    packaged.parent.mkdir(parents=True)
+    packaged.write_text("paths: {}\n")
+    (origin / "README.md").write_text("Owned fixture source\n")
+    environment = {**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"}
+    subprocess.run(["git", "init", "--quiet", str(origin)], env=environment, check=True, timeout=10)
+    subprocess.run(["git", "add", "README.md", "src"], cwd=origin, env=environment, check=True, timeout=10)
+    subprocess.run(
+        [
+            "git",
+            "-c",
+            "user.name=HarnessFixture",
+            "-c",
+            "user.email=harness@example.invalid",
+            "commit",
+            "-qm",
+            "fixture",
+        ],
+        cwd=origin,
+        env=environment,
+        check=True,
+        timeout=10,
+    )
+    late = origin / "src/antigravity_k/late_module.py"
+    late.write_text("VALUE = 42\n")
+    private = origin / "docs/qa/private-runtime/auth-private/pin.txt"
+    private.parent.mkdir(parents=True)
+    private.write_text("synthetic-private-marker\n")
+    public = origin / "docs/qa/public-result.json"
+    public.write_text('{"fixture": true}\n')
+    monkeypatch.setattr(harness, "QA_RECEIPTS", ("docs/qa/public-result.json",))
+    owned = tmp_path / "owned"
+    owned.mkdir()
+    result = harness.owned_checkout(owned, origin)
+    assert not (owned / "project/docs/qa/private-runtime").exists()
+    assert (owned / "project/src/antigravity_k/late_module.py").read_bytes() == late.read_bytes()
+    assert (owned / "project/docs/qa/public-result.json").read_bytes() == public.read_bytes()
+    assert "docs/qa/private-runtime/auth-private/pin.txt" not in result["copied_sources"]
