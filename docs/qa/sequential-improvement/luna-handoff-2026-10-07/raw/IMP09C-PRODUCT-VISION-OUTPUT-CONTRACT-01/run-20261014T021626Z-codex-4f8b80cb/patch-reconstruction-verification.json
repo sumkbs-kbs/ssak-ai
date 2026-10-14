@@ -1,0 +1,36 @@
+{
+  "method": "pure in-memory patch application; no source mutation",
+  "files": {
+    "src/antigravity_k/api/routes/chat.py": {
+      "before_sha256": "21c07609c0fbd5d5cbe15f2704e56c5bb9cba9d7ec7b089af1780183b9e6cbe1",
+      "current_sha256": "fd74feff99c87ceb1f573a859d5da2ac02cec8d3f11232e1fa43beebabb0901e",
+      "byte_identical": true
+    },
+    "src/antigravity_k/engine/protocol_translator.py": {
+      "before_sha256": "891144e6311bac6764e9f139cd235ce5e706ad00abc179e2c238266668af500e",
+      "current_sha256": "f8d42ce763c6e92b6746d67436c1f40b0f4110a86683f8206738042890da24f8",
+      "byte_identical": true
+    },
+    "src/antigravity_k/engine/structured_output.py": {
+      "before_sha256": null,
+      "current_sha256": "d3089deb48e3b78aacf45a4d517ad5c8357d5bc8680e9272f21883b513f162f1",
+      "byte_identical": true
+    },
+    "tests/test_chat_structured_output_contract.py": {
+      "before_sha256": null,
+      "current_sha256": "f246254cb315aa4fb4002ba71235b956e8b23e4d3587cfcde4da27f163c363f5",
+      "byte_identical": true
+    },
+    "pyproject.toml": {
+      "before_sha256": "3d0c64a30766129b47cdf57b9eb4986c67b3042cf8498dd26f9e11a76e7d105d",
+      "current_sha256": "4f29fa6110dcd62abdb14baf8e61d62695685d05c9914e97a6127064cd51244b",
+      "byte_identical": true
+    },
+    "uv.lock": {
+      "before_sha256": "84e09819b85ebec904d2984169abe8235df2807890b02f440be7555d030738a5",
+      "current_sha256": "2a910f6b4d021400683c1ad8e02cf1f7225f7524d9923208f933778f21d119a6",
+      "byte_identical": true
+    }
+  },
+  "status": "PASS"
+}

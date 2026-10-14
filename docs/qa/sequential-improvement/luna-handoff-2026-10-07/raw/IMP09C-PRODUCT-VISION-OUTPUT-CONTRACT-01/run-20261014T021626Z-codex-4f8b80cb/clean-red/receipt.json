@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-c",
+    "/dev/null",
+    "--noconftest",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py",
+    "-k",
+    "test_structured_image_reaches_native_wire_once",
+    "-q",
+    "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/clean-red/junit.xml"
+  ],
+  "exit_code": 1,
+  "pythonpath": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/clean-red/snapshot/src",
+  "source_preimage": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/source-preimage",
+  "scope": "two native wire formatting regressions only"
+}

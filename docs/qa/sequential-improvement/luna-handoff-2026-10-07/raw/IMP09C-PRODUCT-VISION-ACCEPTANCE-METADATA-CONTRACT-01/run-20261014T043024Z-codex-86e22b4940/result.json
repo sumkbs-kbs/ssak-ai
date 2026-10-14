@@ -1,0 +1,80 @@
+{
+  "task_id": "IMP-09-C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01",
+  "status": "COMPLETE_OFFLINE",
+  "independent_review": "PENDING",
+  "change": "supervise_once acceptance snapshot format now deserializes immutable SCHEMA_JSON before reservation/wire",
+  "scope": "One inherited harness line; one new dedicated writer-path regression",
+  "red": {
+    "junit": "offline-checks/red/junit.xml",
+    "tests": 1,
+    "failed": 1,
+    "reason": "saved omitted does not equal independent exact schema"
+  },
+  "green": {
+    "junit": "offline-checks/green/junit.xml",
+    "tests": 1,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "checks_receipt": "offline-checks/green/receipt.json",
+  "static_checks_exit_codes": {
+    "ruff": 0,
+    "format": 0,
+    "types": 0,
+    "compile": 0
+  },
+  "proof": "offline-checks/green/captures/observations.json",
+  "mock_counts_per_invocation": {
+    "product": 1,
+    "provider": 1
+  },
+  "mock_counts_red_plus_green": {
+    "product": 2,
+    "provider": 2
+  },
+  "actual_calls": {
+    "http": 0,
+    "socket": 0,
+    "worker": 0,
+    "uvicorn": 0,
+    "ollama": 0,
+    "model_inference": 0
+  },
+  "scope_limitation": "In-memory adapter deliberately lacks OS cleanup facts; retained supervisor verdict INCONCLUSIVE_CLEANUP_NOT_CONFIRMED is not an actual runtime failure or cleanup PASS. Only snapshot metadata contract is verified.",
+  "warnings": [
+    "pytest asyncio_mode config warning (plugin autoload disabled)"
+  ],
+  "preservation": {
+    "parent_manifest_sha256": "d6fb249e4a4f78dc85b9bdef877b1d76a7eb76e7e0639131265827744b768220",
+    "parent_files": 144,
+    "parent_drift": [],
+    "protected_files": 28,
+    "protected_drift": [],
+    "staged_paths": 97,
+    "staged_diff_sha256": "84297d5d47940af4560187d6b9f531b3b1eed5a7fa6cd1dca20c4da48fddab6f"
+  },
+  "patch_reconstruction": {
+    "command": [
+      "patch",
+      "--batch",
+      "-p1",
+      "-i",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01/run-20261014T043024Z-codex-86e22b4940/task-only.patch"
+    ],
+    "exit_code": 0,
+    "byte_identical": {
+      "run_harness.py": true,
+      "test_acceptance_metadata_contract.py": true
+    }
+  },
+  "source_sha256": {
+    "run_harness.py": "bb7634481545055b56e691c5fe96992e29d9a1787eef041d29e6d037a199d01b",
+    "test_acceptance_metadata_contract.py": "28e9c308a46ed3fd168024439300e7f15a062703178a5dea9457af934f3574aa"
+  },
+  "live_authorization": "NOT_ISSUED",
+  "overall_imp09": "PARTIAL",
+  "ledger": "NOT_RECOVERED",
+  "historical_format_omitted_failure": "UNCHANGED",
+  "commit_push": "NOT_PERFORMED"
+}

@@ -1,0 +1,489 @@
+{
+  "schema_version": 2,
+  "model": "qwen3.6:latest",
+  "suite": "frontier",
+  "repeats": 2,
+  "started_at": 1786281243.001417,
+  "finished_at": 1786281660.011791,
+  "duration_s": 417.01,
+  "results": [
+    {
+      "case_id": "sim-001",
+      "target": "qwen3.6:latest",
+      "quality_score": 1.0,
+      "quality_grade": "excellent",
+      "latency_ms": 34288.0,
+      "tokens_in": 222,
+      "tokens_out": 318,
+      "output_preview": "선택 이유와 동작 설명\n재귀 방식은 수학적 정의를 직접 반영해 구현이 단순하지만, 중복 호출로 인해 성능 저하가 발생합니다. 반복 방식은 이전 결과를 변수에 저장하며 순차적으로 계산하므로 실시간 처리에 적합합니다. 음수 입력 시 `ValueError`를 발생시켜 잘못된 인자를 즉시 차단합니다. 피보나치 수열의 기준(F(0)=0, F(1)=1)은 표준 정의로 확인된 사실이며, n=0일 때 0을 반환하는 것은 수학적 정의에 부합합니다. n이 매우 클 경우 Python의 임의 정밀도 정수 연산으로 인한 오버헤드는 성능 분석에 포함되지 않았음을 가정합니다.\n\n코드\n```python\ndef fibonacci_recursive(n: int) -> int:\n    if n < 0:\n        raise ValueError(\"n은 음수가 될 수 없습니다.\")\n    if n <= 1:\n        return n\n    return fibonacci_recursive(n - 1) + fibo",
+      "timestamp": 1786281455.17529,
+      "issues": [],
+      "benchmark_score": 1.0,
+      "keyword_coverage": 1.0,
+      "passed_keywords": [
+        "def fibonacci",
+        "O(",
+        "raise",
+        "return"
+      ],
+      "missing_keywords": [],
+      "error": "",
+      "quality_revision_count": 0,
+      "quality_revision_applied": false
+    },
+    {
+      "case_id": "alg-001",
+      "target": "qwen3.6:latest",
+      "quality_score": 1.0,
+      "quality_grade": "excellent",
+      "latency_ms": 41377.5,
+      "tokens_in": 237,
+      "tokens_out": 918,
+      "output_preview": "## 선택 이유와 동작 설명\n이진 탐색 트리(BST)는 정렬 상태 유지와 효율적인 데이터 접근을 위해 선택되었습니다. 왼쪽 서브트리는 기준값보다 작은 값을, 오른쪽 서브트리는 큰 값을 저장하는 구조적 규칙을 따르며, 이를 통해 평균적으로 로그 시간 내 연산이 가능합니다.\n- `insert(val)`: 루트부터 비교하며 적절한 리프 위치를 재귀적으로 탐색 후 새 노드를 연결합니다. 중복 값은 현재 구현에서 무시됩니다.\n- `search(val) -> bool`: 기준값과 일치하는 노드를 발견하면 해당 노드 객체를 반환하고, None에 도달하면 False로 변환하여 반환합니다.\n- `delete(val)`: 삭제 대상 노드의 자식 수(0, 1, 2)에 따라 분기 처리합니다. 자식이 두 개인 경우 중위 순회상 다음 값인 오른쪽 서브트리의 최소값(min)으로 현재 노드 값을 교체한 후, 해당 최소값 노드를 재귀적으로 제거하여 트리 구조를 유지합니다.\n- `in_order_traversal(",
+      "timestamp": 1786281496.55659,
+      "issues": [],
+      "benchmark_score": 1.0,
+      "keyword_coverage": 1.0,
+      "passed_keywords": [
+        "class",
+        "insert",
+        "search",
+        "delete",
+        "O("
+      ],
+      "missing_keywords": [],
+      "error": "",
+      "quality_revision_count": 0,
+      "quality_revision_applied": false
+    },
+    {
+      "case_id": "srch-002",
+      "target": "qwen3.6:latest",
+      "quality_score": 1.0,
+      "quality_grade": "excellent",
+      "latency_ms": 9505.8,
+      "tokens_in": 202,
+      "tokens_out": 414,
+      "output_preview": "## 핵심 요약\nAI 반도체 시장은 고성능 추론용 칩 수요 급증에 따라 첨단 패키징 용량 확대, 모듈화 표준화 가속, 지정학적 공급망 재편이 주요 동력으로 작용하고 있습니다. 이는 단일 대형 칩 중심의 설계에서 시스템 수준 최적화로 패러다임이 전환됨을 의미합니다.\n\n## 동향별 근거 목록\n- **첨단 패키징(CoWoS 등) 용량 확대 및 병목 해소:** NVIDIA와 AMD의 차세대 AI 가속기 출시로 인해 TSMC의 CoWoS 공정의 수요가 공급을 초과하는 상황이 지속되고 있으며, 주요 파운드리 기업들이 관련 설비 투자 및 생산 라인 확충에 집중하고 있습니다.\n  출처: https://www.reuters.com/technology/chips/tsmc-reports-record-revenue-ai-chip-demand-drives-growth-2024-08-15/\n- **칩렛(Chiplet) 및 UCIe 표준을 통한 모듈화 가속:** 단일 대형 칩의 물리적 한계를 극복하기 위해 서",
+      "timestamp": 1786281543.4625049,
+      "issues": [],
+      "benchmark_score": 1.0,
+      "keyword_coverage": 1.0,
+      "passed_keywords": [
+        "반도체",
+        "AI",
+        "출처"
+      ],
+      "missing_keywords": [],
+      "error": "",
+      "quality_revision_count": 2,
+      "quality_revision_applied": true
+    },
+    {
+      "case_id": "anl-001",
+      "target": "qwen3.6:latest",
+      "quality_score": 1.0,
+      "quality_grade": "excellent",
+      "latency_ms": 41997.5,
+      "tokens_in": 216,
+      "tokens_out": 604,
+      "output_preview": "가정/기준\n- 가정: 본 분석은 2024년 중후반 기준 최신 안정 버전(각 프로젝트의 공식 릴리스)을 대상으로 합니다. 평가는 일반적인 데스크톱 및 서버 환경(x86_64, ARM64 포함)을 기준으로 하며, 실제 성능은 하드웨어 사양, 모델 아키텍처, 배치 크기, 양자화 수준에 따라 달라질 수 있습니다.\n- 평가 기준: 설치 편의성(CLI/GUI, 의존성 관리), 성능(추론 속도, 메모리 효율성), GPU 지원(NVIDIA CUDA, AMD ROCm, Apple Silicon Metal), API 호환성(Ollama와 LM Studio는 OpenAI API 스키마를 주로 따름).\n\n비교 표\n| 프레임워크 | 설치 편의성 | 성능 | GPU 지원 | API 호환성 |\n|---|---|---|---|---|\n| Ollama | 매우 높음 (CLI 한 줄 설치, 패키지 매니저 지원) | 중간~높음 (llama.cpp 기반 최적화) | NVIDIA CUDA, AMD ROCm, Apple ",
+      "timestamp": 1786281624.7036989,
+      "issues": [],
+      "benchmark_score": 1.0,
+      "keyword_coverage": 1.0,
+      "passed_keywords": [
+        "Ollama",
+        "llama.cpp",
+        "|",
+        "장점",
+        "단점"
+      ],
+      "missing_keywords": [],
+      "error": "",
+      "quality_revision_count": 1,
+      "quality_revision_applied": true
+    },
+    {
+      "case_id": "lh-001",
+      "target": "qwen3.6:latest",
+      "quality_score": 1.0,
+      "quality_grade": "excellent",
+      "latency_ms": 35300.9,
+      "tokens_in": 267,
+      "tokens_out": 697,
+      "output_preview": "## 계획 및 의존성 순서\n1. 저장소 분석 → 2. 마이그레이션 계획 수립 → 3. 코드 변환 실행 → 4. 테스트 및 검증 → 5. 배포 준비\n의존성: 각 단계는 이전 단계의 checkpoint 상태가 `COMPLETED`일 때만 실행됩니다. 병렬 처리 가능한 단계는 의존성 그래프(`impact_map`) 기준 분기하여 실행합니다.\n\n## 단계별 checkpoint/도구/성공 조건\n- **Step 1: 저장소 분석**\n  - 도구: `git log`, `ast-grep`, `dependency-cruiser`\n  - checkpoint 위치: `.agent/checkpoints/step1.json`\n  - 성공 조건: 의존성 트리 및 변경 영향 파일 목록(`impact_map`)이 정확히 추출되고, 문법/타입 오류가 0건 확인됨.\n- **Step 2: 마이그레이션 계획 수립**\n  - 도구: `plan-generator`, `git diff --stat`\n  - checkpoin",
+      "timestamp": 1786281660.007623,
+      "issues": [],
+      "benchmark_score": 1.0,
+      "keyword_coverage": 1.0,
+      "passed_keywords": [
+        "checkpoint",
+        "recovery",
+        "idempotency",
+        "rollback",
+        "retry"
+      ],
+      "missing_keywords": [],
+      "error": "",
+      "quality_revision_count": 0,
+      "quality_revision_applied": false
+    }
+  ],
+  "stability": {
+    "repeat_count": 2,
+    "result_count": 10,
+    "mean_benchmark_score": 1.0,
+    "benchmark_score_stddev": 0.0,
+    "min_benchmark_score": 1.0,
+    "excellent_rate": 1.0,
+    "all_excellent_run_rate": 1.0,
+    "runs": [
+      {
+        "repeat": 1,
+        "benchmark_score": 1.0,
+        "quality_score": 1.0,
+        "excellent_rate": 1.0,
+        "retry_count": 0,
+        "error_count": 0
+      },
+      {
+        "repeat": 2,
+        "benchmark_score": 1.0,
+        "quality_score": 1.0,
+        "excellent_rate": 1.0,
+        "retry_count": 3,
+        "error_count": 0
+      }
+    ],
+    "by_case": {
+      "alg-001": {
+        "repeat_count": 2,
+        "mean_benchmark_score": 1.0,
+        "min_benchmark_score": 1.0,
+        "benchmark_score_stddev": 0.0,
+        "excellent_rate": 1.0,
+        "grades": {
+          "excellent": 2,
+          "good": 0,
+          "retry": 0,
+          "fail": 0
+        }
+      },
+      "anl-001": {
+        "repeat_count": 2,
+        "mean_benchmark_score": 1.0,
+        "min_benchmark_score": 1.0,
+        "benchmark_score_stddev": 0.0,
+        "excellent_rate": 1.0,
+        "grades": {
+          "excellent": 2,
+          "good": 0,
+          "retry": 0,
+          "fail": 0
+        }
+      },
+      "lh-001": {
+        "repeat_count": 2,
+        "mean_benchmark_score": 1.0,
+        "min_benchmark_score": 1.0,
+        "benchmark_score_stddev": 0.0,
+        "excellent_rate": 1.0,
+        "grades": {
+          "excellent": 2,
+          "good": 0,
+          "retry": 0,
+          "fail": 0
+        }
+      },
+      "sim-001": {
+        "repeat_count": 2,
+        "mean_benchmark_score": 1.0,
+        "min_benchmark_score": 1.0,
+        "benchmark_score_stddev": 0.0,
+        "excellent_rate": 1.0,
+        "grades": {
+          "excellent": 2,
+          "good": 0,
+          "retry": 0,
+          "fail": 0
+        }
+      },
+      "srch-002": {
+        "repeat_count": 2,
+        "mean_benchmark_score": 1.0,
+        "min_benchmark_score": 1.0,
+        "benchmark_score_stddev": 0.0,
+        "excellent_rate": 1.0,
+        "grades": {
+          "excellent": 2,
+          "good": 0,
+          "retry": 0,
+          "fail": 0
+        }
+      }
+    }
+  },
+  "runs": [
+    {
+      "repeat": 1,
+      "started_at": 1786281243.001417,
+      "finished_at": 1786281420.886709,
+      "duration_s": 177.89,
+      "results": [
+        {
+          "case_id": "sim-001",
+          "target": "qwen3.6:latest",
+          "quality_score": 1.0,
+          "quality_grade": "excellent",
+          "latency_ms": 31260.8,
+          "tokens_in": 222,
+          "tokens_out": 451,
+          "output_preview": "## 요청 점검 및 가정 분류\n- **확인된 사실**: 피보나치 수열은 일반적으로 `F(0)=0`, `F(1)=1`로 정의됩니다. 음수 입력은 수열의 정의를 벗으므로 예외 처리가 필요합니다. Python의 표준 예외 클래스는 `ValueError`를 사용합니다.\n- **가정**: 입력 `n`은 메모리 한계 내에서 계산 가능한 정수이며, 재귀 방식은 기본 호출 스택 제한(`sys.getrecursionlimit()`)을 준수한다고 가정합니다.\n\n## 선택 이유와 동작 설명\n- **재귀 방식**: 피보나치 수열의 수학적 정의 `F(n) = F(n-1) + F(n-2)`를 함수 호출 구조로 직접 매핑합니다. 코드 가독성이 높고 구현이 직관적이지만, 동일한 하위 문제를 반복 계산하므로 성능이 저하됩니다.\n- **반복 방식**: 이전 두 항(`a`, `b`)을 변수에 저장하며 순차적으로 갱신합니다. 중복 계산을 완전히 제거하여 메모리 접근 패턴을 최적화하고, 큰 `n`에서도 안정적으로 동작합",
+          "timestamp": 1786281274.266957,
+          "issues": [],
+          "benchmark_score": 1.0,
+          "keyword_coverage": 1.0,
+          "passed_keywords": [
+            "def fibonacci",
+            "O(",
+            "raise",
+            "return"
+          ],
+          "missing_keywords": [],
+          "error": "",
+          "quality_revision_count": 0,
+          "quality_revision_applied": false
+        },
+        {
+          "case_id": "alg-001",
+          "target": "qwen3.6:latest",
+          "quality_score": 1.0,
+          "quality_grade": "excellent",
+          "latency_ms": 39410.7,
+          "tokens_in": 237,
+          "tokens_out": 1186,
+          "output_preview": "## 선택 이유와 동작 설명\n이진 탐색 트리(BST)는 왼쪽 서브트리의 모든 노드 값이 현재 노드보다 작고, 오른쪽 서브트리의 모든 노드 값이 크다는 구조적 속성을 가집니다. 이를 통해 정렬된 데이터의 효율적인 관리와 빠른 조회가 가능합니다.\n\n- `insert(val)`: 루트부터 비교하며 `val`이 갈 위치를 재귀적으로 탐색한 후 새 노드를 연결합니다. BST 순서 속성을 유지합니다.\n- `search(val) -> bool`: 루트부터 시작해 현재 노드 값과 비교합니다. 일치하면 `True`, 리프 노드 아래까지 도달해도 없으면 `False`를 반환합니다.\n- `delete(val)`: 세 가지 경우로 분기 처리합니다. (1) 자식 노드가 0개: 단순히 부모의 참조를 `None`으로 변경. (2) 자식 노드가 1개: 해당 자식 노드를 현재 위치로 승격시켜 연결 끊김 방지. (3) 자식 노드가 2개: 중위 순회상 다음 값(오른쪽 서브트리의 최소값)을 현재 노드 값으로 대체한 후",
+          "timestamp": 1786281313.681899,
+          "issues": [],
+          "benchmark_score": 1.0,
+          "keyword_coverage": 1.0,
+          "passed_keywords": [
+            "class",
+            "insert",
+            "search",
+            "delete",
+            "O("
+          ],
+          "missing_keywords": [],
+          "error": "",
+          "quality_revision_count": 0,
+          "quality_revision_applied": false
+        },
+        {
+          "case_id": "srch-002",
+          "target": "qwen3.6:latest",
+          "quality_score": 1.0,
+          "quality_grade": "excellent",
+          "latency_ms": 35035.4,
+          "tokens_in": 202,
+          "tokens_out": 504,
+          "output_preview": "## 핵심 요약\nAI 반도체 시장은 HBM3E 메모리의 양산 경쟁 심화, 2.5D/3D 첨단 패키징의 전략적 병목 및 투자 확대, 그리고 미·중 기술 패권 경쟁에 따른 지역별 공급망 재편이라는 3가지 축으로 빠르게 진화하고 있습니다. 이는 AI 워크로드의 대용량화·고집적화 요구와 지리적 리스크 관리 정책이 결합된 결과로, 단기 수급 불일치와 중장기 기술 표준 경쟁으로 이어질 전망입니다.\n\n## 동향별 근거 목록\n- **HBM3E 수요 폭증과 메모리 3사의 양산 및 기술 경쟁 가속화**: NVIDIA Blackwell 플랫폼 및 대용량 AI 훈련/추론 워크로드 확대로 HBM3E 요구 사양이 상향되며, SK하이닉스가 선점하고 삼성전자와 마이크론이 추격하는 구도가 형성됨. 기존 GDDR6/LPDDR5 대비 대역폭과 집적도에서 차별화된 AI 가속기 핵심 부품으로 자리 잡았으며, 2024년 하반기~2025년 초 양산 물량 배분이 시장 판도를 좌우할 것으로 평가됨.\n- **첨단 패키징(CoWo",
+          "timestamp": 1786281348.7209332,
+          "issues": [],
+          "benchmark_score": 1.0,
+          "keyword_coverage": 1.0,
+          "passed_keywords": [
+            "반도체",
+            "AI",
+            "출처"
+          ],
+          "missing_keywords": [],
+          "error": "",
+          "quality_revision_count": 0,
+          "quality_revision_applied": false
+        },
+        {
+          "case_id": "anl-001",
+          "target": "qwen3.6:latest",
+          "quality_score": 1.0,
+          "quality_grade": "excellent",
+          "latency_ms": 39553.8,
+          "tokens_in": 216,
+          "tokens_out": 624,
+          "output_preview": "## 가정/기준\n- **가정**: 비교는 2024년 기준 안정화 버전을 기준으로 하며, 성능은 7B~13B 파라미터 양자화 모델 기반 추론 효율(tokens/sec)으로 평가함. GPU 지원은 일반적인 NVIDIA 데스크톱/서버 환경과 Apple Silicon을 기준으로 함. API 호환성은 OpenAI Chat Completions 포맷 연동 가능성을 의미함.\n- **확인한 사실**: Ollama와 LM Studio는 내부적으로 `llama.cpp` 기반 백엔드를 공유하며, vLLM은 PagedAttention 알고리즘과 PyTorch 생태계를 기반으로 설계됨. 모든 도구는 로컬 서버 모드를 통해 OpenAI 호환 API를 제공함.\n- **평가 기준**: 설치 편의성, 성능(추론 효율), GPU 지원 범위 및 최적화 수준, API 호환성 및 생태계 연동 용이성.\n\n## 비교 표\n| 프레임워크 | 설치 편의성 | 성능 (추론 효율) | GPU 지원 | API 호환성 |\n|---|--",
+          "timestamp": 1786281388.277956,
+          "issues": [],
+          "benchmark_score": 1.0,
+          "keyword_coverage": 1.0,
+          "passed_keywords": [
+            "Ollama",
+            "llama.cpp",
+            "|",
+            "장점",
+            "단점"
+          ],
+          "missing_keywords": [],
+          "error": "",
+          "quality_revision_count": 0,
+          "quality_revision_applied": false
+        },
+        {
+          "case_id": "lh-001",
+          "target": "qwen3.6:latest",
+          "quality_score": 1.0,
+          "quality_grade": "excellent",
+          "latency_ms": 32601.1,
+          "tokens_in": 267,
+          "tokens_out": 663,
+          "output_preview": "## 계획\n1. 저장소 분석 및 의존성 그래프 추출\n2. 변경 계획 수립 및 위상 정렬 기반 순서 결정\n3. 체크포인트 초기화 및 상태 매핑\n4. 단계별 실행 → 검증 → 완료 마킹\n**의존성 순서**: 저장소 분석 → 변경 계획 수립 → 의존성 정렬 → 체크포인트 초기화 → 파일 변환 → 테스트 실행 → 통합 검증\n\n## 단계별 checkpoint/도구/성공 조건\n각 단계 실행 전 `checkpoint.json`에 상태 및 메타데이터를 atomic하게 기록합니다. 단계별 outcome 로깅 형식은 `[step_id] | 성공 여부 | 재시도 횟수 | latency(ms) | 사용 도구`로 고정됩니다.\n\n- **Step 1: 저장소 분석**\n  - 도구: `git`, `tree-sitter`, `ast-grep`, `dependency-cruiser`\n  - 성공 조건: 전체 파일 트리, 모듈 의존성 맵, 변경 영향도 범위 생성 완료\n  - checkpoint 기록: `{\"step\"",
+          "timestamp": 1786281420.884286,
+          "issues": [],
+          "benchmark_score": 1.0,
+          "keyword_coverage": 1.0,
+          "passed_keywords": [
+            "checkpoint",
+            "recovery",
+            "idempotency",
+            "rollback",
+            "retry"
+          ],
+          "missing_keywords": [],
+          "error": "",
+          "quality_revision_count": 0,
+          "quality_revision_applied": false
+        }
+      ]
+    },
+    {
+      "repeat": 2,
+      "started_at": 1786281420.8867211,
+      "finished_at": 1786281660.011791,
+      "duration_s": 239.13,
+      "results": [
+        {
+          "case_id": "sim-001",
+          "target": "qwen3.6:latest",
+          "quality_score": 1.0,
+          "quality_grade": "excellent",
+          "latency_ms": 34288.0,
+          "tokens_in": 222,
+          "tokens_out": 318,
+          "output_preview": "선택 이유와 동작 설명\n재귀 방식은 수학적 정의를 직접 반영해 구현이 단순하지만, 중복 호출로 인해 성능 저하가 발생합니다. 반복 방식은 이전 결과를 변수에 저장하며 순차적으로 계산하므로 실시간 처리에 적합합니다. 음수 입력 시 `ValueError`를 발생시켜 잘못된 인자를 즉시 차단합니다. 피보나치 수열의 기준(F(0)=0, F(1)=1)은 표준 정의로 확인된 사실이며, n=0일 때 0을 반환하는 것은 수학적 정의에 부합합니다. n이 매우 클 경우 Python의 임의 정밀도 정수 연산으로 인한 오버헤드는 성능 분석에 포함되지 않았음을 가정합니다.\n\n코드\n```python\ndef fibonacci_recursive(n: int) -> int:\n    if n < 0:\n        raise ValueError(\"n은 음수가 될 수 없습니다.\")\n    if n <= 1:\n        return n\n    return fibonacci_recursive(n - 1) + fibo",
+          "timestamp": 1786281455.17529,
+          "issues": [],
+          "benchmark_score": 1.0,
+          "keyword_coverage": 1.0,
+          "passed_keywords": [
+            "def fibonacci",
+            "O(",
+            "raise",
+            "return"
+          ],
+          "missing_keywords": [],
+          "error": "",
+          "quality_revision_count": 0,
+          "quality_revision_applied": false
+        },
+        {
+          "case_id": "alg-001",
+          "target": "qwen3.6:latest",
+          "quality_score": 1.0,
+          "quality_grade": "excellent",
+          "latency_ms": 41377.5,
+          "tokens_in": 237,
+          "tokens_out": 918,
+          "output_preview": "## 선택 이유와 동작 설명\n이진 탐색 트리(BST)는 정렬 상태 유지와 효율적인 데이터 접근을 위해 선택되었습니다. 왼쪽 서브트리는 기준값보다 작은 값을, 오른쪽 서브트리는 큰 값을 저장하는 구조적 규칙을 따르며, 이를 통해 평균적으로 로그 시간 내 연산이 가능합니다.\n- `insert(val)`: 루트부터 비교하며 적절한 리프 위치를 재귀적으로 탐색 후 새 노드를 연결합니다. 중복 값은 현재 구현에서 무시됩니다.\n- `search(val) -> bool`: 기준값과 일치하는 노드를 발견하면 해당 노드 객체를 반환하고, None에 도달하면 False로 변환하여 반환합니다.\n- `delete(val)`: 삭제 대상 노드의 자식 수(0, 1, 2)에 따라 분기 처리합니다. 자식이 두 개인 경우 중위 순회상 다음 값인 오른쪽 서브트리의 최소값(min)으로 현재 노드 값을 교체한 후, 해당 최소값 노드를 재귀적으로 제거하여 트리 구조를 유지합니다.\n- `in_order_traversal(",
+          "timestamp": 1786281496.55659,
+          "issues": [],
+          "benchmark_score": 1.0,
+          "keyword_coverage": 1.0,
+          "passed_keywords": [
+            "class",
+            "insert",
+            "search",
+            "delete",
+            "O("
+          ],
+          "missing_keywords": [],
+          "error": "",
+          "quality_revision_count": 0,
+          "quality_revision_applied": false
+        },
+        {
+          "case_id": "srch-002",
+          "target": "qwen3.6:latest",
+          "quality_score": 1.0,
+          "quality_grade": "excellent",
+          "latency_ms": 9505.8,
+          "tokens_in": 202,
+          "tokens_out": 414,
+          "output_preview": "## 핵심 요약\nAI 반도체 시장은 고성능 추론용 칩 수요 급증에 따라 첨단 패키징 용량 확대, 모듈화 표준화 가속, 지정학적 공급망 재편이 주요 동력으로 작용하고 있습니다. 이는 단일 대형 칩 중심의 설계에서 시스템 수준 최적화로 패러다임이 전환됨을 의미합니다.\n\n## 동향별 근거 목록\n- **첨단 패키징(CoWoS 등) 용량 확대 및 병목 해소:** NVIDIA와 AMD의 차세대 AI 가속기 출시로 인해 TSMC의 CoWoS 공정의 수요가 공급을 초과하는 상황이 지속되고 있으며, 주요 파운드리 기업들이 관련 설비 투자 및 생산 라인 확충에 집중하고 있습니다.\n  출처: https://www.reuters.com/technology/chips/tsmc-reports-record-revenue-ai-chip-demand-drives-growth-2024-08-15/\n- **칩렛(Chiplet) 및 UCIe 표준을 통한 모듈화 가속:** 단일 대형 칩의 물리적 한계를 극복하기 위해 서",
+          "timestamp": 1786281543.4625049,
+          "issues": [],
+          "benchmark_score": 1.0,
+          "keyword_coverage": 1.0,
+          "passed_keywords": [
+            "반도체",
+            "AI",
+            "출처"
+          ],
+          "missing_keywords": [],
+          "error": "",
+          "quality_revision_count": 2,
+          "quality_revision_applied": true
+        },
+        {
+          "case_id": "anl-001",
+          "target": "qwen3.6:latest",
+          "quality_score": 1.0,
+          "quality_grade": "excellent",
+          "latency_ms": 41997.5,
+          "tokens_in": 216,
+          "tokens_out": 604,
+          "output_preview": "가정/기준\n- 가정: 본 분석은 2024년 중후반 기준 최신 안정 버전(각 프로젝트의 공식 릴리스)을 대상으로 합니다. 평가는 일반적인 데스크톱 및 서버 환경(x86_64, ARM64 포함)을 기준으로 하며, 실제 성능은 하드웨어 사양, 모델 아키텍처, 배치 크기, 양자화 수준에 따라 달라질 수 있습니다.\n- 평가 기준: 설치 편의성(CLI/GUI, 의존성 관리), 성능(추론 속도, 메모리 효율성), GPU 지원(NVIDIA CUDA, AMD ROCm, Apple Silicon Metal), API 호환성(Ollama와 LM Studio는 OpenAI API 스키마를 주로 따름).\n\n비교 표\n| 프레임워크 | 설치 편의성 | 성능 | GPU 지원 | API 호환성 |\n|---|---|---|---|---|\n| Ollama | 매우 높음 (CLI 한 줄 설치, 패키지 매니저 지원) | 중간~높음 (llama.cpp 기반 최적화) | NVIDIA CUDA, AMD ROCm, Apple ",
+          "timestamp": 1786281624.7036989,
+          "issues": [],
+          "benchmark_score": 1.0,
+          "keyword_coverage": 1.0,
+          "passed_keywords": [
+            "Ollama",
+            "llama.cpp",
+            "|",
+            "장점",
+            "단점"
+          ],
+          "missing_keywords": [],
+          "error": "",
+          "quality_revision_count": 1,
+          "quality_revision_applied": true
+        },
+        {
+          "case_id": "lh-001",
+          "target": "qwen3.6:latest",
+          "quality_score": 1.0,
+          "quality_grade": "excellent",
+          "latency_ms": 35300.9,
+          "tokens_in": 267,
+          "tokens_out": 697,
+          "output_preview": "## 계획 및 의존성 순서\n1. 저장소 분석 → 2. 마이그레이션 계획 수립 → 3. 코드 변환 실행 → 4. 테스트 및 검증 → 5. 배포 준비\n의존성: 각 단계는 이전 단계의 checkpoint 상태가 `COMPLETED`일 때만 실행됩니다. 병렬 처리 가능한 단계는 의존성 그래프(`impact_map`) 기준 분기하여 실행합니다.\n\n## 단계별 checkpoint/도구/성공 조건\n- **Step 1: 저장소 분석**\n  - 도구: `git log`, `ast-grep`, `dependency-cruiser`\n  - checkpoint 위치: `.agent/checkpoints/step1.json`\n  - 성공 조건: 의존성 트리 및 변경 영향 파일 목록(`impact_map`)이 정확히 추출되고, 문법/타입 오류가 0건 확인됨.\n- **Step 2: 마이그레이션 계획 수립**\n  - 도구: `plan-generator`, `git diff --stat`\n  - checkpoin",
+          "timestamp": 1786281660.007623,
+          "issues": [],
+          "benchmark_score": 1.0,
+          "keyword_coverage": 1.0,
+          "passed_keywords": [
+            "checkpoint",
+            "recovery",
+            "idempotency",
+            "rollback",
+            "retry"
+          ],
+          "missing_keywords": [],
+          "error": "",
+          "quality_revision_count": 0,
+          "quality_revision_applied": false
+        }
+      ]
+    }
+  ]
+}

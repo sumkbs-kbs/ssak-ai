@@ -1,0 +1,734 @@
+--- a/src/antigravity_k/api/routes/chat.py
++++ b/src/antigravity_k/api/routes/chat.py
+@@ -21,6 +21,7 @@
+ from antigravity_k.engine.audit_logger import get_audit_logger
+ from antigravity_k.engine.model_manager import ModelManager
+ from antigravity_k.engine.protocol_translator import APIFormat, ProtocolTranslator
++from antigravity_k.engine.structured_output import StructuredOutputError, parse_output_contract
+ from antigravity_k.engine.tokenizer import TokenEstimator
+ 
+ logger = logging.getLogger("antigravity_k.api.chat")
+@@ -561,6 +562,34 @@
+     except json.JSONDecodeError:
+         raise HTTPException(status_code=400, detail="Invalid JSON body")
+ 
++    try:
++        output_contract = parse_output_contract(body.get("response_format"))
++    except StructuredOutputError as exc:
++        raise HTTPException(status_code=400, detail={"type": "invalid_request_error", "message": str(exc)}) from exc
++    if output_contract is not None:
++        profile = manager._registry.get_model(_string_value(body.get("model")))
++        incompatible = any(
++            body.get(flag)
++            for flag in ("agent_mode", "plan_mode", "tdd_mode", "web_search", "code_mode", "mcp_servers", "stream")
++        )
++        if (
++            incompatible
++            or manager.router.get_combo(_string_value(body.get("model"))) is not None
++            or body.get("tools") is not None
++            or body.get("tool_choice") is not None
++            or profile is None
++            or profile.provider != "ollama"
++            or not profile.repo.lower().startswith("qwen3")
++            or "qwen3" not in profile.name.lower()
++        ):
++            raise HTTPException(
++                status_code=400,
++                detail={
++                    "type": "invalid_request_error",
++                    "message": "Structured output requires a direct non-streaming native Ollama qwen3 completion without tools",
++                },
++            )
++
+     # NX-09-F03/ADR-0005: 첨부는 **거부도 이유와 함께** 해야 한다. 예전에는 화면이
+     # 이미지 바이트를 아예 보내지 않아 모델이 파일명만 봤다(조용한 대체).
+     from antigravity_k.engine import multimodal
+@@ -657,7 +686,7 @@
+             messages.insert(0, cast(ChatMessage, {"role": "system", "content": restored_context}))
+ 
+     is_stream = _bool_value(body.get("stream"))
+-    is_agent_mode = _bool_value(body.get("agent_mode"), default=True)
++    is_agent_mode = _bool_value(body.get("agent_mode"), default=output_contract is None)
+     is_plan_mode = _bool_value(body.get("plan_mode"))
+     from antigravity_k.engine.access_mode import AccessMode, get_access_mode
+ 
+@@ -686,7 +715,7 @@
+ 
+     is_fast_search = False
+ 
+-    if not is_tdd_mode and slash_text:
++    if output_contract is None and not is_tdd_mode and slash_text:
+         _skip_intent_classification = False
+         if slash_text.startswith("/") or is_self_capability_request(slash_text):
+             _skip_intent_classification = True
+@@ -931,7 +960,7 @@
+         is_self_capability_request,
+     )
+ 
+-    if is_self_capability_request(slash_text):
++    if output_contract is None and is_self_capability_request(slash_text):
+         from antigravity_k.api.dependencies import get_slash_registry
+         from antigravity_k.engine.skill_loader import SkillLoader
+         from antigravity_k.tools.tool_registry import ToolRegistry
+@@ -972,7 +1001,7 @@
+         target_format = source_format if source_format != APIFormat.INTERNAL else APIFormat.OPENAI
+         return translator.translate_response(internal_resp, target=target_format)
+ 
+-    if slash_text.startswith("/"):
++    if output_contract is None and slash_text.startswith("/"):
+         from antigravity_k.api.dependencies import get_slash_registry
+ 
+         registry = get_slash_registry()
+@@ -1147,7 +1176,7 @@
+         if has_image:
+             break
+ 
+-    if has_image:
++    if has_image and output_contract is None:
+         # config.yaml의 defaults.vision 모델로 자동 전환
+         import yaml
+ 
+@@ -1369,11 +1398,13 @@
+     prompt += "Assistant: "
+ 
+     try:
+-        kwargs = {
++        kwargs: JsonMap = {
+             "max_tokens": internal_req.get("max_tokens", 1024),
+             "temperature": internal_req.get("temperature", 0.7),
+             "raw_messages": messages,
+         }
++        if output_contract is not None:
++            kwargs["response_format"] = output_contract.native_format()
+ 
+         if is_stream:
+ 
+@@ -1407,6 +1438,8 @@
+             return StreamingResponse(event_generator_native(), media_type="text/event-stream")
+         else:
+             response_text = manager.generate(prompt=prompt, target=target_model, **kwargs)
++            if output_contract is not None:
++                output_contract.validate_content(response_text)
+ 
+             user_msg = _latest_user_text(messages)
+             session_manager.add_turn(
+@@ -1425,6 +1458,8 @@
+             }
+             target_format = source_format if source_format != APIFormat.INTERNAL else APIFormat.OPENAI
+             return translator.translate_response(internal_resp, target=target_format)
++    except StructuredOutputError as exc:
++        raise HTTPException(status_code=502, detail={"type": "structured_output_error", "message": str(exc)}) from exc
+     except Exception as e:
+         logger.error("Generation error: %s", e, exc_info=True)
+         raise HTTPException(status_code=500, detail=str(e))
+--- a/src/antigravity_k/engine/protocol_translator.py
++++ b/src/antigravity_k/engine/protocol_translator.py
+@@ -17,6 +17,8 @@
+ from collections.abc import Mapping
+ from enum import Enum
+ from typing import TypedDict, TypeGuard, cast
++
++from antigravity_k.engine.structured_output import parse_output_contract
+ 
+ logger = logging.getLogger("antigravity_k.protocol_translator")
+ 
+@@ -255,12 +257,12 @@
+         for msg in messages:
+             role = _text(msg.get("role", ""))
+             raw_content = self._extract_content(msg.get("content", ""))
+-            content: str = raw_content if isinstance(raw_content, str) else ""
+             if role == "system":
+-                system_msg = content
++                system_msg = raw_content if isinstance(raw_content, str) else ""
+             else:
+-                chat_messages.append({"role": role, "content": content})
+-
++                chat_messages.append({"role": role, "content": raw_content})
++
++        output_contract = parse_output_contract(body.get("response_format"))
+         return {
+             "messages": chat_messages,
+             "system": system_msg,
+@@ -270,6 +272,7 @@
+             "top_p": _number(body.get("top_p", 0.9), 0.9),
+             "stream": _boolean(body.get("stream", False)),
+             "stop": _strings(body.get("stop", [])),
++            **({"response_format": output_contract.native_format()} if output_contract is not None else {}),
+         }
+ 
+     # ─── Anthropic → 내부 ───────────────────────────────────────────
+--- /dev/null
++++ b/src/antigravity_k/engine/structured_output.py
+@@ -0,0 +1,161 @@
++"""Explicit chat output contracts; schemas never resolve external references."""
++
++from __future__ import annotations
++
++import json
++from dataclasses import dataclass
++from typing import Annotated, Literal, assert_never
++
++from jsonschema import Draft202012Validator, SchemaError
++from pydantic import BaseModel, ConfigDict, Field, JsonValue, TypeAdapter, ValidationError
++from referencing import Registry
++from referencing.exceptions import Unresolvable
++
++
++@dataclass(frozen=True, slots=True)
++class StructuredOutputError(Exception):
++    reason: str
++
++    def __str__(self) -> str:
++        return self.reason
++
++
++class TextFormat(BaseModel):
++    model_config = ConfigDict(frozen=True, extra="forbid", strict=True)
++    type: Literal["text"]
++
++
++class ObjectFormat(BaseModel):
++    model_config = ConfigDict(frozen=True, extra="forbid", strict=True)
++    type: Literal["json_object"]
++
++
++class SchemaEnvelope(BaseModel):
++    model_config = ConfigDict(frozen=True, extra="forbid", strict=True)
++    name: str = Field(min_length=1, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")
++    description: str | None = None
++    strict: bool = False
++    schema_: dict[str, JsonValue] = Field(alias="schema")
++
++
++class SchemaFormat(BaseModel):
++    model_config = ConfigDict(frozen=True, extra="forbid", strict=True)
++    type: Literal["json_schema"]
++    json_schema: SchemaEnvelope
++
++
++class OutputContract(BaseModel):
++    model_config = ConfigDict(frozen=True)
++    schema_text: str | None = None
++
++    def native_format(self) -> str | dict[str, JsonValue]:
++        if self.schema_text is None:
++            return "json"
++        return TypeAdapter(dict[str, JsonValue]).validate_json(self.schema_text)
++
++    def validate_content(self, content: str) -> None:
++        try:
++            value = json.loads(content, parse_constant=_reject_constant, object_pairs_hook=_unique_object)
++        except (json.JSONDecodeError, StructuredOutputError) as exc:
++            raise StructuredOutputError("Model content is not strict JSON") from exc
++        if not isinstance(value, dict):
++            raise StructuredOutputError("Model content must be a JSON object")
++        if self.schema_text is not None:
++            schema = TypeAdapter(dict[str, JsonValue]).validate_json(self.schema_text)
++            try:
++                valid = Draft202012Validator(schema, registry=Registry()).is_valid(value)
++            except Unresolvable as exc:
++                raise StructuredOutputError("Schema reference resolution is disabled") from exc
++            if not valid:
++                raise StructuredOutputError("Model content does not satisfy the requested schema")
++
++
++def _reject_constant(value: str) -> None:
++    raise StructuredOutputError(f"Non-JSON numeric constant: {value}")
++
++
++def _unique_object(pairs: list[tuple[str, JsonValue]]) -> dict[str, JsonValue]:
++    result: dict[str, JsonValue] = {}
++    for key, value in pairs:
++        if key in result:
++            raise StructuredOutputError("Duplicate JSON object key")
++        result[key] = value
++    return result
++
++
++def _reject_references(value: JsonValue) -> None:
++    match value:
++        case dict():
++            if value.get("$schema") not in (None, "https://json-schema.org/draft/2020-12/schema"):
++                raise StructuredOutputError("Only JSON Schema draft 2020-12 is supported")
++            if any(key in value for key in ("$ref", "$dynamicRef", "$recursiveRef")):
++                raise StructuredOutputError("Schema references are not supported")
++            for key, child in value.items():
++                if key in (
++                    "properties",
++                    "patternProperties",
++                    "$defs",
++                    "definitions",
++                    "dependentSchemas",
++                    "dependencies",
++                ):
++                    if isinstance(child, dict):
++                        for schema in child.values():
++                            _reject_references(schema)
++                if key in (
++                    "items",
++                    "contains",
++                    "not",
++                    "if",
++                    "then",
++                    "else",
++                    "additionalProperties",
++                    "additionalItems",
++                    "propertyNames",
++                    "unevaluatedProperties",
++                    "unevaluatedItems",
++                    "allOf",
++                    "anyOf",
++                    "oneOf",
++                    "prefixItems",
++                ):
++                    _reject_references(child)
++        case list():
++            for child in value:
++                _reject_references(child)
++        case str() | int() | float() | bool() | None:
++            return
++        case unreachable:
++            assert_never(unreachable)
++
++
++def parse_output_contract[T](raw: T) -> OutputContract | None:
++    if raw is None:
++        return None
++    try:
++        parsed: TextFormat | ObjectFormat | SchemaFormat = TypeAdapter(
++            Annotated[TextFormat | ObjectFormat | SchemaFormat, Field(discriminator="type")]
++        ).validate_python(raw)
++    except ValidationError as exc:
++        raise StructuredOutputError("Invalid response_format envelope") from exc
++    match parsed:
++        case TextFormat():
++            return None
++        case ObjectFormat():
++            return OutputContract()
++        case SchemaFormat(json_schema=envelope):
++            schema = envelope.schema_
++            _reject_references(schema)
++            if schema.get("type") != "object":
++                raise StructuredOutputError("The root schema must have type object")
++            try:
++                Draft202012Validator.check_schema(schema)
++            except SchemaError as exc:
++                raise StructuredOutputError("Invalid JSON Schema") from exc
++            try:
++                schema_text = json.dumps(schema, allow_nan=False)
++            except ValueError as exc:
++                raise StructuredOutputError("Schema must contain only finite JSON values") from exc
++            return OutputContract(schema_text=schema_text)
++        case unreachable:
++            assert_never(unreachable)
+--- /dev/null
++++ b/tests/test_chat_structured_output_contract.py
+@@ -0,0 +1,359 @@
++from __future__ import annotations
++
++import io
++import json
++import os
++import socket
++import uuid
++from dataclasses import replace
++from pathlib import Path
++
++import pytest
++
++
++@pytest.fixture
++def product(monkeypatch, tmp_path, request):
++    monkeypatch.chdir(tmp_path)
++    monkeypatch.setenv("AGK_AUTO_DISCOVER_LOCAL_MODELS", "false")
++    monkeypatch.setenv("AGK_ALLOWED_ROOTS", str(tmp_path))
++
++    def denied(*args, **kwargs):
++        pytest.fail("unexpected socket connection")
++
++    monkeypatch.setattr(socket.socket, "connect", denied)
++    monkeypatch.setattr(socket.socket, "connect_ex", denied)
++    monkeypatch.setattr(socket, "create_connection", denied)
++    from fastapi import FastAPI
++    from fastapi.testclient import TestClient
++
++    from antigravity_k.api import dependencies, project_binding
++    from antigravity_k.api.routes import chat
++    from antigravity_k.config import config
++    from antigravity_k.engine import provider_capability_probe_runtime
++    from antigravity_k.engine.audit_logger import AuditLogger
++    from antigravity_k.engine.model_manager import ModelManager
++    from antigravity_k.engine.model_registry import ModelRegistry
++    from antigravity_k.engine.project_registry import ProjectRegistry
++    from antigravity_k.engine.protocol_translator import ProtocolTranslator
++    from antigravity_k.engine.provider_adapters import inference_providers
++    from antigravity_k.engine.session_manager import SessionManager
++    from antigravity_k.engine.usage_tracker import UsageTracker
++    from antigravity_k.engine.user_model import global_gbrain
++
++    monkeypatch.setattr(config.paths, "project_root", tmp_path)
++    registry = ProjectRegistry(storage_path=tmp_path / "projects.json")
++    project = registry.add_project("structured-output", str(tmp_path))
++    monkeypatch.setattr(project_binding, "get_project_registry", lambda: registry)
++    sessions = SessionManager(base_dir=str(tmp_path / "sessions"))
++    effects = []
++    start_session = sessions.start_session
++    apply_conversation = chat._apply_authoritative_conversation
++
++    def record_session(*args, **kwargs):
++        effects.append("session")
++        return start_session(*args, **kwargs)
++
++    def record_conversation(*args, **kwargs):
++        effects.append("conversation")
++        return apply_conversation(*args, **kwargs)
++
++    monkeypatch.setattr(sessions, "start_session", record_session)
++    monkeypatch.setattr(chat, "_apply_authoritative_conversation", record_conversation)
++    monkeypatch.setattr(dependencies, "get_session_manager", lambda: sessions)
++    monkeypatch.setattr(chat, "get_audit_logger", lambda: AuditLogger(log_dir=tmp_path / "audit"))
++    monkeypatch.setattr(global_gbrain, "add_node", lambda **kwargs: None)
++    manager = ModelManager(ModelRegistry(), tracker=UsageTracker(db_path=None))
++    monkeypatch.setattr(ModelManager, "_load_mlx_model", lambda *args: (None, None))
++    calls = []
++    metadata_calls = []
++    generations = []
++    responses = []
++    content = ['{"red_circles":2,"blue_squares":1}']
++    generate = manager.generate
++
++    def record_generate(*args, **kwargs):
++        generations.append(kwargs)
++        return generate(*args, **kwargs)
++
++    monkeypatch.setattr(manager, "generate", record_generate)
++
++    def terminal(request, **kwargs):
++        calls.append(json.loads(request.data))
++        return io.BytesIO((json.dumps({"message": {"content": content[0]}, "done": True}) + "\n").encode())
++
++    monkeypatch.setattr(inference_providers, "safe_urlopen", terminal)
++
++    def metadata_terminal(request, **kwargs):
++        assert request.full_url.endswith("/api/show")
++        metadata_calls.append(json.loads(request.data))
++        return io.BytesIO(json.dumps({"capabilities": ["completion", "vision"]}).encode())
++
++    monkeypatch.setattr(provider_capability_probe_runtime, "_urlopen_provider", metadata_terminal)
++    app = FastAPI()
++    app.include_router(chat.router)
++    app.dependency_overrides[chat.get_model_manager] = lambda: manager
++    app.dependency_overrides[chat.get_translator] = ProtocolTranslator
++    body = {
++        "model": "qwen3.8",
++        "project_id": project.id,
++        "messages": [{"role": "user", "content": "Count the shapes and return JSON."}],
++    }
++    with TestClient(app) as client:
++        client.contract_effects = effects
++        client.contract_manager = manager
++        original_post = client.post
++
++        def record_post(*args, **kwargs):
++            response = original_post(*args, **kwargs)
++            responses.append({"status": response.status_code, "body": response.text, "request": kwargs.get("json")})
++            return response
++
++        monkeypatch.setattr(client, "post", record_post)
++        yield client, body, calls, generations, content
++    export = os.environ.get("STRUCTURED_OUTPUT_CAPTURE_ROOT")
++    if export:
++        capture = Path(export) / (uuid.uuid4().hex + ".json")
++        capture.parent.mkdir(parents=True, exist_ok=True)
++        capture.write_text(
++            json.dumps(
++                {
++                    "nodeid": request.node.nodeid,
++                    "wire": calls,
++                    "manager_calls": len(generations),
++                    "provider_calls": len(calls),
++                    "metadata_calls": metadata_calls,
++                    "upstream_content": content[0],
++                    "responses": responses,
++                },
++                ensure_ascii=False,
++                indent=2,
++            )
++        )
++
++
++SCHEMA = {
++    "type": "object",
++    "properties": {"red_circles": {"type": "integer"}, "blue_squares": {"type": "integer"}},
++    "required": ["red_circles", "blue_squares"],
++    "additionalProperties": False,
++}
++ENVELOPE = {"type": "json_schema", "json_schema": {"name": "shapes", "strict": True, "schema": SCHEMA}}
++
++
++@pytest.mark.parametrize("format_value,native", [({"type": "json_object"}, "json"), (ENVELOPE, SCHEMA)])
++def test_structured_image_reaches_native_wire_once(product, format_value, native):
++    client, body, calls, generations, content = product
++    image = (Path(__file__).parent / "fixtures/vision_shapes_384x256.png.b64").read_text().strip()
++    body["messages"][0]["content"] = [
++        {"type": "text", "text": "Count the shapes and return JSON."},
++        {"type": "image_url", "image_url": {"url": "data:image/png;base64," + image}},
++    ]
++    response = client.post("/v1/chat/completions", json={**body, "response_format": format_value})
++    assert response.status_code == 200, response.text
++    assert len(calls) == len(generations) == 1
++    assert calls[0]["format"] == native
++    assert calls[0]["messages"][-1]["images"] == [image]
++    assert response.json()["choices"][0]["message"]["content"] == content[0]
++
++
++@pytest.mark.parametrize(
++    "value",
++    [
++        "json",
++        {},
++        {"type": "bogus"},
++        {"type": "json_schema"},
++        {"type": "json_schema", "json_schema": {"name": "x", "strict": "true", "schema": SCHEMA}},
++        {"type": "json_schema", "json_schema": {"name": "x", "schema": {"type": "bogus"}}},
++        {"type": "json_schema", "json_schema": {"name": "x", "schema": {"$ref": "https://example.com/schema"}}},
++    ],
++)
++def test_bad_format_rejected_before_inference(product, value):
++    client, body, calls, generations, _ = product
++    response = client.post("/v1/chat/completions", json={**body, "response_format": value})
++    assert response.status_code == 400
++    assert response.json()["detail"]["type"] == "invalid_request_error"
++    assert calls == generations == []
++    assert client.contract_effects == []
++
++
++@pytest.mark.parametrize(
++    "extra",
++    [
++        {"agent_mode": True},
++        {"plan_mode": True},
++        {"tdd_mode": True},
++        {"web_search": True},
++        {"tools": []},
++        {"stream": True},
++        {"model": "unknown-provider"},
++    ],
++)
++def test_unsupported_path_rejected_before_inference(product, extra):
++    client, body, calls, generations, _ = product
++    response = client.post("/v1/chat/completions", json={**body, "response_format": ENVELOPE, **extra})
++    assert response.status_code == 400
++    assert calls == generations == []
++    assert client.contract_effects == []
++
++
++@pytest.mark.parametrize(
++    "raw",
++    [
++        '```json\n{"red_circles":2,"blue_squares":1}\n```',
++        "invalid",
++        '{"red_circles":true,"blue_squares":1}',
++        '{"red_circles":2,"blue_squares":1,"extra":0}',
++        '{"red_circles":NaN,"blue_squares":1}',
++        '{"red_circles":0,"red_circles":2,"blue_squares":1}',
++    ],
++)
++def test_invalid_output_is_not_success(product, raw):
++    client, body, calls, generations, content = product
++    content[0] = raw
++    response = client.post("/v1/chat/completions", json={**body, "response_format": ENVELOPE})
++    assert response.status_code == 502, response.text
++    assert response.json()["detail"]["type"] == "structured_output_error"
++    assert len(calls) == len(generations) == 1
++
++
++@pytest.mark.parametrize("format_value", [None, {"type": "text"}, "omitted"])
++def test_text_format_preserves_legacy_output(product, format_value):
++    client, body, calls, _, content = product
++    body["messages"][0]["content"] = "안녕"
++    content[0] = "ordinary text"
++    payload = {**body, "agent_mode": False}
++    if format_value != "omitted":
++        payload["response_format"] = format_value
++    response = client.post("/v1/chat/completions", json=payload)
++    assert response.status_code == 200
++    assert "format" not in calls[0]
++    assert response.json()["choices"][0]["message"]["content"] == content[0]
++
++
++@pytest.mark.parametrize("provider", ["openrouter", "mlx", "anthropic", "ollama"])
++def test_registered_other_provider_is_rejected(product, provider):
++    client, body, calls, generations, _ = product
++    registry = client.contract_manager._registry
++    original = registry.get_model("qwen3.8")
++    registry._models["other"] = replace(original, name="other", provider=provider)
++    response = client.post("/v1/chat/completions", json={**body, "model": "other", "response_format": ENVELOPE})
++    assert response.status_code == 400
++    assert calls == generations == client.contract_effects == []
++
++
++def test_explicit_model_survives_image_default_routing(product):
++    client, body, calls, generations, _ = product
++    registry = client.contract_manager._registry
++    original = registry.get_model("qwen3.8")
++    registry._models["qwen3.8:explicit"] = replace(original, name="qwen3.8:explicit", repo="qwen3.8:explicit")
++    image = (Path(__file__).parent / "fixtures/vision_shapes_384x256.png.b64").read_text().strip()
++    body["messages"][0]["content"] = [{"type": "image_url", "image_url": {"url": "data:image/png;base64," + image}}]
++    response = client.post(
++        "/v1/chat/completions", json={**body, "model": "qwen3.8:explicit", "response_format": ENVELOPE}
++    )
++    assert response.status_code == 200, response.text
++    assert len(calls) == len(generations) == 1
++    assert calls[0]["model"] == "qwen3.8:explicit"
++
++
++def test_reference_named_property_is_ordinary_json(product):
++    client, body, calls, _, content = product
++    schema = {
++        "type": "object",
++        "properties": {"$ref": {"type": "string"}},
++        "required": ["$ref"],
++        "additionalProperties": False,
++    }
++    content[0] = '{"$ref":"ordinary data"}'
++    response = client.post(
++        "/v1/chat/completions",
++        json={
++            **body,
++            "response_format": {"type": "json_schema", "json_schema": {"name": "reference", "schema": schema}},
++        },
++    )
++    assert response.status_code == 200, response.text
++    assert calls[0]["format"] == schema
++
++
++def test_nested_schema_reference_is_rejected(product):
++    client, body, calls, generations, _ = product
++    schema = {"type": "object", "properties": {"child": {"$ref": "https://example.com/schema"}}}
++    response = client.post(
++        "/v1/chat/completions",
++        json={
++            **body,
++            "response_format": {"type": "json_schema", "json_schema": {"name": "reference", "schema": schema}},
++        },
++    )
++    assert response.status_code == 400
++    assert calls == generations == client.contract_effects == []
++
++
++@pytest.mark.parametrize(
++    "child",
++    [
++        {
++            "$schema": "http://json-schema.org/draft-07/schema#",
++            "type": "object",
++            "dependencies": {"x": {"$ref": "https://example.com/schema"}},
++        },
++        {"type": "object", "dependencies": {"x": {"$ref": "https://example.com/schema"}}},
++    ],
++)
++def test_nested_dialect_and_legacy_dependencies_rejected_before_dispatch(product, child):
++    client, body, calls, generations, _ = product
++    schema = {"type": "object", "properties": {"child": child}}
++    response = client.post(
++        "/v1/chat/completions",
++        json={**body, "response_format": {"type": "json_schema", "json_schema": {"name": "nested", "schema": schema}}},
++    )
++    assert response.status_code == 400
++    assert calls == generations == client.contract_effects == []
++
++
++def test_schema_named_property_and_annotation_do_not_switch_dialect(product):
++    client, body, calls, _, content = product
++    schema = {
++        "type": "object",
++        "properties": {"$schema": {"type": "string"}},
++        "examples": [{"$schema": "http://json-schema.org/draft-07/schema#"}],
++    }
++    content[0] = '{"$schema":"ordinary data"}'
++    response = client.post(
++        "/v1/chat/completions",
++        json={**body, "response_format": {"type": "json_schema", "json_schema": {"name": "data", "schema": schema}}},
++    )
++    assert response.status_code == 200, response.text
++    assert calls[0]["format"] == schema
++
++
++def test_closed_registry_maps_resolution_failure_without_transport(monkeypatch):
++    import urllib.request
++
++    from antigravity_k.engine.structured_output import OutputContract, StructuredOutputError
++
++    attempts = []
++
++    def forbidden(*args, **kwargs):
++        attempts.append(args)
++        pytest.fail("schema retrieval attempted")
++
++    monkeypatch.setattr(urllib.request, "urlopen", forbidden)
++    monkeypatch.setattr(socket.socket, "connect", forbidden)
++    monkeypatch.setattr(socket.socket, "connect_ex", forbidden)
++    schema = {
++        "type": "object",
++        "properties": {
++            "child": {
++                "$schema": "http://json-schema.org/draft-07/schema#",
++                "type": "object",
++                "dependencies": {"x": {"$ref": "https://example.com/schema"}},
++            }
++        },
++    }
++    contract = OutputContract(schema_text=json.dumps(schema))
++    with pytest.raises(StructuredOutputError, match="resolution is disabled"):
++        contract.validate_content('{"child":{"x":1}}')
++    assert attempts == []
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -15,6 +15,8 @@
+     "uvicorn[standard]>=0.32.0,<1.0",
+     "httpx>=0.27.0,<1.0",
+     "pydantic>=2.10.0,<3.0",
++    "jsonschema>=4.26.0,<5.0",
++    "referencing>=0.37.0,<0.38",
+     "pydantic-settings>=2.6.0,<3.0",
+     "pyyaml>=6.0.2,<7.0",
+     "rich>=14.2.0,<16.0",
+--- a/uv.lock
++++ b/uv.lock
+@@ -215,6 +215,7 @@
+     { name = "fastapi" },
+     { name = "filelock" },
+     { name = "httpx" },
++    { name = "jsonschema" },
+     { name = "mcp" },
+     { name = "nest-asyncio" },
+     { name = "networkx" },
+@@ -225,6 +226,7 @@
+     { name = "pyjwt" },
+     { name = "pyyaml" },
+     { name = "rank-bm25" },
++    { name = "referencing" },
+     { name = "rich" },
+     { name = "scrapling" },
+     { name = "slowapi" },
+@@ -294,6 +296,7 @@
+     { name = "fastapi", specifier = ">=0.115.0,<1.0" },
+     { name = "filelock", specifier = ">=3.16.0,<4.0" },
+     { name = "httpx", specifier = ">=0.27.0,<1.0" },
++    { name = "jsonschema", specifier = ">=4.26.0,<5.0" },
+     { name = "markdown", marker = "extra == 'rag'", specifier = ">=3.7,<4.0" },
+     { name = "mcp", specifier = ">=1.1.2,<2.0" },
+     { name = "mflux", marker = "extra == 'mlx-media'", specifier = ">=0.19.1,<0.20.0" },
+@@ -321,6 +324,7 @@
+     { name = "python-docx", marker = "extra == 'rag'", specifier = ">=1.1.0,<2.0" },
+     { name = "pyyaml", specifier = ">=6.0.2,<7.0" },
+     { name = "rank-bm25", specifier = ">=0.2.2,<0.3" },
++    { name = "referencing", specifier = ">=0.37.0,<0.38" },
+     { name = "requests", marker = "extra == 'dev'", specifier = ">=2.32.0,<3.0" },
+     { name = "rich", specifier = ">=14.2.0,<16.0" },
+     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.8.0,<1.0" },
+--- /dev/null
++++ b/tests/fixtures/vision_shapes_384x256.png.b64
+@@ -0,0 +1 @@
++iVBORw0KGgoAAAANSUhEUgAAAYAAAAEACAIAAAA1FTYwAAAFAUlEQVR4nO3dwU7cShBAUQbN///yvMWToggpyoIJt7r6nDWCcmNftz0SPF6v1wdA4TP5qQACBJTsgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMg8P47zePzlC16vH5pkB+v51tU616u4bp4Lf+dfvl6PrCdTPfffa359n8tLZD2Z53nRNvf/b3thhqwnUz2ve8K+KkPWk9mel77cW58h68kJPq/+aGHrRxrWk0MMCFBbgX0Nsp6cI30EG3Lxr3kcs56c5vP2q2XsPKfPP20eRooCNPPsnDnVuZPPnIrbAzT5vJw824kzT56NGwM0/4ycP+FZ086fkFsCdMq5aM4715MbP4YHbvWDATrrNjh/2vkTnjst2wJ04vk3eebJs22amQ0BOvfMmzn5zKl2T86/4R0QsDhAp9/0ps0/bZ7b5uet7ICArQHacbubcxRzJvmOHUfBO9gBASsDtOlGN+FYJszwLpuOhW+wAwIyAgTsC9C+PbY/dbppPZnBDgjICBCQESAgI0DAsgBtfb/oH/7tWE/GsAMCMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBCwL0Ov1sVJ1XNaTpeyAgIwAARkBAjICBOwL0L73pu0RWU82sgMCMgIErAzQpqeGCccyYYZ32XQsfIMdELA1QDtudHOOYs4k37HjKHgHOyBgcYBOv91Nm3/aPLfNz1vZAQG7A3TuTW/m5DOn2j05Z++ATjzzJs88ebZNM7PnEeys82/+tPMnPHdafop3QMAlATrlNmjOO9eT/Tug+efi/AnPmnb+hNz1CDb5jJw824kzT56Ne98BzTwvZ0517uQzp2KS7iX0tLNz2jynzz9tHkZ69ufo41HOsOlSsZ6cZsDH8P7UqfXkVgMC5B/+WU9ulT6ChY8Pax67/sR6coIxAfqxy2Z9en5nPZltWID+6WVzVXp+Zz2ZamSAvvTimyW6tjtfWE/mGRygPxXkrz1SHOvJIR4vlytw9cfwwJUECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQIAAAfexAwIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABH5X/ADMNzhPCSdocAAAAAElFTkSuQmCC

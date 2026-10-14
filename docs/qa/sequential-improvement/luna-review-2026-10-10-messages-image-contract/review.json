@@ -1,0 +1,101 @@
+{
+  "review_id": "CODEX_REVIEW_IMP-09-C-MESSAGES-IMAGE-CONTRACT-01",
+  "reviewed_at_utc": "2026-10-10T12:40:18.680789+00:00",
+  "verdict": "APPROVED_SCOPED_OFFLINE",
+  "accepted_status": "COMPLETE_OFFLINE",
+  "blocking_findings": [],
+  "run_root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-MESSAGES-IMAGE-CONTRACT-01/run-20261010T121017Z-bd9f7e61-2efa-471a-8bc7-e69a908a8104",
+  "candidate": {
+    "production": {
+      "path": "src/antigravity_k/api/routes/messages_api.py",
+      "start_sha256": "6c424847c07eb28d3da2dcabb66296926cc4e9c4e4050653ffc0f7094c9aa094",
+      "final_sha256": "35b4c203ca465ad63058f849169949496aac54c824bcc1e1fc3c9cbdbe3623e2"
+    },
+    "test": {
+      "path": "tests/test_messages_image_contract.py",
+      "final_sha256": "595b596d741f26fe67580faf43b87bd891d08491c801ce6cbbd8b9ff39db9c8e"
+    }
+  },
+  "evidence_bindings": {
+    "raw_artifacts_sha256": {
+      "result.json": "ea7b1f7ca6112a7fbcef2414b153ad6409c865e1d06bfbeb2fa97dbacc42ae61",
+      "artifact-manifest.json": "64c924c376cc5e44e1f4714f80ab7f2d466a9e8b5a5b7047e2018572fa76389f",
+      "task-only.patch": "93103603a969329f8b28a82f6b56b81e361d46d7ae5d5af921dfd95abaf37392",
+      "checks.json": "1fbd5638437163d9e25574a4224ba8339dc666f55f25f1fa8749bef5d64ffe5d"
+    },
+    "independent_verification": "verification.json",
+    "independent_verification_sha256": "dbc31fc65817d4d296d3e77d80c1e28fbc9aef3f29185b8cf3cb8fc4aaa4b71f",
+    "independent_junit": "independent-focused.junit.xml",
+    "independent_stdout": "independent-focused.stdout.txt",
+    "verifier": "verify_offline.py",
+    "verifier_sha256": "9ab57a8ea5a3ee7316bf92b834ff60d47a8b4bcfe3da43c47b92c86581d3263b"
+  },
+  "accepted_contract": {
+    "status": 400,
+    "error_type": "invalid_request_error",
+    "message": "Image content is not supported by /v1/messages",
+    "locations": [
+      "messages[*].content[*].image",
+      "messages[*].content[*].tool_result.content[*].image"
+    ],
+    "streaming_and_nonstreaming": true,
+    "pre_generation_rejection": true,
+    "manager_capability_generate_stream_calls_for_postfix_image_cases": 0
+  },
+  "verification": {
+    "baseline_junit": {
+      "tests": 8,
+      "failed": 8,
+      "observed_status": 200,
+      "rerun": false
+    },
+    "postfix_saved_focused": {
+      "tests": 8,
+      "passed": 8
+    },
+    "saved_impact": {
+      "unique_cases": 61,
+      "passed": 61,
+      "failed": 0,
+      "rerun": false
+    },
+    "independent_focused": {
+      "tests": 8,
+      "passed": 8,
+      "exit": 0,
+      "real_network_connect_attempts": 0
+    },
+    "independent_evidence_checks": {
+      "passed": 16,
+      "failed": 0
+    },
+    "artifacts": 72,
+    "protected_files": 144,
+    "patch_reconstruction": "BYTE_IDENTICAL",
+    "retained_static_checks": "Ruff lint/format, production basedpyright error level, in-memory compile: final exit 0 and source hashes match"
+  },
+  "limitations": [
+    "This approves offline route behavior, not authenticated external HTTP, lifespan, model vision support, or image recognition quality.",
+    "Existing tests/conftest.py supplies isolated development-mode auth configuration; production auth source was unchanged.",
+    "The baseline run and Ruff repair commands lack contemporaneous start/end and source-hash receipts. Original log/JUnit/preimage evidence remains preserved; no retrospective timestamps are invented.",
+    "The independent run disabled third-party plugin autoload, producing one unknown asyncio_mode configuration warning alongside the upstream TestClient deprecation warning. Eight synchronous route tests still passed.",
+    "Reported zero manager-double calls applies to postfix image rejection cases, not the entire 66-request before/after history."
+  ],
+  "preservation": {
+    "old_run_evidence_modified": false,
+    "product_source_modified_by_reviewer": false,
+    "shared_ledger_modified": false,
+    "real_http_ollama_inference_runs": 0,
+    "commit_push": false
+  },
+  "next_task": {
+    "id": "IMP-09-B-VI-01-NATIVE",
+    "scope": "One native Ollama vision observation with a deterministic synthetic image, frozen oracle and no product POST.",
+    "prompt": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/ssak-ai-core/GPT6_LUNA_NATIVE_VISION_2026-10-10.md"
+  },
+  "historical_status": {
+    "IMP_09": "PARTIAL",
+    "ledger": "NOT_RECOVERED",
+    "past_failures": "UNCHANGED"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "model": "qwen3.8",
+  "stream": false,
+  "agent_mode": false,
+  "plan_mode": false,
+  "tdd_mode": false,
+  "max_tokens": 128,
+  "temperature": 0,
+  "web_search": false,
+  "messages": [
+    {
+      "role": "user",
+      "content": "/offline-vision-contract-probe Count the visible shapes in the attached image. Return only one JSON object with keys red_circles and blue_squares, whose values are integers. Do not include explanations."
+    }
+  ]
+}

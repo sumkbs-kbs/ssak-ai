@@ -1,0 +1,100 @@
+{
+  "checks": [
+    {
+      "name": "focused",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-STRUCTURED-OUTPUT-PUBLICATION-01/run-20261014T043024Z-codex-86e22b4940/cold_candidate.py"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+      "exit_code": 1,
+      "stdout": "focused.stdout",
+      "stderr": "focused.stderr"
+    },
+    {
+      "name": "lint",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "check",
+        "src/antigravity_k/api/routes/chat.py",
+        "src/antigravity_k/engine/protocol_translator.py",
+        "src/antigravity_k/engine/structured_output.py",
+        "tests/test_chat_structured_output_contract.py"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+      "exit_code": 0,
+      "stdout": "lint.stdout",
+      "stderr": "lint.stderr"
+    },
+    {
+      "name": "format",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "format",
+        "--check",
+        "src/antigravity_k/api/routes/chat.py",
+        "src/antigravity_k/engine/protocol_translator.py",
+        "src/antigravity_k/engine/structured_output.py",
+        "tests/test_chat_structured_output_contract.py"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+      "exit_code": 0,
+      "stdout": "format.stdout",
+      "stderr": "format.stderr"
+    },
+    {
+      "name": "types",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+        "--pythonpath",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "--level",
+        "error",
+        "src/antigravity_k/api/routes/chat.py",
+        "src/antigravity_k/engine/protocol_translator.py",
+        "src/antigravity_k/engine/structured_output.py",
+        "tests/test_chat_structured_output_contract.py"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+      "exit_code": 0,
+      "stdout": "types.stdout",
+      "stderr": "types.stderr"
+    },
+    {
+      "name": "compile",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-c",
+        "import pathlib,sys; [compile(pathlib.Path(p).read_bytes(),p,'exec') for p in sys.argv[1:]]",
+        "src/antigravity_k/api/routes/chat.py",
+        "src/antigravity_k/engine/protocol_translator.py",
+        "src/antigravity_k/engine/structured_output.py",
+        "tests/test_chat_structured_output_contract.py"
+      ],
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+      "exit_code": 0,
+      "stdout": "compile.stdout",
+      "stderr": "compile.stderr"
+    }
+  ],
+  "source_before": {
+    "src/antigravity_k/api/routes/chat.py": "b53affe02c71bb7ae97559217a8c8a78036988f64fb6a23ea5399c8597352ec7",
+    "src/antigravity_k/engine/protocol_translator.py": "f8d42ce763c6e92b6746d67436c1f40b0f4110a86683f8206738042890da24f8",
+    "src/antigravity_k/engine/structured_output.py": "d3089deb48e3b78aacf45a4d517ad5c8357d5bc8680e9272f21883b513f162f1",
+    "tests/test_chat_structured_output_contract.py": "f246254cb315aa4fb4002ba71235b956e8b23e4d3587cfcde4da27f163c363f5",
+    "pyproject.toml": "4f29fa6110dcd62abdb14baf8e61d62695685d05c9914e97a6127064cd51244b",
+    "uv.lock": "2a910f6b4d021400683c1ad8e02cf1f7225f7524d9923208f933778f21d119a6",
+    "tests/fixtures/vision_shapes_384x256.png.b64": "b37f9f02d1ad805f5004cc78ce9f5fd2da0a2780fbe6a2af591d57cd18abee31"
+  },
+  "source_after": {
+    "src/antigravity_k/api/routes/chat.py": "b53affe02c71bb7ae97559217a8c8a78036988f64fb6a23ea5399c8597352ec7",
+    "src/antigravity_k/engine/protocol_translator.py": "f8d42ce763c6e92b6746d67436c1f40b0f4110a86683f8206738042890da24f8",
+    "src/antigravity_k/engine/structured_output.py": "d3089deb48e3b78aacf45a4d517ad5c8357d5bc8680e9272f21883b513f162f1",
+    "tests/test_chat_structured_output_contract.py": "f246254cb315aa4fb4002ba71235b956e8b23e4d3587cfcde4da27f163c363f5",
+    "pyproject.toml": "4f29fa6110dcd62abdb14baf8e61d62695685d05c9914e97a6127064cd51244b",
+    "uv.lock": "2a910f6b4d021400683c1ad8e02cf1f7225f7524d9923208f933778f21d119a6",
+    "tests/fixtures/vision_shapes_384x256.png.b64": "b37f9f02d1ad805f5004cc78ce9f5fd2da0a2780fbe6a2af591d57cd18abee31"
+  },
+  "source_unchanged": true,
+  "base": "3ed591244d801344d7ba468d1afa7faba7f64ec0"
+}

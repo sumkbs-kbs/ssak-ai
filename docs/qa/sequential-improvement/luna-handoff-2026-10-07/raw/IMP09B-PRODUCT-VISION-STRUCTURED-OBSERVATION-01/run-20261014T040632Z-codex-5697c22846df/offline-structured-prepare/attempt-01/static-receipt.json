@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-14T04:12:49.730903+00:00",
+  "checks": [
+    {
+      "name": "ruff",
+      "command": [
+        "/Users/mr.k/miniforge3/bin/ruff",
+        "check",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/run_harness.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/test_structured_product_payload_contract.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "format",
+      "command": [
+        "/Users/mr.k/miniforge3/bin/ruff",
+        "format",
+        "--check",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/run_harness.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/test_structured_product_payload_contract.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "types",
+      "command": [
+        "/Users/mr.k/miniforge3/bin/basedpyright",
+        "--level",
+        "error",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/run_harness.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/test_structured_product_payload_contract.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "compile",
+      "command": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-c",
+        "from pathlib import Path; import sys; [compile(Path(p).read_bytes(),p,\"exec\") for p in sys.argv[1:]]",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/run_harness.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/test_structured_product_payload_contract.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "source_sha256": {
+    "run_harness.py": "b0d6d944f5b6135b1d7cbcb6e0d58ad674b0bfeca73c111fb96ea95f61492bd2",
+    "test_structured_product_payload_contract.py": "3d5b330897592eae53a8a64a2e8abc8f77a6ed6f2b5b9e0dbe04663bee6927a9"
+  }
+}

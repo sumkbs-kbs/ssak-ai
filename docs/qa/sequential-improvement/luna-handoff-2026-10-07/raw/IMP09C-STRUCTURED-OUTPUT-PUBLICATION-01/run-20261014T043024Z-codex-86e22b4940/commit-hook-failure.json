@@ -1,0 +1,12 @@
+{
+  "command": "git commit feat(api): enforce native Ollama structured output contracts",
+  "exit_code": 1,
+  "hook": "mypy",
+  "diagnostic": "src/antigravity_k/engine/structured_output.py:136: error: Need type annotation for parsed [var-annotated]",
+  "errors": 1,
+  "checked_source_files": 571,
+  "repeat_failed_hook_command": "pre-commit run mypy --all-files",
+  "repeat_exit_code": 1,
+  "notes": "Full hook output remains in native tool transcript; saved diagnostic is an excerpt, not reconstructed original stdout",
+  "resolution": "Explicit TextFormat|ObjectFormat|SchemaFormat annotation, no runtime behavior change or checker suppression"
+}

@@ -1,0 +1,108 @@
+{
+  "case_id": "CV-02",
+  "capture_attempt_id": "attempt-e52ffa016d424cfa839c713c48a3416a",
+  "capture_case_id": "case-CV-02-b03d636faf6e412f9ee53ae063410e2c",
+  "input": {
+    "model": "qwen3.8",
+    "stream": false,
+    "agent_mode": false,
+    "plan_mode": false,
+    "tdd_mode": false,
+    "max_tokens": 128,
+    "temperature": 0,
+    "web_search": false,
+    "messages": [
+      {
+        "role": "user",
+        "content": "/offline-vision-contract-probe Count the visible shapes in the attached image. Return only one JSON object with keys red_circles and blue_squares, whose values are integers. Do not include explanations."
+      }
+    ],
+    "attachments": [
+      {
+        "name": "vision-native.png",
+        "mime_type": "image/png",
+        "data_base64": "iVBORw0KGgoAAAANSUhEUgAAAYAAAAEACAIAAAA1FTYwAAAFAUlEQVR4nO3dwU7cShBAUQbN///yvMWToggpyoIJt7r6nDWCcmNftz0SPF6v1wdA4TP5qQACBJTsgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMg8P47zePzlC16vH5pkB+v51tU616u4bp4Lf+dfvl6PrCdTPfffa359n8tLZD2Z53nRNvf/b3thhqwnUz2ve8K+KkPWk9mel77cW58h68kJPq/+aGHrRxrWk0MMCFBbgX0Nsp6cI30EG3Lxr3kcs56c5vP2q2XsPKfPP20eRooCNPPsnDnVuZPPnIrbAzT5vJw824kzT56NGwM0/4ycP+FZ086fkFsCdMq5aM4715MbP4YHbvWDATrrNjh/2vkTnjst2wJ04vk3eebJs22amQ0BOvfMmzn5zKl2T86/4R0QsDhAp9/0ps0/bZ7b5uet7ICArQHacbubcxRzJvmOHUfBO9gBASsDtOlGN+FYJszwLpuOhW+wAwIyAgTsC9C+PbY/dbppPZnBDgjICBCQESAgI0DAsgBtfb/oH/7tWE/GsAMCMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBCwL0Ov1sVJ1XNaTpeyAgIwAARkBAjICBOwL0L73pu0RWU82sgMCMgIErAzQpqeGCccyYYZ32XQsfIMdELA1QDtudHOOYs4k37HjKHgHOyBgcYBOv91Nm3/aPLfNz1vZAQG7A3TuTW/m5DOn2j05Z++ATjzzJs88ebZNM7PnEeys82/+tPMnPHdafop3QMAlATrlNmjOO9eT/Tug+efi/AnPmnb+hNz1CDb5jJw824kzT56Ne98BzTwvZ0517uQzp2KS7iX0tLNz2jynzz9tHkZ69ufo41HOsOlSsZ6cZsDH8P7UqfXkVgMC5B/+WU9ulT6ChY8Pax67/sR6coIxAfqxy2Z9en5nPZltWID+6WVzVXp+Zz2ZamSAvvTimyW6tjtfWE/mGRygPxXkrz1SHOvJIR4vlytw9cfwwJUECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQIAAAfexAwIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABH5X/ADMNzhPCSdocAAAAAElFTkSuQmCC"
+      }
+    ]
+  },
+  "input_canonical_bytes": 2254,
+  "input_sha256": "695320b9b47389a2b3deb81c014eced0dcc147071f2dc9d8234501d0ad9ec6b7",
+  "input_raw_path": "requests/route-input-CV-02.json",
+  "expected": {
+    "model_alias": "qwen3.8",
+    "resolved_profile": "qwen3.8",
+    "provider": "ollama",
+    "surface": "/api/chat",
+    "images_sha256_in_order": [
+      "f51d7d266d67b6458916a32ef610c83feddbacbfad72146bf94e29e7cf077098"
+    ],
+    "image_user_indices": [
+      0
+    ],
+    "prompt_text": "Count the visible shapes in the attached image. Return only one JSON object with keys red_circles and blue_squares, whose values are integers. Do not include explanations.",
+    "bypass_prefix": "/offline-vision-contract-probe",
+    "response_content": "synthetic-CV-02-response"
+  },
+  "actual": {
+    "http_status": 200,
+    "response_raw_path": "responses/route-CV-02.bin",
+    "response_bytes": 280,
+    "response_sha256": "7fee5059af87e9c6230a56b33dad7aca31083cbacd7432320b2d79be6632d00c",
+    "assistant_content": "synthetic-CV-02-response",
+    "provider_request_count": 1,
+    "provider_generate_count": 1,
+    "manager_generate_count": 1,
+    "translator_call_count": 1,
+    "provider_request": {
+      "endpoint": "http://localhost:11434/api/chat",
+      "timeout": 300,
+      "request_bytes": 2419,
+      "request_sha256": "7bee58d2754900a5098d59cb990870f07a56d9bcfd588c54a6ae9d45f56c947a",
+      "request_raw_path": "requests/provider-CV-02.bin",
+      "model": "qwen3.8",
+      "messages_user_images_base64": [
+        [
+          "iVBORw0KGgoAAAANSUhEUgAAAYAAAAEACAIAAAA1FTYwAAAFAUlEQVR4nO3dwU7cShBAUQbN///yvMWToggpyoIJt7r6nDWCcmNftz0SPF6v1wdA4TP5qQACBJTsgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMg8P47zePzlC16vH5pkB+v51tU616u4bp4Lf+dfvl6PrCdTPfffa359n8tLZD2Z53nRNvf/b3thhqwnUz2ve8K+KkPWk9mel77cW58h68kJPq/+aGHrRxrWk0MMCFBbgX0Nsp6cI30EG3Lxr3kcs56c5vP2q2XsPKfPP20eRooCNPPsnDnVuZPPnIrbAzT5vJw824kzT56NGwM0/4ycP+FZ086fkFsCdMq5aM4715MbP4YHbvWDATrrNjh/2vkTnjst2wJ04vk3eebJs22amQ0BOvfMmzn5zKl2T86/4R0QsDhAp9/0ps0/bZ7b5uet7ICArQHacbubcxRzJvmOHUfBO9gBASsDtOlGN+FYJszwLpuOhW+wAwIyAgTsC9C+PbY/dbppPZnBDgjICBCQESAgI0DAsgBtfb/oH/7tWE/GsAMCMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBCwL0Ov1sVJ1XNaTpeyAgIwAARkBAjICBOwL0L73pu0RWU82sgMCMgIErAzQpqeGCccyYYZ32XQsfIMdELA1QDtudHOOYs4k37HjKHgHOyBgcYBOv91Nm3/aPLfNz1vZAQG7A3TuTW/m5DOn2j05Z++ATjzzJs88ebZNM7PnEeys82/+tPMnPHdafop3QMAlATrlNmjOO9eT/Tug+efi/AnPmnb+hNz1CDb5jJw824kzT56Ne98BzTwvZ0517uQzp2KS7iX0tLNz2jynzz9tHkZ69ufo41HOsOlSsZ6cZsDH8P7UqfXkVgMC5B/+WU9ulT6ChY8Pax67/sR6coIxAfqxy2Z9en5nPZltWID+6WVzVXp+Zz2ZamSAvvTimyW6tjtfWE/mGRygPxXkrz1SHOvJIR4vlytw9cfwwJUECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQIAAAfexAwIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABH5X/ADMNzhPCSdocAAAAAElFTkSuQmCC"
+        ]
+      ],
+      "messages_user_images_sha256": [
+        [
+          "f51d7d266d67b6458916a32ef610c83feddbacbfad72146bf94e29e7cf077098"
+        ]
+      ],
+      "messages_user_text": [
+        "/offline-vision-contract-probe Count the visible shapes in the attached image. Return only one JSON object with keys red_circles and blue_squares, whose values are integers. Do not include explanations.\n[첨부 파일: vision-native.png]"
+      ],
+      "flat_image_sha256": [
+        "f51d7d266d67b6458916a32ef610c83feddbacbfad72146bf94e29e7cf077098"
+      ],
+      "decoded_image_bytes": [
+        1338
+      ],
+      "strict_mock_acceptance": true
+    },
+    "provider_target": [
+      "qwen3.8"
+    ],
+    "manager_target": [
+      "qwen3.8"
+    ],
+    "manager_raw_message_count": 1,
+    "loader_call_count": 1,
+    "loader_profile": [
+      "qwen3.8"
+    ],
+    "prompt_text_present": true,
+    "route_error": "",
+    "blocked_socket_connects": []
+  },
+  "acceptance": {
+    "route_200": true,
+    "single_translator_manager_provider_mock": true,
+    "provider_wire_strictly_accepted": true,
+    "assistant_response_is_current_mock": true,
+    "correct_target": true,
+    "zero_socket_connect_attempts": true
+  },
+  "native_vision_fixture_reused_without_inference": true
+}

@@ -1,0 +1,27 @@
+{
+  "url": "http://localhost:11434/api/chat",
+  "timeout": 300,
+  "payload": {
+    "model": "qwen3.8",
+    "stream": false,
+    "keep_alive": "30m",
+    "think": false,
+    "options": {
+      "num_ctx": 32768,
+      "num_predict": 128,
+      "temperature": 0,
+      "min_p": 0.05,
+      "repeat_penalty": 1.3
+    },
+    "messages": [
+      {
+        "role": "system",
+        "content": "/no_think\nAnswer directly. Do not output hidden reasoning, thinking traces, <think>, or <thought> blocks."
+      },
+      {
+        "role": "user",
+        "content": "/offline-vision-contract-probe Count the visible shapes in the attached image. Return only one JSON object with keys red_circles and blue_squares, whose values are integers. Do not include explanations."
+      }
+    ]
+  }
+}

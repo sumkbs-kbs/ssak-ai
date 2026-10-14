@@ -1,0 +1,5 @@
+patching file run_harness.py
+patching file runtime-bridge-contract.json
+patching file profile-contract.json
+patching file response-schema.json
+patching file test_structured_product_payload_contract.py

@@ -1,0 +1,26 @@
+{
+  "nodeid": "tests/test_chat_structured_output_contract.py::test_bad_format_rejected_before_inference[value3]",
+  "wire": [],
+  "manager_calls": 0,
+  "provider_calls": 0,
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 400,
+      "body": "{\"detail\":{\"type\":\"invalid_request_error\",\"message\":\"Invalid response_format envelope\"}}",
+      "request": {
+        "model": "qwen3.8",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Count the shapes and return JSON."
+          }
+        ],
+        "response_format": {
+          "type": "json_schema"
+        }
+      }
+    }
+  ]
+}

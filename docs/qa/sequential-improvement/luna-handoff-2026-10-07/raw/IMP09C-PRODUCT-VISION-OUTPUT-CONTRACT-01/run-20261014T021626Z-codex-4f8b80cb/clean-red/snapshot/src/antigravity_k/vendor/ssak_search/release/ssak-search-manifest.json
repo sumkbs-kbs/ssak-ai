@@ -1,0 +1,193 @@
+{
+  "schema": "ssak-search-artifact-manifest/1",
+  "generated_at": "2026-09-19T03:21:17.313Z",
+  "generated_by": "scripts/write-ssak-artifact-manifest.mjs",
+  "artifact": {
+    "path": "bin/ssak-mcp",
+    "kind": "bun-compiled-standalone",
+    "entrypoint": "src/mcp-standalone.ts",
+    "build_command": "bun build --compile --minify --target=bun-darwin-arm64 src/mcp-standalone.ts --outfile bin/ssak-mcp",
+    "sha256": "1d2c67897b912a10eaf627f27958b1798bf43784cd5921274713b3d855547c26",
+    "size_bytes": 64323314,
+    "format": "macho",
+    "platform": "darwin",
+    "arch": "arm64",
+    "header_magic": "0xcffaedfe"
+  },
+  "runtime_requirements": {
+    "bun": false,
+    "node": false,
+    "npm_install": false,
+    "node_modules": false,
+    "note": "bun build --compile embeds the runtime and every bundled module; the artifact is verified to answer --version with PATH=/usr/bin:/bin only."
+  },
+  "product": {
+    "name": "ssak-mcp-standalone",
+    "version": "2.9.0",
+    "tools": [
+      "ssak_search",
+      "ssak_extract",
+      "ssak_deep_research"
+    ],
+    "requires_backend": false,
+    "structured_content": true
+  },
+  "protocol": {
+    "transport": "stdio",
+    "jsonrpc": "2.0",
+    "supported": [
+      "2025-06-18",
+      "2025-03-26",
+      "2024-11-05"
+    ],
+    "default": "2025-06-18",
+    "error_codes": {
+      "parse_error": -32700,
+      "invalid_request": -32600,
+      "method_not_found": -32601,
+      "not_initialized": -32002
+    }
+  },
+  "contract": {
+    "name": "ssak-web",
+    "schema_version": "1.0",
+    "contract_major": 1,
+    "accepted_majors": [
+      1
+    ],
+    "source_of_truth_repo": "S",
+    "source_of_truth_path": "contracts/ssak-web/v1/",
+    "manifest_path": "contracts/ssak-web/v1/manifest.json",
+    "manifest_sha256": "c237784e1f0b1040fc5f80a448085c324b4e9a01f9607bc595f7c90d49617899",
+    "files": {
+      "envelope.schema.json": "e34dec3e3803b17e8c7b46337f9f0b62cde0d42c33afaf27bf25a5a06a130c5a",
+      "search.schema.json": "fb558742f6fcb6a9a1e3fb52dcf36c9ab47cb1dee585f1e5ce7e8166aec0c6e7",
+      "extract.schema.json": "8e35031ec11d92e024c732a2927fff380dd30877025ef05296ec7fa3aaa2cd11",
+      "deep-research.schema.json": "9b1bfc5a1d37d94ad46690944c69fedb544165ba0f6a07bcda42dd1b7e755058",
+      "fixtures/search.ok.json": "2a9e66ff835dee29708689ebee3e453af3d9821521b7e384f6fa5df125afc878",
+      "fixtures/search.partial.json": "cace91746387a6e5cb3fec5b36f9ac31209d4d02b8e22287d38de487802e2eaf",
+      "fixtures/extract.ok.json": "4186013551f11c9db95a6be91c2151ad0910ec9ed7bdc823c85068640352c703",
+      "fixtures/extract.blocked.policy-denied.json": "586513684430241c4c8e35deb40516eecbdb432fcdb25d415bacb81cfd612e97",
+      "fixtures/deep-research.cancelled.json": "32c3c9c11bf3f0073ac2e779485cd7491096dbe4447e069456a2972f4d85cfc1",
+      "fixtures/deep-research.error.upstream-unavailable.json": "6bd95d2b45ea1e57b4b536ed99aaab59e23b78e3f6fcb2657c7e1ae9e78fd539",
+      "fixtures/blocked.unsupported-capability.json": "16df2823de359801230d451ccb64e14b43af0d280c34b704622247b07c2b1439",
+      "fixtures/legacy.text-fallback.wire.json": "e2b54ccfc6aafe852a33b5c4258298a5fdf3dd3e5e3659121b489773d79dff23",
+      "fixtures/legacy.text-fallback.expected.json": "ee3dcbb893f95d3f79bb0a6394e790962d04cc276cce67dd967b504405e9f61e"
+    }
+  },
+  "source": {
+    "repo": "W (webapp)",
+    "branch": "main",
+    "commit": "be292725634e05c3e7b51e96cf2f71bf2e1efae2",
+    "built_from_export": false,
+    "dirty": true,
+    "dirty_files": [
+      "?? docs/assessments/"
+    ],
+    "artifact_tracked_in_git": false,
+    "inputs": {
+      "files": {
+        "contracts/ssak-web/v1/deep-research.schema.json": "9b1bfc5a1d37d94ad46690944c69fedb544165ba0f6a07bcda42dd1b7e755058",
+        "contracts/ssak-web/v1/envelope.schema.json": "e34dec3e3803b17e8c7b46337f9f0b62cde0d42c33afaf27bf25a5a06a130c5a",
+        "contracts/ssak-web/v1/extract.schema.json": "8e35031ec11d92e024c732a2927fff380dd30877025ef05296ec7fa3aaa2cd11",
+        "contracts/ssak-web/v1/fixtures/blocked.unsupported-capability.json": "16df2823de359801230d451ccb64e14b43af0d280c34b704622247b07c2b1439",
+        "contracts/ssak-web/v1/fixtures/deep-research.cancelled.json": "32c3c9c11bf3f0073ac2e779485cd7491096dbe4447e069456a2972f4d85cfc1",
+        "contracts/ssak-web/v1/fixtures/deep-research.error.upstream-unavailable.json": "6bd95d2b45ea1e57b4b536ed99aaab59e23b78e3f6fcb2657c7e1ae9e78fd539",
+        "contracts/ssak-web/v1/fixtures/extract.blocked.policy-denied.json": "586513684430241c4c8e35deb40516eecbdb432fcdb25d415bacb81cfd612e97",
+        "contracts/ssak-web/v1/fixtures/extract.ok.json": "4186013551f11c9db95a6be91c2151ad0910ec9ed7bdc823c85068640352c703",
+        "contracts/ssak-web/v1/fixtures/legacy.text-fallback.expected.json": "ee3dcbb893f95d3f79bb0a6394e790962d04cc276cce67dd967b504405e9f61e",
+        "contracts/ssak-web/v1/fixtures/legacy.text-fallback.wire.json": "e2b54ccfc6aafe852a33b5c4258298a5fdf3dd3e5e3659121b489773d79dff23",
+        "contracts/ssak-web/v1/fixtures/search.ok.json": "2a9e66ff835dee29708689ebee3e453af3d9821521b7e384f6fa5df125afc878",
+        "contracts/ssak-web/v1/fixtures/search.partial.json": "cace91746387a6e5cb3fec5b36f9ac31209d4d02b8e22287d38de487802e2eaf",
+        "contracts/ssak-web/v1/manifest.json": "c237784e1f0b1040fc5f80a448085c324b4e9a01f9607bc595f7c90d49617899",
+        "contracts/ssak-web/v1/search.schema.json": "fb558742f6fcb6a9a1e3fb52dcf36c9ab47cb1dee585f1e5ce7e8166aec0c6e7",
+        "package-lock.json": "7e16af92de7d10ec86f2026b840892278e235339941c1b8dfc023040694d0a50",
+        "package.json": "c16b672c325419029624ce128f43b815c0cf568500e91250298eeb94f5f34faf",
+        "scripts/build-standalone-binary.sh": "f38ed2d46195bb00b26e3e18b21c7936c73490f0c9bdea3901a990d6f590c060",
+        "scripts/lib/artifact-manifest.mjs": "840ea57da418f6ba7143bbfb8fafac74e179b3dd7b219eb15f4445227e5235a8",
+        "scripts/verify-ssak-artifact.mjs": "3a2deb50646e1ba473a7c2d45e7b1b69ef4cf854a9589e831106cd970446de21",
+        "scripts/write-ssak-artifact-manifest.mjs": "67ab882bc0332cae6224a420e08fcf43a361e7a9a98d4118773d57d670d76557",
+        "src/lib/agent-deep-research.ts": "4bb2f7b3442704abd737da7f107a425453c7e620d626c291ceff13ac9af5b4a9",
+        "src/lib/agent-extractor.ts": "bc28b5142e5a89d9a31b4f5ff6f5556e4cd7a7b86e56f3df13abf5646a2041a4",
+        "src/lib/agent-search-orchestrator.ts": "e013347540e0e657c774c6a612e63c4ce3c44672e66da604bb0e56b2649cba82",
+        "src/lib/bing-search.ts": "570433ffc3dabf586e0780510f9592bdd639d25ce897d29f35d7dc8615c1e697",
+        "src/lib/deploy-env.ts": "008641bb1cb96088544eb80baa565f21f86aa4215c14dc9aa44519e498de7b1c",
+        "src/lib/duckduckgo.ts": "c5adc3c9245b5c56d7326a80c7caf70efb08e4b32e7eaa06711b8fbe1b37bcdd",
+        "src/lib/extract/normalize.ts": "abebab59aaa7938c7166da61bde3a2cadb3842ace2a7aeeb99c1f6a6211ea8b8",
+        "src/lib/fact-check.ts": "921d46bfb6626720f26e8f57f9762f30d4503079d744c8d4bf37213b78297966",
+        "src/lib/jina-search.ts": "e66373fb74114a1a13cb823f2ff4c2233c1ef143d7f3f2e2a33e5c804a696118",
+        "src/lib/korean/stemmer.ts": "105ba32f260376fa7e9939cb08d8d46a23bbdb3aa078efcd631c230465562c39",
+        "src/lib/logger.ts": "b3d516ebd7ee82ede22f13474b4c4f0b779c5a06e4bb719c081a9638f5a8899b",
+        "src/lib/naver-search.ts": "ab38984df55f7aac9e9535a8959e50af60d7983c9f9cc650decdc3d95d8c2618",
+        "src/lib/resilience/retry.ts": "329362c243ece66f71a06df61303332156d3b9baf162d7d284e30b3b78ace7e2",
+        "src/lib/runtime/budget.ts": "f51ed97ef41b14daf10b7cf05bbc64921086ae8714560456026795e032fc48c3",
+        "src/lib/search/fanout.ts": "ce9a6db722f26cbc7d8ab955c995cae9c08b5f60de969699d8aef3c63b36667c",
+        "src/lib/security/egress-policy.ts": "d71588923a9be6c8ace67d8df19ede6b6af6670bd3a2119899bb3d1eb697a2f1",
+        "src/lib/security/phishing-guard.ts": "6d17b9a6d6b12282c511bdc0191d3fff4379c1b2102e536784da75487f5b0c4d",
+        "src/lib/sidecar-client.ts": "75200cd1ac59f929a1b7dff0f2685dee93d1d1507ef3c8c78744687fb2948f06",
+        "src/lib/util.ts": "5637d1764a3b09fe33ccc51e500edb98f8856f3c3bb7c9d812ce3b8f79d3aeb1",
+        "src/lib/wikipedia-backbone.ts": "cdd189d60cf1e6f42fbe4d12db32e6c83404bc8e13a130c4a38d42eb7bc3a04d",
+        "src/mcp-standalone.ts": "c82cd6dc8dfe677cd4b2d8448d88cdaea8c2b6926abea20d7c01b10e304682de",
+        "src/types.ts": "40d5021700c3019a0d410bded787ad4f9625307971edf30a311aa86d7c7b819f",
+        "tsconfig.json": "391b433b2f5933eaf96cbbf456c1a0bd9503bb9140b14e650cac7c4ec06cec28"
+      },
+      "count": 43,
+      "note": "sha256 of every build input that can change the artifact bytes (compiled import closure, build tooling, package metadata, contract). `source.commit` says which commit the build read; these hashes say whether the tree on disk is still that source, and they hold in an export with no .git — `node scripts/verify-ssak-artifact.mjs --require-current-source` compares them."
+    },
+    "note": "bin/ is gitignored, so the artifact travels outside git; this manifest is the record of which source produced the bytes that were verified."
+  },
+  "compatibility": {
+    "s_contract_major": 1,
+    "s_accepted_majors": [
+      1
+    ],
+    "s_min_supported": "contract major 1",
+    "note": "The S side accepts these majors; a consumer that does not understand a different major must refuse the artifact result rather than guess."
+  },
+  "licenses": {
+    "project": {
+      "license": "MIT",
+      "path": "LICENSE",
+      "sha256": "30ec386dd3af5994d85eecc1d348220b3259c01399f5f799af0d27b1b03cc4da"
+    },
+    "records": {
+      "sbom": {
+        "path": "release/sbom.cdx.json",
+        "sha256": "1aadcc2185d9a56e374eb90e282890a86a3f12e3fd94af945f9217e8eee6587e"
+      },
+      "third_party_notices": {
+        "path": "release/THIRD_PARTY_NOTICES.md",
+        "sha256": "de91f718824cd4fed9d67198014de7e002d51ff3b2e6465fce40591ffc144111"
+      }
+    },
+    "bundled_packages": [
+      {
+        "name": "hono",
+        "version": "4.13.3",
+        "license": "MIT",
+        "resolved": true
+      },
+      {
+        "name": "zod",
+        "version": "4.4.3",
+        "license": "MIT",
+        "resolved": true
+      }
+    ],
+    "bundled_source_files": 22,
+    "note": "bundled_packages is the compiled import closure of the artifact (bare specifiers resolved from node_modules), not the Worker bundle inventory in the SBOM."
+  },
+  "config_defaults": {
+    "env": {},
+    "note": "The standalone path reads no environment variables: search, extract and deep-research run in-process, and the only knobs are per-request tool arguments. The legacy Python adapter (sdk/mcp_server.py) is the one that needs SSAK_API_BASE/SSAK_API_KEY."
+  },
+  "provenance": {
+    "signed": false,
+    "signing": "none",
+    "publisher_authenticity": false,
+    "integrity_scope": "sha256 of the artifact bytes described here",
+    "trust_path": "Integrity only. Establishing that a publisher built this needs a signed artifact or a deployment record from the S release path (task 15 pairs this manifest with that trust path); until then a matching sha256 proves the file is the one described, not who produced it.",
+    "reproducible_build": true,
+    "reproducibility_scope": "Byte-identical on repeat builds from the same source with the same compiler version and the same output path (measured 2026-09-19: three consecutive `npm run build:binary` runs produced the same artifact sha256). A different output path or compiler version changes the bytes, so this is same-machine reproducibility — not a cross-build attestation, and not a substitute for signing."
+  }
+}

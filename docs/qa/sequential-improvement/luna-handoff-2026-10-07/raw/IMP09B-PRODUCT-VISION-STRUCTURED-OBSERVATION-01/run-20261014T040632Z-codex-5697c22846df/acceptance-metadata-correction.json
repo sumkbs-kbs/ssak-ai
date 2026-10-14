@@ -1,0 +1,52 @@
+{
+  "task_id": "IMP-09-B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01",
+  "kind": "APPEND_ONLY_GENERATED_ACCEPTANCE_METADATA_CORRECTION",
+  "original": {
+    "path": "acceptance.json",
+    "sha256": "a600973d89f78701a4cb3eb2cfc3da990ffc86eeb5ff9408ef7e0bf8e998e8b8",
+    "field": "format",
+    "value": "omitted",
+    "preserved": true
+  },
+  "intended_before_dispatch": {
+    "planned_acceptance": "planned-acceptance.json",
+    "planned_acceptance_sha256": "438bf54b9e2f852847829a1459ec60aafef1ced48605a9a43676ca9ac884f5ee",
+    "execution_binding_sha256": "ec3f6b4293b400500c0b21329c0cc4d6358ff315dcbfed9ba810b4253754746d",
+    "request_sha256": "5fb7881d29eae990a44d876529ccef5f03fd2ebcb1019937ae15a956b43a905a",
+    "response_schema_sha256": "da677313c66e0f4ac04f7f19170acfafdd8f7598e1bf6a9fd7e5e3d35fec7df5",
+    "profile_contract_sha256": "d79de422d09424ca6c0ef03d5a73237f046cbfa6aa0521fbf0d7f519fc9d8e35",
+    "format": "EXACT_JSON_SCHEMA_OBJECT"
+  },
+  "actual_observation": {
+    "native_request": "runtime-state/captures/provider-7529a2780c094597a3b0776a096efabd-request.bin",
+    "sha256": "11dea25b670bfd18b74b8d7aa22d89a2d3a7769318a5cd1a2d466bbd29ca3f90",
+    "format": {
+      "additionalProperties": false,
+      "properties": {
+        "blue_squares": {
+          "type": "integer"
+        },
+        "red_circles": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "red_circles",
+        "blue_squares"
+      ],
+      "type": "object"
+    },
+    "native_schema_equal": true,
+    "raw_response": "runtime-state/captures/provider-7529a2780c094597a3b0776a096efabd-response.bin",
+    "product_content_exactly_equal": true,
+    "strict_json_schema_pass": true,
+    "semantic_match": true
+  },
+  "reason": "Inherited pre-dispatch acceptance snapshot writer retained stale literal format=omitted; exact request/native format guards and pre-bound planned acceptance required schema",
+  "scope": "Correct reporting metadata using pre-dispatch frozen inputs and saved raw traffic only",
+  "source_after_dispatch_modified": false,
+  "acceptance_original_rewritten": false,
+  "inference_repeated": false,
+  "historical_fail_promoted": false,
+  "remediation": "Repair only a new future owned harness copy's acceptance writer; keep this executed source and artifacts immutable"
+}

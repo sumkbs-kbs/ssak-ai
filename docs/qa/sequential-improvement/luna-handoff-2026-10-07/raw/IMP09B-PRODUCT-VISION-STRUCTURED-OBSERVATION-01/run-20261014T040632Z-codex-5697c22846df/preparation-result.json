@@ -1,0 +1,116 @@
+{
+  "status": "PREPARED_OFFLINE_STRUCTURED_SCHEMA",
+  "independent_review": "PENDING",
+  "task_id": "IMP-09-B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01",
+  "at": "2026-10-14T04:14:06.665455+00:00",
+  "targeted_tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "14",
+    "time": "1.714",
+    "timestamp": "2026-10-14T13:13:13.708303+09:00",
+    "hostname": "MrKui-MacBookPro.local"
+  },
+  "mock_counts": {
+    "asgi_posts": 1,
+    "fake_provider_calls": 1,
+    "socket_attempts": 0
+  },
+  "real_calls": {
+    "http": 0,
+    "socket": 0,
+    "listener": 0,
+    "worker": 0,
+    "uvicorn": 0,
+    "ollama": 0,
+    "model_inference": 0
+  },
+  "static_receipt": "offline-structured-prepare/attempt-01/static-receipt.json",
+  "pytest_receipt": "offline-structured-prepare/attempt-01/pytest-receipt.json",
+  "prepare_receipt": "offline-structured-prepare/attempt-01/prepare-receipt.json",
+  "patch_reconstruction": {
+    "command": [
+      "patch",
+      "--batch",
+      "-p1",
+      "-i",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/task-only.patch"
+    ],
+    "exit_code": 0,
+    "byte_identical": {
+      "run_harness.py": true,
+      "runtime-bridge-contract.json": true,
+      "profile-contract.json": true,
+      "response-schema.json": true,
+      "test_structured_product_payload_contract.py": true
+    }
+  },
+  "inherited_files_identical": {
+    "runtime_adapter.py": true,
+    "test_runtime_bridge_contract.py": true,
+    "test_runtime_compatibility_contract.py": true,
+    "run_offline_prechecks.py": true,
+    "test_runtime_final_gate_contract.py": true,
+    "endpoint-contract.json": true,
+    "budgets.json": true
+  },
+  "protected_files_unchanged": {
+    "src/antigravity_k/api/routes/chat.py": true,
+    "src/antigravity_k/engine/conversation_store.py": true,
+    "src/antigravity_k/engine/protocol_translator.py": true,
+    "src/antigravity_k/engine/model_manager.py": true,
+    "src/antigravity_k/engine/provider_adapters/inference_providers.py": true,
+    "src/antigravity_k/api/server.py": true,
+    "src/antigravity_k/api/dependencies.py": true,
+    "src/antigravity_k/config.py": true,
+    "src/antigravity_k/engine/project_registry.py": true,
+    "src/antigravity_k/engine/model_registry.py": true,
+    "src/antigravity_k/api/project_binding.py": true,
+    "src/antigravity_k/api/auth_routes.py": true,
+    "src/antigravity_k/engine/session_manager.py": true,
+    "src/antigravity_k/engine/usage_tracker.py": true,
+    "src/antigravity_k/engine/audit_logger.py": true,
+    "tests/test_chat_vision_routing_contract.py": true,
+    "tests/fixtures/vision_shapes_384x256.png.b64": true,
+    "config.yaml": true,
+    "src/antigravity_k/engine/sampling_config.py": true,
+    "src/antigravity_k/engine/context_budget.py": true,
+    "src/antigravity_k/engine/multimodal.py": true,
+    "src/antigravity_k/api/routes/system_api.py": true,
+    "src/antigravity_k/api/auth_policy.py": true,
+    "src/antigravity_k/tools/egress_policy.py": true,
+    "src/antigravity_k/engine/structured_output.py": true,
+    "tests/test_chat_structured_output_contract.py": true,
+    "pyproject.toml": true,
+    "uv.lock": true
+  },
+  "source_sha256": {
+    "run_harness.py": "b0d6d944f5b6135b1d7cbcb6e0d58ad674b0bfeca73c111fb96ea95f61492bd2",
+    "runtime_adapter.py": "4ebfd286d01661cfc4f8c028a340ceb7c2668fa3e94a0af22a988cf9115ac472",
+    "test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+    "test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+    "run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a",
+    "test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+    "test_structured_product_payload_contract.py": "3d5b330897592eae53a8a64a2e8abc8f77a6ed6f2b5b9e0dbe04663bee6927a9",
+    "profile-contract.json": "d79de422d09424ca6c0ef03d5a73237f046cbfa6aa0521fbf0d7f519fc9d8e35",
+    "response-schema.json": "da677313c66e0f4ac04f7f19170acfafdd8f7598e1bf6a9fd7e5e3d35fec7df5"
+  },
+  "execution_binding_sha256": "ec3f6b4293b400500c0b21329c0cc4d6358ff315dcbfed9ba810b4253754746d",
+  "request_sha256": "5fb7881d29eae990a44d876529ccef5f03fd2ebcb1019937ae15a956b43a905a",
+  "warnings": [
+    "Unknown config option asyncio_mode",
+    "Starlette TestClient httpx deprecation"
+  ],
+  "live_authorization": "NOT_ISSUED",
+  "current_observation": "NOT_RUN",
+  "historical_case": "FAIL_SEMANTIC preserved",
+  "overall_imp09": "PARTIAL",
+  "ledger": "NOT_RECOVERED",
+  "scope_limits": [
+    "No old selectors replayed",
+    "Mock assistant JSON is fixture data, not live semantic evidence",
+    "Concrete runtime adapter was inherited byte-identically; no new OS cleanup claim"
+  ]
+}

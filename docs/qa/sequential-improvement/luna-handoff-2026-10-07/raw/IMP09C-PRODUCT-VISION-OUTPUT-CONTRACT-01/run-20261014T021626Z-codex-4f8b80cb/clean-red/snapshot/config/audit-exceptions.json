@@ -1,0 +1,66 @@
+{
+  "_contract": "REL-03 공급망 audit 예외 레지스트리. 각 항목은 owner/justification/expires/compensating_controls 4요소가 필수이며, 만료 시 supply_chain_audit gate가 실패한다. 예외는 (id, package, ecosystem, installed_version)이 정확히 일치할 때만 유효하다.",
+  "_id_scheme": "CR-11(2026-09-12): id는 **감사 도구가 보고하는 primary id**를 쓴다. pip-audit/PyPI는 같은 권고를 PYSEC-xxxx-xxxx로 보고하고 CVE/GHSA는 aliases로 준다. 예전에는 CVE로 등록돼 있었지만 출하 extras([rag])가 감사 대상에서 빠져 있어(=chromadb가 한 번도 감사되지 않아) 이 불일치가 드러나지 않았다. id를 CVE로 되돌리면 gate는 deny-by-default로 다시 실패한다 — 의도된 동작이다.",
+  "exceptions": [
+    {
+      "id": "PYSEC-2026-311",
+      "package": "chromadb",
+      "ecosystem": "pypi",
+      "installed_version": "1.5.9",
+      "fixed_version": null,
+      "owner": "rel-03-maintainer",
+      "justification": "상류 수정 버전 미출시 (fix_versions 비어 있음, 2026-09-09 감사 기준). CVE-2026-45829(GHSA-f4j7-r4q5-qw2c) alias — 취약면은 chromadb FastAPI 서버 모드의 pre-auth 코드 주입이다. Ssak-Ai는 chromadb를 임베디드 PersistentClient로만 사용하며 서버를 기동하지 않는다 (engine/vector_store.py, engine/gbrain.py 참조).",
+      "expires": "2026-12-08",
+      "compensating_controls": [
+        "chromadb 서버 모드 미사용 — PersistentClient(임베디드)만 호출하며 네트워크 서버 프로세스가 존재하지 않는다",
+        "단일 사용자 로컬 배포 — 신뢰 경계 외부의 인증된 공격자 시나리오가 성립하지 않는다",
+        "weekly-drift CI가 상류 수정 릴리스를 감시하며, 출시 시 lock 상향 후 본 예외를 제거한다"
+      ]
+    },
+    {
+      "id": "PYSEC-2026-3813",
+      "package": "chromadb",
+      "ecosystem": "pypi",
+      "installed_version": "1.5.9",
+      "fixed_version": null,
+      "owner": "rel-03-maintainer",
+      "justification": "CVE-2026-45830/GHSA-2wm9-hf6c-p5cr alias. 상류 수정 버전 미출시 (fix_versions 비어 있음, 2026-09-12 감사 기준). 인증 우회로 타 tenant/collection 데이터 조작 — chromadb 서버 모드의 다중 인증 사용자 시나리오다. Ssak-Ai는 임베디드 클라이언트만 사용하고 인증 계층(SEC-01/02)이 앞단에 존재한다.",
+      "expires": "2026-12-08",
+      "compensating_controls": [
+        "chromadb 서버 모드 미사용 — 임베디드 PersistentClient만 사용",
+        "단일 사용자 로컬 배포 — tenant/database 분리 요구가 성립하지 않는다",
+        "weekly-drift CI가 상류 수정 릴리스를 감시한다"
+      ]
+    },
+    {
+      "id": "PYSEC-2026-3814",
+      "package": "chromadb",
+      "ecosystem": "pypi",
+      "installed_version": "1.5.9",
+      "fixed_version": null,
+      "owner": "rel-03-maintainer",
+      "justification": "CVE-2026-45833/GHSA-36p7-vc44-83pf alias. 상류 수정 버전 미출시 (fix_versions 비어 있음, 2026-09-12 감사 기준). 인증된 공격자의 trust_remote_code 경유 코드 주입 — chromadb 서버가 원격 모델 저장소 구성을 로드할 때만 성립한다. Ssak-Ai의 임베디드 클라이언트는 원격 모델 구성을 로드하지 않는다.",
+      "expires": "2026-12-08",
+      "compensating_controls": [
+        "chromadb 서버 모드 미사용 — 임베디드 PersistentClient만 사용",
+        "embedding 함수 구성을 외부 입력으로 받지 않는다 (코드 내 고정 기본값)",
+        "weekly-drift CI가 상류 수정 릴리스를 감시한다"
+      ]
+    },
+    {
+      "id": "PYSEC-2026-3815",
+      "package": "chromadb",
+      "ecosystem": "pypi",
+      "installed_version": "1.5.9",
+      "fixed_version": null,
+      "owner": "rel-03-maintainer",
+      "justification": "CVE-2026-45831/GHSA-xph7-9rjv-w5fr alias. 상류 수정 버전 미출시 (fix_versions 비어 있음, 2026-09-12 감사 기준). SimpleRBACAuthorizationProvider의 tenant/database 권한 평가 결함 — 해당 authorization provider를 구성한 서버 모드에서만 성립한다. Ssak-Ai는 어떤 chromadb authorization provider도 구성하지 않는다.",
+      "expires": "2026-12-08",
+      "compensating_controls": [
+        "chromadb 서버 모드/authorization provider 미사용 — 임베디드 PersistentClient만 사용",
+        "단일 사용자 로컬 배포 — RBAC 경계가 성립하지 않는다",
+        "weekly-drift CI가 상류 수정 릴리스를 감시한다"
+      ]
+    }
+  ]
+}

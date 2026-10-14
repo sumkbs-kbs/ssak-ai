@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Todo App</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 400px; margin: 0 auto; }
+        .todo-item { display: flex; justify-content: space-between; margin-bottom: 8px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        .completed { text-decoration: line-through; color: #888; }
+        .controls { margin-bottom: 20px; display: flex; gap: 8px; }
+        #todo-input { flex-grow: 1; padding: 8px; }
+        button { padding: 8px 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Todo App</h1>
+    <div class="controls">
+        <input type="text" id="todo-input" placeholder="Add a new task..." autocomplete="off">
+        <button id="add-btn">Add</button>
+    </div>
+    <div id="todo-list"></div>
+
+    <script>
+        const input = document.getElementById('todo-input');
+        const addBtn = document.getElementById('add-btn');
+        const list = document.getElementById('todo-list');
+
+        function addTodo() {
+            const text = input.value.trim();
+            if (!text) return;
+
+            const div = document.createElement('div');
+            div.className = 'todo-item';
+
+            const span = document.createElement('span');
+            span.textContent = text;
+            // Intentional bug 1: clicking the span toggles 'completed', but there's a typo in class name 'complete' instead of 'completed'
+            span.onclick = () => span.classList.toggle('completed');
+
+            const delBtn = document.createElement('button');
+            delBtn.textContent = 'Delete';
+            delBtn.className = 'del-btn';
+            // Intentional bug 2: removes the button itself instead of the parent div
+            delBtn.onclick = () => div.remove();
+
+            div.appendChild(span);
+            div.appendChild(delBtn);
+            list.appendChild(div);
+
+            // Intentional bug 3: forgot to clear the input field!
+            input.value = '';
+        }
+
+        addBtn.addEventListener('click', addTodo);
+        // Add Enter key support
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') addTodo();
+        });
+    </script>
+</body>
+</html>

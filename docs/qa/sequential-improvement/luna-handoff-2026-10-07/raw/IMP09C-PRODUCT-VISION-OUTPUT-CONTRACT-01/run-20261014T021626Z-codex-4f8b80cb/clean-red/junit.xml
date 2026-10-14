@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="1.597" timestamp="2026-10-14T11:25:39.068756+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="" name="test_structured_image_reaches_native_wire_once[format_value0-json]" time="1.442"><failure message="assert 2 == 1&#10; +  where 2 = len([{'prompt': &quot;You are an autonomous intent router. Analyze the user request and categorize it into ONE of these exactly...er: Count the shapes and return JSON.\nAssistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}])">product = (&lt;starlette.testclient.TestClient object at 0x1337d1e80&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...sistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1}'])
+format_value = {'type': 'json_object'}, native = 'json'
+
+    @pytest.mark.parametrize("format_value,native", [({"type": "json_object"}, "json"), (ENVELOPE, SCHEMA)])
+    def test_structured_image_reaches_native_wire_once(product, format_value, native):
+        client, body, calls, generations, content = product
+        image = (Path(__file__).parent / "fixtures/vision_shapes_384x256.png.b64").read_text().strip()
+        body["messages"][0]["content"] = [
+            {"type": "text", "text": "Count the shapes and return JSON."},
+            {"type": "image_url", "image_url": {"url": "data:image/png;base64," + image}},
+        ]
+        response = client.post("/v1/chat/completions", json={**body, "response_format": format_value})
+        assert response.status_code == 200, response.text
+&gt;       assert len(calls) == len(generations) == 1
+E       assert 2 == 1
+E        +  where 2 = len([{'prompt': "You are an autonomous intent router. Analyze the user request and categorize it into ONE of these exactly...er: Count the shapes and return JSON.\nAssistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}])
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py:143: AssertionError</failure></testcase><testcase classname="" name="test_structured_image_reaches_native_wire_once[format_value1-native1]" time="0.035"><failure message="assert 2 == 1&#10; +  where 2 = len([{'prompt': &quot;You are an autonomous intent router. Analyze the user request and categorize it into ONE of these exactly...er: Count the shapes and return JSON.\nAssistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}])">product = (&lt;starlette.testclient.TestClient object at 0x136cf8a50&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...sistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1}'])
+format_value = {'type': 'json_schema', 'json_schema': {'name': 'shapes', 'strict': True, 'schema': {'type': 'object', 'properties': {...'}, 'blue_squares': {'type': 'integer'}}, 'required': ['red_circles', 'blue_squares'], 'additionalProperties': False}}}
+native = {'type': 'object', 'properties': {'red_circles': {'type': 'integer'}, 'blue_squares': {'type': 'integer'}}, 'required': ['red_circles', 'blue_squares'], 'additionalProperties': False}
+
+    @pytest.mark.parametrize("format_value,native", [({"type": "json_object"}, "json"), (ENVELOPE, SCHEMA)])
+    def test_structured_image_reaches_native_wire_once(product, format_value, native):
+        client, body, calls, generations, content = product
+        image = (Path(__file__).parent / "fixtures/vision_shapes_384x256.png.b64").read_text().strip()
+        body["messages"][0]["content"] = [
+            {"type": "text", "text": "Count the shapes and return JSON."},
+            {"type": "image_url", "image_url": {"url": "data:image/png;base64," + image}},
+        ]
+        response = client.post("/v1/chat/completions", json={**body, "response_format": format_value})
+        assert response.status_code == 200, response.text
+&gt;       assert len(calls) == len(generations) == 1
+E       assert 2 == 1
+E        +  where 2 = len([{'prompt': "You are an autonomous intent router. Analyze the user request and categorize it into ONE of these exactly...er: Count the shapes and return JSON.\nAssistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}])
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py:143: AssertionError</failure></testcase></testsuite></testsuites>

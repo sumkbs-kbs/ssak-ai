@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "status": "EXPLICIT_REVISED_NON_STREAM_PROFILE",
+  "supersedes_assumption": {
+    "repeat_penalty": 1,
+    "min_p": 0,
+    "historical_run": "run-20261014T013431Z-workspace-fix-8c6d1943",
+    "historical_verdict": "FAIL_MANDATORY_GATE"
+  },
+  "basis": "Real ASGI chat route, ProtocolTranslator, ModelManager, OllamaProvider._generate_native; terminal safe_urlopen replaced by in-memory fixture. No upstream inference.",
+  "sampling_profile": "GENERAL",
+  "task_type": null,
+  "expected_payload": {
+    "model": "qwen3.8",
+    "stream": false,
+    "keep_alive": "30m",
+    "think": false,
+    "options": {
+      "num_ctx": 32768,
+      "num_predict": 128,
+      "temperature": 0,
+      "min_p": 0.05,
+      "repeat_penalty": 1.3
+    }
+  },
+  "forbidden_fields": [
+    "format",
+    "tools",
+    "other options/top-level keys"
+  ],
+  "source_sha256": {
+    "src/antigravity_k/engine/sampling_config.py": "4db29f894006525c1a028c2564b5ced2e8d63ca2893bb0a36e9c96532abdba67",
+    "src/antigravity_k/engine/context_budget.py": "4658ec1d338b154ae18d80cbec49324d103f27feabe70de02b2ca9cbd1a04136",
+    "src/antigravity_k/engine/multimodal.py": "d57fb2c55bd155373b582e8c119b627da037d7de4b8e984f120f96becb48ee60"
+  },
+  "preserved_constraints": "Exact model, image SHA, user question, system directive, origin, per-run one-shot/retry constraints remain enforced. Historical failures are not revised."
+}

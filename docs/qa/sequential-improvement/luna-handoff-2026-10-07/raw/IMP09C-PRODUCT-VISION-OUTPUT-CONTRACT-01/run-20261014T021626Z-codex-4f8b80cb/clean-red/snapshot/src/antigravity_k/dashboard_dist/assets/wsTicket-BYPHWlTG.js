@@ -1,0 +1,1 @@
+import{r,aa as a}from"./api-client-DoReRcqC.js";async function i(){const e=r();if(e===null)return null;try{const t=await a("/api/auth/ws-ticket",{method:"POST",headers:{Authorization:`Bearer ${e}`}});return typeof(t==null?void 0:t.ticket)=="string"&&t.ticket.length>0?t.ticket:null}catch{return null}}export{i as f};

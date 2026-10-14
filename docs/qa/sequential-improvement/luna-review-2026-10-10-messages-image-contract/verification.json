@@ -1,0 +1,141 @@
+{
+  "reviewed_at_utc": "2026-10-10T12:40:18.680789+00:00",
+  "python_executable": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+  "python_version": "3.13.12 | packaged by conda-forge | (main, Feb  5 2026, 06:11:05) [Clang 19.1.7 ]",
+  "run_root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-MESSAGES-IMAGE-CONTRACT-01/run-20261010T121017Z-bd9f7e61-2efa-471a-8bc7-e69a908a8104",
+  "checker_sha256": "9ab57a8ea5a3ee7316bf92b834ff60d47a8b4bcfe3da43c47b92c86581d3263b",
+  "checks": [
+    {
+      "name": "saved_manifest",
+      "passed": true,
+      "detail": {
+        "files": 72,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "protected_before",
+      "passed": true,
+      "detail": {
+        "files": 144
+      }
+    },
+    {
+      "name": "current_candidate",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "baseline_preimage",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "patch_scope",
+      "passed": true,
+      "detail": [
+        "src/antigravity_k/api/routes/messages_api.py",
+        "tests/test_messages_image_contract.py"
+      ]
+    },
+    {
+      "name": "independent_patch_reconstruction",
+      "passed": true,
+      "detail": {
+        "exit_code": 0
+      }
+    },
+    {
+      "name": "junit:checks/before.junit.xml",
+      "passed": true,
+      "detail": {
+        "tests_failures_errors_skipped": [
+          8,
+          8,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "name": "junit:checks/after-focused.junit.xml",
+      "passed": true,
+      "detail": {
+        "tests_failures_errors_skipped": [
+          8,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "name": "junit:checks/final-impact.junit.xml",
+      "passed": true,
+      "detail": {
+        "tests_failures_errors_skipped": [
+          61,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "name": "same_focused_case_ids",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "baseline_status_failures",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "final_check_bindings",
+      "passed": true,
+      "detail": {
+        "records": 5
+      }
+    },
+    {
+      "name": "independent_focused_route",
+      "passed": true,
+      "detail": {
+        "exit_code": 0,
+        "pytest_argv": [
+          "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_messages_image_contract.py",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-review-2026-10-10-messages-image-contract/independent-focused.junit.xml",
+          "--basetemp=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-review-2026-10-10-messages-image-contract/pytest-temp"
+        ],
+        "started_at_utc": "2026-10-10T12:40:17.229844+00:00",
+        "finished_at_utc": "2026-10-10T12:40:18.672334+00:00"
+      }
+    },
+    {
+      "name": "no_network_attempts",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "protected_after",
+      "passed": true,
+      "detail": {
+        "files": 144,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "candidate_unchanged_after",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "passed": 16,
+  "failed": [],
+  "scope": "One independent offline 8-case ASGI route run with real network connects blocked; original evidence and product source preserved",
+  "network_attempts": []
+}

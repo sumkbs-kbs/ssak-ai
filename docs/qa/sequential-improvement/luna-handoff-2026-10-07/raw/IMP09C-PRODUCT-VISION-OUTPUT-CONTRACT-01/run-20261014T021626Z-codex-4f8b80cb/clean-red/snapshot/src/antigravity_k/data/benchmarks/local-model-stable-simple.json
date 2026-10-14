@@ -1,0 +1,222 @@
+{
+  "schema_version": 2,
+  "model": "qwen3.6:latest",
+  "suite": "simple",
+  "repeats": 2,
+  "started_at": 1786319085.814324,
+  "finished_at": 1786319135.303624,
+  "duration_s": 49.49,
+  "results": [
+    {
+      "case_id": "sim-001",
+      "target": "qwen3.6:latest",
+      "quality_score": 1.0,
+      "quality_grade": "excellent",
+      "latency_ms": 11665.3,
+      "tokens_in": 235,
+      "tokens_out": 805,
+      "output_preview": "## 선택 이유와 동작 설명\n\n피보나치 수열은 $F(0)=0, F(1)=1$이며, 그 이후 항은 이전 두 항의 합으로 정의됩니다($F(n) = F(n-1) + F(n-2)$). 요청에 따라 재귀적 접근과 반복적 접근을 모두 구현합니다.\n\n1.  **재귀 함수 (`fibonacci_recursive`)**:\n    *   **동작**: 함수가 자기 자신을 호출하여 문제를 작은 하위 문제로 분할합니다. $n$이 0 또는 1일 경우 기본 케이스(base case)를 반환하고, 그렇지 않으면 두 가지 경로로 재귀 호출을 진행합니다.\n    *   **시간 복잡도**: $O(2^n)$ (지수 시간). 동일한 부분 문제가 반복적으로 계산되므로 비효율적입니다. 메모화(memoization)나 다이나믹 프로그래밍 기법이 없으면 성능이 급격히 저하됩니다.\n\n2.  **반복 함수 (`fibonacci_iterative`)**:\n    *   **동작**: 변수를 사용하여 이전 두 값($a, b$)을 ",
+      "timestamp": 1786319124.6411111,
+      "issues": [],
+      "benchmark_score": 1.0,
+      "keyword_coverage": 1.0,
+      "passed_keywords": [
+        "def fibonacci",
+        "O(",
+        "raise",
+        "return"
+      ],
+      "missing_keywords": [],
+      "error": "",
+      "quality_revision_count": 0,
+      "quality_revision_applied": false
+    },
+    {
+      "case_id": "sim-002",
+      "target": "qwen3.6:latest",
+      "quality_score": 1.0,
+      "quality_grade": "excellent",
+      "latency_ms": 10658.1,
+      "tokens_in": 254,
+      "tokens_out": 608,
+      "output_preview": "## 선택 이유와 동작 설명\n\n유니코드 문자열, 특히 이모지나 복합 글자가 포함된 경우 단순히 Python의 슬라이싱 `s[::-1]`을 사용하면 코드 포인트(code point) 단위로 뒤집히므로 '안녕🌍세계'가 아닌 '계세🌎녕안'(이모지가 깨짐 또는 순서 오류 발생 가능)과 같은 잘못된 결과가 나올 수 있습니다. 이를 방지하기 위해서는 **그래프eme 클러스터(Grapheme Cluster)** 단위, 즉 사용자가 인식하는 문자 단위로 뒤집어야 합니다.\n\n1.  **단순 슬라이싱 (`s[::-1]`)**: 내부적으로 UTF-8/UTF-16 코드 포인트를 역순으로 나열합니다. 이모지(예: 🌍)가 여러 코드 포인트로 구성되거나 결합 글자(combinining characters)가 있는 경우 순서가 깨집니다.\n2.  **그래프eme 클러스터 기반 (`grapheme` 라이브러리)**: Unicode Standard Annex #29(UAX#29)를 준수하여 실제 '글자' 단위로 분할",
+      "timestamp": 1786319135.302711,
+      "issues": [],
+      "benchmark_score": 1.0,
+      "keyword_coverage": 1.0,
+      "passed_keywords": [
+        "def reverse",
+        "return"
+      ],
+      "missing_keywords": [],
+      "error": "",
+      "quality_revision_count": 0,
+      "quality_revision_applied": false
+    }
+  ],
+  "stability": {
+    "repeat_count": 2,
+    "result_count": 4,
+    "mean_benchmark_score": 1.0,
+    "benchmark_score_stddev": 0.0,
+    "min_benchmark_score": 1.0,
+    "excellent_rate": 1.0,
+    "all_excellent_run_rate": 1.0,
+    "runs": [
+      {
+        "repeat": 1,
+        "benchmark_score": 1.0,
+        "quality_score": 1.0,
+        "excellent_rate": 1.0,
+        "retry_count": 0,
+        "error_count": 0
+      },
+      {
+        "repeat": 2,
+        "benchmark_score": 1.0,
+        "quality_score": 1.0,
+        "excellent_rate": 1.0,
+        "retry_count": 0,
+        "error_count": 0
+      }
+    ],
+    "by_case": {
+      "sim-001": {
+        "repeat_count": 2,
+        "mean_benchmark_score": 1.0,
+        "min_benchmark_score": 1.0,
+        "benchmark_score_stddev": 0.0,
+        "excellent_rate": 1.0,
+        "grades": {
+          "excellent": 2,
+          "good": 0,
+          "retry": 0,
+          "fail": 0
+        }
+      },
+      "sim-002": {
+        "repeat_count": 2,
+        "mean_benchmark_score": 1.0,
+        "min_benchmark_score": 1.0,
+        "benchmark_score_stddev": 0.0,
+        "excellent_rate": 1.0,
+        "grades": {
+          "excellent": 2,
+          "good": 0,
+          "retry": 0,
+          "fail": 0
+        }
+      }
+    }
+  },
+  "runs": [
+    {
+      "repeat": 1,
+      "started_at": 1786319085.814324,
+      "finished_at": 1786319112.973123,
+      "duration_s": 27.16,
+      "results": [
+        {
+          "case_id": "sim-001",
+          "target": "qwen3.6:latest",
+          "quality_score": 1.0,
+          "quality_grade": "excellent",
+          "latency_ms": 12512.3,
+          "tokens_in": 235,
+          "tokens_out": 781,
+          "output_preview": "## 선택 이유와 동작 설명\n\n피보나치 수열은 $F(0)=0, F(1)=1$이며, 그 이후 항은 이전 두 항의 합으로 정의됩니다($F(n) = F(n-1) + F(n-2)$). 요청에 따라 재귀적 접근과 반복적 접근을 모두 구현합니다.\n\n1.  **재귀 함수 (`fibonacci_recursive`)**:\n    *   **동작**: 함수가 자기 자신을 호출하여 문제를 작은 하위 문제로 분할합니다. $n=0$ 또는 $n=1$일 경우 기본 케이스(base case)를 반환하며 재귀를 종료합니다.\n    *   **시간 복잡도**: $O(2^n)$ (지수 시간). 동일한 부분 문제가 중복으로 계산되기 때문에 비효율적입니다. 메모이제이션(memoization)을 적용하지 않은 순수 재귀의 특징입니다.\n\n2.  **반복 함수 (`fibonacci_iterative`)**:\n    *   **동작**: 두 개의 변수(`a`, `b`)를 사용하여 이전 값들을 저장하며 루프를 돌며 값을 갱신합니",
+          "timestamp": 1786319098.336983,
+          "issues": [],
+          "benchmark_score": 1.0,
+          "keyword_coverage": 1.0,
+          "passed_keywords": [
+            "def fibonacci",
+            "O(",
+            "raise",
+            "return"
+          ],
+          "missing_keywords": [],
+          "error": "",
+          "quality_revision_count": 0,
+          "quality_revision_applied": false
+        },
+        {
+          "case_id": "sim-002",
+          "target": "qwen3.6:latest",
+          "quality_score": 1.0,
+          "quality_grade": "excellent",
+          "latency_ms": 14631.3,
+          "tokens_in": 254,
+          "tokens_out": 896,
+          "output_preview": "## 선택 이유와 동작 설명\n\n유니코드 문자열 뒤집기에서 가장 큰 함정은 **Grapheme Cluster(그래프임 클러스터)**입니다. 이모지, 조합형 자음/모음, 제스처 시퀀스 등은 단일 시각적 글자로 보이지만 코드 포인트(code point)로는 여러 개로 구성될 수 있습니다.\n\n1.  **단순 슬라이싱 (`s[::-1]`)**: Python의 기본 문자열 연산은 내부적으로 UTF-8 또는 UCS4 등 인코딩된 바이트/코드 단위(보통 코드 포인트)를 역순으로 처리합니다. 이모지처럼 여러 코드 포인트로 이루어진 클러스터가 있으면 순서가 뒤집히거나 깨질 수 있습니다 (예: `👨‍👩‍👧` 같은 가족 이모지가 분해됨).\n2.  **Grapheme Cluster 고려 (`grapheme` 라이브러리)**: Unicode Standard Annex #29에 따라 시각적 글자 단위로 클러스터를 인식한 후 뒤집어야 합니다. 이를 위해 `python-grapheme` 패키지를 사용해야 정확합니",
+          "timestamp": 1786319112.97214,
+          "issues": [],
+          "benchmark_score": 1.0,
+          "keyword_coverage": 1.0,
+          "passed_keywords": [
+            "def reverse",
+            "return"
+          ],
+          "missing_keywords": [],
+          "error": "",
+          "quality_revision_count": 0,
+          "quality_revision_applied": false
+        }
+      ]
+    },
+    {
+      "repeat": 2,
+      "started_at": 1786319112.973133,
+      "finished_at": 1786319135.303624,
+      "duration_s": 22.33,
+      "results": [
+        {
+          "case_id": "sim-001",
+          "target": "qwen3.6:latest",
+          "quality_score": 1.0,
+          "quality_grade": "excellent",
+          "latency_ms": 11665.3,
+          "tokens_in": 235,
+          "tokens_out": 805,
+          "output_preview": "## 선택 이유와 동작 설명\n\n피보나치 수열은 $F(0)=0, F(1)=1$이며, 그 이후 항은 이전 두 항의 합으로 정의됩니다($F(n) = F(n-1) + F(n-2)$). 요청에 따라 재귀적 접근과 반복적 접근을 모두 구현합니다.\n\n1.  **재귀 함수 (`fibonacci_recursive`)**:\n    *   **동작**: 함수가 자기 자신을 호출하여 문제를 작은 하위 문제로 분할합니다. $n$이 0 또는 1일 경우 기본 케이스(base case)를 반환하고, 그렇지 않으면 두 가지 경로로 재귀 호출을 진행합니다.\n    *   **시간 복잡도**: $O(2^n)$ (지수 시간). 동일한 부분 문제가 반복적으로 계산되므로 비효율적입니다. 메모화(memoization)나 다이나믹 프로그래밍 기법이 없으면 성능이 급격히 저하됩니다.\n\n2.  **반복 함수 (`fibonacci_iterative`)**:\n    *   **동작**: 변수를 사용하여 이전 두 값($a, b$)을 ",
+          "timestamp": 1786319124.6411111,
+          "issues": [],
+          "benchmark_score": 1.0,
+          "keyword_coverage": 1.0,
+          "passed_keywords": [
+            "def fibonacci",
+            "O(",
+            "raise",
+            "return"
+          ],
+          "missing_keywords": [],
+          "error": "",
+          "quality_revision_count": 0,
+          "quality_revision_applied": false
+        },
+        {
+          "case_id": "sim-002",
+          "target": "qwen3.6:latest",
+          "quality_score": 1.0,
+          "quality_grade": "excellent",
+          "latency_ms": 10658.1,
+          "tokens_in": 254,
+          "tokens_out": 608,
+          "output_preview": "## 선택 이유와 동작 설명\n\n유니코드 문자열, 특히 이모지나 복합 글자가 포함된 경우 단순히 Python의 슬라이싱 `s[::-1]`을 사용하면 코드 포인트(code point) 단위로 뒤집히므로 '안녕🌍세계'가 아닌 '계세🌎녕안'(이모지가 깨짐 또는 순서 오류 발생 가능)과 같은 잘못된 결과가 나올 수 있습니다. 이를 방지하기 위해서는 **그래프eme 클러스터(Grapheme Cluster)** 단위, 즉 사용자가 인식하는 문자 단위로 뒤집어야 합니다.\n\n1.  **단순 슬라이싱 (`s[::-1]`)**: 내부적으로 UTF-8/UTF-16 코드 포인트를 역순으로 나열합니다. 이모지(예: 🌍)가 여러 코드 포인트로 구성되거나 결합 글자(combinining characters)가 있는 경우 순서가 깨집니다.\n2.  **그래프eme 클러스터 기반 (`grapheme` 라이브러리)**: Unicode Standard Annex #29(UAX#29)를 준수하여 실제 '글자' 단위로 분할",
+          "timestamp": 1786319135.302711,
+          "issues": [],
+          "benchmark_score": 1.0,
+          "keyword_coverage": 1.0,
+          "passed_keywords": [
+            "def reverse",
+            "return"
+          ],
+          "missing_keywords": [],
+          "error": "",
+          "quality_revision_count": 0,
+          "quality_revision_applied": false
+        }
+      ]
+    }
+  ]
+}

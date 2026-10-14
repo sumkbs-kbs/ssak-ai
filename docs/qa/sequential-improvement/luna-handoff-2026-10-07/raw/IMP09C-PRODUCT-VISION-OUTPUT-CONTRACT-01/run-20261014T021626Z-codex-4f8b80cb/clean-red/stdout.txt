@@ -1,0 +1,67 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+______ test_structured_image_reaches_native_wire_once[format_value0-json] ______
+
+product = (<starlette.testclient.TestClient object at 0x1337d1e80>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...sistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1}'])
+format_value = {'type': 'json_object'}, native = 'json'
+
+    @pytest.mark.parametrize("format_value,native", [({"type": "json_object"}, "json"), (ENVELOPE, SCHEMA)])
+    def test_structured_image_reaches_native_wire_once(product, format_value, native):
+        client, body, calls, generations, content = product
+        image = (Path(__file__).parent / "fixtures/vision_shapes_384x256.png.b64").read_text().strip()
+        body["messages"][0]["content"] = [
+            {"type": "text", "text": "Count the shapes and return JSON."},
+            {"type": "image_url", "image_url": {"url": "data:image/png;base64," + image}},
+        ]
+        response = client.post("/v1/chat/completions", json={**body, "response_format": format_value})
+        assert response.status_code == 200, response.text
+>       assert len(calls) == len(generations) == 1
+E       assert 2 == 1
+E        +  where 2 = len([{'prompt': "You are an autonomous intent router. Analyze the user request and categorize it into ONE of these exactly...er: Count the shapes and return JSON.\nAssistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}])
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py:143: AssertionError
+------------------------------ Captured log setup ------------------------------
+WARNING  antigravity_k.model_calibration:model_calibration.py:133 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/clean-red/snapshot/data/benchmarks/local-model-stable-simple.json
+WARNING  antigravity_k.model_calibration:model_calibration.py:133 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/clean-red/snapshot/data/benchmarks/local-model-frontier.json
+____ test_structured_image_reaches_native_wire_once[format_value1-native1] _____
+
+product = (<starlette.testclient.TestClient object at 0x136cf8a50>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...sistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1}'])
+format_value = {'type': 'json_schema', 'json_schema': {'name': 'shapes', 'strict': True, 'schema': {'type': 'object', 'properties': {...'}, 'blue_squares': {'type': 'integer'}}, 'required': ['red_circles', 'blue_squares'], 'additionalProperties': False}}}
+native = {'type': 'object', 'properties': {'red_circles': {'type': 'integer'}, 'blue_squares': {'type': 'integer'}}, 'required': ['red_circles', 'blue_squares'], 'additionalProperties': False}
+
+    @pytest.mark.parametrize("format_value,native", [({"type": "json_object"}, "json"), (ENVELOPE, SCHEMA)])
+    def test_structured_image_reaches_native_wire_once(product, format_value, native):
+        client, body, calls, generations, content = product
+        image = (Path(__file__).parent / "fixtures/vision_shapes_384x256.png.b64").read_text().strip()
+        body["messages"][0]["content"] = [
+            {"type": "text", "text": "Count the shapes and return JSON."},
+            {"type": "image_url", "image_url": {"url": "data:image/png;base64," + image}},
+        ]
+        response = client.post("/v1/chat/completions", json={**body, "response_format": format_value})
+        assert response.status_code == 200, response.text
+>       assert len(calls) == len(generations) == 1
+E       assert 2 == 1
+E        +  where 2 = len([{'prompt': "You are an autonomous intent router. Analyze the user request and categorize it into ONE of these exactly...er: Count the shapes and return JSON.\nAssistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}])
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py:143: AssertionError
+------------------------------ Captured log setup ------------------------------
+WARNING  antigravity_k.model_calibration:model_calibration.py:133 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/clean-red/snapshot/data/benchmarks/local-model-stable-simple.json
+WARNING  antigravity_k.model_calibration:model_calibration.py:133 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/clean-red/snapshot/data/benchmarks/local-model-frontier.json
+=============================== warnings summary ===============================
+::test_structured_image_reaches_native_wire_once[format_value0-json]
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+.venv/lib/python3.13/site-packages/_pytest/cacheprovider.py:469
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/_pytest/cacheprovider.py:469: PytestCacheWarning: could not create cache path /dev/.pytest_cache/v/cache/nodeids: [Errno 1] Operation not permitted: '/dev/pytest-cache-files-0mdufk89'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+.venv/lib/python3.13/site-packages/_pytest/cacheprovider.py:423
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/_pytest/cacheprovider.py:423: PytestCacheWarning: could not create cache path /dev/.pytest_cache/v/cache/lastfailed: [Errno 1] Operation not permitted: '/dev/pytest-cache-files-qhj9d4zi'
+    config.cache.set("cache/lastfailed", self.lastfailed)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED ../../../../../../dev::test_structured_image_reaches_native_wire_once[format_value0-json]
+FAILED ../../../../../../dev::test_structured_image_reaches_native_wire_once[format_value1-native1]
+2 failed, 29 deselected, 3 warnings in 1.62s

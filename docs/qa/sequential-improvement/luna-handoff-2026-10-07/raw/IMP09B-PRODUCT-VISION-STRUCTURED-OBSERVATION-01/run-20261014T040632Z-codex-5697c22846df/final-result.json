@@ -1,0 +1,163 @@
+{
+  "task_id": "IMP-09-B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01",
+  "status": "COMPLETE_SCOPED_LIVE_REVIEWED_WITH_ACCEPTANCE_RECORD_CORRECTION",
+  "acceptance": "PASS_SCOPED_STRUCTURED_VISION_UVICORN_AUTH_LIFESPAN_OFF",
+  "independent_runtime_review": "APPROVED_WITH_DISCLOSED_REPORTING_METADATA_DEFECT",
+  "overall_imp09": "PARTIAL",
+  "historical_format_omitted_case": "FAIL_SEMANTIC_UNCHANGED",
+  "historical_ledger": "NOT_RECOVERED",
+  "request_scope": "Fresh explicit json_schema; authenticated external loopback Uvicorn; lifespan off; fixed image/question; one product POST and one native Ollama inference",
+  "model": {
+    "repo": "qwen3.8:latest",
+    "digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+    "ollama_version": "0.40.3"
+  },
+  "observed": {
+    "assistant_content": "{\"blue_squares\": 1, \"red_circles\": 2}",
+    "semantic_counts": {
+      "blue_squares": 1,
+      "red_circles": 2
+    },
+    "strict_json_schema_pass": true,
+    "semantic_match": true,
+    "product_provider_content_identical": true,
+    "native_format_equals_frozen_schema": true,
+    "product_http": 200,
+    "provider_http": 200,
+    "provider_done": true,
+    "gates": {
+      "source_request_authorization": "PASS",
+      "auth_unauthorized_401": "PASS",
+      "auth_bearer_200": "PASS",
+      "readiness": "PASS",
+      "model_version_tags_show_digest_capability": "PASS",
+      "product_status_content_type": "PASS",
+      "upstream_status_done_content_type": "PASS",
+      "input_options_think_format": "PASS",
+      "raw_response_equality": "PASS",
+      "semantic_counts": "PASS",
+      "accounting_lineage": "PASS",
+      "no_retry_redirect_native_tool": "PASS",
+      "cleanup_owned_exit": "PASS",
+      "protected_before_after": "PASS",
+      "execution_binding_immutable": "PASS",
+      "deadline_stage_contract": "PASS",
+      "postflight_deadline": "PASS",
+      "cleanup_deadline": "PASS"
+    },
+    "cleanup": {
+      "source": "RUNTIME_OBSERVATION",
+      "owned_cleanup": true,
+      "worker_started": true,
+      "exit_observation": "OBSERVED",
+      "exit_code": 0,
+      "reaped": true,
+      "released_handles": true,
+      "worker_shutdown_report": "WORKER_DONE",
+      "os_exit_observation": "OBSERVED",
+      "supervisor_exit_observation": "NOT_OBSERVED",
+      "errors": [],
+      "callback_calls": 1,
+      "elapsed_seconds": 0.6862130829831585,
+      "timed_out": false,
+      "timeout_seconds": 5
+    },
+    "external_supervisor_exit_code": 0,
+    "internal_supervisor_exit_observation": "NOT_OBSERVED",
+    "postflight": "MODEL_LOADED_KEEP_ALIVE_30M_PRESERVED; no forced unload"
+  },
+  "current_run_counts": {
+    "product_post": 1,
+    "provider_inference": 1,
+    "readiness_auth_gets": 2,
+    "metadata_preflight_http": 4,
+    "metadata_postflight_http": 1,
+    "parent_http_opens": 8,
+    "provider_wire": 1,
+    "recorded_http_total": 9,
+    "worker_starts": 1,
+    "workers_reaped": 1,
+    "cleanup_calls": 1,
+    "retry": 0,
+    "redirect": 0,
+    "native_direct_inference": 0,
+    "tool": 0,
+    "counting_basis": "runtime-observations http-open events + distinct worker provider journal wire_entered; read events are not requests",
+    "historical_counts_not_merged": true
+  },
+  "preparation": {
+    "focused_passed": 14,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "static_exit_codes": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "mock_asgi_posts": 1,
+    "mock_provider_calls": 1,
+    "socket_attempts": 0,
+    "previous_selectors_repeated": 0,
+    "result": "preparation-result.json",
+    "review": "schema-preflight-review.md"
+  },
+  "provenance": {
+    "execution_binding_sha256": "ec3f6b4293b400500c0b21329c0cc4d6358ff315dcbfed9ba810b4253754746d",
+    "request_sha256": "5fb7881d29eae990a44d876529ccef5f03fd2ebcb1019937ae15a956b43a905a",
+    "response_schema_sha256": "da677313c66e0f4ac04f7f19170acfafdd8f7598e1bf6a9fd7e5e3d35fec7df5",
+    "protected_source_count": 28,
+    "source_drift": [],
+    "implementation_sources_unchanged": true,
+    "unrelated_staged_paths_preserved": 97,
+    "parent_manifest_files_preserved": [
+      125,
+      1123
+    ],
+    "task_patch": "task-only.patch",
+    "patch_files_byte_identical": 5,
+    "final_protection_receipt": "final-protection-verification.json",
+    "artifact_manifest": "artifact-manifest.json",
+    "executed_harness_lineage_task_id": "IMP-09-C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01",
+    "observation_identity": "IMP-09-B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01"
+  },
+  "evidence": {
+    "launch_receipt": "launches/live-62dcc6a8320945ae95260e8b823436fd/launch-receipt.json",
+    "runtime_result": "runtime-cli-result.json",
+    "observations": "runtime-observations.jsonl",
+    "journal": "task-wire-journal.jsonl",
+    "independently_verified_runtime_report": "final-evidence-review.json",
+    "raw_product": "attempts/codex-final-gate-candidate-6/product-response.bin",
+    "raw_provider_request": "runtime-state/captures/provider-7529a2780c094597a3b0776a096efabd-request.bin",
+    "raw_provider_response": "runtime-state/captures/provider-7529a2780c094597a3b0776a096efabd-response.bin",
+    "raw_hashes": {
+      "product": "7b68a44db1ffdd8fc7aa98d9ec8459210fad0b9867d0eabf75a1fe27c2833bcb",
+      "provider_response": "34755d6c0407b3552177d49574999a4bd800703aad2ffcc3f6da6bf1dda554f1",
+      "provider_request": "11dea25b670bfd18b74b8d7aa22d89a2d3a7769318a5cd1a2d466bbd29ca3f90",
+      "planned_acceptance": "438bf54b9e2f852847829a1459ec60aafef1ced48605a9a43676ca9ac884f5ee",
+      "generated_acceptance": "a600973d89f78701a4cb3eb2cfc3da990ffc86eeb5ff9408ef7e0bf8e998e8b8"
+    },
+    "root_raw_verification": "stored-observation-verification.json"
+  },
+  "reporting_defect": {
+    "type": "GENERATED_ACCEPTANCE_FORMAT_LABEL",
+    "original": "acceptance.json",
+    "incorrect_value": "format=omitted",
+    "correct_before_dispatch_contract": "planned-acceptance/schema/profile/request bound to exact json_schema",
+    "original_preserved": true,
+    "executed_source_unchanged": true,
+    "correction_receipt": "acceptance-metadata-correction.json",
+    "impact": "Ancillary reporting metadata contradicts actual schema; independent raw verification confirms observed contract success",
+    "future_source_repair": "New owned copy of run_harness.py:1267 only; no live replay needed"
+  },
+  "limitations": [
+    "One fixed image/question/model/digest under non-stream JSON schema; not general vision quality",
+    "Uvicorn lifespan off; lifecycle-on/full-repository suite/GA not established",
+    "Internal supervisor exit not observed; external launcher exit0 separately preserved",
+    "Historical acceptance cross-link defect preserved in root-start-baseline; old evidence unchanged",
+    "Existing pytest asyncio_mode and TestClient deprecation warnings remain",
+    "Current feature implementation and this observation not newly committed/pushed"
+  ],
+  "next_task": "IMP-09-C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01: new-copy offline metadata-writer correction; preserve this executed run and do not repeat inference"
+}

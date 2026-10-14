@@ -1,0 +1,233 @@
+[build-system]
+requires = ["setuptools>=77.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "antigravity-k"
+dynamic = ["version"]
+description = "Ssak-Ai: Local Autonomous Engineering Agent for Apple Silicon"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = [
+    "fastapi>=0.115.0,<1.0",
+    "uvicorn[standard]>=0.32.0,<1.0",
+    "httpx>=0.27.0,<1.0",
+    "pydantic>=2.10.0,<3.0",
+    "pydantic-settings>=2.6.0,<3.0",
+    "pyyaml>=6.0.2,<7.0",
+    "rich>=14.2.0,<16.0",
+    "typer>=0.13.0,<1.0",
+    "psutil>=6.1.0,<7.0",
+    "aiofiles>=24.1.0,<25.0",
+    "watchfiles>=0.24.0,<2.0",
+    "mcp>=1.1.2,<2.0",
+    "networkx>=3.0,<4.0",
+    "rank-bm25>=0.2.2,<0.3",
+    "nest-asyncio>=1.6.0,<2.0",
+    "cryptography>=50.0.1,<51.0",
+    "textual>=8.0.0,<9.0",
+    "filelock>=3.16.0,<4.0",
+    "pyjwt>=2.8.0,<3.0",
+    "slowapi>=0.1.9,<1.0",
+    "prometheus_client>=0.21.0,<1.0",
+    "croniter>=6.0.0,<7.0",
+    "scrapling>=0.4.15,<0.5",
+]
+
+[project.optional-dependencies]
+# Apple Silicon MLX 추론 (Mac 전용)
+mlx = [
+    "mlx>=0.32.0,<0.33.0; sys_platform == 'darwin'",
+    "mlx>=0.30.3,<0.32.0; sys_platform != 'darwin'",
+    "mlx-lm>=0.31.0,<1.0",
+    "mlx-vlm>=0.2.0,<0.3",
+]
+mlx-media = [
+    "mflux>=0.19.1,<0.20.0",
+]
+transformers = [
+    "torch>=2.4.0,<3.0",
+    "transformers>=4.48.0",
+    "peft>=0.14.0,<1.0",
+]
+# RAG / 문서 파싱
+rag = [
+    "chromadb>=1.5.0,<2.0",
+    "opentelemetry-proto>=1.44.0",
+    "sentence-transformers>=5.0.0,<6.0",
+    "python-docx>=1.1.0,<2.0",
+    "openpyxl>=3.1.0,<4.0",
+    "markdown>=3.7,<4.0",
+]
+# 개발 & 테스트
+dev = [
+    "pytest>=9.0.3,<10.0",
+    "pytest-asyncio>=1.4.0,<2.0",
+    "pytest-cov>=6.0,<8.0",
+    "ruff>=0.8.0,<1.0",
+    "basedpyright>=1.39.0,<2.0",
+    "mypy>=1.13.0,<2.0",
+    # 보안 스캐너는 게이트(`security-bandit`)가 쓰는 도구다 — 선언하지 않으면 그 도구가
+    # 호출 셸(개발자 conda 등)에서 오고, 게이트 초록이 후보가 아니라 머신을 검증한다
+    # (CR-14 F-18 과 같은 결함). lock 에 두어 버전이 떠다니지 않게 한다.
+    "bandit>=1.9.0,<2.0",
+    "types-PyYAML>=6.0",
+    "types-croniter>=5.0.0",
+    "requests>=2.32.0,<3.0",
+    "playwright>=1.40.0,<2.0",
+    "sqlalchemy>=2.0.0,<3.0",
+]
+# 파인튜닝 (데이터셋 처리, LoRA) — 선택적
+finetune = [
+    "datasets>=5.0.1,<6.0",
+    "alembic>=1.13.0,<2.0",
+]
+# 문서 소스 기반 학습 데이터셋 (data_recipes PDF/DOCX 변환) — 선택적
+documents = [
+    "pypdf>=6.1.0,<7.0",
+    "python-docx>=1.1.0,<2.0",
+]
+# GPU 파인튜닝 스크립트 API 드리프트 가드 (unsloth_script_api, Phase 53→54)는 extra로
+# 정의하지 않는다 — unsloth의 datasets<4.4 요구가 finetune extra(datasets>=5)와 정면 충돌해
+# extra 조합 해석이 깨진다. 대신 주간 drift-guard CI job이 `uv pip install`로 직접 설치한다
+# (.github/workflows/weekly-drift.yml).
+
+[project.scripts]
+agk = "antigravity_k.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+antigravity_k = [
+    "config.yaml",
+    "py.typed",
+    "release/python.cdx.json",
+    "release/dashboard.cdx.json",
+    "release/THIRD_PARTY_NOTICES.txt",
+    # 설치본이 들고 나가는 번들 검색 artifact(task 15). 바이트는 핀으로 고정되고, 패키징 전에
+    # `python3 scripts/vendor_ssak_bundle.py --from <W release dir>` 로 materialize 된다.
+    "vendor/ssak_search/PINNED.json",
+    "vendor/ssak_search/bin/*",
+    "vendor/ssak_search/release/*",
+    "dashboard_dist/*",
+    "dashboard_dist/assets/*",
+    "prompts/*",
+    "prompts/roles/*",
+    "data/benchmarks/local-model-stable-simple.json",
+    "data/benchmarks/local-model-frontier.json",
+]
+
+[tool.basedpyright]
+include = ["src", "scripts"]
+# 선택적 런타임 extras(playwright, chromadb, sentence_transformers, docx,
+# pypdf, coverage)는 hermetic gate 환경(--isolated --frozen)에 설치되지
+# 않는다 — import 미해석은 warning으로 강등하고 나머지 진단은 error 게이트
+# (--level error)가 그대로 강제한다.
+reportMissingImports = "warning"
+exclude = [
+    ".venv",
+    ".git",
+    ".ag_worktrees",
+    ".antigravity",
+    ".agent/scratch",
+    ".tmp",
+    ".freebuff",
+    ".omo",
+    ".codebase-memory",
+    ".backup",
+    "sessions",
+    "build",
+    "dist",
+    "dashboard/node_modules",
+    "dashboard/.stryker-tmp",
+    "dashboard/stryker-tmp",
+    "dashboard-vanilla/node_modules",
+    "dashboard-vanilla/dist",
+]
+
+[tool.setuptools.dynamic]
+# Single source of truth: src/antigravity_k/__init__.py::__version__
+version = {attr = "antigravity_k.__version__"}
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore:Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead\\.:DeprecationWarning",
+    "ignore:builtin type SwigPyPacked has no __module__ attribute:DeprecationWarning",
+    "ignore:builtin type SwigPyObject has no __module__ attribute:DeprecationWarning",
+    "ignore:builtin type swigvarlink has no __module__ attribute:DeprecationWarning",
+]
+markers = [
+    "benchmark: 성능 회귀 테스트 (latency 임계값 검증)",
+    "slow: 실행 시간이 긴 느린 테스트 (CI에서 -m 'not slow'로 제외 가능)",
+]
+
+[tool.coverage.run]
+source = ["src/antigravity_k"]
+omit = [
+    "*/tests/*",
+    "*/__init__.py",
+    "*/media_gen*",
+    "*/skill_market_client*",
+    "*/computer_use*",
+]
+
+[tool.coverage.report]
+# Minimum coverage threshold (increasing over time).
+# Core modules now at 58-98% (2026-07). Target: 60% overall by next release.
+fail_under = 60
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+# JavaScript 파일은 ruff가 Python linter이므로 제외
+exclude = ["dashboard/", "*.js", "*.jsx", "*.mjs"]
+
+[tool.ruff.lint]
+# The current codebase still contains legacy route modules and compact helper
+# blocks that rely on local imports and one-line statements. Keep the static
+# gate focused on correctness issues such as undefined names and unused symbols.
+extend-ignore = ["E402", "E701", "E702"]
+extend-select = ["I"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["antigravity_k"]
+
+[tool.mypy]
+ignore_missing_imports = true
+# 점진적 타입 안전성 강화 — 단계적으로 활성화
+strict_optional = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+show_error_codes = true
+# 향후 활성화 목표:
+# disallow_untyped_defs = true
+# disallow_any_unimported = true
+
+[[tool.mypy.overrides]]
+# Tests can be more lenient
+module = ["tests.*"]
+ignore_missing_imports = true
+
+# [[tool.mypy.overrides]]
+# Core engine modules — strictness 증가 대상
+# 향후 활성화 (주석 처리된 상태로 유지):
+# module = ["antigravity_k.engine.config", "antigravity_k.engine.vault"]
+# strict_optional = true
+# disallow_untyped_defs = true
+
+[tool.coverage.html]
+directory = "coverage_html"
+title = "Ssak-Ai Coverage Report"

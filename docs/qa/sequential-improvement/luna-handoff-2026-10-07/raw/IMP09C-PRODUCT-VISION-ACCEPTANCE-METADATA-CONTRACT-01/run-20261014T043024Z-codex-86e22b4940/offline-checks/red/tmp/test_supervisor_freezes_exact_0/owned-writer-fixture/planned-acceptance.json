@@ -1,0 +1,54 @@
+{
+  "task_id": "IMP-09-B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01",
+  "case_id": "FRESH_EXPLICIT_JSON_SCHEMA_PRODUCT_VISION",
+  "historical_case": "format omitted Product-Vision observation remains FAIL_SEMANTIC",
+  "expected_schema": {
+    "type": "object",
+    "properties": {
+      "red_circles": {
+        "type": "integer"
+      },
+      "blue_squares": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "red_circles",
+      "blue_squares"
+    ],
+    "additionalProperties": false
+  },
+  "semantic_expectation": {
+    "red_circles": 2,
+    "blue_squares": 1
+  },
+  "separates_schema_shape_from_semantic_truth": true,
+  "gates": {
+    "request": "Exact new request/binding/image/profile and explicit response_format envelope",
+    "provider_request": "Native /api/chat format equals schema object; one-shot classification succeeds",
+    "transport": "Product/provider HTTP200 with expected content-type and native done=true",
+    "strict_output": "Parse raw assistant content directly as strict JSON; no fence stripping, duplicates or non-JSON constants",
+    "schema": "Exactly two required integer values, bool excluded, no additional keys",
+    "semantics": "red_circles=2 and blue_squares=1",
+    "identity": "Product assistant content exactly equals preserved upstream message content",
+    "budget": "productPOST<=1, providerinference<=1, retry/redirect/native/tool0",
+    "cleanup": "Owned worker OS exit/reap/handles observed after cleanup, <=5sec",
+    "provenance": "Current source/input/binding unchanged before/after"
+  },
+  "budgets": {
+    "product_post_max": 1,
+    "provider_inference_max": 1,
+    "total_seconds": 120,
+    "readiness_seconds": 15,
+    "cleanup_seconds": 5
+  },
+  "lifecycle_scope": {
+    "uvicorn": "external loopback",
+    "lifespan": "off"
+  },
+  "success_status": "PASS_SCOPED_STRUCTURED_VISION_UVICORN_AUTH_LIFESPAN_OFF",
+  "failure_policy": "Record FAILED or INCONCLUSIVE exactly; no resend; do not alter old acceptance",
+  "overall_imp09": "PARTIAL",
+  "ledger": "NOT_RECOVERED",
+  "commit_push": "NOT_PART_OF_THIS_NEW_OBSERVATION"
+}

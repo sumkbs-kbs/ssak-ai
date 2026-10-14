@@ -1,0 +1,1 @@
+{"id":"chatcmpl-23f282257743","object":"chat.completion","created":1791945318,"model":"qwen3.8","choices":[{"index":0,"message":{"role":"assistant","content":"synthetic-CV-04-response"},"finish_reason":"stop"}],"usage":{"prompt_tokens":55,"completion_tokens":6,"total_tokens":61}}

@@ -1,0 +1,25 @@
+{
+  "ordering": [
+    "reserve:product_authenticated_chat_post",
+    "mock_wire:product_authenticated_chat_post",
+    "reserve:ollama_chat_inference_wire",
+    "mock_wire:ollama_chat_inference_wire"
+  ],
+  "all_pre_wire_reads_match_saved": true,
+  "mock_product_calls": 1,
+  "mock_provider_calls": 1,
+  "socket_attempts": 0,
+  "supervisor_verdict": "INCONCLUSIVE_CLEANUP_NOT_CONFIRMED",
+  "state_phases": [
+    "prepared",
+    "bootstrapped",
+    "readiness",
+    "metadata",
+    "frozen",
+    "reserved",
+    "dispatched",
+    "postflight",
+    "cleanup_failed"
+  ],
+  "fixture_only": true
+}

@@ -1,0 +1,4827 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "bom-ref": "pkg:npm/antigravity-k-dashboard-react@0.1.0",
+      "type": "application",
+      "name": "ssak-ai-dashboard-react",
+      "version": "0.1.0"
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:npm/antigravity-k-dashboard-react@0.1.0",
+      "type": "application",
+      "name": "ssak-ai-dashboard-react",
+      "version": "0.1.0"
+    },
+    {
+      "bom-ref": "pkg:npm/%40braintree/sanitize-url@6.0.4",
+      "type": "library",
+      "name": "@braintree/sanitize-url",
+      "version": "6.0.4",
+      "purl": "pkg:npm/%40braintree/sanitize-url@6.0.4",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@braintree/sanitize-url/-/sanitize-url-6.0.4.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40monaco-editor/loader@1.7.0",
+      "type": "library",
+      "name": "@monaco-editor/loader",
+      "version": "1.7.0",
+      "purl": "pkg:npm/%40monaco-editor/loader@1.7.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@monaco-editor/loader/-/loader-1.7.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40monaco-editor/react@4.7.0",
+      "type": "library",
+      "name": "@monaco-editor/react",
+      "version": "4.7.0",
+      "purl": "pkg:npm/%40monaco-editor/react@4.7.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@monaco-editor/react/-/react-4.7.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40tanstack/query-core@5.101.2",
+      "type": "library",
+      "name": "@tanstack/query-core",
+      "version": "5.101.2",
+      "purl": "pkg:npm/%40tanstack/query-core@5.101.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@tanstack/query-core/-/query-core-5.101.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40tanstack/react-query@5.101.2",
+      "type": "library",
+      "name": "@tanstack/react-query",
+      "version": "5.101.2",
+      "purl": "pkg:npm/%40tanstack/react-query@5.101.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@tanstack/react-query/-/react-query-5.101.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40types/d3-scale@4.0.9",
+      "type": "library",
+      "name": "@types/d3-scale",
+      "version": "4.0.9",
+      "purl": "pkg:npm/%40types/d3-scale@4.0.9",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@types/d3-scale/-/d3-scale-4.0.9.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40types/d3-scale-chromatic@3.1.0",
+      "type": "library",
+      "name": "@types/d3-scale-chromatic",
+      "version": "3.1.0",
+      "purl": "pkg:npm/%40types/d3-scale-chromatic@3.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@types/d3-scale-chromatic/-/d3-scale-chromatic-3.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40types/d3-time@3.0.4",
+      "type": "library",
+      "name": "@types/d3-time",
+      "version": "3.0.4",
+      "purl": "pkg:npm/%40types/d3-time@3.0.4",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@types/d3-time/-/d3-time-3.0.4.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40types/debug@4.1.13",
+      "type": "library",
+      "name": "@types/debug",
+      "version": "4.1.13",
+      "purl": "pkg:npm/%40types/debug@4.1.13",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@types/debug/-/debug-4.1.13.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40types/diff@7.0.2",
+      "type": "library",
+      "name": "@types/diff",
+      "version": "7.0.2",
+      "purl": "pkg:npm/%40types/diff@7.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@types/diff/-/diff-7.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40types/estree@1.0.9",
+      "type": "library",
+      "name": "@types/estree",
+      "version": "1.0.9",
+      "purl": "pkg:npm/%40types/estree@1.0.9",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@types/estree/-/estree-1.0.9.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40types/estree-jsx@1.0.5",
+      "type": "library",
+      "name": "@types/estree-jsx",
+      "version": "1.0.5",
+      "purl": "pkg:npm/%40types/estree-jsx@1.0.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@types/estree-jsx/-/estree-jsx-1.0.5.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40types/hast@3.0.5",
+      "type": "library",
+      "name": "@types/hast",
+      "version": "3.0.5",
+      "purl": "pkg:npm/%40types/hast@3.0.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@types/hast/-/hast-3.0.5.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40types/mdast@4.0.4",
+      "type": "library",
+      "name": "@types/mdast",
+      "version": "4.0.4",
+      "purl": "pkg:npm/%40types/mdast@4.0.4",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@types/mdast/-/mdast-4.0.4.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40types/mdast@3.0.15",
+      "type": "library",
+      "name": "@types/mdast",
+      "version": "3.0.15",
+      "purl": "pkg:npm/%40types/mdast@3.0.15",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@types/mdast/-/mdast-3.0.15.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40types/ms@2.1.0",
+      "type": "library",
+      "name": "@types/ms",
+      "version": "2.1.0",
+      "purl": "pkg:npm/%40types/ms@2.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@types/ms/-/ms-2.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40types/unist@3.0.3",
+      "type": "library",
+      "name": "@types/unist",
+      "version": "3.0.3",
+      "purl": "pkg:npm/%40types/unist@3.0.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@types/unist/-/unist-3.0.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40types/unist@2.0.11",
+      "type": "library",
+      "name": "@types/unist",
+      "version": "2.0.11",
+      "purl": "pkg:npm/%40types/unist@2.0.11",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@types/unist/-/unist-2.0.11.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40types/unist@2.0.11",
+      "type": "library",
+      "name": "@types/unist",
+      "version": "2.0.11",
+      "purl": "pkg:npm/%40types/unist@2.0.11",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@types/unist/-/unist-2.0.11.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/%40ungap/structured-clone@1.3.3",
+      "type": "library",
+      "name": "@ungap/structured-clone",
+      "version": "1.3.3",
+      "purl": "pkg:npm/%40ungap/structured-clone@1.3.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@ungap/structured-clone/-/structured-clone-1.3.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/bail@2.0.2",
+      "type": "library",
+      "name": "bail",
+      "version": "2.0.2",
+      "purl": "pkg:npm/bail@2.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/bail/-/bail-2.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/ccount@2.0.1",
+      "type": "library",
+      "name": "ccount",
+      "version": "2.0.1",
+      "purl": "pkg:npm/ccount@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/ccount/-/ccount-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/character-entities@2.0.2",
+      "type": "library",
+      "name": "character-entities",
+      "version": "2.0.2",
+      "purl": "pkg:npm/character-entities@2.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/character-entities/-/character-entities-2.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/character-entities-html4@2.1.0",
+      "type": "library",
+      "name": "character-entities-html4",
+      "version": "2.1.0",
+      "purl": "pkg:npm/character-entities-html4@2.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/character-entities-html4/-/character-entities-html4-2.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/character-entities-legacy@3.0.0",
+      "type": "library",
+      "name": "character-entities-legacy",
+      "version": "3.0.0",
+      "purl": "pkg:npm/character-entities-legacy@3.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/character-entities-legacy/-/character-entities-legacy-3.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/character-reference-invalid@2.0.1",
+      "type": "library",
+      "name": "character-reference-invalid",
+      "version": "2.0.1",
+      "purl": "pkg:npm/character-reference-invalid@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/character-reference-invalid/-/character-reference-invalid-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/comma-separated-tokens@2.0.3",
+      "type": "library",
+      "name": "comma-separated-tokens",
+      "version": "2.0.3",
+      "purl": "pkg:npm/comma-separated-tokens@2.0.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/comma-separated-tokens/-/comma-separated-tokens-2.0.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/commander@8.3.0",
+      "type": "library",
+      "name": "commander",
+      "version": "8.3.0",
+      "purl": "pkg:npm/commander@8.3.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/commander/-/commander-8.3.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/commander@7.2.0",
+      "type": "library",
+      "name": "commander",
+      "version": "7.2.0",
+      "purl": "pkg:npm/commander@7.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/commander/-/commander-7.2.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/cookie@1.1.1",
+      "type": "library",
+      "name": "cookie",
+      "version": "1.1.1",
+      "purl": "pkg:npm/cookie@1.1.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/cookie/-/cookie-1.1.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/cose-base@1.0.3",
+      "type": "library",
+      "name": "cose-base",
+      "version": "1.0.3",
+      "purl": "pkg:npm/cose-base@1.0.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/cose-base/-/cose-base-1.0.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/cytoscape@3.34.3",
+      "type": "library",
+      "name": "cytoscape",
+      "version": "3.34.3",
+      "purl": "pkg:npm/cytoscape@3.34.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/cytoscape/-/cytoscape-3.34.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/cytoscape-cose-bilkent@4.1.0",
+      "type": "library",
+      "name": "cytoscape-cose-bilkent",
+      "version": "4.1.0",
+      "purl": "pkg:npm/cytoscape-cose-bilkent@4.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/cytoscape-cose-bilkent/-/cytoscape-cose-bilkent-4.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3@7.9.0",
+      "type": "library",
+      "name": "d3",
+      "version": "7.9.0",
+      "purl": "pkg:npm/d3@7.9.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3/-/d3-7.9.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-array@2.12.1",
+      "type": "library",
+      "name": "d3-array",
+      "version": "2.12.1",
+      "purl": "pkg:npm/d3-array@2.12.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-array/-/d3-array-2.12.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-array@3.2.4",
+      "type": "library",
+      "name": "d3-array",
+      "version": "3.2.4",
+      "purl": "pkg:npm/d3-array@3.2.4",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-array/-/d3-array-3.2.4.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-axis@3.0.0",
+      "type": "library",
+      "name": "d3-axis",
+      "version": "3.0.0",
+      "purl": "pkg:npm/d3-axis@3.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-axis/-/d3-axis-3.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-brush@3.0.0",
+      "type": "library",
+      "name": "d3-brush",
+      "version": "3.0.0",
+      "purl": "pkg:npm/d3-brush@3.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-brush/-/d3-brush-3.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-chord@3.0.1",
+      "type": "library",
+      "name": "d3-chord",
+      "version": "3.0.1",
+      "purl": "pkg:npm/d3-chord@3.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-chord/-/d3-chord-3.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-color@3.1.0",
+      "type": "library",
+      "name": "d3-color",
+      "version": "3.1.0",
+      "purl": "pkg:npm/d3-color@3.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-color/-/d3-color-3.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-contour@4.0.2",
+      "type": "library",
+      "name": "d3-contour",
+      "version": "4.0.2",
+      "purl": "pkg:npm/d3-contour@4.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-contour/-/d3-contour-4.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-delaunay@6.0.4",
+      "type": "library",
+      "name": "d3-delaunay",
+      "version": "6.0.4",
+      "purl": "pkg:npm/d3-delaunay@6.0.4",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-delaunay/-/d3-delaunay-6.0.4.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-dispatch@3.0.1",
+      "type": "library",
+      "name": "d3-dispatch",
+      "version": "3.0.1",
+      "purl": "pkg:npm/d3-dispatch@3.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-dispatch/-/d3-dispatch-3.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-drag@3.0.0",
+      "type": "library",
+      "name": "d3-drag",
+      "version": "3.0.0",
+      "purl": "pkg:npm/d3-drag@3.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-drag/-/d3-drag-3.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-dsv@3.0.1",
+      "type": "library",
+      "name": "d3-dsv",
+      "version": "3.0.1",
+      "purl": "pkg:npm/d3-dsv@3.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-dsv/-/d3-dsv-3.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-ease@3.0.1",
+      "type": "library",
+      "name": "d3-ease",
+      "version": "3.0.1",
+      "purl": "pkg:npm/d3-ease@3.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-ease/-/d3-ease-3.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-fetch@3.0.1",
+      "type": "library",
+      "name": "d3-fetch",
+      "version": "3.0.1",
+      "purl": "pkg:npm/d3-fetch@3.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-fetch/-/d3-fetch-3.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-force@3.0.0",
+      "type": "library",
+      "name": "d3-force",
+      "version": "3.0.0",
+      "purl": "pkg:npm/d3-force@3.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-force/-/d3-force-3.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-format@3.1.2",
+      "type": "library",
+      "name": "d3-format",
+      "version": "3.1.2",
+      "purl": "pkg:npm/d3-format@3.1.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-format/-/d3-format-3.1.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-geo@3.1.1",
+      "type": "library",
+      "name": "d3-geo",
+      "version": "3.1.1",
+      "purl": "pkg:npm/d3-geo@3.1.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-geo/-/d3-geo-3.1.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-hierarchy@3.1.2",
+      "type": "library",
+      "name": "d3-hierarchy",
+      "version": "3.1.2",
+      "purl": "pkg:npm/d3-hierarchy@3.1.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-hierarchy/-/d3-hierarchy-3.1.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-interpolate@3.0.1",
+      "type": "library",
+      "name": "d3-interpolate",
+      "version": "3.0.1",
+      "purl": "pkg:npm/d3-interpolate@3.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-3.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-path@1.0.9",
+      "type": "library",
+      "name": "d3-path",
+      "version": "1.0.9",
+      "purl": "pkg:npm/d3-path@1.0.9",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-path/-/d3-path-1.0.9.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-path@3.1.0",
+      "type": "library",
+      "name": "d3-path",
+      "version": "3.1.0",
+      "purl": "pkg:npm/d3-path@3.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-path/-/d3-path-3.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-polygon@3.0.1",
+      "type": "library",
+      "name": "d3-polygon",
+      "version": "3.0.1",
+      "purl": "pkg:npm/d3-polygon@3.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-polygon/-/d3-polygon-3.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-quadtree@3.0.1",
+      "type": "library",
+      "name": "d3-quadtree",
+      "version": "3.0.1",
+      "purl": "pkg:npm/d3-quadtree@3.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-quadtree/-/d3-quadtree-3.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-random@3.0.1",
+      "type": "library",
+      "name": "d3-random",
+      "version": "3.0.1",
+      "purl": "pkg:npm/d3-random@3.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-random/-/d3-random-3.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-sankey@0.12.3",
+      "type": "library",
+      "name": "d3-sankey",
+      "version": "0.12.3",
+      "purl": "pkg:npm/d3-sankey@0.12.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-sankey/-/d3-sankey-0.12.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-scale@4.0.2",
+      "type": "library",
+      "name": "d3-scale",
+      "version": "4.0.2",
+      "purl": "pkg:npm/d3-scale@4.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-scale/-/d3-scale-4.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-scale-chromatic@3.1.0",
+      "type": "library",
+      "name": "d3-scale-chromatic",
+      "version": "3.1.0",
+      "purl": "pkg:npm/d3-scale-chromatic@3.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-scale-chromatic/-/d3-scale-chromatic-3.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-selection@3.0.0",
+      "type": "library",
+      "name": "d3-selection",
+      "version": "3.0.0",
+      "purl": "pkg:npm/d3-selection@3.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-selection/-/d3-selection-3.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-shape@1.3.7",
+      "type": "library",
+      "name": "d3-shape",
+      "version": "1.3.7",
+      "purl": "pkg:npm/d3-shape@1.3.7",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-shape/-/d3-shape-1.3.7.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-shape@3.2.0",
+      "type": "library",
+      "name": "d3-shape",
+      "version": "3.2.0",
+      "purl": "pkg:npm/d3-shape@3.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-shape/-/d3-shape-3.2.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-time@3.1.0",
+      "type": "library",
+      "name": "d3-time",
+      "version": "3.1.0",
+      "purl": "pkg:npm/d3-time@3.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-time/-/d3-time-3.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-time-format@4.1.0",
+      "type": "library",
+      "name": "d3-time-format",
+      "version": "4.1.0",
+      "purl": "pkg:npm/d3-time-format@4.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-time-format/-/d3-time-format-4.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-timer@3.0.1",
+      "type": "library",
+      "name": "d3-timer",
+      "version": "3.0.1",
+      "purl": "pkg:npm/d3-timer@3.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-timer/-/d3-timer-3.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-transition@3.0.1",
+      "type": "library",
+      "name": "d3-transition",
+      "version": "3.0.1",
+      "purl": "pkg:npm/d3-transition@3.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-transition/-/d3-transition-3.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/d3-zoom@3.0.0",
+      "type": "library",
+      "name": "d3-zoom",
+      "version": "3.0.0",
+      "purl": "pkg:npm/d3-zoom@3.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/d3-zoom/-/d3-zoom-3.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/dagre-d3-es@7.0.13",
+      "type": "library",
+      "name": "dagre-d3-es",
+      "version": "7.0.13",
+      "purl": "pkg:npm/dagre-d3-es@7.0.13",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/dagre-d3-es/-/dagre-d3-es-7.0.13.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/dayjs@1.11.23",
+      "type": "library",
+      "name": "dayjs",
+      "version": "1.11.23",
+      "purl": "pkg:npm/dayjs@1.11.23",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/dayjs/-/dayjs-1.11.23.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/debug@4.4.3",
+      "type": "library",
+      "name": "debug",
+      "version": "4.4.3",
+      "purl": "pkg:npm/debug@4.4.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/debug/-/debug-4.4.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/decode-named-character-reference@1.3.0",
+      "type": "library",
+      "name": "decode-named-character-reference",
+      "version": "1.3.0",
+      "purl": "pkg:npm/decode-named-character-reference@1.3.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/decode-named-character-reference/-/decode-named-character-reference-1.3.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/delaunator@5.1.0",
+      "type": "library",
+      "name": "delaunator",
+      "version": "5.1.0",
+      "purl": "pkg:npm/delaunator@5.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/delaunator/-/delaunator-5.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/dequal@2.0.3",
+      "type": "library",
+      "name": "dequal",
+      "version": "2.0.3",
+      "purl": "pkg:npm/dequal@2.0.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/dequal/-/dequal-2.0.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/devlop@1.1.0",
+      "type": "library",
+      "name": "devlop",
+      "version": "1.1.0",
+      "purl": "pkg:npm/devlop@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/devlop/-/devlop-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/diff@9.0.0",
+      "type": "library",
+      "name": "diff",
+      "version": "9.0.0",
+      "purl": "pkg:npm/diff@9.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/diff/-/diff-9.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/diff@5.2.2",
+      "type": "library",
+      "name": "diff",
+      "version": "5.2.2",
+      "purl": "pkg:npm/diff@5.2.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/diff/-/diff-5.2.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/dompurify@3.4.14",
+      "type": "library",
+      "name": "dompurify",
+      "version": "3.4.14",
+      "purl": "pkg:npm/dompurify@3.4.14",
+      "licenses": [
+        {
+          "license": {
+            "id": "(MPL-2.0 OR Apache-2.0)"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.14.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/dompurify@3.4.8",
+      "type": "library",
+      "name": "dompurify",
+      "version": "3.4.8",
+      "purl": "pkg:npm/dompurify@3.4.8",
+      "licenses": [
+        {
+          "license": {
+            "id": "(MPL-2.0 OR Apache-2.0)"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.8.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/elkjs@0.9.3",
+      "type": "library",
+      "name": "elkjs",
+      "version": "0.9.3",
+      "purl": "pkg:npm/elkjs@0.9.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "EPL-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/elkjs/-/elkjs-0.9.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/entities@6.0.1",
+      "type": "library",
+      "name": "entities",
+      "version": "6.0.1",
+      "purl": "pkg:npm/entities@6.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-2-Clause"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/entities/-/entities-6.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/escape-string-regexp@5.0.0",
+      "type": "library",
+      "name": "escape-string-regexp",
+      "version": "5.0.0",
+      "purl": "pkg:npm/escape-string-regexp@5.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-5.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/estree-util-is-identifier-name@3.0.0",
+      "type": "library",
+      "name": "estree-util-is-identifier-name",
+      "version": "3.0.0",
+      "purl": "pkg:npm/estree-util-is-identifier-name@3.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/estree-util-is-identifier-name/-/estree-util-is-identifier-name-3.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/extend@3.0.2",
+      "type": "library",
+      "name": "extend",
+      "version": "3.0.2",
+      "purl": "pkg:npm/extend@3.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/extend/-/extend-3.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/hast-util-from-parse5@8.0.3",
+      "type": "library",
+      "name": "hast-util-from-parse5",
+      "version": "8.0.3",
+      "purl": "pkg:npm/hast-util-from-parse5@8.0.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/hast-util-from-parse5/-/hast-util-from-parse5-8.0.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/hast-util-is-element@3.0.0",
+      "type": "library",
+      "name": "hast-util-is-element",
+      "version": "3.0.0",
+      "purl": "pkg:npm/hast-util-is-element@3.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/hast-util-is-element/-/hast-util-is-element-3.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/hast-util-parse-selector@4.0.0",
+      "type": "library",
+      "name": "hast-util-parse-selector",
+      "version": "4.0.0",
+      "purl": "pkg:npm/hast-util-parse-selector@4.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/hast-util-parse-selector/-/hast-util-parse-selector-4.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/hast-util-raw@9.1.0",
+      "type": "library",
+      "name": "hast-util-raw",
+      "version": "9.1.0",
+      "purl": "pkg:npm/hast-util-raw@9.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/hast-util-raw/-/hast-util-raw-9.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/hast-util-sanitize@5.0.2",
+      "type": "library",
+      "name": "hast-util-sanitize",
+      "version": "5.0.2",
+      "purl": "pkg:npm/hast-util-sanitize@5.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/hast-util-sanitize/-/hast-util-sanitize-5.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/hast-util-to-jsx-runtime@2.3.6",
+      "type": "library",
+      "name": "hast-util-to-jsx-runtime",
+      "version": "2.3.6",
+      "purl": "pkg:npm/hast-util-to-jsx-runtime@2.3.6",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/hast-util-to-jsx-runtime/-/hast-util-to-jsx-runtime-2.3.6.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/hast-util-to-parse5@8.0.1",
+      "type": "library",
+      "name": "hast-util-to-parse5",
+      "version": "8.0.1",
+      "purl": "pkg:npm/hast-util-to-parse5@8.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/hast-util-to-parse5/-/hast-util-to-parse5-8.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/hast-util-to-text@4.0.2",
+      "type": "library",
+      "name": "hast-util-to-text",
+      "version": "4.0.2",
+      "purl": "pkg:npm/hast-util-to-text@4.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/hast-util-to-text/-/hast-util-to-text-4.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/hast-util-whitespace@3.0.0",
+      "type": "library",
+      "name": "hast-util-whitespace",
+      "version": "3.0.0",
+      "purl": "pkg:npm/hast-util-whitespace@3.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/hast-util-whitespace/-/hast-util-whitespace-3.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/hastscript@9.0.1",
+      "type": "library",
+      "name": "hastscript",
+      "version": "9.0.1",
+      "purl": "pkg:npm/hastscript@9.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/hastscript/-/hastscript-9.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/highlight.js@11.11.2",
+      "type": "library",
+      "name": "highlight.js",
+      "version": "11.11.2",
+      "purl": "pkg:npm/highlight.js@11.11.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/highlight.js/-/highlight.js-11.11.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/html-url-attributes@3.0.1",
+      "type": "library",
+      "name": "html-url-attributes",
+      "version": "3.0.1",
+      "purl": "pkg:npm/html-url-attributes@3.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/html-url-attributes/-/html-url-attributes-3.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/html-void-elements@3.0.0",
+      "type": "library",
+      "name": "html-void-elements",
+      "version": "3.0.0",
+      "purl": "pkg:npm/html-void-elements@3.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/html-void-elements/-/html-void-elements-3.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/iconv-lite@0.6.3",
+      "type": "library",
+      "name": "iconv-lite",
+      "version": "0.6.3",
+      "purl": "pkg:npm/iconv-lite@0.6.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.6.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/inline-style-parser@0.2.7",
+      "type": "library",
+      "name": "inline-style-parser",
+      "version": "0.2.7",
+      "purl": "pkg:npm/inline-style-parser@0.2.7",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/inline-style-parser/-/inline-style-parser-0.2.7.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/internmap@1.0.1",
+      "type": "library",
+      "name": "internmap",
+      "version": "1.0.1",
+      "purl": "pkg:npm/internmap@1.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/internmap/-/internmap-1.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/internmap@2.0.3",
+      "type": "library",
+      "name": "internmap",
+      "version": "2.0.3",
+      "purl": "pkg:npm/internmap@2.0.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/internmap/-/internmap-2.0.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/is-alphabetical@2.0.1",
+      "type": "library",
+      "name": "is-alphabetical",
+      "version": "2.0.1",
+      "purl": "pkg:npm/is-alphabetical@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/is-alphabetical/-/is-alphabetical-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/is-alphanumerical@2.0.1",
+      "type": "library",
+      "name": "is-alphanumerical",
+      "version": "2.0.1",
+      "purl": "pkg:npm/is-alphanumerical@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/is-alphanumerical/-/is-alphanumerical-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/is-decimal@2.0.1",
+      "type": "library",
+      "name": "is-decimal",
+      "version": "2.0.1",
+      "purl": "pkg:npm/is-decimal@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/is-decimal/-/is-decimal-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/is-hexadecimal@2.0.1",
+      "type": "library",
+      "name": "is-hexadecimal",
+      "version": "2.0.1",
+      "purl": "pkg:npm/is-hexadecimal@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/is-hexadecimal/-/is-hexadecimal-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/is-plain-obj@4.1.0",
+      "type": "library",
+      "name": "is-plain-obj",
+      "version": "4.1.0",
+      "purl": "pkg:npm/is-plain-obj@4.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/is-plain-obj/-/is-plain-obj-4.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/katex@0.16.47",
+      "type": "library",
+      "name": "katex",
+      "version": "0.16.47",
+      "purl": "pkg:npm/katex@0.16.47",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/katex/-/katex-0.16.47.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/khroma@2.1.0",
+      "type": "library",
+      "name": "khroma",
+      "version": "2.1.0",
+      "purl": "pkg:npm/khroma@2.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "properties": [
+        {
+          "name": "agk:license-source",
+          "value": "provenance-declared"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/khroma/-/khroma-2.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/kleur@4.1.5",
+      "type": "library",
+      "name": "kleur",
+      "version": "4.1.5",
+      "purl": "pkg:npm/kleur@4.1.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/kleur/-/kleur-4.1.5.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/ky@2.0.2",
+      "type": "library",
+      "name": "ky",
+      "version": "2.0.2",
+      "purl": "pkg:npm/ky@2.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/ky/-/ky-2.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/layout-base@1.0.2",
+      "type": "library",
+      "name": "layout-base",
+      "version": "1.0.2",
+      "purl": "pkg:npm/layout-base@1.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/layout-base/-/layout-base-1.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/lodash-es@4.18.1",
+      "type": "library",
+      "name": "lodash-es",
+      "version": "4.18.1",
+      "purl": "pkg:npm/lodash-es@4.18.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/lodash-es/-/lodash-es-4.18.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/longest-streak@3.1.0",
+      "type": "library",
+      "name": "longest-streak",
+      "version": "3.1.0",
+      "purl": "pkg:npm/longest-streak@3.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/longest-streak/-/longest-streak-3.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/lowlight@3.3.0",
+      "type": "library",
+      "name": "lowlight",
+      "version": "3.3.0",
+      "purl": "pkg:npm/lowlight@3.3.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/lowlight/-/lowlight-3.3.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/markdown-table@3.0.4",
+      "type": "library",
+      "name": "markdown-table",
+      "version": "3.0.4",
+      "purl": "pkg:npm/markdown-table@3.0.4",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/markdown-table/-/markdown-table-3.0.4.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/marked@14.0.0",
+      "type": "library",
+      "name": "marked",
+      "version": "14.0.0",
+      "purl": "pkg:npm/marked@14.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/marked/-/marked-14.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-find-and-replace@3.0.2",
+      "type": "library",
+      "name": "mdast-util-find-and-replace",
+      "version": "3.0.2",
+      "purl": "pkg:npm/mdast-util-find-and-replace@3.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-find-and-replace/-/mdast-util-find-and-replace-3.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-from-markdown@2.0.3",
+      "type": "library",
+      "name": "mdast-util-from-markdown",
+      "version": "2.0.3",
+      "purl": "pkg:npm/mdast-util-from-markdown@2.0.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-from-markdown/-/mdast-util-from-markdown-2.0.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-from-markdown@1.3.1",
+      "type": "library",
+      "name": "mdast-util-from-markdown",
+      "version": "1.3.1",
+      "purl": "pkg:npm/mdast-util-from-markdown@1.3.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-from-markdown/-/mdast-util-from-markdown-1.3.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-gfm@3.1.0",
+      "type": "library",
+      "name": "mdast-util-gfm",
+      "version": "3.1.0",
+      "purl": "pkg:npm/mdast-util-gfm@3.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-gfm/-/mdast-util-gfm-3.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-gfm-autolink-literal@2.0.1",
+      "type": "library",
+      "name": "mdast-util-gfm-autolink-literal",
+      "version": "2.0.1",
+      "purl": "pkg:npm/mdast-util-gfm-autolink-literal@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-gfm-autolink-literal/-/mdast-util-gfm-autolink-literal-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-gfm-footnote@2.1.0",
+      "type": "library",
+      "name": "mdast-util-gfm-footnote",
+      "version": "2.1.0",
+      "purl": "pkg:npm/mdast-util-gfm-footnote@2.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-gfm-footnote/-/mdast-util-gfm-footnote-2.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-gfm-strikethrough@2.0.0",
+      "type": "library",
+      "name": "mdast-util-gfm-strikethrough",
+      "version": "2.0.0",
+      "purl": "pkg:npm/mdast-util-gfm-strikethrough@2.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-gfm-strikethrough/-/mdast-util-gfm-strikethrough-2.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-gfm-table@2.0.0",
+      "type": "library",
+      "name": "mdast-util-gfm-table",
+      "version": "2.0.0",
+      "purl": "pkg:npm/mdast-util-gfm-table@2.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-gfm-table/-/mdast-util-gfm-table-2.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-gfm-task-list-item@2.0.0",
+      "type": "library",
+      "name": "mdast-util-gfm-task-list-item",
+      "version": "2.0.0",
+      "purl": "pkg:npm/mdast-util-gfm-task-list-item@2.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-gfm-task-list-item/-/mdast-util-gfm-task-list-item-2.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-mdx-expression@2.0.1",
+      "type": "library",
+      "name": "mdast-util-mdx-expression",
+      "version": "2.0.1",
+      "purl": "pkg:npm/mdast-util-mdx-expression@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-mdx-expression/-/mdast-util-mdx-expression-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-mdx-jsx@3.2.0",
+      "type": "library",
+      "name": "mdast-util-mdx-jsx",
+      "version": "3.2.0",
+      "purl": "pkg:npm/mdast-util-mdx-jsx@3.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-mdx-jsx/-/mdast-util-mdx-jsx-3.2.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-mdxjs-esm@2.0.1",
+      "type": "library",
+      "name": "mdast-util-mdxjs-esm",
+      "version": "2.0.1",
+      "purl": "pkg:npm/mdast-util-mdxjs-esm@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-mdxjs-esm/-/mdast-util-mdxjs-esm-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-newline-to-break@2.0.0",
+      "type": "library",
+      "name": "mdast-util-newline-to-break",
+      "version": "2.0.0",
+      "purl": "pkg:npm/mdast-util-newline-to-break@2.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-newline-to-break/-/mdast-util-newline-to-break-2.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-phrasing@4.1.0",
+      "type": "library",
+      "name": "mdast-util-phrasing",
+      "version": "4.1.0",
+      "purl": "pkg:npm/mdast-util-phrasing@4.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-phrasing/-/mdast-util-phrasing-4.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-to-hast@13.2.1",
+      "type": "library",
+      "name": "mdast-util-to-hast",
+      "version": "13.2.1",
+      "purl": "pkg:npm/mdast-util-to-hast@13.2.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-to-hast/-/mdast-util-to-hast-13.2.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-to-markdown@2.1.2",
+      "type": "library",
+      "name": "mdast-util-to-markdown",
+      "version": "2.1.2",
+      "purl": "pkg:npm/mdast-util-to-markdown@2.1.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-to-markdown/-/mdast-util-to-markdown-2.1.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-to-string@4.0.0",
+      "type": "library",
+      "name": "mdast-util-to-string",
+      "version": "4.0.0",
+      "purl": "pkg:npm/mdast-util-to-string@4.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-to-string/-/mdast-util-to-string-4.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mdast-util-to-string@3.2.0",
+      "type": "library",
+      "name": "mdast-util-to-string",
+      "version": "3.2.0",
+      "purl": "pkg:npm/mdast-util-to-string@3.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mdast-util-to-string/-/mdast-util-to-string-3.2.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mermaid@10.9.8",
+      "type": "library",
+      "name": "mermaid",
+      "version": "10.9.8",
+      "purl": "pkg:npm/mermaid@10.9.8",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mermaid/-/mermaid-10.9.8.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark@4.0.2",
+      "type": "library",
+      "name": "micromark",
+      "version": "4.0.2",
+      "purl": "pkg:npm/micromark@4.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark/-/micromark-4.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark@3.2.0",
+      "type": "library",
+      "name": "micromark",
+      "version": "3.2.0",
+      "purl": "pkg:npm/micromark@3.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark/-/micromark-3.2.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-core-commonmark@2.0.3",
+      "type": "library",
+      "name": "micromark-core-commonmark",
+      "version": "2.0.3",
+      "purl": "pkg:npm/micromark-core-commonmark@2.0.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-core-commonmark/-/micromark-core-commonmark-2.0.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-core-commonmark@1.1.0",
+      "type": "library",
+      "name": "micromark-core-commonmark",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-core-commonmark@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-core-commonmark/-/micromark-core-commonmark-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-extension-gfm@3.0.0",
+      "type": "library",
+      "name": "micromark-extension-gfm",
+      "version": "3.0.0",
+      "purl": "pkg:npm/micromark-extension-gfm@3.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-extension-gfm/-/micromark-extension-gfm-3.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-extension-gfm-autolink-literal@2.1.0",
+      "type": "library",
+      "name": "micromark-extension-gfm-autolink-literal",
+      "version": "2.1.0",
+      "purl": "pkg:npm/micromark-extension-gfm-autolink-literal@2.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-extension-gfm-autolink-literal/-/micromark-extension-gfm-autolink-literal-2.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-extension-gfm-footnote@2.1.0",
+      "type": "library",
+      "name": "micromark-extension-gfm-footnote",
+      "version": "2.1.0",
+      "purl": "pkg:npm/micromark-extension-gfm-footnote@2.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-extension-gfm-footnote/-/micromark-extension-gfm-footnote-2.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-extension-gfm-strikethrough@2.1.0",
+      "type": "library",
+      "name": "micromark-extension-gfm-strikethrough",
+      "version": "2.1.0",
+      "purl": "pkg:npm/micromark-extension-gfm-strikethrough@2.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-extension-gfm-strikethrough/-/micromark-extension-gfm-strikethrough-2.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-extension-gfm-table@2.1.1",
+      "type": "library",
+      "name": "micromark-extension-gfm-table",
+      "version": "2.1.1",
+      "purl": "pkg:npm/micromark-extension-gfm-table@2.1.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-extension-gfm-table/-/micromark-extension-gfm-table-2.1.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-extension-gfm-tagfilter@2.0.0",
+      "type": "library",
+      "name": "micromark-extension-gfm-tagfilter",
+      "version": "2.0.0",
+      "purl": "pkg:npm/micromark-extension-gfm-tagfilter@2.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-extension-gfm-tagfilter/-/micromark-extension-gfm-tagfilter-2.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-extension-gfm-task-list-item@2.1.0",
+      "type": "library",
+      "name": "micromark-extension-gfm-task-list-item",
+      "version": "2.1.0",
+      "purl": "pkg:npm/micromark-extension-gfm-task-list-item@2.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-extension-gfm-task-list-item/-/micromark-extension-gfm-task-list-item-2.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-factory-destination@2.0.1",
+      "type": "library",
+      "name": "micromark-factory-destination",
+      "version": "2.0.1",
+      "purl": "pkg:npm/micromark-factory-destination@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-factory-destination/-/micromark-factory-destination-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-factory-destination@1.1.0",
+      "type": "library",
+      "name": "micromark-factory-destination",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-factory-destination@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-factory-destination/-/micromark-factory-destination-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-factory-label@2.0.1",
+      "type": "library",
+      "name": "micromark-factory-label",
+      "version": "2.0.1",
+      "purl": "pkg:npm/micromark-factory-label@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-factory-label/-/micromark-factory-label-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-factory-label@1.1.0",
+      "type": "library",
+      "name": "micromark-factory-label",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-factory-label@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-factory-label/-/micromark-factory-label-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-factory-space@2.0.1",
+      "type": "library",
+      "name": "micromark-factory-space",
+      "version": "2.0.1",
+      "purl": "pkg:npm/micromark-factory-space@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-factory-space/-/micromark-factory-space-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-factory-space@1.1.0",
+      "type": "library",
+      "name": "micromark-factory-space",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-factory-space@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-factory-space/-/micromark-factory-space-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-factory-title@2.0.1",
+      "type": "library",
+      "name": "micromark-factory-title",
+      "version": "2.0.1",
+      "purl": "pkg:npm/micromark-factory-title@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-factory-title/-/micromark-factory-title-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-factory-title@1.1.0",
+      "type": "library",
+      "name": "micromark-factory-title",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-factory-title@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-factory-title/-/micromark-factory-title-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-factory-whitespace@2.0.1",
+      "type": "library",
+      "name": "micromark-factory-whitespace",
+      "version": "2.0.1",
+      "purl": "pkg:npm/micromark-factory-whitespace@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-factory-whitespace/-/micromark-factory-whitespace-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-factory-whitespace@1.1.0",
+      "type": "library",
+      "name": "micromark-factory-whitespace",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-factory-whitespace@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-factory-whitespace/-/micromark-factory-whitespace-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-character@2.1.1",
+      "type": "library",
+      "name": "micromark-util-character",
+      "version": "2.1.1",
+      "purl": "pkg:npm/micromark-util-character@2.1.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-character/-/micromark-util-character-2.1.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-character@1.2.0",
+      "type": "library",
+      "name": "micromark-util-character",
+      "version": "1.2.0",
+      "purl": "pkg:npm/micromark-util-character@1.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-character/-/micromark-util-character-1.2.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-chunked@2.0.1",
+      "type": "library",
+      "name": "micromark-util-chunked",
+      "version": "2.0.1",
+      "purl": "pkg:npm/micromark-util-chunked@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-chunked/-/micromark-util-chunked-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-chunked@1.1.0",
+      "type": "library",
+      "name": "micromark-util-chunked",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-util-chunked@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-chunked/-/micromark-util-chunked-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-classify-character@2.0.1",
+      "type": "library",
+      "name": "micromark-util-classify-character",
+      "version": "2.0.1",
+      "purl": "pkg:npm/micromark-util-classify-character@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-classify-character/-/micromark-util-classify-character-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-classify-character@1.1.0",
+      "type": "library",
+      "name": "micromark-util-classify-character",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-util-classify-character@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-classify-character/-/micromark-util-classify-character-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-combine-extensions@2.0.1",
+      "type": "library",
+      "name": "micromark-util-combine-extensions",
+      "version": "2.0.1",
+      "purl": "pkg:npm/micromark-util-combine-extensions@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-combine-extensions/-/micromark-util-combine-extensions-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-combine-extensions@1.1.0",
+      "type": "library",
+      "name": "micromark-util-combine-extensions",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-util-combine-extensions@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-combine-extensions/-/micromark-util-combine-extensions-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-decode-numeric-character-reference@2.0.2",
+      "type": "library",
+      "name": "micromark-util-decode-numeric-character-reference",
+      "version": "2.0.2",
+      "purl": "pkg:npm/micromark-util-decode-numeric-character-reference@2.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-decode-numeric-character-reference/-/micromark-util-decode-numeric-character-reference-2.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-decode-numeric-character-reference@1.1.0",
+      "type": "library",
+      "name": "micromark-util-decode-numeric-character-reference",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-util-decode-numeric-character-reference@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-decode-numeric-character-reference/-/micromark-util-decode-numeric-character-reference-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-decode-string@2.0.1",
+      "type": "library",
+      "name": "micromark-util-decode-string",
+      "version": "2.0.1",
+      "purl": "pkg:npm/micromark-util-decode-string@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-decode-string/-/micromark-util-decode-string-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-decode-string@1.1.0",
+      "type": "library",
+      "name": "micromark-util-decode-string",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-util-decode-string@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-decode-string/-/micromark-util-decode-string-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-encode@2.0.1",
+      "type": "library",
+      "name": "micromark-util-encode",
+      "version": "2.0.1",
+      "purl": "pkg:npm/micromark-util-encode@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-encode/-/micromark-util-encode-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-encode@1.1.0",
+      "type": "library",
+      "name": "micromark-util-encode",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-util-encode@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-encode/-/micromark-util-encode-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-html-tag-name@2.0.1",
+      "type": "library",
+      "name": "micromark-util-html-tag-name",
+      "version": "2.0.1",
+      "purl": "pkg:npm/micromark-util-html-tag-name@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-html-tag-name/-/micromark-util-html-tag-name-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-html-tag-name@1.2.0",
+      "type": "library",
+      "name": "micromark-util-html-tag-name",
+      "version": "1.2.0",
+      "purl": "pkg:npm/micromark-util-html-tag-name@1.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-html-tag-name/-/micromark-util-html-tag-name-1.2.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-normalize-identifier@2.0.1",
+      "type": "library",
+      "name": "micromark-util-normalize-identifier",
+      "version": "2.0.1",
+      "purl": "pkg:npm/micromark-util-normalize-identifier@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-normalize-identifier/-/micromark-util-normalize-identifier-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-normalize-identifier@1.1.0",
+      "type": "library",
+      "name": "micromark-util-normalize-identifier",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-util-normalize-identifier@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-normalize-identifier/-/micromark-util-normalize-identifier-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-resolve-all@2.0.1",
+      "type": "library",
+      "name": "micromark-util-resolve-all",
+      "version": "2.0.1",
+      "purl": "pkg:npm/micromark-util-resolve-all@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-resolve-all/-/micromark-util-resolve-all-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-resolve-all@1.1.0",
+      "type": "library",
+      "name": "micromark-util-resolve-all",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-util-resolve-all@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-resolve-all/-/micromark-util-resolve-all-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-sanitize-uri@2.0.1",
+      "type": "library",
+      "name": "micromark-util-sanitize-uri",
+      "version": "2.0.1",
+      "purl": "pkg:npm/micromark-util-sanitize-uri@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-sanitize-uri/-/micromark-util-sanitize-uri-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-sanitize-uri@1.2.0",
+      "type": "library",
+      "name": "micromark-util-sanitize-uri",
+      "version": "1.2.0",
+      "purl": "pkg:npm/micromark-util-sanitize-uri@1.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-sanitize-uri/-/micromark-util-sanitize-uri-1.2.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-subtokenize@2.1.0",
+      "type": "library",
+      "name": "micromark-util-subtokenize",
+      "version": "2.1.0",
+      "purl": "pkg:npm/micromark-util-subtokenize@2.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-subtokenize/-/micromark-util-subtokenize-2.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-subtokenize@1.1.0",
+      "type": "library",
+      "name": "micromark-util-subtokenize",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-util-subtokenize@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-subtokenize/-/micromark-util-subtokenize-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-symbol@2.0.1",
+      "type": "library",
+      "name": "micromark-util-symbol",
+      "version": "2.0.1",
+      "purl": "pkg:npm/micromark-util-symbol@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-symbol/-/micromark-util-symbol-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-symbol@1.1.0",
+      "type": "library",
+      "name": "micromark-util-symbol",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-util-symbol@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-symbol/-/micromark-util-symbol-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-types@2.0.2",
+      "type": "library",
+      "name": "micromark-util-types",
+      "version": "2.0.2",
+      "purl": "pkg:npm/micromark-util-types@2.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-types/-/micromark-util-types-2.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/micromark-util-types@1.1.0",
+      "type": "library",
+      "name": "micromark-util-types",
+      "version": "1.1.0",
+      "purl": "pkg:npm/micromark-util-types@1.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micromark-util-types/-/micromark-util-types-1.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/monaco-editor@0.56.0",
+      "type": "library",
+      "name": "monaco-editor",
+      "version": "0.56.0",
+      "purl": "pkg:npm/monaco-editor@0.56.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/monaco-editor/-/monaco-editor-0.56.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/mri@1.2.0",
+      "type": "library",
+      "name": "mri",
+      "version": "1.2.0",
+      "purl": "pkg:npm/mri@1.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mri/-/mri-1.2.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/ms@2.1.3",
+      "type": "library",
+      "name": "ms",
+      "version": "2.1.3",
+      "purl": "pkg:npm/ms@2.1.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/non-layered-tidy-tree-layout@2.0.2",
+      "type": "library",
+      "name": "non-layered-tidy-tree-layout",
+      "version": "2.0.2",
+      "purl": "pkg:npm/non-layered-tidy-tree-layout@2.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/non-layered-tidy-tree-layout/-/non-layered-tidy-tree-layout-2.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/parse-entities@4.0.2",
+      "type": "library",
+      "name": "parse-entities",
+      "version": "4.0.2",
+      "purl": "pkg:npm/parse-entities@4.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/parse-entities/-/parse-entities-4.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/parse5@7.3.0",
+      "type": "library",
+      "name": "parse5",
+      "version": "7.3.0",
+      "purl": "pkg:npm/parse5@7.3.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/parse5/-/parse5-7.3.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/property-information@7.2.0",
+      "type": "library",
+      "name": "property-information",
+      "version": "7.2.0",
+      "purl": "pkg:npm/property-information@7.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/property-information/-/property-information-7.2.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/react@19.2.7",
+      "type": "library",
+      "name": "react",
+      "version": "19.2.7",
+      "purl": "pkg:npm/react@19.2.7",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/react/-/react-19.2.7.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/react-dom@19.2.7",
+      "type": "library",
+      "name": "react-dom",
+      "version": "19.2.7",
+      "purl": "pkg:npm/react-dom@19.2.7",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/react-dom/-/react-dom-19.2.7.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/react-markdown@9.1.0",
+      "type": "library",
+      "name": "react-markdown",
+      "version": "9.1.0",
+      "purl": "pkg:npm/react-markdown@9.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/react-markdown/-/react-markdown-9.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/react-router@7.18.3",
+      "type": "library",
+      "name": "react-router",
+      "version": "7.18.3",
+      "purl": "pkg:npm/react-router@7.18.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/react-router/-/react-router-7.18.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/react-router-dom@7.18.3",
+      "type": "library",
+      "name": "react-router-dom",
+      "version": "7.18.3",
+      "purl": "pkg:npm/react-router-dom@7.18.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/react-router-dom/-/react-router-dom-7.18.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/rehype-highlight@7.0.2",
+      "type": "library",
+      "name": "rehype-highlight",
+      "version": "7.0.2",
+      "purl": "pkg:npm/rehype-highlight@7.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/rehype-highlight/-/rehype-highlight-7.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/rehype-raw@7.0.0",
+      "type": "library",
+      "name": "rehype-raw",
+      "version": "7.0.0",
+      "purl": "pkg:npm/rehype-raw@7.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/rehype-raw/-/rehype-raw-7.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/rehype-sanitize@6.0.0",
+      "type": "library",
+      "name": "rehype-sanitize",
+      "version": "6.0.0",
+      "purl": "pkg:npm/rehype-sanitize@6.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/rehype-sanitize/-/rehype-sanitize-6.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/remark-breaks@4.0.0",
+      "type": "library",
+      "name": "remark-breaks",
+      "version": "4.0.0",
+      "purl": "pkg:npm/remark-breaks@4.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/remark-breaks/-/remark-breaks-4.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/remark-gfm@4.0.1",
+      "type": "library",
+      "name": "remark-gfm",
+      "version": "4.0.1",
+      "purl": "pkg:npm/remark-gfm@4.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/remark-gfm/-/remark-gfm-4.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/remark-parse@11.0.0",
+      "type": "library",
+      "name": "remark-parse",
+      "version": "11.0.0",
+      "purl": "pkg:npm/remark-parse@11.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/remark-parse/-/remark-parse-11.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/remark-rehype@11.1.2",
+      "type": "library",
+      "name": "remark-rehype",
+      "version": "11.1.2",
+      "purl": "pkg:npm/remark-rehype@11.1.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/remark-rehype/-/remark-rehype-11.1.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/remark-stringify@11.0.0",
+      "type": "library",
+      "name": "remark-stringify",
+      "version": "11.0.0",
+      "purl": "pkg:npm/remark-stringify@11.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/remark-stringify/-/remark-stringify-11.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/robust-predicates@3.0.3",
+      "type": "library",
+      "name": "robust-predicates",
+      "version": "3.0.3",
+      "purl": "pkg:npm/robust-predicates@3.0.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "Unlicense"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/robust-predicates/-/robust-predicates-3.0.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/rw@1.3.3",
+      "type": "library",
+      "name": "rw",
+      "version": "1.3.3",
+      "purl": "pkg:npm/rw@1.3.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/rw/-/rw-1.3.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/sade@1.8.1",
+      "type": "library",
+      "name": "sade",
+      "version": "1.8.1",
+      "purl": "pkg:npm/sade@1.8.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/sade/-/sade-1.8.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/safer-buffer@2.1.2",
+      "type": "library",
+      "name": "safer-buffer",
+      "version": "2.1.2",
+      "purl": "pkg:npm/safer-buffer@2.1.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/scheduler@0.27.0",
+      "type": "library",
+      "name": "scheduler",
+      "version": "0.27.0",
+      "purl": "pkg:npm/scheduler@0.27.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/scheduler/-/scheduler-0.27.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/set-cookie-parser@2.7.2",
+      "type": "library",
+      "name": "set-cookie-parser",
+      "version": "2.7.2",
+      "purl": "pkg:npm/set-cookie-parser@2.7.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/set-cookie-parser/-/set-cookie-parser-2.7.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/space-separated-tokens@2.0.2",
+      "type": "library",
+      "name": "space-separated-tokens",
+      "version": "2.0.2",
+      "purl": "pkg:npm/space-separated-tokens@2.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/space-separated-tokens/-/space-separated-tokens-2.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/split.js@1.6.5",
+      "type": "library",
+      "name": "split.js",
+      "version": "1.6.5",
+      "purl": "pkg:npm/split.js@1.6.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/split.js/-/split.js-1.6.5.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/state-local@1.0.7",
+      "type": "library",
+      "name": "state-local",
+      "version": "1.0.7",
+      "purl": "pkg:npm/state-local@1.0.7",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/state-local/-/state-local-1.0.7.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/stringify-entities@4.0.4",
+      "type": "library",
+      "name": "stringify-entities",
+      "version": "4.0.4",
+      "purl": "pkg:npm/stringify-entities@4.0.4",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/stringify-entities/-/stringify-entities-4.0.4.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/style-to-js@1.1.21",
+      "type": "library",
+      "name": "style-to-js",
+      "version": "1.1.21",
+      "purl": "pkg:npm/style-to-js@1.1.21",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/style-to-js/-/style-to-js-1.1.21.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/style-to-object@1.0.14",
+      "type": "library",
+      "name": "style-to-object",
+      "version": "1.0.14",
+      "purl": "pkg:npm/style-to-object@1.0.14",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/style-to-object/-/style-to-object-1.0.14.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/stylis@4.4.0",
+      "type": "library",
+      "name": "stylis",
+      "version": "4.4.0",
+      "purl": "pkg:npm/stylis@4.4.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/stylis/-/stylis-4.4.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/trim-lines@3.0.1",
+      "type": "library",
+      "name": "trim-lines",
+      "version": "3.0.1",
+      "purl": "pkg:npm/trim-lines@3.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/trim-lines/-/trim-lines-3.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/trough@2.2.0",
+      "type": "library",
+      "name": "trough",
+      "version": "2.2.0",
+      "purl": "pkg:npm/trough@2.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/trough/-/trough-2.2.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/ts-dedent@2.3.0",
+      "type": "library",
+      "name": "ts-dedent",
+      "version": "2.3.0",
+      "purl": "pkg:npm/ts-dedent@2.3.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/ts-dedent/-/ts-dedent-2.3.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/unified@11.0.5",
+      "type": "library",
+      "name": "unified",
+      "version": "11.0.5",
+      "purl": "pkg:npm/unified@11.0.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/unified/-/unified-11.0.5.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/unist-util-find-after@5.0.0",
+      "type": "library",
+      "name": "unist-util-find-after",
+      "version": "5.0.0",
+      "purl": "pkg:npm/unist-util-find-after@5.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/unist-util-find-after/-/unist-util-find-after-5.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/unist-util-is@6.0.1",
+      "type": "library",
+      "name": "unist-util-is",
+      "version": "6.0.1",
+      "purl": "pkg:npm/unist-util-is@6.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/unist-util-is/-/unist-util-is-6.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/unist-util-position@5.0.0",
+      "type": "library",
+      "name": "unist-util-position",
+      "version": "5.0.0",
+      "purl": "pkg:npm/unist-util-position@5.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/unist-util-position/-/unist-util-position-5.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/unist-util-stringify-position@4.0.0",
+      "type": "library",
+      "name": "unist-util-stringify-position",
+      "version": "4.0.0",
+      "purl": "pkg:npm/unist-util-stringify-position@4.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/unist-util-stringify-position/-/unist-util-stringify-position-4.0.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/unist-util-stringify-position@3.0.3",
+      "type": "library",
+      "name": "unist-util-stringify-position",
+      "version": "3.0.3",
+      "purl": "pkg:npm/unist-util-stringify-position@3.0.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/unist-util-stringify-position/-/unist-util-stringify-position-3.0.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/unist-util-visit@5.1.0",
+      "type": "library",
+      "name": "unist-util-visit",
+      "version": "5.1.0",
+      "purl": "pkg:npm/unist-util-visit@5.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/unist-util-visit/-/unist-util-visit-5.1.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/unist-util-visit-parents@6.0.2",
+      "type": "library",
+      "name": "unist-util-visit-parents",
+      "version": "6.0.2",
+      "purl": "pkg:npm/unist-util-visit-parents@6.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/unist-util-visit-parents/-/unist-util-visit-parents-6.0.2.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/uuid@11.1.1",
+      "type": "library",
+      "name": "uuid",
+      "version": "11.1.1",
+      "purl": "pkg:npm/uuid@11.1.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/uuid/-/uuid-11.1.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/uvu@0.5.6",
+      "type": "library",
+      "name": "uvu",
+      "version": "0.5.6",
+      "purl": "pkg:npm/uvu@0.5.6",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/uvu/-/uvu-0.5.6.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/vfile@6.0.3",
+      "type": "library",
+      "name": "vfile",
+      "version": "6.0.3",
+      "purl": "pkg:npm/vfile@6.0.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/vfile/-/vfile-6.0.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/vfile-location@5.0.3",
+      "type": "library",
+      "name": "vfile-location",
+      "version": "5.0.3",
+      "purl": "pkg:npm/vfile-location@5.0.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/vfile-location/-/vfile-location-5.0.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/vfile-message@4.0.3",
+      "type": "library",
+      "name": "vfile-message",
+      "version": "4.0.3",
+      "purl": "pkg:npm/vfile-message@4.0.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/vfile-message/-/vfile-message-4.0.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/web-namespaces@2.0.1",
+      "type": "library",
+      "name": "web-namespaces",
+      "version": "2.0.1",
+      "purl": "pkg:npm/web-namespaces@2.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/web-namespaces/-/web-namespaces-2.0.1.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/web-worker@1.5.0",
+      "type": "library",
+      "name": "web-worker",
+      "version": "1.5.0",
+      "purl": "pkg:npm/web-worker@1.5.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/web-worker/-/web-worker-1.5.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/xterm@5.3.0",
+      "type": "library",
+      "name": "xterm",
+      "version": "5.3.0",
+      "purl": "pkg:npm/xterm@5.3.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/xterm/-/xterm-5.3.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/xterm-addon-fit@0.8.0",
+      "type": "library",
+      "name": "xterm-addon-fit",
+      "version": "0.8.0",
+      "purl": "pkg:npm/xterm-addon-fit@0.8.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/xterm-addon-fit/-/xterm-addon-fit-0.8.0.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/zod@4.4.3",
+      "type": "library",
+      "name": "zod",
+      "version": "4.4.3",
+      "purl": "pkg:npm/zod@4.4.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/zod/-/zod-4.4.3.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/zustand@5.0.14",
+      "type": "library",
+      "name": "zustand",
+      "version": "5.0.14",
+      "purl": "pkg:npm/zustand@5.0.14",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/zustand/-/zustand-5.0.14.tgz"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/zwitch@2.0.4",
+      "type": "library",
+      "name": "zwitch",
+      "version": "2.0.4",
+      "purl": "pkg:npm/zwitch@2.0.4",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/zwitch/-/zwitch-2.0.4.tgz"
+        }
+      ]
+    }
+  ]
+}

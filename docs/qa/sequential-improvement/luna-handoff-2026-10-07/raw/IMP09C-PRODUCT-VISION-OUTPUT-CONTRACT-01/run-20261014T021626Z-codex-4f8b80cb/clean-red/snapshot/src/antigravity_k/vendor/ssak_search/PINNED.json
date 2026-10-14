@@ -1,0 +1,29 @@
+{
+  "schema": "ssak-bundle-pin/v1",
+  "purpose": "The S installation ships the W search bundle byte-for-byte. This file is the pin: it names the exact bytes the package must contain, so a build either ships those bytes or fails.",
+  "source": {
+    "repo": "W (webapp)",
+    "commit": "be292725634e05c3e7b51e96cf2f71bf2e1efae2",
+    "artifact_relative_path": "bin/ssak-mcp",
+    "manifest_relative_path": "release/ssak-search-manifest.json"
+  },
+  "artifact": {
+    "sha256": "1d2c67897b912a10eaf627f27958b1798bf43784cd5921274713b3d855547c26",
+    "size_bytes": 64323314,
+    "platform": "darwin",
+    "arch": "arm64",
+    "format": "macho",
+    "product": "ssak-mcp-standalone",
+    "version": "2.9.0"
+  },
+  "materialize": {
+    "command": "python3 scripts/vendor_ssak_bundle.py --from <path to a W release dir (needs bin/ssak-mcp and release/ssak-search-manifest.json)>",
+    "check_command": "python3 scripts/vendor_ssak_bundle.py --check",
+    "why_not_committed": "The bytes are a build artifact, not source. W's own manifest records artifact_tracked_in_git=false, so the pin lives in git and the bytes are materialized into package data at packaging time (and ignored by git here). Never substitute a different hash: 'arbitrary latest download' is exactly what this pin forbids."
+  },
+  "package_data": [
+    "vendor/ssak_search/bin/*",
+    "vendor/ssak_search/release/*",
+    "vendor/ssak_search/PINNED.json"
+  ]
+}

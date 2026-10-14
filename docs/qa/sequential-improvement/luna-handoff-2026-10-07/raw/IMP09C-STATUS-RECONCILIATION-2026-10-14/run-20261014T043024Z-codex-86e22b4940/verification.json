@@ -1,0 +1,59 @@
+{
+  "legacy_task_fields_deep_equal": true,
+  "legacy_status_suffix_preserved": true,
+  "scoped_evidence_links": [
+    [
+      "IMP-09-C-STREAM-OPTIONS-01",
+      "review",
+      true
+    ],
+    [
+      "IMP-09-B-TOOL-03-UVICORN-AUTH",
+      "review",
+      true
+    ],
+    [
+      "IMP-09-C-MESSAGES-IMAGE-CONTRACT-01",
+      "review",
+      true
+    ],
+    [
+      "IMP-09-C-PRODUCT-VISION-OUTPUT-CONTRACT-01",
+      "review",
+      true
+    ],
+    [
+      "IMP-09-C-PRODUCT-VISION-OUTPUT-CONTRACT-01",
+      "result",
+      true
+    ],
+    [
+      "IMP-09-B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01",
+      "review",
+      true
+    ],
+    [
+      "IMP-09-B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01",
+      "result",
+      true
+    ],
+    [
+      "IMP-09-C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01",
+      "review",
+      true
+    ],
+    [
+      "IMP-09-C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01",
+      "result",
+      true
+    ]
+  ],
+  "missing_links": [],
+  "current_parent": {
+    "IMP-09": "PARTIAL",
+    "historical_ledger": "NOT_RECOVERED",
+    "global_parent_counts": "NOT_RECOMPUTED"
+  },
+  "priority_next": "IMP-09-C-STRUCTURED-OUTPUT-PUBLICATION-01",
+  "original_jsonl_files_untouched_by_reconciliation": true
+}

@@ -1,0 +1,78 @@
+{
+  "review_id": "CODEX_REVIEW_IMP-09-B-TOOL-03-UVICORN-AUTH",
+  "reviewed_at_utc": "2026-10-10T12:01:38.792656+00:00",
+  "verdict": "APPROVED_SCOPED_LIVE",
+  "accepted_outcome": "PASS_SCOPED_UVICORN_AUTH_LIFESPAN_OFF",
+  "blocking_findings": [],
+  "run_root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-TOOL-03-UVICORN-AUTH/run-20261010T111024Z-d52d7488-ff42-4488-8020-e393ef32f264",
+  "evidence_bindings": {
+    "final_result_sha256": "8a74d5e1d7ad2df3ff08c0a5c8970123266aa3b722dac329fbfaa5c572f7e195",
+    "verification": "verification.json",
+    "verification_sha256": "0483075d9c98bd74303cb34cdec5e9183c6a1634291aa5043d2696d8f49f9973",
+    "verifier": "verify_saved_evidence.py",
+    "verifier_sha256": "a9f6f7b2985f704af45002cfdfca40effae9325887d45d08cc28833d3172f9a6",
+    "executed_harness_sha256": "eca747a767db36c6db084070a157c744b454156e4e13673723cbd44c7441f31e",
+    "product_request_sha256": "f5e4877ebb04448f3fe2d0e51153dc12033708c791e9eee32dc4409689b57e0a"
+  },
+  "independent_verification": {
+    "saved_evidence_checks_passed": 65,
+    "failed": 0,
+    "manifest_files": 75,
+    "current_source_bindings": 28,
+    "protected_bindings": 14,
+    "patch_reconstruction": "BYTE_IDENTICAL",
+    "normalized_parent_execution_ast": "IDENTICAL_EXCEPT_TASK_RUN_METADATA",
+    "live_requests_this_review": 0
+  },
+  "accepted_observations": {
+    "authenticated_product_post": 1,
+    "real_ollama_chat_inference": 1,
+    "ollama_http_total": 6,
+    "product_capability_show_post": 0,
+    "retry": 0,
+    "redirect_follow": 0,
+    "sse_frames": 28,
+    "closed_content_blocks": 2,
+    "tool_use": {
+      "id": "nonempty",
+      "name": "lookup_part",
+      "input": {
+        "name": "bolts"
+      },
+      "stop_reason": "tool_use"
+    },
+    "options": {
+      "model": "qwen3.8",
+      "stream": true,
+      "think": false,
+      "num_predict": 512,
+      "temperature": 0
+    },
+    "external_supervisor_exit": 0,
+    "internal_supervisor_observed_exit": null,
+    "internal_observed_exit_state": "NOT_OBSERVED",
+    "worker_exit": 0,
+    "temporary_auth_removed": true
+  },
+  "scope_limits": [
+    "Real loopback authenticated HTTP and real Ollama inference with manually initialized worker and lifespan=off.",
+    "Tool semantics came from a JSON text code fence bridged into Anthropic tool_use; native tool_calls were absent.",
+    "Anonymous rejection was verified by the real auth function in worker preflight; no separate anonymous external HTTP request was sent.",
+    "No tool execution, full lifespan, login flow, tokenizer accuracy, general semantic quality, installed-model-wide coverage or release approval.",
+    "Historical TOOL-01/02 and EM-01 FAIL, IMP-09 PARTIAL and ledger NOT_RECOVERED remain historical states."
+  ],
+  "preservation": {
+    "old_run_modified": false,
+    "product_source_modified": false,
+    "shared_ledger_modified": false,
+    "live_harness_executed": false,
+    "commit_push": false
+  },
+  "next_task": {
+    "id": "IMP-09-C-MESSAGES-IMAGE-CONTRACT-01",
+    "reason": "The existing Messages text flattening has no image branch. Verify and repair silent image loss with offline route tests and typed pre-generation HTTP 400.",
+    "basis": "STATIC_CODE_OBSERVATION_ONLY; new route failure must be reproduced before editing.",
+    "scope": "messages_api.py plus one new regression test file; no live harness, HTTP wire, Ollama or inference.",
+    "prompt": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/ssak-ai-core/GPT6_LUNA_MESSAGES_IMAGE_CONTRACT_2026-10-10.md"
+  }
+}

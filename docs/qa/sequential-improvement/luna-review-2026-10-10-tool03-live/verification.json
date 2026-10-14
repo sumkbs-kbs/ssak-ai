@@ -1,0 +1,413 @@
+{
+  "reviewed_at_utc": "2026-10-10T12:01:38.792656+00:00",
+  "review_scope": "Offline parsing and binding of saved live evidence; no harness, HTTP, listener, Ollama or inference execution",
+  "run_root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-TOOL-03-UVICORN-AUTH/run-20261010T111024Z-d52d7488-ff42-4488-8020-e393ef32f264",
+  "final_result_sha256": "8a74d5e1d7ad2df3ff08c0a5c8970123266aa3b722dac329fbfaa5c572f7e195",
+  "checker_sha256": "a9f6f7b2985f704af45002cfdfca40effae9325887d45d08cc28833d3172f9a6",
+  "checks": [
+    {
+      "name": "manifest",
+      "passed": true,
+      "detail": {
+        "files": 75,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "source_sha256",
+      "passed": true,
+      "detail": {
+        "files": 28,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "protected_file_sha256",
+      "passed": true,
+      "detail": {
+        "files": 14,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "receipt_source_continuity",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "identity",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "frozen_request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "parent_binding",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "metadata_only_ast",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "patch_reconstruction",
+      "passed": true,
+      "detail": {
+        "exit_code": 0,
+        "sha256": "eca747a767db36c6db084070a157c744b454156e4e13673723cbd44c7441f31e"
+      }
+    },
+    {
+      "name": "execution_binding",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "outer_receipt_binding",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "separate_exit_observations",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "worker_cleanup",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "request_chain:ollama-preflight-version",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "raw_capture:ollama-preflight-version",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "request_chain:ollama-preflight-tags",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "raw_capture:ollama-preflight-tags",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "request_chain:ollama-preflight-ps",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "raw_capture:ollama-preflight-ps",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "request_chain:ollama-preflight-show",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "raw_capture:ollama-preflight-show",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "request_chain:product-authenticated",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "request_chain:ollama-inference",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "raw_capture:ollama-inference",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "request_chain:ollama-postflight-ps",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "raw_capture:ollama-postflight-ps",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bounded_transmissions",
+      "passed": true,
+      "detail": {
+        "ollama-preflight-version": {
+          "reserved": 1,
+          "entered": 1,
+          "response": 1
+        },
+        "ollama-preflight-tags": {
+          "reserved": 1,
+          "entered": 1,
+          "response": 1
+        },
+        "ollama-preflight-ps": {
+          "reserved": 1,
+          "entered": 1,
+          "response": 1
+        },
+        "ollama-preflight-show": {
+          "reserved": 1,
+          "entered": 1,
+          "response": 1
+        },
+        "product-authenticated": {
+          "reserved": 1,
+          "entered": 1,
+          "response": 1
+        },
+        "ollama-inference": {
+          "reserved": 1,
+          "entered": 1,
+          "response": 1
+        },
+        "ollama-postflight-ps": {
+          "reserved": 1,
+          "entered": 1,
+          "response": 1
+        }
+      }
+    },
+    {
+      "name": "acceptance_before_wire",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "options",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ndjson_terminal",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "sse_delimiter",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:0",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:6",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:7",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:8",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:9",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:10",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:11",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:12",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:13",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:14",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:15",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:16",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:17",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:18",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:19",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:20",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:21",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:22",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:23",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:24",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:25",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:26",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "event_type:27",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "sse_lifecycle",
+      "passed": true,
+      "detail": {
+        "frames": 28,
+        "blocks": 2,
+        "errors": []
+      }
+    },
+    {
+      "name": "tool_contract",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "upstream_product_bridge",
+      "passed": true,
+      "detail": {
+        "native_tool_calls_present": false,
+        "bridge": "JSON code fence to tool_use"
+      }
+    },
+    {
+      "name": "auth_and_scope",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "retained_offline_checks",
+      "passed": true,
+      "detail": [
+        {
+          "name": "self-check",
+          "exit_code": 0
+        },
+        {
+          "name": "ruff",
+          "exit_code": 0
+        },
+        {
+          "name": "ruff-format",
+          "exit_code": 0
+        },
+        {
+          "name": "basedpyright",
+          "exit_code": 0
+        },
+        {
+          "name": "memory-compile",
+          "exit_code": 0
+        }
+      ]
+    },
+    {
+      "name": "historical_format_failure_retained",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "passed": 65,
+  "failed": [],
+  "raw_capture_count": 6
+}

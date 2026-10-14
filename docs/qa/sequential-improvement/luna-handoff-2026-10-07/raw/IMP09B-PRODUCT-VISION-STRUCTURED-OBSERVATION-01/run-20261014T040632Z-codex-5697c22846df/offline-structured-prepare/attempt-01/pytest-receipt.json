@@ -1,0 +1,30 @@
+{
+  "command": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-o",
+    "addopts=",
+    "-o",
+    "testpaths=",
+    "test_structured_product_payload_contract.py",
+    "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/offline-structured-prepare/attempt-01/junit.xml"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df",
+  "env_overrides": {
+    "PYTHONPATH": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PROFILE_CAPTURE_ROOT": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09B-PRODUCT-VISION-STRUCTURED-OBSERVATION-01/run-20261014T040632Z-codex-5697c22846df/offline-structured-prepare/attempt-01/captures",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "exit_code": 0,
+  "at": "2026-10-14T04:13:15.795846+00:00",
+  "source_sha256": {
+    "response-schema.json": "da677313c66e0f4ac04f7f19170acfafdd8f7598e1bf6a9fd7e5e3d35fec7df5",
+    "run_harness.py": "b0d6d944f5b6135b1d7cbcb6e0d58ad674b0bfeca73c111fb96ea95f61492bd2",
+    "test_structured_product_payload_contract.py": "3d5b330897592eae53a8a64a2e8abc8f77a6ed6f2b5b9e0dbe04663bee6927a9",
+    "planned-acceptance.json": "438bf54b9e2f852847829a1459ec60aafef1ced48605a9a43676ca9ac884f5ee",
+    "profile-contract.json": "d79de422d09424ca6c0ef03d5a73237f046cbfa6aa0521fbf0d7f519fc9d8e35"
+  }
+}

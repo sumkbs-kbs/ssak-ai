@@ -1,0 +1,2 @@
+patching file run_harness.py
+patching file test_acceptance_metadata_contract.py

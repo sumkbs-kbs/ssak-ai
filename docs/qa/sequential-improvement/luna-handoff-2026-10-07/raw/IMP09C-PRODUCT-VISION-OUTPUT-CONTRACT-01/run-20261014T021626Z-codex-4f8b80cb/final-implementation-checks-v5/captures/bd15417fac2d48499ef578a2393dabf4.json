@@ -1,0 +1,43 @@
+{
+  "nodeid": "tests/test_chat_structured_output_contract.py::test_nested_dialect_and_legacy_dependencies_rejected_before_dispatch[child0]",
+  "wire": [],
+  "manager_calls": 0,
+  "provider_calls": 0,
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 400,
+      "body": "{\"detail\":{\"type\":\"invalid_request_error\",\"message\":\"Only JSON Schema draft 2020-12 is supported\"}}",
+      "request": {
+        "model": "qwen3.8",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Count the shapes and return JSON."
+          }
+        ],
+        "response_format": {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "nested",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "child": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "type": "object",
+                  "dependencies": {
+                    "x": {
+                      "$ref": "https://example.com/schema"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

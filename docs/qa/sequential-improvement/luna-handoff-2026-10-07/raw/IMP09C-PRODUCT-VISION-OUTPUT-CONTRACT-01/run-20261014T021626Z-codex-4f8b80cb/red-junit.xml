@@ -1,0 +1,754 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="2" failures="21" skipped="0" tests="25" time="39.538" timestamp="2026-10-14T11:19:08.901183+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_chat_structured_output_contract" name="test_structured_image_reaches_native_wire_once[format_value0-json]" time="1.858"><failure message="assert 2 == 1&#10; +  where 2 = len([{'prompt': &quot;You are an autonomous intent router. Analyze the user request and categorize it into ONE of these exactly...er: Count the shapes and return JSON.\nAssistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}])">product = (&lt;starlette.testclient.TestClient object at 0x1262ffcb0&gt;, {'model': 'qwen3.8', 'project_id': 'proj_ef39b896', 'message...sistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1}'])
+format_value = {'type': 'json_object'}, native = 'json'
+
+    @pytest.mark.parametrize("format_value,native", [({"type": "json_object"}, "json"), (ENVELOPE, SCHEMA)])
+    def test_structured_image_reaches_native_wire_once(product, format_value, native):
+        client, body, calls, generations, content = product
+        image = (Path(__file__).parent / "fixtures/vision_shapes_384x256.png.b64").read_text().strip()
+        body["messages"][0]["content"] = [{"type": "text", "text": "Count the shapes and return JSON."}, {"type": "image_url", "image_url": {"url": "data:image/png;base64," + image}}]
+        response = client.post("/v1/chat/completions", json={**body, "response_format": format_value})
+        assert response.status_code == 200, response.text
+&gt;       assert len(calls) == len(generations) == 1
+E       assert 2 == 1
+E        +  where 2 = len([{'prompt': "You are an autonomous intent router. Analyze the user request and categorize it into ONE of these exactly...er: Count the shapes and return JSON.\nAssistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}])
+
+tests/test_chat_structured_output_contract.py:81: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_structured_image_reaches_native_wire_once[format_value1-native1]" time="0.034"><failure message="assert 2 == 1&#10; +  where 2 = len([{'prompt': &quot;You are an autonomous intent router. Analyze the user request and categorize it into ONE of these exactly...er: Count the shapes and return JSON.\nAssistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}])">product = (&lt;starlette.testclient.TestClient object at 0x1273f9e50&gt;, {'model': 'qwen3.8', 'project_id': 'proj_6bb3a5d5', 'message...sistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1}'])
+format_value = {'type': 'json_schema', 'json_schema': {'name': 'shapes', 'strict': True, 'schema': {'type': 'object', 'properties': {...'}, 'blue_squares': {'type': 'integer'}}, 'required': ['red_circles', 'blue_squares'], 'additionalProperties': False}}}
+native = {'type': 'object', 'properties': {'red_circles': {'type': 'integer'}, 'blue_squares': {'type': 'integer'}}, 'required': ['red_circles', 'blue_squares'], 'additionalProperties': False}
+
+    @pytest.mark.parametrize("format_value,native", [({"type": "json_object"}, "json"), (ENVELOPE, SCHEMA)])
+    def test_structured_image_reaches_native_wire_once(product, format_value, native):
+        client, body, calls, generations, content = product
+        image = (Path(__file__).parent / "fixtures/vision_shapes_384x256.png.b64").read_text().strip()
+        body["messages"][0]["content"] = [{"type": "text", "text": "Count the shapes and return JSON."}, {"type": "image_url", "image_url": {"url": "data:image/png;base64," + image}}]
+        response = client.post("/v1/chat/completions", json={**body, "response_format": format_value})
+        assert response.status_code == 200, response.text
+&gt;       assert len(calls) == len(generations) == 1
+E       assert 2 == 1
+E        +  where 2 = len([{'prompt': "You are an autonomous intent router. Analyze the user request and categorize it into ONE of these exactly...er: Count the shapes and return JSON.\nAssistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}])
+
+tests/test_chat_structured_output_contract.py:81: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_bad_format_rejected_before_inference[json]" time="0.019"><failure message="assert 200 == 400&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x1274ade50&gt;, {'model': 'qwen3.8', 'project_id': 'proj_6fa1cae5', 'message...sistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1}'])
+value = 'json'
+
+    @pytest.mark.parametrize("value", ["json", {}, {"type": "bogus"}, {"type": "json_schema"}, {"type": "json_schema", "json_schema": {"name": "x", "strict": "true", "schema": SCHEMA}}, {"type": "json_schema", "json_schema": {"name": "x", "schema": {"type": "bogus"}}}, {"type": "json_schema", "json_schema": {"name": "x", "schema": {"$ref": "https://example.com/schema"}}}])
+    def test_bad_format_rejected_before_inference(product, value):
+        client, body, calls, generations, _ = product
+        response = client.post("/v1/chat/completions", json={**body, "response_format": value})
+&gt;       assert response.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:91: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_bad_format_rejected_before_inference[value1]" time="0.019"><failure message="assert 200 == 400&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x1274122c0&gt;, {'model': 'qwen3.8', 'project_id': 'proj_6fb802dc', 'message...sistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1}'])
+value = {}
+
+    @pytest.mark.parametrize("value", ["json", {}, {"type": "bogus"}, {"type": "json_schema"}, {"type": "json_schema", "json_schema": {"name": "x", "strict": "true", "schema": SCHEMA}}, {"type": "json_schema", "json_schema": {"name": "x", "schema": {"type": "bogus"}}}, {"type": "json_schema", "json_schema": {"name": "x", "schema": {"$ref": "https://example.com/schema"}}}])
+    def test_bad_format_rejected_before_inference(product, value):
+        client, body, calls, generations, _ = product
+        response = client.post("/v1/chat/completions", json={**body, "response_format": value})
+&gt;       assert response.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:91: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_bad_format_rejected_before_inference[value2]" time="0.019"><failure message="assert 200 == 400&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x127494b00&gt;, {'model': 'qwen3.8', 'project_id': 'proj_b64321c3', 'message...sistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1}'])
+value = {'type': 'bogus'}
+
+    @pytest.mark.parametrize("value", ["json", {}, {"type": "bogus"}, {"type": "json_schema"}, {"type": "json_schema", "json_schema": {"name": "x", "strict": "true", "schema": SCHEMA}}, {"type": "json_schema", "json_schema": {"name": "x", "schema": {"type": "bogus"}}}, {"type": "json_schema", "json_schema": {"name": "x", "schema": {"$ref": "https://example.com/schema"}}}])
+    def test_bad_format_rejected_before_inference(product, value):
+        client, body, calls, generations, _ = product
+        response = client.post("/v1/chat/completions", json={**body, "response_format": value})
+&gt;       assert response.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:91: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_bad_format_rejected_before_inference[value3]" time="0.019"><failure message="assert 200 == 400&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x1273ba210&gt;, {'model': 'qwen3.8', 'project_id': 'proj_20459c53', 'message...sistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1}'])
+value = {'type': 'json_schema'}
+
+    @pytest.mark.parametrize("value", ["json", {}, {"type": "bogus"}, {"type": "json_schema"}, {"type": "json_schema", "json_schema": {"name": "x", "strict": "true", "schema": SCHEMA}}, {"type": "json_schema", "json_schema": {"name": "x", "schema": {"type": "bogus"}}}, {"type": "json_schema", "json_schema": {"name": "x", "schema": {"$ref": "https://example.com/schema"}}}])
+    def test_bad_format_rejected_before_inference(product, value):
+        client, body, calls, generations, _ = product
+        response = client.post("/v1/chat/completions", json={**body, "response_format": value})
+&gt;       assert response.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:91: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_bad_format_rejected_before_inference[value4]" time="0.018"><failure message="assert 200 == 400&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x1273f3f00&gt;, {'model': 'qwen3.8', 'project_id': 'proj_0ae18a84', 'message...sistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1}'])
+value = {'type': 'json_schema', 'json_schema': {'name': 'x', 'strict': 'true', 'schema': {'type': 'object', 'properties': {'re...'}, 'blue_squares': {'type': 'integer'}}, 'required': ['red_circles', 'blue_squares'], 'additionalProperties': False}}}
+
+    @pytest.mark.parametrize("value", ["json", {}, {"type": "bogus"}, {"type": "json_schema"}, {"type": "json_schema", "json_schema": {"name": "x", "strict": "true", "schema": SCHEMA}}, {"type": "json_schema", "json_schema": {"name": "x", "schema": {"type": "bogus"}}}, {"type": "json_schema", "json_schema": {"name": "x", "schema": {"$ref": "https://example.com/schema"}}}])
+    def test_bad_format_rejected_before_inference(product, value):
+        client, body, calls, generations, _ = product
+        response = client.post("/v1/chat/completions", json={**body, "response_format": value})
+&gt;       assert response.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:91: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_bad_format_rejected_before_inference[value5]" time="0.019"><failure message="assert 200 == 400&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x1273f1d00&gt;, {'model': 'qwen3.8', 'project_id': 'proj_d7b6405b', 'message...sistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1}'])
+value = {'type': 'json_schema', 'json_schema': {'name': 'x', 'schema': {'type': 'bogus'}}}
+
+    @pytest.mark.parametrize("value", ["json", {}, {"type": "bogus"}, {"type": "json_schema"}, {"type": "json_schema", "json_schema": {"name": "x", "strict": "true", "schema": SCHEMA}}, {"type": "json_schema", "json_schema": {"name": "x", "schema": {"type": "bogus"}}}, {"type": "json_schema", "json_schema": {"name": "x", "schema": {"$ref": "https://example.com/schema"}}}])
+    def test_bad_format_rejected_before_inference(product, value):
+        client, body, calls, generations, _ = product
+        response = client.post("/v1/chat/completions", json={**body, "response_format": value})
+&gt;       assert response.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:91: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_bad_format_rejected_before_inference[value6]" time="0.019"><failure message="assert 200 == 400&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x1273f2ad0&gt;, {'model': 'qwen3.8', 'project_id': 'proj_c232f73c', 'message...sistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1}'])
+value = {'type': 'json_schema', 'json_schema': {'name': 'x', 'schema': {'$ref': 'https://example.com/schema'}}}
+
+    @pytest.mark.parametrize("value", ["json", {}, {"type": "bogus"}, {"type": "json_schema"}, {"type": "json_schema", "json_schema": {"name": "x", "strict": "true", "schema": SCHEMA}}, {"type": "json_schema", "json_schema": {"name": "x", "schema": {"type": "bogus"}}}, {"type": "json_schema", "json_schema": {"name": "x", "schema": {"$ref": "https://example.com/schema"}}}])
+    def test_bad_format_rejected_before_inference(product, value):
+        client, body, calls, generations, _ = product
+        response = client.post("/v1/chat/completions", json={**body, "response_format": value})
+&gt;       assert response.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:91: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_unsupported_path_rejected_before_inference[extra0]" time="0.019"><failure message="assert 200 == 400&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x1275246b0&gt;, {'model': 'qwen3.8', 'project_id': 'proj_5c03fab7', 'message...sistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1}'])
+extra = {'agent_mode': True}
+
+    @pytest.mark.parametrize("extra", [{"agent_mode": True}, {"plan_mode": True}, {"tdd_mode": True}, {"web_search": True}, {"tools": []}, {"stream": True}, {"model": "unknown-provider"}])
+    def test_unsupported_path_rejected_before_inference(product, extra):
+        client, body, calls, generations, _ = product
+        response = client.post("/v1/chat/completions", json={**body, "response_format": ENVELOPE, **extra})
+&gt;       assert response.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:100: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_unsupported_path_rejected_before_inference[extra1]" time="0.019"><failure message="assert 200 == 400&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x1275269c0&gt;, {'model': 'qwen3.8', 'project_id': 'proj_7472289a', 'message...sistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1}'])
+extra = {'plan_mode': True}
+
+    @pytest.mark.parametrize("extra", [{"agent_mode": True}, {"plan_mode": True}, {"tdd_mode": True}, {"web_search": True}, {"tools": []}, {"stream": True}, {"model": "unknown-provider"}])
+    def test_unsupported_path_rejected_before_inference(product, extra):
+        client, body, calls, generations, _ = product
+        response = client.post("/v1/chat/completions", json={**body, "response_format": ENVELOPE, **extra})
+&gt;       assert response.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:100: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_unsupported_path_rejected_before_inference[extra2]" time="36.255"><failure message="assert 200 == 400&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x127526e00&gt;, {'model': 'qwen3.8', 'project_id': 'proj_fbb21e4d', 'message...ct.toml'\n\n\nPlease fix the code.", 'target': 'qwen3.8', 'temperature': 0.1}], ['{"red_circles":2,"blue_squares":1}'])
+extra = {'tdd_mode': True}
+
+    @pytest.mark.parametrize("extra", [{"agent_mode": True}, {"plan_mode": True}, {"tdd_mode": True}, {"web_search": True}, {"tools": []}, {"stream": True}, {"model": "unknown-provider"}])
+    def test_unsupported_path_rejected_before_inference(product, extra):
+        client, body, calls, generations, _ = product
+        response = client.post("/v1/chat/completions", json={**body, "response_format": ENVELOPE, **extra})
+&gt;       assert response.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:100: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_unsupported_path_rejected_before_inference[extra3]" time="0.022"><failure message="assert 200 == 400&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x12759fac0&gt;, {'model': 'qwen3.8', 'project_id': 'proj_0f65f1ff', 'message...sistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1}'])
+extra = {'web_search': True}
+
+    @pytest.mark.parametrize("extra", [{"agent_mode": True}, {"plan_mode": True}, {"tdd_mode": True}, {"web_search": True}, {"tools": []}, {"stream": True}, {"model": "unknown-provider"}])
+    def test_unsupported_path_rejected_before_inference(product, extra):
+        client, body, calls, generations, _ = product
+        response = client.post("/v1/chat/completions", json={**body, "response_format": ENVELOPE, **extra})
+&gt;       assert response.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:100: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_unsupported_path_rejected_before_inference[extra4]" time="0.019"><failure message="assert 200 == 400&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x15b1088d0&gt;, {'model': 'qwen3.8', 'project_id': 'proj_7623f006', 'message...\n\nAssistant:', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7}], ['{"red_circles":2,"blue_squares":1}'])
+extra = {'tools': []}
+
+    @pytest.mark.parametrize("extra", [{"agent_mode": True}, {"plan_mode": True}, {"tdd_mode": True}, {"web_search": True}, {"tools": []}, {"stream": True}, {"model": "unknown-provider"}])
+    def test_unsupported_path_rejected_before_inference(product, extra):
+        client, body, calls, generations, _ = product
+        response = client.post("/v1/chat/completions", json={**body, "response_format": ENVELOPE, **extra})
+&gt;       assert response.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:100: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_unsupported_path_rejected_before_inference[extra5]" time="0.385"><failure message="Failed: unexpected socket connection">product = (&lt;starlette.testclient.TestClient object at 0x15b108f30&gt;, {'model': 'qwen3.8', 'project_id': 'proj_3efcc8b7', 'message...and return JSON.", 'target': 'qwen3.8', 'max_tokens': 10, 'temperature': 0.0}], ['{"red_circles":2,"blue_squares":1}'])
+extra = {'stream': True}
+
+    @pytest.mark.parametrize("extra", [{"agent_mode": True}, {"plan_mode": True}, {"tdd_mode": True}, {"web_search": True}, {"tools": []}, {"stream": True}, {"model": "unknown-provider"}])
+    def test_unsupported_path_rejected_before_inference(product, extra):
+        client, body, calls, generations, _ = product
+&gt;       response = client.post("/v1/chat/completions", json={**body, "response_format": ENVELOPE, **extra})
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_chat_structured_output_contract.py:99: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.13/site-packages/starlette/testclient.py:556: in post
+    return super().post(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:455: in request
+    return super().request(
+.venv/lib/python3.13/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/starlette/testclient.py:354: in handle_request
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/testclient.py:351: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:334: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:259: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/fastapi/applications.py:1159: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/applications.py:96: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:670: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:690: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:280: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:134: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:121: in app
+    await response(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/responses.py:273: in __call__
+    async with create_collapsing_task_group() as task_group:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/contextlib.py:235: in __aexit__
+    await self.gen.athrow(value)
+.venv/lib/python3.13/site-packages/starlette/_utils.py:93: in create_collapsing_task_group
+    raise exc from exc.__cause__ or context
+.venv/lib/python3.13/site-packages/starlette/responses.py:276: in wrap
+    await func()
+src/antigravity_k/api/chat_agent_stream_generator.py:32: in stream_response
+    await super().stream_response(send)
+.venv/lib/python3.13/site-packages/starlette/responses.py:250: in stream_response
+    async for chunk in self.body_iterator:
+src/antigravity_k/api/routes/chat.py:1237: in event_generator
+    async for chunk in stream_aiter:
+src/antigravity_k/api/chat_agent_stream_generator.py:83: in contextual_agent_stream
+    done, chunk = await run_sync(stream.pull)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/anyio/to_thread.py:63: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2518: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:1002: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/api/chat_agent_stream_generator.py:67: in pull
+    return self.context.run(self._next)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/api/chat_agent_stream_generator.py:61: in _next
+    return False, next(self.iterator)
+                  ^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/api/chat_agent_stream_generator.py:47: in _scoped_stream
+    yield from runtime.stream(messages, target_model=target_model)
+src/antigravity_k/engine/agent_runtime.py:224: in stream
+    yield from self.start_stream(
+src/antigravity_k/engine/direct_task_execution.py:334: in _stream_execution
+    for chunk in normalize_streaming_chunks(
+src/antigravity_k/engine/language_normalizer.py:31: in normalize_streaming_chunks
+    for chunk in chunks:
+                 ^^^^^^
+src/antigravity_k/engine/orchestrator/agent.py:898: in run_stream
+    yield from _stream_run(self, messages, target_model, max_steps, ephemeral_message)
+src/antigravity_k/engine/orchestrator/stream.py:563: in run_stream
+    yield from state_graph.execute(ctx, orchestrator=orch)
+src/antigravity_k/engine/state_graph.py:321: in execute
+    for chunk in gen:
+                 ^^^
+src/antigravity_k/engine/orchestrator_execution_handlers.py:189: in agent_execute_handler
+    yield from tool_loop.run_loop(
+src/antigravity_k/engine/tool_loop.py:1282: in run_loop
+    ) = prepare_prompt(prompt_messages, delegate_to, task_type)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/engine/orchestrator/agent.py:667: in _prepare_agent_prompt
+    tool_prompt = self._build_tool_prompt(task_type) if delegate_to != "CEO" else ""
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/engine/orchestrator/agent.py:435: in _build_tool_prompt
+    snapshot = engine.build(
+src/antigravity_k/engine/self_capability.py:109: in build
+    model_info=self._model_info(model_manager),
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/engine/self_capability.py:264: in _model_info
+    value = method_fn()
+            ^^^^^^^^^^^
+src/antigravity_k/engine/model_manager.py:1872: in get_model_info
+    return self.status()
+           ^^^^^^^^^^^^^
+src/antigravity_k/engine/model_manager.py:1804: in status
+    provider_capabilities = self.provider_capabilities()
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/engine/model_manager.py:1831: in provider_capabilities
+    capabilities[profile.name] = self._provider_capability_for_profile(profile, refresh=refresh)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/engine/model_manager.py:1856: in _provider_capability_for_profile
+    capability = self._capability_probe.observe(profile, refresh=refresh)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/engine/provider_capability_probe.py:55: in observe
+    capability = self._probe_ollama(profile)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/engine/provider_capability_probe.py:87: in _probe_ollama
+    payload = self._request_json(request)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/engine/provider_capability_probe_runtime.py:82: in _request_json
+    with opener(request, timeout=2) as response:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/engine/provider_capabilities.py:37: in _configured_urlopen
+    return safe_urlopen(target, timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/tools/egress_policy.py:99: in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/urllib/request.py:189: in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/urllib/request.py:489: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/urllib/request.py:506: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+/Users/mr.k/miniforge3/lib/python3.13/urllib/request.py:466: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/urllib/request.py:1348: in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/urllib/request.py:1319: in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+/Users/mr.k/miniforge3/lib/python3.13/http/client.py:1358: in request
+    self._send_request(method, url, body, headers, encode_chunked)
+/Users/mr.k/miniforge3/lib/python3.13/http/client.py:1404: in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+/Users/mr.k/miniforge3/lib/python3.13/http/client.py:1353: in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+/Users/mr.k/miniforge3/lib/python3.13/http/client.py:1113: in _send_output
+    self.send(msg)
+/Users/mr.k/miniforge3/lib/python3.13/http/client.py:1057: in send
+    self.connect()
+/Users/mr.k/miniforge3/lib/python3.13/http/client.py:1023: in connect
+    self.sock = self._create_connection(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (('localhost', 11434), 2, None), kwargs = {}
+
+    def denied(*args, **kwargs):
+&gt;       pytest.fail("unexpected socket connection")
+E       Failed: unexpected socket connection
+
+tests/test_chat_structured_output_contract.py:14: Failed</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_unsupported_path_rejected_before_inference[extra5]" time="0.000"><error message="failed on teardown with &quot;RuntimeError: This portal is not running&quot;">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x1277c9450&gt;
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-427/test_unsupported_path_rejected5')
+
+    @pytest.fixture
+    def product(monkeypatch, tmp_path):
+        def denied(*args, **kwargs):
+            pytest.fail("unexpected socket connection")
+    
+        monkeypatch.setattr(socket.socket, "connect", denied)
+        monkeypatch.setattr(socket.socket, "connect_ex", denied)
+        monkeypatch.setattr(socket, "create_connection", denied)
+        from fastapi import FastAPI
+        from fastapi.testclient import TestClient
+    
+        from antigravity_k.api import dependencies, project_binding
+        from antigravity_k.api.routes import chat
+        from antigravity_k.config import config
+        from antigravity_k.engine.audit_logger import AuditLogger
+        from antigravity_k.engine.model_manager import ModelManager
+        from antigravity_k.engine.model_registry import ModelRegistry
+        from antigravity_k.engine.project_registry import ProjectRegistry
+        from antigravity_k.engine.protocol_translator import ProtocolTranslator
+        from antigravity_k.engine.provider_adapters import inference_providers
+        from antigravity_k.engine.session_manager import SessionManager
+        from antigravity_k.engine.usage_tracker import UsageTracker
+        from antigravity_k.engine.user_model import global_gbrain
+    
+        monkeypatch.setattr(config.paths, "project_root", tmp_path)
+        registry = ProjectRegistry(storage_path=tmp_path / "projects.json")
+        project = registry.add_project("structured-output", str(tmp_path))
+        monkeypatch.setattr(project_binding, "get_project_registry", lambda: registry)
+        sessions = SessionManager(base_dir=str(tmp_path / "sessions"))
+        monkeypatch.setattr(dependencies, "get_session_manager", lambda: sessions)
+        monkeypatch.setattr(chat, "get_audit_logger", lambda: AuditLogger(log_dir=tmp_path / "audit"))
+        monkeypatch.setattr(global_gbrain, "add_node", lambda **kwargs: None)
+        manager = ModelManager(ModelRegistry(), tracker=UsageTracker(db_path=None))
+        monkeypatch.setattr(ModelManager, "_load_mlx_model", lambda *args: (None, None))
+        calls = []
+        generations = []
+        content = ['{"red_circles":2,"blue_squares":1}']
+        generate = manager.generate
+    
+        def record_generate(*args, **kwargs):
+            generations.append(kwargs)
+            return generate(*args, **kwargs)
+    
+        monkeypatch.setattr(manager, "generate", record_generate)
+    
+        def terminal(request, **kwargs):
+            calls.append(json.loads(request.data))
+            return io.BytesIO(json.dumps({"message": {"content": content[0]}, "done": True}).encode())
+    
+        monkeypatch.setattr(inference_providers, "safe_urlopen", terminal)
+        app = FastAPI()
+        app.include_router(chat.router)
+        app.dependency_overrides[chat.get_model_manager] = lambda: manager
+        app.dependency_overrides[chat.get_translator] = ProtocolTranslator
+        body = {"model": "qwen3.8", "project_id": project.id, "messages": [{"role": "user", "content": "Count the shapes and return JSON."}]}
+&gt;       with TestClient(app) as client:
+             ^^^^^^^^^^^^^^^
+
+tests/test_chat_structured_output_contract.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.13/site-packages/starlette/testclient.py:709: in __exit__
+    self.exit_stack.close()
+/Users/mr.k/miniforge3/lib/python3.13/contextlib.py:627: in close
+    self.__exit__(None, None, None)
+/Users/mr.k/miniforge3/lib/python3.13/contextlib.py:619: in __exit__
+    raise exc
+/Users/mr.k/miniforge3/lib/python3.13/contextlib.py:604: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/contextlib.py:482: in _exit_wrapper
+    callback(*args, **kwds)
+.venv/lib/python3.13/site-packages/starlette/testclient.py:702: in wait_shutdown
+    portal.call(self.wait_shutdown)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:334: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:376: in start_task_soon
+    self._check_running()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;anyio.from_thread.BlockingPortal object at 0x15b1db040&gt;
+
+    def _check_running(self) -&gt; None:
+        if self._event_loop_thread_id is None:
+&gt;           raise RuntimeError("This portal is not running")
+E           RuntimeError: This portal is not running
+
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:214: RuntimeError</error></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_unsupported_path_rejected_before_inference[extra6]" time="0.019"><failure message="Failed: unexpected socket connection">product = (&lt;starlette.testclient.TestClient object at 0x15b6d7680&gt;, {'model': 'qwen3.8', 'project_id': 'proj_67df3998', 'message...n JSON.", 'target': 'unknown-provider', 'max_tokens': 10, 'temperature': 0.0}], ['{"red_circles":2,"blue_squares":1}'])
+extra = {'model': 'unknown-provider'}
+
+    @pytest.mark.parametrize("extra", [{"agent_mode": True}, {"plan_mode": True}, {"tdd_mode": True}, {"web_search": True}, {"tools": []}, {"stream": True}, {"model": "unknown-provider"}])
+    def test_unsupported_path_rejected_before_inference(product, extra):
+        client, body, calls, generations, _ = product
+&gt;       response = client.post("/v1/chat/completions", json={**body, "response_format": ENVELOPE, **extra})
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_chat_structured_output_contract.py:99: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.13/site-packages/starlette/testclient.py:556: in post
+    return super().post(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:455: in request
+    return super().request(
+.venv/lib/python3.13/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/starlette/testclient.py:354: in handle_request
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/testclient.py:351: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:334: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:259: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/fastapi/applications.py:1159: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/applications.py:96: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:670: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:690: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:280: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:134: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:120: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/fastapi/routing.py:674: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.13/site-packages/fastapi/routing.py:328: in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/api/routes/chat.py:746: in chat_completions
+    intent = await run_in_threadpool(_classify_intent)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/starlette/concurrency.py:34: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/anyio/to_thread.py:63: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2518: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:1002: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/api/routes/chat.py:728: in _classify_intent
+    res = manager.generate(
+tests/test_chat_structured_output_contract.py:52: in record_generate
+    return generate(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/engine/model_manager.py:677: in generate
+    _ = self.discover_local_models()
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/engine/model_manager.py:271: in discover_local_models
+    added = self._registry.refresh_local_models()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/engine/model_registry.py:645: in refresh_local_models
+    return self.merge_discovered_models(source.discover())
+                                        ^^^^^^^^^^^^^^^^^
+src/antigravity_k/engine/local_model_discovery.py:124: in discover
+    found.extend(self._discover_ollama())
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/engine/local_model_discovery.py:135: in _discover_ollama
+    payload = self._request_json(f"{base_url}/api/tags")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/engine/local_model_discovery.py:376: in _request_json
+    with safe_urlopen(request, timeout=2) as response:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/antigravity_k/tools/egress_policy.py:99: in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/urllib/request.py:189: in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/urllib/request.py:489: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/urllib/request.py:506: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+/Users/mr.k/miniforge3/lib/python3.13/urllib/request.py:466: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/urllib/request.py:1348: in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/urllib/request.py:1319: in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+/Users/mr.k/miniforge3/lib/python3.13/http/client.py:1358: in request
+    self._send_request(method, url, body, headers, encode_chunked)
+/Users/mr.k/miniforge3/lib/python3.13/http/client.py:1404: in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+/Users/mr.k/miniforge3/lib/python3.13/http/client.py:1353: in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+/Users/mr.k/miniforge3/lib/python3.13/http/client.py:1113: in _send_output
+    self.send(msg)
+/Users/mr.k/miniforge3/lib/python3.13/http/client.py:1057: in send
+    self.connect()
+/Users/mr.k/miniforge3/lib/python3.13/http/client.py:1023: in connect
+    self.sock = self._create_connection(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (('127.0.0.1', 11434), 2, None), kwargs = {}
+
+    def denied(*args, **kwargs):
+&gt;       pytest.fail("unexpected socket connection")
+E       Failed: unexpected socket connection
+
+tests/test_chat_structured_output_contract.py:14: Failed</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_unsupported_path_rejected_before_inference[extra6]" time="0.000"><error message="failed on teardown with &quot;RuntimeError: This portal is not running&quot;">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x169a0b4a0&gt;
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-427/test_unsupported_path_rejected6')
+
+    @pytest.fixture
+    def product(monkeypatch, tmp_path):
+        def denied(*args, **kwargs):
+            pytest.fail("unexpected socket connection")
+    
+        monkeypatch.setattr(socket.socket, "connect", denied)
+        monkeypatch.setattr(socket.socket, "connect_ex", denied)
+        monkeypatch.setattr(socket, "create_connection", denied)
+        from fastapi import FastAPI
+        from fastapi.testclient import TestClient
+    
+        from antigravity_k.api import dependencies, project_binding
+        from antigravity_k.api.routes import chat
+        from antigravity_k.config import config
+        from antigravity_k.engine.audit_logger import AuditLogger
+        from antigravity_k.engine.model_manager import ModelManager
+        from antigravity_k.engine.model_registry import ModelRegistry
+        from antigravity_k.engine.project_registry import ProjectRegistry
+        from antigravity_k.engine.protocol_translator import ProtocolTranslator
+        from antigravity_k.engine.provider_adapters import inference_providers
+        from antigravity_k.engine.session_manager import SessionManager
+        from antigravity_k.engine.usage_tracker import UsageTracker
+        from antigravity_k.engine.user_model import global_gbrain
+    
+        monkeypatch.setattr(config.paths, "project_root", tmp_path)
+        registry = ProjectRegistry(storage_path=tmp_path / "projects.json")
+        project = registry.add_project("structured-output", str(tmp_path))
+        monkeypatch.setattr(project_binding, "get_project_registry", lambda: registry)
+        sessions = SessionManager(base_dir=str(tmp_path / "sessions"))
+        monkeypatch.setattr(dependencies, "get_session_manager", lambda: sessions)
+        monkeypatch.setattr(chat, "get_audit_logger", lambda: AuditLogger(log_dir=tmp_path / "audit"))
+        monkeypatch.setattr(global_gbrain, "add_node", lambda **kwargs: None)
+        manager = ModelManager(ModelRegistry(), tracker=UsageTracker(db_path=None))
+        monkeypatch.setattr(ModelManager, "_load_mlx_model", lambda *args: (None, None))
+        calls = []
+        generations = []
+        content = ['{"red_circles":2,"blue_squares":1}']
+        generate = manager.generate
+    
+        def record_generate(*args, **kwargs):
+            generations.append(kwargs)
+            return generate(*args, **kwargs)
+    
+        monkeypatch.setattr(manager, "generate", record_generate)
+    
+        def terminal(request, **kwargs):
+            calls.append(json.loads(request.data))
+            return io.BytesIO(json.dumps({"message": {"content": content[0]}, "done": True}).encode())
+    
+        monkeypatch.setattr(inference_providers, "safe_urlopen", terminal)
+        app = FastAPI()
+        app.include_router(chat.router)
+        app.dependency_overrides[chat.get_model_manager] = lambda: manager
+        app.dependency_overrides[chat.get_translator] = ProtocolTranslator
+        body = {"model": "qwen3.8", "project_id": project.id, "messages": [{"role": "user", "content": "Count the shapes and return JSON."}]}
+&gt;       with TestClient(app) as client:
+             ^^^^^^^^^^^^^^^
+
+tests/test_chat_structured_output_contract.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.13/site-packages/starlette/testclient.py:709: in __exit__
+    self.exit_stack.close()
+/Users/mr.k/miniforge3/lib/python3.13/contextlib.py:627: in close
+    self.__exit__(None, None, None)
+/Users/mr.k/miniforge3/lib/python3.13/contextlib.py:619: in __exit__
+    raise exc
+/Users/mr.k/miniforge3/lib/python3.13/contextlib.py:604: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/contextlib.py:482: in _exit_wrapper
+    callback(*args, **kwds)
+.venv/lib/python3.13/site-packages/starlette/testclient.py:702: in wait_shutdown
+    portal.call(self.wait_shutdown)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:334: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:376: in start_task_soon
+    self._check_running()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;anyio.from_thread.BlockingPortal object at 0x15f66b4d0&gt;
+
+    def _check_running(self) -&gt; None:
+        if self._event_loop_thread_id is None:
+&gt;           raise RuntimeError("This portal is not running")
+E           RuntimeError: This portal is not running
+
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:214: RuntimeError</error></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_invalid_output_is_not_success[```json\n{&quot;red_circles&quot;:2,&quot;blue_squares&quot;:1}\n```]" time="0.020"><failure message="AssertionError: {&quot;id&quot;:&quot;chatcmpl-f7f7ba531af0&quot;,&quot;object&quot;:&quot;chat.completion&quot;,&quot;created&quot;:1791944388,&quot;model&quot;:&quot;qwen3.8&quot;,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;message&quot;:{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:&quot;```json\n{\&quot;red_circles\&quot;:2,\&quot;blue_squares\&quot;:1}\n```&quot;},&quot;finish_reason&quot;:&quot;stop&quot;}],&quot;usage&quot;:{&quot;prompt_tokens&quot;:13,&quot;completion_tokens&quot;:12,&quot;total_tokens&quot;:25}}&#10;assert 200 == 502&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x169f3ce20&gt;, {'model': 'qwen3.8', 'project_id': 'proj_cc8c4974', 'message...arget': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['```json\n{"red_circles":2,"blue_squares":1}\n```'])
+raw = '```json\n{"red_circles":2,"blue_squares":1}\n```'
+
+    @pytest.mark.parametrize("raw", ['```json\n{"red_circles":2,"blue_squares":1}\n```', 'invalid', '{"red_circles":true,"blue_squares":1}', '{"red_circles":2,"blue_squares":1,"extra":0}', '{"red_circles":NaN,"blue_squares":1}'])
+    def test_invalid_output_is_not_success(product, raw):
+        client, body, calls, generations, content = product
+        content[0] = raw
+        response = client.post("/v1/chat/completions", json={**body, "response_format": ENVELOPE})
+&gt;       assert response.status_code == 502, response.text
+E       AssertionError: {"id":"chatcmpl-f7f7ba531af0","object":"chat.completion","created":1791944388,"model":"qwen3.8","choices":[{"index":0,"message":{"role":"assistant","content":"```json\n{\"red_circles\":2,\"blue_squares\":1}\n```"},"finish_reason":"stop"}],"usage":{"prompt_tokens":13,"completion_tokens":12,"total_tokens":25}}
+E       assert 200 == 502
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:109: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_invalid_output_is_not_success[invalid]" time="0.019"><failure message="AssertionError: {&quot;id&quot;:&quot;chatcmpl-929433dc6f30&quot;,&quot;object&quot;:&quot;chat.completion&quot;,&quot;created&quot;:1791944388,&quot;model&quot;:&quot;qwen3.8&quot;,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;message&quot;:{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:&quot;invalid&quot;},&quot;finish_reason&quot;:&quot;stop&quot;}],&quot;usage&quot;:{&quot;prompt_tokens&quot;:13,&quot;completion_tokens&quot;:2,&quot;total_tokens&quot;:15}}&#10;assert 200 == 502&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x169f3d370&gt;, {'model': 'qwen3.8', 'project_id': 'proj_b8d36817', 'message...shapes and return JSON.\nAssistant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['invalid'])
+raw = 'invalid'
+
+    @pytest.mark.parametrize("raw", ['```json\n{"red_circles":2,"blue_squares":1}\n```', 'invalid', '{"red_circles":true,"blue_squares":1}', '{"red_circles":2,"blue_squares":1,"extra":0}', '{"red_circles":NaN,"blue_squares":1}'])
+    def test_invalid_output_is_not_success(product, raw):
+        client, body, calls, generations, content = product
+        content[0] = raw
+        response = client.post("/v1/chat/completions", json={**body, "response_format": ENVELOPE})
+&gt;       assert response.status_code == 502, response.text
+E       AssertionError: {"id":"chatcmpl-929433dc6f30","object":"chat.completion","created":1791944388,"model":"qwen3.8","choices":[{"index":0,"message":{"role":"assistant","content":"invalid"},"finish_reason":"stop"}],"usage":{"prompt_tokens":13,"completion_tokens":2,"total_tokens":15}}
+E       assert 200 == 502
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:109: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_invalid_output_is_not_success[{&quot;red_circles&quot;:true,&quot;blue_squares&quot;:1}]" time="0.020"><failure message="AssertionError: {&quot;id&quot;:&quot;chatcmpl-9950256ecd44&quot;,&quot;object&quot;:&quot;chat.completion&quot;,&quot;created&quot;:1791944388,&quot;model&quot;:&quot;qwen3.8&quot;,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;message&quot;:{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:&quot;{\&quot;red_circles\&quot;:true,\&quot;blue_squares\&quot;:1}&quot;},&quot;finish_reason&quot;:&quot;stop&quot;}],&quot;usage&quot;:{&quot;prompt_tokens&quot;:13,&quot;completion_tokens&quot;:9,&quot;total_tokens&quot;:22}}&#10;assert 200 == 502&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x169f3d8c0&gt;, {'model': 'qwen3.8', 'project_id': 'proj_555e0f1b', 'message...tant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":true,"blue_squares":1}'])
+raw = '{"red_circles":true,"blue_squares":1}'
+
+    @pytest.mark.parametrize("raw", ['```json\n{"red_circles":2,"blue_squares":1}\n```', 'invalid', '{"red_circles":true,"blue_squares":1}', '{"red_circles":2,"blue_squares":1,"extra":0}', '{"red_circles":NaN,"blue_squares":1}'])
+    def test_invalid_output_is_not_success(product, raw):
+        client, body, calls, generations, content = product
+        content[0] = raw
+        response = client.post("/v1/chat/completions", json={**body, "response_format": ENVELOPE})
+&gt;       assert response.status_code == 502, response.text
+E       AssertionError: {"id":"chatcmpl-9950256ecd44","object":"chat.completion","created":1791944388,"model":"qwen3.8","choices":[{"index":0,"message":{"role":"assistant","content":"{\"red_circles\":true,\"blue_squares\":1}"},"finish_reason":"stop"}],"usage":{"prompt_tokens":13,"completion_tokens":9,"total_tokens":22}}
+E       assert 200 == 502
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:109: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_invalid_output_is_not_success[{&quot;red_circles&quot;:2,&quot;blue_squares&quot;:1,&quot;extra&quot;:0}]" time="0.019"><failure message="AssertionError: {&quot;id&quot;:&quot;chatcmpl-e76f1f9d6331&quot;,&quot;object&quot;:&quot;chat.completion&quot;,&quot;created&quot;:1791944388,&quot;model&quot;:&quot;qwen3.8&quot;,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;message&quot;:{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:&quot;{\&quot;red_circles\&quot;:2,\&quot;blue_squares\&quot;:1,\&quot;extra\&quot;:0}&quot;},&quot;finish_reason&quot;:&quot;stop&quot;}],&quot;usage&quot;:{&quot;prompt_tokens&quot;:13,&quot;completion_tokens&quot;:11,&quot;total_tokens&quot;:24}}&#10;assert 200 == 502&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x169f3de10&gt;, {'model': 'qwen3.8', 'project_id': 'proj_5a59bb4a', 'message..., 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":2,"blue_squares":1,"extra":0}'])
+raw = '{"red_circles":2,"blue_squares":1,"extra":0}'
+
+    @pytest.mark.parametrize("raw", ['```json\n{"red_circles":2,"blue_squares":1}\n```', 'invalid', '{"red_circles":true,"blue_squares":1}', '{"red_circles":2,"blue_squares":1,"extra":0}', '{"red_circles":NaN,"blue_squares":1}'])
+    def test_invalid_output_is_not_success(product, raw):
+        client, body, calls, generations, content = product
+        content[0] = raw
+        response = client.post("/v1/chat/completions", json={**body, "response_format": ENVELOPE})
+&gt;       assert response.status_code == 502, response.text
+E       AssertionError: {"id":"chatcmpl-e76f1f9d6331","object":"chat.completion","created":1791944388,"model":"qwen3.8","choices":[{"index":0,"message":{"role":"assistant","content":"{\"red_circles\":2,\"blue_squares\":1,\"extra\":0}"},"finish_reason":"stop"}],"usage":{"prompt_tokens":13,"completion_tokens":11,"total_tokens":24}}
+E       assert 200 == 502
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:109: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_invalid_output_is_not_success[{&quot;red_circles&quot;:NaN,&quot;blue_squares&quot;:1}]" time="0.019"><failure message="AssertionError: {&quot;id&quot;:&quot;chatcmpl-9420825fc60e&quot;,&quot;object&quot;:&quot;chat.completion&quot;,&quot;created&quot;:1791944388,&quot;model&quot;:&quot;qwen3.8&quot;,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;message&quot;:{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:&quot;{\&quot;red_circles\&quot;:NaN,\&quot;blue_squares\&quot;:1}&quot;},&quot;finish_reason&quot;:&quot;stop&quot;}],&quot;usage&quot;:{&quot;prompt_tokens&quot;:13,&quot;completion_tokens&quot;:9,&quot;total_tokens&quot;:22}}&#10;assert 200 == 502&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">product = (&lt;starlette.testclient.TestClient object at 0x169f3dae0&gt;, {'model': 'qwen3.8', 'project_id': 'proj_83b32e96', 'message...stant: ', 'target': 'qwen3.8', 'max_tokens': 4096, 'temperature': 0.7, ...}], ['{"red_circles":NaN,"blue_squares":1}'])
+raw = '{"red_circles":NaN,"blue_squares":1}'
+
+    @pytest.mark.parametrize("raw", ['```json\n{"red_circles":2,"blue_squares":1}\n```', 'invalid', '{"red_circles":true,"blue_squares":1}', '{"red_circles":2,"blue_squares":1,"extra":0}', '{"red_circles":NaN,"blue_squares":1}'])
+    def test_invalid_output_is_not_success(product, raw):
+        client, body, calls, generations, content = product
+        content[0] = raw
+        response = client.post("/v1/chat/completions", json={**body, "response_format": ENVELOPE})
+&gt;       assert response.status_code == 502, response.text
+E       AssertionError: {"id":"chatcmpl-9420825fc60e","object":"chat.completion","created":1791944388,"model":"qwen3.8","choices":[{"index":0,"message":{"role":"assistant","content":"{\"red_circles\":NaN,\"blue_squares\":1}"},"finish_reason":"stop"}],"usage":{"prompt_tokens":13,"completion_tokens":9,"total_tokens":22}}
+E       assert 200 == 502
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests/test_chat_structured_output_contract.py:109: AssertionError</failure></testcase><testcase classname="tests.test_chat_structured_output_contract" name="test_text_format_preserves_legacy_output[None]" time="0.019" /><testcase classname="tests.test_chat_structured_output_contract" name="test_text_format_preserves_legacy_output[format_value1]" time="0.019" /></testsuite></testsuites>

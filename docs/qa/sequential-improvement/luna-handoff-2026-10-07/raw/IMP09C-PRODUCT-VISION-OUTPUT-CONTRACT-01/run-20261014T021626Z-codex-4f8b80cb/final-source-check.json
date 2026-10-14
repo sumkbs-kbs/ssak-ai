@@ -1,0 +1,50 @@
+{
+  "source_sha256": {
+    "src/antigravity_k/api/routes/chat.py": "fd74feff99c87ceb1f573a859d5da2ac02cec8d3f11232e1fa43beebabb0901e",
+    "src/antigravity_k/engine/protocol_translator.py": "f8d42ce763c6e92b6746d67436c1f40b0f4110a86683f8206738042890da24f8",
+    "src/antigravity_k/engine/structured_output.py": "d3089deb48e3b78aacf45a4d517ad5c8357d5bc8680e9272f21883b513f162f1",
+    "tests/test_chat_structured_output_contract.py": "f246254cb315aa4fb4002ba71235b956e8b23e4d3587cfcde4da27f163c363f5",
+    "pyproject.toml": "4f29fa6110dcd62abdb14baf8e61d62695685d05c9914e97a6127064cd51244b",
+    "uv.lock": "2a910f6b4d021400683c1ad8e02cf1f7225f7524d9923208f933778f21d119a6"
+  },
+  "mismatches": [],
+  "junit": {
+    "focused": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "36",
+        "time": "1.849",
+        "timestamp": "2026-10-14T11:31:48.783853+09:00",
+        "hostname": "MrKui-MacBookPro.local"
+      }
+    ],
+    "adjacent": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "50",
+        "time": "1.436",
+        "timestamp": "2026-10-14T11:35:17.339701+09:00",
+        "hostname": "MrKui-MacBookPro.local"
+      }
+    ],
+    "clean_red": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "2",
+        "skipped": "0",
+        "tests": "2",
+        "time": "1.597",
+        "timestamp": "2026-10-14T11:25:39.068756+09:00",
+        "hostname": "MrKui-MacBookPro.local"
+      }
+    ]
+  },
+  "staged_diff_sha256": "84297d5d47940af4560187d6b9f531b3b1eed5a7fa6cd1dca20c4da48fddab6f"
+}

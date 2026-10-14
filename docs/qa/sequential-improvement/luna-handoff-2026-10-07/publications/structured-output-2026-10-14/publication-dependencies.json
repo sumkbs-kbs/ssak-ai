@@ -1,0 +1,40 @@
+{
+  "scope": "Historical review reports directly referenced by current status; no historical runtime archive recreation",
+  "files": [
+    {
+      "path": "docs/qa/sequential-improvement/luna-review-2026-10-08-stream-options/review.md",
+      "bytes": 6579,
+      "sha256": "0a81f160ec8ab0a0679665a6ac3fec48a7dddfe73d86cca73ea9cee532df87ee"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-review-2026-10-10-tool03-live/review.md",
+      "bytes": 4898,
+      "sha256": "d631b191a522421d2c62742b412750ab1fbc36257a8bc1c2f447043a7be6de8a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-review-2026-10-10-tool03-live/review.json",
+      "bytes": 3594,
+      "sha256": "f629479e543eaa7f6f6f0890e1e20e30a236a0806417b70a331f4ef4e5f3d626"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-review-2026-10-10-tool03-live/verification.json",
+      "bytes": 8328,
+      "sha256": "0483075d9c98bd74303cb34cdec5e9183c6a1634291aa5043d2696d8f49f9973"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-review-2026-10-10-messages-image-contract/review.md",
+      "bytes": 4453,
+      "sha256": "f7407098e5ad3ec8160841bfc2511af88acb3d40d71dd85f530a2af2ece6e866"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-review-2026-10-10-messages-image-contract/review.json",
+      "bytes": 4446,
+      "sha256": "4e98d13edbb28f9c388ee01377cc3139945eab034be158b3e54481cce8dbb99e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-review-2026-10-10-messages-image-contract/verification.json",
+      "bytes": 3613,
+      "sha256": "dbc31fc65817d4d296d3e77d80c1e28fbc9aef3f29185b8cf3cb8fc4aaa4b71f"
+    }
+  ]
+}

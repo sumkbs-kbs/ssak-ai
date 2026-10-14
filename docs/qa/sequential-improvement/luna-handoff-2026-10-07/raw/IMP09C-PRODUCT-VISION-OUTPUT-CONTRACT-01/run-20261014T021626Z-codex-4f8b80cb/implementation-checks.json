@@ -1,0 +1,85 @@
+{
+  "checks": [
+    {
+      "scenario": "focused",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_chat_structured_output_contract.py",
+        "-q",
+        "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/implementation-checks/junit.xml"
+      ],
+      "exit_code": 0,
+      "stdout": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/implementation-checks/focused.stdout",
+      "stderr": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/implementation-checks/focused.stderr"
+    },
+    {
+      "scenario": "lint",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "check",
+        "src/antigravity_k/api/routes/chat.py",
+        "src/antigravity_k/engine/protocol_translator.py",
+        "src/antigravity_k/engine/structured_output.py",
+        "tests/test_chat_structured_output_contract.py"
+      ],
+      "exit_code": 0,
+      "stdout": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/implementation-checks/lint.stdout",
+      "stderr": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/implementation-checks/lint.stderr"
+    },
+    {
+      "scenario": "format",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "format",
+        "--check",
+        "src/antigravity_k/api/routes/chat.py",
+        "src/antigravity_k/engine/protocol_translator.py",
+        "src/antigravity_k/engine/structured_output.py",
+        "tests/test_chat_structured_output_contract.py"
+      ],
+      "exit_code": 0,
+      "stdout": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/implementation-checks/format.stdout",
+      "stderr": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/implementation-checks/format.stderr"
+    },
+    {
+      "scenario": "types",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+        "--level",
+        "error",
+        "src/antigravity_k/api/routes/chat.py",
+        "src/antigravity_k/engine/protocol_translator.py",
+        "src/antigravity_k/engine/structured_output.py"
+      ],
+      "exit_code": 0,
+      "stdout": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/implementation-checks/types.stdout",
+      "stderr": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/implementation-checks/types.stderr"
+    },
+    {
+      "scenario": "compile",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-c",
+        "import pathlib,sys; [compile(pathlib.Path(p).read_bytes(),p,'exec') for p in sys.argv[1:]]",
+        "src/antigravity_k/api/routes/chat.py",
+        "src/antigravity_k/engine/protocol_translator.py",
+        "src/antigravity_k/engine/structured_output.py",
+        "tests/test_chat_structured_output_contract.py"
+      ],
+      "exit_code": 0,
+      "stdout": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/implementation-checks/compile.stdout",
+      "stderr": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-OUTPUT-CONTRACT-01/run-20261014T021626Z-codex-4f8b80cb/implementation-checks/compile.stderr"
+    }
+  ],
+  "source_sha256": {
+    "src/antigravity_k/api/routes/chat.py": "1950bf7849066eb2d2bd230827f195d716e1868fb18265a686add8c2ddf1d926",
+    "src/antigravity_k/engine/protocol_translator.py": "f8d42ce763c6e92b6746d67436c1f40b0f4110a86683f8206738042890da24f8",
+    "src/antigravity_k/engine/structured_output.py": "bfbe0fc83210727b6df9ff8594ba735eff7c1bf3ac6007f4e1c60065de91f4d6",
+    "tests/test_chat_structured_output_contract.py": "64a5474b55b76ceeb77b4a8e9d8a271fed9028a83e4c0e2bed43f348bc65e0de",
+    "pyproject.toml": "ad491958796175a381c07b2487c5c0f3b3d1d886704f98a5cee752bb269a3fff",
+    "uv.lock": "c85cf4fc1923a12bf71e35ad8e23997c122788c4b5bbc0eaebefb4e9dcd738a4"
+  },
+  "actual_network_or_inference": 0
+}

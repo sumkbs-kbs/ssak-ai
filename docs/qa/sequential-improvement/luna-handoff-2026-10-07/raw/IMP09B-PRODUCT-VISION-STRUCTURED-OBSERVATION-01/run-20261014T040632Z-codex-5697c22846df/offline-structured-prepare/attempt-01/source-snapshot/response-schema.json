@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "red_circles": {
+      "type": "integer"
+    },
+    "blue_squares": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "red_circles",
+    "blue_squares"
+  ],
+  "additionalProperties": false
+}

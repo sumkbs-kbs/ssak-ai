@@ -1,0 +1,76 @@
+{
+  "checks": [
+    {
+      "name": "pytest",
+      "command": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-o",
+        "testpaths=",
+        "test_acceptance_metadata_contract.py",
+        "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01/run-20261014T043024Z-codex-86e22b4940/offline-checks/green/junit.xml",
+        "--basetemp=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01/run-20261014T043024Z-codex-86e22b4940/offline-checks/green/tmp"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "ruff",
+      "command": [
+        "/Users/mr.k/miniforge3/bin/ruff",
+        "check",
+        "run_harness.py",
+        "test_acceptance_metadata_contract.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "format",
+      "command": [
+        "/Users/mr.k/miniforge3/bin/ruff",
+        "format",
+        "--check",
+        "run_harness.py",
+        "test_acceptance_metadata_contract.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "types",
+      "command": [
+        "/Users/mr.k/miniforge3/bin/basedpyright",
+        "--level",
+        "error",
+        "run_harness.py",
+        "test_acceptance_metadata_contract.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "compile",
+      "command": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-c",
+        "from pathlib import Path; import sys; [compile(Path(p).read_bytes(),p,\"exec\") for p in sys.argv[1:]]",
+        "run_harness.py",
+        "test_acceptance_metadata_contract.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01/run-20261014T043024Z-codex-86e22b4940",
+  "environment": {
+    "PYTHONPATH": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "ACCEPTANCE_CAPTURE_ROOT": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-ACCEPTANCE-METADATA-CONTRACT-01/run-20261014T043024Z-codex-86e22b4940/offline-checks/green/captures"
+  },
+  "at": "2026-10-14T04:34:13.842235+00:00",
+  "source_sha256": {
+    "run_harness.py": "bb7634481545055b56e691c5fe96992e29d9a1787eef041d29e6d037a199d01b",
+    "test_acceptance_metadata_contract.py": "28e9c308a46ed3fd168024439300e7f15a062703178a5dea9457af934f3574aa"
+  }
+}

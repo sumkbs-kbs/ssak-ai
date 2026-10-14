@@ -1,0 +1,101 @@
+{
+  "nodeid": "tests/test_chat_structured_output_contract.py::test_explicit_model_survives_image_default_routing",
+  "wire": [
+    {
+      "model": "qwen3.8:explicit",
+      "stream": false,
+      "keep_alive": "30m",
+      "think": false,
+      "options": {
+        "num_ctx": 32768,
+        "num_predict": 4096,
+        "temperature": 0.7,
+        "min_p": 0.05,
+        "repeat_penalty": 1.3
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "/no_think\nAnswer directly. Do not output hidden reasoning, thinking traces, <think>, or <thought> blocks."
+        },
+        {
+          "role": "user",
+          "content": "",
+          "images": [
+            "iVBORw0KGgoAAAANSUhEUgAAAYAAAAEACAIAAAA1FTYwAAAFAUlEQVR4nO3dwU7cShBAUQbN///yvMWToggpyoIJt7r6nDWCcmNftz0SPF6v1wdA4TP5qQACBJTsgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMg8P47zePzlC16vH5pkB+v51tU616u4bp4Lf+dfvl6PrCdTPfffa359n8tLZD2Z53nRNvf/b3thhqwnUz2ve8K+KkPWk9mel77cW58h68kJPq/+aGHrRxrWk0MMCFBbgX0Nsp6cI30EG3Lxr3kcs56c5vP2q2XsPKfPP20eRooCNPPsnDnVuZPPnIrbAzT5vJw824kzT56NGwM0/4ycP+FZ086fkFsCdMq5aM4715MbP4YHbvWDATrrNjh/2vkTnjst2wJ04vk3eebJs22amQ0BOvfMmzn5zKl2T86/4R0QsDhAp9/0ps0/bZ7b5uet7ICArQHacbubcxRzJvmOHUfBO9gBASsDtOlGN+FYJszwLpuOhW+wAwIyAgTsC9C+PbY/dbppPZnBDgjICBCQESAgI0DAsgBtfb/oH/7tWE/GsAMCMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBCwL0Ov1sVJ1XNaTpeyAgIwAARkBAjICBOwL0L73pu0RWU82sgMCMgIErAzQpqeGCccyYYZ32XQsfIMdELA1QDtudHOOYs4k37HjKHgHOyBgcYBOv91Nm3/aPLfNz1vZAQG7A3TuTW/m5DOn2j05Z++ATjzzJs88ebZNM7PnEeys82/+tPMnPHdafop3QMAlATrlNmjOO9eT/Tug+efi/AnPmnb+hNz1CDb5jJw824kzT56Ne98BzTwvZ0517uQzp2KS7iX0tLNz2jynzz9tHkZ69ufo41HOsOlSsZ6cZsDH8P7UqfXkVgMC5B/+WU9ulT6ChY8Pax67/sR6coIxAfqxy2Z9en5nPZltWID+6WVzVXp+Zz2ZamSAvvTimyW6tjtfWE/mGRygPxXkrz1SHOvJIR4vlytw9cfwwJUECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQIAAAfexAwIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABH5X/ADMNzhPCSdocAAAAAElFTkSuQmCC"
+          ]
+        }
+      ],
+      "format": {
+        "type": "object",
+        "properties": {
+          "red_circles": {
+            "type": "integer"
+          },
+          "blue_squares": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "red_circles",
+          "blue_squares"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ],
+  "manager_calls": 1,
+  "provider_calls": 1,
+  "metadata_calls": [
+    {
+      "name": "qwen3.8:explicit"
+    }
+  ],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 200,
+      "body": "{\"id\":\"chatcmpl-485bfb452a49\",\"object\":\"chat.completion\",\"created\":1791953151,\"model\":\"qwen3.8:explicit\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"red_circles\\\":2,\\\"blue_squares\\\":1}\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":5,\"completion_tokens\":9,\"total_tokens\":14}}",
+      "request": {
+        "model": "qwen3.8:explicit",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "image_url",
+                "image_url": {
+                  "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYAAAAEACAIAAAA1FTYwAAAFAUlEQVR4nO3dwU7cShBAUQbN///yvMWToggpyoIJt7r6nDWCcmNftz0SPF6v1wdA4TP5qQACBJTsgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMg8P47zePzlC16vH5pkB+v51tU616u4bp4Lf+dfvl6PrCdTPfffa359n8tLZD2Z53nRNvf/b3thhqwnUz2ve8K+KkPWk9mel77cW58h68kJPq/+aGHrRxrWk0MMCFBbgX0Nsp6cI30EG3Lxr3kcs56c5vP2q2XsPKfPP20eRooCNPPsnDnVuZPPnIrbAzT5vJw824kzT56NGwM0/4ycP+FZ086fkFsCdMq5aM4715MbP4YHbvWDATrrNjh/2vkTnjst2wJ04vk3eebJs22amQ0BOvfMmzn5zKl2T86/4R0QsDhAp9/0ps0/bZ7b5uet7ICArQHacbubcxRzJvmOHUfBO9gBASsDtOlGN+FYJszwLpuOhW+wAwIyAgTsC9C+PbY/dbppPZnBDgjICBCQESAgI0DAsgBtfb/oH/7tWE/GsAMCMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBCwL0Ov1sVJ1XNaTpeyAgIwAARkBAjICBOwL0L73pu0RWU82sgMCMgIErAzQpqeGCccyYYZ32XQsfIMdELA1QDtudHOOYs4k37HjKHgHOyBgcYBOv91Nm3/aPLfNz1vZAQG7A3TuTW/m5DOn2j05Z++ATjzzJs88ebZNM7PnEeys82/+tPMnPHdafop3QMAlATrlNmjOO9eT/Tug+efi/AnPmnb+hNz1CDb5jJw824kzT56Ne98BzTwvZ0517uQzp2KS7iX0tLNz2jynzz9tHkZ69ufo41HOsOlSsZ6cZsDH8P7UqfXkVgMC5B/+WU9ulT6ChY8Pax67/sR6coIxAfqxy2Z9en5nPZltWID+6WVzVXp+Zz2ZamSAvvTimyW6tjtfWE/mGRygPxXkrz1SHOvJIR4vlytw9cfwwJUECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQIAAAfexAwIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABGQECMgIEZAQIyAgQkBEgICNAQEaAgIwAARkBAjICBGQECMgIEJARICAjQEBGgICMAAEZAQIyAgRkBAjICBCQESAgI0BARoCAjAABH5X/ADMNzhPCSdocAAAAAElFTkSuQmCC"
+                }
+              }
+            ]
+          }
+        ],
+        "response_format": {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "shapes",
+            "strict": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "red_circles": {
+                  "type": "integer"
+                },
+                "blue_squares": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "red_circles",
+                "blue_squares"
+              ],
+              "additionalProperties": false
+            }
+          }
+        }
+      }
+    }
+  ]
+}
