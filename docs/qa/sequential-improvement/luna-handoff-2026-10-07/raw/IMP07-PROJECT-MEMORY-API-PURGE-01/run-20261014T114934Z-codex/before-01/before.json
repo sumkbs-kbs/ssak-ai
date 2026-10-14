@@ -1,0 +1,121 @@
+{
+  "a_graph": [
+    {
+      "id": "A-node",
+      "owner": "A"
+    },
+    {
+      "id": "A-peer",
+      "owner": "A"
+    }
+  ],
+  "b_graph": [
+    {
+      "id": "B-node",
+      "owner": "B"
+    },
+    {
+      "id": "B-peer",
+      "owner": "B"
+    }
+  ],
+  "a_vectors": {
+    "ids": [
+      "A-row-1",
+      "A-row-2"
+    ],
+    "documents": [
+      "A one",
+      "A two"
+    ],
+    "metadatas": [
+      {
+        "owner": "A",
+        "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/before-01/projects/A/one.md"
+      },
+      {
+        "owner": "A",
+        "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/before-01/projects/A/two.md"
+      }
+    ],
+    "embeddings": [
+      [
+        1.0,
+        0.0,
+        1.0
+      ],
+      [
+        0.0,
+        1.0,
+        1.0
+      ]
+    ]
+  },
+  "b_vectors": {
+    "ids": [
+      "B-row-1",
+      "B-row-2"
+    ],
+    "documents": [
+      "B one",
+      "B two"
+    ],
+    "metadatas": [
+      {
+        "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/before-01/projects/B/one.md",
+        "owner": "B"
+      },
+      {
+        "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/before-01/projects/B/two.md",
+        "owner": "B"
+      }
+    ],
+    "embeddings": [
+      [
+        1.0,
+        0.0,
+        1.0
+      ],
+      [
+        0.0,
+        1.0,
+        1.0
+      ]
+    ]
+  },
+  "b_graph_vectors": {
+    "ids": [
+      "B-graph-vector"
+    ],
+    "documents": [
+      "B native graph projection"
+    ],
+    "metadatas": [
+      {
+        "owner": "B"
+      }
+    ],
+    "embeddings": [
+      [
+        1.0,
+        2.0,
+        3.0
+      ]
+    ]
+  },
+  "b_files": {
+    ".antigravity/gbrain/chroma/chroma.sqlite3": "bd0f6bdacfd35da064c3d9ea00d5745f444d38c4f8bc2cdcba1bf63b48420968",
+    ".antigravity/gbrain/chroma/db7a0227-e88c-46cf-878e-87f6fe4b807f/data_level0.bin": "a6b5bd491f247f64222e96c0d04c0311816393c536e477006030691a52e04326",
+    ".antigravity/gbrain/chroma/db7a0227-e88c-46cf-878e-87f6fe4b807f/header.bin": "d8e58061428a9211ad4ca81d0977d60083adf89c4e6dafc735f09b6a3b2154ef",
+    ".antigravity/gbrain/chroma/db7a0227-e88c-46cf-878e-87f6fe4b807f/length.bin": "7a12e561363385e9dfeeab326368731c030ed4b374e7f5897ac819159d2884c5",
+    ".antigravity/gbrain/chroma/db7a0227-e88c-46cf-878e-87f6fe4b807f/link_lists.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".antigravity/gbrain/knowledge_graph.graphml": "4be8fc4dba3c13f75834ca41ea6d2b5d0c7230f2bd91a83b11bebacb2ab68ca8",
+    ".antigravity/rag_vectors/672da2d5-90b7-4b39-8674-dfff06c8c70e/data_level0.bin": "336872ed274acd9d5fc2a36dbc6870a2aa4c8826db4eb1f756c7dc4083a36993",
+    ".antigravity/rag_vectors/672da2d5-90b7-4b39-8674-dfff06c8c70e/header.bin": "d8e58061428a9211ad4ca81d0977d60083adf89c4e6dafc735f09b6a3b2154ef",
+    ".antigravity/rag_vectors/672da2d5-90b7-4b39-8674-dfff06c8c70e/length.bin": "7a12e561363385e9dfeeab326368731c030ed4b374e7f5897ac819159d2884c5",
+    ".antigravity/rag_vectors/672da2d5-90b7-4b39-8674-dfff06c8c70e/link_lists.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".antigravity/rag_vectors/chroma.sqlite3": "6cf9cd5202e1c8a0d9ba7ec28614885f4750d2195b57d37b5974d236b11b13cc"
+  },
+  "global_graph_sha": "ee10139326899ba2d3758e9797adf1aa7bccbf5d54e87b51fadc242cf2e99ebb",
+  "outside_sha": "07a61bf1bdba1f8061b97415c9410e3f722a545e9dd3b7a1c56a4332529049ee"
+}

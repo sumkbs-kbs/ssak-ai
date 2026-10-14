@@ -1,0 +1,8 @@
+{
+  "independent_src_tests_files": 1250,
+  "changed_independent_files": [],
+  "root_inverse_to_full_preimage": true,
+  "test_byte_identical": true,
+  "preserved_staged_sha256": "84297d5d47940af4560187d6b9f531b3b1eed5a7fa6cd1dca20c4da48fddab6f",
+  "root_adaptation": "Admin native operations use the pre-existing CHROMA_LIFECYCLE_LOCK; no legacy locks or constructor/query/close code replaced."
+}

@@ -1,0 +1,65 @@
+{
+  "request_identity": [
+    [
+      "proj_59993fea",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/after-01/projects/A"
+    ]
+  ],
+  "purge_coroutine_resume_events": [
+    {
+      "line": 422,
+      "lasti": 4
+    },
+    {
+      "line": 424,
+      "lasti": 46
+    },
+    {
+      "line": 424,
+      "lasti": 46
+    },
+    {
+      "line": 424,
+      "lasti": 46
+    }
+  ],
+  "asgi_requests": [
+    {
+      "method": "DELETE",
+      "path": "/api/memory",
+      "authorized": false,
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/memory",
+      "authorized": true,
+      "status": 200,
+      "body_sha256": "20c6b18bcdaa9dba3636d5c3248202dda1451df0551f0988b410f4f506a6cc98"
+    }
+  ],
+  "model_quality": "NOT_EVALUATED",
+  "fixture_vectors": "precomputed 3D; not neural embeddings",
+  "project_a": {
+    "id": "proj_59993fea",
+    "root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/after-01/projects/A"
+  },
+  "project_b": {
+    "id": "proj_5e158076",
+    "root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/after-01/projects/B"
+  },
+  "configured_default_root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/after-01/project_root",
+  "purge_status": 200,
+  "a_residual_graph_nodes": 0,
+  "a_residual_graph_vectors": 0,
+  "a_residual_project_vectors": 0,
+  "b_graph_and_vectors_preserved": true,
+  "b_persisted_files_preserved": true,
+  "outside_and_global_graph_preserved": true,
+  "classification": "PASS_SCOPED_ASGI_AUTH_PROJECT_PURGE"
+}

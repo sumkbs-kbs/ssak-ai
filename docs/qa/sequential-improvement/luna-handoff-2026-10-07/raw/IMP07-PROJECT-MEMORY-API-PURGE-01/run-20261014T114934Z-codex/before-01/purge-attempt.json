@@ -1,0 +1,7 @@
+{
+  "method": "DELETE",
+  "path": "/api/memory",
+  "scope": "all",
+  "expected_active_project": "proj_d9733485",
+  "retry_budget": 0
+}

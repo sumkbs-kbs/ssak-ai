@@ -1,0 +1,13 @@
+{
+  "include": [
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/vector_store.py",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py"
+  ],
+  "extraPaths": [
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src"
+  ],
+  "venvPath": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "venv": ".venv",
+  "pythonVersion": "3.13"
+}

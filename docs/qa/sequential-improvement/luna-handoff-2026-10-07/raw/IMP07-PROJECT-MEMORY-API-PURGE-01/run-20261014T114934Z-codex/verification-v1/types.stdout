@@ -1,0 +1,12 @@
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py:448:51 - error: "clear_persisted_collection" is unknown import symbol (reportAttributeAccessIssue)
+/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py:67:25 - error: "clear_persisted_collection" is not a known attribute of module "antigravity_k.engine.vector_store" (reportAttributeAccessIssue)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py:77:25 - error: "clear_persisted_collection" is not a known attribute of module "antigravity_k.engine.vector_store" (reportAttributeAccessIssue)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py:84:25 - error: "clear_persisted_collection" is not a known attribute of module "antigravity_k.engine.vector_store" (reportAttributeAccessIssue)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py:91:25 - error: "clear_persisted_collection" is not a known attribute of module "antigravity_k.engine.vector_store" (reportAttributeAccessIssue)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py:102:22 - error: "clear_persisted_collection" is not a known attribute of module "antigravity_k.engine.vector_store" (reportAttributeAccessIssue)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py:116:22 - error: "clear_persisted_collection" is not a known attribute of module "antigravity_k.engine.vector_store" (reportAttributeAccessIssue)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py:123:22 - error: "clear_persisted_collection" is not a known attribute of module "antigravity_k.engine.vector_store" (reportAttributeAccessIssue)
+  /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py:134:22 - error: "clear_persisted_collection" is not a known attribute of module "antigravity_k.engine.vector_store" (reportAttributeAccessIssue)
+9 errors, 0 warnings, 0 notes

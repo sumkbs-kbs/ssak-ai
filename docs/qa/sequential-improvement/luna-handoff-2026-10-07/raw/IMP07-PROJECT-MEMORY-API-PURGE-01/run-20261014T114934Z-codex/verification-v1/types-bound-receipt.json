@@ -1,0 +1,9 @@
+{
+  "scope": "Exact clean candidate import root and Python 3.13",
+  "chunk_id": "c61c8e",
+  "wall_time_seconds": 0.630134167,
+  "exit_code": 0,
+  "original_token_count": 8,
+  "output": "0 errors, 0 warnings, 0 notes\n",
+  "prior_failures": "Original 9 import-resolution errors retained in types.stdout. Intermediate config inferred system Python 3.9 (25 errors); that original output is in tool transcript only. Source unchanged; final source config adds pythonVersion 3.13."
+}

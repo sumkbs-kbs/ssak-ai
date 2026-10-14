@@ -1,6 +1,6 @@
 {
   "current_snapshot": {
-    "as_of_utc": "2026-10-14T11:35:15Z",
+    "as_of_utc": "2026-10-14T12:09:21Z",
     "scope": "Listed IMP-09 scoped evidence and active priority queue only; other parent acceptance not re-audited",
     "authority": "This current_snapshot and STATUS.md current section take precedence for listed rows; original recorded_at/summary/tasks/subtasks below remain historical",
     "parent_status": {
@@ -198,6 +198,15 @@
         "independent_preparation_review": "APPROVED",
         "independent_actual_review": "NOT_RUN",
         "limits": "Freshv4 genuine4HTTP401/200/200/200, child25538exit0/reaped/groupempty, guards0/model0; source580/publicmanifest87verified. v2NO_SUCCESS0HTTP and v3NO_SUCCESS4HTTP retained; cumulative8. No browser/liveNN/fullGA; optionalIDE/emptyconfiglimits"
+      },
+      {
+        "id": "IMP-07-PROJECT-MEMORY-API-PURGE-01",
+        "status": "PASS_SCOPED_AUTH_ACTIVE_PROJECT_PURGE_MAIN_REVIEW",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/handoff-ko.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/result.json",
+        "candidate_commit": "6f0bd05d84506ab9435bbc4866f2acf2cb49585b",
+        "independent_review": "NOT_RUN",
+        "limits": "Before real authenticated API500/Agraph0/project-vector2; after authAPI200/Aall0, Bgraph/vector/files andglobalGBrain preserved; freshprocess A0/B2-1-2. Clean9+adjacent47, finalfixture9, root56/static4. ASGI/lifespanOFF/precomputed3D; not concurrent session selection or NNquality; originalfailure retained."
       }
     ],
     "current_capability_boundary": {
@@ -216,7 +225,7 @@
       "native_startup_fixture_sigsegv": "BASELINE_AND_CANDIDATE_MINUS11_PRESERVED_ROUTING_FIXTURES_ISOLATED_NOT_PRODUCTION_FIX",
       "rag_keyword_provider_calls": "ZERO_FOR_PUBLIC_CHROMA_EXPORT_HYBRID_EXISTING1_OR2",
       "rag_semantic_quality": "PASS_SCOPED_CONTROLLED10_EXPLORATORY9_REAL27_EMBEDDING_REQUESTS",
-      "project_rag_management_api_purge": "NOT_RUN_B_GRAPH_AND_BOUND_VECTOR_COVERAGE_PENDING",
+      "project_rag_management_api_purge": "PASS_SCOPED_AUTH_ASGI_ACTIVE_A_NATIVE_GRAPH_VECTOR_PURGE_B_PRESERVED_FRESH_PROCESS_REOPEN",
       "startup_storage_roots": "EXPLICIT_GBRAIN_GLOBAL_MEMORY_CONTEXT_STORE_OVERRIDES_AND_CONFIGURED_AGENCY_ROOT"
     },
     "priority_queue": [
@@ -293,9 +302,9 @@
       {
         "priority": 5,
         "id": "MEMORY_SEARCH_QUALITY",
-        "status": "IN_PROGRESS_REAL_RETRIEVAL_PASSED_MANAGEMENT_PURGE_PENDING",
+        "status": "DONE_SCOPED_REAL_RETRIEVAL_AND_AUTH_ACTIVE_PROJECT_PURGE",
         "scope": "Publish approved strict/native embedding dependency closure, then explicit opt-in RAG embedding identity and source-bound retrieval quality",
-        "next_concrete_task": "ACTUAL_MANAGEMENT_API_A_PURGE_B_GRAPH_VECTOR_PRESERVATION_NN0",
+        "next_concrete_task": "PROCEED_PRIORITY6_BROWSER_FAILURE_SURFACES",
         "current_task": "IMP-07-PROJECT-MEMORY-API-PURGE-01",
         "completed_subtasks": [
           {
@@ -319,6 +328,11 @@
             "id": "IMP-07-RAG-REAL-RETRIEVAL-01",
             "status": "DONE_SCOPED_REAL_RETRIEVAL_REVIEWED",
             "candidate_commit": "7802aa1b3043d66a80f6f891c6cf3db039b393a0"
+          },
+          {
+            "id": "IMP-07-PROJECT-MEMORY-API-PURGE-01",
+            "status": "DONE_SCOPED_MAIN_REVIEW_PUSHED",
+            "feature_commit": "6f0bd05d84506ab9435bbc4866f2acf2cb49585b"
           }
         ]
       },
@@ -344,7 +358,8 @@
             "candidate_commit": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1"
           }
         ],
-        "next_concrete_task": "REAL_BROWSER_LOGIN_TYPED_SSE_FAILURE_AND_QUEUED_TASK_FAILED_TERMINAL_NN0"
+        "next_concrete_task": "REAL_BROWSER_LOGIN_TYPED_SSE_FAILURE_AND_QUEUED_TASK_FAILED_TERMINAL_NN0",
+        "current_task": "IMP-06-BROWSER-FAILURE-SURFACES-01"
       },
       {
         "priority": 7,
@@ -374,7 +389,7 @@
       "status_commit": "8ed827654cb608c55b22fe75b295abf3365114f4",
       "direct_transport_feature_commit": "8b22847730f5419307dda66f5ca6ab57fc1b023f",
       "direct_transport_qa_commit": "50437f0ccbb0dd512204ce38b640bd5c238eb97a",
-      "latest_remote_sha_verified": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1",
+      "latest_remote_sha_verified": "6f0bd05d84506ab9435bbc4866f2acf2cb49585b",
       "native_stream_feature_commit": "97f898661195623ba87eb826e94b03538aecb38f",
       "native_stream_qa_commit": "d2aed8c1f7237f08f7b497e6760b792754c61b1e",
       "compatible_transport_feature_commit": "bad768d9bf07a805446edac98861d0a2f596b124",
@@ -395,9 +410,11 @@
       "rag_keyword_qa_commit": "7802aa1b3043d66a80f6f891c6cf3db039b393a0",
       "startup_storage_feature_commit": "7482ebb8b76c7c686e729e68c48f7258e2cc7e66",
       "lifespan_agency_feature_commit": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1",
-      "current_followup_qa": "VERIFIED_LOCAL_AWAITING_OWNED_EVIDENCE_PUBLICATION"
+      "current_followup_qa": "SEARCH_STARTUP_PUBLISHED_04BA8592_PURGE_VERIFIED_LOCAL_PUBLICATION_PENDING",
+      "search_startup_qa_commit": "04ba85924fd79bde9d92052b86b2925506e15f03",
+      "project_memory_purge_feature_commit": "6f0bd05d84506ab9435bbc4866f2acf2cb49585b"
     },
-    "next_task": "IMP-07-PROJECT-MEMORY-API-PURGE-01",
+    "next_task": "IMP-06-BROWSER-FAILURE-SURFACES-01",
     "do_not_repeat": "Use saved successful receipts unless source, environment or a new failure hypothesis changes; do not replay old inference or reconstruct lost ledgers"
   },
   "recorded_at": "2026-10-07T13:16:06.378463+00:00",

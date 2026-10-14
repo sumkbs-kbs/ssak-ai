@@ -1,0 +1,19 @@
+{
+  "classification": "PASS_SCOPED_FRESH_PROCESS_REOPEN",
+  "counts": {
+    "a": {
+      "graph_nodes": 0,
+      "graph_vectors": 0,
+      "project_vectors": 0
+    },
+    "b": {
+      "graph_nodes": 2,
+      "graph_vectors": 1,
+      "project_vectors": 2
+    }
+  },
+  "b_logical_projection_equal": true,
+  "product_requests": 0,
+  "model_calls": 0,
+  "guard_violations": []
+}

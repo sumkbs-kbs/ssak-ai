@@ -1,0 +1,10 @@
+{
+  "violations": [],
+  "binds": 0,
+  "model_calls": 0,
+  "scheduled_ticks": 0,
+  "subprocesses": [
+    "file",
+    "{\"argv\": [\"file\", \"-b\", \"/Users/mr.k/miniforge3/bin/python3.13\"], \"file_sha256\": \"8014815e1028410f48966f1880f99c842a5678cf2fcaa010e8d7e9e498f651d0\", \"platform_sha256\": \"882e24bdc7bff673962c502d8904cf26d574cf7b1db1e113ecfbcb073aaaeec0\"}"
+  ]
+}

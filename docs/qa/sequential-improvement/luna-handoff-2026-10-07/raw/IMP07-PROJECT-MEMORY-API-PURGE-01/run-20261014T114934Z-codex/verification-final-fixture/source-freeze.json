@@ -1,0 +1,5 @@
+{
+  "src/antigravity_k/engine/vector_store.py": "e15643641b1fc386c3a163c743bdc7addd47f3fb4b32f292d79515dbeaf72925",
+  "src/antigravity_k/api/dependencies.py": "c2829217f1863125e0aa2c0ee9f903f76c11480b04e8cc058044ac0b29a19527",
+  "tests/test_project_vector_purge_contract.py": "c2bb94d154abece23845a130a1783581c36357c21478bcb1ce35ca68ce9b7761"
+}

@@ -1,0 +1,10 @@
+{
+  "classification": "EXIT_OBSERVED",
+  "pid": 40553,
+  "exit_code": 0,
+  "reaped": true,
+  "forced": false,
+  "cleanup_errors": [],
+  "group_empty": true,
+  "elapsed_sec": 15.714511916041374
+}

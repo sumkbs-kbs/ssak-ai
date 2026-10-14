@@ -1,0 +1,97 @@
+[
+  {
+    "name": "lint",
+    "argv": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+      "check",
+      "--config",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/pyproject.toml",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/vector_store.py",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py"
+    ],
+    "exit_code": 0,
+    "source_hashes": {
+      "src/antigravity_k/engine/vector_store.py": "e15643641b1fc386c3a163c743bdc7addd47f3fb4b32f292d79515dbeaf72925",
+      "src/antigravity_k/api/dependencies.py": "c2829217f1863125e0aa2c0ee9f903f76c11480b04e8cc058044ac0b29a19527",
+      "tests/test_project_vector_purge_contract.py": "f146f5c53934c8311aafeffc632b44b9812f3a1d68562f0ef1d5ed521c719f99"
+    }
+  },
+  {
+    "name": "format",
+    "argv": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+      "format",
+      "--check",
+      "--config",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/pyproject.toml",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/vector_store.py",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py"
+    ],
+    "exit_code": 0,
+    "source_hashes": {
+      "src/antigravity_k/engine/vector_store.py": "e15643641b1fc386c3a163c743bdc7addd47f3fb4b32f292d79515dbeaf72925",
+      "src/antigravity_k/api/dependencies.py": "c2829217f1863125e0aa2c0ee9f903f76c11480b04e8cc058044ac0b29a19527",
+      "tests/test_project_vector_purge_contract.py": "f146f5c53934c8311aafeffc632b44b9812f3a1d68562f0ef1d5ed521c719f99"
+    }
+  },
+  {
+    "name": "types",
+    "argv": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+      "--level",
+      "error",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/vector_store.py",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py"
+    ],
+    "exit_code": 1,
+    "source_hashes": {
+      "src/antigravity_k/engine/vector_store.py": "e15643641b1fc386c3a163c743bdc7addd47f3fb4b32f292d79515dbeaf72925",
+      "src/antigravity_k/api/dependencies.py": "c2829217f1863125e0aa2c0ee9f903f76c11480b04e8cc058044ac0b29a19527",
+      "tests/test_project_vector_purge_contract.py": "f146f5c53934c8311aafeffc632b44b9812f3a1d68562f0ef1d5ed521c719f99"
+    }
+  },
+  {
+    "name": "compile",
+    "argv": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+      "-B",
+      "-c",
+      "from pathlib import Path;import sys;[compile(Path(p).read_bytes(),p,'exec') for p in sys.argv[1:]]",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/vector_store.py",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py"
+    ],
+    "exit_code": 0,
+    "source_hashes": {
+      "src/antigravity_k/engine/vector_store.py": "e15643641b1fc386c3a163c743bdc7addd47f3fb4b32f292d79515dbeaf72925",
+      "src/antigravity_k/api/dependencies.py": "c2829217f1863125e0aa2c0ee9f903f76c11480b04e8cc058044ac0b29a19527",
+      "tests/test_project_vector_purge_contract.py": "f146f5c53934c8311aafeffc632b44b9812f3a1d68562f0ef1d5ed521c719f99"
+    }
+  },
+  {
+    "name": "pytest",
+    "argv": [
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+      "-B",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/pytest_guard.py",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/verification-v1",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py",
+      "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_rag_embedding_identity_contract.py",
+      "-q",
+      "--basetemp=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/verification-v1/tmp/pytest",
+      "-o",
+      "cache_dir=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/verification-v1/cache/pytest",
+      "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/verification-v1/junit.xml"
+    ],
+    "exit_code": 0,
+    "source_hashes": {
+      "src/antigravity_k/engine/vector_store.py": "e15643641b1fc386c3a163c743bdc7addd47f3fb4b32f292d79515dbeaf72925",
+      "src/antigravity_k/api/dependencies.py": "c2829217f1863125e0aa2c0ee9f903f76c11480b04e8cc058044ac0b29a19527",
+      "tests/test_project_vector_purge_contract.py": "f146f5c53934c8311aafeffc632b44b9812f3a1d68562f0ef1d5ed521c719f99"
+    }
+  }
+]

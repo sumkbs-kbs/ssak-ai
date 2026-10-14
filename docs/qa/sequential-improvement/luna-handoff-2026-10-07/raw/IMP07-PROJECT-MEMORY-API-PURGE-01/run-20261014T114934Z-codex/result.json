@@ -1,0 +1,373 @@
+{
+  "classification": "PASS_SCOPED_AUTHENTICATED_ACTIVE_PROJECT_PURGE",
+  "candidate_commit": "6f0bd05d84506ab9435bbc4866f2acf2cb49585b",
+  "before": {
+    "request_identity": [
+      [
+        "proj_d9733485",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/before-01/projects/A"
+      ]
+    ],
+    "purge_coroutine_resume_events": [
+      {
+        "line": 422,
+        "lasti": 4
+      },
+      {
+        "line": 424,
+        "lasti": 46
+      },
+      {
+        "line": 424,
+        "lasti": 46
+      },
+      {
+        "line": 424,
+        "lasti": 46
+      }
+    ],
+    "asgi_requests": [
+      {
+        "method": "DELETE",
+        "path": "/api/memory",
+        "authorized": false,
+        "status": 401
+      },
+      {
+        "method": "POST",
+        "path": "/api/auth/login",
+        "status": 200
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/memory",
+        "authorized": true,
+        "status": 500,
+        "body_sha256": "209f0e2227cf59038ed7f17a1c510320fdf6d99d6abb4349f0f54dc0918d80be"
+      }
+    ],
+    "model_quality": "NOT_EVALUATED",
+    "fixture_vectors": "precomputed 3D; not neural embeddings",
+    "project_a": {
+      "id": "proj_d9733485",
+      "root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/before-01/projects/A"
+    },
+    "project_b": {
+      "id": "proj_b0d7471a",
+      "root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/before-01/projects/B"
+    },
+    "configured_default_root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/before-01/project_root",
+    "purge_status": 500,
+    "a_residual_graph_nodes": 0,
+    "a_residual_graph_vectors": 0,
+    "a_residual_project_vectors": 2,
+    "b_graph_and_vectors_preserved": true,
+    "b_persisted_files_preserved": true,
+    "outside_and_global_graph_preserved": true,
+    "classification": "FAIL_OBSERVED_PROJECT_PURGE"
+  },
+  "after": {
+    "request_identity": [
+      [
+        "proj_59993fea",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/after-01/projects/A"
+      ]
+    ],
+    "purge_coroutine_resume_events": [
+      {
+        "line": 422,
+        "lasti": 4
+      },
+      {
+        "line": 424,
+        "lasti": 46
+      },
+      {
+        "line": 424,
+        "lasti": 46
+      },
+      {
+        "line": 424,
+        "lasti": 46
+      }
+    ],
+    "asgi_requests": [
+      {
+        "method": "DELETE",
+        "path": "/api/memory",
+        "authorized": false,
+        "status": 401
+      },
+      {
+        "method": "POST",
+        "path": "/api/auth/login",
+        "status": 200
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/memory",
+        "authorized": true,
+        "status": 200,
+        "body_sha256": "20c6b18bcdaa9dba3636d5c3248202dda1451df0551f0988b410f4f506a6cc98"
+      }
+    ],
+    "model_quality": "NOT_EVALUATED",
+    "fixture_vectors": "precomputed 3D; not neural embeddings",
+    "project_a": {
+      "id": "proj_59993fea",
+      "root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/after-01/projects/A"
+    },
+    "project_b": {
+      "id": "proj_5e158076",
+      "root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/after-01/projects/B"
+    },
+    "configured_default_root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/after-01/project_root",
+    "purge_status": 200,
+    "a_residual_graph_nodes": 0,
+    "a_residual_graph_vectors": 0,
+    "a_residual_project_vectors": 0,
+    "b_graph_and_vectors_preserved": true,
+    "b_persisted_files_preserved": true,
+    "outside_and_global_graph_preserved": true,
+    "classification": "PASS_SCOPED_ASGI_AUTH_PROJECT_PURGE"
+  },
+  "fresh_process_reopen": {
+    "classification": "PASS_SCOPED_FRESH_PROCESS_REOPEN",
+    "counts": {
+      "a": {
+        "graph_nodes": 0,
+        "graph_vectors": 0,
+        "project_vectors": 0
+      },
+      "b": {
+        "graph_nodes": 2,
+        "graph_vectors": 1,
+        "project_vectors": 2
+      }
+    },
+    "b_logical_projection_equal": true,
+    "product_requests": 0,
+    "model_calls": 0,
+    "guard_violations": []
+  },
+  "checks": {
+    "verification-v1": 56,
+    "verification-final-fixture": 9,
+    "verification-root": 56
+  },
+  "static_final_clean": [
+    {
+      "name": "lint",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "check",
+        "--config",
+        "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/pyproject.toml",
+        "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/vector_store.py",
+        "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py",
+        "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py"
+      ],
+      "exit_code": 0,
+      "source_hashes": {
+        "src/antigravity_k/engine/vector_store.py": "e15643641b1fc386c3a163c743bdc7addd47f3fb4b32f292d79515dbeaf72925",
+        "src/antigravity_k/api/dependencies.py": "c2829217f1863125e0aa2c0ee9f903f76c11480b04e8cc058044ac0b29a19527",
+        "tests/test_project_vector_purge_contract.py": "c2bb94d154abece23845a130a1783581c36357c21478bcb1ce35ca68ce9b7761"
+      }
+    },
+    {
+      "name": "format",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/pyproject.toml",
+        "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/vector_store.py",
+        "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py",
+        "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py"
+      ],
+      "exit_code": 0,
+      "source_hashes": {
+        "src/antigravity_k/engine/vector_store.py": "e15643641b1fc386c3a163c743bdc7addd47f3fb4b32f292d79515dbeaf72925",
+        "src/antigravity_k/api/dependencies.py": "c2829217f1863125e0aa2c0ee9f903f76c11480b04e8cc058044ac0b29a19527",
+        "tests/test_project_vector_purge_contract.py": "c2bb94d154abece23845a130a1783581c36357c21478bcb1ce35ca68ce9b7761"
+      }
+    },
+    {
+      "name": "types",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+        "--project",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/type-source-config.json",
+        "--level",
+        "error"
+      ],
+      "exit_code": 0,
+      "source_hashes": {
+        "src/antigravity_k/engine/vector_store.py": "e15643641b1fc386c3a163c743bdc7addd47f3fb4b32f292d79515dbeaf72925",
+        "src/antigravity_k/api/dependencies.py": "c2829217f1863125e0aa2c0ee9f903f76c11480b04e8cc058044ac0b29a19527",
+        "tests/test_project_vector_purge_contract.py": "c2bb94d154abece23845a130a1783581c36357c21478bcb1ce35ca68ce9b7761"
+      }
+    },
+    {
+      "name": "compile",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-B",
+        "-c",
+        "from pathlib import Path;import sys;[compile(Path(p).read_bytes(),p,'exec') for p in sys.argv[1:]]",
+        "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/vector_store.py",
+        "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py",
+        "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py"
+      ],
+      "exit_code": 0,
+      "source_hashes": {
+        "src/antigravity_k/engine/vector_store.py": "e15643641b1fc386c3a163c743bdc7addd47f3fb4b32f292d79515dbeaf72925",
+        "src/antigravity_k/api/dependencies.py": "c2829217f1863125e0aa2c0ee9f903f76c11480b04e8cc058044ac0b29a19527",
+        "tests/test_project_vector_purge_contract.py": "c2bb94d154abece23845a130a1783581c36357c21478bcb1ce35ca68ce9b7761"
+      }
+    },
+    {
+      "name": "pytest",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-B",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/pytest_guard.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/verification-final-fixture",
+        "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/tests/test_project_vector_purge_contract.py",
+        "-q",
+        "--basetemp=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/verification-final-fixture/tmp/pytest",
+        "-o",
+        "cache_dir=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/verification-final-fixture/cache/pytest",
+        "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/verification-final-fixture/junit.xml"
+      ],
+      "exit_code": 0,
+      "source_hashes": {
+        "src/antigravity_k/engine/vector_store.py": "e15643641b1fc386c3a163c743bdc7addd47f3fb4b32f292d79515dbeaf72925",
+        "src/antigravity_k/api/dependencies.py": "c2829217f1863125e0aa2c0ee9f903f76c11480b04e8cc058044ac0b29a19527",
+        "tests/test_project_vector_purge_contract.py": "c2bb94d154abece23845a130a1783581c36357c21478bcb1ce35ca68ce9b7761"
+      }
+    }
+  ],
+  "static_root": [
+    {
+      "name": "lint",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "check",
+        "--config",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/pyproject.toml",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/vector_store.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/dependencies.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_project_vector_purge_contract.py"
+      ],
+      "exit_code": 0,
+      "source_hashes": {
+        "src/antigravity_k/engine/vector_store.py": "c1643d57fe91df288b9bbb6c3f7dea7f8b669df850013ce9ab435c8d9de9fbdc",
+        "src/antigravity_k/api/dependencies.py": "b6028cfb7f6176c7564b83151cf08e29d93119d770231387880f6835941d78da",
+        "tests/test_project_vector_purge_contract.py": "c2bb94d154abece23845a130a1783581c36357c21478bcb1ce35ca68ce9b7761"
+      }
+    },
+    {
+      "name": "format",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/pyproject.toml",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/vector_store.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/dependencies.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_project_vector_purge_contract.py"
+      ],
+      "exit_code": 0,
+      "source_hashes": {
+        "src/antigravity_k/engine/vector_store.py": "c1643d57fe91df288b9bbb6c3f7dea7f8b669df850013ce9ab435c8d9de9fbdc",
+        "src/antigravity_k/api/dependencies.py": "b6028cfb7f6176c7564b83151cf08e29d93119d770231387880f6835941d78da",
+        "tests/test_project_vector_purge_contract.py": "c2bb94d154abece23845a130a1783581c36357c21478bcb1ce35ca68ce9b7761"
+      }
+    },
+    {
+      "name": "types",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+        "--project",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/type-root-config.json",
+        "--level",
+        "error"
+      ],
+      "exit_code": 0,
+      "source_hashes": {
+        "src/antigravity_k/engine/vector_store.py": "c1643d57fe91df288b9bbb6c3f7dea7f8b669df850013ce9ab435c8d9de9fbdc",
+        "src/antigravity_k/api/dependencies.py": "b6028cfb7f6176c7564b83151cf08e29d93119d770231387880f6835941d78da",
+        "tests/test_project_vector_purge_contract.py": "c2bb94d154abece23845a130a1783581c36357c21478bcb1ce35ca68ce9b7761"
+      }
+    },
+    {
+      "name": "compile",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-B",
+        "-c",
+        "from pathlib import Path;import sys;[compile(Path(p).read_bytes(),p,'exec') for p in sys.argv[1:]]",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/vector_store.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/dependencies.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_project_vector_purge_contract.py"
+      ],
+      "exit_code": 0,
+      "source_hashes": {
+        "src/antigravity_k/engine/vector_store.py": "c1643d57fe91df288b9bbb6c3f7dea7f8b669df850013ce9ab435c8d9de9fbdc",
+        "src/antigravity_k/api/dependencies.py": "b6028cfb7f6176c7564b83151cf08e29d93119d770231387880f6835941d78da",
+        "tests/test_project_vector_purge_contract.py": "c2bb94d154abece23845a130a1783581c36357c21478bcb1ce35ca68ce9b7761"
+      }
+    },
+    {
+      "name": "pytest",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-B",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/pytest_guard.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/verification-root",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_project_vector_purge_contract.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_project_rag_embedding_identity_contract.py",
+        "-q",
+        "--basetemp=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/verification-root/tmp/pytest",
+        "-o",
+        "cache_dir=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/verification-root/cache/pytest",
+        "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-PROJECT-MEMORY-API-PURGE-01/run-20261014T114934Z-codex/verification-root/junit.xml"
+      ],
+      "exit_code": 0,
+      "source_hashes": {
+        "src/antigravity_k/engine/vector_store.py": "c1643d57fe91df288b9bbb6c3f7dea7f8b669df850013ce9ab435c8d9de9fbdc",
+        "src/antigravity_k/api/dependencies.py": "b6028cfb7f6176c7564b83151cf08e29d93119d770231387880f6835941d78da",
+        "tests/test_project_vector_purge_contract.py": "c2bb94d154abece23845a130a1783581c36357c21478bcb1ce35ca68ce9b7761"
+      }
+    }
+  ],
+  "patch_reconstruction_byte_identical": true,
+  "root_preservation": {
+    "independent_src_tests_files": 1250,
+    "changed_independent_files": [],
+    "root_inverse_to_full_preimage": true,
+    "test_byte_identical": true,
+    "preserved_staged_sha256": "84297d5d47940af4560187d6b9f531b3b1eed5a7fa6cd1dca20c4da48fddab6f",
+    "root_adaptation": "Admin native operations use the pre-existing CHROMA_LIFECYCLE_LOCK; no legacy locks or constructor/query/close code replaced."
+  },
+  "product_surface": "actual ASGI app/auth/login/memory/runtime callbacks; lifespan OFF",
+  "total_asgi_requests": 6,
+  "authorized_purge_requests": 2,
+  "old_successful_model_requests_replayed": 0,
+  "actual_model_calls": 0,
+  "independent_review": "NOT_RUN_MAIN_SESSION_REVIEW_COMPLETE",
+  "overall_IMP09": "PARTIAL",
+  "historical_ledger": "NOT_RECOVERED",
+  "limits": [
+    "precomputed 3D fixtures prove deletion/isolation, not semantic quality",
+    "active registry selection, not concurrent per-session project selection",
+    "provider clears remain sequential, not a cross-provider atomic transaction",
+    "original 500 and partial clear preserved; no automatic retry",
+    "root preserves pre-existing lifecycle lock; actual ASGI observation targets published clean candidate"
+  ]
+}

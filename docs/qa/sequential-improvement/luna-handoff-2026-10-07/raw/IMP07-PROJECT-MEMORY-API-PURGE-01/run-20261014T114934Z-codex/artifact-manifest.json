@@ -1,0 +1,1070 @@
+{
+  "files": {
+    ".ruff_cache/.gitignore": {
+      "bytes": 35,
+      "sha256": "9e3a60f1e6ec4ae60215c11d54b171392745ec25e9dded433d5bd921363af316"
+    },
+    ".ruff_cache/0.15.14/12797780315176319480": {
+      "bytes": 228,
+      "sha256": "dfa494f05a57dbe8ec647c0d64ea9ff8fb3998da9e3f7ccc9fb3e2e7f22fdbaf"
+    },
+    ".ruff_cache/CACHEDIR.TAG": {
+      "bytes": 43,
+      "sha256": "5953156d7e0c564a427251316eaf26f8870e6483ae2197f916b630e4f93e31ae"
+    },
+    "acceptance.md": {
+      "bytes": 1149,
+      "sha256": "c76c309400ee0332d65aab25f985bb9c9b31b25287d582abf671ba6754c8b7e1"
+    },
+    "after-01/after.json": {
+      "bytes": 3188,
+      "sha256": "b4dd380901469507f557bc30f2b191414e0e0a9f904d70a52527fadddedf9d3c"
+    },
+    "after-01/before.json": {
+      "bytes": 3870,
+      "sha256": "9b3ca6469cea8472b7f79e59870adbb4860ac05956e2c48761f38db7083fb682"
+    },
+    "after-01/config.yaml": {
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "after-01/empty.env": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "after-01/guard.json": {
+      "bytes": 386,
+      "sha256": "54cfb519756413445f2fd657ca910987572cb004d87da9467909e61da6945d3c"
+    },
+    "after-01/observations.json": {
+      "bytes": 2053,
+      "sha256": "4605f59d0653d7590ef5201f226281c037d2a8e100437d068dae050c92100114"
+    },
+    "after-01/outside.txt": {
+      "bytes": 21,
+      "sha256": "07a61bf1bdba1f8061b97415c9410e3f722a545e9dd3b7a1c56a4332529049ee"
+    },
+    "after-01/purge-attempt.json": {
+      "bytes": 135,
+      "sha256": "1436490b76fa99d8493533eda61bfb13998f248cc07aafb9f3adecd318d18916"
+    },
+    "after-01/reopen-binding.json": {
+      "bytes": 71034,
+      "sha256": "cb2882207023fc07b91186e1eb328879d9c2da2a5ed20cecceed66b49ea85ee4"
+    },
+    "after-01/reopen-guard.json": {
+      "bytes": 57,
+      "sha256": "009e396b2bbf871121b24f7ca32fc302d6ee3575c7d2237472dda7101e8c16f3"
+    },
+    "after-01/reopen-receipt.json": {
+      "bytes": 61,
+      "sha256": "c79806004bc13385cb2ee03979bcdbb7ef334775d2933ebc72d95bbe5af71235"
+    },
+    "after-01/reopen-result.json": {
+      "bytes": 376,
+      "sha256": "1f093737ba76b8767404ee9a2b700a3b542df60fd4d520bc19ea5aed7856592b"
+    },
+    "after-01/reopen.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "after-01/reopen.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "after-01/response.bin": {
+      "bytes": 179,
+      "sha256": "20c6b18bcdaa9dba3636d5c3248202dda1451df0551f0988b410f4f506a6cc98"
+    },
+    "after-01/source-freeze.json": {
+      "bytes": 71387,
+      "sha256": "ad59bf6e0970dfa23a97447ddca724336ed915b0a6680088f566de85d902cef8"
+    },
+    "after-01/stderr.log": {
+      "bytes": 981,
+      "sha256": "439db8b9d5dbb780c527bf1f3f196fce50832d1bf8cf1c8d691fe1fb9db2e460"
+    },
+    "after-01/stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "after-01/supervisor-receipt.json": {
+      "bytes": 195,
+      "sha256": "060429b5e81117963b2cdbbdc6c465d170d51223181fb8697ec88a626f808586"
+    },
+    "before-01/after.json": {
+      "bytes": 3884,
+      "sha256": "e647e730ee2ff7c66e3d6a2c5c4df31b42d6f123bdfc0a32514f50975ead7376"
+    },
+    "before-01/before.json": {
+      "bytes": 3874,
+      "sha256": "5ca995875f1da786bc97aaa9c7aa14bd1559727365f5d1d1a923c5345b0ebd15"
+    },
+    "before-01/config.yaml": {
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "before-01/empty.env": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "before-01/guard.json": {
+      "bytes": 386,
+      "sha256": "54cfb519756413445f2fd657ca910987572cb004d87da9467909e61da6945d3c"
+    },
+    "before-01/observations.json": {
+      "bytes": 2049,
+      "sha256": "ea2b4270d9931ba6ac819de2f30cf84ecd6a78cf39a118675a4f95f60388c04c"
+    },
+    "before-01/outside.txt": {
+      "bytes": 21,
+      "sha256": "07a61bf1bdba1f8061b97415c9410e3f722a545e9dd3b7a1c56a4332529049ee"
+    },
+    "before-01/purge-attempt.json": {
+      "bytes": 135,
+      "sha256": "b5d7657a1133cca94f42f197836e37220eb7458e83fbdacfbee7b03821b9dd48"
+    },
+    "before-01/response.bin": {
+      "bytes": 163,
+      "sha256": "209f0e2227cf59038ed7f17a1c510320fdf6d99d6abb4349f0f54dc0918d80be"
+    },
+    "before-01/source-freeze.json": {
+      "bytes": 71385,
+      "sha256": "1f48517714725829bb71fde6151fc7d9f9f473ca564f16d00ce2ec6e4ee3436b"
+    },
+    "before-01/stderr.log": {
+      "bytes": 20339,
+      "sha256": "1df2c8382c54eb51c3615454c02c91d013763289a981a7386c92b8aa8915bf01"
+    },
+    "before-01/stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "before-01/supervisor-receipt.json": {
+      "bytes": 195,
+      "sha256": "702303b3f1cbabdb599f8014a2fcded7ad31ae4ffd8accb4cf3758900928041a"
+    },
+    "candidate-plan.json": {
+      "bytes": 70832,
+      "sha256": "88cddf86f06b83ff3d390940cec696e41c7452ff3728aa139c38fe61af13c53f"
+    },
+    "capture_root_before.py": {
+      "bytes": 1226,
+      "sha256": "8a07f170fafb92223cb697df49e9a6d00ef84980451c1760a2a35630e49a44e3"
+    },
+    "finish.py": {
+      "bytes": 5421,
+      "sha256": "c6bd3a4c496a450eeba57c59595c5be410cf5e483d0f81f6a049768060c26ccb"
+    },
+    "freeze_candidate.py": {
+      "bytes": 1011,
+      "sha256": "a7eb26c1559afae02f6917e97e4590a04405509b725f47124c4e42bc3ac557f9"
+    },
+    "handoff-ko.md": {
+      "bytes": 2280,
+      "sha256": "e51f5c0f92ed372002177354df939a474f5b55c0683a6bda4f193d66dfe6b1e4"
+    },
+    "integrate_owned.py": {
+      "bytes": 3420,
+      "sha256": "bdaf3c85c32531e0dd7f617711dbddb8bc53bc46a91a8134f94aab720d0cb070"
+    },
+    "integration-receipt.json": {
+      "bytes": 557,
+      "sha256": "bf63217b35703dddbea30a4d6e87af52dda4b4dd630fdcde8c08ecf23b167350"
+    },
+    "launch_reopen.py": {
+      "bytes": 1477,
+      "sha256": "1523e547ac69fe07b49c6001d9a1b2ed0bda992cc949cfb1e364641ddc275092"
+    },
+    "probe.py": {
+      "bytes": 9481,
+      "sha256": "ad076578979d8b304ceddee7e705c839ee96f5583b90d040a66d75c8cf480fba"
+    },
+    "pytest_guard.py": {
+      "bytes": 308,
+      "sha256": "689724eea757dc3e9affc7a7242b185638b34195f475c0d3d2837022ef95e091"
+    },
+    "reopen_persisted.py": {
+      "bytes": 2090,
+      "sha256": "1e96f6046658daf8a39d8a1c30948446914d81ba13498c703cceb131f000d54b"
+    },
+    "result.json": {
+      "bytes": 18042,
+      "sha256": "cdb2769c9af9fcd7961b4770f9b8e63bf8979b1be14731dd3c6bae1957a31bd4"
+    },
+    "root-before.json": {
+      "bytes": 144355,
+      "sha256": "2386b67672df937881bc880566363e89c7554cff8c3216650657873d25228f0c"
+    },
+    "root-preimage/src/antigravity_k/api/dependencies.py": {
+      "bytes": 35659,
+      "sha256": "26a45f9dd971e4dfb150692acdbd6dca85a7f1a1941f361449801cafcded6a36"
+    },
+    "root-preimage/src/antigravity_k/engine/vector_store.py": {
+      "bytes": 19449,
+      "sha256": "6b4a5c74fea5d6f1106d5b3e1949de14716cd70ccd7a116053616cdf32e87b78"
+    },
+    "root-preservation.json": {
+      "bytes": 396,
+      "sha256": "c964ed9e4913fb493da13b190a0436cd7b6b552e86de478e867099eab6bbc5f8"
+    },
+    "supervise.py": {
+      "bytes": 3315,
+      "sha256": "54352f349290104693f2dcead04b2643f9f65632d69a4b1f18ecad3a73fb9eb5"
+    },
+    "supervise_v2.py": {
+      "bytes": 3325,
+      "sha256": "d324c530a7b62134c3a49a014f0d298770814dace65ed767922e08fdd5d1245d"
+    },
+    "task-only.patch": {
+      "bytes": 8688,
+      "sha256": "f084edfc9191a23ea289dcf9d58426b81ddb230909bb59b11d41aa149a48f1cb"
+    },
+    "type-root-config.json": {
+      "bytes": 487,
+      "sha256": "e56cd81ff9bfa0370af435d3f1dd66db00019a7fe907f56ac317f0741ce6a7cb"
+    },
+    "type-source-config.json": {
+      "bytes": 575,
+      "sha256": "3f80e931e56c9ed63d87a7b434c60ee6af27b699e6bb29539e15b7b0b5cee628"
+    },
+    "verification-final-fixture/.ruff_cache/.gitignore": {
+      "bytes": 35,
+      "sha256": "9e3a60f1e6ec4ae60215c11d54b171392745ec25e9dded433d5bd921363af316"
+    },
+    "verification-final-fixture/.ruff_cache/0.15.14/11550116079419252343": {
+      "bytes": 129,
+      "sha256": "c37384810b690fe4b2e547e28b1d1efffa4708d1064c9e4282332cb14e926f70"
+    },
+    "verification-final-fixture/.ruff_cache/0.15.14/551978140764415978": {
+      "bytes": 132,
+      "sha256": "47f404524d352fcbadea012c8b16a01061326339ec4a7f5fbcd6491f34e36b98"
+    },
+    "verification-final-fixture/.ruff_cache/0.15.14/9363307837852310958": {
+      "bytes": 126,
+      "sha256": "f7ecccb0fa0bb8d9d1c47e08ff5e034177b0f73eec783612236279f7864a48d5"
+    },
+    "verification-final-fixture/.ruff_cache/CACHEDIR.TAG": {
+      "bytes": 43,
+      "sha256": "5953156d7e0c564a427251316eaf26f8870e6483ae2197f916b630e4f93e31ae"
+    },
+    "verification-final-fixture/checks.json": {
+      "bytes": 5734,
+      "sha256": "18fd597582e03730aa039c8ed0f8b22b16a454615c5f4a1c954694e85db2738c"
+    },
+    "verification-final-fixture/compile.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-final-fixture/compile.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-final-fixture/config.yaml": {
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "verification-final-fixture/data/projects.json": {
+      "bytes": 350,
+      "sha256": "33987f396c7a5a63cfad554c1d17cac18f34f596b271d01927d5e6277a54e1da"
+    },
+    "verification-final-fixture/data/projects.json.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-final-fixture/empty.env": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-final-fixture/format.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-final-fixture/format.stdout": {
+      "bytes": 26,
+      "sha256": "eee76f865de5a9f2456950f710ae5d5f9b5bd0ea02aa54f614c5eed6642a0bfd"
+    },
+    "verification-final-fixture/guard.json": {
+      "bytes": 102,
+      "sha256": "52c2b525ce16a835039dd293bf713a7f10d029852d228a4ceecc1c5feaf294bf"
+    },
+    "verification-final-fixture/junit.xml": {
+      "bytes": 1475,
+      "sha256": "8211a75cb15759e0ff43a9bc2bcd987e542b9609fff5e931911c597df2f881fa"
+    },
+    "verification-final-fixture/lint.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-final-fixture/lint.stdout": {
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "verification-final-fixture/pytest.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-final-fixture/pytest.stdout": {
+      "bytes": 98,
+      "sha256": "7bf623f552515ca1d2eb8887e8a01608c20684cb448d068597e7fff835ddfe22"
+    },
+    "verification-final-fixture/source-freeze.json": {
+      "bytes": 345,
+      "sha256": "5c572f835e2f843e93443566c830929f014d76b2fde509b59b2f81956899bb0c"
+    },
+    "verification-final-fixture/types.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-final-fixture/types.stdout": {
+      "bytes": 30,
+      "sha256": "56882e01cb80173ef053c4096e4ee43e3123a15f5c0a06715f96988d48fbd91c"
+    },
+    "verification-root/.ruff_cache/.gitignore": {
+      "bytes": 35,
+      "sha256": "9e3a60f1e6ec4ae60215c11d54b171392745ec25e9dded433d5bd921363af316"
+    },
+    "verification-root/.ruff_cache/0.15.14/10123608654294220708": {
+      "bytes": 110,
+      "sha256": "6f948c27647966c2ed15b0d4c397e20a0095f70cd272b097adde859fd4f42c2b"
+    },
+    "verification-root/.ruff_cache/0.15.14/2065995321541489056": {
+      "bytes": 107,
+      "sha256": "052d752becc2a659b768971910833ed909b38d987bfb23060dbb164cbf348eaa"
+    },
+    "verification-root/.ruff_cache/0.15.14/5149882749096086268": {
+      "bytes": 104,
+      "sha256": "b2403bf14e1f3928f958a016999a13ea4b92cf577cd71077c97d9e983a77011e"
+    },
+    "verification-root/.ruff_cache/CACHEDIR.TAG": {
+      "bytes": 43,
+      "sha256": "5953156d7e0c564a427251316eaf26f8870e6483ae2197f916b630e4f93e31ae"
+    },
+    "verification-root/checks.json": {
+      "bytes": 5540,
+      "sha256": "7fb420ca8c839e262aee37bddecebf355384562d3f33fa384e40ad494045eaac"
+    },
+    "verification-root/compile.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-root/compile.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-root/config.yaml": {
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "verification-root/data/projects.json": {
+      "bytes": 332,
+      "sha256": "da5e8891639d4739f3ba6d8925d6a45ef3f874f5b4990c8d847225ecd4197e27"
+    },
+    "verification-root/data/projects.json.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-root/empty.env": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-root/format.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-root/format.stdout": {
+      "bytes": 26,
+      "sha256": "eee76f865de5a9f2456950f710ae5d5f9b5bd0ea02aa54f614c5eed6642a0bfd"
+    },
+    "verification-root/guard.json": {
+      "bytes": 375,
+      "sha256": "14ff2d7615402fc64ac8191ea7b810939d389c557df4be8e608fdad5092718eb"
+    },
+    "verification-root/junit.xml": {
+      "bytes": 9101,
+      "sha256": "85389af456ce0741976a47120b1159d0d6c03939bc59633d0efc20c896efee72"
+    },
+    "verification-root/lint.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-root/lint.stdout": {
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "verification-root/pytest.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-root/pytest.stdout": {
+      "bytes": 99,
+      "sha256": "77770a8c21ebf9bc5b25821b896ca48614c08c4491d5aaae5c0e5fdec4be70b0"
+    },
+    "verification-root/source-freeze.json": {
+      "bytes": 345,
+      "sha256": "caa54dee17a97edcca201e83a8f6fd6440b1662392cb547c9b460f7fdb2a255e"
+    },
+    "verification-root/types.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-root/types.stdout": {
+      "bytes": 30,
+      "sha256": "56882e01cb80173ef053c4096e4ee43e3123a15f5c0a06715f96988d48fbd91c"
+    },
+    "verification-v1/.ruff_cache/.gitignore": {
+      "bytes": 35,
+      "sha256": "9e3a60f1e6ec4ae60215c11d54b171392745ec25e9dded433d5bd921363af316"
+    },
+    "verification-v1/.ruff_cache/0.15.14/10124888913096448238": {
+      "bytes": 129,
+      "sha256": "7190ae69430290baf829a0602043c490f7ab7812d1ebe9e9394a2c5a210f1c16"
+    },
+    "verification-v1/.ruff_cache/0.15.14/11515474076977702121": {
+      "bytes": 126,
+      "sha256": "d0817001b14d26e6b34ec842f084c1b7753efcaf0c4475a8ba5bf04003b6988b"
+    },
+    "verification-v1/.ruff_cache/0.15.14/15052436305994448911": {
+      "bytes": 132,
+      "sha256": "a61e2b20e16d47e3d44b8378ec461c9690c7399c751324065b76967003477861"
+    },
+    "verification-v1/.ruff_cache/CACHEDIR.TAG": {
+      "bytes": 43,
+      "sha256": "5953156d7e0c564a427251316eaf26f8870e6483ae2197f916b630e4f93e31ae"
+    },
+    "verification-v1/checks.json": {
+      "bytes": 5954,
+      "sha256": "f562a2a7e6a213a291e23b7dabd63b56959b810b66d7103408b626395d331cd7"
+    },
+    "verification-v1/compile.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-v1/compile.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-v1/config.yaml": {
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "verification-v1/data/projects.json": {
+      "bytes": 328,
+      "sha256": "981b83d1bcb957d8bec5e0e38013ce32245a8a4bed32679a5566c3be568a5dbc"
+    },
+    "verification-v1/data/projects.json.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-v1/empty.env": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-v1/format.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-v1/format.stdout": {
+      "bytes": 26,
+      "sha256": "eee76f865de5a9f2456950f710ae5d5f9b5bd0ea02aa54f614c5eed6642a0bfd"
+    },
+    "verification-v1/guard.json": {
+      "bytes": 375,
+      "sha256": "14ff2d7615402fc64ac8191ea7b810939d389c557df4be8e608fdad5092718eb"
+    },
+    "verification-v1/junit.xml": {
+      "bytes": 9101,
+      "sha256": "3aebeebcd6f9651366c604142c5c9aee84099712a1d12c75b6d880378ccb5c6b"
+    },
+    "verification-v1/lint.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-v1/lint.stdout": {
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "verification-v1/pytest.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-v1/pytest.stdout": {
+      "bytes": 99,
+      "sha256": "40ec6c6bb8948433481a81056a6f1d6b40d0fc6a9b165330ed62fb08114a1fd9"
+    },
+    "verification-v1/source-freeze.json": {
+      "bytes": 345,
+      "sha256": "81e37318063ac09cdf57954de0118af8925cc9ca241d4494c0761cc15f1ba010"
+    },
+    "verification-v1/types-bound-receipt.json": {
+      "bytes": 478,
+      "sha256": "72949c2b0da89bb6cedde913c0dd4621e972ee26a6fec0bebf8d5b29f1d9cf18"
+    },
+    "verification-v1/types.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification-v1/types.stdout": {
+      "bytes": 2512,
+      "sha256": "a5ffde77dd6bf68d1e025f001edad985dae54ca9cb931eb45ffbe1a4cc1bccd5"
+    },
+    "verify_candidate.py": {
+      "bytes": 2575,
+      "sha256": "a093e63650162687985609a5416b40ff53479f79b5d2a4b82e7a5b5e55b74769"
+    },
+    "verify_fixture_final.py": {
+      "bytes": 2541,
+      "sha256": "c28acc97c50ca7582c9a52d4f0f6fe8d12fa098af79cf6b073c82d0846960105"
+    },
+    "verify_preservation.py": {
+      "bytes": 2137,
+      "sha256": "c0f277265267056a1b71888b1e916b9975c1e50090ec6ff15d883fb5f5b06566"
+    },
+    "verify_root.py": {
+      "bytes": 2572,
+      "sha256": "2ec638c9899ebb042fd0e76fc64abaf3097ff1afa640f83bdcaf731b5c4ce549"
+    }
+  },
+  "omitted_local_files": [
+    "after-01/auth-private/.pin-hash.lock",
+    "after-01/auth-private/pin-hash",
+    "after-01/auth-private/token-secret",
+    "after-01/data/projects.json",
+    "after-01/data/projects.json.bak",
+    "after-01/data/projects.json.lock",
+    "after-01/data/tasks.db",
+    "after-01/gbrain/chroma/chroma.sqlite3",
+    "after-01/gbrain/knowledge_graph.graphml",
+    "after-01/global-memory/facts.json",
+    "after-01/global-memory/identity.json",
+    "after-01/global-memory/patterns.json",
+    "after-01/global-memory/preference_facts.json",
+    "after-01/global-memory/preferences.json",
+    "after-01/logs/audit_ocsf_202610.jsonl",
+    "after-01/projects/A/.antigravity/gbrain/chroma/26b6af58-ec96-4772-a2ac-6d2db89dee87/data_level0.bin",
+    "after-01/projects/A/.antigravity/gbrain/chroma/26b6af58-ec96-4772-a2ac-6d2db89dee87/header.bin",
+    "after-01/projects/A/.antigravity/gbrain/chroma/26b6af58-ec96-4772-a2ac-6d2db89dee87/length.bin",
+    "after-01/projects/A/.antigravity/gbrain/chroma/26b6af58-ec96-4772-a2ac-6d2db89dee87/link_lists.bin",
+    "after-01/projects/A/.antigravity/gbrain/chroma/chroma.sqlite3",
+    "after-01/projects/A/.antigravity/gbrain/knowledge_graph.graphml",
+    "after-01/projects/A/.antigravity/memory/cavemem.sqlite3",
+    "after-01/projects/A/.antigravity/memory/durable_memory.db",
+    "after-01/projects/A/.antigravity/memory/durable_memory.db.vectors/chroma.sqlite3",
+    "after-01/projects/A/.antigravity/memory/episodic/episodes.json",
+    "after-01/projects/A/.antigravity/memory/project_facts.json",
+    "after-01/projects/A/.antigravity/memory/scheduled_jobs.db",
+    "after-01/projects/A/.antigravity/rag_vectors/73e74953-8974-4c25-b046-099605b53ee0/data_level0.bin",
+    "after-01/projects/A/.antigravity/rag_vectors/73e74953-8974-4c25-b046-099605b53ee0/header.bin",
+    "after-01/projects/A/.antigravity/rag_vectors/73e74953-8974-4c25-b046-099605b53ee0/length.bin",
+    "after-01/projects/A/.antigravity/rag_vectors/73e74953-8974-4c25-b046-099605b53ee0/link_lists.bin",
+    "after-01/projects/A/.antigravity/rag_vectors/chroma.sqlite3",
+    "after-01/projects/A/.antigravity/sessions/.locks/53793bc4_30f0404361b340ddb970b90cb9c3b6fb.lock",
+    "after-01/projects/A/.antigravity/sessions/.tombstones/53793bc4_30f0404361b340ddb970b90cb9c3b6fb.json",
+    "after-01/projects/A/.antigravity/vault_data/.chroma/chroma.sqlite3",
+    "after-01/projects/A/.antigravity/vault_data/.git/HEAD",
+    "after-01/projects/A/.antigravity/vault_data/.git/config",
+    "after-01/projects/A/.antigravity/vault_data/.git/description",
+    "after-01/projects/A/.antigravity/vault_data/.git/hooks/applypatch-msg.sample",
+    "after-01/projects/A/.antigravity/vault_data/.git/hooks/commit-msg.sample",
+    "after-01/projects/A/.antigravity/vault_data/.git/hooks/fsmonitor-watchman.sample",
+    "after-01/projects/A/.antigravity/vault_data/.git/hooks/post-update.sample",
+    "after-01/projects/A/.antigravity/vault_data/.git/hooks/pre-applypatch.sample",
+    "after-01/projects/A/.antigravity/vault_data/.git/hooks/pre-commit.sample",
+    "after-01/projects/A/.antigravity/vault_data/.git/hooks/pre-merge-commit.sample",
+    "after-01/projects/A/.antigravity/vault_data/.git/hooks/pre-push.sample",
+    "after-01/projects/A/.antigravity/vault_data/.git/hooks/pre-rebase.sample",
+    "after-01/projects/A/.antigravity/vault_data/.git/hooks/pre-receive.sample",
+    "after-01/projects/A/.antigravity/vault_data/.git/hooks/prepare-commit-msg.sample",
+    "after-01/projects/A/.antigravity/vault_data/.git/hooks/push-to-checkout.sample",
+    "after-01/projects/A/.antigravity/vault_data/.git/hooks/sendemail-validate.sample",
+    "after-01/projects/A/.antigravity/vault_data/.git/hooks/update.sample",
+    "after-01/projects/A/.antigravity/vault_data/.git/info/exclude",
+    "after-01/projects/A/.antigravity/wiki/wiki.db",
+    "after-01/projects/A/.antigravity_k/agency.db",
+    "after-01/projects/B/.antigravity/gbrain/chroma/cef1e7a1-0ab6-4043-8d9e-164eb81b7ddc/data_level0.bin",
+    "after-01/projects/B/.antigravity/gbrain/chroma/cef1e7a1-0ab6-4043-8d9e-164eb81b7ddc/header.bin",
+    "after-01/projects/B/.antigravity/gbrain/chroma/cef1e7a1-0ab6-4043-8d9e-164eb81b7ddc/length.bin",
+    "after-01/projects/B/.antigravity/gbrain/chroma/cef1e7a1-0ab6-4043-8d9e-164eb81b7ddc/link_lists.bin",
+    "after-01/projects/B/.antigravity/gbrain/chroma/chroma.sqlite3",
+    "after-01/projects/B/.antigravity/gbrain/knowledge_graph.graphml",
+    "after-01/projects/B/.antigravity/rag_vectors/a8e3e56d-b8d9-4110-b8c6-758e49b8a6ce/data_level0.bin",
+    "after-01/projects/B/.antigravity/rag_vectors/a8e3e56d-b8d9-4110-b8c6-758e49b8a6ce/header.bin",
+    "after-01/projects/B/.antigravity/rag_vectors/a8e3e56d-b8d9-4110-b8c6-758e49b8a6ce/length.bin",
+    "after-01/projects/B/.antigravity/rag_vectors/a8e3e56d-b8d9-4110-b8c6-758e49b8a6ce/link_lists.bin",
+    "after-01/projects/B/.antigravity/rag_vectors/chroma.sqlite3",
+    "before-01/auth-private/.pin-hash.lock",
+    "before-01/auth-private/pin-hash",
+    "before-01/auth-private/token-secret",
+    "before-01/data/projects.json",
+    "before-01/data/projects.json.bak",
+    "before-01/data/projects.json.lock",
+    "before-01/data/tasks.db",
+    "before-01/gbrain/chroma/chroma.sqlite3",
+    "before-01/gbrain/knowledge_graph.graphml",
+    "before-01/global-memory/facts.json",
+    "before-01/global-memory/identity.json",
+    "before-01/global-memory/patterns.json",
+    "before-01/global-memory/preference_facts.json",
+    "before-01/global-memory/preferences.json",
+    "before-01/logs_dir/agent_diagnostics/ERR-20261014-115239-ea5ea2.md",
+    "before-01/logs_dir/agent_errors.jsonl",
+    "before-01/projects/A/.antigravity/gbrain/chroma/chroma.sqlite3",
+    "before-01/projects/A/.antigravity/gbrain/chroma/f6dafd20-77e8-4a61-90d6-24f0612982e9/data_level0.bin",
+    "before-01/projects/A/.antigravity/gbrain/chroma/f6dafd20-77e8-4a61-90d6-24f0612982e9/header.bin",
+    "before-01/projects/A/.antigravity/gbrain/chroma/f6dafd20-77e8-4a61-90d6-24f0612982e9/length.bin",
+    "before-01/projects/A/.antigravity/gbrain/chroma/f6dafd20-77e8-4a61-90d6-24f0612982e9/link_lists.bin",
+    "before-01/projects/A/.antigravity/gbrain/knowledge_graph.graphml",
+    "before-01/projects/A/.antigravity/memory/cavemem.sqlite3",
+    "before-01/projects/A/.antigravity/memory/durable_memory.db",
+    "before-01/projects/A/.antigravity/memory/durable_memory.db.vectors/chroma.sqlite3",
+    "before-01/projects/A/.antigravity/memory/episodic/episodes.json",
+    "before-01/projects/A/.antigravity/memory/project_facts.json",
+    "before-01/projects/A/.antigravity/memory/scheduled_jobs.db",
+    "before-01/projects/A/.antigravity/rag_vectors/chroma.sqlite3",
+    "before-01/projects/A/.antigravity/rag_vectors/e077a0cf-f0bb-44b6-b7f8-8fe1e3676744/data_level0.bin",
+    "before-01/projects/A/.antigravity/rag_vectors/e077a0cf-f0bb-44b6-b7f8-8fe1e3676744/header.bin",
+    "before-01/projects/A/.antigravity/rag_vectors/e077a0cf-f0bb-44b6-b7f8-8fe1e3676744/length.bin",
+    "before-01/projects/A/.antigravity/rag_vectors/e077a0cf-f0bb-44b6-b7f8-8fe1e3676744/link_lists.bin",
+    "before-01/projects/A/.antigravity/sessions/.locks/62264bb2_84038a53d0d3461b8c8a4b3c1cbca976.lock",
+    "before-01/projects/A/.antigravity/sessions/.tombstones/62264bb2_84038a53d0d3461b8c8a4b3c1cbca976.json",
+    "before-01/projects/A/.antigravity/vault_data/.chroma/chroma.sqlite3",
+    "before-01/projects/A/.antigravity/vault_data/.git/HEAD",
+    "before-01/projects/A/.antigravity/vault_data/.git/config",
+    "before-01/projects/A/.antigravity/vault_data/.git/description",
+    "before-01/projects/A/.antigravity/vault_data/.git/hooks/applypatch-msg.sample",
+    "before-01/projects/A/.antigravity/vault_data/.git/hooks/commit-msg.sample",
+    "before-01/projects/A/.antigravity/vault_data/.git/hooks/fsmonitor-watchman.sample",
+    "before-01/projects/A/.antigravity/vault_data/.git/hooks/post-update.sample",
+    "before-01/projects/A/.antigravity/vault_data/.git/hooks/pre-applypatch.sample",
+    "before-01/projects/A/.antigravity/vault_data/.git/hooks/pre-commit.sample",
+    "before-01/projects/A/.antigravity/vault_data/.git/hooks/pre-merge-commit.sample",
+    "before-01/projects/A/.antigravity/vault_data/.git/hooks/pre-push.sample",
+    "before-01/projects/A/.antigravity/vault_data/.git/hooks/pre-rebase.sample",
+    "before-01/projects/A/.antigravity/vault_data/.git/hooks/pre-receive.sample",
+    "before-01/projects/A/.antigravity/vault_data/.git/hooks/prepare-commit-msg.sample",
+    "before-01/projects/A/.antigravity/vault_data/.git/hooks/push-to-checkout.sample",
+    "before-01/projects/A/.antigravity/vault_data/.git/hooks/sendemail-validate.sample",
+    "before-01/projects/A/.antigravity/vault_data/.git/hooks/update.sample",
+    "before-01/projects/A/.antigravity/vault_data/.git/info/exclude",
+    "before-01/projects/A/.antigravity/wiki/wiki.db",
+    "before-01/projects/A/.antigravity_k/agency.db",
+    "before-01/projects/B/.antigravity/gbrain/chroma/chroma.sqlite3",
+    "before-01/projects/B/.antigravity/gbrain/chroma/db7a0227-e88c-46cf-878e-87f6fe4b807f/data_level0.bin",
+    "before-01/projects/B/.antigravity/gbrain/chroma/db7a0227-e88c-46cf-878e-87f6fe4b807f/header.bin",
+    "before-01/projects/B/.antigravity/gbrain/chroma/db7a0227-e88c-46cf-878e-87f6fe4b807f/length.bin",
+    "before-01/projects/B/.antigravity/gbrain/chroma/db7a0227-e88c-46cf-878e-87f6fe4b807f/link_lists.bin",
+    "before-01/projects/B/.antigravity/gbrain/knowledge_graph.graphml",
+    "before-01/projects/B/.antigravity/rag_vectors/672da2d5-90b7-4b39-8674-dfff06c8c70e/data_level0.bin",
+    "before-01/projects/B/.antigravity/rag_vectors/672da2d5-90b7-4b39-8674-dfff06c8c70e/header.bin",
+    "before-01/projects/B/.antigravity/rag_vectors/672da2d5-90b7-4b39-8674-dfff06c8c70e/length.bin",
+    "before-01/projects/B/.antigravity/rag_vectors/672da2d5-90b7-4b39-8674-dfff06c8c70e/link_lists.bin",
+    "before-01/projects/B/.antigravity/rag_vectors/chroma.sqlite3",
+    "patch-reconstruction/src/antigravity_k/api/dependencies.py",
+    "patch-reconstruction/src/antigravity_k/engine/vector_store.py",
+    "patch-reconstruction/tests/test_project_vector_purge_contract.py",
+    "verification-final-fixture/cache/pytest/.gitignore",
+    "verification-final-fixture/cache/pytest/CACHEDIR.TAG",
+    "verification-final-fixture/cache/pytest/README.md",
+    "verification-final-fixture/cache/pytest/v/cache/nodeids",
+    "verification-final-fixture/tmp/sec01-auth-w4uh3_4j/token_secret",
+    "verification-root/cache/pytest/.gitignore",
+    "verification-root/cache/pytest/CACHEDIR.TAG",
+    "verification-root/cache/pytest/README.md",
+    "verification-root/cache/pytest/v/cache/nodeids",
+    "verification-root/gbrain/chroma/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_bound_sync_validates_edit0/models.yaml",
+    "verification-root/tmp/pytest/test_bound_sync_validates_edit0/project/first.md",
+    "verification-root/tmp/pytest/test_bound_sync_validates_edit0/vectors/59c684fb-2b42-4e7b-ae3a-d9f4a2509fa5/data_level0.bin",
+    "verification-root/tmp/pytest/test_bound_sync_validates_edit0/vectors/59c684fb-2b42-4e7b-ae3a-d9f4a2509fa5/header.bin",
+    "verification-root/tmp/pytest/test_bound_sync_validates_edit0/vectors/59c684fb-2b42-4e7b-ae3a-d9f4a2509fa5/length.bin",
+    "verification-root/tmp/pytest/test_bound_sync_validates_edit0/vectors/59c684fb-2b42-4e7b-ae3a-d9f4a2509fa5/link_lists.bin",
+    "verification-root/tmp/pytest/test_bound_sync_validates_edit0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_bound_sync_validates_edit0/vectors/rag-manifest.json",
+    "verification-root/tmp/pytest/test_constructor_no_inference_0/models.yaml",
+    "verification-root/tmp/pytest/test_constructor_no_inference_0/vectors/04459518-bf13-4647-a742-a35ef3e44bae/data_level0.bin",
+    "verification-root/tmp/pytest/test_constructor_no_inference_0/vectors/04459518-bf13-4647-a742-a35ef3e44bae/header.bin",
+    "verification-root/tmp/pytest/test_constructor_no_inference_0/vectors/04459518-bf13-4647-a742-a35ef3e44bae/length.bin",
+    "verification-root/tmp/pytest/test_constructor_no_inference_0/vectors/04459518-bf13-4647-a742-a35ef3e44bae/link_lists.bin",
+    "verification-root/tmp/pytest/test_constructor_no_inference_0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_delete_and_purge_never_em0/models.yaml",
+    "verification-root/tmp/pytest/test_delete_and_purge_never_em0/vectors/b195064f-e8d9-444e-aa44-a9250001da94/data_level0.bin",
+    "verification-root/tmp/pytest/test_delete_and_purge_never_em0/vectors/b195064f-e8d9-444e-aa44-a9250001da94/header.bin",
+    "verification-root/tmp/pytest/test_delete_and_purge_never_em0/vectors/b195064f-e8d9-444e-aa44-a9250001da94/length.bin",
+    "verification-root/tmp/pytest/test_delete_and_purge_never_em0/vectors/b195064f-e8d9-444e-aa44-a9250001da94/link_lists.bin",
+    "verification-root/tmp/pytest/test_delete_and_purge_never_em0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_delete_native_failure_doe0/models.yaml",
+    "verification-root/tmp/pytest/test_delete_native_failure_doe0/vectors/3199a33b-94ad-4170-ae6d-0e04e34818a3/data_level0.bin",
+    "verification-root/tmp/pytest/test_delete_native_failure_doe0/vectors/3199a33b-94ad-4170-ae6d-0e04e34818a3/header.bin",
+    "verification-root/tmp/pytest/test_delete_native_failure_doe0/vectors/3199a33b-94ad-4170-ae6d-0e04e34818a3/length.bin",
+    "verification-root/tmp/pytest/test_delete_native_failure_doe0/vectors/3199a33b-94ad-4170-ae6d-0e04e34818a3/link_lists.bin",
+    "verification-root/tmp/pytest/test_delete_native_failure_doe0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_delete_native_failure_doe0/vectors/rag-manifest.json",
+    "verification-root/tmp/pytest/test_explicit_factory_failure_0/models.yaml",
+    "verification-root/tmp/pytest/test_explicit_open_rejects_leg0/models.yaml",
+    "verification-root/tmp/pytest/test_explicit_open_rejects_leg0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_explicit_open_rejects_leg1/models.yaml",
+    "verification-root/tmp/pytest/test_explicit_open_rejects_leg1/vectors/349aa8ef-7262-4cdd-8fc8-d46d6ed71492/data_level0.bin",
+    "verification-root/tmp/pytest/test_explicit_open_rejects_leg1/vectors/349aa8ef-7262-4cdd-8fc8-d46d6ed71492/header.bin",
+    "verification-root/tmp/pytest/test_explicit_open_rejects_leg1/vectors/349aa8ef-7262-4cdd-8fc8-d46d6ed71492/length.bin",
+    "verification-root/tmp/pytest/test_explicit_open_rejects_leg1/vectors/349aa8ef-7262-4cdd-8fc8-d46d6ed71492/link_lists.bin",
+    "verification-root/tmp/pytest/test_explicit_open_rejects_leg1/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_implicit_refusal_and_othe0/models.yaml",
+    "verification-root/tmp/pytest/test_implicit_refusal_and_othe0/vectors/c6de991f-b7ab-41b9-9d57-5fd61cf451db/data_level0.bin",
+    "verification-root/tmp/pytest/test_implicit_refusal_and_othe0/vectors/c6de991f-b7ab-41b9-9d57-5fd61cf451db/header.bin",
+    "verification-root/tmp/pytest/test_implicit_refusal_and_othe0/vectors/c6de991f-b7ab-41b9-9d57-5fd61cf451db/length.bin",
+    "verification-root/tmp/pytest/test_implicit_refusal_and_othe0/vectors/c6de991f-b7ab-41b9-9d57-5fd61cf451db/link_lists.bin",
+    "verification-root/tmp/pytest/test_implicit_refusal_and_othe0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo0/models.yaml",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo1/models.yaml",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo1/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo2/models.yaml",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo2/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo3/models.yaml",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo3/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo4/models.yaml",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo4/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo5/models.yaml",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo5/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo6/models.yaml",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo6/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo7/models.yaml",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo7/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo8/models.yaml",
+    "verification-root/tmp/pytest/test_invalid_vectors_fail_befo8/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_legacy_constructor_and_de0/legacy-default/30a7719d-b641-4868-9637-17df8cb3804e/data_level0.bin",
+    "verification-root/tmp/pytest/test_legacy_constructor_and_de0/legacy-default/30a7719d-b641-4868-9637-17df8cb3804e/header.bin",
+    "verification-root/tmp/pytest/test_legacy_constructor_and_de0/legacy-default/30a7719d-b641-4868-9637-17df8cb3804e/length.bin",
+    "verification-root/tmp/pytest/test_legacy_constructor_and_de0/legacy-default/30a7719d-b641-4868-9637-17df8cb3804e/link_lists.bin",
+    "verification-root/tmp/pytest/test_legacy_constructor_and_de0/legacy-default/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_legacy_constructor_and_de0/models.yaml",
+    "verification-root/tmp/pytest/test_mutable_registry_provider0/models.yaml",
+    "verification-root/tmp/pytest/test_mutable_registry_provider0/vectors/1a086087-5564-4f74-9396-44c2efa0d55c/data_level0.bin",
+    "verification-root/tmp/pytest/test_mutable_registry_provider0/vectors/1a086087-5564-4f74-9396-44c2efa0d55c/header.bin",
+    "verification-root/tmp/pytest/test_mutable_registry_provider0/vectors/1a086087-5564-4f74-9396-44c2efa0d55c/length.bin",
+    "verification-root/tmp/pytest/test_mutable_registry_provider0/vectors/1a086087-5564-4f74-9396-44c2efa0d55c/link_lists.bin",
+    "verification-root/tmp/pytest/test_mutable_registry_provider0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_native_upsert_failure_kee0/models.yaml",
+    "verification-root/tmp/pytest/test_native_upsert_failure_kee0/vectors/a06109f8-2832-435f-a1ab-cd2e4346c187/data_level0.bin",
+    "verification-root/tmp/pytest/test_native_upsert_failure_kee0/vectors/a06109f8-2832-435f-a1ab-cd2e4346c187/header.bin",
+    "verification-root/tmp/pytest/test_native_upsert_failure_kee0/vectors/a06109f8-2832-435f-a1ab-cd2e4346c187/length.bin",
+    "verification-root/tmp/pytest/test_native_upsert_failure_kee0/vectors/a06109f8-2832-435f-a1ab-cd2e4346c187/link_lists.bin",
+    "verification-root/tmp/pytest/test_native_upsert_failure_kee0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_outside_sources_never_rea0/models.yaml",
+    "verification-root/tmp/pytest/test_outside_sources_never_rea0/outside.md",
+    "verification-root/tmp/pytest/test_outside_sources_never_rea0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_outside_sources_never_rea1/models.yaml",
+    "verification-root/tmp/pytest/test_outside_sources_never_rea1/outside.md",
+    "verification-root/tmp/pytest/test_outside_sources_never_rea1/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_outside_sources_never_rea2/models.yaml",
+    "verification-root/tmp/pytest/test_outside_sources_never_rea2/outside.md",
+    "verification-root/tmp/pytest/test_outside_sources_never_rea2/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_outside_sources_never_rea3/models.yaml",
+    "verification-root/tmp/pytest/test_outside_sources_never_rea3/outside.md",
+    "verification-root/tmp/pytest/test_outside_sources_never_rea3/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_persisted_vector_dimensio0/models.yaml",
+    "verification-root/tmp/pytest/test_persisted_vector_dimensio0/vectors/5d222ae3-eb70-4f8b-bd6d-9441774b5106/data_level0.bin",
+    "verification-root/tmp/pytest/test_persisted_vector_dimensio0/vectors/5d222ae3-eb70-4f8b-bd6d-9441774b5106/header.bin",
+    "verification-root/tmp/pytest/test_persisted_vector_dimensio0/vectors/5d222ae3-eb70-4f8b-bd6d-9441774b5106/length.bin",
+    "verification-root/tmp/pytest/test_persisted_vector_dimensio0/vectors/5d222ae3-eb70-4f8b-bd6d-9441774b5106/link_lists.bin",
+    "verification-root/tmp/pytest/test_persisted_vector_dimensio0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_persistent_failure_never_0/models.yaml",
+    "verification-root/tmp/pytest/test_provider_failure_has_no_u0/models.yaml",
+    "verification-root/tmp/pytest/test_provider_failure_has_no_u0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_provider_failure_has_no_u1/models.yaml",
+    "verification-root/tmp/pytest/test_provider_failure_has_no_u1/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres0/models.yaml",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres0/project/notes.md",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres0/vectors/d8f5521d-8266-4fbd-8d33-a9393e7275bd/data_level0.bin",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres0/vectors/d8f5521d-8266-4fbd-8d33-a9393e7275bd/header.bin",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres0/vectors/d8f5521d-8266-4fbd-8d33-a9393e7275bd/length.bin",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres0/vectors/d8f5521d-8266-4fbd-8d33-a9393e7275bd/link_lists.bin",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres0/vectors/rag-manifest.json",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres1/models.yaml",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres1/project/notes.md",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres1/vectors/49104032-256b-4b60-8a33-1d2a70941753/data_level0.bin",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres1/vectors/49104032-256b-4b60-8a33-1d2a70941753/header.bin",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres1/vectors/49104032-256b-4b60-8a33-1d2a70941753/length.bin",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres1/vectors/49104032-256b-4b60-8a33-1d2a70941753/link_lists.bin",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres1/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres1/vectors/rag-manifest.json",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres2/models.yaml",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres2/project/notes.md",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres2/vectors/c15c7d91-7349-4dc6-8fb7-7a2cb95c525a/data_level0.bin",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres2/vectors/c15c7d91-7349-4dc6-8fb7-7a2cb95c525a/header.bin",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres2/vectors/c15c7d91-7349-4dc6-8fb7-7a2cb95c525a/length.bin",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres2/vectors/c15c7d91-7349-4dc6-8fb7-7a2cb95c525a/link_lists.bin",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres2/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_rag_failed_embedding_pres2/vectors/rag-manifest.json",
+    "verification-root/tmp/pytest/test_real_rag_index_search_cha0/models.yaml",
+    "verification-root/tmp/pytest/test_real_rag_index_search_cha0/other-vectors/6ea50852-6cbb-43dd-b82d-4dd73a3995f3/data_level0.bin",
+    "verification-root/tmp/pytest/test_real_rag_index_search_cha0/other-vectors/6ea50852-6cbb-43dd-b82d-4dd73a3995f3/header.bin",
+    "verification-root/tmp/pytest/test_real_rag_index_search_cha0/other-vectors/6ea50852-6cbb-43dd-b82d-4dd73a3995f3/length.bin",
+    "verification-root/tmp/pytest/test_real_rag_index_search_cha0/other-vectors/6ea50852-6cbb-43dd-b82d-4dd73a3995f3/link_lists.bin",
+    "verification-root/tmp/pytest/test_real_rag_index_search_cha0/other-vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_real_rag_index_search_cha0/vectors/6ab15494-e38b-46e7-aff5-407498c82116/data_level0.bin",
+    "verification-root/tmp/pytest/test_real_rag_index_search_cha0/vectors/6ab15494-e38b-46e7-aff5-407498c82116/header.bin",
+    "verification-root/tmp/pytest/test_real_rag_index_search_cha0/vectors/6ab15494-e38b-46e7-aff5-407498c82116/length.bin",
+    "verification-root/tmp/pytest/test_real_rag_index_search_cha0/vectors/6ab15494-e38b-46e7-aff5-407498c82116/link_lists.bin",
+    "verification-root/tmp/pytest/test_real_rag_index_search_cha0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_real_rag_index_search_cha0/vectors/rag-manifest.json",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m0/models.yaml",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m0/vectors/6a099aef-10e9-4a8e-8df1-069624a87e0c/data_level0.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m0/vectors/6a099aef-10e9-4a8e-8df1-069624a87e0c/header.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m0/vectors/6a099aef-10e9-4a8e-8df1-069624a87e0c/length.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m0/vectors/6a099aef-10e9-4a8e-8df1-069624a87e0c/link_lists.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m1/models.yaml",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m1/vectors/14d2e923-d386-4ca7-8de9-f9e0021b26f6/data_level0.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m1/vectors/14d2e923-d386-4ca7-8de9-f9e0021b26f6/header.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m1/vectors/14d2e923-d386-4ca7-8de9-f9e0021b26f6/length.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m1/vectors/14d2e923-d386-4ca7-8de9-f9e0021b26f6/link_lists.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m1/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m2/models.yaml",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m2/vectors/078dc23e-d047-4b7a-aab5-4535ee11e9ee/data_level0.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m2/vectors/078dc23e-d047-4b7a-aab5-4535ee11e9ee/header.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m2/vectors/078dc23e-d047-4b7a-aab5-4535ee11e9ee/length.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m2/vectors/078dc23e-d047-4b7a-aab5-4535ee11e9ee/link_lists.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m2/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m3/models.yaml",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m3/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m3/vectors/fd2909ed-9d5c-4cf5-a3eb-1d64e006902f/data_level0.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m3/vectors/fd2909ed-9d5c-4cf5-a3eb-1d64e006902f/header.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m3/vectors/fd2909ed-9d5c-4cf5-a3eb-1d64e006902f/length.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m3/vectors/fd2909ed-9d5c-4cf5-a3eb-1d64e006902f/link_lists.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m4/models.yaml",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m4/vectors/c4339a25-71ee-4b8a-acfa-6bd0d81cb7bd/data_level0.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m4/vectors/c4339a25-71ee-4b8a-acfa-6bd0d81cb7bd/header.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m4/vectors/c4339a25-71ee-4b8a-acfa-6bd0d81cb7bd/length.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m4/vectors/c4339a25-71ee-4b8a-acfa-6bd0d81cb7bd/link_lists.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m4/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m5/models.yaml",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m5/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m5/vectors/f7715cbf-afe7-426f-9c7a-96da1610b074/data_level0.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m5/vectors/f7715cbf-afe7-426f-9c7a-96da1610b074/header.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m5/vectors/f7715cbf-afe7-426f-9c7a-96da1610b074/length.bin",
+    "verification-root/tmp/pytest/test_same_dimension_identity_m5/vectors/f7715cbf-afe7-426f-9c7a-96da1610b074/link_lists.bin",
+    "verification-root/tmp/pytest/test_unknown_dimension_stays_b0/models.yaml",
+    "verification-root/tmp/pytest/test_unknown_dimension_stays_b0/vectors/88cad623-792d-4668-b252-64a815f4b826/data_level0.bin",
+    "verification-root/tmp/pytest/test_unknown_dimension_stays_b0/vectors/88cad623-792d-4668-b252-64a815f4b826/header.bin",
+    "verification-root/tmp/pytest/test_unknown_dimension_stays_b0/vectors/88cad623-792d-4668-b252-64a815f4b826/length.bin",
+    "verification-root/tmp/pytest/test_unknown_dimension_stays_b0/vectors/88cad623-792d-4668-b252-64a815f4b826/link_lists.bin",
+    "verification-root/tmp/pytest/test_unknown_dimension_stays_b0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_unknown_dimensions_persis0/models.yaml",
+    "verification-root/tmp/pytest/test_unknown_dimensions_persis0/vectors/61177dc9-1af4-4dbc-9722-339d05f88188/data_level0.bin",
+    "verification-root/tmp/pytest/test_unknown_dimensions_persis0/vectors/61177dc9-1af4-4dbc-9722-339d05f88188/header.bin",
+    "verification-root/tmp/pytest/test_unknown_dimensions_persis0/vectors/61177dc9-1af4-4dbc-9722-339d05f88188/length.bin",
+    "verification-root/tmp/pytest/test_unknown_dimensions_persis0/vectors/61177dc9-1af4-4dbc-9722-339d05f88188/link_lists.bin",
+    "verification-root/tmp/pytest/test_unknown_dimensions_persis0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_unknown_first_batch_dimen0/models.yaml",
+    "verification-root/tmp/pytest/test_unknown_first_batch_dimen0/vectors/chroma.sqlite3",
+    "verification-root/tmp/pytest/test_unsupported_binding_rejec0/models.yaml",
+    "verification-root/tmp/pytest/test_unsupported_binding_rejec1/models.yaml",
+    "verification-root/tmp/pytest/test_unsupported_binding_rejec2/models.yaml",
+    "verification-root/tmp/pytest/test_unsupported_binding_rejec3/models.yaml",
+    "verification-root/tmp/pytest/test_unsupported_binding_rejec4/models.yaml",
+    "verification-root/tmp/pytest/test_unsupported_binding_rejec5/models.yaml",
+    "verification-root/tmp/sec01-auth-3ih4d0bj/token_secret",
+    "verification-v1/cache/pytest/.gitignore",
+    "verification-v1/cache/pytest/CACHEDIR.TAG",
+    "verification-v1/cache/pytest/README.md",
+    "verification-v1/cache/pytest/v/cache/nodeids",
+    "verification-v1/gbrain/chroma/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_bound_sync_validates_edit0/models.yaml",
+    "verification-v1/tmp/pytest/test_bound_sync_validates_edit0/project/first.md",
+    "verification-v1/tmp/pytest/test_bound_sync_validates_edit0/vectors/ae848b60-98be-482f-a3a6-41966095e4cd/data_level0.bin",
+    "verification-v1/tmp/pytest/test_bound_sync_validates_edit0/vectors/ae848b60-98be-482f-a3a6-41966095e4cd/header.bin",
+    "verification-v1/tmp/pytest/test_bound_sync_validates_edit0/vectors/ae848b60-98be-482f-a3a6-41966095e4cd/length.bin",
+    "verification-v1/tmp/pytest/test_bound_sync_validates_edit0/vectors/ae848b60-98be-482f-a3a6-41966095e4cd/link_lists.bin",
+    "verification-v1/tmp/pytest/test_bound_sync_validates_edit0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_bound_sync_validates_edit0/vectors/rag-manifest.json",
+    "verification-v1/tmp/pytest/test_constructor_no_inference_0/models.yaml",
+    "verification-v1/tmp/pytest/test_constructor_no_inference_0/vectors/90dcf73b-28bc-4a5f-8aed-86e1788cf038/data_level0.bin",
+    "verification-v1/tmp/pytest/test_constructor_no_inference_0/vectors/90dcf73b-28bc-4a5f-8aed-86e1788cf038/header.bin",
+    "verification-v1/tmp/pytest/test_constructor_no_inference_0/vectors/90dcf73b-28bc-4a5f-8aed-86e1788cf038/length.bin",
+    "verification-v1/tmp/pytest/test_constructor_no_inference_0/vectors/90dcf73b-28bc-4a5f-8aed-86e1788cf038/link_lists.bin",
+    "verification-v1/tmp/pytest/test_constructor_no_inference_0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_delete_and_purge_never_em0/models.yaml",
+    "verification-v1/tmp/pytest/test_delete_and_purge_never_em0/vectors/5f18a69c-591c-4733-b22a-c7a065dc153f/data_level0.bin",
+    "verification-v1/tmp/pytest/test_delete_and_purge_never_em0/vectors/5f18a69c-591c-4733-b22a-c7a065dc153f/header.bin",
+    "verification-v1/tmp/pytest/test_delete_and_purge_never_em0/vectors/5f18a69c-591c-4733-b22a-c7a065dc153f/length.bin",
+    "verification-v1/tmp/pytest/test_delete_and_purge_never_em0/vectors/5f18a69c-591c-4733-b22a-c7a065dc153f/link_lists.bin",
+    "verification-v1/tmp/pytest/test_delete_and_purge_never_em0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_delete_native_failure_doe0/models.yaml",
+    "verification-v1/tmp/pytest/test_delete_native_failure_doe0/vectors/245042ce-6e3a-46ec-9cc2-2208c0da564e/data_level0.bin",
+    "verification-v1/tmp/pytest/test_delete_native_failure_doe0/vectors/245042ce-6e3a-46ec-9cc2-2208c0da564e/header.bin",
+    "verification-v1/tmp/pytest/test_delete_native_failure_doe0/vectors/245042ce-6e3a-46ec-9cc2-2208c0da564e/length.bin",
+    "verification-v1/tmp/pytest/test_delete_native_failure_doe0/vectors/245042ce-6e3a-46ec-9cc2-2208c0da564e/link_lists.bin",
+    "verification-v1/tmp/pytest/test_delete_native_failure_doe0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_delete_native_failure_doe0/vectors/rag-manifest.json",
+    "verification-v1/tmp/pytest/test_explicit_factory_failure_0/models.yaml",
+    "verification-v1/tmp/pytest/test_explicit_open_rejects_leg0/models.yaml",
+    "verification-v1/tmp/pytest/test_explicit_open_rejects_leg0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_explicit_open_rejects_leg1/models.yaml",
+    "verification-v1/tmp/pytest/test_explicit_open_rejects_leg1/vectors/0b1b77cf-5ed9-4ab2-89cb-a4af3acd6570/data_level0.bin",
+    "verification-v1/tmp/pytest/test_explicit_open_rejects_leg1/vectors/0b1b77cf-5ed9-4ab2-89cb-a4af3acd6570/header.bin",
+    "verification-v1/tmp/pytest/test_explicit_open_rejects_leg1/vectors/0b1b77cf-5ed9-4ab2-89cb-a4af3acd6570/length.bin",
+    "verification-v1/tmp/pytest/test_explicit_open_rejects_leg1/vectors/0b1b77cf-5ed9-4ab2-89cb-a4af3acd6570/link_lists.bin",
+    "verification-v1/tmp/pytest/test_explicit_open_rejects_leg1/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_implicit_refusal_and_othe0/models.yaml",
+    "verification-v1/tmp/pytest/test_implicit_refusal_and_othe0/vectors/8973c887-e4f2-4fe7-aeb4-2af32e498247/data_level0.bin",
+    "verification-v1/tmp/pytest/test_implicit_refusal_and_othe0/vectors/8973c887-e4f2-4fe7-aeb4-2af32e498247/header.bin",
+    "verification-v1/tmp/pytest/test_implicit_refusal_and_othe0/vectors/8973c887-e4f2-4fe7-aeb4-2af32e498247/length.bin",
+    "verification-v1/tmp/pytest/test_implicit_refusal_and_othe0/vectors/8973c887-e4f2-4fe7-aeb4-2af32e498247/link_lists.bin",
+    "verification-v1/tmp/pytest/test_implicit_refusal_and_othe0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo0/models.yaml",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo1/models.yaml",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo1/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo2/models.yaml",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo2/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo3/models.yaml",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo3/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo4/models.yaml",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo4/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo5/models.yaml",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo5/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo6/models.yaml",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo6/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo7/models.yaml",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo7/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo8/models.yaml",
+    "verification-v1/tmp/pytest/test_invalid_vectors_fail_befo8/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_legacy_constructor_and_de0/legacy-default/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_legacy_constructor_and_de0/legacy-default/fbfd3f81-012e-42d6-8390-5d5fc6925026/data_level0.bin",
+    "verification-v1/tmp/pytest/test_legacy_constructor_and_de0/legacy-default/fbfd3f81-012e-42d6-8390-5d5fc6925026/header.bin",
+    "verification-v1/tmp/pytest/test_legacy_constructor_and_de0/legacy-default/fbfd3f81-012e-42d6-8390-5d5fc6925026/length.bin",
+    "verification-v1/tmp/pytest/test_legacy_constructor_and_de0/legacy-default/fbfd3f81-012e-42d6-8390-5d5fc6925026/link_lists.bin",
+    "verification-v1/tmp/pytest/test_legacy_constructor_and_de0/models.yaml",
+    "verification-v1/tmp/pytest/test_mutable_registry_provider0/models.yaml",
+    "verification-v1/tmp/pytest/test_mutable_registry_provider0/vectors/5a27f8c5-c585-4de4-a1b7-42b86e66c34e/data_level0.bin",
+    "verification-v1/tmp/pytest/test_mutable_registry_provider0/vectors/5a27f8c5-c585-4de4-a1b7-42b86e66c34e/header.bin",
+    "verification-v1/tmp/pytest/test_mutable_registry_provider0/vectors/5a27f8c5-c585-4de4-a1b7-42b86e66c34e/length.bin",
+    "verification-v1/tmp/pytest/test_mutable_registry_provider0/vectors/5a27f8c5-c585-4de4-a1b7-42b86e66c34e/link_lists.bin",
+    "verification-v1/tmp/pytest/test_mutable_registry_provider0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_native_upsert_failure_kee0/models.yaml",
+    "verification-v1/tmp/pytest/test_native_upsert_failure_kee0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_native_upsert_failure_kee0/vectors/dcf1b427-1e89-4297-bfa4-a5828cd85476/data_level0.bin",
+    "verification-v1/tmp/pytest/test_native_upsert_failure_kee0/vectors/dcf1b427-1e89-4297-bfa4-a5828cd85476/header.bin",
+    "verification-v1/tmp/pytest/test_native_upsert_failure_kee0/vectors/dcf1b427-1e89-4297-bfa4-a5828cd85476/length.bin",
+    "verification-v1/tmp/pytest/test_native_upsert_failure_kee0/vectors/dcf1b427-1e89-4297-bfa4-a5828cd85476/link_lists.bin",
+    "verification-v1/tmp/pytest/test_outside_sources_never_rea0/models.yaml",
+    "verification-v1/tmp/pytest/test_outside_sources_never_rea0/outside.md",
+    "verification-v1/tmp/pytest/test_outside_sources_never_rea0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_outside_sources_never_rea1/models.yaml",
+    "verification-v1/tmp/pytest/test_outside_sources_never_rea1/outside.md",
+    "verification-v1/tmp/pytest/test_outside_sources_never_rea1/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_outside_sources_never_rea2/models.yaml",
+    "verification-v1/tmp/pytest/test_outside_sources_never_rea2/outside.md",
+    "verification-v1/tmp/pytest/test_outside_sources_never_rea2/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_outside_sources_never_rea3/models.yaml",
+    "verification-v1/tmp/pytest/test_outside_sources_never_rea3/outside.md",
+    "verification-v1/tmp/pytest/test_outside_sources_never_rea3/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_persisted_vector_dimensio0/models.yaml",
+    "verification-v1/tmp/pytest/test_persisted_vector_dimensio0/vectors/c84c96ca-64d4-4feb-b548-b0b9a34a1480/data_level0.bin",
+    "verification-v1/tmp/pytest/test_persisted_vector_dimensio0/vectors/c84c96ca-64d4-4feb-b548-b0b9a34a1480/header.bin",
+    "verification-v1/tmp/pytest/test_persisted_vector_dimensio0/vectors/c84c96ca-64d4-4feb-b548-b0b9a34a1480/length.bin",
+    "verification-v1/tmp/pytest/test_persisted_vector_dimensio0/vectors/c84c96ca-64d4-4feb-b548-b0b9a34a1480/link_lists.bin",
+    "verification-v1/tmp/pytest/test_persisted_vector_dimensio0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_persistent_failure_never_0/models.yaml",
+    "verification-v1/tmp/pytest/test_provider_failure_has_no_u0/models.yaml",
+    "verification-v1/tmp/pytest/test_provider_failure_has_no_u0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_provider_failure_has_no_u1/models.yaml",
+    "verification-v1/tmp/pytest/test_provider_failure_has_no_u1/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres0/models.yaml",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres0/project/notes.md",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres0/vectors/81cbbf9f-0504-49eb-990b-83b81c896706/data_level0.bin",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres0/vectors/81cbbf9f-0504-49eb-990b-83b81c896706/header.bin",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres0/vectors/81cbbf9f-0504-49eb-990b-83b81c896706/length.bin",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres0/vectors/81cbbf9f-0504-49eb-990b-83b81c896706/link_lists.bin",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres0/vectors/rag-manifest.json",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres1/models.yaml",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres1/project/notes.md",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres1/vectors/403bf131-4b33-4810-aca1-6420e95bbcd2/data_level0.bin",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres1/vectors/403bf131-4b33-4810-aca1-6420e95bbcd2/header.bin",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres1/vectors/403bf131-4b33-4810-aca1-6420e95bbcd2/length.bin",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres1/vectors/403bf131-4b33-4810-aca1-6420e95bbcd2/link_lists.bin",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres1/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres1/vectors/rag-manifest.json",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres2/models.yaml",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres2/project/notes.md",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres2/vectors/4e33228d-d8c2-44bb-946e-fc457273c77e/data_level0.bin",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres2/vectors/4e33228d-d8c2-44bb-946e-fc457273c77e/header.bin",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres2/vectors/4e33228d-d8c2-44bb-946e-fc457273c77e/length.bin",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres2/vectors/4e33228d-d8c2-44bb-946e-fc457273c77e/link_lists.bin",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres2/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_rag_failed_embedding_pres2/vectors/rag-manifest.json",
+    "verification-v1/tmp/pytest/test_real_rag_index_search_cha0/models.yaml",
+    "verification-v1/tmp/pytest/test_real_rag_index_search_cha0/other-vectors/1e431efb-d7b8-4b5d-b456-c604ce0ceb51/data_level0.bin",
+    "verification-v1/tmp/pytest/test_real_rag_index_search_cha0/other-vectors/1e431efb-d7b8-4b5d-b456-c604ce0ceb51/header.bin",
+    "verification-v1/tmp/pytest/test_real_rag_index_search_cha0/other-vectors/1e431efb-d7b8-4b5d-b456-c604ce0ceb51/length.bin",
+    "verification-v1/tmp/pytest/test_real_rag_index_search_cha0/other-vectors/1e431efb-d7b8-4b5d-b456-c604ce0ceb51/link_lists.bin",
+    "verification-v1/tmp/pytest/test_real_rag_index_search_cha0/other-vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_real_rag_index_search_cha0/vectors/9cc92573-1494-4ebd-9d6a-3720f58b1c83/data_level0.bin",
+    "verification-v1/tmp/pytest/test_real_rag_index_search_cha0/vectors/9cc92573-1494-4ebd-9d6a-3720f58b1c83/header.bin",
+    "verification-v1/tmp/pytest/test_real_rag_index_search_cha0/vectors/9cc92573-1494-4ebd-9d6a-3720f58b1c83/length.bin",
+    "verification-v1/tmp/pytest/test_real_rag_index_search_cha0/vectors/9cc92573-1494-4ebd-9d6a-3720f58b1c83/link_lists.bin",
+    "verification-v1/tmp/pytest/test_real_rag_index_search_cha0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_real_rag_index_search_cha0/vectors/rag-manifest.json",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m0/models.yaml",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m0/vectors/97866b8f-6a2e-4aa8-8c1e-e30e789425ff/data_level0.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m0/vectors/97866b8f-6a2e-4aa8-8c1e-e30e789425ff/header.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m0/vectors/97866b8f-6a2e-4aa8-8c1e-e30e789425ff/length.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m0/vectors/97866b8f-6a2e-4aa8-8c1e-e30e789425ff/link_lists.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m1/models.yaml",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m1/vectors/6771bb41-b50d-48c7-90b9-436a4fb81fe8/data_level0.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m1/vectors/6771bb41-b50d-48c7-90b9-436a4fb81fe8/header.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m1/vectors/6771bb41-b50d-48c7-90b9-436a4fb81fe8/length.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m1/vectors/6771bb41-b50d-48c7-90b9-436a4fb81fe8/link_lists.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m1/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m2/models.yaml",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m2/vectors/5290b8d6-06f4-4ee1-a021-7b76b9f82e21/data_level0.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m2/vectors/5290b8d6-06f4-4ee1-a021-7b76b9f82e21/header.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m2/vectors/5290b8d6-06f4-4ee1-a021-7b76b9f82e21/length.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m2/vectors/5290b8d6-06f4-4ee1-a021-7b76b9f82e21/link_lists.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m2/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m3/models.yaml",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m3/vectors/98ee0123-74e7-4814-a686-bdd27c67e33d/data_level0.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m3/vectors/98ee0123-74e7-4814-a686-bdd27c67e33d/header.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m3/vectors/98ee0123-74e7-4814-a686-bdd27c67e33d/length.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m3/vectors/98ee0123-74e7-4814-a686-bdd27c67e33d/link_lists.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m3/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m4/models.yaml",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m4/vectors/9e91215a-0932-4a94-ac44-8895f945c047/data_level0.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m4/vectors/9e91215a-0932-4a94-ac44-8895f945c047/header.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m4/vectors/9e91215a-0932-4a94-ac44-8895f945c047/length.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m4/vectors/9e91215a-0932-4a94-ac44-8895f945c047/link_lists.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m4/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m5/models.yaml",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m5/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m5/vectors/f8913a6e-cfed-48b0-b28c-f419614d3d1a/data_level0.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m5/vectors/f8913a6e-cfed-48b0-b28c-f419614d3d1a/header.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m5/vectors/f8913a6e-cfed-48b0-b28c-f419614d3d1a/length.bin",
+    "verification-v1/tmp/pytest/test_same_dimension_identity_m5/vectors/f8913a6e-cfed-48b0-b28c-f419614d3d1a/link_lists.bin",
+    "verification-v1/tmp/pytest/test_unknown_dimension_stays_b0/models.yaml",
+    "verification-v1/tmp/pytest/test_unknown_dimension_stays_b0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_unknown_dimension_stays_b0/vectors/d228a55d-69db-440f-ba97-a5d69af760ad/data_level0.bin",
+    "verification-v1/tmp/pytest/test_unknown_dimension_stays_b0/vectors/d228a55d-69db-440f-ba97-a5d69af760ad/header.bin",
+    "verification-v1/tmp/pytest/test_unknown_dimension_stays_b0/vectors/d228a55d-69db-440f-ba97-a5d69af760ad/length.bin",
+    "verification-v1/tmp/pytest/test_unknown_dimension_stays_b0/vectors/d228a55d-69db-440f-ba97-a5d69af760ad/link_lists.bin",
+    "verification-v1/tmp/pytest/test_unknown_dimensions_persis0/models.yaml",
+    "verification-v1/tmp/pytest/test_unknown_dimensions_persis0/vectors/c77d1768-503d-4b8b-bf25-7e2d0b6d75f9/data_level0.bin",
+    "verification-v1/tmp/pytest/test_unknown_dimensions_persis0/vectors/c77d1768-503d-4b8b-bf25-7e2d0b6d75f9/header.bin",
+    "verification-v1/tmp/pytest/test_unknown_dimensions_persis0/vectors/c77d1768-503d-4b8b-bf25-7e2d0b6d75f9/length.bin",
+    "verification-v1/tmp/pytest/test_unknown_dimensions_persis0/vectors/c77d1768-503d-4b8b-bf25-7e2d0b6d75f9/link_lists.bin",
+    "verification-v1/tmp/pytest/test_unknown_dimensions_persis0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_unknown_first_batch_dimen0/models.yaml",
+    "verification-v1/tmp/pytest/test_unknown_first_batch_dimen0/vectors/chroma.sqlite3",
+    "verification-v1/tmp/pytest/test_unsupported_binding_rejec0/models.yaml",
+    "verification-v1/tmp/pytest/test_unsupported_binding_rejec1/models.yaml",
+    "verification-v1/tmp/pytest/test_unsupported_binding_rejec2/models.yaml",
+    "verification-v1/tmp/pytest/test_unsupported_binding_rejec3/models.yaml",
+    "verification-v1/tmp/pytest/test_unsupported_binding_rejec4/models.yaml",
+    "verification-v1/tmp/pytest/test_unsupported_binding_rejec5/models.yaml",
+    "verification-v1/tmp/sec01-auth-rw_ryr9p/token_secret"
+  ],
+  "scope": "Public fixture/result/log/source allowlist; native/auth/runtime state preserved locally"
+}
