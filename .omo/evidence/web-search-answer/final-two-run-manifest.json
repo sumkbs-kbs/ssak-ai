@@ -1,0 +1,65 @@
+{
+  "status": "PASS_TWO_CONSECUTIVE_ACTUAL_UI_RUNS",
+  "identical_prompt": "QA-09. web_search 도구로 Python 공식 문서를 검색해서 list와 tuple의 차이를 확인하세요. 변경 가능 여부와 문법 예시를 2행 표로 정리하고 공식 docs.python.org 출처 링크 1개를 제공하세요. 파일 수정과 저장은 하지 마세요.",
+  "runs": [
+    {
+      "run": 1,
+      "task_id": "direct_b1813e34988d",
+      "status": "done",
+      "error": null,
+      "source_href": "https://docs.python.org/3/tutorial/datastructures.html",
+      "data_rows": 2,
+      "inline_python_ast_valid": true,
+      "used_tools": [
+        "web_search"
+      ],
+      "validation_stages": [
+        "draft",
+        "final_candidate"
+      ],
+      "artifacts": {
+        ".omo/evidence/web-search-answer/marker-final-1-task_history.json": "a5007b6807700e61f49c587514a118e0a429d735483e2d96b127deb7ca8206fb",
+        ".omo/evidence/web-search-answer/marker-final-1-task_checkpoints.json": "2fc7346dab3d07e95693d7f709d042eddbe468a152b0b8fe354775feb9ddcb00",
+        ".omo/evidence/web-search-answer/marker-final-1-task_execution_events.json": "15183294ff8da61070fb43e04669c7cd538189e46ff2d44f90b22d670bf27179",
+        ".omo/evidence/web-search-answer/marker-final-1-sources.txt": "394768f71d77831305f2fea2a4b5b9c0f369d594230ca73acc7ce6dd6ddf96d0",
+        "docs/qa/2026-10-04-sequential-audit/search-final-live-1.raw.txt": "e4c0bd6d52e1ca39231548ac150bc70433630923a0710bc518f314584541b325",
+        "docs/qa/2026-10-04-sequential-audit/search-final-live-1.ax.txt": "2d625d7952ac3d0bdcc451ffe16d42be39ab584aa6be4c232211b5b9738e77cf",
+        "docs/qa/2026-10-04-sequential-audit/search-final-live-1.dom.json": "2cf1d2ab39cd7b2126f04cbbafe4b3fe7422e32eee5a19f181f01d7731b8c38e",
+        "docs/qa/2026-10-04-sequential-audit/search-final-live-1.jpg": "70d2e8c7fb7f9760dc1adecda0d828b56014324dd9de601d6b10c47066c98e36"
+      }
+    },
+    {
+      "run": 2,
+      "task_id": "direct_ac8806f080e9",
+      "status": "done",
+      "error": null,
+      "source_href": "https://docs.python.org/3/tutorial/datastructures.html",
+      "data_rows": 2,
+      "inline_python_ast_valid": true,
+      "used_tools": [
+        "web_search"
+      ],
+      "validation_stages": [
+        "draft",
+        "final_candidate"
+      ],
+      "artifacts": {
+        ".omo/evidence/web-search-answer/marker-final-2-task_history.json": "4243eebada9b3faa6e7b36e57311a57e61f95e23022f0470a02e5791707751bd",
+        ".omo/evidence/web-search-answer/marker-final-2-task_checkpoints.json": "0b732ff713ecc5dc8ef8c4a39d15e3008d58985c6ab5251706ada1565232cee2",
+        ".omo/evidence/web-search-answer/marker-final-2-task_execution_events.json": "64e2782411f7234535b511eef776d1a08ae140bafe3e3a4cf46ffc8ee45980de",
+        ".omo/evidence/web-search-answer/marker-final-2-sources.txt": "394768f71d77831305f2fea2a4b5b9c0f369d594230ca73acc7ce6dd6ddf96d0",
+        "docs/qa/2026-10-04-sequential-audit/search-final-live-2.raw.txt": "7c51237b172a0be75d308844ac3083d46f21bb47e8c3fe170a83b51b61cf9e68",
+        "docs/qa/2026-10-04-sequential-audit/search-final-live-2.ax.txt": "7620eacc091f012de57fcc43d669cdb99d33202740f6375f4b59e7412a8e29c9",
+        "docs/qa/2026-10-04-sequential-audit/search-final-live-2.dom.json": "6ac9d7f135b0f1609199d100c8ca8e77fa0b4233081b36bd3f9b7807c12ff967",
+        "docs/qa/2026-10-04-sequential-audit/search-final-live-2.jpg": "9ed02320c8881e406c322c332da6c1b5a12d3078a93470cf178520d3e0867e17"
+      }
+    }
+  ],
+  "source_hashes": {
+    "src/antigravity_k/tools/web_search_tool.py": "199870844730ae982ca12910ee811ab5bc72ea315ca9b916aab2274b1fb23b38",
+    "src/antigravity_k/tools/search_quality_evaluator.py": "aefbffdf2bbbc187817706c8c38a5b92575c767c80d7b573a655568057a808f4",
+    "src/antigravity_k/engine/citation_table_contract.py": "96b90a5da876d6b98825bfb9435445c9585e12707aaeebecbd04b761b4a6cad9",
+    "src/antigravity_k/engine/tool_loop.py": "93a2d83861faaecc8c378f1b56598bd716f1e7d8083be1ee890db8b57e10a625"
+  },
+  "limitation": "Syntax checks do not execute examples. UI observations are root-owned; prior failed runs remain preserved."
+}

@@ -238,7 +238,8 @@ def test_production_loop_requires_receipt_for_explicit_search(tmp_path: Path, us
     tool_call = (
         '<tool_call>{"name":"web_search","arguments":{"query":"Python list tuple official documentation"}}</tool_call>'
     )
-    orch = _Orchestrator(tmp_path, [tool_call, VERIFIED_REPLY] if uses_search else [VERIFIED_REPLY])
+    # The omission case also refuses the one corrective generation, without any receipt.
+    orch = _Orchestrator(tmp_path, [tool_call, VERIFIED_REPLY] if uses_search else [VERIFIED_REPLY, VERIFIED_REPLY])
     store = TaskStateStore(str(tmp_path / "synthetic-tasks.db"))
     execution = DirectTaskExecution(orch, _TaskRunner(store))
     context = execution._create_execution(SEARCH_REQUEST, "interactive")
@@ -261,6 +262,7 @@ def test_production_loop_requires_receipt_for_explicit_search(tmp_path: Path, us
     assert task is not None
     assert task["output"] == finals[0]
     assert outcomes[0].expected_tools == ("web_search",)
+    assert len(orch.manager.requests) == 2
     if uses_search:
         assert outcomes[0].success is True
         assert outcomes[0].used_tools == ("web_search",)

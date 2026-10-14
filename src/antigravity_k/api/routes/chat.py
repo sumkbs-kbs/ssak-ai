@@ -1,13 +1,13 @@
 import asyncio
-import contextvars
 import json
 import logging
-from collections.abc import AsyncIterator, Iterator, Mapping, Sequence
+from collections.abc import AsyncGenerator, AsyncIterator, Iterator, Mapping, Sequence
 from typing import Annotated, Any, Callable, TypeAlias, cast
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
+from antigravity_k.api.chat_agent_stream_generator import AgentStreamingResponse
 from antigravity_k.api.contracts.execution_context import RequestExecutionContext
 
 # 이 함수들은 server.py의 의존성 주입 함수들을 참조합니다.
@@ -1218,8 +1218,6 @@ async def chat_completions(
     # 도구 토글에 한해 제한 없이 동작한다(tri-state).
     from antigravity_k.engine.tool_policy import (
         ToolPolicy,
-        reset_tool_policy,
-        set_tool_policy,
     )
 
     _policy_denied: set[str] = set()
@@ -1240,13 +1238,10 @@ async def chat_completions(
     )
 
     if is_stream and is_agent_mode:
-        from starlette.concurrency import run_in_threadpool
-
+        from antigravity_k.api.chat_agent_stream_generator import contextual_agent_stream
         from antigravity_k.engine.chat_stream_events import (
             FinalChunk,
             ProgressChunk,
-            reset_chat_stream_events,
-            set_chat_stream_events,
         )
 
         runtime = get_agent_runtime()
@@ -1255,35 +1250,21 @@ async def chat_completions(
 
         # Start new session — shared singleton을 리셋해 사용한다
         active_session = reset_active_session()
-        active_session.is_active = True
 
-        async def event_generator():
+        async def event_generator() -> AsyncGenerator[str, None]:
             full_response = ""
-            stream_aiter = None
-            policy_token = set_tool_policy(_tool_policy)
-            event_token = set_chat_stream_events(True)
+            stream_aiter: AsyncGenerator[str, None] | None = None
             try:
+                active_session.is_active = True
                 accepted_frame = _conversation_revision_sse(_conversation_snapshot)
                 if accepted_frame:
                     yield accepted_frame
-                stream_iterator = runtime.stream(cast(Sequence[Mapping[str, str]], messages), target_model=target_model)
-                stream_context = contextvars.copy_context()
-
-                async def iterate_stream() -> AsyncIterator[str]:
-                    def next_chunk() -> tuple[bool, str | None]:
-                        try:
-                            return False, next(stream_iterator)
-                        except StopIteration:
-                            return True, None
-
-                    while True:
-                        done, chunk = await run_in_threadpool(stream_context.run, next_chunk)
-                        if done:
-                            return
-                        if chunk is not None:
-                            yield chunk
-
-                stream_aiter = iterate_stream()
+                stream_aiter = contextual_agent_stream(
+                    runtime,
+                    cast(Sequence[Mapping[str, str]], messages),
+                    target_model,
+                    _tool_policy,
+                )
                 async for chunk in stream_aiter:
                     if isinstance(chunk, ProgressChunk):
                         yield f"data: {json.dumps({'agk_status': {'text': str(chunk)}}, ensure_ascii=False)}\n\n"
@@ -1367,20 +1348,11 @@ async def chat_completions(
                 active_session.error = str(failure)
                 yield f"event: error\ndata: {json.dumps({'error': failure.detail()})}\n\n"
             finally:
-                reset_chat_stream_events(event_token)
-                # 요청 단위 도구 정책 해제
-                reset_tool_policy(policy_token)
-                # 백그라운드 이터레이터 명시적 종료 (스레드 풀 작업 정리)
-                if stream_aiter is not None:
-                    aclose = getattr(stream_aiter, "aclose", None)
-                    if aclose:
-                        try:
-                            await aclose()
-                        except Exception:
-                            logger.debug("Stream iterator cleanup failed", exc_info=True)
                 active_session.is_active = False
+                if stream_aiter is not None:
+                    await stream_aiter.aclose()
 
-        return StreamingResponse(event_generator(), media_type="text/event-stream")
+        return AgentStreamingResponse(event_generator(), media_type="text/event-stream")
 
     # Non-streaming or non-agent mode (fallback to original logic)
     system_msg = internal_req.get("system", "")

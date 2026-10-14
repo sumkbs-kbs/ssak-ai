@@ -420,7 +420,13 @@ class DirectTaskExecution:
             record = state_store.get_task(execution_context.task_id)
             if record is not None and record["status"] == "running":
                 output = "".join(output_parts)
-                cas_won = _safe_task_transition(state_store, execution_context.task_id, "cancelled", output=output)
+                cas_won = _safe_task_transition(
+                    state_store,
+                    execution_context.task_id,
+                    "cancelled",
+                    output=output,
+                    record_event=True,
+                )
                 _append_terminal_domain_event(
                     state_store,
                     execution_context.task_id,

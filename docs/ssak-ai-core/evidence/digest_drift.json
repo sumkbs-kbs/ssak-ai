@@ -3,7 +3,7 @@
     "python",
     "scripts/digest_drift.py"
   ],
-  "source_head": "0b1aca2d",
+  "source_head": "f6f3f4eb",
   "counts": {
     "match": 8,
     "reverified": 42,
@@ -117,9 +117,9 @@
       "doc": "T01a_typed_model.md",
       "path": "src/antigravity_k/engine/cognitive/models.py",
       "recorded": "65abe58b",
-      "actual": "afe99ffae7ebb74d29e34a82aab34da2a119317e437529ddcca53e89be204945",
+      "actual": "1bae5123d3b8e13ff6f88a43ce67d54335de4ad7bf575b114fc83703f7927cc5",
       "status": "reverified",
-      "reverified_on": "2026-09-27"
+      "reverified_on": "2026-10-15"
     },
     {
       "doc": "T01a_typed_model.md",
@@ -301,9 +301,9 @@
       "doc": "T07_actions.md",
       "path": "src/antigravity_k/engine/cognitive/actions.py",
       "recorded": "894ea5abc6c72426",
-      "actual": "6feda593081a7eead98630ebe7e726d4d184d7debde77358a2c66871864ed38a",
+      "actual": "285c28dfaf8c0b0c2b92e6d9f31be70b2b6b7a9174ce009e464beef889d40e84",
       "status": "reverified",
-      "reverified_on": "2026-10-01"
+      "reverified_on": "2026-10-15"
     },
     {
       "doc": "T07_actions.md",
@@ -365,9 +365,9 @@
       "doc": "T11_surface.md",
       "path": "scripts/measure_cognitive_surface.py",
       "recorded": "76d3a88b1b517171",
-      "actual": "dd9137f71b928aec7871042b116aaea9787675ea404a0283e2c80cfca2e6c5c9",
+      "actual": "40d6155c8c36e3a1aa8d10671888502c04f8ac6e15f430ce3dc72600bcadfb4f",
       "status": "reverified",
-      "reverified_on": "2026-10-01"
+      "reverified_on": "2026-10-15"
     },
     {
       "doc": "T11_surface.md",
@@ -461,9 +461,9 @@
       "doc": "T13_growth.md",
       "path": "src/antigravity_k/engine/cognitive/growth.py",
       "recorded": "f2a5dd011c622d9b",
-      "actual": "e10ece4427945efaa40a052c62d84a1231bdbe37a43d422ca9fc044f2db66c5d",
+      "actual": "6670b19c4dd0dde983e610aabc45e23ba60f1024e7048143e99e589b73755385",
       "status": "reverified",
-      "reverified_on": "2026-10-04"
+      "reverified_on": "2026-10-15"
     },
     {
       "doc": "T13_growth.md",
@@ -493,9 +493,9 @@
       "doc": "T13_live_pilot.md",
       "path": "src/antigravity_k/engine/cognitive/live_pilot.py",
       "recorded": "f15d923940d22fd7",
-      "actual": "a02433a607a6c07997d44ef1bea8dd957f796bc6fd353d4b8fef9da69e9fc8ab",
+      "actual": "e81c990e15b5c47b0db933f3f60805ca648ed419940d546fc324192c7da0acd2",
       "status": "reverified",
-      "reverified_on": "2026-10-01"
+      "reverified_on": "2026-10-15"
     },
     {
       "doc": "T13_live_pilot.md",

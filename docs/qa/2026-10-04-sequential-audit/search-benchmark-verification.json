@@ -1,0 +1,30 @@
+{
+  "verified": true,
+  "tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "31",
+    "time": "21.651",
+    "timestamp": "2026-10-04T12:14:46.957173+09:00",
+    "hostname": "MrKui-MacBookPro.local"
+  },
+  "gate": "PASS",
+  "contracts": 21,
+  "fixture_diff_empty": true,
+  "source_sha256": {
+    "scripts/benchmark_ssak_search.py": "723ca9c9ff4d16cae9f31daa8b956abe04347666bcc1b9d3585d6659a08e7522",
+    "tests/test_ssak_search_benchmark.py": "168faccda6c5b2480272684a26350cff4b91c9a437f1b3683263736a541fff4a",
+    "src/antigravity_k/tools/web_search_engine.py": "bdfe710002666fe4f4b11605e5b6cecd3475a4849d916ff2f50f9710ddbc38c6",
+    "tests/fixtures/ssak_search_eval/child.py": "bd5cad8175f1af49efd2d25b7f8811092effe2fb225c800a9651aeb0ec419caa",
+    "tests/fixtures/ssak_search_eval/anchor.json": "b98f6d2b4777fbebac381ca64699ab04534600127ecaeacda94f8a41b15996dc"
+  },
+  "child_pid": 55519,
+  "child_exited": true,
+  "removed_full_run_tempdirs": [
+    "/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/ssak-search-eval-cache-5x8uuea5",
+    "/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/ssak-search-eval-ugotesza"
+  ],
+  "scope": "No production source edits; fixture and committed anchor unchanged; no network transport; no commit/push."
+}

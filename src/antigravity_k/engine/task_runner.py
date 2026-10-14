@@ -520,6 +520,7 @@ class BackgroundTaskRunner:
                     TaskStatus.CANCELLED,
                     error="Task was cancelled before execution started.",
                     expected_status=claim_status,
+                    record_event=True,
                 )
             except TaskTransitionConflictError:
                 cancelled = False
@@ -673,11 +674,7 @@ class BackgroundTaskRunner:
             task.status = TaskStatus.DONE
             task.updated_at = datetime.now(UTC).isoformat()
 
-            if not self._update_db_status(task.task_id, TaskStatus.DONE, output=task.output):
-                record = self.state_store.get_task(task.task_id)
-                if record is not None:
-                    task.status = parse_task_status(record["status"])
-                    task.error = record["error"]
+            if not self._persist_task_completion(task):
                 self._record_task_outcome(
                     task,
                     target_model,
@@ -710,6 +707,33 @@ class BackgroundTaskRunner:
             _reset_worktree_context(worktree_binding_token)
             if task.worktree_path and task.status != TaskStatus.PAUSED:
                 self.worktree_manager.remove_worktree(task.task_id)
+
+    def _persist_task_completion(self, task: BackgroundTask) -> bool:
+        """Accept the atomic terminal winner; fail a completion write that did not commit."""
+        record = self.state_store.get_task(task.task_id)
+        if record is not None and record["status"] == TaskStatus.DONE:
+            task.output = record["output"] or ""
+            task.error = record["error"]
+            return True
+        if self._update_db_status(task.task_id, TaskStatus.DONE, output=task.output):
+            return True
+
+        record = self.state_store.get_task(task.task_id)
+        if record is not None and record["status"] in {TaskStatus.DONE, TaskStatus.FAILED, TaskStatus.CANCELLED}:
+            task.status = parse_task_status(record["status"])
+            task.output = record["output"] or ""
+            task.error = record["error"]
+            return task.status == TaskStatus.DONE
+
+        task.status = TaskStatus.FAILED
+        task.error = "Task completion status could not be persisted."
+        if not self._update_db_status(task.task_id, TaskStatus.FAILED, output=task.output, error=task.error):
+            record = self.state_store.get_task(task.task_id)
+            if record is not None:
+                task.status = parse_task_status(record["status"])
+                task.output = record["output"] or ""
+                task.error = record["error"]
+        return task.status == TaskStatus.DONE
 
     def _bind_worktree_context(self, task: BackgroundTask) -> Token[RequestExecutionContext | None] | None:
         """Bind RequestExecutionContext to the task's worktree (DAT-02).
@@ -1280,6 +1304,7 @@ class BackgroundTaskRunner:
                 task_id,
                 TaskStatus.RUNNING,
                 expected_status=expected_status,
+                record_event=True,
             )
         except TaskTransitionConflictError:
             logger.info("Task execution claim lost: %s", task_id)
@@ -1297,7 +1322,7 @@ class BackgroundTaskRunner:
     ) -> bool:
         """DB에 태스크 상태를 업데이트합니다."""
         try:
-            return self.state_store.transition(task_id, status, output=output, error=error)
+            return self.state_store.transition(task_id, status, output=output, error=error, record_event=True)
         except (sqlite3.Error, InvalidTaskStatusError, InvalidTaskTransitionError, TaskTransitionConflictError):
             logger.exception("DB status update failed")
             return False

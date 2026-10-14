@@ -22,7 +22,7 @@ from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 
 from antigravity_k.engine.cognitive.action_admission import preconditions
-from antigravity_k.engine.cognitive.action_journal import PENDING, SETTLED, ActionJournal
+from antigravity_k.engine.cognitive.action_journal import PENDING, SETTLED, ActionClaimView, ActionJournal
 from antigravity_k.engine.cognitive.action_lifecycle import (
     REVERSAL_CLAIM_MARKERS,
     cancel,
@@ -238,7 +238,7 @@ class ActionDispatcher:
     ) -> ReconciliationResult:
         return submit_observation(self, submission, producer=producer, load_record=load_record, now=now)
 
-    def pending_with_reasons(self, project_id: str) -> tuple:
+    def pending_with_reasons(self, project_id: str) -> tuple[ActionClaimView, ...]:
         """Operator-visible pending claims; timeout never clears these rows."""
         return self.pending_claims(project_id)
 
@@ -285,7 +285,7 @@ class ActionDispatcher:
             records=records,
         )
 
-    def pending_claims(self, project_id: str):
+    def pending_claims(self, project_id: str) -> tuple[ActionClaimView, ...]:
         """Restart-safe pending claim projection from the durable journal."""
         if self.journal is None:
             return ()

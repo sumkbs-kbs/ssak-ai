@@ -40,7 +40,10 @@ SCRIPTS_DIR: Final[Path] = REPO_ROOT / "scripts"
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
-from harness_contract import (  # noqa: E402
+if str(Path(__file__).resolve().parents[1]) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from scripts.harness_contract import (  # noqa: E402
     Cases,
     Floor,
     Probe,

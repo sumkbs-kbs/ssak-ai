@@ -1,0 +1,129 @@
+{
+  "model": "real local Ollama qwen3.8:latest",
+  "surface": "production Chat/Agent in actual IAB UI, temporary stores, lifespan off",
+  "same_exact_prompt": true,
+  "source_manifest": "source-final-marker-after.json",
+  "runs": [
+    {
+      "run": 1,
+      "task_id": "direct_b1813e34988d",
+      "duration_seconds": 32.575761,
+      "checks": {
+        "one_table_two_data_rows": true,
+        "one_official_rendered_href": true,
+        "mutable_immutable_distinction_root_manual_review": true,
+        "valid_python_spans_without_literal_br": true,
+        "rendered_final_not_working": true,
+        "ui_raw_equals_durable_output": true,
+        "done_without_error": true,
+        "web_search_only": true,
+        "citation_table_presentation_all_valid": true,
+        "one_terminal_event": true,
+        "continuous_event_sequence": true,
+        "no_revision_generation": true
+      },
+      "syntax": [
+        {
+          "code": "t[0] = 88888",
+          "parses": true
+        },
+        {
+          "code": "TypeError",
+          "parses": true
+        },
+        {
+          "code": "lst = [1, 2, 3]",
+          "parses": true
+        },
+        {
+          "code": "lst.append(4)",
+          "parses": true
+        },
+        {
+          "code": "[1, 2, 3, 4]",
+          "parses": true
+        },
+        {
+          "code": "tup = (1, 2, 3)",
+          "parses": true
+        },
+        {
+          "code": "tup[0] = 99",
+          "parses": true
+        }
+      ],
+      "source_href": "https://docs.python.org/3/tutorial/datastructures.html",
+      "pass": true,
+      "event_sequence_range": [
+        1,
+        9
+      ]
+    },
+    {
+      "run": 2,
+      "task_id": "direct_ac8806f080e9",
+      "duration_seconds": 27.518088,
+      "checks": {
+        "one_table_two_data_rows": true,
+        "one_official_rendered_href": true,
+        "mutable_immutable_distinction_root_manual_review": true,
+        "valid_python_spans_without_literal_br": true,
+        "rendered_final_not_working": true,
+        "ui_raw_equals_durable_output": true,
+        "done_without_error": true,
+        "web_search_only": true,
+        "citation_table_presentation_all_valid": true,
+        "one_terminal_event": true,
+        "continuous_event_sequence": true,
+        "no_revision_generation": true
+      },
+      "syntax": [
+        {
+          "code": "t[0] = 88888",
+          "parses": true
+        },
+        {
+          "code": "TypeError",
+          "parses": true
+        },
+        {
+          "code": "lst = [1, 2, 3]",
+          "parses": true
+        },
+        {
+          "code": "lst.append(4)",
+          "parses": true
+        },
+        {
+          "code": "[1, 2, 3, 4]",
+          "parses": true
+        },
+        {
+          "code": "t = (1, 2, 3)",
+          "parses": true
+        },
+        {
+          "code": "t = 1, 2, 3",
+          "parses": true
+        },
+        {
+          "code": "t[0] = 99",
+          "parses": true
+        }
+      ],
+      "source_href": "https://docs.python.org/3/tutorial/datastructures.html",
+      "pass": true,
+      "event_sequence_range": [
+        10,
+        18
+      ]
+    }
+  ],
+  "pass": true,
+  "limits": [
+    "Two observed runs do not establish every-prompt reliability or latency SLA.",
+    "AST parsing validates syntax; Root reviewed displayed semantics, no untrusted snippets were executed.",
+    "Citation evaluator remains lexical, with unchanged per-fragment thresholds."
+  ],
+  "harness_correction": "Initial check incorrectly assumed each task sequence starts at1. Durable event sequence is store-global: first1..9 and second10..18. Correct check requires no gaps within each actual task. Initial failed computed check preserved as search-final-live-check.json."
+}

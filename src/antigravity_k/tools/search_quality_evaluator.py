@@ -17,7 +17,7 @@ from .web_search_quality import canonicalize_url, source_id_for_url
 
 _CITATION_PATTERN = re.compile(r"\[citation:([A-Za-z0-9][A-Za-z0-9_-]*)\]")
 _CLAIM_SPLIT_PATTERN = re.compile(r"(?<=[.!?。！？])\s+(?!\[citation:)|\n+")
-_TABLE_SEPARATOR_PATTERN: Final = re.compile(r"\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|?\s*")
+_TABLE_SEPARATOR_PATTERN: Final = re.compile(r"\s*\|?\s*:?-+:?\s*(?:\|\s*:?-+:?\s*)+\|?\s*")
 _SOURCE_LINK_FOOTER_PATTERN: Final = re.compile(
     r"출처:\s*(?:\[[^\]]+\]\(<https?://[^>\s]+>\)(?:,\s*)?)+",
 )
@@ -353,6 +353,64 @@ def _citation_claim_content(response_text: str, sources: tuple[CitationSource, .
     return "\n".join(claims)
 
 
+def _table_data_rows(response_text: str) -> set[str]:
+    """Identify data rows only after a matching GFM header and delimiter."""
+    rows: set[str] = set()
+    lines = response_text.splitlines()
+    fenced = False
+    in_table = False
+    for index, line in enumerate(lines):
+        if line.lstrip().startswith(("```", "~~~")):
+            fenced = not fenced
+            in_table = False
+            continue
+        if fenced:
+            continue
+        if _TABLE_SEPARATOR_PATTERN.fullmatch(line) and index:
+            header = lines[index - 1]
+
+            def cells(value: str) -> list[str]:
+                return re.split(r"(?<!\\)\|", value.strip().strip("|"))
+
+            in_table = "|" in header and len(cells(header)) == len(cells(line))
+            continue
+        if in_table and "|" in line and line.strip().strip("|").strip():
+            rows.add(line)
+        else:
+            in_table = False
+    return rows
+
+
+def _evaluate_table_row(
+    row: str, sources: tuple[CitationSource, ...], min_overlap: float, conflict_sets: tuple[frozenset[str], ...]
+) -> ClaimEvaluation | None:
+    markers = " ".join(dict.fromkeys(match.group() for match in _CITATION_PATTERN.finditer(row)))
+    fragments = _CLAIM_SPLIT_PATTERN.split(row)
+    # Each sentence retains the row's citations but must pass independently.
+    detail = evaluate_citations(
+        "\n".join(fragment + " " + markers for fragment in fragments), sources, min_overlap, conflict_sets
+    )
+    if not detail.claims:
+        return None
+
+    def ids(field: str) -> tuple[str, ...]:
+        return tuple(dict.fromkeys(value for claim in detail.claims for value in getattr(claim, field)))
+
+    supported = all(claim.supported for claim in detail.claims)
+    return ClaimEvaluation(
+        claim=_CITATION_PATTERN.sub("", row).strip(" \t-*•"),
+        cited_source_ids=ids("cited_source_ids"),
+        supported_source_ids=ids("supported_source_ids") if supported else (),
+        unknown_source_ids=ids("unknown_source_ids"),
+        conflicting_source_ids=ids("conflicting_source_ids"),
+        best_overlap=min(claim.best_overlap for claim in detail.claims),
+        supported=supported,
+        conflict_acknowledged=all(
+            not claim.conflicting_source_ids or claim.conflict_acknowledged for claim in detail.claims
+        ),
+    )
+
+
 def evaluate_citations(
     response_text: str,
     sources: Iterable[CitationSource],
@@ -371,7 +429,19 @@ def evaluate_citations(
     )
     claims: list[ClaimEvaluation] = []
     prior_claim_acknowledged_conflict = False
-    for raw_claim in _CLAIM_SPLIT_PATTERN.split(_citation_claim_content(response_text, source_values)):
+    table_rows = _table_data_rows(response_text)
+    raw_claims = (
+        claim
+        for line in _citation_claim_content(response_text, source_values).splitlines()
+        for claim in ([line] if line in table_rows else _CLAIM_SPLIT_PATTERN.split(line))
+    )
+    for raw_claim in raw_claims:
+        if raw_claim in table_rows:
+            row_claim = _evaluate_table_row(raw_claim, source_values, min_overlap, normalized_conflict_sets)
+            if row_claim is not None:
+                claims.append(row_claim)
+            prior_claim_acknowledged_conflict = False
+            continue
         citation_ids: list[str] = [match.group(1) for match in _CITATION_PATTERN.finditer(raw_claim)]
         cited_ids: tuple[str, ...] = tuple(dict.fromkeys(citation_ids))
         claim = _CITATION_PATTERN.sub("", raw_claim).strip(" \t-*•")

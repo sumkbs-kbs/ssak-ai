@@ -69,15 +69,15 @@ def same_enum(left: object, right: object) -> bool:
 
     if left is right:
         return True
+    if not isinstance(left, Enum):
+        return False
+    if not isinstance(right, Enum):
+        return False
     left_type = type(left)
     right_type = type(right)
-    if not (isinstance(left_type, type) and issubclass(left_type, Enum)):
-        return False
-    if not (isinstance(right_type, type) and issubclass(right_type, Enum)):
-        return False
     if (left_type.__module__, left_type.__qualname__) != (right_type.__module__, right_type.__qualname__):
         return False
-    return left.value == right.value  # type: ignore[attr-defined]
+    return left.value == right.value
 
 
 UtcDatetime = Annotated[AwareDatetime, AfterValidator(ensure_utc)]

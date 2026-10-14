@@ -552,6 +552,20 @@ def _as_float(value: object, default: float = 0.0) -> float:
     return float(str(value))
 
 
+def _optional_ledger_text(value: object, field_name: str) -> str | None:
+    if value is None or isinstance(value, str):
+        return value
+    raise GrowthBenchmarkError(f"ledger {field_name} must be text or null")
+
+
+def _optional_ledger_outcome(value: object) -> Mapping[str, object] | None:
+    if value is None:
+        return None
+    if not isinstance(value, Mapping) or not all(isinstance(key, str) for key in value):
+        raise GrowthBenchmarkError("ledger outcome must be a mapping with text keys or null")
+    return {key: item for key, item in value.items() if isinstance(key, str)}
+
+
 def _as_str_bool_map(value: object) -> dict[str, bool]:
     if value is None:
         return {}
@@ -1075,11 +1089,11 @@ def aggregate_from_ledger(
                     repetition=_as_int(item["repetition"]),
                     order=str(item["order"]),
                     status=str(item["status"]),
-                    started_at=item.get("started_at"),  # type: ignore[arg-type]
-                    finished_at=item.get("finished_at"),  # type: ignore[arg-type]
-                    outcome=item.get("outcome"),  # type: ignore[arg-type]
+                    started_at=_optional_ledger_text(item.get("started_at"), "started_at"),
+                    finished_at=_optional_ledger_text(item.get("finished_at"), "finished_at"),
+                    outcome=_optional_ledger_outcome(item.get("outcome")),
                     error_category=str(item.get("error_category") or ""),
-                    policy_version=item.get("policy_version"),  # type: ignore[arg-type]
+                    policy_version=_optional_ledger_text(item.get("policy_version"), "policy_version"),
                     mechanism_flags=_as_str_bool_map(item.get("mechanism_flags")),
                     requested_policy_version=str(item["requested_policy_version"])
                     if item.get("requested_policy_version") is not None

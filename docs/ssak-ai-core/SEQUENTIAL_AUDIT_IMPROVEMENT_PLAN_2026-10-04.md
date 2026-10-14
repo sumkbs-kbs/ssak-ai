@@ -11,6 +11,11 @@ source_audit: docs/qa/2026-10-04-sequential-audit/RESULTS.md
 
 # Ssak-Ai 상세 개선 개발 계획
 
+<!-- proposed-path: scripts/run_sequential_audit.py -->
+<!-- proposed-path: tests/test_sequential_audit_harness.py -->
+<!-- proposed-path: src/antigravity_k/engine/financial_valuation.py -->
+<!-- proposed-path: tests/test_financial_valuation.py -->
+
 이 문서는 2026-10-04 순차 기능 감사에서 확인한 결과를 다음 개발자가 바로 재현·수정·검증할 수 있는 작업으로 바꾼 실행 계획이다. 제품 소유 저장소는 Ssak-Ai다. 이 문서를 작성하면서 제품 코드를 추가 수정하거나 전체 테스트를 다시 실행하지 않았다. 문서의 작업은 모두 예정 상태이며, 아래 완료 기준을 충족한 새 실행 증거가 있어야 구현 완료로 바뀐다.
 
 다음 실행자는 IMP-00부터 시작한다. 이미 고친 항목은 회귀 방지 대상으로 유지하고, 미검증 항목은 먼저 재현한다. 정상임이 확인되면 코드를 변경하지 않고 검증 증거를 보강한다. 새로운 기능인 DCF/comps 계산은 현재 기능의 결함 수정과 별도 작업으로 취급한다.

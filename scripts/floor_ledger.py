@@ -89,7 +89,10 @@ SCRIPTS_DIR: Final[Path] = REPO_ROOT / "scripts"
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
-from harness_contract import (  # noqa: E402
+if str(Path(__file__).resolve().parents[1]) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from scripts.harness_contract import (  # noqa: E402
     Cases,
     Floor,
     Probe,
@@ -3212,10 +3215,11 @@ def self_probe() -> Probe:
     # 하한 기록 — **판단의 이동**은 실패, 관측·올림은 보고. 합성 입력으로 다시 묻는다.
     probe_row = LayerRow("p", KIND_MEASURED, "scripts/p.py", (Floor("수", 3, 1, why="근거"),), {}, _COMMIT_SAMPLE)
     judged_row = judged_floors(Ledger((probe_row,), (), (), 0.0))
+    recorded_floor: dict[str, object] = {"layer": "p", "label": "수", "minimum": 1, "observed": 3, "why": "근거"}
     recorded: dict[str, object] = {
         "method": "2026-01-01 시험 승인",
         "recorded_on": "2026-01-01",
-        "floors": [{"layer": "p", "label": "수", "minimum": 1, "observed": 3, "why": "근거"}],
+        "floors": [recorded_floor],
     }
     cases.equal("기록과 지금 판단이 같으면 조용하다", record_problems(judged_row, recorded), [])
     cases.check("기록이 없으면 실패한다", bool(record_problems(judged_row, None)))
@@ -3227,7 +3231,7 @@ def self_probe() -> Probe:
         "`floors` 없는 기록은 무엇을 승인했는지 말하지 않는다",
         bool(record_problems(judged_row, {**recorded, "floors": []})),
     )
-    lowered = record_problems(judged_row, {**recorded, "floors": [{**recorded["floors"][0], "minimum": 2}]})  # type: ignore[index]
+    lowered = record_problems(judged_row, {**recorded, "floors": [{**recorded_floor, "minimum": 2}]})
     cases.check(
         "내려간 하한은 실패하고 이름·옛값·새값을 남긴다(승인 없는 하향)",
         len(lowered) == 1 and "내려간 하한" in lowered[0] and "2 → 1" in lowered[0],
@@ -3238,7 +3242,7 @@ def self_probe() -> Probe:
     )
     cases.check(
         "관측만 움직인 기록은 낡지 않는다(관측은 판정에 안 든다)",
-        record_problems(judged_row, {**recorded, "floors": [{**recorded["floors"][0], "observed": 999}]}) == [],  # type: ignore[index]
+        record_problems(judged_row, {**recorded, "floors": [{**recorded_floor, "observed": 999}]}) == [],
     )
     # 층 단위 문장 — 하나의 결정(층이 통째로 움직임)이 하한 개수만큼의 문장으로 흩어지지 않아야 한다.
     wide: dict[str, object] = {

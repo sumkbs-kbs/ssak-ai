@@ -95,7 +95,7 @@ import tempfile
 import time
 import zipfile
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Final
 
@@ -110,7 +110,10 @@ RECORD: Final[Path] = REPO_ROOT / "docs" / "ssak-ai-core" / "evidence" / "releas
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
-from harness_contract import (  # noqa: E402
+if str(Path(__file__).resolve().parents[1]) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from scripts.harness_contract import (  # noqa: E402
     Cases,
     Floor,
     Probe,
@@ -1285,6 +1288,11 @@ def tracked_paths(repo: Path) -> frozenset[str] | None:
     `.gitignore` 대상이고 배포판에도 실린다). 그걸 실제 파일로 오인하면 이 층은 자기 빌드가 남긴 찌꺼기마다 빨개진다.
     """
 
+    root = subprocess.run(
+        ["git", "rev-parse", "--show-toplevel"], cwd=repo, capture_output=True, text=True, check=False
+    )
+    if root.returncode != EXIT_OK or Path(root.stdout.strip()).resolve() != repo.resolve():
+        return None
     listing = subprocess.run(["git", "ls-files"], cwd=repo, capture_output=True, text=True, check=False)
     if listing.returncode != EXIT_OK:
         return None
@@ -1710,19 +1718,18 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
     real_file = "antigravity_k-0.1.0/src/antigravity_k/__init__.py"
 
     def sdist_of(**overrides: object) -> Identity:
-        payload: dict[str, object] = {
-            "kind": "sdist",
-            "first": "b" * 16,
-            "second": "c" * 16,
-            "members": 1205,
-            "pinned_members": 0,
-            "appeared": (),
-            "differs": (generated,),
-            "allowed_differs": (generated,),
-            "real_differs": (),
-        }
-        payload.update(overrides)
-        return Identity(**payload)  # type: ignore[arg-type]
+        base = Identity(
+            kind="sdist",
+            first="b" * 16,
+            second="c" * 16,
+            members=1205,
+            pinned_members=0,
+            appeared=(),
+            differs=(generated,),
+            allowed_differs=(generated,),
+            real_differs=(),
+        )
+        return replace(base, **overrides)
 
     good_sensitivity = Sensitivity(
         control_equal=True,
@@ -1733,81 +1740,54 @@ def self_probe(*, probe_ok: bool = True) -> Probe:
     )
 
     def repro_of(**overrides: object) -> Reproducibility:
-        payload: dict[str, object] = {
-            "identities": (good_wheel, sdist_of()),
-            "second_build_exit": EXIT_OK,
-            "sensitivity": good_sensitivity,
-            "ci_pinned": True,
-            "ci_pin_value": str(REPRO_PIN),
-            "seconds": 12.0,
-            "ci_note": "",
-            "tracked_readable": True,
-        }
-        payload.update(overrides)
-        return Reproducibility(**payload)  # type: ignore[arg-type]
+        base = Reproducibility(
+            identities=(good_wheel, sdist_of()),
+            second_build_exit=EXIT_OK,
+            sensitivity=good_sensitivity,
+            ci_pinned=True,
+            ci_pin_value=str(REPRO_PIN),
+            seconds=12.0,
+            ci_note="",
+            tracked_readable=True,
+        )
+        return replace(base, **overrides)
 
     def record(**overrides: object) -> Observation:
-        base: dict[str, object] = {
-            "build_exit": EXIT_OK,
-            "artifacts": (
+        base = Observation(
+            build_exit=EXIT_OK,
+            artifacts=(
                 Artifact("wheel", "antigravity_k-0.1.0-py3-none-any.whl", 100, "a"),
                 Artifact("sdist", "antigravity_k-0.1.0.tar.gz", 120, "b"),
             ),
-            "verify_exit": EXIT_OK,
-            "passed": ARTIFACT_KINDS,
-            "roundtrip_exit": EXIT_OK,
-            "compared": 664,
-            "missing": (),
-            "differing": (),
-            "extra": (),
-            "rehearsal_exit": EXIT_OK,
-            "rehearsal_missing": (TAMPER_TARGET,),
-            "rehearsal_differing": (REWRITE_TARGET,),
-            "rehearsal_compared": 664,
-            "content": ContentCheck(658, (), ("antigravity_k.dist-info/METADATA",), (), (TRANSFORM_TARGET,)),
-            "tree": TreeCoverage(
+            verify_exit=EXIT_OK,
+            passed=ARTIFACT_KINDS,
+            roundtrip_exit=EXIT_OK,
+            compared=664,
+            missing=(),
+            differing=(),
+            extra=(),
+            rehearsal_exit=EXIT_OK,
+            rehearsal_missing=(TAMPER_TARGET,),
+            rehearsal_differing=(REWRITE_TARGET,),
+            rehearsal_compared=664,
+            content=ContentCheck(658, (), ("antigravity_k.dist-info/METADATA",), (), (TRANSFORM_TARGET,)),
+            tree=TreeCoverage(
                 expected=tuple(f"antigravity_k/f{i}.py" for i in range(656)),
                 missing=(),
                 generated=("antigravity_k/vendor/ssak_search/bin/ssak-mcp",),
                 local_only=("antigravity_k/local_scratch.py",),
             ),
-            "tree_rehearsal_control": (),
-            "tree_rehearsal_defect": (MINI_DROPPED,),
-            "reproducibility": repro_of(),
-            "tamper_exit": EXIT_FAIL,
-            "tamper_removed": TAMPER_TARGET,
-            "inputs_line": True,
-            "crashed": False,
-            "seconds": 24.0,
-            "note": "",
-        }
-        payload: dict[str, object] = {**base, **overrides}
-        return Observation(
-            build_exit=payload["build_exit"],  # type: ignore[arg-type]
-            artifacts=payload["artifacts"],  # type: ignore[arg-type]
-            verify_exit=payload["verify_exit"],  # type: ignore[arg-type]
-            passed=payload["passed"],  # type: ignore[arg-type]
-            roundtrip_exit=payload["roundtrip_exit"],  # type: ignore[arg-type]
-            compared=int(payload["compared"]),  # type: ignore[call-overload]
-            missing=payload["missing"],  # type: ignore[arg-type]
-            differing=payload["differing"],  # type: ignore[arg-type]
-            extra=payload["extra"],  # type: ignore[arg-type]
-            rehearsal_exit=payload["rehearsal_exit"],  # type: ignore[arg-type]
-            rehearsal_missing=payload["rehearsal_missing"],  # type: ignore[arg-type]
-            rehearsal_differing=payload["rehearsal_differing"],  # type: ignore[arg-type]
-            rehearsal_compared=int(payload["rehearsal_compared"]),  # type: ignore[call-overload]
-            tree=payload["tree"],  # type: ignore[arg-type]
-            content=payload["content"],  # type: ignore[arg-type]
-            tree_rehearsal_control=payload["tree_rehearsal_control"],  # type: ignore[arg-type]
-            tree_rehearsal_defect=payload["tree_rehearsal_defect"],  # type: ignore[arg-type]
-            reproducibility=payload["reproducibility"],  # type: ignore[arg-type]
-            tamper_exit=payload["tamper_exit"],  # type: ignore[arg-type]
-            tamper_removed=str(payload["tamper_removed"]),
-            inputs_line=bool(payload["inputs_line"]),
-            crashed=bool(payload["crashed"]),
-            seconds=float(payload["seconds"]),  # type: ignore[arg-type]
-            note=str(payload["note"]),
+            tree_rehearsal_control=(),
+            tree_rehearsal_defect=(MINI_DROPPED,),
+            reproducibility=repro_of(),
+            tamper_exit=EXIT_FAIL,
+            tamper_removed=TAMPER_TARGET,
+            inputs_line=True,
+            crashed=False,
+            seconds=24.0,
+            note="",
         )
+        return replace(base, **overrides)
 
     cases.check("빌드·소비·red 재현을 모두 본 관찰은 통과다", record().ok)
     cases.check("빌드가 실패하면 통과가 아니다", not record(build_exit=EXIT_FAIL).ok)

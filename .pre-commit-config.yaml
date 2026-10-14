@@ -6,7 +6,7 @@ repos:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
         types_or: [python, pyi, jupyter]
-        exclude: &immutable_qa ^docs/qa/sequential-improvement/[^/]+/raw/
+        exclude: &immutable_qa ^(docs/qa/sequential-improvement/[^/]+/raw/|docs/qa/2026-10-04-sequential-audit/|\.omo/evidence/web-search-answer/)
       - id: ruff-format
         types_or: [python, pyi, jupyter]
         exclude: *immutable_qa
@@ -21,7 +21,7 @@ repos:
       # 커밋 시 trailing-whitespace 가 번들 11개를 다시 써서 커밋이 중단됐다.
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
-        exclude: &immutable_bytes ^(src/antigravity_k/dashboard_dist/|docs/qa/sequential-improvement/[^/]+/raw/)
+        exclude: &immutable_bytes ^(src/antigravity_k/dashboard_dist/|docs/qa/sequential-improvement/[^/]+/raw/|docs/qa/2026-10-04-sequential-audit/|\.omo/evidence/web-search-answer/)
       - id: end-of-file-fixer
         exclude: *immutable_bytes
       - id: check-yaml

@@ -40,7 +40,10 @@ _SCRIPTS_DIR: Final[Path] = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from harness_contract import Floor, Probe, floor_problems, probe_problems  # noqa: E402, Literal
+if str(Path(__file__).resolve().parents[1]) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from scripts.harness_contract import Floor, Probe, floor_problems, probe_problems  # noqa: E402, Literal
 
 EXIT_OK: Final[int] = 0
 EXIT_FAILED: Final[int] = 1
@@ -910,6 +913,16 @@ def iter_citations(root: Path | None = None) -> Iterator[tuple[Path, str]]:
             yield doc, citation
 
 
+def proposed_citations(doc: Path) -> frozenset[str]:
+    text = doc.read_text(encoding="utf-8")
+    if not text.startswith("---\n"):
+        return frozenset()
+    frontmatter = text.split("\n---", 1)[0]
+    if "planning_only: true" not in frontmatter.splitlines():
+        return frozenset()
+    return frozenset(re.findall(r"<!-- proposed-path: ([^\s]+) -->", text))
+
+
 def count_citations(root: Path | None = None) -> int:
     """인용 수 — 이 리뷰의 하한이 재는 관측값이다(스캔이 깨지면 0 이 되고, 그때 하한이 문다)."""
 
@@ -948,8 +961,12 @@ def check_citation_tracking(docs_root: Path | None = None, *, on: str | None = N
     unresolved: list[str] = []
     untracked: list[str] = []
     total = 0
+    proposed = 0
     for doc, citation in iter_citations(root):
         total += 1
+        if citation in proposed_citations(doc):
+            proposed += 1
+            continue
         resolved = _resolve_citation(citation)
         if resolved is None:
             if citation not in registered:
@@ -994,7 +1011,9 @@ def check_citation_tracking(docs_root: Path | None = None, *, on: str | None = N
     return CheckResult(
         name="citation_tracking",
         passed=True,
-        detail=(f"인용 {total}건이 모두 실재·추적되고, 등록 {len(_CITATION_EXCEPTIONS)}건은 이유와 기한이 있다"),
+        detail=(
+            f"인용 {total - proposed}건이 실재·추적되고, 미구현 제안 {proposed}건은 별도 선언이며, 등록 {len(_CITATION_EXCEPTIONS)}건은 이유와 기한이 있다"
+        ),
         observed=total,
     )
 

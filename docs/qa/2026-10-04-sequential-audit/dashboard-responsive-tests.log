@@ -1,0 +1,11 @@
+Already up to date
+Done in 134ms using pnpm v11.3.0
+
+ RUN  v4.1.11 /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard
+
+
+ Test Files  125 passed (125)
+      Tests  1243 passed (1243)
+   Start at  12:36:09
+   Duration  13.61s (transform 5.59s, setup 30.16s, import 21.36s, tests 35.72s, environment 121.63s)
+

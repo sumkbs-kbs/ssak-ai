@@ -293,6 +293,41 @@
       "verified_digest": "452b68a4fef2fd434c4e92a6d27a642f557e79bc07e040efa3fe5d29389075e6",
       "verified_on": "2026-10-01",
       "method": "ruff-format whitespace-only reformat by pre-commit hook on 2026-09-27; AST verified identical to the frozen bytes that passed integrated QA (1,125 passed) and the v8 live run; no semantic change"
+    },
+    {
+      "doc": "T01a_typed_model.md",
+      "path": "src/antigravity_k/engine/cognitive/models.py",
+      "verified_digest": "1bae5123d3b8e13ff6f88a43ce67d54335de4ad7bf575b114fc83703f7927cc5",
+      "verified_on": "2026-10-15",
+      "method": "Main review of scoped type-gate closure: official full src/scripts basedpyright0 errors; selected regression343 passed, eight metadata/Git-boundary failures retained. Git boundary repaired and focused test passed; separate nullable ledger6 and ROOT enum/ledger checks pass. Historical approvals remain unchanged; no full suite, live model or release claim. Evidence: docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-FULL-TYPE-GATE-CLOSURE-01/run-20261014T143900Z-codex."
+    },
+    {
+      "doc": "T07_actions.md",
+      "path": "src/antigravity_k/engine/cognitive/actions.py",
+      "verified_digest": "285c28dfaf8c0b0c2b92e6d9f31be70b2b6b7a9174ce009e464beef889d40e84",
+      "verified_on": "2026-10-15",
+      "method": "Main review of scoped type-gate closure: official full src/scripts basedpyright0 errors; selected regression343 passed, eight metadata/Git-boundary failures retained. Git boundary repaired and focused test passed; separate nullable ledger6 and ROOT enum/ledger checks pass. Historical approvals remain unchanged; no full suite, live model or release claim. Evidence: docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-FULL-TYPE-GATE-CLOSURE-01/run-20261014T143900Z-codex."
+    },
+    {
+      "doc": "T11_surface.md",
+      "path": "scripts/measure_cognitive_surface.py",
+      "verified_digest": "40d6155c8c36e3a1aa8d10671888502c04f8ac6e15f430ce3dc72600bcadfb4f",
+      "verified_on": "2026-10-15",
+      "method": "Main review of scoped type-gate closure: official full src/scripts basedpyright0 errors; selected regression343 passed, eight metadata/Git-boundary failures retained. Git boundary repaired and focused test passed; separate nullable ledger6 and ROOT enum/ledger checks pass. Historical approvals remain unchanged; no full suite, live model or release claim. Evidence: docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-FULL-TYPE-GATE-CLOSURE-01/run-20261014T143900Z-codex."
+    },
+    {
+      "doc": "T13_growth.md",
+      "path": "src/antigravity_k/engine/cognitive/growth.py",
+      "verified_digest": "6670b19c4dd0dde983e610aabc45e23ba60f1024e7048143e99e589b73755385",
+      "verified_on": "2026-10-15",
+      "method": "Main review of scoped type-gate closure: official full src/scripts basedpyright0 errors; selected regression343 passed, eight metadata/Git-boundary failures retained. Git boundary repaired and focused test passed; separate nullable ledger6 and ROOT enum/ledger checks pass. Historical approvals remain unchanged; no full suite, live model or release claim. Evidence: docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-FULL-TYPE-GATE-CLOSURE-01/run-20261014T143900Z-codex."
+    },
+    {
+      "doc": "T13_live_pilot.md",
+      "path": "src/antigravity_k/engine/cognitive/live_pilot.py",
+      "verified_digest": "e81c990e15b5c47b0db933f3f60805ca648ed419940d546fc324192c7da0acd2",
+      "verified_on": "2026-10-15",
+      "method": "Main review of scoped type-gate closure: official full src/scripts basedpyright0 errors; selected regression343 passed, eight metadata/Git-boundary failures retained. Git boundary repaired and focused test passed; separate nullable ledger6 and ROOT enum/ledger checks pass. Historical approvals remain unchanged; no full suite, live model or release claim. Evidence: docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-FULL-TYPE-GATE-CLOSURE-01/run-20261014T143900Z-codex."
     }
   ],
   "command": [

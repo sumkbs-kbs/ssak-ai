@@ -1484,6 +1484,7 @@ class GrowthRunner:
         )
 
         corrected_dispatched = 0
+        dispatch_keys = [intent.action_key]
         if missing:
             # 누락 evidence를 읽은 뒤 정정 append를 한 번 더 낸다(재시도).
             corrected = append_intent(
@@ -1508,6 +1509,7 @@ class GrowthRunner:
             )
             second = dispatcher.execute(corrected, project_id=self.project_id, producer=self.producer)
             corrected_dispatched = 1 if same_enum(second.status, ActionExecutionStatus.DISPATCHED) else 0
+            dispatch_keys.append(corrected.action_key)
         dispatched_feedback = sum(1 for item in episode.feedback if item.executed)
         refused_feedback = sum(1 for item in episode.feedback if not item.executed)
         tool_calls = 1 + dispatched_feedback + corrected_dispatched
@@ -1539,9 +1541,6 @@ class GrowthRunner:
                 f"guards={[guard.value for guard in guards]}"
             ),
         )
-        dispatch_keys = [intent.action_key]
-        if missing:
-            dispatch_keys.append(corrected.action_key)
         return TaskRun(
             outcome=outcome,
             first_attempt_status=first_attempt_status,

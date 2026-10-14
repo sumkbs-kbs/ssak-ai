@@ -1,0 +1,226 @@
+Already up to date
+Done in 129ms using pnpm v11.3.0
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/e2e/tests/accessibility-hard-gate.spec.ts
+  64:6  warning  'ViewportName' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/e2e/tests/accessibility-inventory.spec.ts
+  12:29  warning  'Page' is defined but never used      @typescript-eslint/no-unused-vars
+  43:69  warning  'testInfo' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/e2e/tests/auth-bootstrap.spec.ts
+  11:24  warning  Unexpected empty object pattern  no-empty-pattern
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/e2e/tests/capture-desktop-layout.spec.ts
+  1:16  warning  'expect' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/api/client.ts
+  7:10  warning  'createAccessPinHeaders' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/components/Chat/ActivityTimeline.tsx
+  35:15  warning  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/components/Chat/ActivityTimeline.tsx:35:15
+  33 |   if (items.length === 0) return null;
+  34 |
+> 35 |   const now = Date.now();
+     |               ^^^^^^^^^^ Cannot call impure function
+  36 |   const chipLabels: string[] = [];
+  37 |   for (let i = items.length - 1; i >= 0 && chipLabels.length < 3; i -= 1) {
+  38 |     if (!chipLabels.includes(items[i].label)) chipLabels.push(items[i].label);  react-hooks/purity
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/components/Chat/ChatPage.tsx
+  529:18  warning  The ref value 'runGateRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'runGateRef.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+  707:36  warning  Unsafe usage of ReturnStatement                                                                                                                                                                                                                                      no-unsafe-finally
+  722:11  warning  Unsafe usage of ReturnStatement                                                                                                                                                                                                                                      no-unsafe-finally
+  839:18  warning  'error' is defined but never used                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/components/Chat/EnvironmentPanel.tsx
+  111:34  warning  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/components/Chat/EnvironmentPanel.tsx:111:34
+  109 |   const isStreaming = useChatStore((s) => s.isStreaming);
+  110 |
+> 111 |   const [now, setNow] = useState(Date.now());
+      |                                  ^^^^^^^^^^ Cannot call impure function
+  112 |   const [activityExpanded, setActivityExpanded] = useState(true);
+  113 |   const [errorsExpanded, setErrorsExpanded] = useState(true);
+  114 |  react-hooks/purity
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/components/Chat/__tests__/ChatPageRunOwnership.test.tsx
+  295:25  warning  '_value' is defined but never used  @typescript-eslint/no-unused-vars
+  352:30  warning  '_value' is defined but never used  @typescript-eslint/no-unused-vars
+  383:27  warning  '_value' is defined but never used  @typescript-eslint/no-unused-vars
+  451:27  warning  '_value' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/components/Editor/ChangePanel.tsx
+  134:5  warning  'approveChange' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  136:5  warning  'approveAll' is assigned a value but never used     @typescript-eslint/no-unused-vars
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/components/Editor/FolderBrowser.tsx
+  107:7   warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/components/Editor/FolderBrowser.tsx:107:7
+  105 |   useEffect(() => {
+  106 |     if (folderBrowserVisible) {
+> 107 |       setHistory([]);
+      |       ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  108 |       setHistoryIdx(-1);
+  109 |       const timer = setTimeout(() => void loadBrowse('', true), 0);
+  110 |       return () => clearTimeout(timer);                                                                                                                                                                                                                             react-hooks/set-state-in-effect
+  113:6   warning  React Hook useEffect has a missing dependency: 'loadBrowse'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  react-hooks/exhaustive-deps
+  190:33  warning  Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `browseData`, but the source dependencies were [browseData?.items, searchFilter]. Inferred less specific property than source.
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/components/Editor/FolderBrowser.tsx:190:33
+  188 |
+  189 |   // Filtered items
+> 190 |   const filteredItems = useMemo(() => {
+      |                                 ^^^^^^^
+> 191 |     if (!browseData?.items) return [];
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 192 |     if (!searchFilter.trim()) return browseData.items;
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 193 |     const q = searchFilter.trim().toLowerCase();
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 194 |     return browseData.items.filter(it => it.name.toLowerCase().includes(q));
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 195 |   }, [browseData?.items, searchFilter]);
+      | ^^^^ Could not preserve existing manual memoization
+  196 |
+  197 |   if (!folderBrowserVisible) return null;
+  198 |  react-hooks/preserve-manual-memoization
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/components/Search/SearchIntegrationPanel.tsx
+  364:14  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/components/Search/SearchIntegrationPanel.tsx:364:14
+  362 |
+  363 |     useEffect(() => {
+> 364 |         void refresh();
+      |              ^^^^^^^ Avoid calling setState() directly within an effect
+  365 |     }, [refresh]);
+  366 |
+  367 |     // 상대 시각("15분 전 수집")을 살아 있게 둔다 — 한 번 그린 시각이 굳으면 거짓이 된다  react-hooks/set-state-in-effect
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/components/shared/__tests__/SessionDisclosurePanel.test.tsx
+  8:26  warning  'fireEvent' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/features/task-execution/TaskQueuePanel.tsx
+  51:7  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/features/task-execution/TaskQueuePanel.tsx:51:7
+  49 |       && completedSubmitDraft.generation === draftGeneration
+  50 |     ) {
+> 51 |       setPrompt('');
+     |       ^^^^^^^^^ Avoid calling setState() directly within an effect
+  52 |       setDraftGeneration((generation) => generation + 1);
+  53 |     }
+  54 |   }, [completedSubmitDraft, draftGeneration, prompt]);  react-hooks/set-state-in-effect
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/hooks/useConversationFork.ts
+  59:3  warning  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/hooks/useConversationFork.ts:59:3
+  57 |   const isCompactingRef = useRef(options.isCompacting);
+  58 |   const onStatusRef = useRef(options.onStatus);
+> 59 |   isCompactingRef.current = options.isCompacting;
+     |   ^^^^^^^^^^^^^^^^^^^^^^^ Cannot update ref during render
+  60 |   onStatusRef.current = options.onStatus;
+  61 |
+  62 |   useEffect(() => {  react-hooks/refs
+  60:3  warning  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/hooks/useConversationFork.ts:60:3
+  58 |   const onStatusRef = useRef(options.onStatus);
+  59 |   isCompactingRef.current = options.isCompacting;
+> 60 |   onStatusRef.current = options.onStatus;
+     |   ^^^^^^^^^^^^^^^^^^^ Cannot update ref during render
+  61 |
+  62 |   useEffect(() => {
+  63 |     mountedRef.current = true;                               react-hooks/refs
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/pages/ModelHubPage.tsx
+  76:10  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/pages/ModelHubPage.tsx:76:10
+  74 |
+  75 |   useEffect(() => {
+> 76 |     void loadModels(false);
+     |          ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  77 |   }, [loadModels]);
+  78 |
+  79 |   const handleSelectModel = async (modelId: string) => {  react-hooks/set-state-in-effect
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/pages/SettingsPage.tsx
+  384:12  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/pages/SettingsPage.tsx:384:12
+  382 |   useEffect(() => {
+  383 |     if (mobileGuideOpen) {
+> 384 |       void loadNetworkAccessInfo();
+      |            ^^^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  385 |     }
+  386 |   }, [mobileGuideOpen, loadNetworkAccessInfo]);
+  387 |  react-hooks/set-state-in-effect
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/stores/chatStore.ts
+  188:23  warning  'activeSessionId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  403:15  warning  'activeSession' is assigned a value but never used    @typescript-eslint/no-unused-vars
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/stores/fileStore.ts
+  98:29  warning  '_epoch' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/utils/__tests__/exhaustedNotification.test.ts
+  7:36  warning  'beforeEach' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/src/utils/monacoRuntime.test.ts
+  15:10  warning  'configureLocalMonacoRuntime' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/dashboard/vite.backendHealth.ts
+  64:3  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+  67:5  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+  70:3  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+
+✖ 36 problems (0 errors, 36 warnings)
+  0 errors and 3 warnings potentially fixable with the `--fix` option.
+

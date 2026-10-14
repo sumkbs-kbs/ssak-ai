@@ -1,0 +1,7 @@
+vector_store_sha256=147cea96911f438fa1c42086924988288651d5fbfa96d21d82b2361e9c194680
+{"clients_requested": 8, "clients_opened": 8, "failures": []}
+PASS: unrelated GBrain close preserves live VectorStore system
+PASS: fixture-owned import singleton closed through GBrain.close
+{"owned_chroma_systems_remaining": 0}
+PASS: eight clients initialized; live peer survived closes; persistent reopen count=1
+PASS: disposable tree removed; worker pool joined

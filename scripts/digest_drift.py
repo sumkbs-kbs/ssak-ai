@@ -45,7 +45,10 @@ _SCRIPTS_DIR: Final[Path] = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from harness_contract import (  # noqa: E402
+if str(Path(__file__).resolve().parents[1]) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from scripts.harness_contract import (  # noqa: E402
     Cases,
     Floor,
     Probe,
@@ -154,7 +157,7 @@ class Drift:
 
     @property
     def counts(self) -> dict[str, int]:
-        counts = dict.fromkeys(STATUSES, 0)
+        counts: dict[str, int] = dict.fromkeys(STATUSES, 0)
         for pin in self.pins:
             counts[pin.status] += 1
         return counts

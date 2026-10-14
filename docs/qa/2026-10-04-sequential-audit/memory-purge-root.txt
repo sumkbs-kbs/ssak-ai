@@ -1,0 +1,7 @@
+{"phase": "seeded", "nodes_edges_vectors_tick": [2, 1, 2, 3]}
+{"phase": "purged", "deleted": 2, "nodes_edges_vectors_tick": [0, 0, 0, 0]}
+{"phase": "reopened", "nodes_edges_vectors_tick": [0, 0, 0, 0]}
+{"phase": "disk", "graphml_sha256": "0b0beff3c42dde04ae204d307a4b0f978da1ab73ec036109b7ba7da3c21e2e67", "graphml_nodes": 0, "graphml_edges": 0}
+{"phase": "closed", "rejected": true}
+PASS: constructor, seeded reopen, purge, purged reopen, disk graph, closed contract
+PASS: temporary home removed

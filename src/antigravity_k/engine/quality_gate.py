@@ -634,11 +634,14 @@ class QualityGate:
         """
         score = 1.0
         issues: list[str] = []
-        if len(output) < 300:
-            return score, issues
-
         prose = re.sub(r"```(?:\w+)?\s*.*?```", "", output, flags=re.DOTALL).strip()
         if not prose:
+            return score, issues
+
+        # Short words can supply a full vocabulary sample below 300 characters.
+        # Keep identifier suffixes so id1 and id2 are not counted as the same word.
+        words = re.findall(r"[가-힣a-zA-Z][가-힣a-zA-Z0-9_]+", prose.lower())
+        if len(output) < 300 and len(words) <= 50:
             return score, issues
 
         # 1. 문장 단위 반복 감지
@@ -667,7 +670,6 @@ class QualityGate:
                 issues.append("구조 요소 부족 (heading/list/table 없는 긴 산문)")
 
         # 3. 고유 단어 비율 (filler 탐지)
-        words = re.findall(r"[가-힣a-zA-Z]{2,}", prose.lower())
         if len(words) > 50:
             unique_words = set(words)
             vocab_richness = len(unique_words) / len(words)

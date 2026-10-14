@@ -89,6 +89,7 @@ async def paused_chat_stream(boundary: Boundary, body: bytes) -> StreamingRespon
 
     with pytest.MonkeyPatch.context() as transport:
         transport.setattr(chat, "StreamingResponse", PausedResponse)
+        transport.setattr(chat, "AgentStreamingResponse", PausedResponse)
         await boundary.app(scope, receive, send)
     assert len(responses) == 1
     return responses[0]

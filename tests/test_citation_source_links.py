@@ -24,7 +24,7 @@ TABLE_REPLY: Final = (
 )
 
 
-def _production_final(tmp_path: Path, reply: str, evidence: str = SEARCH_RESULT) -> str:
+def _production_final(tmp_path: Path, reply: str, evidence: str = SEARCH_RESULT, request: str = SEARCH_REQUEST) -> str:
     tool_call = (
         '<tool_call>{"name":"web_search","arguments":{"query":"Python list tuple official documentation"}}</tool_call>'
     )
@@ -39,12 +39,12 @@ def _production_final(tmp_path: Path, reply: str, evidence: str = SEARCH_RESULT)
         monkeypatch.setattr(orch.ctx.tool_executor, "execute_async", search_result)
         store = TaskStateStore(str(tmp_path / "synthetic-citation.db"))
         execution = DirectTaskExecution(orch, _TaskRunner(store))
-        context = execution._create_execution(SEARCH_REQUEST, "interactive")
+        context = execution._create_execution(request, "interactive")
         assert context is not None
         orch.task_execution_context = context
         token = set_chat_stream_events(True)
         try:
-            chunks = list(orch.run_stream([{"role": "user", "content": SEARCH_REQUEST}], "controlled-model"))
+            chunks = list(orch.run_stream([{"role": "user", "content": request}], "controlled-model"))
         finally:
             reset_chat_stream_events(token)
         finals = [str(chunk) for chunk in chunks if isinstance(chunk, FinalChunk)]
@@ -116,3 +116,18 @@ def test_unknown_citation_does_not_resolve_to_unrelated_source_url(tmp_path: Pat
     assert "unknown-id" not in final
     assert f"[docs.python.org](<{PUBLIC_URL}>)" in final
     assert "Invented quantum fact" not in final
+
+
+def test_supported_table_survives_filtering_of_unrelated_unsupported_prose() -> None:
+    from antigravity_k.engine.tool_loop import ToolLoopEngine
+
+    # Given
+    source = CitationSource(
+        "python-types", "Built-in Types", "Lists are mutable sequences. Tuples are immutable sequences.", PUBLIC_URL
+    )
+    draft = TABLE_REPLY + "\n\nAll tuples can always be dictionary keys. [citation:python-types]"
+    report = evaluate_citations(draft, [source])
+    # When
+    recovered = ToolLoopEngine._supported_claim_fallback(report, draft)
+    # Then
+    assert recovered == TABLE_REPLY

@@ -192,10 +192,16 @@ class ConversationRecord:
         )
 
     def prompt_messages(self) -> list[dict[str, str]]:
-        """History assembled for the next model call (authoritative)."""
+        """Server-owned history, without promoting summary text to system authority.
+
+        Summaries can contain user instructions and untrusted tool output. Treat
+        them as assistant history at the model boundary, including legacy stored
+        system summaries. Keep persisted roles and original exports unchanged.
+        """
         out: list[dict[str, str]] = []
         for msg in self.messages:
-            out.append({"role": msg.role, "content": msg.content})
+            role = "assistant" if msg.provenance == "summary" else msg.role
+            out.append({"role": role, "content": msg.content})
         return out
 
     def estimate_tokens(self) -> int:
