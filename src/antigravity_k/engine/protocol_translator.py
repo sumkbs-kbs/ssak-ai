@@ -18,6 +18,8 @@ from collections.abc import Mapping
 from enum import Enum
 from typing import TypedDict, TypeGuard, cast
 
+from antigravity_k.engine.structured_output import parse_output_contract
+
 logger = logging.getLogger("antigravity_k.protocol_translator")
 
 Payload = dict[str, object]
@@ -255,12 +257,12 @@ class ProtocolTranslator:
         for msg in messages:
             role = _text(msg.get("role", ""))
             raw_content = self._extract_content(msg.get("content", ""))
-            content: str = raw_content if isinstance(raw_content, str) else ""
             if role == "system":
-                system_msg = content
+                system_msg = raw_content if isinstance(raw_content, str) else ""
             else:
-                chat_messages.append({"role": role, "content": content})
+                chat_messages.append({"role": role, "content": raw_content})
 
+        output_contract = parse_output_contract(body.get("response_format"))
         return {
             "messages": chat_messages,
             "system": system_msg,
@@ -270,6 +272,7 @@ class ProtocolTranslator:
             "top_p": _number(body.get("top_p", 0.9), 0.9),
             "stream": _boolean(body.get("stream", False)),
             "stop": _strings(body.get("stop", [])),
+            **({"response_format": output_contract.native_format()} if output_contract is not None else {}),
         }
 
     # ─── Anthropic → 내부 ───────────────────────────────────────────

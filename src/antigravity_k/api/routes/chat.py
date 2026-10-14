@@ -21,6 +21,7 @@ from antigravity_k.api.dependencies import (
 from antigravity_k.engine.audit_logger import get_audit_logger
 from antigravity_k.engine.model_manager import ModelManager
 from antigravity_k.engine.protocol_translator import APIFormat, ProtocolTranslator
+from antigravity_k.engine.structured_output import StructuredOutputError, parse_output_contract
 from antigravity_k.engine.tokenizer import TokenEstimator
 
 logger = logging.getLogger("antigravity_k.api.chat")
@@ -561,6 +562,34 @@ async def chat_completions(
     except json.JSONDecodeError:
         raise HTTPException(status_code=400, detail="Invalid JSON body")
 
+    try:
+        output_contract = parse_output_contract(body.get("response_format"))
+    except StructuredOutputError as exc:
+        raise HTTPException(status_code=400, detail={"type": "invalid_request_error", "message": str(exc)}) from exc
+    if output_contract is not None:
+        profile = manager._registry.get_model(_string_value(body.get("model")))
+        incompatible = any(
+            body.get(flag)
+            for flag in ("agent_mode", "plan_mode", "tdd_mode", "web_search", "code_mode", "mcp_servers", "stream")
+        )
+        if (
+            incompatible
+            or manager.router.get_combo(_string_value(body.get("model"))) is not None
+            or body.get("tools") is not None
+            or body.get("tool_choice") is not None
+            or profile is None
+            or profile.provider != "ollama"
+            or not profile.repo.lower().startswith("qwen3")
+            or "qwen3" not in profile.name.lower()
+        ):
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "type": "invalid_request_error",
+                    "message": "Structured output requires a direct non-streaming native Ollama qwen3 completion without tools",
+                },
+            )
+
     # NX-09-F03/ADR-0005: 첨부는 **거부도 이유와 함께** 해야 한다. 예전에는 화면이
     # 이미지 바이트를 아예 보내지 않아 모델이 파일명만 봤다(조용한 대체).
     from antigravity_k.engine import multimodal
@@ -657,7 +686,7 @@ async def chat_completions(
             messages.insert(0, cast(ChatMessage, {"role": "system", "content": restored_context}))
 
     is_stream = _bool_value(body.get("stream"))
-    is_agent_mode = _bool_value(body.get("agent_mode"), default=True)
+    is_agent_mode = _bool_value(body.get("agent_mode"), default=output_contract is None)
     is_plan_mode = _bool_value(body.get("plan_mode"))
     from antigravity_k.engine.access_mode import AccessMode, get_access_mode
 
@@ -686,7 +715,7 @@ async def chat_completions(
 
     is_fast_search = False
 
-    if not is_tdd_mode and slash_text:
+    if output_contract is None and not is_tdd_mode and slash_text:
         _skip_intent_classification = False
         if slash_text.startswith("/") or is_self_capability_request(slash_text):
             _skip_intent_classification = True
@@ -931,7 +960,7 @@ async def chat_completions(
         is_self_capability_request,
     )
 
-    if is_self_capability_request(slash_text):
+    if output_contract is None and is_self_capability_request(slash_text):
         from antigravity_k.api.dependencies import get_slash_registry
         from antigravity_k.engine.skill_loader import SkillLoader
         from antigravity_k.tools.tool_registry import ToolRegistry
@@ -972,7 +1001,7 @@ async def chat_completions(
         target_format = source_format if source_format != APIFormat.INTERNAL else APIFormat.OPENAI
         return translator.translate_response(internal_resp, target=target_format)
 
-    if slash_text.startswith("/"):
+    if output_contract is None and slash_text.startswith("/"):
         from antigravity_k.api.dependencies import get_slash_registry
 
         registry = get_slash_registry()
@@ -1147,7 +1176,7 @@ async def chat_completions(
         if has_image:
             break
 
-    if has_image:
+    if has_image and output_contract is None:
         # config.yaml의 defaults.vision 모델로 자동 전환
         import yaml
 
@@ -1369,11 +1398,13 @@ async def chat_completions(
     prompt += "Assistant: "
 
     try:
-        kwargs = {
+        kwargs: JsonMap = {
             "max_tokens": internal_req.get("max_tokens", 1024),
             "temperature": internal_req.get("temperature", 0.7),
             "raw_messages": messages,
         }
+        if output_contract is not None:
+            kwargs["response_format"] = output_contract.native_format()
 
         if is_stream:
 
@@ -1407,6 +1438,8 @@ async def chat_completions(
             return StreamingResponse(event_generator_native(), media_type="text/event-stream")
         else:
             response_text = manager.generate(prompt=prompt, target=target_model, **kwargs)
+            if output_contract is not None:
+                output_contract.validate_content(response_text)
 
             user_msg = _latest_user_text(messages)
             session_manager.add_turn(
@@ -1425,6 +1458,8 @@ async def chat_completions(
             }
             target_format = source_format if source_format != APIFormat.INTERNAL else APIFormat.OPENAI
             return translator.translate_response(internal_resp, target=target_format)
+    except StructuredOutputError as exc:
+        raise HTTPException(status_code=502, detail={"type": "structured_output_error", "message": str(exc)}) from exc
     except Exception as e:
         logger.error("Generation error: %s", e, exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
