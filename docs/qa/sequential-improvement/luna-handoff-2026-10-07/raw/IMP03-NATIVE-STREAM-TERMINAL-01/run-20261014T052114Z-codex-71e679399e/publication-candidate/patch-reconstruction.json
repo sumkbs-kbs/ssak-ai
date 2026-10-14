@@ -1,0 +1,35 @@
+{
+  "exit_code": 0,
+  "files": [
+    {
+      "path": "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+      "sha256": "4b57852c594f0bf531525996cfa53df239eea71b0a3dbe432d0a2c2b5583cef9",
+      "matches": true
+    },
+    {
+      "path": "src/antigravity_k/engine/provider_adapters/transport_errors.py",
+      "sha256": "6b936e5de490edfe6ef7630187ed98517c2877533c3570c74e8eef7455581ac2",
+      "matches": true
+    },
+    {
+      "path": "src/antigravity_k/api/routes/chat.py",
+      "sha256": "36353d61e352b20b1bafcc828b16117cf3853fdf7af6ec31b28dde398b475ddb",
+      "matches": true
+    },
+    {
+      "path": "src/antigravity_k/api/routes/messages_api.py",
+      "sha256": "9ed49800a2ccb81dadbdb3ab0a74e1d3e77892cfd3587246bf3514ec19714d7b",
+      "matches": true
+    },
+    {
+      "path": "tests/test_native_stream_terminal_contract.py",
+      "sha256": "6998a24fe613ab90581090b5d97c02f7d21ca96d54a73a88de2c2876bd2078b4",
+      "matches": true
+    },
+    {
+      "path": "tests/test_inference_providers.py",
+      "sha256": "d52f6e6cccc9f1dbbfade2f8e796efaffb0e3273f17f05a2a417aac5f557066f",
+      "matches": true
+    }
+  ]
+}

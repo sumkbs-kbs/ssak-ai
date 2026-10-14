@@ -1,0 +1,30 @@
+{
+  "nodeid": "tests/test_native_transport_error_contract.py::test_native_transport_failure_is_non_success_once[failure2-503-None-/v1/messages]",
+  "wire": [],
+  "manager_calls": 1,
+  "provider_calls": 0,
+  "metadata_calls": [
+    {
+      "name": "qwen3.8"
+    }
+  ],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 503,
+      "body": "{\"error\":{\"type\":\"provider_transport_error\",\"code\":\"provider_unavailable\",\"message\":\"The model provider is unavailable.\"}}",
+      "request": {
+        "model": "qwen3.8",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "agent_mode": false,
+        "max_tokens": 128
+      }
+    }
+  ]
+}

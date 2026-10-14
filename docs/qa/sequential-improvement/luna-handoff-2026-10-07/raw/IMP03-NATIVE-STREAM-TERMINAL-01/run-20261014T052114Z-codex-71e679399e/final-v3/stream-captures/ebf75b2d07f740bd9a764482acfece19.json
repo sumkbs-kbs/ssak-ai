@@ -1,0 +1,54 @@
+{
+  "nodeid": "tests/test_native_stream_terminal_contract.py::test_tools_transport_failure_never_falls_back[error0]",
+  "wire": [
+    {
+      "model": "qwen3.8",
+      "stream": true,
+      "keep_alive": "30m",
+      "think": false,
+      "options": {
+        "num_ctx": 32768,
+        "num_predict": 4096,
+        "temperature": 0.5,
+        "repeat_penalty": 1.0,
+        "min_p": 0.05
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "/no_think\nAnswer directly. Do not output hidden reasoning, thinking traces, <think>, or <thought> blocks."
+        },
+        {
+          "role": "user",
+          "content": "read sentinel"
+        }
+      ],
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "parameters": {
+              "type": "object"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "upstream_hex_or_error_type": [
+    "HTTPError"
+  ],
+  "usage": [
+    {
+      "model_name": "qwen3.8",
+      "latency_ms": 0.12111663818359375,
+      "success": false,
+      "error": "The model provider returned an unsuccessful HTTP response.",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0,
+  "sleeps": []
+}

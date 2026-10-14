@@ -1,0 +1,7 @@
+{
+  "status": 200,
+  "headers": {
+    "content-type": "text/event-stream; charset=utf-8"
+  },
+  "sse": "data: {\"id\": \"chatcmpl-stream\", \"object\": \"chat.completion.chunk\", \"model\": \"qwen3.8\", \"choices\": [{\"delta\": {\"content\": \"partial\"}, \"index\": 0, \"finish_reason\": null}]}\n\nevent: error\ndata: {\"error\": {\"type\": \"provider_protocol_error\", \"code\": \"incomplete_stream\", \"message\": \"The model provider returned an invalid or incomplete stream.\"}}\n\n"
+}

@@ -1,0 +1,35 @@
+{
+  "task": "IMP-03-NATIVE-STREAM-TERMINAL-01",
+  "status": "COMPLETE_OFFLINE",
+  "review": "PENDING",
+  "checks": "final-v3/checks.json",
+  "junit": "final-v3/junit.xml",
+  "tests": 101,
+  "failed": 0,
+  "source_sha256": {
+    "src/antigravity_k/engine/provider_adapters/inference_providers.py": "4b57852c594f0bf531525996cfa53df239eea71b0a3dbe432d0a2c2b5583cef9",
+    "src/antigravity_k/engine/provider_adapters/transport_errors.py": "6b936e5de490edfe6ef7630187ed98517c2877533c3570c74e8eef7455581ac2",
+    "src/antigravity_k/api/routes/chat.py": "99669a95f7c7cc831f695f4ab81f4d5d268facd31901cb3db1d1d7252dd938c5",
+    "src/antigravity_k/api/routes/messages_api.py": "bc9c065ac21302a2c48fd3aaf3e18f3a1b990f37cd7a70a653208257c4a9816a",
+    "tests/test_native_stream_terminal_contract.py": "6998a24fe613ab90581090b5d97c02f7d21ca96d54a73a88de2c2876bd2078b4",
+    "tests/test_inference_providers.py": "89b3078019221260b9161eee717de2a730270aad014f73ba375b213da082d7ca"
+  },
+  "counts": {
+    "captures": 19,
+    "wire_calls": 21,
+    "success_usage": 5,
+    "failed_usage": 16,
+    "sleep_calls": 0
+  },
+  "physical_socket_attempts": 0,
+  "patch": "task-only.patch",
+  "reconstruction": "patch-reconstruction.json",
+  "live": "NOT_RUN_BY_WORKER",
+  "commit_push": "NOT_PERFORMED",
+  "limitations": [
+    "Initial red Messages2cases were request-validation400, not targetfailure; preserved",
+    "Initial red test source not separately snapshotted",
+    "ToolLoop uses real engine/manager/provider and owned read tool; surrounding orchestrator mocked",
+    "No complete agent SSE lifecycle proof"
+  ]
+}

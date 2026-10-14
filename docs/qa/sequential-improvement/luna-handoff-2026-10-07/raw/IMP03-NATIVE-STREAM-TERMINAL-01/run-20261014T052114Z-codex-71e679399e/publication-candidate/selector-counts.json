@@ -1,0 +1,7 @@
+{
+  "tests.test_native_stream_terminal_contract": 19,
+  "tests.test_native_transport_error_contract": 21,
+  "tests.test_inference_providers": 10,
+  "tests.test_chat_structured_output_contract": 36,
+  "tests.test_messages_streaming": 6
+}

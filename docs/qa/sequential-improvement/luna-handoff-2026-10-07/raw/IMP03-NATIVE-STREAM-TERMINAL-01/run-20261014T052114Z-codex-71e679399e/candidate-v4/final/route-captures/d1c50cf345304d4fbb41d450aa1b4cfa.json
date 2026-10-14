@@ -1,0 +1,87 @@
+{
+  "nodeid": "tests/test_chat_structured_output_contract.py::test_invalid_output_is_not_success[```json\\n{\"red_circles\":2,\"blue_squares\":1}\\n```]",
+  "wire": [
+    {
+      "model": "qwen3.8",
+      "stream": false,
+      "keep_alive": "30m",
+      "think": false,
+      "options": {
+        "num_ctx": 32768,
+        "num_predict": 4096,
+        "temperature": 0.7,
+        "min_p": 0.05,
+        "repeat_penalty": 1.3
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "/no_think\nAnswer directly. Do not output hidden reasoning, thinking traces, <think>, or <thought> blocks."
+        },
+        {
+          "role": "user",
+          "content": "Count the shapes and return JSON."
+        }
+      ],
+      "format": {
+        "type": "object",
+        "properties": {
+          "red_circles": {
+            "type": "integer"
+          },
+          "blue_squares": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "red_circles",
+          "blue_squares"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ],
+  "manager_calls": 1,
+  "provider_calls": 1,
+  "metadata_calls": [],
+  "upstream_content": "```json\n{\"red_circles\":2,\"blue_squares\":1}\n```",
+  "responses": [
+    {
+      "status": 502,
+      "body": "{\"detail\":{\"type\":\"structured_output_error\",\"message\":\"Model content is not strict JSON\"}}",
+      "request": {
+        "model": "qwen3.8",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Count the shapes and return JSON."
+          }
+        ],
+        "response_format": {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "shapes",
+            "strict": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "red_circles": {
+                  "type": "integer"
+                },
+                "blue_squares": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "red_circles",
+                "blue_squares"
+              ],
+              "additionalProperties": false
+            }
+          }
+        }
+      }
+    }
+  ]
+}

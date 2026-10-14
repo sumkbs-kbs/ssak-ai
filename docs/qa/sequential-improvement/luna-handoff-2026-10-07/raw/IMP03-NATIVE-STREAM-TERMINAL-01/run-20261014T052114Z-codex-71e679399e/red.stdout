@@ -1,0 +1,312 @@
+FFFFFFFFFFFF.                                                            [100%]
+=================================== FAILURES ===================================
+_ test_incomplete_tool_stream_never_emits_or_retries[{"error": "private upstream error"}\n] _
+
+stream_case = (<starlette.testclient.TestClient object at 0x11fbd5160>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...odel_name': 'qwen3.8', 'tokens_in': 3, 'tokens_out': 0, 'latency_ms': 14.111995697021484, ...}], 'persisted': [], ...})
+raw = b'{"error": "private upstream error"}\n'
+
+    @pytest.mark.parametrize("raw", [
+        ndjson({"error": "private upstream error"}),
+        ndjson(CALL),
+        ndjson(CALL) + b"{bad\n",
+        ndjson(CALL) + b"\xff\n",
+        ndjson(CALL, {"done": 1}),
+        ndjson({"message": {"content": '<tool_call>{"name":"read_file","arguments":{}}</tool_call>'}, "done": False}),
+    ])
+    def test_incomplete_tool_stream_never_emits_or_retries(stream_case, raw):
+        _, body, manager, state = stream_case
+        state["responses"] = [raw, raw, raw]
+        emitted = []
+>       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:69: Failed
+_ test_incomplete_tool_stream_never_emits_or_retries[{"message": {"tool_calls": [{"function": {"name": "read_file", "arguments": {"file_path": "sentinel"}}}]}, "done": false}\n] _
+
+stream_case = (<starlette.testclient.TestClient object at 0x11fbe9d10>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...odel_name': 'qwen3.8', 'tokens_in': 3, 'tokens_out': 22, 'latency_ms': 0.186920166015625, ...}], 'persisted': [], ...})
+raw = b'{"message": {"tool_calls": [{"function": {"name": "read_file", "arguments": {"file_path": "sentinel"}}}]}, "done": false}\n'
+
+    @pytest.mark.parametrize("raw", [
+        ndjson({"error": "private upstream error"}),
+        ndjson(CALL),
+        ndjson(CALL) + b"{bad\n",
+        ndjson(CALL) + b"\xff\n",
+        ndjson(CALL, {"done": 1}),
+        ndjson({"message": {"content": '<tool_call>{"name":"read_file","arguments":{}}</tool_call>'}, "done": False}),
+    ])
+    def test_incomplete_tool_stream_never_emits_or_retries(stream_case, raw):
+        _, body, manager, state = stream_case
+        state["responses"] = [raw, raw, raw]
+        emitted = []
+>       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:69: Failed
+_ test_incomplete_tool_stream_never_emits_or_retries[{"message": {"tool_calls": [{"function": {"name": "read_file", "arguments": {"file_path": "sentinel"}}}]}, "done": false}\n{bad\n] _
+
+stream_case = (<starlette.testclient.TestClient object at 0x11fbbf750>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...el_name': 'qwen3.8', 'tokens_in': 3, 'tokens_out': 22, 'latency_ms': 0.15473365783691406, ...}], 'persisted': [], ...})
+raw = b'{"message": {"tool_calls": [{"function": {"name": "read_file", "arguments": {"file_path": "sentinel"}}}]}, "done": false}\n{bad\n'
+
+    @pytest.mark.parametrize("raw", [
+        ndjson({"error": "private upstream error"}),
+        ndjson(CALL),
+        ndjson(CALL) + b"{bad\n",
+        ndjson(CALL) + b"\xff\n",
+        ndjson(CALL, {"done": 1}),
+        ndjson({"message": {"content": '<tool_call>{"name":"read_file","arguments":{}}</tool_call>'}, "done": False}),
+    ])
+    def test_incomplete_tool_stream_never_emits_or_retries(stream_case, raw):
+        _, body, manager, state = stream_case
+        state["responses"] = [raw, raw, raw]
+        emitted = []
+>       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:69: Failed
+_ test_incomplete_tool_stream_never_emits_or_retries[{"message": {"tool_calls": [{"function": {"name": "read_file", "arguments": {"file_path": "sentinel"}}}]}, "done": false}\n\xff\n] _
+
+stream_case = (<starlette.testclient.TestClient object at 0x11fccc510>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...del_name': 'qwen3.8', 'tokens_in': 3, 'tokens_out': 24, 'latency_ms': 0.7219314575195312, ...}], 'persisted': [], ...})
+raw = b'{"message": {"tool_calls": [{"function": {"name": "read_file", "arguments": {"file_path": "sentinel"}}}]}, "done": false}\n\xff\n'
+
+    @pytest.mark.parametrize("raw", [
+        ndjson({"error": "private upstream error"}),
+        ndjson(CALL),
+        ndjson(CALL) + b"{bad\n",
+        ndjson(CALL) + b"\xff\n",
+        ndjson(CALL, {"done": 1}),
+        ndjson({"message": {"content": '<tool_call>{"name":"read_file","arguments":{}}</tool_call>'}, "done": False}),
+    ])
+    def test_incomplete_tool_stream_never_emits_or_retries(stream_case, raw):
+        _, body, manager, state = stream_case
+        state["responses"] = [raw, raw, raw]
+        emitted = []
+>       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:69: Failed
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.inference_providers:inference_providers.py:879 Ollama native tools rejected; retrying with XML tool protocol
+ERROR    antigravity_k.inference_providers:inference_providers.py:893 Local API stream failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 874, in stream_generate
+    yield from self._iter_stream_response(response, cast(list[DynamicValue] | None, tools_schema))
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 723, in _iter_stream_response
+    line_text = line.decode("utf-8").strip()
+                ~~~~~~~~~~~^^^^^^^^^
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+_ test_incomplete_tool_stream_never_emits_or_retries[{"message": {"tool_calls": [{"function": {"name": "read_file", "arguments": {"file_path": "sentinel"}}}]}, "done": false}\n{"done": 1}\n] _
+
+stream_case = (<starlette.testclient.TestClient object at 0x11fccec40>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...el_name': 'qwen3.8', 'tokens_in': 3, 'tokens_out': 22, 'latency_ms': 0.15592575073242188, ...}], 'persisted': [], ...})
+raw = b'{"message": {"tool_calls": [{"function": {"name": "read_file", "arguments": {"file_path": "sentinel"}}}]}, "done": false}\n{"done": 1}\n'
+
+    @pytest.mark.parametrize("raw", [
+        ndjson({"error": "private upstream error"}),
+        ndjson(CALL),
+        ndjson(CALL) + b"{bad\n",
+        ndjson(CALL) + b"\xff\n",
+        ndjson(CALL, {"done": 1}),
+        ndjson({"message": {"content": '<tool_call>{"name":"read_file","arguments":{}}</tool_call>'}, "done": False}),
+    ])
+    def test_incomplete_tool_stream_never_emits_or_retries(stream_case, raw):
+        _, body, manager, state = stream_case
+        state["responses"] = [raw, raw, raw]
+        emitted = []
+>       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:69: Failed
+_ test_incomplete_tool_stream_never_emits_or_retries[{"message": {"content": "<tool_call>{\"name\":\"read_file\",\"arguments\":{}}</tool_call>"}, "done": false}\n] _
+
+stream_case = (<starlette.testclient.TestClient object at 0x11fccf6f0>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...el_name': 'qwen3.8', 'tokens_in': 3, 'tokens_out': 15, 'latency_ms': 0.15616416931152344, ...}], 'persisted': [], ...})
+raw = b'{"message": {"content": "<tool_call>{\\"name\\":\\"read_file\\",\\"arguments\\":{}}</tool_call>"}, "done": false}\n'
+
+    @pytest.mark.parametrize("raw", [
+        ndjson({"error": "private upstream error"}),
+        ndjson(CALL),
+        ndjson(CALL) + b"{bad\n",
+        ndjson(CALL) + b"\xff\n",
+        ndjson(CALL, {"done": 1}),
+        ndjson({"message": {"content": '<tool_call>{"name":"read_file","arguments":{}}</tool_call>'}, "done": False}),
+    ])
+    def test_incomplete_tool_stream_never_emits_or_retries(stream_case, raw):
+        _, body, manager, state = stream_case
+        state["responses"] = [raw, raw, raw]
+        emitted = []
+>       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:69: Failed
+_ test_direct_sse_failure_has_no_success_terminal[{"error": "private upstream"}\n-/v1/chat/completions] _
+
+stream_case = (<starlette.testclient.TestClient object at 0x11fcf82b0>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...803161621094, ...}], 'persisted': [([{'role': 'user', 'content': '안녕'}, {'role': 'assistant', 'content': ''}],)], ...})
+route = '/v1/chat/completions', raw = b'{"error": "private upstream"}\n'
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("raw", [ndjson({"error": "private upstream"}), ndjson({"message": {"content": "partial"}, "done": False})])
+    def test_direct_sse_failure_has_no_success_terminal(stream_case, route, raw):
+        client, body, _, state = stream_case
+        state["responses"] = [raw]
+        response = client.post(route, json=body)
+        assert response.status_code == 200
+>       assert '"provider_protocol_error"' in response.text
+E       assert '"provider_protocol_error"' in 'data: [DONE]\n\n'
+E        +  where 'data: [DONE]\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:84: AssertionError
+_ test_direct_sse_failure_has_no_success_terminal[{"error": "private upstream"}\n-/v1/messages] _
+
+stream_case = (<starlette.testclient.TestClient object at 0x11fcf9940>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...ct at 0x11fcd3020>, {'responses': [b'{"error": "private upstream"}\n'], 'wire': [], 'usage': [], 'persisted': [], ...})
+route = '/v1/messages', raw = b'{"error": "private upstream"}\n'
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("raw", [ndjson({"error": "private upstream"}), ndjson({"message": {"content": "partial"}, "done": False})])
+    def test_direct_sse_failure_has_no_success_terminal(stream_case, route, raw):
+        client, body, _, state = stream_case
+        state["responses"] = [raw]
+        response = client.post(route, json=body)
+>       assert response.status_code == 200
+E       assert 400 == 200
+E        +  where 400 = <Response [400 Bad Request]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:83: AssertionError
+_ test_direct_sse_failure_has_no_success_terminal[{"message": {"content": "partial"}, "done": false}\n-/v1/chat/completions] _
+
+stream_case = (<starlette.testclient.TestClient object at 0x11fccf490>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...10938, ...}], 'persisted': [([{'role': 'user', 'content': '안녕'}, {'role': 'assistant', 'content': 'partial'}],)], ...})
+route = '/v1/chat/completions'
+raw = b'{"message": {"content": "partial"}, "done": false}\n'
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("raw", [ndjson({"error": "private upstream"}), ndjson({"message": {"content": "partial"}, "done": False})])
+    def test_direct_sse_failure_has_no_success_terminal(stream_case, route, raw):
+        client, body, _, state = stream_case
+        state["responses"] = [raw]
+        response = client.post(route, json=body)
+        assert response.status_code == 200
+>       assert '"provider_protocol_error"' in response.text
+E       assert '"provider_protocol_error"' in 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "qwen3.8", "choices": [{"delta": {"content": "partial"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n'
+E        +  where 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "qwen3.8", "choices": [{"delta": {"content": "partial"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:84: AssertionError
+_ test_direct_sse_failure_has_no_success_terminal[{"message": {"content": "partial"}, "done": false}\n-/v1/messages] _
+
+stream_case = (<starlette.testclient.TestClient object at 0x11fccdf30>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...'responses': [b'{"message": {"content": "partial"}, "done": false}\n'], 'wire': [], 'usage': [], 'persisted': [], ...})
+route = '/v1/messages'
+raw = b'{"message": {"content": "partial"}, "done": false}\n'
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("raw", [ndjson({"error": "private upstream"}), ndjson({"message": {"content": "partial"}, "done": False})])
+    def test_direct_sse_failure_has_no_success_terminal(stream_case, route, raw):
+        client, body, _, state = stream_case
+        state["responses"] = [raw]
+        response = client.post(route, json=body)
+>       assert response.status_code == 200
+E       assert 400 == 200
+E        +  where 400 = <Response [400 Bad Request]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:83: AssertionError
+____________ test_tools_transport_failure_never_falls_back[error0] _____________
+
+stream_case = (<starlette.testclient.TestClient object at 0x11fcceea0>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...del_name': 'qwen3.8', 'tokens_in': 3, 'tokens_out': 11, 'latency_ms': 0.8289813995361328, ...}], 'persisted': [], ...})
+error = <HTTPError 500: 'private'>
+
+    @pytest.mark.parametrize("error", [HTTPError("http://127.0.0.1/api/chat", 500, "private", Message(), io.BytesIO(b'{"error":"failure"}')), TimeoutError("private timeout")])
+    def test_tools_transport_failure_never_falls_back(stream_case, error):
+        _, body, manager, state = stream_case
+        state["responses"] = [error] * 4
+>       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:95: Failed
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 500 — 1.0초 후 재시도 (1/2) http://localhost:11434/api/chat
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 500 — 2.0초 후 재시도 (2/2) http://localhost:11434/api/chat
+WARNING  antigravity_k.inference_providers:inference_providers.py:879 Ollama native tools rejected; retrying with XML tool protocol
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 500 — 1.0초 후 재시도 (1/2) http://localhost:11434/api/chat
+ERROR    antigravity_k.inference_providers:inference_providers.py:893 Local API stream failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py", line 35, in terminal
+    raise result
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 873, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py", line 35, in terminal
+    raise result
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py", line 35, in terminal
+    raise result
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py", line 35, in terminal
+    raise result
+urllib.error.HTTPError: HTTP Error 500: private
+____________ test_tools_transport_failure_never_falls_back[error1] _____________
+
+stream_case = (<starlette.testclient.TestClient object at 0x11fccf5c0>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...del_name': 'qwen3.8', 'tokens_in': 3, 'tokens_out': 10, 'latency_ms': 0.6389617919921875, ...}], 'persisted': [], ...})
+error = TimeoutError('private timeout')
+
+    @pytest.mark.parametrize("error", [HTTPError("http://127.0.0.1/api/chat", 500, "private", Message(), io.BytesIO(b'{"error":"failure"}')), TimeoutError("private timeout")])
+    def test_tools_transport_failure_never_falls_back(stream_case, error):
+        _, body, manager, state = stream_case
+        state["responses"] = [error] * 4
+>       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:95: Failed
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.inference_providers:inference_providers.py:879 Ollama native tools rejected; retrying with XML tool protocol
+ERROR    antigravity_k.inference_providers:inference_providers.py:893 Local API stream failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 888, in stream_generate
+    with safe_urlopen(fallback_req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py", line 35, in terminal
+    raise result
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 873, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py", line 35, in terminal
+    raise result
+TimeoutError: private timeout
+=============================== warnings summary ===============================
+tests/test_native_stream_terminal_contract.py::test_incomplete_tool_stream_never_emits_or_retries[{"error": "private upstream error"}\n]
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_native_stream_terminal_contract.py::test_incomplete_tool_stream_never_emits_or_retries[{"error": "private upstream error"}\n]
+FAILED tests/test_native_stream_terminal_contract.py::test_incomplete_tool_stream_never_emits_or_retries[{"message": {"tool_calls": [{"function": {"name": "read_file", "arguments": {"file_path": "sentinel"}}}]}, "done": false}\n]
+FAILED tests/test_native_stream_terminal_contract.py::test_incomplete_tool_stream_never_emits_or_retries[{"message": {"tool_calls": [{"function": {"name": "read_file", "arguments": {"file_path": "sentinel"}}}]}, "done": false}\n{bad\n]
+FAILED tests/test_native_stream_terminal_contract.py::test_incomplete_tool_stream_never_emits_or_retries[{"message": {"tool_calls": [{"function": {"name": "read_file", "arguments": {"file_path": "sentinel"}}}]}, "done": false}\n\xff\n]
+FAILED tests/test_native_stream_terminal_contract.py::test_incomplete_tool_stream_never_emits_or_retries[{"message": {"tool_calls": [{"function": {"name": "read_file", "arguments": {"file_path": "sentinel"}}}]}, "done": false}\n{"done": 1}\n]
+FAILED tests/test_native_stream_terminal_contract.py::test_incomplete_tool_stream_never_emits_or_retries[{"message": {"content": "<tool_call>{\"name\":\"read_file\",\"arguments\":{}}</tool_call>"}, "done": false}\n]
+FAILED tests/test_native_stream_terminal_contract.py::test_direct_sse_failure_has_no_success_terminal[{"error": "private upstream"}\n-/v1/chat/completions]
+FAILED tests/test_native_stream_terminal_contract.py::test_direct_sse_failure_has_no_success_terminal[{"error": "private upstream"}\n-/v1/messages]
+FAILED tests/test_native_stream_terminal_contract.py::test_direct_sse_failure_has_no_success_terminal[{"message": {"content": "partial"}, "done": false}\n-/v1/chat/completions]
+FAILED tests/test_native_stream_terminal_contract.py::test_direct_sse_failure_has_no_success_terminal[{"message": {"content": "partial"}, "done": false}\n-/v1/messages]
+FAILED tests/test_native_stream_terminal_contract.py::test_tools_transport_failure_never_falls_back[error0]
+FAILED tests/test_native_stream_terminal_contract.py::test_tools_transport_failure_never_falls_back[error1]
+12 failed, 1 passed, 1 warning in 2.00s

@@ -1,0 +1,45 @@
+{
+  "status": 200,
+  "sse": "data: {\"id\": \"chatcmpl-stream\", \"object\": \"chat.completion.chunk\", \"model\": \"qwen3.8\", \"choices\": [{\"delta\": {\"content\": \"partial\"}, \"index\": 0, \"finish_reason\": null}]}\n\nevent: error\ndata: {\"error\": {\"type\": \"provider_protocol_error\", \"code\": \"incomplete_stream\", \"message\": \"The model provider returned an invalid or incomplete stream.\"}}\n\n",
+  "error_events": [
+    {
+      "error": {
+        "type": "provider_protocol_error",
+        "code": "incomplete_stream",
+        "message": "The model provider returned an invalid or incomplete stream."
+      }
+    }
+  ],
+  "product_asgi_posts": 1,
+  "provider_http_posts": 1,
+  "provider_requests": [
+    {
+      "method": "POST",
+      "path": "/api/chat",
+      "bytes": 379,
+      "sha256": "a056b0f745b36acc7a44df40e58482de2a042800d1fffaab2f1b8f2d7f3bce3c"
+    }
+  ],
+  "provider_response_status": 200,
+  "retry_posts": 0,
+  "usage": [
+    {
+      "model_name": "qwen3.8",
+      "timestamp": 1791955822.73881,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "latency_ms": 11.034250259399414,
+      "success": false,
+      "error": "The model provider returned an invalid or incomplete stream.",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "success_usage": 0,
+  "failure_usage": 1,
+  "assistant_records": 0,
+  "model_inference": 0,
+  "real_ollama": 0,
+  "product_external_http": 0,
+  "source_changed_during_observation": []
+}

@@ -1,0 +1,18 @@
+{
+  "scope": "Saved console verdict label only; no execution repeated",
+  "raw_stdout_label": "PASS_SCOPED_ASGI_REAL_PROVIDER_HTTP503",
+  "raw_stdout_label_status": "STALE_COPIED_CONSOLE_STRING",
+  "authoritative_result": "result.json",
+  "correct_scenario_verdict": "PASS_SCOPED_ASGI_REAL_NATIVE_INCOMPLETE_STREAM",
+  "actual_provider_status": 200,
+  "actual_product_status": 200,
+  "actual_sse_error_type": "provider_protocol_error",
+  "actual_sse_error_code": "incomplete_stream",
+  "actual_provider_posts": 1,
+  "retries": 0,
+  "failed_usage": 1,
+  "successful_usage": 0,
+  "assistant_persistence": 0,
+  "product_response_completed_with_success_done": false,
+  "raw_source_stdout_receipt_and_result_preserved": true
+}

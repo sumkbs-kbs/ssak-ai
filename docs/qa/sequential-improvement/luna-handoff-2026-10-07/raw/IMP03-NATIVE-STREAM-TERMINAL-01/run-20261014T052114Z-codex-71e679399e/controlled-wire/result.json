@@ -1,0 +1,5 @@
+{
+  "verdict": "PASS_SCOPED_ASGI_REAL_NATIVE_INCOMPLETE_STREAM",
+  "limits": "Controlled failure only; no live model/auth/Uvicorn/lifespan claim",
+  "observations": "observations.json"
+}

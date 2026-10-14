@@ -1,0 +1,413 @@
+.......F.F.....FF.F.....F                                                [100%]
+=================================== FAILURES ===================================
+_ test_direct_sse_failure_has_no_success_terminal[{"error": "private upstream"}\n-/v1/messages] _
+
+stream_case = (<starlette.testclient.TestClient object at 0x1197735c0>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...ct at 0x1199a7bd0>, {'responses': [b'{"error": "private upstream"}\n'], 'wire': [], 'usage': [], 'persisted': [], ...})
+route = '/v1/messages', raw = b'{"error": "private upstream"}\n'
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "raw", [ndjson({"error": "private upstream"}), ndjson({"message": {"content": "partial"}, "done": False})]
+    )
+    def test_direct_sse_failure_has_no_success_terminal(stream_case, route, raw):
+        client, body, _, state = stream_case
+        state["responses"] = [raw]
+        response = client.post(route, json=body)
+>       assert response.status_code == 200
+E       assert 400 == 200
+E        +  where 400 = <Response [400 Bad Request]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:92: AssertionError
+_ test_direct_sse_failure_has_no_success_terminal[{"message": {"content": "partial"}, "done": false}\n-/v1/messages] _
+
+stream_case = (<starlette.testclient.TestClient object at 0x119a29cd0>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...'responses': [b'{"message": {"content": "partial"}, "done": false}\n'], 'wire': [], 'usage': [], 'persisted': [], ...})
+route = '/v1/messages'
+raw = b'{"message": {"content": "partial"}, "done": false}\n'
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "raw", [ndjson({"error": "private upstream"}), ndjson({"message": {"content": "partial"}, "done": False})]
+    )
+    def test_direct_sse_failure_has_no_success_terminal(stream_case, route, raw):
+        client, body, _, state = stream_case
+        state["responses"] = [raw]
+        response = client.post(route, json=body)
+>       assert response.status_code == 200
+E       assert 400 == 200
+E        +  where 400 = <Response [400 Bad Request]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:92: AssertionError
+__________ test_ollama_native_tools_are_sent_and_emitted_as_tool_call __________
+
+    def test_ollama_native_tools_are_sent_and_emitted_as_tool_call():
+        response = MagicMock()
+        _mock_attr(response, "__iter__").return_value = iter(
+            [
+                json.dumps(
+                    {
+                        "message": {
+                            "role": "assistant",
+                            "tool_calls": [
+                                {
+                                    "function": {
+                                        "name": "read_file",
+                                        "arguments": {"file_path": "README.md"},
+                                    },
+                                },
+                            ],
+                        },
+                        "done": False,
+                    },
+                ).encode()
+                + b"\n",
+                json.dumps({"done": True}).encode() + b"\n",
+            ],
+        )
+        request_context = MagicMock()
+        _mock_attr(request_context, "__enter__").return_value = response
+        _mock_attr(request_context, "__exit__").return_value = False
+        provider = OllamaProvider()
+    
+        with patch.object(provider, "_resolve_endpoint", return_value=("http://localhost:11434/v1", "ollama")):
+            with patch(
+                "antigravity_k.engine.provider_adapters.inference_providers.urllib.request.urlopen",
+                return_value=request_context,
+            ) as urlopen:
+>               chunks = list(
+                    provider.stream_generate(
+                        _loaded_model(),
+                        "read README",
+                        tools=cast(
+                            list[dict[str, object]],
+                            [
+                                {
+                                    "type": "function",
+                                    "function": {
+                                        "name": "read_file",
+                                        "description": "Read a file",
+                                        "parameters": {"type": "object", "properties": {}},
+                                    },
+                                },
+                            ],
+                        ),
+                    ),
+                )
+
+tests/test_inference_providers.py:109: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/antigravity_k/engine/provider_adapters/inference_providers.py:902: in stream_generate
+    yield from self._iter_stream_response(response, cast(list[DynamicValue] | None, tools_schema))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <antigravity_k.engine.provider_adapters.inference_providers.OllamaProvider object at 0x103ed0940>
+response = <MagicMock id='4726485216'>
+tools_schema = [{'type': 'function', 'function': {'name': 'read_file', 'description': 'Read a file', 'parameters': {'type': 'object', 'properties': {}}}}]
+
+    def _iter_stream_response(
+        self, response: Iterator[bytes], tools_schema: list[DynamicValue] | None = None
+    ) -> Iterator[str]:
+        pending_tool_calls: list[JsonMap] = []
+        buffered_content: list[str] = []
+        complete = False
+        for line in response:
+            try:
+                line_text = line.decode("utf-8").strip()
+                if not line_text:
+                    continue
+                raw: object = json.loads(line_text)
+                if not isinstance(raw, dict):
+                    raise NativeProtocolError("invalid_stream")
+                chunk = _as_json_map(raw)
+                if "error" in chunk:
+                    raise NativeProtocolError("upstream_stream_error")
+                msg = _as_json_map(cast(object, chunk.get("message")))
+                if msg:
+                    native_tool_calls = _as_json_maps(cast(object, msg.get("tool_calls")))
+                    pending_tool_calls.extend(native_tool_calls)
+                    if msg.get("content"):
+                        content = cast(str, msg["content"])
+                        if tools_schema:
+                            buffered_content.append(content)
+                        else:
+                            yield content
+                if chunk.get("done") is True:
+                    complete = True
+                    break
+            except (json.JSONDecodeError, UnicodeError) as exc:
+                raise NativeProtocolError("invalid_stream") from exc
+        if not complete:
+>           raise NativeProtocolError("incomplete_stream")
+E           antigravity_k.engine.provider_adapters.transport_errors.NativeProtocolError: The model provider returned an invalid or incomplete stream.
+
+src/antigravity_k/engine/provider_adapters/inference_providers.py:754: NativeProtocolError
+__ test_ollama_single_native_tool_json_content_is_synthesized_as_a_tool_call ___
+
+    def test_ollama_single_native_tool_json_content_is_synthesized_as_a_tool_call():
+        # Given: Qwen returns exactly one required tool's arguments as fenced JSON content.
+        response = MagicMock()
+        _mock_attr(response, "__iter__").return_value = iter(
+            [
+                json.dumps(
+                    {
+                        "message": {"role": "assistant", "content": '```json\n{"file_path": "config.yaml"}\n```'},
+                        "done": True,
+                    },
+                ).encode()
+                + b"\n",
+            ],
+        )
+        request_context = MagicMock()
+        _mock_attr(request_context, "__enter__").return_value = response
+        _mock_attr(request_context, "__exit__").return_value = False
+        provider = OllamaProvider()
+    
+        # When: the adapter streams the native tool response.
+        with (
+            patch.object(provider, "_resolve_endpoint", return_value=("http://localhost:11434/v1", "ollama")),
+            patch(
+                "antigravity_k.engine.provider_adapters.inference_providers.urllib.request.urlopen",
+                return_value=request_context,
+            ),
+        ):
+>           output = "".join(
+                provider.stream_generate(
+                    _loaded_model(),
+                    "read config",
+                    tools=[
+                        {
+                            "type": "function",
+                            "function": {
+                                "name": "read_file",
+                                "parameters": {
+                                    "type": "object",
+                                    "properties": {"file_path": {"type": "string"}},
+                                    "required": ["file_path"],
+                                },
+                            },
+                        },
+                    ],
+                ),
+            )
+
+tests/test_inference_providers.py:173: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/antigravity_k/engine/provider_adapters/inference_providers.py:902: in stream_generate
+    yield from self._iter_stream_response(response, cast(list[DynamicValue] | None, tools_schema))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <antigravity_k.engine.provider_adapters.inference_providers.OllamaProvider object at 0x1199cea50>
+response = <MagicMock id='4726487232'>
+tools_schema = [{'type': 'function', 'function': {'name': 'read_file', 'parameters': {'type': 'object', 'properties': {'file_path': {'type': 'string'}}, 'required': ['file_path']}}}]
+
+    def _iter_stream_response(
+        self, response: Iterator[bytes], tools_schema: list[DynamicValue] | None = None
+    ) -> Iterator[str]:
+        pending_tool_calls: list[JsonMap] = []
+        buffered_content: list[str] = []
+        complete = False
+        for line in response:
+            try:
+                line_text = line.decode("utf-8").strip()
+                if not line_text:
+                    continue
+                raw: object = json.loads(line_text)
+                if not isinstance(raw, dict):
+                    raise NativeProtocolError("invalid_stream")
+                chunk = _as_json_map(raw)
+                if "error" in chunk:
+                    raise NativeProtocolError("upstream_stream_error")
+                msg = _as_json_map(cast(object, chunk.get("message")))
+                if msg:
+                    native_tool_calls = _as_json_maps(cast(object, msg.get("tool_calls")))
+                    pending_tool_calls.extend(native_tool_calls)
+                    if msg.get("content"):
+                        content = cast(str, msg["content"])
+                        if tools_schema:
+                            buffered_content.append(content)
+                        else:
+                            yield content
+                if chunk.get("done") is True:
+                    complete = True
+                    break
+            except (json.JSONDecodeError, UnicodeError) as exc:
+                raise NativeProtocolError("invalid_stream") from exc
+        if not complete:
+>           raise NativeProtocolError("incomplete_stream")
+E           antigravity_k.engine.provider_adapters.transport_errors.NativeProtocolError: The model provider returned an invalid or incomplete stream.
+
+src/antigravity_k/engine/provider_adapters/inference_providers.py:754: NativeProtocolError
+___________ test_qwen_native_stream_uses_the_profile_context_budget ____________
+
+    def test_qwen_native_stream_uses_the_profile_context_budget():
+        response = MagicMock()
+        _mock_attr(response, "__iter__").return_value = iter([json.dumps({"done": True}).encode() + b"\n"])
+        request_context = MagicMock()
+        _mock_attr(request_context, "__enter__").return_value = response
+        _mock_attr(request_context, "__exit__").return_value = False
+        provider = OllamaProvider()
+    
+        with (
+            patch.object(provider, "_resolve_endpoint", return_value=("http://localhost:11434/v1", "ollama")),
+            patch(
+                "antigravity_k.engine.provider_adapters.inference_providers.safe_urlopen",
+                return_value=request_context,
+            ) as urlopen,
+        ):
+>           _ = list(
+                provider.stream_generate(
+                    _loaded_model(context_length=16_384),
+                    "Hello",
+                    max_tokens=64,
+                    temperature=0,
+                ),
+            )
+
+tests/test_inference_providers.py:247: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/antigravity_k/engine/provider_adapters/inference_providers.py:902: in stream_generate
+    yield from self._iter_stream_response(response, cast(list[DynamicValue] | None, tools_schema))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <antigravity_k.engine.provider_adapters.inference_providers.OllamaProvider object at 0x119de83c0>
+response = <MagicMock id='4728572624'>, tools_schema = None
+
+    def _iter_stream_response(
+        self, response: Iterator[bytes], tools_schema: list[DynamicValue] | None = None
+    ) -> Iterator[str]:
+        pending_tool_calls: list[JsonMap] = []
+        buffered_content: list[str] = []
+        complete = False
+        for line in response:
+            try:
+                line_text = line.decode("utf-8").strip()
+                if not line_text:
+                    continue
+                raw: object = json.loads(line_text)
+                if not isinstance(raw, dict):
+                    raise NativeProtocolError("invalid_stream")
+                chunk = _as_json_map(raw)
+                if "error" in chunk:
+                    raise NativeProtocolError("upstream_stream_error")
+                msg = _as_json_map(cast(object, chunk.get("message")))
+                if msg:
+                    native_tool_calls = _as_json_maps(cast(object, msg.get("tool_calls")))
+                    pending_tool_calls.extend(native_tool_calls)
+                    if msg.get("content"):
+                        content = cast(str, msg["content"])
+                        if tools_schema:
+                            buffered_content.append(content)
+                        else:
+                            yield content
+                if chunk.get("done") is True:
+                    complete = True
+                    break
+            except (json.JSONDecodeError, UnicodeError) as exc:
+                raise NativeProtocolError("invalid_stream") from exc
+        if not complete:
+>           raise NativeProtocolError("incomplete_stream")
+E           antigravity_k.engine.provider_adapters.transport_errors.NativeProtocolError: The model provider returned an invalid or incomplete stream.
+
+src/antigravity_k/engine/provider_adapters/inference_providers.py:754: NativeProtocolError
+__________ test_ollama_native_tool_rejection_falls_back_to_xml_prompt __________
+
+    def test_ollama_native_tool_rejection_falls_back_to_xml_prompt():
+        response = MagicMock()
+        _mock_attr(response, "__iter__").return_value = iter(
+            [
+                json.dumps(
+                    {
+                        "message": {"content": '<tool_call>{"name":"read_file","arguments":{}}</tool_call>'},
+                        "done": True,
+                    },
+                ).encode()
+                + b"\n",
+            ],
+        )
+        request_context = MagicMock()
+        _mock_attr(request_context, "__enter__").return_value = response
+        _mock_attr(request_context, "__exit__").return_value = False
+        provider = OllamaProvider()
+    
+        with patch.object(provider, "_resolve_endpoint", return_value=("http://localhost:11434/v1", "ollama")):
+            with patch(
+                "antigravity_k.engine.provider_adapters.inference_providers.urllib.request.urlopen",
+                side_effect=[
+                    HTTPError(
+                        "http://localhost:11434/api/chat",
+                        400,
+                        "Bad Request",
+                        Message(),
+                        io.BytesIO(b'{"error":"tools are not supported"}'),
+                    ),
+                    request_context,
+                ],
+            ) as urlopen:
+>               chunks = list(
+                    provider.stream_generate(
+                        _loaded_model(),
+                        "read README",
+                        tools=[{"type": "function", "function": {"name": "read_file"}}],
+                    ),
+                )
+
+tests/test_inference_providers.py:396: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/antigravity_k/engine/provider_adapters/inference_providers.py:902: in stream_generate
+    yield from self._iter_stream_response(response, cast(list[DynamicValue] | None, tools_schema))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <antigravity_k.engine.provider_adapters.inference_providers.OllamaProvider object at 0x119de85d0>
+response = <MagicMock id='4728578000'>
+tools_schema = [{'type': 'function', 'function': {'name': 'read_file'}}]
+
+    def _iter_stream_response(
+        self, response: Iterator[bytes], tools_schema: list[DynamicValue] | None = None
+    ) -> Iterator[str]:
+        pending_tool_calls: list[JsonMap] = []
+        buffered_content: list[str] = []
+        complete = False
+        for line in response:
+            try:
+                line_text = line.decode("utf-8").strip()
+                if not line_text:
+                    continue
+                raw: object = json.loads(line_text)
+                if not isinstance(raw, dict):
+                    raise NativeProtocolError("invalid_stream")
+                chunk = _as_json_map(raw)
+                if "error" in chunk:
+                    raise NativeProtocolError("upstream_stream_error")
+                msg = _as_json_map(cast(object, chunk.get("message")))
+                if msg:
+                    native_tool_calls = _as_json_maps(cast(object, msg.get("tool_calls")))
+                    pending_tool_calls.extend(native_tool_calls)
+                    if msg.get("content"):
+                        content = cast(str, msg["content"])
+                        if tools_schema:
+                            buffered_content.append(content)
+                        else:
+                            yield content
+                if chunk.get("done") is True:
+                    complete = True
+                    break
+            except (json.JSONDecodeError, UnicodeError) as exc:
+                raise NativeProtocolError("invalid_stream") from exc
+        if not complete:
+>           raise NativeProtocolError("incomplete_stream")
+E           antigravity_k.engine.provider_adapters.transport_errors.NativeProtocolError: The model provider returned an invalid or incomplete stream.
+
+src/antigravity_k/engine/provider_adapters/inference_providers.py:754: NativeProtocolError
+=============================== warnings summary ===============================
+tests/test_native_stream_terminal_contract.py::test_incomplete_tool_stream_never_emits_or_retries[{"error": "private upstream error"}\n]
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_native_stream_terminal_contract.py::test_direct_sse_failure_has_no_success_terminal[{"error": "private upstream"}\n-/v1/messages]
+FAILED tests/test_native_stream_terminal_contract.py::test_direct_sse_failure_has_no_success_terminal[{"message": {"content": "partial"}, "done": false}\n-/v1/messages]
+FAILED tests/test_inference_providers.py::test_ollama_native_tools_are_sent_and_emitted_as_tool_call
+FAILED tests/test_inference_providers.py::test_ollama_single_native_tool_json_content_is_synthesized_as_a_tool_call
+FAILED tests/test_inference_providers.py::test_qwen_native_stream_uses_the_profile_context_budget
+FAILED tests/test_inference_providers.py::test_ollama_native_tool_rejection_falls_back_to_xml_prompt
+6 failed, 19 passed, 1 warning in 2.23s

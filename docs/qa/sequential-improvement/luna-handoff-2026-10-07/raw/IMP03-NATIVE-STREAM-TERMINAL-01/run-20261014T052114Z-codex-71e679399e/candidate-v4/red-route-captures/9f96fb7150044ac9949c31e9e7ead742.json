@@ -1,0 +1,9 @@
+{
+  "nodeid": "tests/test_native_stream_terminal_contract.py::test_malformed_content_is_typed_failure_not_success[/v1/chat/completions-1]",
+  "wire": [],
+  "manager_calls": 0,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": []
+}

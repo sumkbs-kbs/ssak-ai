@@ -1,0 +1,26 @@
+{
+  "nodeid": "tests/test_native_transport_error_contract.py::test_native_success_is_not_classified_by_prefix[ordinary reply-/v1/chat/completions]",
+  "wire": [],
+  "manager_calls": 1,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 200,
+      "body": "{\"id\":\"chatcmpl-018cca315283\",\"object\":\"chat.completion\",\"created\":1791956109,\"model\":\"qwen3.8\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"ordinary reply\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":7,\"completion_tokens\":4,\"total_tokens\":11}}",
+      "request": {
+        "model": "qwen3.8",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "agent_mode": false,
+        "max_tokens": 128
+      }
+    }
+  ]
+}

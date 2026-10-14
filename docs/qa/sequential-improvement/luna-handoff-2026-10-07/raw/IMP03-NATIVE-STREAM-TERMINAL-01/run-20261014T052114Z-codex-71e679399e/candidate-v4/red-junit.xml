@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="17" skipped="0" tests="19" time="2.909" timestamp="2026-10-14T14:34:44.962358+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_content_is_typed_failure_not_success[/v1/messages-content0]" time="2.050"><failure message="assert '&quot;provider_protocol_error&quot;' in 'event: message_start\ndata: {&quot;type&quot;: &quot;message_start&quot;, &quot;message&quot;: {&quot;id&quot;: &quot;msg_a20bb8c334a34e3ca77af6a4&quot;, &quot;type&quot;: &quot;mess...n&quot;, &quot;stop_sequence&quot;: null}, &quot;usage&quot;: {&quot;output_tokens&quot;: 18}}\n\nevent: message_stop\ndata: {&quot;type&quot;: &quot;message_stop&quot;}\n\n'&#10; +  where 'event: message_start\ndata: {&quot;type&quot;: &quot;message_start&quot;, &quot;message&quot;: {&quot;id&quot;: &quot;msg_a20bb8c334a34e3ca77af6a4&quot;, &quot;type&quot;: &quot;mess...n&quot;, &quot;stop_sequence&quot;: null}, &quot;usage&quot;: {&quot;output_tokens&quot;: 18}}\n\nevent: message_stop\ndata: {&quot;type&quot;: &quot;message_stop&quot;}\n\n' = &lt;Response [200 OK]&gt;.text">stream_case = (&lt;starlette.testclient.TestClient object at 0x132ae5400&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...atency_ms': 14.087200164794922, 'success': False, 'error': 'can only concatenate str (not "list") to str', ...}], ...})
+route = '/v1/messages', content = ['partial']
+
+    @pytest.mark.parametrize("content", [["partial"], None, 1, False, {}])
+    @pytest.mark.parametrize("route", ["/v1/messages", "/v1/chat/completions"])
+    def test_malformed_content_is_typed_failure_not_success(stream_case, route, content):
+        client, body, _, state = stream_case
+        state["responses"] = [ndjson({"message": {"content": content}, "done": True})]
+        response = client.post(route, json=body)
+&gt;       assert '"provider_protocol_error"' in response.text
+E       assert '"provider_protocol_error"' in 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_a20bb8c334a34e3ca77af6a4", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 18}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n'
+E        +  where 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_a20bb8c334a34e3ca77af6a4", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 18}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' = &lt;Response [200 OK]&gt;.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:205: AssertionError</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_content_is_typed_failure_not_success[/v1/messages-None]" time="0.019"><failure message="assert '&quot;provider_protocol_error&quot;' in 'event: message_start\ndata: {&quot;type&quot;: &quot;message_start&quot;, &quot;message&quot;: {&quot;id&quot;: &quot;msg_6bc9c6bb74074a7da447620d&quot;, &quot;type&quot;: &quot;mess...rn&quot;, &quot;stop_sequence&quot;: null}, &quot;usage&quot;: {&quot;output_tokens&quot;: 0}}\n\nevent: message_stop\ndata: {&quot;type&quot;: &quot;message_stop&quot;}\n\n'&#10; +  where 'event: message_start\ndata: {&quot;type&quot;: &quot;message_start&quot;, &quot;message&quot;: {&quot;id&quot;: &quot;msg_6bc9c6bb74074a7da447620d&quot;, &quot;type&quot;: &quot;mess...rn&quot;, &quot;stop_sequence&quot;: null}, &quot;usage&quot;: {&quot;output_tokens&quot;: 0}}\n\nevent: message_stop\ndata: {&quot;type&quot;: &quot;message_stop&quot;}\n\n' = &lt;Response [200 OK]&gt;.text">stream_case = (&lt;starlette.testclient.TestClient object at 0x132d38050&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...], 'usage': [{'model_name': 'qwen3.8', 'tokens_in': 7, 'tokens_out': 0, 'latency_ms': 0.17309188842773438, ...}], ...})
+route = '/v1/messages', content = None
+
+    @pytest.mark.parametrize("content", [["partial"], None, 1, False, {}])
+    @pytest.mark.parametrize("route", ["/v1/messages", "/v1/chat/completions"])
+    def test_malformed_content_is_typed_failure_not_success(stream_case, route, content):
+        client, body, _, state = stream_case
+        state["responses"] = [ndjson({"message": {"content": content}, "done": True})]
+        response = client.post(route, json=body)
+&gt;       assert '"provider_protocol_error"' in response.text
+E       assert '"provider_protocol_error"' in 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_6bc9c6bb74074a7da447620d", "type": "mess...rn", "stop_sequence": null}, "usage": {"output_tokens": 0}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n'
+E        +  where 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_6bc9c6bb74074a7da447620d", "type": "mess...rn", "stop_sequence": null}, "usage": {"output_tokens": 0}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' = &lt;Response [200 OK]&gt;.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:205: AssertionError</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_content_is_typed_failure_not_success[/v1/messages-1]" time="0.020"><failure message="assert '&quot;provider_protocol_error&quot;' in 'event: message_start\ndata: {&quot;type&quot;: &quot;message_start&quot;, &quot;message&quot;: {&quot;id&quot;: &quot;msg_3f5801e707f143cea6303743&quot;, &quot;type&quot;: &quot;mess...n&quot;, &quot;stop_sequence&quot;: null}, &quot;usage&quot;: {&quot;output_tokens&quot;: 18}}\n\nevent: message_stop\ndata: {&quot;type&quot;: &quot;message_stop&quot;}\n\n'&#10; +  where 'event: message_start\ndata: {&quot;type&quot;: &quot;message_start&quot;, &quot;message&quot;: {&quot;id&quot;: &quot;msg_3f5801e707f143cea6303743&quot;, &quot;type&quot;: &quot;mess...n&quot;, &quot;stop_sequence&quot;: null}, &quot;usage&quot;: {&quot;output_tokens&quot;: 18}}\n\nevent: message_stop\ndata: {&quot;type&quot;: &quot;message_stop&quot;}\n\n' = &lt;Response [200 OK]&gt;.text">stream_case = (&lt;starlette.testclient.TestClient object at 0x132d7c7d0&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...'latency_ms': 0.125885009765625, 'success': False, 'error': 'can only concatenate str (not "int") to str', ...}], ...})
+route = '/v1/messages', content = 1
+
+    @pytest.mark.parametrize("content", [["partial"], None, 1, False, {}])
+    @pytest.mark.parametrize("route", ["/v1/messages", "/v1/chat/completions"])
+    def test_malformed_content_is_typed_failure_not_success(stream_case, route, content):
+        client, body, _, state = stream_case
+        state["responses"] = [ndjson({"message": {"content": content}, "done": True})]
+        response = client.post(route, json=body)
+&gt;       assert '"provider_protocol_error"' in response.text
+E       assert '"provider_protocol_error"' in 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_3f5801e707f143cea6303743", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 18}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n'
+E        +  where 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_3f5801e707f143cea6303743", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 18}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' = &lt;Response [200 OK]&gt;.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:205: AssertionError</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_content_is_typed_failure_not_success[/v1/messages-False]" time="0.018"><failure message="assert '&quot;provider_protocol_error&quot;' in 'event: message_start\ndata: {&quot;type&quot;: &quot;message_start&quot;, &quot;message&quot;: {&quot;id&quot;: &quot;msg_267f00a5a0bb469d95d8d3ee&quot;, &quot;type&quot;: &quot;mess...rn&quot;, &quot;stop_sequence&quot;: null}, &quot;usage&quot;: {&quot;output_tokens&quot;: 0}}\n\nevent: message_stop\ndata: {&quot;type&quot;: &quot;message_stop&quot;}\n\n'&#10; +  where 'event: message_start\ndata: {&quot;type&quot;: &quot;message_start&quot;, &quot;message&quot;: {&quot;id&quot;: &quot;msg_267f00a5a0bb469d95d8d3ee&quot;, &quot;type&quot;: &quot;mess...rn&quot;, &quot;stop_sequence&quot;: null}, &quot;usage&quot;: {&quot;output_tokens&quot;: 0}}\n\nevent: message_stop\ndata: {&quot;type&quot;: &quot;message_stop&quot;}\n\n' = &lt;Response [200 OK]&gt;.text">stream_case = (&lt;starlette.testclient.TestClient object at 0x132da0640&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...], 'usage': [{'model_name': 'qwen3.8', 'tokens_in': 7, 'tokens_out': 0, 'latency_ms': 0.14281272888183594, ...}], ...})
+route = '/v1/messages', content = False
+
+    @pytest.mark.parametrize("content", [["partial"], None, 1, False, {}])
+    @pytest.mark.parametrize("route", ["/v1/messages", "/v1/chat/completions"])
+    def test_malformed_content_is_typed_failure_not_success(stream_case, route, content):
+        client, body, _, state = stream_case
+        state["responses"] = [ndjson({"message": {"content": content}, "done": True})]
+        response = client.post(route, json=body)
+&gt;       assert '"provider_protocol_error"' in response.text
+E       assert '"provider_protocol_error"' in 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_267f00a5a0bb469d95d8d3ee", "type": "mess...rn", "stop_sequence": null}, "usage": {"output_tokens": 0}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n'
+E        +  where 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_267f00a5a0bb469d95d8d3ee", "type": "mess...rn", "stop_sequence": null}, "usage": {"output_tokens": 0}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' = &lt;Response [200 OK]&gt;.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:205: AssertionError</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_content_is_typed_failure_not_success[/v1/messages-content4]" time="0.019"><failure message="assert '&quot;provider_protocol_error&quot;' in 'event: message_start\ndata: {&quot;type&quot;: &quot;message_start&quot;, &quot;message&quot;: {&quot;id&quot;: &quot;msg_0c1ddf6c68e94fc19d522e75&quot;, &quot;type&quot;: &quot;mess...rn&quot;, &quot;stop_sequence&quot;: null}, &quot;usage&quot;: {&quot;output_tokens&quot;: 0}}\n\nevent: message_stop\ndata: {&quot;type&quot;: &quot;message_stop&quot;}\n\n'&#10; +  where 'event: message_start\ndata: {&quot;type&quot;: &quot;message_start&quot;, &quot;message&quot;: {&quot;id&quot;: &quot;msg_0c1ddf6c68e94fc19d522e75&quot;, &quot;type&quot;: &quot;mess...rn&quot;, &quot;stop_sequence&quot;: null}, &quot;usage&quot;: {&quot;output_tokens&quot;: 0}}\n\nevent: message_stop\ndata: {&quot;type&quot;: &quot;message_stop&quot;}\n\n' = &lt;Response [200 OK]&gt;.text">stream_case = (&lt;starlette.testclient.TestClient object at 0x132da2fd0&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...'], 'usage': [{'model_name': 'qwen3.8', 'tokens_in': 7, 'tokens_out': 0, 'latency_ms': 0.1418590545654297, ...}], ...})
+route = '/v1/messages', content = {}
+
+    @pytest.mark.parametrize("content", [["partial"], None, 1, False, {}])
+    @pytest.mark.parametrize("route", ["/v1/messages", "/v1/chat/completions"])
+    def test_malformed_content_is_typed_failure_not_success(stream_case, route, content):
+        client, body, _, state = stream_case
+        state["responses"] = [ndjson({"message": {"content": content}, "done": True})]
+        response = client.post(route, json=body)
+&gt;       assert '"provider_protocol_error"' in response.text
+E       assert '"provider_protocol_error"' in 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_0c1ddf6c68e94fc19d522e75", "type": "mess...rn", "stop_sequence": null}, "usage": {"output_tokens": 0}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n'
+E        +  where 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_0c1ddf6c68e94fc19d522e75", "type": "mess...rn", "stop_sequence": null}, "usage": {"output_tokens": 0}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' = &lt;Response [200 OK]&gt;.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:205: AssertionError</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_content_is_typed_failure_not_success[/v1/chat/completions-content0]" time="0.029"><failure message="TypeError: can only concatenate str (not &quot;list&quot;) to str">stream_case = (&lt;starlette.testclient.TestClient object at 0x132da3950&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...atency_ms': 0.1239776611328125, 'success': False, 'error': 'can only concatenate str (not "list") to str', ...}], ...})
+route = '/v1/chat/completions', content = ['partial']
+
+    @pytest.mark.parametrize("content", [["partial"], None, 1, False, {}])
+    @pytest.mark.parametrize("route", ["/v1/messages", "/v1/chat/completions"])
+    def test_malformed_content_is_typed_failure_not_success(stream_case, route, content):
+        client, body, _, state = stream_case
+        state["responses"] = [ndjson({"message": {"content": content}, "done": True})]
+&gt;       response = client.post(route, json=body)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:204: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py:107: in record_post
+    response = original_post(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/testclient.py:556: in post
+    return super().post(
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/testclient.py:455: in request
+    return super().request(
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/testclient.py:354: in handle_request
+    raise exc
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/testclient.py:351: in handle_request
+    portal.call(self.app, scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/from_thread.py:334: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/from_thread.py:259: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/applications.py:1159: in __call__
+    await super().__call__(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/applications.py:96: in __call__
+    await self.middleware_stack(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/routing.py:670: in __call__
+    await self.middleware_stack(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/routing.py:690: in app
+    await route.handle(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/routing.py:280: in handle
+    await self.app(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/routing.py:134: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/routing.py:121: in app
+    await response(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/responses.py:273: in __call__
+    async with create_collapsing_task_group() as task_group:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/contextlib.py:235: in __aexit__
+    await self.gen.athrow(value)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_utils.py:93: in create_collapsing_task_group
+    raise exc from exc.__cause__ or context
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/responses.py:276: in wrap
+    await func()
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/responses.py:250: in stream_response
+    async for chunk in self.body_iterator:
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/concurrency.py:57: in iterate_in_threadpool
+    yield await anyio.to_thread.run_sync(_next, as_iterator)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/to_thread.py:63: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2518: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:1002: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/concurrency.py:46: in _next
+    return next(iterator)
+           ^^^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/chat.py:1387: in event_generator_native
+    for chunk in manager.stream_generate(prompt=prompt, target=target_model, **kwargs):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;antigravity_k.engine.model_manager.ModelManager object at 0x132b772f0&gt;
+prompt = 'User: 안녕\nAssistant: ', target = 'qwen3.8'
+kwargs = {'max_tokens': 128, 'temperature': 0.7, 'raw_messages': [{'role': 'user', 'content': '안녕'}]}
+
+    def stream_generate(self, prompt: str, target: str, **kwargs: DynamicValue) -&gt; Iterator[str]:
+        """텍스트 생성 수행 (스트리밍)."""
+        collective_internal = bool(kwargs.pop("_collective_internal", False))
+        if not self.router.get_combo(target) and not self._registry.model_exists(target):
+            _ = self.discover_local_models()
+        combo = self.router.get_combo(target)
+        if combo and combo.strategy == RouteStrategy.COLLECTIVE and not collective_internal:
+            try:
+                text = self.generate_collective(prompt, target, **kwargs)
+            except Exception as e:
+                logger.exception("Unhandled exception")
+                text = f"[API Error] 집단지성 실행 중 오류가 발생했습니다: {e}"
+            chunk_size = _as_int(kwargs.get("stream_chunk_size", 256), 256)
+            for idx in range(0, len(text), chunk_size):
+                yield text[idx : idx + chunk_size]
+            return
+    
+        start_time = time.time()
+        fallback_depth = 0
+        used_model = None
+        combo_name = None
+    
+        try:
+            if self.router.get_combo(target):
+                combo_name = target
+                profile = self.router.route(target)
+                used_model = profile.name
+                combo = self.router.get_combo(target)
+                if combo is not None and used_model in combo.models:
+                    fallback_depth = combo.models.index(used_model)
+            else:
+                profile = self.router.route_single(target)
+                used_model = profile.name
+        except AllModelsUnavailableError as e:
+            logger.error("추론 실패 (모든 모델 비가용): %s", e)
+            raise
+    
+        full_text = ""
+        # Combo routes may fall back mid-stream. Buffer chunks until the
+        # current model succeeds so callers ("".join / full_response accumulators)
+        # never concatenate a partial primary answer with the fallback reply.
+        # Single-model targets still stream live.
+        pending_chunks: list[str] = []
+        try:
+            loaded = self.get(used_model)
+    
+            for chunk in self._do_stream_generate(loaded, prompt, **kwargs):
+                # 에러 문자열은 청크 어디에서든 독립적으로 yield될 수 있다 —
+                # 첫 청크만 검사하면 이후 에러가 사용자에게 그대로 노출된다.
+                if combo_name and chunk.strip().lower().startswith("[api error"):
+                    raise RuntimeError(chunk.strip())
+&gt;               full_text += chunk
+E               TypeError: can only concatenate str (not "list") to str
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py:860: TypeError</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_content_is_typed_failure_not_success[/v1/chat/completions-None]" time="0.021"><failure message="assert '&quot;provider_protocol_error&quot;' in 'data: [DONE]\n\n'&#10; +  where 'data: [DONE]\n\n' = &lt;Response [200 OK]&gt;.text">stream_case = (&lt;starlette.testclient.TestClient object at 0x132da3230&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...], 'usage': [{'model_name': 'qwen3.8', 'tokens_in': 7, 'tokens_out': 0, 'latency_ms': 0.13017654418945312, ...}], ...})
+route = '/v1/chat/completions', content = None
+
+    @pytest.mark.parametrize("content", [["partial"], None, 1, False, {}])
+    @pytest.mark.parametrize("route", ["/v1/messages", "/v1/chat/completions"])
+    def test_malformed_content_is_typed_failure_not_success(stream_case, route, content):
+        client, body, _, state = stream_case
+        state["responses"] = [ndjson({"message": {"content": content}, "done": True})]
+        response = client.post(route, json=body)
+&gt;       assert '"provider_protocol_error"' in response.text
+E       assert '"provider_protocol_error"' in 'data: [DONE]\n\n'
+E        +  where 'data: [DONE]\n\n' = &lt;Response [200 OK]&gt;.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:205: AssertionError</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_content_is_typed_failure_not_success[/v1/chat/completions-1]" time="0.021"><failure message="TypeError: can only concatenate str (not &quot;int&quot;) to str">stream_case = (&lt;starlette.testclient.TestClient object at 0x132da35c0&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...atency_ms': 0.11801719665527344, 'success': False, 'error': 'can only concatenate str (not "int") to str', ...}], ...})
+route = '/v1/chat/completions', content = 1
+
+    @pytest.mark.parametrize("content", [["partial"], None, 1, False, {}])
+    @pytest.mark.parametrize("route", ["/v1/messages", "/v1/chat/completions"])
+    def test_malformed_content_is_typed_failure_not_success(stream_case, route, content):
+        client, body, _, state = stream_case
+        state["responses"] = [ndjson({"message": {"content": content}, "done": True})]
+&gt;       response = client.post(route, json=body)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:204: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py:107: in record_post
+    response = original_post(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/testclient.py:556: in post
+    return super().post(
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/testclient.py:455: in request
+    return super().request(
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/testclient.py:354: in handle_request
+    raise exc
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/testclient.py:351: in handle_request
+    portal.call(self.app, scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/from_thread.py:334: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/from_thread.py:259: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/applications.py:1159: in __call__
+    await super().__call__(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/applications.py:96: in __call__
+    await self.middleware_stack(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/routing.py:670: in __call__
+    await self.middleware_stack(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/routing.py:690: in app
+    await route.handle(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/routing.py:280: in handle
+    await self.app(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/routing.py:134: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/routing.py:121: in app
+    await response(scope, receive, send)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/responses.py:273: in __call__
+    async with create_collapsing_task_group() as task_group:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/contextlib.py:235: in __aexit__
+    await self.gen.athrow(value)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/_utils.py:93: in create_collapsing_task_group
+    raise exc from exc.__cause__ or context
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/responses.py:276: in wrap
+    await func()
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/responses.py:250: in stream_response
+    async for chunk in self.body_iterator:
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/concurrency.py:57: in iterate_in_threadpool
+    yield await anyio.to_thread.run_sync(_next, as_iterator)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/to_thread.py:63: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2518: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:1002: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/concurrency.py:46: in _next
+    return next(iterator)
+           ^^^^^^^^^^^^^^
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/chat.py:1387: in event_generator_native
+    for chunk in manager.stream_generate(prompt=prompt, target=target_model, **kwargs):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;antigravity_k.engine.model_manager.ModelManager object at 0x132ba9d00&gt;
+prompt = 'User: 안녕\nAssistant: ', target = 'qwen3.8'
+kwargs = {'max_tokens': 128, 'temperature': 0.7, 'raw_messages': [{'role': 'user', 'content': '안녕'}]}
+
+    def stream_generate(self, prompt: str, target: str, **kwargs: DynamicValue) -&gt; Iterator[str]:
+        """텍스트 생성 수행 (스트리밍)."""
+        collective_internal = bool(kwargs.pop("_collective_internal", False))
+        if not self.router.get_combo(target) and not self._registry.model_exists(target):
+            _ = self.discover_local_models()
+        combo = self.router.get_combo(target)
+        if combo and combo.strategy == RouteStrategy.COLLECTIVE and not collective_internal:
+            try:
+                text = self.generate_collective(prompt, target, **kwargs)
+            except Exception as e:
+                logger.exception("Unhandled exception")
+                text = f"[API Error] 집단지성 실행 중 오류가 발생했습니다: {e}"
+            chunk_size = _as_int(kwargs.get("stream_chunk_size", 256), 256)
+            for idx in range(0, len(text), chunk_size):
+                yield text[idx : idx + chunk_size]
+            return
+    
+        start_time = time.time()
+        fallback_depth = 0
+        used_model = None
+        combo_name = None
+    
+        try:
+            if self.router.get_combo(target):
+                combo_name = target
+                profile = self.router.route(target)
+                used_model = profile.name
+                combo = self.router.get_combo(target)
+                if combo is not None and used_model in combo.models:
+                    fallback_depth = combo.models.index(used_model)
+            else:
+                profile = self.router.route_single(target)
+                used_model = profile.name
+        except AllModelsUnavailableError as e:
+            logger.error("추론 실패 (모든 모델 비가용): %s", e)
+            raise
+    
+        full_text = ""
+        # Combo routes may fall back mid-stream. Buffer chunks until the
+        # current model succeeds so callers ("".join / full_response accumulators)
+        # never concatenate a partial primary answer with the fallback reply.
+        # Single-model targets still stream live.
+        pending_chunks: list[str] = []
+        try:
+            loaded = self.get(used_model)
+    
+            for chunk in self._do_stream_generate(loaded, prompt, **kwargs):
+                # 에러 문자열은 청크 어디에서든 독립적으로 yield될 수 있다 —
+                # 첫 청크만 검사하면 이후 에러가 사용자에게 그대로 노출된다.
+                if combo_name and chunk.strip().lower().startswith("[api error"):
+                    raise RuntimeError(chunk.strip())
+&gt;               full_text += chunk
+E               TypeError: can only concatenate str (not "int") to str
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py:860: TypeError</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_content_is_typed_failure_not_success[/v1/chat/completions-False]" time="0.020"><failure message="assert '&quot;provider_protocol_error&quot;' in 'data: [DONE]\n\n'&#10; +  where 'data: [DONE]\n\n' = &lt;Response [200 OK]&gt;.text">stream_case = (&lt;starlette.testclient.TestClient object at 0x132da1a70&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...'], 'usage': [{'model_name': 'qwen3.8', 'tokens_in': 7, 'tokens_out': 0, 'latency_ms': 0.1289844512939453, ...}], ...})
+route = '/v1/chat/completions', content = False
+
+    @pytest.mark.parametrize("content", [["partial"], None, 1, False, {}])
+    @pytest.mark.parametrize("route", ["/v1/messages", "/v1/chat/completions"])
+    def test_malformed_content_is_typed_failure_not_success(stream_case, route, content):
+        client, body, _, state = stream_case
+        state["responses"] = [ndjson({"message": {"content": content}, "done": True})]
+        response = client.post(route, json=body)
+&gt;       assert '"provider_protocol_error"' in response.text
+E       assert '"provider_protocol_error"' in 'data: [DONE]\n\n'
+E        +  where 'data: [DONE]\n\n' = &lt;Response [200 OK]&gt;.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:205: AssertionError</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_content_is_typed_failure_not_success[/v1/chat/completions-content4]" time="0.020"><failure message="assert '&quot;provider_protocol_error&quot;' in 'data: [DONE]\n\n'&#10; +  where 'data: [DONE]\n\n' = &lt;Response [200 OK]&gt;.text">stream_case = (&lt;starlette.testclient.TestClient object at 0x132da2650&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...], 'usage': [{'model_name': 'qwen3.8', 'tokens_in': 7, 'tokens_out': 0, 'latency_ms': 0.12302398681640625, ...}], ...})
+route = '/v1/chat/completions', content = {}
+
+    @pytest.mark.parametrize("content", [["partial"], None, 1, False, {}])
+    @pytest.mark.parametrize("route", ["/v1/messages", "/v1/chat/completions"])
+    def test_malformed_content_is_typed_failure_not_success(stream_case, route, content):
+        client, body, _, state = stream_case
+        state["responses"] = [ndjson({"message": {"content": content}, "done": True})]
+        response = client.post(route, json=body)
+&gt;       assert '"provider_protocol_error"' in response.text
+E       assert '"provider_protocol_error"' in 'data: [DONE]\n\n'
+E        +  where 'data: [DONE]\n\n' = &lt;Response [200 OK]&gt;.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:205: AssertionError</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_message_or_tool_fields_never_dispatch[None]" time="0.018"><failure message="Failed: DID NOT RAISE RuntimeError">stream_case = (&lt;starlette.testclient.TestClient object at 0x1106acfc0&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...'], 'usage': [{'model_name': 'qwen3.8', 'tokens_in': 3, 'tokens_out': 0, 'latency_ms': 0.1537799835205078, ...}], ...})
+message = None
+
+    @pytest.mark.parametrize("message", [
+        None, [], {"tool_calls": None}, {"tool_calls": [None]},
+        {"tool_calls": [{"function": None}]},
+        {"tool_calls": [{"function": {"name": 1, "arguments": {}}}]},
+        {"tool_calls": [{"function": {"name": "read_file", "arguments": "{}"}}]},
+    ])
+    def test_malformed_message_or_tool_fields_never_dispatch(stream_case, message):
+        _, body, manager, state = stream_case
+        state["responses"] = [ndjson({"message": message, "done": True})]
+        emitted = []
+&gt;       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:221: Failed</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_message_or_tool_fields_never_dispatch[message1]" time="0.018"><failure message="Failed: DID NOT RAISE RuntimeError">stream_case = (&lt;starlette.testclient.TestClient object at 0x132da23f0&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...], 'usage': [{'model_name': 'qwen3.8', 'tokens_in': 3, 'tokens_out': 0, 'latency_ms': 0.14519691467285156, ...}], ...})
+message = []
+
+    @pytest.mark.parametrize("message", [
+        None, [], {"tool_calls": None}, {"tool_calls": [None]},
+        {"tool_calls": [{"function": None}]},
+        {"tool_calls": [{"function": {"name": 1, "arguments": {}}}]},
+        {"tool_calls": [{"function": {"name": "read_file", "arguments": "{}"}}]},
+    ])
+    def test_malformed_message_or_tool_fields_never_dispatch(stream_case, message):
+        _, body, manager, state = stream_case
+        state["responses"] = [ndjson({"message": message, "done": True})]
+        emitted = []
+&gt;       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:221: Failed</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_message_or_tool_fields_never_dispatch[message2]" time="0.018"><failure message="Failed: DID NOT RAISE RuntimeError">stream_case = (&lt;starlette.testclient.TestClient object at 0x132da1ba0&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...], 'usage': [{'model_name': 'qwen3.8', 'tokens_in': 3, 'tokens_out': 0, 'latency_ms': 0.16498565673828125, ...}], ...})
+message = {'tool_calls': None}
+
+    @pytest.mark.parametrize("message", [
+        None, [], {"tool_calls": None}, {"tool_calls": [None]},
+        {"tool_calls": [{"function": None}]},
+        {"tool_calls": [{"function": {"name": 1, "arguments": {}}}]},
+        {"tool_calls": [{"function": {"name": "read_file", "arguments": "{}"}}]},
+    ])
+    def test_malformed_message_or_tool_fields_never_dispatch(stream_case, message):
+        _, body, manager, state = stream_case
+        state["responses"] = [ndjson({"message": message, "done": True})]
+        emitted = []
+&gt;       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:221: Failed</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_message_or_tool_fields_never_dispatch[message3]" time="0.018"><failure message="Failed: DID NOT RAISE RuntimeError">stream_case = (&lt;starlette.testclient.TestClient object at 0x132da1940&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...], 'usage': [{'model_name': 'qwen3.8', 'tokens_in': 3, 'tokens_out': 0, 'latency_ms': 0.14400482177734375, ...}], ...})
+message = {'tool_calls': [None]}
+
+    @pytest.mark.parametrize("message", [
+        None, [], {"tool_calls": None}, {"tool_calls": [None]},
+        {"tool_calls": [{"function": None}]},
+        {"tool_calls": [{"function": {"name": 1, "arguments": {}}}]},
+        {"tool_calls": [{"function": {"name": "read_file", "arguments": "{}"}}]},
+    ])
+    def test_malformed_message_or_tool_fields_never_dispatch(stream_case, message):
+        _, body, manager, state = stream_case
+        state["responses"] = [ndjson({"message": message, "done": True})]
+        emitted = []
+&gt;       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:221: Failed</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_message_or_tool_fields_never_dispatch[message4]" time="0.018"><failure message="Failed: DID NOT RAISE RuntimeError">stream_case = (&lt;starlette.testclient.TestClient object at 0x132da1f30&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...], 'usage': [{'model_name': 'qwen3.8', 'tokens_in': 3, 'tokens_out': 0, 'latency_ms': 0.14781951904296875, ...}], ...})
+message = {'tool_calls': [{'function': None}]}
+
+    @pytest.mark.parametrize("message", [
+        None, [], {"tool_calls": None}, {"tool_calls": [None]},
+        {"tool_calls": [{"function": None}]},
+        {"tool_calls": [{"function": {"name": 1, "arguments": {}}}]},
+        {"tool_calls": [{"function": {"name": "read_file", "arguments": "{}"}}]},
+    ])
+    def test_malformed_message_or_tool_fields_never_dispatch(stream_case, message):
+        _, body, manager, state = stream_case
+        state["responses"] = [ndjson({"message": message, "done": True})]
+        emitted = []
+&gt;       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:221: Failed</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_message_or_tool_fields_never_dispatch[message5]" time="0.018"><failure message="Failed: DID NOT RAISE RuntimeError">stream_case = (&lt;starlette.testclient.TestClient object at 0x132da0d60&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{..., 'usage': [{'model_name': 'qwen3.8', 'tokens_in': 3, 'tokens_out': 14, 'latency_ms': 0.15163421630859375, ...}], ...})
+message = {'tool_calls': [{'function': {'name': 1, 'arguments': {}}}]}
+
+    @pytest.mark.parametrize("message", [
+        None, [], {"tool_calls": None}, {"tool_calls": [None]},
+        {"tool_calls": [{"function": None}]},
+        {"tool_calls": [{"function": {"name": 1, "arguments": {}}}]},
+        {"tool_calls": [{"function": {"name": "read_file", "arguments": "{}"}}]},
+    ])
+    def test_malformed_message_or_tool_fields_never_dispatch(stream_case, message):
+        _, body, manager, state = stream_case
+        state["responses"] = [ndjson({"message": message, "done": True})]
+        emitted = []
+&gt;       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:221: Failed</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_malformed_message_or_tool_fields_never_dispatch[message6]" time="0.019"><failure message="Failed: DID NOT RAISE RuntimeError">stream_case = (&lt;starlette.testclient.TestClient object at 0x132da0770&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...'], 'usage': [{'model_name': 'qwen3.8', 'tokens_in': 3, 'tokens_out': 16, 'latency_ms': 0.148773193359375, ...}], ...})
+message = {'tool_calls': [{'function': {'name': 'read_file', 'arguments': '{}'}}]}
+
+    @pytest.mark.parametrize("message", [
+        None, [], {"tool_calls": None}, {"tool_calls": [None]},
+        {"tool_calls": [{"function": None}]},
+        {"tool_calls": [{"function": {"name": 1, "arguments": {}}}]},
+        {"tool_calls": [{"function": {"name": "read_file", "arguments": "{}"}}]},
+    ])
+    def test_malformed_message_or_tool_fields_never_dispatch(stream_case, message):
+        _, body, manager, state = stream_case
+        state["responses"] = [ndjson({"message": message, "done": True})]
+        emitted = []
+&gt;       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_stream_terminal_contract.py:221: Failed</failure></testcase><testcase classname="tests.test_native_stream_terminal_contract" name="test_empty_string_content_with_valid_done_remains_success[/v1/messages]" time="0.018" /><testcase classname="tests.test_native_stream_terminal_contract" name="test_empty_string_content_with_valid_done_remains_success[/v1/chat/completions]" time="0.020" /></testsuite></testsuites>

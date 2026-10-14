@@ -1,0 +1,27 @@
+{
+  "nodeid": "tests/test_native_stream_terminal_contract.py::test_malformed_content_is_typed_failure_not_success[/v1/messages-False]",
+  "wire": [],
+  "manager_calls": 0,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 200,
+      "body": "event: message_start\ndata: {\"type\": \"message_start\", \"message\": {\"id\": \"msg_267f00a5a0bb469d95d8d3ee\", \"type\": \"message\", \"role\": \"assistant\", \"model\": \"qwen3.8\", \"content\": [], \"stop_reason\": null, \"usage\": {\"input_tokens\": 1, \"output_tokens\": 0}}}\n\nevent: message_delta\ndata: {\"type\": \"message_delta\", \"delta\": {\"stop_reason\": \"end_turn\", \"stop_sequence\": null}, \"usage\": {\"output_tokens\": 0}}\n\nevent: message_stop\ndata: {\"type\": \"message_stop\"}\n\n",
+      "request": {
+        "model": "qwen3.8",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "stream": true,
+        "agent_mode": false,
+        "max_tokens": 128
+      }
+    }
+  ]
+}

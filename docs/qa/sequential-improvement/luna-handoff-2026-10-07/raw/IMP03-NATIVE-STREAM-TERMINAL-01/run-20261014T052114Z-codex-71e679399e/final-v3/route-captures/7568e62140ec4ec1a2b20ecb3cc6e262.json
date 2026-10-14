@@ -1,0 +1,27 @@
+{
+  "nodeid": "tests/test_native_stream_terminal_contract.py::test_direct_sse_failure_has_no_success_terminal[{\"error\": \"private upstream\"}\\n-/v1/messages]",
+  "wire": [],
+  "manager_calls": 0,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 200,
+      "body": "event: message_start\ndata: {\"type\": \"message_start\", \"message\": {\"id\": \"msg_3a05d6af92f64809b2565c79\", \"type\": \"message\", \"role\": \"assistant\", \"model\": \"qwen3.8\", \"content\": [], \"stop_reason\": null, \"usage\": {\"input_tokens\": 1, \"output_tokens\": 0}}}\n\nevent: error\ndata: {\"type\": \"error\", \"error\": {\"type\": \"provider_protocol_error\", \"code\": \"upstream_stream_error\", \"message\": \"The model provider returned an invalid or incomplete stream.\"}}\n\n",
+      "request": {
+        "model": "qwen3.8",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "stream": true,
+        "agent_mode": false,
+        "max_tokens": 128
+      }
+    }
+  ]
+}

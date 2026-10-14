@@ -1,0 +1,9 @@
+{
+  "antigravity_k.api.routes.chat": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/routes/chat.py",
+  "antigravity_k.api.routes.messages_api": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/routes/messages_api.py",
+  "antigravity_k.engine.protocol_translator": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/protocol_translator.py",
+  "antigravity_k.engine.model_manager": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/model_manager.py",
+  "antigravity_k.engine.tool_loop": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/tool_loop.py",
+  "antigravity_k.engine.provider_adapters.inference_providers": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py",
+  "antigravity_k.engine.provider_adapters.transport_errors": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/provider_adapters/transport_errors.py"
+}
