@@ -1,0 +1,627 @@
+{
+  "invocation": "candidate-v2/invocation.json",
+  "junit": "candidate-v2/junit.xml",
+  "contracts": [
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_same_dimension_identity_mismatch_rejected_without_mutation[endpoint]",
+      "artifact": "candidate-v2/captures/02852f135fe41ef4.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 1
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_same_dimension_identity_mismatch_rejected_without_mutation[query_prefix]",
+      "artifact": "candidate-v2/captures/1bdb74d8df571217.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 1
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_outside_sources_never_read_embed_or_store[symlink-index]",
+      "artifact": "candidate-v2/captures/20e854777612da2c.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 0,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_explicit_open_rejects_legacy_without_metadata_even_when_empty[True]",
+      "artifact": "candidate-v2/captures/277a256cef385565.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 0,
+      "native_operations": 1
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad5]",
+      "artifact": "candidate-v2/captures/290491c8d9310766.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_mutable_registry_provider_endpoint_revalidated_before_every_model_call",
+      "artifact": "candidate-v2/captures/290bf1dfaaaa7d50.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 1
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_same_dimension_identity_mismatch_rejected_without_mutation[repo]",
+      "artifact": "candidate-v2/captures/29cc6d9ee4ec37a5.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 1
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_unsupported_binding_rejected_before_loader_or_network[query]",
+      "artifact": "candidate-v2/captures/2a486a83ef3b97e9.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 0,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_implicit_refusal_and_other_identity_refusal_do_not_harm_bound_peer",
+      "artifact": "candidate-v2/captures/2e9f687e3c5aa3b9.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 3,
+      "native_operations": 3
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_same_dimension_identity_mismatch_rejected_without_mutation[name]",
+      "artifact": "candidate-v2/captures/3252263252b0d8f6.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 1
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_real_rag_index_search_change_delete_preserves_other_project",
+      "artifact": "candidate-v2/captures/33d2346bc4fc58c3.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 4,
+      "native_operations": 6
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_legacy_constructor_and_default_callback_path_remain_opt_in_only",
+      "artifact": "candidate-v2/captures/351778e4efda0b9f.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 0,
+      "native_operations": 2
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad4]",
+      "artifact": "candidate-v2/captures/355643d78e3440a8.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_unsupported_binding_rejected_before_loader_or_network[credentials]",
+      "artifact": "candidate-v2/captures/3f1831af772d28f4.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 0,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad8]",
+      "artifact": "candidate-v2/captures/48c0baf577ff3733.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_unsupported_binding_rejected_before_loader_or_network[role]",
+      "artifact": "candidate-v2/captures/49ff1e674ca41651.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 0,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_unknown_dimension_stays_bound_after_purge_and_query_validation",
+      "artifact": "candidate-v2/captures/4a5d255b7175cabe.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 3,
+      "native_operations": 2
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_outside_sources_never_read_embed_or_store[file]",
+      "artifact": "candidate-v2/captures/4abc554d8a2f3e5f.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 0,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad2]",
+      "artifact": "candidate-v2/captures/56fe446288a952e9.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_provider_failure_has_no_upsert_no_fallback[failure0]",
+      "artifact": "candidate-v2/captures/5ed96e3bcfecc600.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_explicit_factory_failure_surfaces_but_legacy_fallback_remains",
+      "artifact": "candidate-v2/captures/7cacf41f3ffc36b3.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 0,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad6]",
+      "artifact": "candidate-v2/captures/7ecd11b4aadac136.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_delete_and_purge_never_embed",
+      "artifact": "candidate-v2/captures/8320136b3ba128d3.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 3
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_unsupported_binding_rejected_before_loader_or_network[fragment]",
+      "artifact": "candidate-v2/captures/8377bda826caa603.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 0,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_rag_failed_embedding_preserves_rows_manifest_and_retryability[sync]",
+      "artifact": "candidate-v2/captures/877a76ff1f2e3072.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 3,
+      "native_operations": 3
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad0]",
+      "artifact": "candidate-v2/captures/88f280359883d078.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad3]",
+      "artifact": "candidate-v2/captures/89086f2ad020127b.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_bound_sync_validates_edits_before_deleting_removed_sources",
+      "artifact": "candidate-v2/captures/8ab003500ecea22c.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 3,
+      "native_operations": 3
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_explicit_open_rejects_legacy_without_metadata_even_when_empty[False]",
+      "artifact": "candidate-v2/captures/96f870b173a59c04.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 0,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_outside_sources_never_read_embed_or_store[symlink-sync]",
+      "artifact": "candidate-v2/captures/abbcccc5c86c033f.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 0,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_native_upsert_failure_keeps_unknown_metadata_and_metadata_failure_is_uncertain",
+      "artifact": "candidate-v2/captures/ad2e5a9ac6f7e530.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 2,
+      "native_operations": 1
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_unsupported_binding_rejected_before_loader_or_network[provider]",
+      "artifact": "candidate-v2/captures/b1ad14676d8cbf5e.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 0,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_provider_failure_has_no_upsert_no_fallback[failure1]",
+      "artifact": "candidate-v2/captures/bd10771c2ca6c37d.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_outside_sources_never_read_embed_or_store[parent-subdir]",
+      "artifact": "candidate-v2/captures/c22be718ba116404.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 0,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad1]",
+      "artifact": "candidate-v2/captures/c8f7a423d30800ac.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_persisted_vector_dimension_disagreement_rejects_reopen",
+      "artifact": "candidate-v2/captures/d32df690b4a5f886.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 1
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_same_dimension_identity_mismatch_rejected_without_mutation[dimensions]",
+      "artifact": "candidate-v2/captures/d42116933ca42fa7.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 1
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_constructor_no_inference_and_document_query_redaction_use_strict_binding",
+      "artifact": "candidate-v2/captures/d43300a186abf7af.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 3,
+      "native_operations": 3
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_same_dimension_identity_mismatch_rejected_without_mutation[document_prefix]",
+      "artifact": "candidate-v2/captures/df0571351ee87c24.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 1
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_delete_native_failure_does_not_advance_bound_manifest",
+      "artifact": "candidate-v2/captures/e75103c4e60f0b00.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 2
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_rag_failed_embedding_preserves_rows_manifest_and_retryability[index_file]",
+      "artifact": "candidate-v2/captures/ec446f0e863b740d.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 3,
+      "native_operations": 3
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_unsupported_binding_rejected_before_loader_or_network[missing]",
+      "artifact": "candidate-v2/captures/ef1b58244967db68.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 0,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_unknown_first_batch_dimension_consistency_and_float32_norm",
+      "artifact": "candidate-v2/captures/ef525683b072a561.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 2,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_unknown_dimensions_persist_reopen_and_peer_close",
+      "artifact": "candidate-v2/captures/f1b3ee846d91c88e.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 3,
+      "native_operations": 2
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_rag_failed_embedding_preserves_rows_manifest_and_retryability[index_project]",
+      "artifact": "candidate-v2/captures/f471710e155b4d09.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 3,
+      "native_operations": 3
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad7]",
+      "artifact": "candidate-v2/captures/fa3253cd4f4edde9.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 1,
+      "native_operations": 0
+    },
+    {
+      "scenario": "tests/test_project_rag_embedding_identity_contract.py::test_persistent_failure_never_falls_back",
+      "artifact": "candidate-v2/captures/fe3f1b662fcce379.json",
+      "binary_observable": "pytest PASS; forbidden=[]; native/model routing assertions in frozen test source",
+      "model_calls": 0,
+      "native_operations": 0
+    }
+  ],
+  "all_selected_cases": [
+    {
+      "name": "test_constructor_no_inference_and_document_query_redaction_use_strict_binding",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_unknown_dimensions_persist_reopen_and_peer_close",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_same_dimension_identity_mismatch_rejected_without_mutation[name]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_same_dimension_identity_mismatch_rejected_without_mutation[repo]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_same_dimension_identity_mismatch_rejected_without_mutation[endpoint]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_same_dimension_identity_mismatch_rejected_without_mutation[document_prefix]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_same_dimension_identity_mismatch_rejected_without_mutation[query_prefix]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_same_dimension_identity_mismatch_rejected_without_mutation[dimensions]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_explicit_open_rejects_legacy_without_metadata_even_when_empty[False]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_explicit_open_rejects_legacy_without_metadata_even_when_empty[True]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_implicit_refusal_and_other_identity_refusal_do_not_harm_bound_peer",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad0]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad1]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad2]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad3]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad4]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad5]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad6]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad7]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad8]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_provider_failure_has_no_upsert_no_fallback[failure0]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_provider_failure_has_no_upsert_no_fallback[failure1]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_unsupported_binding_rejected_before_loader_or_network[provider]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_unsupported_binding_rejected_before_loader_or_network[role]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_unsupported_binding_rejected_before_loader_or_network[missing]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_unsupported_binding_rejected_before_loader_or_network[credentials]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_unsupported_binding_rejected_before_loader_or_network[query]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_unsupported_binding_rejected_before_loader_or_network[fragment]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_mutable_registry_provider_endpoint_revalidated_before_every_model_call",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_delete_and_purge_never_embed",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_native_upsert_failure_keeps_unknown_metadata_and_metadata_failure_is_uncertain",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_persistent_failure_never_falls_back",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_rag_failed_embedding_preserves_rows_manifest_and_retryability[index_file]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_rag_failed_embedding_preserves_rows_manifest_and_retryability[index_project]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_rag_failed_embedding_preserves_rows_manifest_and_retryability[sync]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_real_rag_index_search_change_delete_preserves_other_project",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_outside_sources_never_read_embed_or_store[file]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_outside_sources_never_read_embed_or_store[parent-subdir]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_outside_sources_never_read_embed_or_store[symlink-index]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_outside_sources_never_read_embed_or_store[symlink-sync]",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_explicit_factory_failure_surfaces_but_legacy_fallback_remains",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_bound_sync_validates_edits_before_deleting_removed_sources",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_unknown_dimension_stays_bound_after_purge_and_query_validation",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_unknown_first_batch_dimension_consistency_and_float32_norm",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_persisted_vector_dimension_disagreement_rejects_reopen",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_delete_native_failure_does_not_advance_bound_manifest",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_legacy_constructor_and_default_callback_path_remain_opt_in_only",
+      "classname": "tests.test_project_rag_embedding_identity_contract",
+      "passed": true
+    },
+    {
+      "name": "test_index_project_reuses_manifest_for_persistent_store",
+      "classname": "tests.test_rag_incremental",
+      "passed": true
+    },
+    {
+      "name": "test_index_project_batches_upserts_and_reindexes_changed_file",
+      "classname": "tests.test_rag_incremental",
+      "passed": true
+    },
+    {
+      "name": "test_index_project_removes_stale_chunks_when_file_becomes_empty",
+      "classname": "tests.test_rag_incremental",
+      "passed": true
+    },
+    {
+      "name": "test_subdir_sync_does_not_delete_chunks_outside_scope",
+      "classname": "tests.test_rag_subdir_sync_regression",
+      "passed": true
+    },
+    {
+      "name": "test_indexed_chunks_expose_provenance_and_freshness",
+      "classname": "tests.test_rag_provenance",
+      "passed": true
+    },
+    {
+      "name": "test_format_context_exposes_citation_marker",
+      "classname": "tests.test_rag_provenance",
+      "passed": true
+    },
+    {
+      "name": "test_validate_citations_rejects_missing_unknown_and_unverified_sources",
+      "classname": "tests.test_rag_provenance",
+      "passed": true
+    },
+    {
+      "name": "test_repeated_headings_get_unique_ids",
+      "classname": "tests.test_rag01_chunk_identity.TestUniqueIds",
+      "passed": true
+    },
+    {
+      "name": "test_long_common_prefix_docs_get_unique_ids",
+      "classname": "tests.test_rag01_chunk_identity.TestUniqueIds",
+      "passed": true
+    },
+    {
+      "name": "test_multiple_intros_unique",
+      "classname": "tests.test_rag01_chunk_identity.TestUniqueIds",
+      "passed": true
+    },
+    {
+      "name": "test_mixed_table_doc_unique_ids",
+      "classname": "tests.test_rag01_chunk_identity.TestUniqueIds",
+      "passed": true
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "head": "2a8791ed8259543b54a12225bcc46cea69451efa",
+  "protected_files": 574,
+  "unowned_source_changes": [],
+  "status": " M src/antigravity_k/api/dependencies.py\n M src/antigravity_k/engine/rag_indexer.py\n M src/antigravity_k/engine/vector_store.py\n?? src/antigravity_k/engine/project_embedding_binding.py\n?? tests/test_project_rag_embedding_identity_contract.py\n",
+  "index_sha256": "5d9da9eddcd769636f54a66063cd31b4c4ac3d9efae483090d674bb8d2253928"
+}

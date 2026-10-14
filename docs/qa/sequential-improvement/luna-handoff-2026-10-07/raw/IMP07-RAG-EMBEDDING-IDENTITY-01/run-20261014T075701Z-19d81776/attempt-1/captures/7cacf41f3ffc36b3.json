@@ -1,0 +1,7 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_explicit_factory_failure_surfaces_but_legacy_fallback_remains",
+  "engine_calls": [],
+  "forbidden": [],
+  "native": [],
+  "observations": {}
+}

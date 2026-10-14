@@ -1,0 +1,118 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_rag_failed_embedding_preserves_rows_manifest_and_retryability[sync]",
+  "engine_calls": [
+    {
+      "text": [
+        "# Old section\nold content\n\n",
+        "# Another section\nold trailing content\n"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "# New section\nnew replacement content\n"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "# New section\nnew replacement content\n"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "upsert",
+      "ids": [
+        "5edcc6b1dd6ac7da",
+        "3c457b973da8025f"
+      ],
+      "documents": [
+        "# Old section\nold content\n\n",
+        "# Another section\nold trailing content\n"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          2.0,
+          0.5
+        ],
+        [
+          1.0,
+          1.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "upsert",
+      "ids": [
+        "cec599f7f187fe3a"
+      ],
+      "documents": [
+        "# New section\nnew replacement content\n"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          13.0,
+          0.5
+        ]
+      ]
+    }
+  ],
+  "observations": {
+    "records_before": [
+      {
+        "id": "5edcc6b1dd6ac7da",
+        "document": "# Old section\nold content\n\n",
+        "metadata": {
+          "start_line": 1,
+          "source_type": "code",
+          "node_name": "Old section",
+          "indexed_at": "2026-10-14T08:04:03.267803+00:00",
+          "node_type": "text_section",
+          "end_line": 3,
+          "source_hash": "b9f40d32d8869e8d52ce78ace439de91",
+          "source": "notes.md"
+        }
+      },
+      {
+        "id": "3c457b973da8025f",
+        "document": "# Another section\nold trailing content\n",
+        "metadata": {
+          "indexed_at": "2026-10-14T08:04:03.267803+00:00",
+          "source_type": "code",
+          "source_hash": "b9f40d32d8869e8d52ce78ace439de91",
+          "node_type": "text_section",
+          "start_line": 4,
+          "end_line": 5,
+          "node_name": "Another section",
+          "source": "notes.md"
+        }
+      }
+    ],
+    "records_after": [
+      {
+        "id": "cec599f7f187fe3a",
+        "document": "# New section\nnew replacement content\n",
+        "metadata": {
+          "source_type": "code",
+          "source_hash": "c9c744d67f45f482b511db079a903c35",
+          "node_type": "text_section",
+          "node_name": "New section",
+          "indexed_at": "2026-10-14T08:04:03.276419+00:00",
+          "source": "notes.md",
+          "end_line": 2,
+          "start_line": 1
+        }
+      }
+    ],
+    "canonical_sha256": "8f513e84df2da0cf13b97b44c70c2a7f8e4184f0df24000d43156fb86880d80a"
+  }
+}

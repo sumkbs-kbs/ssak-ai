@@ -1,0 +1,1231 @@
+diff --git a/src/antigravity_k/engine/vector_store.py b/src/antigravity_k/engine/vector_store.py
+--- a/src/antigravity_k/engine/vector_store.py
++++ b/src/antigravity_k/engine/vector_store.py
+@@ -4,6 +4,13 @@
+ from collections.abc import Callable, Mapping, Sequence
+ from types import TracebackType
+ from typing import Protocol, cast, final
++
++from antigravity_k.engine.project_embedding_binding import (
++    DIMENSIONS_METADATA_KEY,
++    IDENTITY_METADATA_KEY,
++    ProjectEmbeddingBinding,
++    ProjectEmbeddingBindingError,
++)
+ 
+ # 선택적 의존성. import 실패 시 전체 런타임 부팅을 막지 않도록 방어 로드.
+ # chromadb는 VectorStore 인스턴스 생성 시점에만 필요하다.
+@@ -32,17 +39,25 @@
+ 
+ 
+ class _CollectionLike(Protocol):
++    @property
++    def metadata(self) -> Mapping[str, object] | None: ...
++
++    def modify(self, *, metadata: dict[str, MetadataValue]) -> object: ...
++
+     def upsert(
+         self,
+         *,
+         ids: list[str],
+         documents: list[str],
+         metadatas: list[dict[str, MetadataValue]],
++        embeddings: list[list[float]] | None = None,
+     ) -> object: ...
+ 
+-    def query(self, *, query_texts: list[str], n_results: int) -> dict[str, object]: ...
+-
+-    def get(self, include: list[str] | None = None) -> dict[str, object]: ...
++    def query(
++        self, *, n_results: int, query_texts: list[str] | None = None, query_embeddings: list[list[float]] | None = None
++    ) -> dict[str, object]: ...
++
++    def get(self, include: list[str] | None = None, *, limit: int | None = None) -> dict[str, object]: ...
+ 
+     def delete(
+         self,
+@@ -57,12 +72,24 @@
+ class _ClientLike(Protocol):
+     def get_or_create_collection(self, *, name: str) -> _CollectionLike: ...
+ 
++    def get_collection(self, *, name: str, embedding_function: None) -> _CollectionLike: ...
++
++    def create_collection(
++        self, *, name: str, embedding_function: None, metadata: dict[str, MetadataValue]
++    ) -> _CollectionLike: ...
++
+ 
+ @final
+ class VectorStore:
+     """ChromaDB-backed vector store for RAG chunk storage and retrieval."""
+ 
+-    def __init__(self, persist_directory: str, collection_name: str = "vault_notes"):
++    def __init__(
++        self,
++        persist_directory: str,
++        collection_name: str = "vault_notes",
++        *,
++        embedding_binding: ProjectEmbeddingBinding | None = None,
++    ):
+         """Initialize the VectorStore.
+ 
+         Args:
+@@ -72,6 +99,12 @@
+         """
+         import os
+ 
++        self.embedding_binding = embedding_binding
++        self._preserve_shared_clients = embedding_binding is not None
++        self._collection_name = collection_name
++        self._write_uncertain = False
++        if embedding_binding is not None:
++            embedding_binding.revalidate()
+         self.persist_directory = persist_directory
+         os.makedirs(persist_directory, exist_ok=True)
+         self._closed = False
+@@ -89,6 +122,8 @@
+         try:
+             self.client = persistent_client(path=self.persist_directory)
+         except KeyError:
++            if embedding_binding is not None:
++                raise
+             # ChromaDB SharedSystemClient 캐시 충돌 시 Settings 으로 재시도
+             logger.warning("ChromaDB 캐시 충돌 감지, Settings 모드로 재초기화합니다.")
+             settings_factory = cast(Callable[..., object], Settings)
+@@ -108,9 +143,35 @@
+                 client_factory = cast(Callable[[], _ClientLike], getattr(chroma_module, "Client"))
+                 self.client = client_factory()
+ 
+-        # Get or create the collection.
+         client = self.client
+-        self.collection = client.get_or_create_collection(name=collection_name)
++        from chromadb.errors import NotFoundError
++
++        try:
++            existing = client.get_collection(name=collection_name, embedding_function=None)
++        except NotFoundError:
++            existing = None
++        if existing is not None:
++            metadata = existing.metadata or {}
++            if IDENTITY_METADATA_KEY in metadata:
++                self._preserve_shared_clients = True
++            if embedding_binding is None:
++                if IDENTITY_METADATA_KEY in metadata:
++                    raise ProjectEmbeddingBindingError("An explicit embedding binding is required for this collection.")
++            else:
++                self._validate_bound_collection(existing)
++        if embedding_binding is None:
++            self.collection = client.get_or_create_collection(name=collection_name)
++        elif existing is not None:
++            self.collection = existing
++        else:
++            self.collection = client.create_collection(
++                name=collection_name,
++                embedding_function=None,
++                metadata={
++                    IDENTITY_METADATA_KEY: embedding_binding.identity.serialized(),
++                    DIMENSIONS_METADATA_KEY: 0,
++                },
++            )
+         logger.info(
+             "Initialized ChromaDB VectorStore at %s, collection: %s",
+             persist_directory,
+@@ -131,11 +192,12 @@
+         finally:
+             try:
+                 clear_system_cache = getattr(SharedSystemClient, "clear_system_cache", None)
+-                if callable(clear_system_cache):
++                if not self._preserve_shared_clients and callable(clear_system_cache):
+                     _ = clear_system_cache()
+             except Exception:
+                 logger.exception("VectorStore: clear_system_cache 실패")
+             self.client = None
++            self.collection = None
+ 
+     def __del__(self) -> None:
+         self.close()
+@@ -151,7 +213,39 @@
+     ) -> None:
+         self.close()
+ 
++    def _validate_bound_collection(self, collection: _CollectionLike) -> int:
++        binding = self.embedding_binding
++        if binding is None:
++            raise ProjectEmbeddingBindingError("An explicit embedding binding is required.")
++        binding.revalidate()
++        metadata = collection.metadata or {}
++        if metadata.get(IDENTITY_METADATA_KEY) != binding.identity.serialized():
++            raise ProjectEmbeddingBindingError(
++                "Collection embedding identity mismatch; no automatic migration is allowed."
++            )
++        observed = metadata.get(DIMENSIONS_METADATA_KEY)
++        if type(observed) is not int or observed < 0:
++            raise ProjectEmbeddingBindingError("Collection embedding dimension metadata is invalid.")
++        declared = binding.identity.configured_dimensions
++        if declared and observed and declared != observed:
++            raise ProjectEmbeddingBindingError("Collection embedding dimensions disagree with the binding.")
++        if collection.count():
++            if not observed:
++                raise ProjectEmbeddingBindingError("Collection embedding dimension commit is uncertain.")
++            stored = collection.get(include=["embeddings"], limit=1).get("embeddings")
++            rows = cast(Sequence[Sequence[float]], stored)
++            if stored is None or len(rows) != 1 or len(rows[0]) != observed:
++                raise ProjectEmbeddingBindingError("Persisted embedding dimensions disagree with collection metadata.")
++        return observed
++
+     def _require_collection(self) -> _CollectionLike:
++        if self._closed:
++            raise RuntimeError("VectorStore is closed")
++        if self._write_uncertain:
++            raise ProjectEmbeddingBindingError("VectorStore embedding write outcome is uncertain; reopen before use.")
++        if self.embedding_binding is not None and self.client is not None:
++            self.collection = self.client.get_collection(name=self._collection_name, embedding_function=None)
++            _ = self._validate_bound_collection(self.collection)
+         collection = self.collection
+         if collection is None:
+             raise RuntimeError("VectorStore collection is unavailable")
+@@ -162,6 +256,7 @@
+ 
+         Each chunk should have 'id', 'text', and 'metadata'.
+         """
++        collection = self._require_collection()
+         if not chunks:
+             return
+ 
+@@ -187,8 +282,59 @@
+                 else:
+                     safe_meta[k] = str(v)
+             metadatas.append(safe_meta)
+-        _ = self._require_collection().upsert(ids=ids, documents=documents, metadatas=metadatas)
++        self._upsert(collection, ids, documents, metadatas)
+         logger.info("Upserted %s chunks into ChromaDB.", len(chunks))
++
++    def _upsert(
++        self,
++        collection: _CollectionLike,
++        ids: list[str],
++        documents: list[str],
++        metadatas: list[dict[str, MetadataValue]],
++    ) -> None:
++        binding = self.embedding_binding
++        if binding is None:
++            _ = collection.upsert(ids=ids, documents=documents, metadatas=metadatas)
++            return
++        observed = self._validate_bound_collection(collection)
++        vectors = binding.embed(documents, observed_dimensions=observed)
++        _ = collection.upsert(ids=ids, documents=documents, metadatas=metadatas, embeddings=vectors)
++        if not observed:
++            try:
++                metadata = dict(cast(Mapping[str, MetadataValue], collection.metadata or {}))
++                metadata[DIMENSIONS_METADATA_KEY] = len(vectors[0])
++                _ = collection.modify(metadata=metadata)
++            except Exception:
++                self._write_uncertain = True
++                raise
++
++    def replace_sources(self, sources: Mapping[str, Sequence[Mapping[str, object]]]) -> None:
++        """Validate/embed one complete source replacement before any native write or deletion."""
++        collection = self._require_collection()
++        if self.embedding_binding is None:
++            raise ProjectEmbeddingBindingError("Source replacement requires an explicit binding.")
++        chunks = [chunk for group in sources.values() for chunk in group]
++        for source, group in sources.items():
++            for chunk in group:
++                metadata = chunk.get("metadata")
++                if not isinstance(metadata, Mapping) or metadata.get("source") != source:
++                    raise ProjectEmbeddingBindingError("Replacement chunk source does not match its source group.")
++        new_ids = {str(chunk["id"]) for chunk in chunks}
++        old_rows = self.export_all()
++        if any(
++            row["id"] in new_ids and cast(Mapping[str, object], row["metadata"]).get("source") not in sources
++            for row in old_rows
++        ):
++            raise ProjectEmbeddingBindingError("Replacement IDs collide with another source.")
++        stale_ids = [
++            str(row["id"])
++            for row in old_rows
++            if cast(Mapping[str, object], row["metadata"]).get("source") in sources and row["id"] not in new_ids
++        ]
++        if chunks:
++            self.upsert_chunks(chunks)
++        if stale_ids:
++            _ = collection.delete(ids=stale_ids)
+ 
+     def store_embedding(self, source_table: str, source_id: int, text: str) -> bool:
+         self.upsert_chunks(
+@@ -250,7 +396,7 @@
+         return None
+ 
+     def get_stats(self) -> dict[str, object]:
+-        count = self.collection.count() if self.collection is not None else 0
++        count = self._require_collection().count()
+         return {"available": True, "persist_directory": self.persist_directory, "count": count}
+ 
+     def delete_file_chunks(self, file_path: str) -> None:
+@@ -302,11 +448,7 @@
+         changed = sum(old != new for old, new in zip(documents, safe_documents, strict=False))
+         if ids:
+             collection = self._require_collection()
+-            _ = collection.upsert(
+-                ids=ids,
+-                documents=safe_documents,
+-                metadatas=cast(list[dict[str, MetadataValue]], safe_metadatas),
+-            )
++            self._upsert(collection, ids, safe_documents, cast(list[dict[str, MetadataValue]], safe_metadatas))
+         return changed
+ 
+     def apply_retention(self, max_age_days: int) -> int:
+@@ -316,7 +458,15 @@
+ 
+     def search(self, query: str, n_results: int = 5) -> list[dict[str, object]]:
+         """Search for the most relevant chunks given a query string."""
+-        results = self._require_collection().query(query_texts=[query], n_results=n_results)
++        collection = self._require_collection()
++        if self.embedding_binding is None:
++            results = collection.query(query_texts=[query], n_results=n_results)
++        else:
++            if not collection.count():
++                return []
++            observed = self._validate_bound_collection(collection)
++            vectors = self.embedding_binding.embed([query], query=True, observed_dimensions=observed)
++            results = collection.query(query_embeddings=vectors, n_results=n_results)
+ 
+         # Format results
+         formatted_results: list[dict[str, object]] = []
+diff --git a/src/antigravity_k/engine/project_embedding_binding.py b/src/antigravity_k/engine/project_embedding_binding.py
+new file mode 100644
+--- /dev/null
++++ b/src/antigravity_k/engine/project_embedding_binding.py
+@@ -0,0 +1,110 @@
++"""Explicit configured embedding identity for a project vector collection."""
++
++from __future__ import annotations
++
++import json
++import math
++import struct
++from dataclasses import asdict, dataclass, field
++
++from antigravity_k.engine.embeddings import EmbeddingEngine
++from antigravity_k.engine.provider_adapters.embedding_providers import OllamaEmbeddingProvider
++
++IDENTITY_METADATA_KEY = "ssak_embedding_identity"
++DIMENSIONS_METADATA_KEY = "ssak_embedding_observed_dimensions"
++
++
++class ProjectEmbeddingBindingError(ValueError):
++    """The requested embedding identity or vectors cannot safely use this index."""
++
++
++@dataclass(frozen=True, slots=True)
++class ConfiguredEmbeddingIdentity:
++    version: int
++    provider: str
++    profile_name: str
++    wire_model: str
++    endpoint: str
++    configured_dimensions: int
++    document_prefix: str
++    query_prefix: str
++    weight_revision: None = None
++    weight_revision_status: str = "UNVERIFIED"
++
++    def serialized(self) -> str:
++        return json.dumps(asdict(self), sort_keys=True, separators=(",", ":"))
++
++
++@dataclass(frozen=True, slots=True)
++class ProjectEmbeddingBinding:
++    engine: EmbeddingEngine
++    model_name: str
++    document_prefix: str = ""
++    query_prefix: str = ""
++    identity: ConfiguredEmbeddingIdentity = field(init=False)
++
++    def __post_init__(self) -> None:
++        object.__setattr__(self, "identity", self._configured_identity())
++
++    def _configured_identity(self) -> ConfiguredEmbeddingIdentity:
++        registry = self.engine.registry
++        profile = registry.get_model(self.model_name) if registry is not None else None
++        if profile is None or profile.provider.casefold() != "ollama":
++            raise ProjectEmbeddingBindingError("A registered Ollama embedding profile is required.")
++        if "embedding" not in {role.strip().casefold() for role in profile.supported_roles}:
++            raise ProjectEmbeddingBindingError("The configured profile does not support embeddings.")
++        if type(profile.dimensions) is not int or profile.dimensions < 0:
++            raise ProjectEmbeddingBindingError("Configured embedding dimensions must be a non-negative integer.")
++        return ConfiguredEmbeddingIdentity(
++            version=1,
++            provider="ollama",
++            profile_name=profile.name,
++            wire_model=profile.repo or profile.name,
++            endpoint=OllamaEmbeddingProvider.resolve_base_url(profile, registry),
++            configured_dimensions=profile.dimensions,
++            document_prefix=self.document_prefix,
++            query_prefix=self.query_prefix,
++        )
++
++    def revalidate(self) -> None:
++        if self._configured_identity() != self.identity:
++            raise ProjectEmbeddingBindingError(
++                "The configured embedding identity changed; reopen with the original binding."
++            )
++
++    def embed(self, texts: list[str], *, query: bool = False, observed_dimensions: int = 0) -> list[list[float]]:
++        self.revalidate()
++        prefix = self.query_prefix if query else self.document_prefix
++        raw = self.engine.embed([prefix + text for text in texts], self.model_name, allow_fallback=False)
++        self.revalidate()
++        return self.validate_vectors(raw, len(texts), observed_dimensions)
++
++    def validate_vectors(self, raw: object, count: int, observed_dimensions: int) -> list[list[float]]:
++        if not isinstance(raw, list) or len(raw) != count:
++            raise ProjectEmbeddingBindingError("Embedding vector count does not match the input.")
++        vectors: list[list[float]] = []
++        expected = self.identity.configured_dimensions or observed_dimensions
++        for row in raw:
++            if not isinstance(row, list) or not row:
++                raise ProjectEmbeddingBindingError("Embedding vectors must be non-empty numeric rows.")
++            if expected and len(row) != expected:
++                raise ProjectEmbeddingBindingError("Embedding dimensions do not match the collection.")
++            expected = len(row)
++            if observed_dimensions and expected != observed_dimensions:
++                raise ProjectEmbeddingBindingError("Embedding dimensions changed for this collection.")
++            vector: list[float] = []
++            for value in row:
++                if type(value) not in (int, float):
++                    raise ProjectEmbeddingBindingError("Embedding values must be numeric and not boolean.")
++                try:
++                    number = float(value)
++                except (OverflowError, ValueError) as exc:
++                    raise ProjectEmbeddingBindingError("Embedding value is out of range.") from exc
++                if not math.isfinite(number) or abs(number) > 3.4028234663852886e38:
++                    raise ProjectEmbeddingBindingError("Embedding value is not a finite Chroma float32 value.")
++                vector.append(struct.unpack("f", struct.pack("f", number))[0])
++            norm = math.hypot(*vector)
++            if not math.isfinite(norm) or norm <= 0:
++                raise ProjectEmbeddingBindingError("Embedding vector norm must be positive and finite.")
++            vectors.append(vector)
++        return vectors
+diff --git a/src/antigravity_k/engine/rag_indexer.py b/src/antigravity_k/engine/rag_indexer.py
+--- a/src/antigravity_k/engine/rag_indexer.py
++++ b/src/antigravity_k/engine/rag_indexer.py
+@@ -131,6 +131,38 @@
+         self._long_context_fusion: LongContextFusion = LongContextFusion()
+         self._load_manifest()
+ 
++    def _uses_bound_vectors(self) -> bool:
++        return getattr(self.vector_store, "embedding_binding", None) is not None
++
++    def _check_bound_path(self, path: str) -> None:
++        if self._uses_bound_vectors():
++            root = Path(self.project_root).resolve()
++            if not Path(path).resolve().is_relative_to(root):
++                raise ValueError("Bound project RAG cannot access paths outside its project root.")
++
++    def _replace_bound_chunks(self, chunks: list[CodeChunk], sources: list[str]) -> None:
++        groups: dict[str, list[Mapping[str, object]]] = {source: [] for source in sources}
++        for chunk in chunks:
++            groups[chunk.file_path].append(
++                {
++                    "id": chunk.chunk_id,
++                    "text": chunk.content,
++                    "metadata": {
++                        "source": chunk.file_path,
++                        "node_type": chunk.node_type,
++                        "node_name": chunk.node_name,
++                        "start_line": chunk.start_line,
++                        "end_line": chunk.end_line,
++                        **chunk.metadata,
++                    },
++                }
++            )
++        replace = cast(
++            Callable[[Mapping[str, Sequence[Mapping[str, object]]]], None],
++            getattr(self.vector_store, "replace_sources"),
++        )
++        replace(groups)
++
+     def _load_manifest(self) -> None:
+         if self._manifest_path is None or not self._store_has_chunks() or not self._manifest_path.is_file():
+             return
+@@ -167,6 +199,9 @@
+             logger.warning("[RAGIndexer] Could not persist manifest: %s", self._manifest_path)
+ 
+     def index_project(self, subdirs: list[str] | None = None) -> int:
++        return self._index_project(subdirs, [])
++
++    def _index_project(self, subdirs: list[str] | None, removed_sources: list[str]) -> int:
+         """프로젝트 전체 또는 지정된 하위 디렉토리를 인덱싱합니다.
+ 
+         Returns:
+@@ -178,8 +213,11 @@
+         else:
+             scan_dirs = [self.project_root]
+ 
++        for scan_dir in scan_dirs:
++            self._check_bound_path(scan_dir)
+         all_chunks: list[CodeChunk] = []
+         changed_files: list[str] = []
++        pending_hashes: dict[str, str] = {}
+ 
+         for scan_dir in scan_dirs:
+             if not os.path.isdir(scan_dir):
+@@ -194,6 +232,7 @@
+                         continue
+ 
+                     fpath = os.path.join(root, fname)
++                    self._check_bound_path(fpath)
+                     rel_path = os.path.relpath(fpath, self.project_root)
+ 
+                     try:
+@@ -207,7 +246,10 @@
+                     content_hash = hashlib.md5(content.encode(), usedforsecurity=False).hexdigest()
+                     if self._file_hashes.get(rel_path) == content_hash:
+                         continue  # 변경 없음 → 스킵
+-                    self._file_hashes[rel_path] = content_hash
++                    if self._uses_bound_vectors():
++                        pending_hashes[rel_path] = content_hash
++                    else:
++                        self._file_hashes[rel_path] = content_hash
+                     changed_files.append(rel_path)
+ 
+                     # 파일 유형별 청킹
+@@ -220,6 +262,16 @@
+ 
+                     self._annotate_chunks(chunks, content_hash)
+                     all_chunks.extend(chunks)
++
++        if self._uses_bound_vectors():
++            for source in removed_sources:
++                self._check_bound_path(os.path.join(self.project_root, source))
++            self._replace_bound_chunks(all_chunks, [*changed_files, *removed_sources])
++            self._file_hashes.update(pending_hashes)
++            for source in removed_sources:
++                self._file_hashes.pop(source, None)
++            self._persist_manifest()
++            return len(all_chunks)
+ 
+         if self.vector_store:
+             delete_chunks = getattr(self.vector_store, "delete_file_chunks", None)
+@@ -258,6 +310,8 @@
+         else:
+             scan_dirs = [self.project_root]
+ 
++        for scan_dir in scan_dirs:
++            self._check_bound_path(scan_dir)
+         current_files: set[str] = set()
+         for scan_dir in scan_dirs:
+             if not os.path.isdir(scan_dir):
+@@ -268,6 +322,7 @@
+                     ext = Path(fname).suffix.lower()
+                     if ext in INDEXABLE_EXTENSIONS:
+                         fpath = os.path.join(root, fname)
++                        self._check_bound_path(fpath)
+                         rel_path = os.path.relpath(fpath, self.project_root)
+                         current_files.add(rel_path)
+ 
+@@ -286,6 +341,8 @@
+         else:
+             manifest_files = set(self._file_hashes)
+         deleted_files = manifest_files - current_files
++        if self._uses_bound_vectors():
++            return self._index_project(subdirs, sorted(deleted_files))
+         for rel_path in deleted_files:
+             del self._file_hashes[rel_path]
+             if self.vector_store:
+@@ -301,6 +358,7 @@
+         if not os.path.isabs(file_path):
+             abs_path = os.path.join(self.project_root, file_path)
+ 
++        self._check_bound_path(abs_path)
+         if not os.path.isfile(abs_path):
+             return 0
+ 
+@@ -318,10 +376,12 @@
+         # (원본 파일은 수정하지 않고, 청킹/라인 계산에만 정규화된 텍스트를 쓴다.)
+         content = content.replace("\r\n", "\n").replace("\r", "\n")
+ 
+-        self._file_hashes[rel_path] = hashlib.md5(content.encode(), usedforsecurity=False).hexdigest()
++        content_hash = hashlib.md5(content.encode(), usedforsecurity=False).hexdigest()
++        if not self._uses_bound_vectors():
++            self._file_hashes[rel_path] = content_hash
+ 
+         # 기존 청크 삭제
+-        if self.vector_store:
++        if self.vector_store and not self._uses_bound_vectors():
+             self.vector_store.delete_file_chunks(rel_path)
+ 
+         # 재청킹
+@@ -332,7 +392,12 @@
+         else:
+             chunks = self._chunk_generic(rel_path, content)
+ 
+-        self._annotate_chunks(chunks, self._file_hashes[rel_path])
++        self._annotate_chunks(chunks, content_hash)
++        if self._uses_bound_vectors():
++            self._replace_bound_chunks(chunks, [rel_path])
++            self._file_hashes[rel_path] = content_hash
++            self._persist_manifest()
++            return len(chunks)
+         if self.vector_store and chunks:
+             store_chunks = [
+                 {
+diff --git a/src/antigravity_k/api/dependencies.py b/src/antigravity_k/api/dependencies.py
+--- a/src/antigravity_k/api/dependencies.py
++++ b/src/antigravity_k/api/dependencies.py
+@@ -39,6 +39,7 @@
+     from fastapi import FastAPI
+ 
+     from antigravity_k.engine.mode_manager import ModeManager
++    from antigravity_k.engine.project_embedding_binding import ProjectEmbeddingBinding
+ 
+ 
+ type JsonPrimitive = str | int | float | bool | None
+@@ -228,7 +229,9 @@
+             return None
+ 
+ 
+-def _attach_project_rag_indexer(orchestrator: OrchestratorAgent, project_root: str) -> None:
++def _attach_project_rag_indexer(
++    orchestrator: OrchestratorAgent, project_root: str, *, embedding_binding: ProjectEmbeddingBinding | None = None
++) -> None:
+     """Wire a real per-project RAGIndexer with vectors under the project root."""
+     from antigravity_k.engine.project_memory_paths import project_rag_vector_dir
+     from antigravity_k.engine.rag_indexer import RAGIndexer
+@@ -236,8 +239,16 @@
+ 
+     rag_dir = project_rag_vector_dir(project_root)
+     try:
+-        vector_store: object | None = VectorStore(str(rag_dir), collection_name="project_code")
++        vector_store: object | None
++        if embedding_binding is None:
++            vector_store = VectorStore(str(rag_dir), collection_name="project_code")
++        else:
++            vector_store = VectorStore(
++                str(rag_dir), collection_name="project_code", embedding_binding=embedding_binding
++            )
+     except Exception:
++        if embedding_binding is not None:
++            raise
+         logger.exception("Project RAG VectorStore init failed for %s", project_root)
+         vector_store = None
+     setattr(orchestrator, "_rag_indexer", RAGIndexer(project_root=project_root, vector_store=vector_store))
+diff --git a/tests/test_project_rag_embedding_identity_contract.py b/tests/test_project_rag_embedding_identity_contract.py
+new file mode 100644
+--- /dev/null
++++ b/tests/test_project_rag_embedding_identity_contract.py
+@@ -0,0 +1,613 @@
++"""Project embedding routing with real owned Chroma and deterministic model doubles."""
++
++from __future__ import annotations
++
++import hashlib
++import json
++import os
++import socket
++from collections.abc import Callable
++from dataclasses import dataclass, field
++from pathlib import Path
++from types import SimpleNamespace
++from typing import cast, override
++
++import chromadb
++import pytest
++import yaml
++from chromadb.api.models.Collection import Collection
++from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
++from chromadb.utils.embedding_functions.onnx_mini_lm_l6_v2 import ONNXMiniLM_L6_V2
++
++from antigravity_k.engine.embeddings import EmbeddingEngine, EmbeddingModelUnavailableError
++from antigravity_k.engine.model_registry import ModelRegistry
++from antigravity_k.engine.project_embedding_binding import (
++    DIMENSIONS_METADATA_KEY,
++    IDENTITY_METADATA_KEY,
++    ProjectEmbeddingBinding,
++    ProjectEmbeddingBindingError,
++)
++from antigravity_k.engine.rag_indexer import RAGIndexer
++from antigravity_k.engine.vector_store import MetadataValue, VectorStore
++
++MODEL = "configured-embedding"
++
++
++class FakeEngine(EmbeddingEngine):
++    def __init__(self, registry: ModelRegistry):
++        super().__init__(registry=registry)
++        self.calls: list[dict[str, object]] = []
++        self.result: object = None
++        self.failure: Exception | None = None
++
++    @override
++    def embed(self, text: str | list[str], model_name: str, *, allow_fallback: bool = True) -> list[list[float]]:
++        self.calls.append({"text": text, "model_name": model_name, "allow_fallback": allow_fallback})
++        if self.failure is not None:
++            raise self.failure
++        if self.result is not None:
++            return cast(list[list[float]], self.result)
++        texts = [text] if isinstance(text, str) else text
++        return [[1.0, float(len(item) % 13 + 1), 0.5] for item in texts]
++
++
++@dataclass
++class Case:
++    root: Path
++    engine: FakeEngine
++    forbidden: list[str]
++    native: list[dict[str, object]]
++    stores: list[VectorStore] = field(default_factory=list)
++    observations: dict[str, object] = field(default_factory=dict)
++
++    def binding(self, **kwargs: str) -> ProjectEmbeddingBinding:
++        return ProjectEmbeddingBinding(self.engine, MODEL, **kwargs)
++
++    def store(self, path: Path | None = None, binding: ProjectEmbeddingBinding | None = None) -> VectorStore:
++        store = VectorStore(str(path or self.root / "vectors"), embedding_binding=binding or self.binding())
++        self.stores.append(store)
++        return store
++
++
++@pytest.fixture
++def case(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest):
++    forbidden: list[str] = []
++    native: list[dict[str, object]] = []
++
++    def deny(*args: object, **kwargs: object):
++        forbidden.append("network/model-loader/fallback/default-embedding/download")
++        raise AssertionError("Unexpected physical network, model loader, fallback or default Chroma embedding")
++
++    monkeypatch.setattr(socket.socket, "connect", deny)
++    monkeypatch.setattr(socket.socket, "connect_ex", deny)
++    monkeypatch.setattr(socket, "create_connection", deny)
++    monkeypatch.setattr(EmbeddingEngine, "load_model", deny)
++    monkeypatch.setattr(EmbeddingEngine, "_fallback_embedding", deny)
++    monkeypatch.setattr(DefaultEmbeddingFunction, "__call__", deny)
++    monkeypatch.setattr(ONNXMiniLM_L6_V2, "_download_model_if_not_exists", deny)
++    original_upsert = Collection.upsert
++    original_query = Collection.query
++    original_delete = Collection.delete
++
++    def upsert(self, *args, **kwargs):
++        native.append(
++            {
++                "operation": "upsert",
++                "ids": kwargs.get("ids"),
++                "documents": kwargs.get("documents"),
++                "embeddings": kwargs.get("embeddings"),
++            }
++        )
++        return original_upsert(self, *args, **kwargs)
++
++    def query(self, *args, **kwargs):
++        native.append(
++            {
++                "operation": "query",
++                "query_texts": kwargs.get("query_texts"),
++                "query_embeddings": kwargs.get("query_embeddings"),
++            }
++        )
++        return original_query(self, *args, **kwargs)
++
++    def delete(self, *args, **kwargs):
++        native.append({"operation": "delete", "ids": kwargs.get("ids"), "where": kwargs.get("where")})
++        return original_delete(self, *args, **kwargs)
++
++    monkeypatch.setattr(Collection, "delete", delete)
++    monkeypatch.setattr(Collection, "upsert", upsert)
++    monkeypatch.setattr(Collection, "query", query)
++    config = tmp_path / "models.yaml"
++    config.write_text(
++        yaml.safe_dump(
++            {
++                "models": {
++                    "embedding": [
++                        {"name": MODEL, "repo": "nomic-embed-text:latest", "provider": "ollama", "dimensions": 0}
++                    ]
++                },
++                "providers": {"ollama": {"base_url": "http://localhost:11434/v1"}},
++            }
++        )
++    )
++    engine = FakeEngine(ModelRegistry(config_path=str(config)))
++    result = Case(tmp_path, engine, forbidden, native)
++    yield result
++    for store in result.stores:
++        store.close()
++    capture = os.environ.get("RAG_BINDING_CAPTURE_ROOT")
++    if capture:
++        target = Path(capture)
++        target.mkdir(parents=True, exist_ok=True)
++        (target / (hashlib.sha256(request.node.nodeid.encode()).hexdigest()[:16] + ".json")).write_text(
++            json.dumps(
++                {
++                    "nodeid": request.node.nodeid,
++                    "engine_calls": engine.calls,
++                    "forbidden": forbidden,
++                    "native": native,
++                    "observations": result.observations,
++                },
++                ensure_ascii=False,
++                indent=2,
++            )
++        )
++    assert forbidden == []
++
++
++def chunk(identifier: str = "one", text: str = "stored document", source: str = "note.md") -> dict[str, object]:
++    return {"id": identifier, "text": text, "metadata": {"source": source}}
++
++
++def profile(case: Case):
++    assert case.engine.registry is not None
++    value = case.engine.registry.get_model(MODEL)
++    assert value is not None
++    return value
++
++
++def test_constructor_no_inference_and_document_query_redaction_use_strict_binding(case: Case):
++    binding = case.binding(document_prefix="search_document: ", query_prefix="search_query: ")
++    store = case.store(binding=binding)
++    assert case.engine.calls == []
++    identity = binding.identity
++    assert identity.configured_dimensions == 0 and identity.weight_revision is None
++    assert identity.weight_revision_status == "UNVERIFIED"
++    assert identity.endpoint == "http://localhost:11434"
++    secret = "api_key=sk-" + "a" * 40
++    store.upsert_chunks([chunk(text=secret)])
++    original = store.export_all()[0]["document"]
++    assert original == secret
++    assert store.search("find secret", 1)
++    assert store.redact_all() == 1
++    redacted = store.export_all()[0]["document"]
++    assert redacted != secret
++    assert case.engine.calls == [
++        {"text": ["search_document: " + secret], "model_name": MODEL, "allow_fallback": False},
++        {"text": ["search_query: find secret"], "model_name": MODEL, "allow_fallback": False},
++        {"text": ["search_document: " + str(redacted)], "model_name": MODEL, "allow_fallback": False},
++    ]
++    assert all(call.get("embeddings") is not None for call in case.native if call["operation"] == "upsert")
++    assert all(
++        call.get("query_embeddings") is not None and call.get("query_texts") is None
++        for call in case.native
++        if call["operation"] == "query"
++    )
++    case.observations.update(identity=identity.serialized(), stored_before=original, stored_after=redacted)
++
++
++def test_unknown_dimensions_persist_reopen_and_peer_close(case: Case):
++    store = case.store()
++    assert store.collection is not None
++    assert store.collection.metadata is not None
++    assert store.collection.metadata[DIMENSIONS_METADATA_KEY] == 0
++    assert store.search("empty") == [] and case.engine.calls == []
++    store.upsert_chunks([chunk()])
++    assert store.collection.metadata is not None
++    assert store.collection.metadata[DIMENSIONS_METADATA_KEY] == 3
++    peer = case.store()
++    store.close()
++    calls = len(case.engine.calls)
++    with pytest.raises(RuntimeError, match="closed"):
++        store.get_stats()
++    with pytest.raises(RuntimeError, match="closed"):
++        store.upsert_chunks([chunk()])
++    with pytest.raises(RuntimeError, match="closed"):
++        store.search("no native count")
++    assert len(case.engine.calls) == calls
++    peer.upsert_chunks([chunk("two")])
++    assert peer.get_stats()["count"] == 2
++    peer.close()
++    reopened = case.store()
++    assert reopened.get_stats()["count"] == 2
++    case.engine.result = [[1.0, 2.0]]
++    before = reopened.export_all()
++    with pytest.raises(ProjectEmbeddingBindingError, match="dimensions"):
++        reopened.upsert_chunks([chunk("three")])
++    assert reopened.export_all() == before
++    case.observations["reopened_records"] = before
++
++
++@pytest.mark.parametrize("change", ["name", "repo", "endpoint", "document_prefix", "query_prefix", "dimensions"])
++def test_same_dimension_identity_mismatch_rejected_without_mutation(case: Case, change: str):
++    store = case.store()
++    store.upsert_chunks([chunk()])
++    before = store.export_all()
++    old = profile(case)
++    kwargs = {}
++    if change == "name":
++        old.name = "renamed-profile"
++    elif change == "repo":
++        old.repo = "other-model:latest"
++    elif change == "endpoint":
++        old.api_base = "http://127.0.0.1:11434"
++    elif change == "dimensions":
++        old.dimensions = 3
++    else:
++        kwargs[change] = "new-prefix: "
++    with pytest.raises(ProjectEmbeddingBindingError, match="identity"):
++        case.store(binding=case.binding(**kwargs))
++    if change in {"name", "repo", "endpoint", "dimensions"}:
++        with pytest.raises(ProjectEmbeddingBindingError, match="identity"):
++            store.search("drift")
++    assert store.collection is not None
++    assert store.collection.count() == 1
++    case.observations["records_before"] = before
++    assert len(case.engine.calls) == 1
++
++
++@pytest.mark.parametrize("populated", [False, True])
++def test_explicit_open_rejects_legacy_without_metadata_even_when_empty(case: Case, populated: bool):
++    client = chromadb.PersistentClient(path=str(case.root / "vectors"))
++    legacy = client.create_collection("vault_notes", embedding_function=None)
++    if populated:
++        legacy.upsert(ids=["old"], documents=["legacy"], embeddings=[[1.0, 2.0, 3.0]])
++    before = legacy.get(include=["documents"])
++    with pytest.raises(ProjectEmbeddingBindingError, match="identity"):
++        case.store()
++    assert legacy.metadata is None and legacy.get(include=["documents"]) == before
++    assert case.engine.calls == []
++    cast(Callable[[], None], getattr(client, "close"))()
++
++
++def test_implicit_refusal_and_other_identity_refusal_do_not_harm_bound_peer(case: Case):
++    peer = case.store()
++    peer.upsert_chunks([chunk()])
++    with pytest.raises(ProjectEmbeddingBindingError, match="explicit"):
++        VectorStore(str(case.root / "vectors"))
++    with pytest.raises(ProjectEmbeddingBindingError, match="identity"):
++        case.store(binding=case.binding(query_prefix="different"))
++    peer.upsert_chunks([chunk("after")])
++    assert len(peer.search("peer", 2)) == 2
++
++
++@pytest.mark.parametrize(
++    "bad",
++    [
++        [],
++        [[1.0]],
++        [[1.0, 2.0], [1.0]],
++        [[True, 1.0, 2.0]],
++        [[float("nan"), 1.0, 2.0]],
++        [[float("inf"), 1.0, 2.0]],
++        [[0.0, 0.0, 0.0]],
++        [[1e100, 1.0, 2.0]],
++        [["1", 2, 3]],
++    ],
++)
++def test_invalid_vectors_fail_before_upsert_or_dimension_metadata(case: Case, bad: object):
++    profile(case).dimensions = 3
++    store = case.store()
++    assert store.collection is not None
++    before = dict(store.collection.metadata or {})
++    case.engine.result = bad
++    with pytest.raises(ProjectEmbeddingBindingError):
++        store.upsert_chunks([chunk()])
++    assert case.native == [] and store.get_stats()["count"] == 0
++    assert store.collection.metadata == before
++
++
++@pytest.mark.parametrize("failure", [EmbeddingModelUnavailableError(MODEL), RuntimeError("provider failure")])
++def test_provider_failure_has_no_upsert_no_fallback(case: Case, failure: Exception):
++    store = case.store()
++    case.engine.failure = failure
++    with pytest.raises(type(failure)):
++        store.upsert_chunks([chunk()])
++    assert store.get_stats()["count"] == 0 and case.native == []
++    assert case.engine.calls[0]["allow_fallback"] is False
++
++
++@pytest.mark.parametrize("change", ["provider", "role", "missing", "credentials", "query", "fragment"])
++def test_unsupported_binding_rejected_before_loader_or_network(case: Case, change: str):
++    value = profile(case)
++    if change == "provider":
++        value.provider = "mlx"
++    elif change == "role":
++        value.roles = ("coding",)
++        value.role = "coding"
++    elif change == "missing":
++        assert case.engine.registry is not None
++        case.engine.registry._models.clear()
++    else:
++        value.api_base = {
++            "credentials": "http://user:secret@localhost:11434",
++            "query": "http://localhost:11434?token=secret",
++            "fragment": "http://localhost:11434#secret",
++        }[change]
++    with pytest.raises((ProjectEmbeddingBindingError, RuntimeError)):
++        case.binding()
++    assert not (case.root / "vectors").exists() and case.engine.calls == []
++
++
++def test_mutable_registry_provider_endpoint_revalidated_before_every_model_call(case: Case):
++    store = case.store()
++    store.upsert_chunks([chunk()])
++    assert case.engine.registry is not None
++    case.engine.registry.providers["ollama"]["base_url"] = "http://other-host:11434"
++    for action in (lambda: store.upsert_chunks([chunk("new")]), lambda: store.search("query"), store.redact_all):
++        with pytest.raises(ProjectEmbeddingBindingError, match="identity"):
++            action()
++    assert len(case.engine.calls) == 1
++
++
++def test_delete_and_purge_never_embed(case: Case):
++    store = case.store()
++    store.upsert_chunks([chunk(), chunk("two", source="second.md")])
++    calls = len(case.engine.calls)
++    store.delete_file_chunks_strict("note.md")
++    assert store.clear() == 1
++    assert len(case.engine.calls) == calls and store.get_stats()["count"] == 0
++
++
++def test_native_upsert_failure_keeps_unknown_metadata_and_metadata_failure_is_uncertain(
++    case: Case, monkeypatch: pytest.MonkeyPatch
++):
++    store = case.store()
++    assert store.collection is not None
++    before = dict(store.collection.metadata or {})
++    original = Collection.upsert
++
++    def fail(*args: object, **kwargs: object):
++        raise RuntimeError("native write failed")
++
++    monkeypatch.setattr(Collection, "upsert", fail)
++    with pytest.raises(RuntimeError, match="native write"):
++        store.upsert_chunks([chunk()])
++    assert store.collection.metadata == before and store.collection.count() == 0
++    monkeypatch.setattr(Collection, "upsert", original)
++    monkeypatch.setattr(Collection, "modify", fail)
++    with pytest.raises(RuntimeError, match="native write"):
++        store.upsert_chunks([chunk()])
++    assert store.collection.count() == 1 and store.collection.metadata == before
++    with pytest.raises(ProjectEmbeddingBindingError, match="uncertain"):
++        store.search("blocked")
++    with pytest.raises(ProjectEmbeddingBindingError, match="uncertain"):
++        case.store()
++
++
++def test_persistent_failure_never_falls_back(case: Case, monkeypatch: pytest.MonkeyPatch):
++    def fail(*args: object, **kwargs: object):
++        raise KeyError("owned persistent failure")
++
++    def forbidden(*args: object, **kwargs: object):
++        pytest.fail("in-memory fallback called")
++
++    monkeypatch.setattr(chromadb, "PersistentClient", fail)
++    monkeypatch.setattr(chromadb, "Client", forbidden)
++    with pytest.raises(KeyError):
++        case.store()
++    assert case.engine.calls == []
++
++
++@pytest.mark.parametrize("method", ["index_file", "index_project", "sync"])
++def test_rag_failed_embedding_preserves_rows_manifest_and_retryability(case: Case, method: str):
++    project = case.root / "project"
++    project.mkdir()
++    source = project / "notes.md"
++    source.write_text("# Old section\nold content\n\n# Another section\nold trailing content\n")
++    store = case.store()
++    indexer = RAGIndexer(str(project), vector_store=store)
++    assert indexer.index_project() > 0
++    before = store.export_all()
++    manifest = Path(store.persist_directory) / "rag-manifest.json"
++    saved_manifest = manifest.read_bytes()
++    source.write_text("# New section\nnew replacement content\n")
++    canonical = source.read_bytes()
++    action = (lambda: indexer.index_file("notes.md")) if method == "index_file" else getattr(indexer, method)
++    case.engine.failure = EmbeddingModelUnavailableError(MODEL)
++    with pytest.raises(EmbeddingModelUnavailableError):
++        action()
++    failed_rows = store.export_all()
++    case.observations.update(
++        records_before=before,
++        records_after_failure=failed_rows,
++        manifest_before_sha256=hashlib.sha256(saved_manifest).hexdigest(),
++        manifest_after_failure_sha256=hashlib.sha256(manifest.read_bytes()).hexdigest(),
++    )
++    assert failed_rows == before and manifest.read_bytes() == saved_manifest
++    assert source.read_bytes() == canonical
++    case.engine.failure = None
++    assert action() > 0
++    after = store.export_all()
++    assert after and all("old " not in str(row["document"]) for row in after)
++    assert source.read_bytes() == canonical
++    calls = len(case.engine.calls)
++    assert indexer.index_project() == 0 and len(case.engine.calls) == calls
++    case.observations.update(
++        records_before=before, records_after=after, canonical_sha256=hashlib.sha256(canonical).hexdigest()
++    )
++
++
++def test_real_rag_index_search_change_delete_preserves_other_project(case: Case):
++    project = case.root / "project"
++    project.mkdir()
++    source = project / "notes.md"
++    source.write_text("# Alpha\noriginal owned content\n")
++    other = case.store(case.root / "other-vectors")
++    other.upsert_chunks([chunk("other", "untouched other project")])
++    other_before = other.export_all()
++    store = case.store()
++    indexer = RAGIndexer(str(project), vector_store=store)
++    assert indexer.index_project() > 0
++    canonical = source.read_bytes()
++    assert indexer.search("content", n_results=1, mode="semantic")
++    assert source.read_bytes() == canonical
++    source.write_text("# Beta\nchanged owned content\n")
++    changed = source.read_bytes()
++    assert indexer.sync() > 0
++    assert source.read_bytes() == changed and other.export_all() == other_before
++    source.unlink()
++    calls = len(case.engine.calls)
++    assert indexer.sync() == 0 and store.get_stats()["count"] == 0
++    assert len(case.engine.calls) == calls and other.export_all() == other_before
++
++
++@pytest.mark.parametrize("operation", ["file", "parent-subdir", "symlink-index", "symlink-sync"])
++def test_outside_sources_never_read_embed_or_store(case: Case, monkeypatch: pytest.MonkeyPatch, operation: str):
++    project = case.root / "project"
++    project.mkdir()
++    sentinel = case.root / "outside.md"
++    sentinel.write_text("outside private sentinel")
++    digest = hashlib.sha256(sentinel.read_bytes()).hexdigest()
++    store = case.store()
++    indexer = RAGIndexer(str(project), vector_store=store)
++    if operation.startswith("symlink"):
++        (project / "link.md").symlink_to(sentinel)
++    original_open = __import__("builtins").open
++
++    def guarded_open(file, *args, **kwargs):
++        if isinstance(file, (str, Path)) and Path(file).resolve() == sentinel:
++            pytest.fail("outside sentinel read")
++        return original_open(file, *args, **kwargs)
++
++    with monkeypatch.context() as guard:
++        guard.setattr("builtins.open", guarded_open)
++        with pytest.raises(ValueError, match="outside"):
++            if operation == "file":
++                indexer.index_file(str(sentinel))
++            elif operation == "parent-subdir":
++                indexer.index_project([".."])
++            elif operation == "symlink-index":
++                indexer.index_project()
++            else:
++                indexer.sync()
++    assert hashlib.sha256(sentinel.read_bytes()).hexdigest() == digest
++    assert case.engine.calls == [] and store.get_stats()["count"] == 0
++
++
++def test_explicit_factory_failure_surfaces_but_legacy_fallback_remains(case: Case, monkeypatch: pytest.MonkeyPatch):
++    from antigravity_k.api.dependencies import _attach_project_rag_indexer
++    from antigravity_k.engine import vector_store as module
++    from antigravity_k.engine.orchestrator import OrchestratorAgent
++
++    def fail(*args: object, **kwargs: object):
++        raise RuntimeError("owned vector constructor failure")
++
++    monkeypatch.setattr(module, "VectorStore", fail)
++    orchestrator = cast(OrchestratorAgent, cast(object, SimpleNamespace()))
++    with pytest.raises(RuntimeError, match="constructor failure"):
++        _attach_project_rag_indexer(orchestrator, str(case.root), embedding_binding=case.binding())
++    assert not hasattr(orchestrator, "_rag_indexer")
++    _attach_project_rag_indexer(orchestrator, str(case.root))
++    assert getattr(orchestrator, "_rag_indexer").vector_store is None
++
++
++def test_bound_sync_validates_edits_before_deleting_removed_sources(case: Case):
++    project = case.root / "project"
++    project.mkdir()
++    first = project / "first.md"
++    removed = project / "removed.md"
++    first.write_text("# First\nold first\n")
++    removed.write_text("# Removed\nold removed\n")
++    store = case.store()
++    indexer = RAGIndexer(str(project), store)
++    assert indexer.index_project() == 2
++    before = store.export_all()
++    manifest = Path(store.persist_directory) / "rag-manifest.json"
++    old_manifest = manifest.read_bytes()
++    first.write_text("# First\nnew first\n")
++    removed.unlink()
++    case.engine.failure = EmbeddingModelUnavailableError(MODEL)
++    with pytest.raises(EmbeddingModelUnavailableError):
++        indexer.sync()
++    assert store.export_all() == before and manifest.read_bytes() == old_manifest
++    case.engine.failure = None
++    assert indexer.sync() == 1
++    rows = store.export_all()
++    assert len(rows) == 1 and "new first" in str(rows[0]["document"])
++
++
++def test_unknown_dimension_stays_bound_after_purge_and_query_validation(case: Case):
++    store = case.store()
++    store.upsert_chunks([chunk()])
++    case.engine.result = [[1.0, 2.0]]
++    queries = len([row for row in case.native if row["operation"] == "query"])
++    with pytest.raises(ProjectEmbeddingBindingError, match="dimensions"):
++        store.search("invalid query dimensions")
++    assert len([row for row in case.native if row["operation"] == "query"]) == queries
++    assert store.clear() == 1
++    store.close()
++    reopened = case.store()
++    with pytest.raises(ProjectEmbeddingBindingError, match="dimensions"):
++        reopened.upsert_chunks([chunk()])
++    assert reopened.get_stats()["count"] == 0
++
++
++def test_unknown_first_batch_dimension_consistency_and_float32_norm(case: Case):
++    store = case.store()
++    for rows in ([[1.0, 2.0], [1.0, 2.0, 3.0]], [[1e-100, 0.0, 0.0], [1e-100, 0.0, 0.0]]):
++        case.engine.result = rows
++        with pytest.raises(ProjectEmbeddingBindingError):
++            store.upsert_chunks([chunk(), chunk("two")])
++    assert case.native == [] and store.get_stats()["count"] == 0
++
++
++def test_persisted_vector_dimension_disagreement_rejects_reopen(case: Case):
++    store = case.store()
++    store.upsert_chunks([chunk()])
++    assert store.collection is not None
++    metadata = dict(store.collection.metadata or {})
++    metadata[DIMENSIONS_METADATA_KEY] = 2
++    store.collection.modify(metadata=cast(dict[str, MetadataValue], metadata))
++    with pytest.raises(ProjectEmbeddingBindingError, match="Persisted"):
++        case.store()
++    assert len(case.engine.calls) == 1
++
++
++def test_delete_native_failure_does_not_advance_bound_manifest(case: Case, monkeypatch: pytest.MonkeyPatch):
++    project = case.root / "project"
++    project.mkdir()
++    source = project / "notes.md"
++    source.write_text("# Delete\nthis record\n")
++    store = case.store()
++    indexer = RAGIndexer(str(project), store)
++    assert indexer.index_project() == 1
++    manifest = Path(store.persist_directory) / "rag-manifest.json"
++    before = manifest.read_bytes()
++    source.unlink()
++    original = Collection.delete
++
++    def fail(*args: object, **kwargs: object):
++        raise RuntimeError("native delete failed")
++
++    monkeypatch.setattr(Collection, "delete", fail)
++    with pytest.raises(RuntimeError, match="native delete"):
++        indexer.sync()
++    assert manifest.read_bytes() == before and store.get_stats()["count"] == 1
++    monkeypatch.setattr(Collection, "delete", original)
++    assert indexer.sync() == 0 and store.get_stats()["count"] == 0
++
++
++def test_legacy_constructor_and_default_callback_path_remain_opt_in_only(case: Case, monkeypatch: pytest.MonkeyPatch):
++    def deterministic(self, input):
++        return [[1.0, 2.0, 3.0] for _ in input]
++
++    monkeypatch.setattr(DefaultEmbeddingFunction, "__call__", deterministic)
++    with VectorStore(str(case.root / "legacy-default")) as legacy:
++        legacy.upsert_chunks([chunk()])
++        assert legacy.search("legacy", 1)
++        assert legacy.collection is not None
++        assert IDENTITY_METADATA_KEY not in (legacy.collection.metadata or {})
++    assert case.engine.calls == []
++    assert case.native[0]["embeddings"] is None
++    assert case.native[1]["query_texts"] == ["legacy"]

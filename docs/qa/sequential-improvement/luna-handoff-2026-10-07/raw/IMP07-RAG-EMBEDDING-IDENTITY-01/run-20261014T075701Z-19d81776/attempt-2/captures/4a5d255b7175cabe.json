@@ -1,0 +1,46 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_unknown_dimension_stays_bound_after_purge_and_query_validation",
+  "engine_calls": [
+    {
+      "text": [
+        "stored document"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "invalid query dimensions"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "stored document"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "upsert",
+      "ids": [
+        "one"
+      ],
+      "documents": [
+        "stored document"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          3.0,
+          0.5
+        ]
+      ]
+    }
+  ],
+  "observations": {}
+}

@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "git",
+    "apply",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/task-only.patch"
+  ],
+  "preimage_head": "2a8791ed8259543b54a12225bcc46cea69451efa",
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "",
+  "matches": {
+    "src/antigravity_k/engine/vector_store.py": true,
+    "src/antigravity_k/engine/project_embedding_binding.py": true,
+    "src/antigravity_k/engine/rag_indexer.py": true,
+    "src/antigravity_k/api/dependencies.py": true,
+    "tests/test_project_rag_embedding_identity_contract.py": true
+  }
+}

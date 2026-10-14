@@ -1,0 +1,25 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_legacy_constructor_and_default_callback_path_remain_opt_in_only",
+  "engine_calls": [],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "upsert",
+      "ids": [
+        "one"
+      ],
+      "documents": [
+        "stored document"
+      ],
+      "embeddings": null
+    },
+    {
+      "operation": "query",
+      "query_texts": [
+        "legacy"
+      ],
+      "query_embeddings": null
+    }
+  ],
+  "observations": {}
+}

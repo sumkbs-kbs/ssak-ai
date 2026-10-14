@@ -1,0 +1,32 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_mutable_registry_provider_endpoint_revalidated_before_every_model_call",
+  "engine_calls": [
+    {
+      "text": [
+        "stored document"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "upsert",
+      "ids": [
+        "one"
+      ],
+      "documents": [
+        "stored document"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          3.0,
+          0.5
+        ]
+      ]
+    }
+  ],
+  "observations": {}
+}

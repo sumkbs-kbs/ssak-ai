@@ -1,0 +1,1318 @@
+{
+  "scope": "Published owned RAG identity QA subset; immutable worker manifest describes local source-bound scope",
+  "feature_commit": "4de2ef8b3df692e36f2e39230e6428e041c158d4",
+  "files": [
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/HANDOFF.md",
+      "bytes": 6074,
+      "sha256": "1044f20f263fe8cbb449d8076e2deee7afa4fcbb99bb11fd91bd9e308bcee49e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/IMMUTABLE_MANIFEST.json",
+      "bytes": 29541,
+      "sha256": "a66cacdafab1c0cdcefe354ba5a1474bc35afaf5b4b51bca25c35c2cd859530d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/IMMUTABLE_MANIFEST.sha256",
+      "bytes": 90,
+      "sha256": "8951f3db13e6092df7443c8d19a17f093f74c0b24ddbfda4a82d54cc23b4c38c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/02852f135fe41ef4.json",
+      "bytes": 768,
+      "sha256": "77fc81499bb2e451dc61b5d893606739f63016ff2b5b0157d2c5b595384041ca"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/1bdb74d8df571217.json",
+      "bytes": 772,
+      "sha256": "650c01692b78fde4cd7f928b0a8e6e2e405bc2b1c18dacf453b327672b81b47e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/20e854777612da2c.json",
+      "bytes": 213,
+      "sha256": "4eebefc56e714d4255f5b50540f3e69f165c86a96637bc621460c22e7ab5d2ec"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/277a256cef385565.json",
+      "bytes": 447,
+      "sha256": "af0058046244331f057a195d5af4873919d27263beca0323ef1fbe3a5229d526"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/290491c8d9310766.json",
+      "bytes": 359,
+      "sha256": "a23c7730704f5f9a2479b5930ef209798ccad1b4e9f24e433fb9b22b4b2fb1f9"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/290bf1dfaaaa7d50.json",
+      "bytes": 599,
+      "sha256": "565780e7622edd3fe729ccb7b3dfab4dd9f9d1293e48432ae3b1413ba96058cd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/29cc6d9ee4ec37a5.json",
+      "bytes": 764,
+      "sha256": "1a6de33818f8449a3209323384408ce0cf1fc215864fa8115f49cef52da183d0"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/2a486a83ef3b97e9.json",
+      "bytes": 217,
+      "sha256": "5045fc99fd0a869626cf679e5759da5d2965ce69231d6a989829fe9ba52d0e09"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/2e9f687e3c5aa3b9.json",
+      "bytes": 1260,
+      "sha256": "b8f2ac0c69dc0adaef78fef7b5e6dd5d0549c08b60347cb5dcfda261aefc7b92"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/3252263252b0d8f6.json",
+      "bytes": 764,
+      "sha256": "10f72f0dc66d4c9f2f97a4a98a553bc34c8247fab5c642c62aad342c5d46fb18"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/33d2346bc4fc58c3.json",
+      "bytes": 1735,
+      "sha256": "bad496a05f0517fe2cc830532024c15a33fe147bffc214f2528c8841f29d72ba"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/355643d78e3440a8.json",
+      "bytes": 359,
+      "sha256": "de515a51226bbfc3c95785dd75f57b59c8a7df4a60af1ac6191b1354cfed5dcd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/3f1831af772d28f4.json",
+      "bytes": 223,
+      "sha256": "0864ed2c8d2df87c9b3166ba82c13151110a6776551c223347892ab474b94be7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/48c0baf577ff3733.json",
+      "bytes": 359,
+      "sha256": "1ce18dd90c2907213edcd59ebbb5e13d9a7ebfced7fa8a316f48ba29c0d87913"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/49ff1e674ca41651.json",
+      "bytes": 216,
+      "sha256": "c0b7ae4e3388600565f1076d673f219adfe959384151193a7a28341a8d0caa6b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/4abc554d8a2f3e5f.json",
+      "bytes": 204,
+      "sha256": "62afbdc3a9a5054bfadda10380a0535e0d4d56da3210aaaca41318e29be587c2"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/56fe446288a952e9.json",
+      "bytes": 359,
+      "sha256": "5a5de62c65ee4ccd3b018b8385e9ec92a53ea74a916b73c54dea673979a24f60"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/5ed96e3bcfecc600.json",
+      "bytes": 349,
+      "sha256": "c2b76b6f365545bca43a452b5dd2c814c1ae188c3ae8148f2599bed5f4c96c74"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/7cacf41f3ffc36b3.json",
+      "bytes": 218,
+      "sha256": "75f6fb57870a6fcb98a68800bfb242c60c03766ab47ffe55054811788dce96af"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/7ecd11b4aadac136.json",
+      "bytes": 359,
+      "sha256": "aea39107b442ccac2cac4875064dc46af0782a570d871f8b86764a558b744f95"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/8320136b3ba128d3.json",
+      "bytes": 691,
+      "sha256": "decf38350827fe0d39a413ec8725f3ecc037cd338e811bfd4c7cde0f2e31576b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/8377bda826caa603.json",
+      "bytes": 220,
+      "sha256": "a7de24139281ef5a3a70e1fd7e4f27a83f42377922de6b04a0b1c216697756c6"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/877a76ff1f2e3072.json",
+      "bytes": 2964,
+      "sha256": "82f786f32c06ff1522015901e3c1194fa67312a18edd07741d3c0bc04bf1ef29"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/88f280359883d078.json",
+      "bytes": 359,
+      "sha256": "a5b2ef07df80661436827e4cd3eae22115270b174b728dda014de77876da270e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/89086f2ad020127b.json",
+      "bytes": 359,
+      "sha256": "f37c163ca069203bcac5912cd71e7640b6d16ea33240d63339faf1c6ff849395"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/96f870b173a59c04.json",
+      "bytes": 225,
+      "sha256": "33be8b254a52e2d6e85f8ccadbc1515e30e19e994353070cd6ee70fd43e4dc03"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/abbcccc5c86c033f.json",
+      "bytes": 212,
+      "sha256": "3682d429209cbe6cbfaea9122a2ac4a805544f46d15315d27a379a766bc5819b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/ad2e5a9ac6f7e530.json",
+      "bytes": 745,
+      "sha256": "686e1ac55687a9092e63f98214c826953296f69ff906d13483ed354cc78ba2ff"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/b1ad14676d8cbf5e.json",
+      "bytes": 220,
+      "sha256": "aec3ebe5e044ffa4f7ff34c775c8627a20e4781eb6ca4fe83ffb4951bdf060da"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/bd10771c2ca6c37d.json",
+      "bytes": 349,
+      "sha256": "f6874b10d630fd618d952078c78e2a3fc0845ae40d55f1e1edae11f84478fcd4"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/c22be718ba116404.json",
+      "bytes": 213,
+      "sha256": "6c729f6ba64306f3f481c9fbb27ff236777428e368ca6fc5d4f4daea8cb5369e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/c8f7a423d30800ac.json",
+      "bytes": 359,
+      "sha256": "e8e6d7ec402010165f828f2d4c3e4c39660e8aef005e6b76b757dd23a9359bba"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/d42116933ca42fa7.json",
+      "bytes": 770,
+      "sha256": "88852c1f8fd2b93ceb54bcc78bbd9a93d38a7ae14a36e8c5c3d298221fd61ecd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/d43300a186abf7af.json",
+      "bytes": 1876,
+      "sha256": "49588470c3e835a48ea9b11c53edf3d0d3e5ca3015b92508c399a6b0a33f643a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/df0571351ee87c24.json",
+      "bytes": 775,
+      "sha256": "eb8731a2e57d6347cafae37dd61ac5f0aa10690fe84c413857a9dcc0cb538b3b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/ec446f0e863b740d.json",
+      "bytes": 2970,
+      "sha256": "edc78dff0d2eb443ddb9103da78ce4fa01e1e2726cca5c65f1bd2b8bddc03295"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/ef1b58244967db68.json",
+      "bytes": 219,
+      "sha256": "0a09d536f9b06dc3ae94abb868ea30b4f199f64aa449dcccfcba63563e757dc9"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/f1b3ee846d91c88e.json",
+      "bytes": 1395,
+      "sha256": "9180d43056d3a020e1b68c97b5dc36325a34990b5e1b41e9a3d8954f52e7c720"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/f471710e155b4d09.json",
+      "bytes": 2973,
+      "sha256": "c5515da9659ce51afd1e63a7fb32db7d3ebb1d0963cb88751527fc9735497439"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/fa3253cd4f4edde9.json",
+      "bytes": 359,
+      "sha256": "627f08c22420d85866125ea8b4cd7966b26ba50f236f2e427e3b33bafaf8ff2c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/captures/fe3f1b662fcce379.json",
+      "bytes": 192,
+      "sha256": "9a2215bd6ed831f6b6e5733f66c1e02f7bf18e42e9b1c845c5d3397a8e215288"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-1/junit.xml",
+      "bytes": 6930,
+      "sha256": "98c46040fb2ce7342bf6e39e8db24edc1bd7c69f389cb278663399a08abf3db0"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/02852f135fe41ef4.json",
+      "bytes": 768,
+      "sha256": "77fc81499bb2e451dc61b5d893606739f63016ff2b5b0157d2c5b595384041ca"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/1bdb74d8df571217.json",
+      "bytes": 772,
+      "sha256": "650c01692b78fde4cd7f928b0a8e6e2e405bc2b1c18dacf453b327672b81b47e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/20e854777612da2c.json",
+      "bytes": 213,
+      "sha256": "4eebefc56e714d4255f5b50540f3e69f165c86a96637bc621460c22e7ab5d2ec"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/277a256cef385565.json",
+      "bytes": 447,
+      "sha256": "af0058046244331f057a195d5af4873919d27263beca0323ef1fbe3a5229d526"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/290491c8d9310766.json",
+      "bytes": 359,
+      "sha256": "a23c7730704f5f9a2479b5930ef209798ccad1b4e9f24e433fb9b22b4b2fb1f9"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/290bf1dfaaaa7d50.json",
+      "bytes": 599,
+      "sha256": "565780e7622edd3fe729ccb7b3dfab4dd9f9d1293e48432ae3b1413ba96058cd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/29cc6d9ee4ec37a5.json",
+      "bytes": 764,
+      "sha256": "1a6de33818f8449a3209323384408ce0cf1fc215864fa8115f49cef52da183d0"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/2a486a83ef3b97e9.json",
+      "bytes": 217,
+      "sha256": "5045fc99fd0a869626cf679e5759da5d2965ce69231d6a989829fe9ba52d0e09"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/2e9f687e3c5aa3b9.json",
+      "bytes": 1260,
+      "sha256": "b8f2ac0c69dc0adaef78fef7b5e6dd5d0549c08b60347cb5dcfda261aefc7b92"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/3252263252b0d8f6.json",
+      "bytes": 764,
+      "sha256": "10f72f0dc66d4c9f2f97a4a98a553bc34c8247fab5c642c62aad342c5d46fb18"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/33d2346bc4fc58c3.json",
+      "bytes": 1735,
+      "sha256": "bad496a05f0517fe2cc830532024c15a33fe147bffc214f2528c8841f29d72ba"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/351778e4efda0b9f.json",
+      "bytes": 504,
+      "sha256": "25197c8b29009c322d9c0038d25bb45bda55d610afa01dcef8049363d0b4922b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/355643d78e3440a8.json",
+      "bytes": 359,
+      "sha256": "de515a51226bbfc3c95785dd75f57b59c8a7df4a60af1ac6191b1354cfed5dcd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/3f1831af772d28f4.json",
+      "bytes": 223,
+      "sha256": "0864ed2c8d2df87c9b3166ba82c13151110a6776551c223347892ab474b94be7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/48c0baf577ff3733.json",
+      "bytes": 359,
+      "sha256": "1ce18dd90c2907213edcd59ebbb5e13d9a7ebfced7fa8a316f48ba29c0d87913"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/49ff1e674ca41651.json",
+      "bytes": 216,
+      "sha256": "c0b7ae4e3388600565f1076d673f219adfe959384151193a7a28341a8d0caa6b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/4a5d255b7175cabe.json",
+      "bytes": 876,
+      "sha256": "cbb25eedc4fe57d5a270bef937027d324ddf4b5b5f0dee746e9aaa974641e741"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/4abc554d8a2f3e5f.json",
+      "bytes": 204,
+      "sha256": "62afbdc3a9a5054bfadda10380a0535e0d4d56da3210aaaca41318e29be587c2"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/56fe446288a952e9.json",
+      "bytes": 359,
+      "sha256": "5a5de62c65ee4ccd3b018b8385e9ec92a53ea74a916b73c54dea673979a24f60"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/5ed96e3bcfecc600.json",
+      "bytes": 349,
+      "sha256": "c2b76b6f365545bca43a452b5dd2c814c1ae188c3ae8148f2599bed5f4c96c74"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/7cacf41f3ffc36b3.json",
+      "bytes": 218,
+      "sha256": "75f6fb57870a6fcb98a68800bfb242c60c03766ab47ffe55054811788dce96af"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/7ecd11b4aadac136.json",
+      "bytes": 359,
+      "sha256": "aea39107b442ccac2cac4875064dc46af0782a570d871f8b86764a558b744f95"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/8320136b3ba128d3.json",
+      "bytes": 691,
+      "sha256": "decf38350827fe0d39a413ec8725f3ecc037cd338e811bfd4c7cde0f2e31576b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/8377bda826caa603.json",
+      "bytes": 220,
+      "sha256": "a7de24139281ef5a3a70e1fd7e4f27a83f42377922de6b04a0b1c216697756c6"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/877a76ff1f2e3072.json",
+      "bytes": 2964,
+      "sha256": "668da6ec21d1e98a1e97df2bbc6a6245ab9a1bafb045ebd46d479a169c459e96"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/88f280359883d078.json",
+      "bytes": 359,
+      "sha256": "a5b2ef07df80661436827e4cd3eae22115270b174b728dda014de77876da270e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/89086f2ad020127b.json",
+      "bytes": 359,
+      "sha256": "f37c163ca069203bcac5912cd71e7640b6d16ea33240d63339faf1c6ff849395"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/8ab003500ecea22c.json",
+      "bytes": 1310,
+      "sha256": "88153cf2f2384be32149ba0c6c5d96836d08389412f0ba51d3306bd13fb808f1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/96f870b173a59c04.json",
+      "bytes": 225,
+      "sha256": "33be8b254a52e2d6e85f8ccadbc1515e30e19e994353070cd6ee70fd43e4dc03"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/abbcccc5c86c033f.json",
+      "bytes": 212,
+      "sha256": "3682d429209cbe6cbfaea9122a2ac4a805544f46d15315d27a379a766bc5819b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/ad2e5a9ac6f7e530.json",
+      "bytes": 745,
+      "sha256": "686e1ac55687a9092e63f98214c826953296f69ff906d13483ed354cc78ba2ff"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/b1ad14676d8cbf5e.json",
+      "bytes": 220,
+      "sha256": "aec3ebe5e044ffa4f7ff34c775c8627a20e4781eb6ca4fe83ffb4951bdf060da"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/bd10771c2ca6c37d.json",
+      "bytes": 349,
+      "sha256": "f6874b10d630fd618d952078c78e2a3fc0845ae40d55f1e1edae11f84478fcd4"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/c22be718ba116404.json",
+      "bytes": 213,
+      "sha256": "6c729f6ba64306f3f481c9fbb27ff236777428e368ca6fc5d4f4daea8cb5369e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/c8f7a423d30800ac.json",
+      "bytes": 359,
+      "sha256": "e8e6d7ec402010165f828f2d4c3e4c39660e8aef005e6b76b757dd23a9359bba"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/d32df690b4a5f886.json",
+      "bytes": 583,
+      "sha256": "feb7ab2fcafaaefdb8e7f00feceeca655fb842e92383f0316ef6fa32bc81464c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/d42116933ca42fa7.json",
+      "bytes": 770,
+      "sha256": "88852c1f8fd2b93ceb54bcc78bbd9a93d38a7ae14a36e8c5c3d298221fd61ecd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/d43300a186abf7af.json",
+      "bytes": 1876,
+      "sha256": "49588470c3e835a48ea9b11c53edf3d0d3e5ca3015b92508c399a6b0a33f643a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/df0571351ee87c24.json",
+      "bytes": 775,
+      "sha256": "eb8731a2e57d6347cafae37dd61ac5f0aa10690fe84c413857a9dcc0cb538b3b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/e75103c4e60f0b00.json",
+      "bytes": 611,
+      "sha256": "5fe8d1b8dfa14d5aa4b8f1781d6b13c42eca00a2cc590bbca728e28e8abda290"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/ec446f0e863b740d.json",
+      "bytes": 2970,
+      "sha256": "93a6855368a41cbab07f8f3027dc4961bd5af198c35b5e8738706785622ae06c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/ef1b58244967db68.json",
+      "bytes": 219,
+      "sha256": "0a09d536f9b06dc3ae94abb868ea30b4f199f64aa449dcccfcba63563e757dc9"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/ef525683b072a561.json",
+      "bytes": 547,
+      "sha256": "0eee7a5ad0b997af1771b8e9a60d3116ab293079b055ff944b3118ffca1fdbfc"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/f1b3ee846d91c88e.json",
+      "bytes": 1395,
+      "sha256": "9180d43056d3a020e1b68c97b5dc36325a34990b5e1b41e9a3d8954f52e7c720"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/f471710e155b4d09.json",
+      "bytes": 2973,
+      "sha256": "7ec892fd94b2c7488b5a2a63553d3faf15d1935b598d9ddc0e0191b1623435fd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/fa3253cd4f4edde9.json",
+      "bytes": 359,
+      "sha256": "627f08c22420d85866125ea8b4cd7966b26ba50f236f2e427e3b33bafaf8ff2c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/captures/fe3f1b662fcce379.json",
+      "bytes": 192,
+      "sha256": "9a2215bd6ed831f6b6e5733f66c1e02f7bf18e42e9b1c845c5d3397a8e215288"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/attempt-2/junit.xml",
+      "bytes": 7884,
+      "sha256": "b7eae56c5df9f74be67c864833f056d1872f7e53c90dba861d3a0ceaa3085ab7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/baseline.json",
+      "bytes": 70352,
+      "sha256": "bc630aeda0d3e0eb4e905e1574d427989f1ee90e5ac57b1a84a21f3449761fb6"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-source/src/antigravity_k/api/dependencies.py",
+      "bytes": 35664,
+      "sha256": "e0996e163a9399d45b8732a0821701a82c211bc5c56e5eae4de678f9cbc7080e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-source/src/antigravity_k/engine/project_embedding_binding.py",
+      "bytes": 5145,
+      "sha256": "593d1263f39584ac9ac05347069f03441cc6e0df4f92412372e09502bf169a68"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-source/src/antigravity_k/engine/rag_indexer.py",
+      "bytes": 47353,
+      "sha256": "154be669bb76c970098d19df533cc1d62ec8465b46773e90490271b5f017702c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-source/src/antigravity_k/engine/vector_store.py",
+      "bytes": 21157,
+      "sha256": "8c61b1d66b1b2c2ed4e8f3978d2e355bb5fa6166af92f266e15da84fd68984b0"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-source/tests/test_project_rag_embedding_identity_contract.py",
+      "bytes": 25629,
+      "sha256": "283c2dd7b63932076f7fe0794f0974859f0bdcf13a74291dea54be6687599145"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/02852f135fe41ef4.json",
+      "bytes": 768,
+      "sha256": "77fc81499bb2e451dc61b5d893606739f63016ff2b5b0157d2c5b595384041ca"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/1bdb74d8df571217.json",
+      "bytes": 772,
+      "sha256": "650c01692b78fde4cd7f928b0a8e6e2e405bc2b1c18dacf453b327672b81b47e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/20e854777612da2c.json",
+      "bytes": 213,
+      "sha256": "4eebefc56e714d4255f5b50540f3e69f165c86a96637bc621460c22e7ab5d2ec"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/277a256cef385565.json",
+      "bytes": 447,
+      "sha256": "af0058046244331f057a195d5af4873919d27263beca0323ef1fbe3a5229d526"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/290491c8d9310766.json",
+      "bytes": 359,
+      "sha256": "a23c7730704f5f9a2479b5930ef209798ccad1b4e9f24e433fb9b22b4b2fb1f9"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/290bf1dfaaaa7d50.json",
+      "bytes": 599,
+      "sha256": "565780e7622edd3fe729ccb7b3dfab4dd9f9d1293e48432ae3b1413ba96058cd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/29cc6d9ee4ec37a5.json",
+      "bytes": 764,
+      "sha256": "1a6de33818f8449a3209323384408ce0cf1fc215864fa8115f49cef52da183d0"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/2a486a83ef3b97e9.json",
+      "bytes": 217,
+      "sha256": "5045fc99fd0a869626cf679e5759da5d2965ce69231d6a989829fe9ba52d0e09"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/2e9f687e3c5aa3b9.json",
+      "bytes": 1260,
+      "sha256": "b8f2ac0c69dc0adaef78fef7b5e6dd5d0549c08b60347cb5dcfda261aefc7b92"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/3252263252b0d8f6.json",
+      "bytes": 764,
+      "sha256": "10f72f0dc66d4c9f2f97a4a98a553bc34c8247fab5c642c62aad342c5d46fb18"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/33d2346bc4fc58c3.json",
+      "bytes": 1961,
+      "sha256": "11f79b325564c4669f4111b797b50502fddc3987d4ff240be7182d3862c428cd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/351778e4efda0b9f.json",
+      "bytes": 504,
+      "sha256": "25197c8b29009c322d9c0038d25bb45bda55d610afa01dcef8049363d0b4922b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/355643d78e3440a8.json",
+      "bytes": 359,
+      "sha256": "de515a51226bbfc3c95785dd75f57b59c8a7df4a60af1ac6191b1354cfed5dcd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/3f1831af772d28f4.json",
+      "bytes": 223,
+      "sha256": "0864ed2c8d2df87c9b3166ba82c13151110a6776551c223347892ab474b94be7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/48c0baf577ff3733.json",
+      "bytes": 359,
+      "sha256": "1ce18dd90c2907213edcd59ebbb5e13d9a7ebfced7fa8a316f48ba29c0d87913"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/49ff1e674ca41651.json",
+      "bytes": 216,
+      "sha256": "c0b7ae4e3388600565f1076d673f219adfe959384151193a7a28341a8d0caa6b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/4a5d255b7175cabe.json",
+      "bytes": 976,
+      "sha256": "4dae1a14c50b519e75c4c52d6e2fcce62b85f5f1463e9931e8b7d97cdd863976"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/4abc554d8a2f3e5f.json",
+      "bytes": 204,
+      "sha256": "62afbdc3a9a5054bfadda10380a0535e0d4d56da3210aaaca41318e29be587c2"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/56fe446288a952e9.json",
+      "bytes": 359,
+      "sha256": "5a5de62c65ee4ccd3b018b8385e9ec92a53ea74a916b73c54dea673979a24f60"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/5ed96e3bcfecc600.json",
+      "bytes": 349,
+      "sha256": "c2b76b6f365545bca43a452b5dd2c814c1ae188c3ae8148f2599bed5f4c96c74"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/7cacf41f3ffc36b3.json",
+      "bytes": 218,
+      "sha256": "75f6fb57870a6fcb98a68800bfb242c60c03766ab47ffe55054811788dce96af"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/7ecd11b4aadac136.json",
+      "bytes": 359,
+      "sha256": "aea39107b442ccac2cac4875064dc46af0782a570d871f8b86764a558b744f95"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/8320136b3ba128d3.json",
+      "bytes": 905,
+      "sha256": "eb81102dcf80725cece3806f282af84c7e04261712e0b10fd489bb6223642616"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/8377bda826caa603.json",
+      "bytes": 220,
+      "sha256": "a7de24139281ef5a3a70e1fd7e4f27a83f42377922de6b04a0b1c216697756c6"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/877a76ff1f2e3072.json",
+      "bytes": 4262,
+      "sha256": "d029839d4a01ac178775719954de074645678f56174eba435b336cdbfb4f7aac"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/88f280359883d078.json",
+      "bytes": 359,
+      "sha256": "a5b2ef07df80661436827e4cd3eae22115270b174b728dda014de77876da270e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/89086f2ad020127b.json",
+      "bytes": 359,
+      "sha256": "f37c163ca069203bcac5912cd71e7640b6d16ea33240d63339faf1c6ff849395"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/8ab003500ecea22c.json",
+      "bytes": 1451,
+      "sha256": "509cd74aaed4417618d2f1c546b5722bea08b07f23e765a657a356f02ecd5882"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/96f870b173a59c04.json",
+      "bytes": 225,
+      "sha256": "33be8b254a52e2d6e85f8ccadbc1515e30e19e994353070cd6ee70fd43e4dc03"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/abbcccc5c86c033f.json",
+      "bytes": 212,
+      "sha256": "3682d429209cbe6cbfaea9122a2ac4a805544f46d15315d27a379a766bc5819b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/ad2e5a9ac6f7e530.json",
+      "bytes": 745,
+      "sha256": "686e1ac55687a9092e63f98214c826953296f69ff906d13483ed354cc78ba2ff"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/b1ad14676d8cbf5e.json",
+      "bytes": 220,
+      "sha256": "aec3ebe5e044ffa4f7ff34c775c8627a20e4781eb6ca4fe83ffb4951bdf060da"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/bd10771c2ca6c37d.json",
+      "bytes": 349,
+      "sha256": "f6874b10d630fd618d952078c78e2a3fc0845ae40d55f1e1edae11f84478fcd4"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/c22be718ba116404.json",
+      "bytes": 213,
+      "sha256": "6c729f6ba64306f3f481c9fbb27ff236777428e368ca6fc5d4f4daea8cb5369e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/c8f7a423d30800ac.json",
+      "bytes": 359,
+      "sha256": "e8e6d7ec402010165f828f2d4c3e4c39660e8aef005e6b76b757dd23a9359bba"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/d32df690b4a5f886.json",
+      "bytes": 583,
+      "sha256": "feb7ab2fcafaaefdb8e7f00feceeca655fb842e92383f0316ef6fa32bc81464c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/d42116933ca42fa7.json",
+      "bytes": 770,
+      "sha256": "88852c1f8fd2b93ceb54bcc78bbd9a93d38a7ae14a36e8c5c3d298221fd61ecd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/d43300a186abf7af.json",
+      "bytes": 1876,
+      "sha256": "49588470c3e835a48ea9b11c53edf3d0d3e5ca3015b92508c399a6b0a33f643a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/df0571351ee87c24.json",
+      "bytes": 775,
+      "sha256": "eb8731a2e57d6347cafae37dd61ac5f0aa10690fe84c413857a9dcc0cb538b3b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/e75103c4e60f0b00.json",
+      "bytes": 724,
+      "sha256": "5617767a3b11c78d8e903a30d1b0b584538ad1f7b692eb5954186db194aa33a4"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/ec446f0e863b740d.json",
+      "bytes": 4268,
+      "sha256": "d3238d1f91d36cb11b6fd9754097dee21f0003a5a8dea9c18f695649178f3649"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/ef1b58244967db68.json",
+      "bytes": 219,
+      "sha256": "0a09d536f9b06dc3ae94abb868ea30b4f199f64aa449dcccfcba63563e757dc9"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/ef525683b072a561.json",
+      "bytes": 547,
+      "sha256": "0eee7a5ad0b997af1771b8e9a60d3116ab293079b055ff944b3118ffca1fdbfc"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/f1b3ee846d91c88e.json",
+      "bytes": 1395,
+      "sha256": "9180d43056d3a020e1b68c97b5dc36325a34990b5e1b41e9a3d8954f52e7c720"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/f471710e155b4d09.json",
+      "bytes": 4271,
+      "sha256": "1dd037db1f70007e452be74c90171af4ab9bc500a4f45e00f53c64df82042996"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/fa3253cd4f4edde9.json",
+      "bytes": 359,
+      "sha256": "627f08c22420d85866125ea8b4cd7966b26ba50f236f2e427e3b33bafaf8ff2c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/captures/fe3f1b662fcce379.json",
+      "bytes": 192,
+      "sha256": "9a2215bd6ed831f6b6e5733f66c1e02f7bf18e42e9b1c845c5d3397a8e215288"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/exit.json",
+      "bytes": 17,
+      "sha256": "c365161d39236fe0f1d32937fbc549796b8487d8faf65ed3879b96897c78ea5d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/invocation.json",
+      "bytes": 2256,
+      "sha256": "20c55aad4b570aec5051699ba484e0bfdbd75b3aede52874546fa9aa19e18837"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/junit.xml",
+      "bytes": 9294,
+      "sha256": "f821c7ab4df59c306d13a1c38d1b4f7adc5f84c9ff6421803d68eb6c2ecc1281"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v1/module-socket-binding.json",
+      "bytes": 1369,
+      "sha256": "f77cadc7772407f11623bbd380dd7839e5490599cc8b862598537f5cc50328d7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/02852f135fe41ef4.json",
+      "bytes": 768,
+      "sha256": "77fc81499bb2e451dc61b5d893606739f63016ff2b5b0157d2c5b595384041ca"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/1bdb74d8df571217.json",
+      "bytes": 772,
+      "sha256": "650c01692b78fde4cd7f928b0a8e6e2e405bc2b1c18dacf453b327672b81b47e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/20e854777612da2c.json",
+      "bytes": 213,
+      "sha256": "4eebefc56e714d4255f5b50540f3e69f165c86a96637bc621460c22e7ab5d2ec"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/277a256cef385565.json",
+      "bytes": 447,
+      "sha256": "af0058046244331f057a195d5af4873919d27263beca0323ef1fbe3a5229d526"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/290491c8d9310766.json",
+      "bytes": 359,
+      "sha256": "a23c7730704f5f9a2479b5930ef209798ccad1b4e9f24e433fb9b22b4b2fb1f9"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/290bf1dfaaaa7d50.json",
+      "bytes": 599,
+      "sha256": "565780e7622edd3fe729ccb7b3dfab4dd9f9d1293e48432ae3b1413ba96058cd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/29cc6d9ee4ec37a5.json",
+      "bytes": 764,
+      "sha256": "1a6de33818f8449a3209323384408ce0cf1fc215864fa8115f49cef52da183d0"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/2a486a83ef3b97e9.json",
+      "bytes": 217,
+      "sha256": "5045fc99fd0a869626cf679e5759da5d2965ce69231d6a989829fe9ba52d0e09"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/2e9f687e3c5aa3b9.json",
+      "bytes": 1260,
+      "sha256": "b8f2ac0c69dc0adaef78fef7b5e6dd5d0549c08b60347cb5dcfda261aefc7b92"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/3252263252b0d8f6.json",
+      "bytes": 764,
+      "sha256": "10f72f0dc66d4c9f2f97a4a98a553bc34c8247fab5c642c62aad342c5d46fb18"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/33d2346bc4fc58c3.json",
+      "bytes": 1961,
+      "sha256": "11f79b325564c4669f4111b797b50502fddc3987d4ff240be7182d3862c428cd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/351778e4efda0b9f.json",
+      "bytes": 504,
+      "sha256": "25197c8b29009c322d9c0038d25bb45bda55d610afa01dcef8049363d0b4922b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/355643d78e3440a8.json",
+      "bytes": 359,
+      "sha256": "de515a51226bbfc3c95785dd75f57b59c8a7df4a60af1ac6191b1354cfed5dcd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/3f1831af772d28f4.json",
+      "bytes": 223,
+      "sha256": "0864ed2c8d2df87c9b3166ba82c13151110a6776551c223347892ab474b94be7"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/48c0baf577ff3733.json",
+      "bytes": 359,
+      "sha256": "1ce18dd90c2907213edcd59ebbb5e13d9a7ebfced7fa8a316f48ba29c0d87913"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/49ff1e674ca41651.json",
+      "bytes": 216,
+      "sha256": "c0b7ae4e3388600565f1076d673f219adfe959384151193a7a28341a8d0caa6b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/4a5d255b7175cabe.json",
+      "bytes": 976,
+      "sha256": "4dae1a14c50b519e75c4c52d6e2fcce62b85f5f1463e9931e8b7d97cdd863976"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/4abc554d8a2f3e5f.json",
+      "bytes": 204,
+      "sha256": "62afbdc3a9a5054bfadda10380a0535e0d4d56da3210aaaca41318e29be587c2"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/56fe446288a952e9.json",
+      "bytes": 359,
+      "sha256": "5a5de62c65ee4ccd3b018b8385e9ec92a53ea74a916b73c54dea673979a24f60"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/5ed96e3bcfecc600.json",
+      "bytes": 349,
+      "sha256": "c2b76b6f365545bca43a452b5dd2c814c1ae188c3ae8148f2599bed5f4c96c74"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/7cacf41f3ffc36b3.json",
+      "bytes": 218,
+      "sha256": "75f6fb57870a6fcb98a68800bfb242c60c03766ab47ffe55054811788dce96af"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/7ecd11b4aadac136.json",
+      "bytes": 359,
+      "sha256": "aea39107b442ccac2cac4875064dc46af0782a570d871f8b86764a558b744f95"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/8320136b3ba128d3.json",
+      "bytes": 905,
+      "sha256": "eb81102dcf80725cece3806f282af84c7e04261712e0b10fd489bb6223642616"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/8377bda826caa603.json",
+      "bytes": 220,
+      "sha256": "a7de24139281ef5a3a70e1fd7e4f27a83f42377922de6b04a0b1c216697756c6"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/877a76ff1f2e3072.json",
+      "bytes": 4262,
+      "sha256": "dd9d19634d6cc59ea8eae80d86d8f9962016dd30fc0f6368c186f94d9ccbaa7d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/88f280359883d078.json",
+      "bytes": 359,
+      "sha256": "a5b2ef07df80661436827e4cd3eae22115270b174b728dda014de77876da270e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/89086f2ad020127b.json",
+      "bytes": 359,
+      "sha256": "f37c163ca069203bcac5912cd71e7640b6d16ea33240d63339faf1c6ff849395"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/8ab003500ecea22c.json",
+      "bytes": 1451,
+      "sha256": "509cd74aaed4417618d2f1c546b5722bea08b07f23e765a657a356f02ecd5882"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/96f870b173a59c04.json",
+      "bytes": 225,
+      "sha256": "33be8b254a52e2d6e85f8ccadbc1515e30e19e994353070cd6ee70fd43e4dc03"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/abbcccc5c86c033f.json",
+      "bytes": 212,
+      "sha256": "3682d429209cbe6cbfaea9122a2ac4a805544f46d15315d27a379a766bc5819b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/ad2e5a9ac6f7e530.json",
+      "bytes": 745,
+      "sha256": "686e1ac55687a9092e63f98214c826953296f69ff906d13483ed354cc78ba2ff"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/b1ad14676d8cbf5e.json",
+      "bytes": 220,
+      "sha256": "aec3ebe5e044ffa4f7ff34c775c8627a20e4781eb6ca4fe83ffb4951bdf060da"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/bd10771c2ca6c37d.json",
+      "bytes": 349,
+      "sha256": "f6874b10d630fd618d952078c78e2a3fc0845ae40d55f1e1edae11f84478fcd4"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/c22be718ba116404.json",
+      "bytes": 213,
+      "sha256": "6c729f6ba64306f3f481c9fbb27ff236777428e368ca6fc5d4f4daea8cb5369e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/c8f7a423d30800ac.json",
+      "bytes": 359,
+      "sha256": "e8e6d7ec402010165f828f2d4c3e4c39660e8aef005e6b76b757dd23a9359bba"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/d32df690b4a5f886.json",
+      "bytes": 583,
+      "sha256": "feb7ab2fcafaaefdb8e7f00feceeca655fb842e92383f0316ef6fa32bc81464c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/d42116933ca42fa7.json",
+      "bytes": 770,
+      "sha256": "88852c1f8fd2b93ceb54bcc78bbd9a93d38a7ae14a36e8c5c3d298221fd61ecd"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/d43300a186abf7af.json",
+      "bytes": 1876,
+      "sha256": "49588470c3e835a48ea9b11c53edf3d0d3e5ca3015b92508c399a6b0a33f643a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/df0571351ee87c24.json",
+      "bytes": 775,
+      "sha256": "eb8731a2e57d6347cafae37dd61ac5f0aa10690fe84c413857a9dcc0cb538b3b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/e75103c4e60f0b00.json",
+      "bytes": 724,
+      "sha256": "5617767a3b11c78d8e903a30d1b0b584538ad1f7b692eb5954186db194aa33a4"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/ec446f0e863b740d.json",
+      "bytes": 4268,
+      "sha256": "f9cd69b672a33d4999ce43c594b99c02b5564c57dbd057bbd1dd1af05e881de5"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/ef1b58244967db68.json",
+      "bytes": 219,
+      "sha256": "0a09d536f9b06dc3ae94abb868ea30b4f199f64aa449dcccfcba63563e757dc9"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/ef525683b072a561.json",
+      "bytes": 547,
+      "sha256": "0eee7a5ad0b997af1771b8e9a60d3116ab293079b055ff944b3118ffca1fdbfc"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/f1b3ee846d91c88e.json",
+      "bytes": 1395,
+      "sha256": "9180d43056d3a020e1b68c97b5dc36325a34990b5e1b41e9a3d8954f52e7c720"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/f471710e155b4d09.json",
+      "bytes": 4271,
+      "sha256": "c3ceb0b3fea6c33c9e21310915afa1dda492e1c9094abd160c0f34adc62ff3f0"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/fa3253cd4f4edde9.json",
+      "bytes": 359,
+      "sha256": "627f08c22420d85866125ea8b4cd7966b26ba50f236f2e427e3b33bafaf8ff2c"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/captures/fe3f1b662fcce379.json",
+      "bytes": 192,
+      "sha256": "9a2215bd6ed831f6b6e5733f66c1e02f7bf18e42e9b1c845c5d3397a8e215288"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/exit.json",
+      "bytes": 17,
+      "sha256": "c365161d39236fe0f1d32937fbc549796b8487d8faf65ed3879b96897c78ea5d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/invocation.json",
+      "bytes": 2256,
+      "sha256": "07759a04bf9b1c3365015c161b1a7fcc4670e16cb31356335a0271993f84dd64"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/junit.xml",
+      "bytes": 9294,
+      "sha256": "47bd76bc112a442b382d5d8a7540105182310ba098961a8e5aa0ed10fb749812"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/candidate-v2/module-socket-binding.json",
+      "bytes": 1369,
+      "sha256": "3054738ae02a760fc74d4e11534d39ebadf7a31b110ed664304008b4950f6333"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/chroma-close-source.json",
+      "bytes": 1848,
+      "sha256": "26601ec74010b66601fb9f141ac6a89a8758696c39c7b68e09b6fb326b659d79"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/ownership-after.json",
+      "bytes": 463,
+      "sha256": "079c3259d23764fbe977e0c04064d6101039629da25c8c7a6197c86b0cc62031"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/preimage/src/antigravity_k/api/dependencies.py",
+      "bytes": 35221,
+      "sha256": "0b1f70551132cc7a4beae8d7dfa4360cf8fc5bf80614bfdf76e759b1fd3719d1"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/preimage/src/antigravity_k/engine/rag_indexer.py",
+      "bytes": 44433,
+      "sha256": "6177bd17e550fbf94d7ee22c8a16e9f4ecfaba6b1e6c2737c09bf35587acdfcb"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/preimage/src/antigravity_k/engine/vector_store.py",
+      "bytes": 14016,
+      "sha256": "a5bf01c315d58dda3519e99e89d78f6d89fa7633fc6583edf5cab4809d8c8255"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/prepare_publication.py",
+      "bytes": 2668,
+      "sha256": "832c059037a94bd12b6e9c820551774521656d8cf980669f434e2f036074b35e"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/reconstruction.json",
+      "bytes": 656,
+      "sha256": "c0d79547aeecff7904f5df64a3436faeda09dd4956742cfde3c90f934a6b9725"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/red-optin/captures/d43300a186abf7af.json",
+      "bytes": 229,
+      "sha256": "060625e9a61c4cd1e4bd4c6c2dde2a087dfa436cb9d00d4318158aaca56e2c16"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/red-optin/exit.json",
+      "bytes": 17,
+      "sha256": "64a1526b099d75eed9d9da41a5562dcc164b6ffddeb729dd371c4496bbcded05"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/red-optin/invocation.json",
+      "bytes": 2481,
+      "sha256": "509a7dab22701d42adfb82faf3c85eee88182f6570c1923bd20dbaae81f250fa"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/red-optin/junit.xml",
+      "bytes": 1147,
+      "sha256": "441dda5e991a4f953bfdc7d3ff009a4e3e5048d2504bc40778b3727469f3865b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/red-ordering/captures/877a76ff1f2e3072.json",
+      "bytes": 2416,
+      "sha256": "ba0169d6ea516ea3b057388b4e8c2339250eb09cee3e061457e86972db3870d6"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/red-ordering/captures/ec446f0e863b740d.json",
+      "bytes": 2422,
+      "sha256": "31d448e3799ed0cb4e2ef168f64d240397a525960eb7d1d7c740d4322ad19f59"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/red-ordering/captures/f471710e155b4d09.json",
+      "bytes": 2425,
+      "sha256": "a3362b4c57d15aa75305d97cd50b3290320f1301fcf7dbcbf9a612dc3e68295b"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/red-ordering/exit.json",
+      "bytes": 17,
+      "sha256": "64a1526b099d75eed9d9da41a5562dcc164b6ffddeb729dd371c4496bbcded05"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/red-ordering/invocation.json",
+      "bytes": 2477,
+      "sha256": "929a71f81dfcd667c15b2c79b3ac783699056021f70d6ea3364d336f7e8ca692"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/red-ordering/junit.xml",
+      "bytes": 3644,
+      "sha256": "a930b42508351430f64e5276bd728eaba8f9ea78417259d51569ca85ba7f417a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/red-tests.executed.py",
+      "bytes": 25629,
+      "sha256": "283c2dd7b63932076f7fe0794f0974859f0bdcf13a74291dea54be6687599145"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/red.xml",
+      "bytes": 2058,
+      "sha256": "da5b8d1ad1e1d0881a362918aa669bd603206b069a20e3b2b37395f014215f1a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/red_preimage.py",
+      "bytes": 393,
+      "sha256": "57a23be670eab18ab576cb9df72485f81985db7a227bc441e4ce3983c5d3a485"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/review/independent-review.md",
+      "bytes": 1225,
+      "sha256": "8e857982e5b332664ce8cf3d75c7f051d8bce78ac7c517b74fb4e583e3f9c969"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/run_checks.py",
+      "bytes": 1957,
+      "sha256": "2f9c4c09aaee515d341fde7a1b7642f376773ce2148a3252fa784dacde3e25db"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/scenario-evidence.json",
+      "bytes": 28961,
+      "sha256": "bae18fb66d68319b8226c8eb93afc1413636091547478154b29ff4879b9a4b42"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/seal.py",
+      "bytes": 4160,
+      "sha256": "e8e58f0dca81cd3f4849e2d149dd28fb0c9b2b7fa7c5345ef42129e977e1012a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/source_guard.py",
+      "bytes": 1186,
+      "sha256": "280a6b2d1160bb11c8b5aacb3f047da11e92f0f69ad8659e07fdf4230045074a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/static-v1/basedpyright.json",
+      "bytes": 1108,
+      "sha256": "cb768db248a53ff21358ca1beff37e8d9d5a97597061c64627c49a84514a1e6d"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/static-v1/compile.json",
+      "bytes": 1228,
+      "sha256": "4a28d9b805efad5ef4802c5e3aa5ce22fc57f55d003be11a965c79d175b665d0"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/static-v1/format.json",
+      "bytes": 1101,
+      "sha256": "7742fa71eef2c39417e93fe6c916b3953ff9bd41da960529f1d9d73b112f5b05"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/static-v1/ruff.json",
+      "bytes": 1085,
+      "sha256": "3b8c3882971f4a66a792f4d28b0faca6cef2fc02c4f362072b3da94a989125f9"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/static-v2/basedpyright.json",
+      "bytes": 1108,
+      "sha256": "837dc6c0da5040eb51194c886a2c37a738d3713ff566aafb2af58f664e514101"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/static-v2/compile.json",
+      "bytes": 1228,
+      "sha256": "2ea3bf26d3b70fc43463de17fd61e6171623103423e9a45b94650a563f80567a"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/static-v2/format.json",
+      "bytes": 1101,
+      "sha256": "55462ece06cbe5c58abb340b8e62e0c7244b3b14c1f1b72fa7b6d9e25932ef7f"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/static-v2/ruff.json",
+      "bytes": 1085,
+      "sha256": "7b5ef8eca72fdf4e9ebc45270c1e3dfe957fbabe901c44075779881dbdea86d9"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/static_checks.py",
+      "bytes": 1376,
+      "sha256": "77e6a1a2620d979e9f6c8081c39951089ced1c385c35da734955c953558ff518"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/static_checks_v2.py",
+      "bytes": 1376,
+      "sha256": "bb6ffbc56ca65a8945da87f94de05e93f862d348a99d0f68a771f5869eed25e2"
+    },
+    {
+      "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/task-only.patch",
+      "bytes": 53616,
+      "sha256": "feb95510b5ab2807caaad657f9c15080f96464d03169534dd18a26cd5152b43c"
+    }
+  ],
+  "omitted_local_files": [
+    {
+      "path": "__pycache__/red_preimage.cpython-313-pytest-9.1.1.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "__pycache__/source_guard.cpython-313-pytest-9.1.1.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "attempt-1.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "attempt-2.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v1/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v2/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "candidate-v2/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "preimage/src/antigravity_k/engine/__pycache__/rag_indexer.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "preimage/src/antigravity_k/engine/__pycache__/vector_store.cpython-313.pyc",
+      "reason": "runtime_state_cache_or_nested_git"
+    },
+    {
+      "path": "red-optin/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "red-optin/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "red-ordering/stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "red-ordering/stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "red.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v1/basedpyright.stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v1/basedpyright.stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v1/compile.stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v1/compile.stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v1/format.stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v1/format.stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v1/ruff.stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v1/ruff.stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v2/basedpyright.stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v2/basedpyright.stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v2/compile.stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v2/compile.stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v2/format.stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v2/format.stdout.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v2/ruff.stderr.log",
+      "reason": "gitignored"
+    },
+    {
+      "path": "static-v2/ruff.stdout.log",
+      "reason": "gitignored"
+    }
+  ],
+  "omitted_files_preserved_locally": true
+}

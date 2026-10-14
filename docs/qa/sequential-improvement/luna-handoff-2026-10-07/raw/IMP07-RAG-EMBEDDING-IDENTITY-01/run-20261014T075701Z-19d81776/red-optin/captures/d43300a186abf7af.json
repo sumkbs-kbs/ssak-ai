@@ -1,0 +1,7 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_constructor_no_inference_and_document_query_redaction_use_strict_binding",
+  "engine_calls": [],
+  "forbidden": [],
+  "native": [],
+  "observations": {}
+}

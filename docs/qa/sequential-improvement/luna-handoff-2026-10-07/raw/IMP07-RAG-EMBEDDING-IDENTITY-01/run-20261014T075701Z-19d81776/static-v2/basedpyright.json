@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+    "--level",
+    "error",
+    "src/antigravity_k/engine/vector_store.py",
+    "src/antigravity_k/engine/project_embedding_binding.py",
+    "src/antigravity_k/engine/rag_indexer.py",
+    "src/antigravity_k/api/dependencies.py",
+    "tests/test_project_rag_embedding_identity_contract.py"
+  ],
+  "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+  "returncode": 0,
+  "source_sha256": {
+    "src/antigravity_k/engine/vector_store.py": "8c61b1d66b1b2c2ed4e8f3978d2e355bb5fa6166af92f266e15da84fd68984b0",
+    "src/antigravity_k/engine/project_embedding_binding.py": "593d1263f39584ac9ac05347069f03441cc6e0df4f92412372e09502bf169a68",
+    "src/antigravity_k/engine/rag_indexer.py": "154be669bb76c970098d19df533cc1d62ec8465b46773e90490271b5f017702c",
+    "src/antigravity_k/api/dependencies.py": "e0996e163a9399d45b8732a0821701a82c211bc5c56e5eae4de678f9cbc7080e",
+    "tests/test_project_rag_embedding_identity_contract.py": "283c2dd7b63932076f7fe0794f0974859f0bdcf13a74291dea54be6687599145"
+  }
+}

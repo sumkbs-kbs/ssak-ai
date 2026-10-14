@@ -1,0 +1,95 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_rag_failed_embedding_preserves_rows_manifest_and_retryability[sync]",
+  "engine_calls": [
+    {
+      "text": [
+        "# Old section\nold content\n\n",
+        "# Another section\nold trailing content\n"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "# New section\nnew replacement content\n"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "delete",
+      "ids": null,
+      "where": {
+        "source": "notes.md"
+      }
+    },
+    {
+      "operation": "upsert",
+      "ids": [
+        "5edcc6b1dd6ac7da",
+        "3c457b973da8025f"
+      ],
+      "documents": [
+        "# Old section\nold content\n\n",
+        "# Another section\nold trailing content\n"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          2.0,
+          0.5
+        ],
+        [
+          1.0,
+          1.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "delete",
+      "ids": null,
+      "where": {
+        "source": "notes.md"
+      }
+    }
+  ],
+  "observations": {
+    "records_before": [
+      {
+        "id": "5edcc6b1dd6ac7da",
+        "document": "# Old section\nold content\n\n",
+        "metadata": {
+          "node_type": "text_section",
+          "node_name": "Old section",
+          "source_type": "code",
+          "end_line": 3,
+          "start_line": 1,
+          "source_hash": "b9f40d32d8869e8d52ce78ace439de91",
+          "indexed_at": "2026-10-14T08:07:26.539507+00:00",
+          "source": "notes.md"
+        }
+      },
+      {
+        "id": "3c457b973da8025f",
+        "document": "# Another section\nold trailing content\n",
+        "metadata": {
+          "source": "notes.md",
+          "node_name": "Another section",
+          "source_type": "code",
+          "end_line": 5,
+          "source_hash": "b9f40d32d8869e8d52ce78ace439de91",
+          "node_type": "text_section",
+          "start_line": 4,
+          "indexed_at": "2026-10-14T08:07:26.539507+00:00"
+        }
+      }
+    ],
+    "records_after_failure": [],
+    "manifest_before_sha256": "614979d2fb2227af15c48ea290c7561b1ea4f72ef64056791ccb67fc19607660",
+    "manifest_after_failure_sha256": "614979d2fb2227af15c48ea290c7561b1ea4f72ef64056791ccb67fc19607660"
+  }
+}

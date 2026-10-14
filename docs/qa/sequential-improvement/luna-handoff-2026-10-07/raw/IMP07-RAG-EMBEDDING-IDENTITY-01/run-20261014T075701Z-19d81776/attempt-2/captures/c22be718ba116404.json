@@ -1,0 +1,7 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_outside_sources_never_read_embed_or_store[parent-subdir]",
+  "engine_calls": [],
+  "forbidden": [],
+  "native": [],
+  "observations": {}
+}

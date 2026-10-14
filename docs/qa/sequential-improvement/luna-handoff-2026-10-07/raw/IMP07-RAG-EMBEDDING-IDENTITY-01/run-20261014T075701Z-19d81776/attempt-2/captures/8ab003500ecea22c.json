@@ -1,0 +1,70 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_bound_sync_validates_edits_before_deleting_removed_sources",
+  "engine_calls": [
+    {
+      "text": [
+        "# Removed\nold removed\n",
+        "# First\nold first\n"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "# First\nnew first\n"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "# First\nnew first\n"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "upsert",
+      "ids": [
+        "5aacc22a1a4d0183",
+        "7a9ff03fc46b8fe6"
+      ],
+      "documents": [
+        "# Removed\nold removed\n",
+        "# First\nold first\n"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          10.0,
+          0.5
+        ],
+        [
+          1.0,
+          6.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "upsert",
+      "ids": [
+        "760290dc67fbdb6e"
+      ],
+      "documents": [
+        "# First\nnew first\n"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          6.0,
+          0.5
+        ]
+      ]
+    }
+  ],
+  "observations": {}
+}

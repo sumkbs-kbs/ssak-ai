@@ -1,0 +1,26 @@
+{
+  "modules": {
+    "antigravity_k.engine.vector_store": {
+      "path": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/vector_store.py",
+      "sha256": "8c61b1d66b1b2c2ed4e8f3978d2e355bb5fa6166af92f266e15da84fd68984b0"
+    },
+    "antigravity_k.engine.project_embedding_binding": {
+      "path": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/project_embedding_binding.py",
+      "sha256": "593d1263f39584ac9ac05347069f03441cc6e0df4f92412372e09502bf169a68"
+    },
+    "antigravity_k.engine.rag_indexer": {
+      "path": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/rag_indexer.py",
+      "sha256": "154be669bb76c970098d19df533cc1d62ec8465b46773e90490271b5f017702c"
+    },
+    "antigravity_k.api.dependencies": {
+      "path": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/dependencies.py",
+      "sha256": "e0996e163a9399d45b8732a0821701a82c211bc5c56e5eae4de678f9cbc7080e"
+    },
+    "antigravity_k.engine.embeddings": {
+      "path": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/embeddings.py",
+      "sha256": "3522ff04d2df755bfeab8dadc1eaa9339b309db46b7c927efba50b9ad998b0cb"
+    }
+  },
+  "socket_attempts": [],
+  "exitstatus": 0
+}

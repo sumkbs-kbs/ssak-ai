@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.626" timestamp="2026-10-14T17:07:24.966977+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_project_rag_embedding_identity_contract" name="test_constructor_no_inference_and_document_query_redaction_use_strict_binding" time="0.166"><failure message="TypeError: VectorStore.__init__() got an unexpected keyword argument 'embedding_binding'">tests/test_project_rag_embedding_identity_contract.py:171: in test_constructor_no_inference_and_document_query_redaction_use_strict_binding
+    store = case.store(binding=binding)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_project_rag_embedding_identity_contract.py:67: in store
+    store = VectorStore(str(path or self.root / "vectors"), embedding_binding=binding or self.binding())
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: VectorStore.__init__() got an unexpected keyword argument 'embedding_binding'</failure></testcase></testsuite></testsuites>

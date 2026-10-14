@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-o",
+    "pythonpath=src:.",
+    "-p",
+    "red_preimage",
+    "tests/test_project_rag_embedding_identity_contract.py::test_rag_failed_embedding_preserves_rows_manifest_and_retryability",
+    "-q",
+    "--tb=short",
+    "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/red-ordering/junit.xml"
+  ],
+  "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+  "env_overrides": {
+    "PYTHONPATH": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776:/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src:/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+    "RAG_BINDING_CAPTURE_ROOT": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/red-ordering/captures",
+    "ANONYMIZED_TELEMETRY": "False",
+    "AGK_AUTO_DISCOVER_LOCAL_MODELS": "false",
+    "BINDING_CHECK_DIR": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/red-ordering",
+    "RED_SOURCE": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-EMBEDDING-IDENTITY-01/run-20261014T075701Z-19d81776/preimage/src/antigravity_k/engine/rag_indexer.py",
+    "RED_MODULE": "rag_indexer"
+  },
+  "source_sha256": {
+    "src/antigravity_k/engine/vector_store.py": "8c61b1d66b1b2c2ed4e8f3978d2e355bb5fa6166af92f266e15da84fd68984b0",
+    "src/antigravity_k/engine/project_embedding_binding.py": "593d1263f39584ac9ac05347069f03441cc6e0df4f92412372e09502bf169a68",
+    "src/antigravity_k/engine/rag_indexer.py": "154be669bb76c970098d19df533cc1d62ec8465b46773e90490271b5f017702c",
+    "src/antigravity_k/api/dependencies.py": "d43ffad27145d8fce7c1e24876c9572f9183b6ebed66f6b43b0b50f8e02d7ab1",
+    "tests/test_project_rag_embedding_identity_contract.py": "283c2dd7b63932076f7fe0794f0974859f0bdcf13a74291dea54be6687599145"
+  },
+  "effective_preimage_sha256": "6177bd17e550fbf94d7ee22c8a16e9f4ecfaba6b1e6c2737c09bf35587acdfcb"
+}

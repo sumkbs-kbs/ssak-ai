@@ -1,0 +1,24 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_explicit_open_rejects_legacy_without_metadata_even_when_empty[True]",
+  "engine_calls": [],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "upsert",
+      "ids": [
+        "old"
+      ],
+      "documents": [
+        "legacy"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          2.0,
+          3.0
+        ]
+      ]
+    }
+  ],
+  "observations": {}
+}

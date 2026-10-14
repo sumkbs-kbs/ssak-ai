@@ -1,0 +1,77 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_constructor_no_inference_and_document_query_redaction_use_strict_binding",
+  "engine_calls": [
+    {
+      "text": [
+        "search_document: api_key=sk-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "search_query: find secret"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "search_document: api_key=<REDACTED>"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "upsert",
+      "ids": [
+        "one"
+      ],
+      "documents": [
+        "api_key=sk-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          4.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "query",
+      "query_texts": null,
+      "query_embeddings": [
+        [
+          1.0,
+          13.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "upsert",
+      "ids": [
+        "one"
+      ],
+      "documents": [
+        "api_key=<REDACTED>"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          10.0,
+          0.5
+        ]
+      ]
+    }
+  ],
+  "observations": {
+    "identity": "{\"configured_dimensions\":0,\"document_prefix\":\"search_document: \",\"endpoint\":\"http://localhost:11434\",\"profile_name\":\"configured-embedding\",\"provider\":\"ollama\",\"query_prefix\":\"search_query: \",\"version\":1,\"weight_revision\":null,\"weight_revision_status\":\"UNVERIFIED\",\"wire_model\":\"nomic-embed-text:latest\"}",
+    "stored_before": "api_key=sk-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "stored_after": "api_key=<REDACTED>"
+  }
+}

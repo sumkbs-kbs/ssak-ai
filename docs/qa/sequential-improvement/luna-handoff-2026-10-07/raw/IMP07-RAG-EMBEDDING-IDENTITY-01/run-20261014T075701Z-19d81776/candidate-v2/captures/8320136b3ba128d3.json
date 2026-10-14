@@ -1,0 +1,54 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_delete_and_purge_never_embed",
+  "engine_calls": [
+    {
+      "text": [
+        "stored document",
+        "stored document"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "upsert",
+      "ids": [
+        "one",
+        "two"
+      ],
+      "documents": [
+        "stored document",
+        "stored document"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          3.0,
+          0.5
+        ],
+        [
+          1.0,
+          3.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "delete",
+      "ids": null,
+      "where": {
+        "source": "note.md"
+      }
+    },
+    {
+      "operation": "delete",
+      "ids": [
+        "two"
+      ],
+      "where": null
+    }
+  ],
+  "observations": {}
+}

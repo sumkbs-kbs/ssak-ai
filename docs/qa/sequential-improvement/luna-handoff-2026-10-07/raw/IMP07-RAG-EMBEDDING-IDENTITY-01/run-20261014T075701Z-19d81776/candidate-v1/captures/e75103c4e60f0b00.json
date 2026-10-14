@@ -1,0 +1,39 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_delete_native_failure_does_not_advance_bound_manifest",
+  "engine_calls": [
+    {
+      "text": [
+        "# Delete\nthis record\n"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "upsert",
+      "ids": [
+        "65d0902a150a8e2d"
+      ],
+      "documents": [
+        "# Delete\nthis record\n"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          9.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "delete",
+      "ids": [
+        "65d0902a150a8e2d"
+      ],
+      "where": null
+    }
+  ],
+  "observations": {}
+}

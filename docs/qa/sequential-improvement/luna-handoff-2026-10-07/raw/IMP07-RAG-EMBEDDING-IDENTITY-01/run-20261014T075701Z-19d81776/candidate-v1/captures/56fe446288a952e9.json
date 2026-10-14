@@ -1,0 +1,15 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_invalid_vectors_fail_before_upsert_or_dimension_metadata[bad2]",
+  "engine_calls": [
+    {
+      "text": [
+        "stored document"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [],
+  "observations": {}
+}

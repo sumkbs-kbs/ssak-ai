@@ -1,0 +1,73 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_implicit_refusal_and_other_identity_refusal_do_not_harm_bound_peer",
+  "engine_calls": [
+    {
+      "text": [
+        "stored document"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "stored document"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    },
+    {
+      "text": [
+        "peer"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "upsert",
+      "ids": [
+        "one"
+      ],
+      "documents": [
+        "stored document"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          3.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "upsert",
+      "ids": [
+        "after"
+      ],
+      "documents": [
+        "stored document"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          3.0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "operation": "query",
+      "query_texts": null,
+      "query_embeddings": [
+        [
+          1.0,
+          5.0,
+          0.5
+        ]
+      ]
+    }
+  ],
+  "observations": {}
+}

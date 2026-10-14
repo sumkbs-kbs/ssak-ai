@@ -1,0 +1,42 @@
+{
+  "nodeid": "tests/test_project_rag_embedding_identity_contract.py::test_same_dimension_identity_mismatch_rejected_without_mutation[query_prefix]",
+  "engine_calls": [
+    {
+      "text": [
+        "stored document"
+      ],
+      "model_name": "configured-embedding",
+      "allow_fallback": false
+    }
+  ],
+  "forbidden": [],
+  "native": [
+    {
+      "operation": "upsert",
+      "ids": [
+        "one"
+      ],
+      "documents": [
+        "stored document"
+      ],
+      "embeddings": [
+        [
+          1.0,
+          3.0,
+          0.5
+        ]
+      ]
+    }
+  ],
+  "observations": {
+    "records_before": [
+      {
+        "id": "one",
+        "document": "stored document",
+        "metadata": {
+          "source": "note.md"
+        }
+      }
+    ]
+  }
+}
