@@ -19,7 +19,11 @@ from antigravity_k.engine.context_budget import context_budget_for_context_lengt
 # `engine/__init__ → model_manager → inference_providers` 와 순환한다(게이트:
 # reportImportCycles). leaf 모듈에서 이름을 직접 가져온다.
 from antigravity_k.engine.multimodal import adapter_messages
-from antigravity_k.engine.provider_adapters.transport_errors import NativeTransportError, TransportFailure
+from antigravity_k.engine.provider_adapters.transport_errors import (
+    NativeProtocolError,
+    NativeTransportError,
+    TransportFailure,
+)
 from antigravity_k.tools.egress_policy import safe_urlopen
 
 if TYPE_CHECKING:
@@ -719,15 +723,46 @@ class OllamaProvider(BaseInferenceProvider):
     ) -> Iterator[str]:
         pending_tool_calls: list[JsonMap] = []
         buffered_content: list[str] = []
+        complete = False
         for line in response:
-            line_text = line.decode("utf-8").strip()
-            if not line_text:
-                continue
             try:
-                chunk = _as_json_map(cast(object, json.loads(line_text)))
+                line_text = line.decode("utf-8").strip()
+                if not line_text:
+                    continue
+                raw: object = json.loads(line_text)
+                if not isinstance(raw, dict):
+                    raise NativeProtocolError("invalid_stream")
+                chunk = _as_json_map(raw)
+                if "error" in chunk:
+                    raise NativeProtocolError("upstream_stream_error")
+                if "done" in chunk and not isinstance(chunk["done"], bool):
+                    raise NativeProtocolError("invalid_stream")
+                if "message" in chunk and not isinstance(chunk["message"], dict):
+                    raise NativeProtocolError("invalid_stream")
                 msg = _as_json_map(cast(object, chunk.get("message")))
                 if msg:
-                    native_tool_calls = _as_json_maps(cast(object, msg.get("tool_calls")))
+                    if "content" in msg and not isinstance(msg["content"], str):
+                        raise NativeProtocolError("invalid_stream")
+                    raw_calls = msg.get("tool_calls", [])
+                    if not isinstance(raw_calls, list):
+                        raise NativeProtocolError("invalid_stream")
+                    native_tool_calls: list[JsonMap] = []
+                    for raw_call in raw_calls:
+                        if not isinstance(raw_call, dict):
+                            raise NativeProtocolError("invalid_stream")
+                        call = _as_json_map(raw_call)
+                        raw_function = call.get("function")
+                        if not isinstance(raw_function, dict):
+                            raise NativeProtocolError("invalid_stream")
+                        function = _as_json_map(raw_function)
+                        name = function.get("name")
+                        if (
+                            not isinstance(name, str)
+                            or not name.strip()
+                            or not isinstance(function.get("arguments"), dict)
+                        ):
+                            raise NativeProtocolError("invalid_stream")
+                        native_tool_calls.append(call)
                     pending_tool_calls.extend(native_tool_calls)
                     if msg.get("content"):
                         content = cast(str, msg["content"])
@@ -735,8 +770,13 @@ class OllamaProvider(BaseInferenceProvider):
                             buffered_content.append(content)
                         else:
                             yield content
-            except json.JSONDecodeError:
-                continue
+                if chunk.get("done") is True:
+                    complete = True
+                    break
+            except (json.JSONDecodeError, UnicodeError) as exc:
+                raise NativeProtocolError("invalid_stream") from exc
+        if not complete:
+            raise NativeProtocolError("incomplete_stream")
         if pending_tool_calls:
             # 네이티브 도구 호출과 함께 생성된 텍스트는 폐기하지 않는다 —
             # 모델이 "검색하겠습니다" 같은 안내/추론 텍스트를 쓰고 도구를
@@ -870,13 +910,11 @@ class OllamaProvider(BaseInferenceProvider):
             headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"},
         )
         try:
-            with safe_urlopen(req, timeout=300) as response:
-                yield from self._iter_stream_response(response, cast(list[DynamicValue] | None, tools_schema))
-                return
-        except Exception as outer_error:
-            error_message = str(outer_error)
-            if tools_schema:
-                logger.warning("Ollama native tools rejected; retrying with XML tool protocol")
+            try:
+                response = safe_urlopen(req, timeout=300, max_retries=0)
+            except HTTPError as exc:
+                if not tools_schema or not self._is_tools_rejection(exc):
+                    raise
                 fallback_data = dict(data)
                 _ = fallback_data.pop("tools", None)
                 fallback_req = urllib.request.Request(
@@ -884,14 +922,33 @@ class OllamaProvider(BaseInferenceProvider):
                     data=json.dumps(fallback_data).encode("utf-8"),
                     headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"},
                 )
-                try:
-                    with safe_urlopen(fallback_req, timeout=300) as response:
-                        yield from self._iter_stream_response(response)
-                        return
-                except Exception as fallback_error:
-                    error_message = str(fallback_error)
-            logger.exception("Local API stream failed")
-            yield f"[API Error for {loaded.profile.name}] {error_message}"
+                response = safe_urlopen(fallback_req, timeout=300, max_retries=0)
+            with response as opened:
+                yield from self._iter_stream_response(opened, cast(list[DynamicValue] | None, tools_schema))
+        except HTTPError as exc:
+            raise NativeTransportError(TransportFailure.HTTP, upstream_status=exc.code) from exc
+        except TimeoutError as exc:
+            raise NativeTransportError(TransportFailure.TIMEOUT) from exc
+        except URLError as exc:
+            failure = TransportFailure.TIMEOUT if isinstance(exc.reason, TimeoutError) else TransportFailure.UNAVAILABLE
+            raise NativeTransportError(failure) from exc
+        except OSError as exc:
+            raise NativeTransportError(TransportFailure.UNAVAILABLE) from exc
+
+    @staticmethod
+    def _is_tools_rejection(error: HTTPError) -> bool:
+        if error.code != 400:
+            return False
+        try:
+            body = _as_json_map(cast(object, json.loads(error.read(8192).decode("utf-8"))))
+        except (ValueError, UnicodeError, OSError):
+            return False
+        finally:
+            error.close()
+        message = body.get("error")
+        return isinstance(message, str) and any(
+            phrase in message.lower() for phrase in ("does not support tools", "tools are not supported")
+        )
 
 
 class NimProvider(BaseInferenceProvider):

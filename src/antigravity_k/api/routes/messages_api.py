@@ -33,7 +33,7 @@ from antigravity_k.engine.anthropic_tool_bridge import (
 )
 from antigravity_k.engine.model_manager import ModelManager
 from antigravity_k.engine.protocol_translator import APIFormat, ProtocolTranslator
-from antigravity_k.engine.provider_adapters.transport_errors import NativeTransportError
+from antigravity_k.engine.provider_adapters.transport_errors import NativeProtocolError, NativeTransportError
 
 logger = logging.getLogger("antigravity_k.api.messages")
 
@@ -299,6 +299,9 @@ async def _stream_events(
                 }
             )
             emitted_text.append(chunk)
+    except (NativeTransportError, NativeProtocolError) as exc:
+        yield _sse({"type": "error", "error": exc.detail()})
+        return
     except Exception as exc:  # noqa: BLE001
         logger.exception("stream_generate failed")
         error_text = f"[API Error] {exc}"

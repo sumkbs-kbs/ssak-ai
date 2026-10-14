@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import NotRequired, TypedDict, assert_never
+from typing import Literal, NotRequired, TypedDict, assert_never
 
 
 class TransportFailure(StrEnum):
@@ -55,3 +55,14 @@ class NativeTransportError(RuntimeError):
         if self.upstream_status is not None:
             result["upstream_status"] = self.upstream_status
         return result
+
+
+@dataclass(slots=True)
+class NativeProtocolError(RuntimeError):
+    code: Literal["invalid_stream", "upstream_stream_error", "incomplete_stream"]
+
+    def __str__(self) -> str:
+        return "The model provider returned an invalid or incomplete stream."
+
+    def detail(self) -> TransportErrorDetail:
+        return {"type": "provider_protocol_error", "code": self.code, "message": str(self)}

@@ -1,8 +1,11 @@
+import io
 import json
+from email.message import Message
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Protocol, cast
 from unittest.mock import MagicMock, patch
+from urllib.error import HTTPError
 
 import pytest
 
@@ -370,7 +373,16 @@ def test_ollama_native_tool_rejection_falls_back_to_xml_prompt():
     with patch.object(provider, "_resolve_endpoint", return_value=("http://localhost:11434/v1", "ollama")):
         with patch(
             "antigravity_k.engine.provider_adapters.inference_providers.urllib.request.urlopen",
-            side_effect=[RuntimeError("tools are not supported"), request_context],
+            side_effect=[
+                HTTPError(
+                    "http://localhost:11434/api/chat",
+                    400,
+                    "Bad Request",
+                    Message(),
+                    io.BytesIO(b'{"error":"tools are not supported"}'),
+                ),
+                request_context,
+            ],
         ) as urlopen:
             chunks = list(
                 provider.stream_generate(

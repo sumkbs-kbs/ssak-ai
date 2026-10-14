@@ -21,7 +21,7 @@ from antigravity_k.api.dependencies import (
 from antigravity_k.engine.audit_logger import get_audit_logger
 from antigravity_k.engine.model_manager import ModelManager
 from antigravity_k.engine.protocol_translator import APIFormat, ProtocolTranslator
-from antigravity_k.engine.provider_adapters.transport_errors import NativeTransportError
+from antigravity_k.engine.provider_adapters.transport_errors import NativeProtocolError, NativeTransportError
 from antigravity_k.engine.structured_output import StructuredOutputError, parse_output_contract
 from antigravity_k.engine.tokenizer import TokenEstimator
 
@@ -1411,21 +1411,25 @@ async def chat_completions(
 
             def event_generator_native():
                 full_response = ""
-                for chunk in manager.stream_generate(prompt=prompt, target=target_model, **kwargs):
-                    full_response += chunk
-                    data = {
-                        "id": "chatcmpl-stream",
-                        "object": "chat.completion.chunk",
-                        "model": target_model,
-                        "choices": [
-                            {
-                                "delta": {"content": chunk},
-                                "index": 0,
-                                "finish_reason": None,
-                            }
-                        ],
-                    }
-                    yield f"data: {json.dumps(data)}\n\n"
+                try:
+                    for chunk in manager.stream_generate(prompt=prompt, target=target_model, **kwargs):
+                        full_response += chunk
+                        data = {
+                            "id": "chatcmpl-stream",
+                            "object": "chat.completion.chunk",
+                            "model": target_model,
+                            "choices": [
+                                {
+                                    "delta": {"content": chunk},
+                                    "index": 0,
+                                    "finish_reason": None,
+                                }
+                            ],
+                        }
+                        yield f"data: {json.dumps(data)}\n\n"
+                except (NativeTransportError, NativeProtocolError) as exc:
+                    yield f"event: error\ndata: {json.dumps({'error': exc.detail()})}\n\n"
+                    return
 
                 user_msg = _latest_user_text(messages)
                 session_manager.add_turn(
