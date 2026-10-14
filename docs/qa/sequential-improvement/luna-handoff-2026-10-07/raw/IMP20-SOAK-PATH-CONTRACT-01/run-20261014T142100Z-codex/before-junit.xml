@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="5" time="0.510" timestamp="2026-10-14T23:20:56.761061+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_soak_candidate_path_contract" name="test_runner_defaults_to_its_candidate_and_creates_a_fresh_output_parent" time="0.332"><failure message="AssertionError: + set -u&#10;  + REPO=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai&#10;  + OUT_REL=docs/qa/2026-09-16-followup/nx10&#10;  + cd /Users/mr.k/program/coding/ssak_comp/Ssak-Ai&#10;  + '[' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai = -- ']'&#10;  + case &quot;$1&quot; in&#10;  + printf 'blocked foreign checkout: %s\n' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai&#10;  blocked foreign checkout: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai&#10;  + exit 73&#10;  &#10;assert 73 == 0&#10; +  where 73 = CompletedProcess(args=['bash', '-x', '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna...program/coding/ssak_comp/Ssak-Ai\nblocked foreign checkout: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai\n+ exit 73\n').returncode">tmp_path = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_runner_defaults_to_its_ca0')
+
+    def test_runner_defaults_to_its_candidate_and_creates_a_fresh_output_parent(tmp_path:Path)-&gt;None:
+        root,env=fixture_repo(tmp_path);out=tmp_path/"fresh-output"
+        env["NX10_OUT"]=str(out)
+        result=invoke(root/REL/"run_nx10_soak.sh",env)
+&gt;       assert result.returncode==0,result.stderr
+E       AssertionError: + set -u
+E         + REPO=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+E         + OUT_REL=docs/qa/2026-09-16-followup/nx10
+E         + cd /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+E         + '[' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai = -- ']'
+E         + case "$1" in
+E         + printf 'blocked foreign checkout: %s\n' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+E         blocked foreign checkout: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+E         + exit 73
+E         
+E       assert 73 == 0
+E        +  where 73 = CompletedProcess(args=['bash', '-x', '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna...program/coding/ssak_comp/Ssak-Ai\nblocked foreign checkout: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai\n+ exit 73\n').returncode
+
+tests/test_soak_candidate_path_contract.py:34: AssertionError</failure></testcase><testcase classname="tests.test_soak_candidate_path_contract" name="test_runner_explicit_candidate_and_interpreter_keep_outputs_owned[NX10_OUT]" time="0.007"><failure message="AssertionError: + set -u&#10;  + REPO=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai&#10;  + OUT_REL=docs/qa/2026-09-16-followup/nx10&#10;  + cd /Users/mr.k/program/coding/ssak_comp/Ssak-Ai&#10;  + '[' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai = -- ']'&#10;  + case &quot;$1&quot; in&#10;  + printf 'blocked foreign checkout: %s\n' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai&#10;  blocked foreign checkout: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai&#10;  + exit 73&#10;  &#10;assert 73 == 0&#10; +  where 73 = CompletedProcess(args=['bash', '-x', '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna...program/coding/ssak_comp/Ssak-Ai\nblocked foreign checkout: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai\n+ exit 73\n').returncode">tmp_path = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_runner_explicit_candidate0')
+output_key = 'NX10_OUT'
+
+    @pytest.mark.parametrize("output_key",["NX10_OUT","NX10_SOAK_OUT_DIR"])
+    def test_runner_explicit_candidate_and_interpreter_keep_outputs_owned(tmp_path:Path,output_key:str)-&gt;None:
+        root,env=fixture_repo(tmp_path);out=tmp_path/"alternate-output"
+        interpreter=root/"alternate-python";interpreter.symlink_to((root/".venv/bin/python").resolve())
+        shutil.rmtree(root/".venv")
+        env.update(NX10_REPO=str(root),NX10_PYTHON=str(interpreter))
+        env[output_key]=str(out)
+        result=invoke(root/REL/"run_nx10_soak.sh",env)
+&gt;       assert result.returncode==0,result.stderr
+E       AssertionError: + set -u
+E         + REPO=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+E         + OUT_REL=docs/qa/2026-09-16-followup/nx10
+E         + cd /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+E         + '[' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai = -- ']'
+E         + case "$1" in
+E         + printf 'blocked foreign checkout: %s\n' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+E         blocked foreign checkout: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+E         + exit 73
+E         
+E       assert 73 == 0
+E        +  where 73 = CompletedProcess(args=['bash', '-x', '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna...program/coding/ssak_comp/Ssak-Ai\nblocked foreign checkout: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai\n+ exit 73\n').returncode
+
+tests/test_soak_candidate_path_contract.py:46: AssertionError</failure></testcase><testcase classname="tests.test_soak_candidate_path_contract" name="test_runner_explicit_candidate_and_interpreter_keep_outputs_owned[NX10_SOAK_OUT_DIR]" time="0.006"><failure message="AssertionError: + set -u&#10;  + REPO=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai&#10;  + OUT_REL=docs/qa/2026-09-16-followup/nx10&#10;  + cd /Users/mr.k/program/coding/ssak_comp/Ssak-Ai&#10;  + '[' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai = -- ']'&#10;  + case &quot;$1&quot; in&#10;  + printf 'blocked foreign checkout: %s\n' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai&#10;  blocked foreign checkout: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai&#10;  + exit 73&#10;  &#10;assert 73 == 0&#10; +  where 73 = CompletedProcess(args=['bash', '-x', '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna...program/coding/ssak_comp/Ssak-Ai\nblocked foreign checkout: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai\n+ exit 73\n').returncode">tmp_path = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_runner_explicit_candidate1')
+output_key = 'NX10_SOAK_OUT_DIR'
+
+    @pytest.mark.parametrize("output_key",["NX10_OUT","NX10_SOAK_OUT_DIR"])
+    def test_runner_explicit_candidate_and_interpreter_keep_outputs_owned(tmp_path:Path,output_key:str)-&gt;None:
+        root,env=fixture_repo(tmp_path);out=tmp_path/"alternate-output"
+        interpreter=root/"alternate-python";interpreter.symlink_to((root/".venv/bin/python").resolve())
+        shutil.rmtree(root/".venv")
+        env.update(NX10_REPO=str(root),NX10_PYTHON=str(interpreter))
+        env[output_key]=str(out)
+        result=invoke(root/REL/"run_nx10_soak.sh",env)
+&gt;       assert result.returncode==0,result.stderr
+E       AssertionError: + set -u
+E         + REPO=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+E         + OUT_REL=docs/qa/2026-09-16-followup/nx10
+E         + cd /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+E         + '[' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai = -- ']'
+E         + case "$1" in
+E         + printf 'blocked foreign checkout: %s\n' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+E         blocked foreign checkout: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+E         + exit 73
+E         
+E       assert 73 == 0
+E        +  where 73 = CompletedProcess(args=['bash', '-x', '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna...program/coding/ssak_comp/Ssak-Ai\nblocked foreign checkout: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai\n+ exit 73\n').returncode
+
+tests/test_soak_candidate_path_contract.py:46: AssertionError</failure></testcase><testcase classname="tests.test_soak_candidate_path_contract" name="test_scheduler_resolves_candidate_runner_independently_of_evidence_directory" time="0.006"><failure message="AssertionError: + set -u&#10;  + REPO=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai&#10;  + OUT=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_scheduler_resolves_candid0/scheduler-output&#10;  + RUNNER=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_scheduler_resolves_candid0/scheduler-output/run_nx10_soak.sh&#10;  + SCHEDULE=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_scheduler_resolves_candid0/scheduler-output/soak-schedule.txt&#10;  + LOG=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_scheduler_resolves_candid0/scheduler-output/soak-schedule.log&#10;  + LOCK=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_scheduler_resolves_candid0/scheduler-output/.soak-arm.lock&#10;  + PY_FP=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python&#10;  + '[' -x /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python ']'&#10;  + AT_LOCAL=22:00&#10;  + '[' -n '' ']'&#10;  + EXPECTED_FP=&#10;  + FP_SOURCE=computed-at-launch&#10;  + DRY_RUN=1&#10;  + cd /Users/mr.k/program/coding/ssak_comp/Ssak-Ai&#10;  + '[' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai = -- ']'&#10;  + case &quot;$1&quot; in&#10;  + printf 'blocked foreign checkout: %s\n' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai&#10;  blocked foreign checkout: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai&#10;  + exit 73&#10;  &#10;assert 73 == 0&#10; +  where 73 = CompletedProcess(args=['bash', '-x', '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna...program/coding/ssak_comp/Ssak-Ai\nblocked foreign checkout: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai\n+ exit 73\n').returncode">tmp_path = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_scheduler_resolves_candid0')
+
+    def test_scheduler_resolves_candidate_runner_independently_of_evidence_directory(tmp_path:Path)-&gt;None:
+        root,env=fixture_repo(tmp_path);out=tmp_path/"scheduler-output"
+        env.update(NX10_OUT=str(out),NX10_SCHEDULE_DRY_RUN="1")
+        result=invoke(root/REL/"schedule_nx10_soak.sh",env)
+&gt;       assert result.returncode==0,result.stderr
+E       AssertionError: + set -u
+E         + REPO=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+E         + OUT=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_scheduler_resolves_candid0/scheduler-output
+E         + RUNNER=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_scheduler_resolves_candid0/scheduler-output/run_nx10_soak.sh
+E         + SCHEDULE=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_scheduler_resolves_candid0/scheduler-output/soak-schedule.txt
+E         + LOG=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_scheduler_resolves_candid0/scheduler-output/soak-schedule.log
+E         + LOCK=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_scheduler_resolves_candid0/scheduler-output/.soak-arm.lock
+E         + PY_FP=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python
+E         + '[' -x /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python ']'
+E         + AT_LOCAL=22:00
+E         + '[' -n '' ']'
+E         + EXPECTED_FP=
+E         + FP_SOURCE=computed-at-launch
+E         + DRY_RUN=1
+E         + cd /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+E         + '[' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai = -- ']'
+E         + case "$1" in
+E         + printf 'blocked foreign checkout: %s\n' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+E         blocked foreign checkout: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+E         + exit 73
+E         
+E       assert 73 == 0
+E        +  where 73 = CompletedProcess(args=['bash', '-x', '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna...program/coding/ssak_comp/Ssak-Ai\nblocked foreign checkout: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai\n+ exit 73\n').returncode
+
+tests/test_soak_candidate_path_contract.py:54: AssertionError</failure></testcase><testcase classname="tests.test_soak_candidate_path_contract" name="test_controller_status_uses_candidate_scripts_for_fresh_output" time="0.094"><failure message="AssertionError: + set -u&#10;  ++ _nx10_repo_root&#10;  ++ local dir&#10;  ++++ dirname /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/scripts/soak_control.sh&#10;  +++ cd /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/scripts&#10;  +++ '[' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/scripts = -- ']'&#10;  +++ case &quot;$1&quot; in&#10;  +++ builtin cd /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/scripts&#10;  +++ pwd&#10;  ++ dir=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/scripts&#10;  ++ [[ /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/scripts != \/ ]]&#10;  ++ [[ -f /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/scripts/pyproject.toml ]]&#10;  +++ dirname /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/scripts&#10;  ++ dir=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate&#10;  ++ [[ /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate != \/ ]]&#10;  ++ [[ -f /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/pyproject.toml ]]&#10;  ++ [[ -d /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/src/antigravity_k ]]&#10;  ++ printf '%s\n' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate&#10;  ++ return 0&#10;  + REPO=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate&#10;  + OUT=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output&#10;  + SCHEDULER=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/schedule_nx10_soak.sh&#10;  + RUNNER=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/run_nx10_soak.sh&#10;  + PATTERN=no-such-fixture-scheduler&#10;  + GRACE=15&#10;  + SCREEN_NAME=nx10soak&#10;  + SOAK_PROC_PATTERN=no-such-fixture-worker&#10;  + LOCK=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/.soak-arm.lock&#10;  + RUNLOCK=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/.soak-run.lock&#10;  + EXIT_TXT=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/soak-exit.txt&#10;  + SCHED_LOG=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/soak-schedule.log&#10;  + SCHEDULE=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/soak-schedule.txt&#10;  + VENV_PY=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/.venv/bin/python&#10;  + _pf_total=0&#10;  + _pf_failed=0&#10;  + _st_total=0&#10;  + _st_passed=0&#10;  + case &quot;${1:-status}&quot; in&#10;  + shift&#10;  + cmd_status&#10;  + orphans=()&#10;  + local state fp_current fp_expected live roots orphans pid owner healthy=1 count run_owner&#10;  ++ _utc&#10;  ++ date -u +%FT%TZ&#10;  + printf 'NX-10 soak 예약 상태 (%s)\n' 2026-10-14T14:20:57Z&#10;  + printf '  repo=%s\n  pattern=%s\n' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate no-such-fixture-scheduler&#10;  ++ _lock_state&#10;  ++ '[' '!' -d /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/.soak-arm.lock ']'&#10;  ++ printf none&#10;  ++ return 0&#10;  + state=none&#10;  + _print_lock&#10;  + local state pid&#10;  ++ _lock_state&#10;  ++ '[' '!' -d /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/.soak-arm.lock ']'&#10;  ++ printf none&#10;  ++ return 0&#10;  + state=none&#10;  + printf '  잠금: %s (%s)\n' none /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/.soak-arm.lock&#10;  + '[' none = none ']'&#10;  + return 0&#10;  ++ _matches&#10;  ++ pgrep -f -- no-such-fixture-scheduler&#10;  ++ grep -v -x -e 79739 -e 79704&#10;  ++ true&#10;  + live=&#10;  ++ _roots&#10;  ++ local all pid ppid&#10;  +++ _matches&#10;  +++ pgrep -f -- no-such-fixture-scheduler&#10;  +++ grep -v -x -e 79739 -e 79704&#10;  +++ true&#10;  ++ all=&#10;  ++ read -r pid&#10;  ++ '[' -n '' ']'&#10;  ++ continue&#10;  ++ read -r pid&#10;  + roots=&#10;  ++ printf '%s\n' ''&#10;  ++ grep -c .&#10;  ++ true&#10;  + count=0&#10;  ++ printf '%s\n' ''&#10;  ++ grep -c .&#10;  ++ true&#10;  + printf '  살아 있는 예약: %s건 (일치 프로세스 %s개 — 래퍼·heartbeat 포함)\n' 0 0&#10;  ++ printf %s ''&#10;  + read -r pid&#10;  + '[' -n '' ']'&#10;  + continue&#10;  + read -r pid&#10;  ++ _lock_owner_pid&#10;  ++ true&#10;  + owner=&#10;  ++ printf %s ''&#10;  + read -r pid&#10;  + '[' -n '' ']'&#10;  + continue&#10;  + read -r pid&#10;  + printf '  잠금 밖(고아) 예약: %s\n' 0&#10;  + '[' 0 -gt 0 ']'&#10;  ++ _lock_field expected_fingerprint&#10;  ++ true&#10;  + fp_expected=&#10;  ++ _tree_fingerprint&#10;  ++ cd /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate&#10;  ++ '[' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate = -- ']'&#10;  ++ case &quot;$1&quot; in&#10;  ++ builtin cd /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate&#10;  +++ _py&#10;  +++ '[' -x /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/.venv/bin/python ']'&#10;  +++ printf %s /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/.venv/bin/python&#10;  ++ /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/.venv/bin/python -c 'import sys,pathlib; sys.path.insert(0,'\''scripts'\''); import ga_gate; print(ga_gate.worktree_fingerprint(pathlib.Path('\''.'\'')))'&#10;  + fp_current=fixture-fingerprint&#10;  + run_owner=&#10;  + '[' -d /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/.soak-run.lock ']'&#10;  + '[' -n '' ']'&#10;  + '[' -n '' ']'&#10;  + printf '  지문: 기대=%s\n        현재=%s\n' '?' fixture-fingerprint&#10;  + '[' 0 -gt 0 ']'&#10;  + '[' none = armed ']'&#10;  + healthy=0&#10;  + '[' 0 = 1 ']'&#10;  + healthy=0&#10;  + '[' -n '' ']'&#10;  + '[' none = armed ']'&#10;  + '[' 0 = 1 ']'&#10;  + printf '  판정: ATTENTION — 단일 예약이 아니거나 지문이 다르다(위 참조)\n'&#10;  + return 1&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['bash', '-x', '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna...\' none = armed \']\'\n+ \'[\' 0 = 1 \']\'\n+ printf \'  판정: ATTENTION — 단일 예약이 아니거나 지문이 다르다(위 참조)\\n\'\n+ return 1\n').returncode">tmp_path = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0')
+
+    def test_controller_status_uses_candidate_scripts_for_fresh_output(tmp_path:Path)-&gt;None:
+        root,env=fixture_repo(tmp_path);out=tmp_path/"controller-output"
+        env.update(NX10_OUT=str(out),NX10_SCHED_PATTERN="no-such-fixture-scheduler",NX10_SOAK_PROC_PATTERN="no-such-fixture-worker")
+        result=invoke(root/"scripts/soak_control.sh",env,"status")
+&gt;       assert result.returncode==0,result.stderr
+E       AssertionError: + set -u
+E         ++ _nx10_repo_root
+E         ++ local dir
+E         ++++ dirname /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/scripts/soak_control.sh
+E         +++ cd /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/scripts
+E         +++ '[' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/scripts = -- ']'
+E         +++ case "$1" in
+E         +++ builtin cd /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/scripts
+E         +++ pwd
+E         ++ dir=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/scripts
+E         ++ [[ /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/scripts != \/ ]]
+E         ++ [[ -f /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/scripts/pyproject.toml ]]
+E         +++ dirname /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/scripts
+E         ++ dir=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate
+E         ++ [[ /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate != \/ ]]
+E         ++ [[ -f /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/pyproject.toml ]]
+E         ++ [[ -d /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/src/antigravity_k ]]
+E         ++ printf '%s\n' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate
+E         ++ return 0
+E         + REPO=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate
+E         + OUT=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output
+E         + SCHEDULER=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/schedule_nx10_soak.sh
+E         + RUNNER=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/run_nx10_soak.sh
+E         + PATTERN=no-such-fixture-scheduler
+E         + GRACE=15
+E         + SCREEN_NAME=nx10soak
+E         + SOAK_PROC_PATTERN=no-such-fixture-worker
+E         + LOCK=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/.soak-arm.lock
+E         + RUNLOCK=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/.soak-run.lock
+E         + EXIT_TXT=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/soak-exit.txt
+E         + SCHED_LOG=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/soak-schedule.log
+E         + SCHEDULE=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/soak-schedule.txt
+E         + VENV_PY=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/.venv/bin/python
+E         + _pf_total=0
+E         + _pf_failed=0
+E         + _st_total=0
+E         + _st_passed=0
+E         + case "${1:-status}" in
+E         + shift
+E         + cmd_status
+E         + orphans=()
+E         + local state fp_current fp_expected live roots orphans pid owner healthy=1 count run_owner
+E         ++ _utc
+E         ++ date -u +%FT%TZ
+E         + printf 'NX-10 soak 예약 상태 (%s)\n' 2026-10-14T14:20:57Z
+E         + printf '  repo=%s\n  pattern=%s\n' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate no-such-fixture-scheduler
+E         ++ _lock_state
+E         ++ '[' '!' -d /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/.soak-arm.lock ']'
+E         ++ printf none
+E         ++ return 0
+E         + state=none
+E         + _print_lock
+E         + local state pid
+E         ++ _lock_state
+E         ++ '[' '!' -d /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/.soak-arm.lock ']'
+E         ++ printf none
+E         ++ return 0
+E         + state=none
+E         + printf '  잠금: %s (%s)\n' none /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/.soak-arm.lock
+E         + '[' none = none ']'
+E         + return 0
+E         ++ _matches
+E         ++ pgrep -f -- no-such-fixture-scheduler
+E         ++ grep -v -x -e 79739 -e 79704
+E         ++ true
+E         + live=
+E         ++ _roots
+E         ++ local all pid ppid
+E         +++ _matches
+E         +++ pgrep -f -- no-such-fixture-scheduler
+E         +++ grep -v -x -e 79739 -e 79704
+E         +++ true
+E         ++ all=
+E         ++ read -r pid
+E         ++ '[' -n '' ']'
+E         ++ continue
+E         ++ read -r pid
+E         + roots=
+E         ++ printf '%s\n' ''
+E         ++ grep -c .
+E         ++ true
+E         + count=0
+E         ++ printf '%s\n' ''
+E         ++ grep -c .
+E         ++ true
+E         + printf '  살아 있는 예약: %s건 (일치 프로세스 %s개 — 래퍼·heartbeat 포함)\n' 0 0
+E         ++ printf %s ''
+E         + read -r pid
+E         + '[' -n '' ']'
+E         + continue
+E         + read -r pid
+E         ++ _lock_owner_pid
+E         ++ true
+E         + owner=
+E         ++ printf %s ''
+E         + read -r pid
+E         + '[' -n '' ']'
+E         + continue
+E         + read -r pid
+E         + printf '  잠금 밖(고아) 예약: %s\n' 0
+E         + '[' 0 -gt 0 ']'
+E         ++ _lock_field expected_fingerprint
+E         ++ true
+E         + fp_expected=
+E         ++ _tree_fingerprint
+E         ++ cd /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate
+E         ++ '[' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate = -- ']'
+E         ++ case "$1" in
+E         ++ builtin cd /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate
+E         +++ _py
+E         +++ '[' -x /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/.venv/bin/python ']'
+E         +++ printf %s /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/.venv/bin/python
+E         ++ /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/candidate/.venv/bin/python -c 'import sys,pathlib; sys.path.insert(0,'\''scripts'\''); import ga_gate; print(ga_gate.worktree_fingerprint(pathlib.Path('\''.'\'')))'
+E         + fp_current=fixture-fingerprint
+E         + run_owner=
+E         + '[' -d /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SOAK-PATH-CONTRACT-01/run-20261014T142100Z-codex/before-tmp/test_controller_status_uses_ca0/controller-output/.soak-run.lock ']'
+E         + '[' -n '' ']'
+E         + '[' -n '' ']'
+E         + printf '  지문: 기대=%s\n        현재=%s\n' '?' fixture-fingerprint
+E         + '[' 0 -gt 0 ']'
+E         + '[' none = armed ']'
+E         + healthy=0
+E         + '[' 0 = 1 ']'
+E         + healthy=0
+E         + '[' -n '' ']'
+E         + '[' none = armed ']'
+E         + '[' 0 = 1 ']'
+E         + printf '  판정: ATTENTION — 단일 예약이 아니거나 지문이 다르다(위 참조)\n'
+E         + return 1
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['bash', '-x', '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna...\' none = armed \']\'\n+ \'[\' 0 = 1 \']\'\n+ printf \'  판정: ATTENTION — 단일 예약이 아니거나 지문이 다르다(위 참조)\\n\'\n+ return 1\n').returncode
+
+tests/test_soak_candidate_path_contract.py:61: AssertionError</failure></testcase></testsuite></testsuites>

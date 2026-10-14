@@ -1,5 +1,5 @@
 {
   "_comment": "이 번들을 만든 소스 리비전(CR-14 F-12). 이 파일이 있는 한 로컬·CI·Docker 빌드가 같은 바이트를 낸다 — 커밋된 번들의 BUILD 라벨이 매 커밋마다 흔들리지 않는다. 소스가 바뀌면 `pnpm run build` 로 번들을 갱신한 뒤 이 값을 그 시점 리비전으로 다시 기록한다.",
-  "buildId": "5a717c4a",
-  "builtAt": null
+  "buildId": "c472d4fcd7c5",
+  "builtAt": "2026-10-14T14:28:09Z"
 }

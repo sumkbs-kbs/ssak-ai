@@ -1,0 +1,89 @@
+{
+  "files": [
+    {
+      "path": "before-junit.xml",
+      "bytes": 37552,
+      "sha256": "4e88a23638240106d36690eab7cbd9580424a00d19a4344a4d71df0f014215a7"
+    },
+    {
+      "path": "before.stdout.txt",
+      "bytes": 21704,
+      "sha256": "fedc6770eb0f953344b81e1e5cdf85365d183600d88a8974c1e0004d8d60961e"
+    },
+    {
+      "path": "before.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "after-junit.xml",
+      "bytes": 30547,
+      "sha256": "52b831160d8c60417cd649aeceb82a2fee5e79f08480a71f02d7de59a7221f47"
+    },
+    {
+      "path": "after.stdout.txt",
+      "bytes": 15850,
+      "sha256": "5085ed00eae8c77da3dccd7537796e94f30c4ecae870925d0cbb031205801bd3"
+    },
+    {
+      "path": "after.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "final-junit.xml",
+      "bytes": 1378,
+      "sha256": "ca3a37a3ac5639f68a2ffffc3f8769eaa6ba8eaeb7d5f72b919929068b818804"
+    },
+    {
+      "path": "final.stdout.txt",
+      "bytes": 98,
+      "sha256": "d7b8f157c4be1f474353830b0a6b13785be505e430566fd1ef4d27e380d9eae3"
+    },
+    {
+      "path": "final.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "root-junit.xml",
+      "bytes": 1378,
+      "sha256": "31845774c3df6fae00d97120db75f9c948afc1d0e8bbf34e54fe8ed0a92d6fd8"
+    },
+    {
+      "path": "root.stdout.txt",
+      "bytes": 98,
+      "sha256": "38f9e798f24167fbb2faf04c1e3933586deb1686c27e5211d7e976ac6027ed1b"
+    },
+    {
+      "path": "root.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "root-runner-preimage.sh",
+      "bytes": 7997,
+      "sha256": "0b4eda8478f25a6fc2d7dd0a24adab413b87e190e89dc86774795337d1d3089a"
+    },
+    {
+      "path": "integration-receipt.json",
+      "bytes": 557,
+      "sha256": "9515b745ac03e3db10ac2327646418f88a18cee2391260a50260040a794cd081"
+    },
+    {
+      "path": "handoff-ko.md",
+      "bytes": 2049,
+      "sha256": "4cbf184baa5e164a7c5790983506072ca6601218dfdc0f7e1161d0d575864801"
+    },
+    {
+      "path": "result.json",
+      "bytes": 665,
+      "sha256": "da8ecbfa43057cd35473b8c08536cbff461a7dd4225112642d39d611cc64b373"
+    },
+    {
+      "path": "task-only.patch",
+      "bytes": 11839,
+      "sha256": "f74ad3f304ede0ec5cb175409ae01f29c0288154b46c93b9143f427e2300a8b6"
+    }
+  ]
+}

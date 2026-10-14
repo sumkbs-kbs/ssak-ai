@@ -1,0 +1,14 @@
+{
+  "status": "DONE_SCOPED_STUB_CONTRACT",
+  "feature_commit": "c472d4fcd7c52a045f9bd0a0c07bba582ff51b54",
+  "review": "MAIN_AGENT_COMPLETED",
+  "independent_review": "NOT_RUN",
+  "before": {"tests": 5, "failed": 5},
+  "first_after": {"passed": 4, "failed": 1, "reason": "New status test expected zero despite established idle ATTENTION exit1"},
+  "clean_final": {"passed": 7, "failed": 0},
+  "root_final": {"passed": 7, "failed": 0},
+  "ruff_format_bash_syntax": "PASS",
+  "actual_soak": "NOT_RUN",
+  "actual_model_http": 0,
+  "limits": "Stub candidate and val02 replacement; preserves candidate/output wiring only. Global 23gate and new8h acceptance separate."
+}

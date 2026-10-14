@@ -1,0 +1,218 @@
+diff --git a/docs/qa/2026-09-16-followup/nx10/run_nx10_soak.sh b/docs/qa/2026-09-16-followup/nx10/run_nx10_soak.sh
+index 1de6ac1f..b8a1265d 100644
+--- a/docs/qa/2026-09-16-followup/nx10/run_nx10_soak.sh
++++ b/docs/qa/2026-09-16-followup/nx10/run_nx10_soak.sh
+@@ -21,13 +21,15 @@
+ 
+ set -u
+ 
+-REPO="/Users/mr.k/program/coding/ssak_comp/Ssak-Ai"
++REPO="${NX10_REPO:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)}"
+ OUT_REL="${NX10_SOAK_OUT_REL:-docs/qa/2026-09-16-followup/nx10}"
+ # 증거 경로를 **절대경로로 덮어쓸 수 있게** 둔다: 그래야 "동시 실행을 거부하는가"를 임시 디렉터리에서
+ # 검증할 수 있다(거부 경로가 본 증거에 시험 흔적을 남기지 않는다).
+ cd "$REPO" || exit 1
+-OUT="${NX10_SOAK_OUT_DIR:-$REPO/$OUT_REL}"
+-PY="$REPO/.venv/bin/python"
++OUT="${NX10_SOAK_OUT_DIR:-${NX10_OUT:-$REPO/$OUT_REL}}"
++PY="${NX10_PYTHON:-$REPO/.venv/bin/python}"
++[ -x "$PY" ] || { printf 'Candidate interpreter unavailable: %s\n' "$PY" >&2; exit 2; }
++mkdir -p "$OUT" || exit 2
+ SOAK_SECONDS="${SOAK_SECONDS:-28800}"
+ REPORT="$OUT/soak-${SOAK_SECONDS}.json"
+ # ── 보존 캡(측정 설정 — 기록에 남긴다) ─────────────────────────────────────────
+@@ -40,7 +42,7 @@ REPORT="$OUT/soak-${SOAK_SECONDS}.json"
+ # 8시간 예상 쓰기량(≈4.5 GB)이 여유 있게 들어가는 값으로 올리고, 그 사실을 기록·문서에 남긴다.
+ # soft cap 은 기본값을 그대로 둔다(경고·`journals_over_soft_cap` 관측이 그대로 살아 있다).
+ export AGK_CONVERSATION_JOURNAL_HARD_CAP_MB="${AGK_CONVERSATION_JOURNAL_HARD_CAP_MB:-8192}"
+-RETENTION_CAPS="$("$REPO/.venv/bin/python" -c "import sys; sys.path.insert(0,'src'); from antigravity_k.engine.conversation_retention import resolve_policy as r; p=r(); print('soft=%dMiB hard=%dMiB' % (p.soft_cap_bytes//1048576, p.hard_cap_bytes//1048576))" 2>/dev/null || echo unknown)"
++RETENTION_CAPS="$("$PY" -c "import sys; sys.path.insert(0,'src'); from antigravity_k.engine.conversation_retention import resolve_policy as r; p=r(); print('soft=%dMiB hard=%dMiB' % (p.soft_cap_bytes//1048576, p.hard_cap_bytes//1048576))" 2>/dev/null || echo unknown)"
+ # 작업 디렉토리는 **저장소 밖**에 둔다 — 8시간 soak 은 수백 MB~수 GB 를 쓰므로 공유 체크아웃을
+ # 더럽히면 다른 레인의 `git status`/프라이어블 worktree 판정에 끼어든다. (60초 리허설은
+ # 저장소 안에 만들었던 적이 있다 — 그 디렉토리들은 증거로 남기고, 정식 실행부터는 /tmp 를 쓴다.)
+diff --git a/docs/qa/2026-09-16-followup/nx10/schedule_nx10_soak.sh b/docs/qa/2026-09-16-followup/nx10/schedule_nx10_soak.sh
+index 5cf80ed8..f3f7a435 100644
+--- a/docs/qa/2026-09-16-followup/nx10/schedule_nx10_soak.sh
++++ b/docs/qa/2026-09-16-followup/nx10/schedule_nx10_soak.sh
+@@ -20,17 +20,19 @@
+ 
+ set -u
+ 
+-REPO="${NX10_REPO:-/Users/mr.k/program/coding/ssak_comp/Ssak-Ai}"
+-OUT="${NX10_OUT:-$REPO/docs/qa/2026-09-16-followup/nx10}"
+-RUNNER="${NX10_RUNNER:-$OUT/run_nx10_soak.sh}"
++REPO="${NX10_REPO:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)}"
++OUT="${NX10_SOAK_OUT_DIR:-${NX10_OUT:-$REPO/docs/qa/2026-09-16-followup/nx10}}"
++RUNNER="${NX10_RUNNER:-$REPO/docs/qa/2026-09-16-followup/nx10/run_nx10_soak.sh}"
++export NX10_REPO="$REPO" NX10_OUT="$OUT" NX10_SOAK_OUT_DIR="$OUT" NX10_RUNNER="$RUNNER"
+ SCHEDULE="$OUT/soak-schedule.txt"
+ LOG="$OUT/soak-schedule.log"
+ LOCK="$OUT/.soak-arm.lock"   # 예약 단일 잠금 — 상세는 soak_control.sh 참조
+ # 지문 계산은 **venv 파이썬**으로 한다. 시스템 `python`/`python3` 는 3.9 일 수 있고(실측:
+ # /usr/bin/python3 = 3.9.6), 그러면 `ga_gate.py` 의 3.12 문법에서 SyntaxError 가 나
+ # 지문이 UNVERIFIED 로 떨어져 **22:00 에 아무것도 하지 않고 중단**된다.
+-PY_FP="$REPO/.venv/bin/python"
+-[ -x "$PY_FP" ] || PY_FP="python3"
++PY_FP="${NX10_PYTHON:-$REPO/.venv/bin/python}"
++[ -x "$PY_FP" ] || { printf 'Candidate interpreter unavailable: %s\n' "$PY_FP" >&2; exit 2; }
++export NX10_PYTHON="$PY_FP"
+ AT_LOCAL="${NX10_SOAK_AT:-22:00}"
+ # 기본값은 **예약하는 시점의 트리 지문**이다(고정 해시를 하드코딩하지 않는다 — 낡은 해시가 남아
+ # 있으면 정상 예약도 드리프트로 오판한다). 값을 넘기면 그 값이 우선이고 출처를 기록한다.
+@@ -123,6 +125,7 @@ if [ "$DRY_RUN" = "1" ]; then
+ fi
+ 
+ # 여기서 잠금을 잡는다: 대기 중인 예약은 하나만 존재해야 한다.
++mkdir -p "$OUT" || exit 2
+ _acquire_lock
+ # 대기 중 중단(TERM/HUP/INT)되더라도 내 잠금은 풀고 죽는다 — 남겨 두면 다음 예약이 stale 판정을 본다.
+ trap '_release_lock' EXIT INT TERM HUP
+diff --git a/scripts/soak_control.sh b/scripts/soak_control.sh
+index a821838f..8f4ad0b0 100755
+--- a/scripts/soak_control.sh
++++ b/scripts/soak_control.sh
+@@ -57,10 +57,12 @@ _nx10_repo_root() {
+   done
+   return 1
+ }
+-REPO="${NX10_REPO:-$(_nx10_repo_root || printf '%s' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai)}"
+-OUT="${NX10_OUT:-$REPO/docs/qa/2026-09-16-followup/nx10}"
+-SCHEDULER="${NX10_SCHEDULER:-$OUT/schedule_nx10_soak.sh}"
+-RUNNER="${NX10_RUNNER:-$OUT/run_nx10_soak.sh}"
++REPO="${NX10_REPO:-$(_nx10_repo_root)}"
++[ -n "$REPO" ] || { printf 'Candidate repository unavailable\n' >&2; exit 2; }
++OUT="${NX10_SOAK_OUT_DIR:-${NX10_OUT:-$REPO/docs/qa/2026-09-16-followup/nx10}}"
++SCHEDULER="${NX10_SCHEDULER:-$REPO/docs/qa/2026-09-16-followup/nx10/schedule_nx10_soak.sh}"
++RUNNER="${NX10_RUNNER:-$REPO/docs/qa/2026-09-16-followup/nx10/run_nx10_soak.sh}"
++export NX10_REPO="$REPO" NX10_OUT="$OUT" NX10_SOAK_OUT_DIR="$OUT" NX10_RUNNER="$RUNNER"
+ PATTERN="${NX10_SCHED_PATTERN:-schedule_nx10_soak.sh}"
+ GRACE="${NX10_CANCEL_GRACE:-15}"
+ SCREEN_NAME="${NX10_SCREEN_NAME:-nx10soak}"
+@@ -72,7 +74,8 @@ RUNLOCK="$OUT/.soak-run.lock"       # 8시간 실행 단일 잠금 — runner 
+ EXIT_TXT="$OUT/soak-exit.txt"
+ SCHED_LOG="$OUT/soak-schedule.log"
+ SCHEDULE="$OUT/soak-schedule.txt"
+-VENV_PY="$REPO/.venv/bin/python"
++VENV_PY="${NX10_PYTHON:-$REPO/.venv/bin/python}"
++export NX10_PYTHON="$VENV_PY"
+ 
+ _utc() { date -u +%FT%TZ; }
+ 
+diff --git a/tests/test_soak_candidate_path_contract.py b/tests/test_soak_candidate_path_contract.py
+new file mode 100644
+index 00000000..ca712510
+--- /dev/null
++++ b/tests/test_soak_candidate_path_contract.py
+@@ -0,0 +1,112 @@
++from __future__ import annotations
++
++import json
++import os
++import shutil
++import subprocess
++import sys
++from pathlib import Path
++
++import pytest
++
++REPO = Path(__file__).resolve().parents[1]
++REL = Path("docs/qa/2026-09-16-followup/nx10")
++
++
++def fixture_repo(tmp_path: Path) -> tuple[Path, dict[str, str]]:
++    root = tmp_path / "candidate"
++    root.mkdir()
++    (root / REL).mkdir(parents=True)
++    (root / "scripts").mkdir()
++    for name in ("run_nx10_soak.sh", "schedule_nx10_soak.sh"):
++        shutil.copy2(REPO / REL / name, root / REL / name)
++    shutil.copy2(REPO / "scripts/soak_control.sh", root / "scripts/soak_control.sh")
++    for rel in ("src/antigravity_k", "src/antigravity_k/engine", ".venv/bin"):
++        (root / rel).mkdir(parents=True, exist_ok=True)
++    (root / "pyproject.toml").write_text("")
++    for rel in ("src/antigravity_k/__init__.py", "src/antigravity_k/engine/__init__.py"):
++        (root / rel).write_text("")
++    (root / "src/antigravity_k/engine/conversation_retention.py").write_text(
++        "from types import SimpleNamespace\ndef resolve_policy(): return SimpleNamespace(soft_cap_bytes=1048576,hard_cap_bytes=8388608)\n"
++    )
++    (root / "scripts/ga_gate.py").write_text("def worktree_fingerprint(root): return 'fixture-fingerprint'\n")
++    (root / ".venv/bin/python").symlink_to(Path(sys.executable).resolve())
++    (root / "scripts/val02_staging.py").write_text(
++        "import json,os,sys,pathlib\npathlib.Path(sys.argv[sys.argv.index('--output')+1]).write_text(json.dumps({'cwd':os.getcwd(),'argv':sys.argv,'python':sys.executable,'fixture':True}))\n"
++    )
++    guard = tmp_path / "shell-guard.sh"
++    guard.write_text(
++        'cd() { if [ "$1" = "--" ]; then shift; fi; case "$1" in "$ALLOWED_FIXTURE_ROOT"*) builtin cd "$@" ;; *) printf "blocked foreign checkout: %s\\n" "$1" >&2; exit 73 ;; esac; }\n'
++    )
++    env = {k: v for k, v in os.environ.items() if not k.startswith("NX10_") and k not in ("SOAK_SECONDS", "BASH_ENV")}
++    env.update(BASH_ENV=str(guard), ALLOWED_FIXTURE_ROOT=str(root), NX10_NO_CAFFEINATE="1", SOAK_SECONDS="1")
++    return root, env
++
++
++def invoke(script: Path, env: dict[str, str], *args: str) -> subprocess.CompletedProcess[str]:
++    return subprocess.run(
++        ["bash", "-x", str(script), *args], env=env, capture_output=True, text=True, timeout=15, check=False
++    )
++
++
++def test_runner_defaults_to_its_candidate_and_creates_a_fresh_output_parent(tmp_path: Path) -> None:
++    root, env = fixture_repo(tmp_path)
++    out = tmp_path / "fresh-output"
++    env["NX10_OUT"] = str(out)
++    result = invoke(root / REL / "run_nx10_soak.sh", env)
++    assert result.returncode == 0, result.stderr
++    response = json.loads((out / "soak-1.json").read_text())
++    assert response["fixture"] and response["cwd"] == str(root)
++    assert not (out / ".soak-run.lock").exists()
++
++
++@pytest.mark.parametrize("output_key", ["NX10_OUT", "NX10_SOAK_OUT_DIR"])
++def test_runner_explicit_candidate_and_interpreter_keep_outputs_owned(tmp_path: Path, output_key: str) -> None:
++    root, env = fixture_repo(tmp_path)
++    out = tmp_path / "alternate-output"
++    interpreter = root / "alternate-python"
++    interpreter.symlink_to((root / ".venv/bin/python").resolve())
++    shutil.rmtree(root / ".venv")
++    env.update(NX10_REPO=str(root), NX10_PYTHON=str(interpreter))
++    env[output_key] = str(out)
++    result = invoke(root / REL / "run_nx10_soak.sh", env)
++    assert result.returncode == 0, result.stderr
++    response = json.loads((out / "soak-1.json").read_text())
++    assert response["cwd"] == str(root)
++    assert str(interpreter) in (out / "soak-exit.txt").read_text()
++
++
++def test_scheduler_resolves_candidate_runner_independently_of_evidence_directory(tmp_path: Path) -> None:
++    root, env = fixture_repo(tmp_path)
++    out = tmp_path / "scheduler-output"
++    env.update(NX10_OUT=str(out), NX10_SCHEDULE_DRY_RUN="1")
++    result = invoke(root / REL / "schedule_nx10_soak.sh", env)
++    assert result.returncode == 0, result.stderr
++    assert "RUNNER=" + str(root / REL / "run_nx10_soak.sh") in result.stderr
++    assert not (out / "soak-1.json").exists()
++
++
++def test_controller_status_uses_candidate_scripts_for_fresh_output(tmp_path: Path) -> None:
++    root, env = fixture_repo(tmp_path)
++    out = tmp_path / "controller-output"
++    env.update(
++        NX10_OUT=str(out),
++        NX10_SCHED_PATTERN="no-such-fixture-scheduler",
++        NX10_SOAK_PROC_PATTERN="no-such-fixture-worker",
++    )
++    result = invoke(root / "scripts/soak_control.sh", env, "status")
++    assert result.returncode == 1, result.stderr
++    assert "ATTENTION" in result.stdout
++    assert "RUNNER=" + str(root / REL / "run_nx10_soak.sh") in result.stderr
++    assert "SCHEDULER=" + str(root / REL / "schedule_nx10_soak.sh") in result.stderr
++
++
++@pytest.mark.parametrize("name", ["run_nx10_soak.sh", "schedule_nx10_soak.sh"])
++def test_missing_explicit_interpreter_stops_before_any_harness(tmp_path: Path, name: str) -> None:
++    root, env = fixture_repo(tmp_path)
++    out = tmp_path / "blocked-output"
++    env.update(NX10_PYTHON=str(root / "missing-python"), NX10_OUT=str(out))
++    result = invoke(root / REL / name, env)
++    assert result.returncode == 2
++    assert "Candidate interpreter unavailable" in result.stderr
++    assert not out.exists()
