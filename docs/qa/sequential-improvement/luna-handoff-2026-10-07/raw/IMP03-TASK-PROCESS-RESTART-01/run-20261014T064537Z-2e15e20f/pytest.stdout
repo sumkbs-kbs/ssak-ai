@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.12, pytest-9.1.1, pluggy-1.6.0 -- /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python
+rootdir: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai
+configfile: pyproject.toml
+collecting ... collected 1 item
+
+../../../../../../../../tests/test_task_process_restart.py::test_task_resume_survives_real_process_kill_without_duplicate_effects PASSED [100%]
+
+=============================== warnings summary ===============================
+../../../../../../../../.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1464
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1464: PytestConfigWarning: Unknown config option: asyncio_mode
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+tests/test_task_process_restart.py::test_task_resume_survives_real_process_kill_without_duplicate_effects
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/config.py:62: UserWarning: Config file '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f/runtime/missing.env' not found.
+    warnings.warn(f"Config file '{env_file}' not found.")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f/junit.xml -
+======================== 1 passed, 2 warnings in 1.10s =========================

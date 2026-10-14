@@ -1,0 +1,122 @@
+{
+  "status": "PASS_SCOPED_REAL_OS_RESTART",
+  "assertions": {
+    "pytestExitZero": true,
+    "noTimeout": true,
+    "noRemainingOwnedProcesses": true,
+    "sourceUnchanged": true,
+    "indexUnchanged": true,
+    "guardInherited": true,
+    "moduleBinding": true,
+    "physicalNetworkZero": true,
+    "externalExecutableZero": true,
+    "distinctWorkerPids": true,
+    "actualKillObserved": true,
+    "bothCompletedWorkersReaped": true,
+    "checkpointTen": true,
+    "finalDone": true,
+    "exactlyOnceEffects": true,
+    "exactlyOnceEventSteps": true
+  },
+  "counts": {
+    "physicalNetworkAttempts": 0,
+    "unixSocketOperations": 0,
+    "externalExecutableAttempts": 0,
+    "starts": 3,
+    "joined": 3,
+    "guardProcesses": 5
+  },
+  "changed": [],
+  "pids": {
+    "starts": [
+      {
+        "event": "process_started",
+        "pid": 84708,
+        "ppid": 84681,
+        "time": 1791960587.406355,
+        "child_pid": 84714,
+        "name": "SpawnProcess-1"
+      },
+      {
+        "event": "process_started",
+        "pid": 84708,
+        "ppid": 84681,
+        "time": 1791960587.6577432,
+        "child_pid": 84719,
+        "name": "SpawnProcess-2"
+      },
+      {
+        "event": "process_started",
+        "pid": 84708,
+        "ppid": 84681,
+        "time": 1791960587.873802,
+        "child_pid": 84721,
+        "name": "SpawnProcess-3"
+      }
+    ],
+    "joins": [
+      {
+        "event": "process_joined",
+        "pid": 84708,
+        "ppid": 84681,
+        "time": 1791960587.656251,
+        "child_pid": 84714,
+        "exitcode": 0,
+        "alive": false
+      },
+      {
+        "event": "process_joined",
+        "pid": 84708,
+        "ppid": 84681,
+        "time": 1791960587.8723898,
+        "child_pid": 84719,
+        "exitcode": -9,
+        "alive": false
+      },
+      {
+        "event": "process_joined",
+        "pid": 84708,
+        "ppid": 84681,
+        "time": 1791960588.126505,
+        "child_pid": 84721,
+        "exitcode": 0,
+        "alive": false
+      }
+    ]
+  },
+  "checkpointStep": 10,
+  "finalOutput": "1,2,3,4,5,6,7,8,9,10,11,12,",
+  "baselineEffectSteps": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "resumedEffectSteps": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "limits": [
+    "Fixture orchestrator discards messages/target_model; semantic context and approval are not proved.",
+    "Python physical network guard covers inherited Python workers; no non-Python subprocess was launched.",
+    "Anonymous multiprocessing Pipes are IPC; no Unix socket operations were observed."
+  ]
+}

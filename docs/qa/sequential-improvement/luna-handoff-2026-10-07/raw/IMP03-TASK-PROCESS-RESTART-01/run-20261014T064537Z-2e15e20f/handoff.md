@@ -1,0 +1,23 @@
+# IMP03-TASK-PROCESS-RESTART-01
+
+One fresh invocation of the existing `tests/test_task_process_restart.py::test_task_resume_survives_real_process_kill_without_duplicate_effects` passed: **1 passed, 0 failed, 0 skipped**, pytest exit 0, 1.10 seconds. The successful selector was not repeated. No runtime, test, or source edits and no Git stage/commit/push were made.
+
+The task graph discovery tool returned `Transport closed`; the existing test, runner, state-store and event interfaces were read directly. Their exact relevant source copies and repository source hashes are retained.
+
+| Criterion | Exact scenario and observable | Artifact |
+| --- | --- | --- |
+| Real interrupted process | Existing selector starts baseline PID 84714, interrupted owner PID 84719, and fresh resumed owner PID 84721. PID 84719 receives the original multiprocessing kill and original OS join returns **-9**, alive=false. | `process-ledger/84708.jsonl`; inherited worker ledgers |
+| Persisted checkpoint and resume | Existing test waits for checkpoint 10 before killing; new process reads it and resumes steps 11–12. Final status done and output matches uninterrupted baseline. | `junit.xml`, `pytest-reports.jsonl`, `state-observation.json`, raw `runtime/tmp/pytest/` databases |
+| Exactly-once effects | Baseline and interrupted/resumed effect files each contain exactly `[1,2,3,4,5,6,7,8,9,10,11,12]`; execution-event steps match with no duplicate. | `state-observation.json`, raw `.effects` files, `result.json` |
+| Real cleanup | Original joins reap both successful workers with exit 0; killed worker joins at -9; Node close event reaps pytest PID 84708. OS process-group lookup observes zero remaining owned processes. Deadline did not fire. | `invocation.json`, process ledger, `result.json` |
+| Bounded execution | Outer process-group deadline 30 seconds, SIGTERM requests owned-child kill/join cleanup, 3-second escalation to SIGKILL. Only the newly created group is targeted. | `capture.mjs`, `bootstrap/sitecustomize.py`, `invocation.json` |
+| Inherited isolation and network guard | All spawned Python workers load sitecustomize. Physical AF_INET/AF_INET6 connect/bind/sendto/listen and DNS are denied; no such attempts occurred. Unix socket operations are counted separately (0); anonymous multiprocessing pipes are legitimate IPC. No external executable was launched by the guarded scenario. | Per-PID `guard_installed` ledger entries; `result.json` counts; `invocation.json` environment |
+| Current source and module binding | Before/after hashes cover source/test/config inputs; actual pytest module paths are captured. Relevant source files and Git index are unchanged. | `source-before.json`, `source-after.json`, `pytest-session.json`, `index-before.txt`, `index-after.txt`, `result.json` |
+
+Actual executable, full argv, cwd, PID/group, timing, exit status and explicit environment overrides are recorded in `invocation.json`. The pytest command uses the existing `.venv/bin/python`, absolute existing test selector, `-p qa_receipts`, owned `--basetemp`, and JUnit output. The tiny plugin records actual pytest phase results as JSON because pytest-json-report is not installed; it does not change assertions. `pytest.stdout` and `pytest.stderr` are unmodified process output.
+
+The test ran with an owned cwd, TMPDIR, supported `AGK_PATH_*` settings and task DB override, plus owned state/userbrain environment paths. HOME and CODEX_HOME were not changed. The two task databases and effects come from the test's explicit owned tmp_path. Model/provider execution is not used: fixture-model is consumed by the fake executor, which discards the target and messages. Offline model-download settings are set; no HTTP/Ollama/model-download connection was made. All network counts describe this guarded fixture run.
+
+Limit: this scenario proves OS checkpoint/effect continuity, **not semantic message/context recovery or approval continuity**. Its fake executor explicitly discards messages and target_model. Other scoped tests are separate evidence and their counts are not added here. No full-app, browser, live-provider, or release claim is made. Two setup warnings are retained: disabled plugin autoload leaves `asyncio_mode` unknown, and the deliberately missing owned environment file is reported. Neither changes the synchronous selector's assertions.
+
+`state-read-receipt.json` records the independent read-only SQLite/effect extraction; `result.json` lists binary acceptance checks; `artifact-manifest.json` seals the minimal run. Temporary runtime contains only five files, approximately 96 KB, rather than a bulk copied user state tree. The timeout cleanup path was installed but not exercised because this run completed within its deadline.

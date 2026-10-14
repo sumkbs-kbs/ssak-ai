@@ -1,0 +1,8 @@
+{"event": "guard_installed", "pid": 84708, "ppid": 84681, "time": 1791960586.965678, "executable": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python", "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f/runtime", "pythonpath": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f/bootstrap:/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src:/Users/mr.k/program/coding/ssak_comp/Ssak-Ai"}
+{"event": "process_started", "pid": 84708, "ppid": 84681, "time": 1791960587.406355, "child_pid": 84714, "name": "SpawnProcess-1"}
+{"event": "process_joined", "pid": 84708, "ppid": 84681, "time": 1791960587.656251, "child_pid": 84714, "exitcode": 0, "alive": false}
+{"event": "process_started", "pid": 84708, "ppid": 84681, "time": 1791960587.6577432, "child_pid": 84719, "name": "SpawnProcess-2"}
+{"event": "process_kill_requested", "pid": 84708, "ppid": 84681, "time": 1791960587.870799, "child_pid": 84719}
+{"event": "process_joined", "pid": 84708, "ppid": 84681, "time": 1791960587.8723898, "child_pid": 84719, "exitcode": -9, "alive": false}
+{"event": "process_started", "pid": 84708, "ppid": 84681, "time": 1791960587.873802, "child_pid": 84721, "name": "SpawnProcess-3"}
+{"event": "process_joined", "pid": 84708, "ppid": 84681, "time": 1791960588.126505, "child_pid": 84721, "exitcode": 0, "alive": false}

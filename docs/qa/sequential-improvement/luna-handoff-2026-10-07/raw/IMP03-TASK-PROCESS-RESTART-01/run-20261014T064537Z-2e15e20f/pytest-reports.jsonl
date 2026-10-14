@@ -1,0 +1,3 @@
+{"nodeid": "tests/test_task_process_restart.py::test_task_resume_survives_real_process_kill_without_duplicate_effects", "when": "setup", "outcome": "passed", "duration": 0.13963408302515745, "longrepr": "None"}
+{"nodeid": "tests/test_task_process_restart.py::test_task_resume_survives_real_process_kill_without_duplicate_effects", "when": "call", "outcome": "passed", "duration": 0.7369807499926537, "longrepr": "None"}
+{"nodeid": "tests/test_task_process_restart.py::test_task_resume_survives_real_process_kill_without_duplicate_effects", "when": "teardown", "outcome": "passed", "duration": 0.0004922910593450069, "longrepr": "None"}

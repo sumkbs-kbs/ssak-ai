@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-c",
+    "import json,sqlite3,sys,pathlib\nresult={}\nfor name in sys.argv[1:]:\n p=pathlib.Path(name)\n if p.suffix==\".effects\":\n  result[p.name]=[int(x) for x in p.read_text().splitlines()]\n else:\n  with sqlite3.connect(\"file:\"+str(p)+\"?mode=ro\",uri=True) as db:\n   db.row_factory=sqlite3.Row\n   result[p.name]={table:[dict(row) for row in db.execute(\"SELECT * FROM \"+table+\" ORDER BY 1\")] for table in [\"task_history\",\"task_checkpoints\",\"task_execution_events\"]}\nprint(json.dumps(result,indent=2))",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f/runtime/tmp/pytest/test_task_resume_survives_real0/baseline.db",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f/runtime/tmp/pytest/test_task_resume_survives_real0/baseline.effects",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f/runtime/tmp/pytest/test_task_resume_survives_real0/interrupted.db",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f/runtime/tmp/pytest/test_task_resume_survives_real0/interrupted.effects",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f/runtime/tmp/pytest/test_task_resume_survives_realcurrent/baseline.db",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f/runtime/tmp/pytest/test_task_resume_survives_realcurrent/baseline.effects",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f/runtime/tmp/pytest/test_task_resume_survives_realcurrent/interrupted.db",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f/runtime/tmp/pytest/test_task_resume_survives_realcurrent/interrupted.effects"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-TASK-PROCESS-RESTART-01/run-20261014T064537Z-2e15e20f",
+  "exitCode": 0,
+  "stderr": ""
+}
