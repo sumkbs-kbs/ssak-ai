@@ -569,19 +569,21 @@ class BrowserTaskMemory:
         dedupe_key = _dedupe_key(owner_value, site, kind_value, goal_value)
         with self._connect() as conn:
             existing = conn.execute(
-                f"SELECT id, created_at, entry_id FROM {TABLE} WHERE dedupe_key = ?", (dedupe_key,)
+                "SELECT id, created_at, entry_id FROM browser_task_memory WHERE dedupe_key = ?", (dedupe_key,)
             ).fetchone()
             if existing is None:
                 # id 는 중복 키의 앞부분이다. 같은 사이트·같은 목표를 **다시** 확인해도 앞선 철회 기록과
                 # 충돌하지 않게, 이미 쓰인 접두사면 번호를 붙인다(첫 기억은 번호 없는 id 를 갖는다).
                 base_id = f"btm_{dedupe_key[:16]}"
-                taken = conn.execute(f"SELECT COUNT(*) FROM {TABLE} WHERE entry_id GLOB ?", (base_id + "*",)).fetchone()
+                taken = conn.execute(
+                    "SELECT COUNT(*) FROM browser_task_memory WHERE entry_id GLOB ?", (base_id + "*",)
+                ).fetchone()
                 seen = int(taken[0]) if taken is not None else 0
                 entry_id = base_id if seen == 0 else f"{base_id}_{seen + 1}"
                 cursor = conn.execute(
-                    f"INSERT INTO {TABLE} (entry_id, dedupe_key, kind, owner, origin, origin_url, goal, body, steps,"
-                    f" evidence, consent, minimized, source_task, created_at, updated_at, expires_at, revoked_at,"
-                    f" revoke_reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', '')",
+                    "INSERT INTO browser_task_memory (entry_id, dedupe_key, kind, owner, origin, origin_url, goal, body, steps,"
+                    " evidence, consent, minimized, source_task, created_at, updated_at, expires_at, revoked_at,"
+                    " revoke_reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', '')",
                     (
                         entry_id,
                         dedupe_key,
@@ -609,8 +611,8 @@ class BrowserTaskMemory:
                 entry_id = str(existing["entry_id"])  # 덮어쓰기는 **같은 기억**이다(id 를 바꾸지 않는다)
                 # 같은 절차를 다시 확인했다 = **덮어쓰기**다(무한히 쌓지 않는다). 색인도 같은 id 로 덮어쓴다.
                 _ = conn.execute(
-                    f"UPDATE {TABLE} SET origin_url = ?, body = ?, steps = ?, evidence = ?, consent = ?, minimized = ?,"
-                    f" source_task = ?, updated_at = ?, expires_at = ? WHERE dedupe_key = ?",
+                    "UPDATE browser_task_memory SET origin_url = ?, body = ?, steps = ?, evidence = ?, consent = ?, minimized = ?,"
+                    " source_task = ?, updated_at = ?, expires_at = ? WHERE dedupe_key = ?",
                     (
                         scrub_url(origin_url),
                         body,
@@ -806,20 +808,13 @@ class BrowserTaskMemory:
 
     def _load_rows(self, *, owner: str, origin: str, kind: MemoryKind | None) -> list[tuple[int, TaskMemoryEntry]]:
         """행 id 와 항목을 함께 준다(색인에서 빼려면 숫자 id 가 필요하다)."""
-        clauses = []
-        params: list[object] = []
-        if owner:
-            clauses.append("owner = ?")
-            params.append(owner)
-        if origin:
-            clauses.append("origin = ?")
-            params.append(origin)
-        if kind is not None:
-            clauses.append("kind = ?")
-            params.append(kind.value)
-        where = f" WHERE {' AND '.join(clauses)}" if clauses else ""
+        kind_value = kind.value if kind is not None else None
         with self._connect() as conn:
-            rows = conn.execute(f"SELECT * FROM {TABLE}{where} ORDER BY updated_at DESC", params).fetchall()
+            rows = conn.execute(
+                "SELECT * FROM browser_task_memory WHERE (? = '' OR owner = ?)"
+                " AND (? = '' OR origin = ?) AND (? IS NULL OR kind = ?) ORDER BY updated_at DESC",
+                (owner, owner, origin, origin, kind_value, kind_value),
+            ).fetchall()
         return [(int(row["id"]), _entry_from_row(row)) for row in rows]
 
     def _load(self, *, owner: str, origin: str, kind: MemoryKind | None) -> list[TaskMemoryEntry]:
@@ -827,7 +822,7 @@ class BrowserTaskMemory:
 
     def _row_id(self, entry_id: str) -> int:
         with self._connect() as conn:
-            row = conn.execute(f"SELECT id FROM {TABLE} WHERE entry_id = ?", (entry_id,)).fetchone()
+            row = conn.execute("SELECT id FROM browser_task_memory WHERE entry_id = ?", (entry_id,)).fetchone()
         return int(row["id"]) if row is not None else 0
 
     def _rank(
@@ -878,8 +873,8 @@ class BrowserTaskMemory:
         stamp = utc_stamp(self._now(now))
         with self._connect() as conn:
             _ = conn.execute(
-                f"UPDATE {TABLE} SET revoked_at = ?, revoke_reason = ?, dedupe_key = dedupe_key || '#revoked'"
-                f" WHERE entry_id = ?",
+                "UPDATE browser_task_memory SET revoked_at = ?, revoke_reason = ?, dedupe_key = dedupe_key || '#revoked'"
+                " WHERE entry_id = ?",
                 (stamp, clip(reason, 200), entry_id),
             )
             conn.commit()
@@ -914,7 +909,7 @@ class BrowserTaskMemory:
         stamp = utc_stamp(self._now(now))
         with self._connect() as conn:
             _ = conn.execute(
-                f"UPDATE {TABLE} SET body = ?, evidence = ?, steps = ?, updated_at = ? WHERE entry_id = ?",
+                "UPDATE browser_task_memory SET body = ?, evidence = ?, steps = ?, updated_at = ? WHERE entry_id = ?",
                 (
                     body,
                     json.dumps(list(evidence_lines), ensure_ascii=False),
@@ -952,7 +947,7 @@ class BrowserTaskMemory:
         for row_id, entry in self._load_rows(owner="", origin="", kind=None):
             if entry.expired_or_revoked(moment):
                 with self._connect() as conn:
-                    _ = conn.execute(f"DELETE FROM {TABLE} WHERE entry_id = ?", (entry.entry_id,))
+                    _ = conn.execute("DELETE FROM browser_task_memory WHERE entry_id = ?", (entry.entry_id,))
                     conn.commit()
                 _ = self._unembed(row_id)
                 removed += 1
@@ -962,14 +957,14 @@ class BrowserTaskMemory:
 
     def _entry_by_id(self, entry_id: str) -> TaskMemoryEntry:
         with self._connect() as conn:
-            row = conn.execute(f"SELECT * FROM {TABLE} WHERE entry_id = ?", (entry_id,)).fetchone()
+            row = conn.execute("SELECT * FROM browser_task_memory WHERE entry_id = ?", (entry_id,)).fetchone()
         if row is None:
             raise MemoryRefusal(NOT_FOUND, f"그런 기억이 없다: {entry_id}")
         return _entry_from_row(row)
 
     def _require_entry(self, entry_id: str, *, owner: str) -> int:
         with self._connect() as conn:
-            row = conn.execute(f"SELECT id, owner FROM {TABLE} WHERE entry_id = ?", (entry_id,)).fetchone()
+            row = conn.execute("SELECT id, owner FROM browser_task_memory WHERE entry_id = ?", (entry_id,)).fetchone()
         if row is None:
             raise MemoryRefusal(NOT_FOUND, f"그런 기억이 없다: {entry_id}")
         if str(row["owner"]) != str(owner or ""):

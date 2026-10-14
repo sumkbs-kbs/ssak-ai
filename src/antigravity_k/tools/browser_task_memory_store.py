@@ -94,7 +94,7 @@ def integration_purge(
         conn.row_factory = sqlite3.Row
         try:
             rows = conn.execute(
-                f"SELECT id, entry_id, body, expires_at, updated_at, revoked_at FROM {TABLE}"
+                "SELECT id, entry_id, body, expires_at, updated_at, revoked_at FROM browser_task_memory"
             ).fetchall()
         except sqlite3.OperationalError:
             return 0  # 아직 표가 없다 = 기억을 쓴 적이 없다
@@ -105,7 +105,7 @@ def integration_purge(
                 body = str(row["body"])
                 redacted = redact_full(body)
                 if redacted != body:
-                    _ = conn.execute(f"UPDATE {TABLE} SET body = ? WHERE entry_id = ?", (redacted, entry_id))
+                    _ = conn.execute("UPDATE browser_task_memory SET body = ? WHERE entry_id = ?", (redacted, entry_id))
                     changed += 1
                 continue
             # `all` = 설정과 무관한 전부 삭제, `expired` = 만료됐거나 마지막 확인이 보관 기간을 넘긴 항목.
@@ -114,7 +114,7 @@ def integration_purge(
                 age_limit = moment - max_age_days * 86400
                 stale = stale or parse_epoch(str(row["updated_at"])) <= age_limit
             if stale or str(row["revoked_at"] or ""):
-                _ = conn.execute(f"DELETE FROM {TABLE} WHERE entry_id = ?", (entry_id,))
+                _ = conn.execute("DELETE FROM browser_task_memory WHERE entry_id = ?", (entry_id,))
                 if callable(drop):
                     try:
                         _ = drop(VECTOR_TABLE, row_id)

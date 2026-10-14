@@ -167,9 +167,15 @@ class LegacySQLiteSource:
         return tuple(str(row["name"]) for row in rows)
 
     def _count_on(self, connection: sqlite3.Connection, table: str, known_tables: set[str]) -> int:
-        if table not in known_tables:
+        queries = {
+            EVENTS_TABLE: "SELECT COUNT(*) AS total FROM agency_events",
+            OBJECTIVES_TABLE: "SELECT COUNT(*) AS total FROM agency_objectives",
+            OBJECTIVE_TASKS_TABLE: "SELECT COUNT(*) AS total FROM agency_objective_tasks",
+        }
+        query = queries.get(table)
+        if table not in known_tables or query is None:
             return 0
-        row = connection.execute(f"SELECT COUNT(*) AS total FROM {table}").fetchone()  # noqa: S608 - table 화이트리스트
+        row = connection.execute(query).fetchone()
         return int(row["total"]) if row is not None else 0
 
     def _count(self, table: str) -> int:
@@ -193,17 +199,26 @@ class LegacySQLiteSource:
         """
 
         digest = hashlib.sha256()
-        for table, columns in (
-            (EVENTS_TABLE, "event_id, project_id, trajectory_id, parent_event_id, event_type, payload_json"),
-            (OBJECTIVES_TABLE, "objective_id, project_id, title, description, trajectory_id"),
-            (OBJECTIVE_TASKS_TABLE, "task_id, objective_id, project_id, trajectory_id, created_at"),
+        for table, query in (
+            (
+                EVENTS_TABLE,
+                "SELECT event_id, project_id, trajectory_id, parent_event_id, event_type, payload_json FROM agency_events ORDER BY 1",
+            ),
+            (
+                OBJECTIVES_TABLE,
+                "SELECT objective_id, project_id, title, description, trajectory_id FROM agency_objectives ORDER BY 1",
+            ),
+            (
+                OBJECTIVE_TASKS_TABLE,
+                "SELECT task_id, objective_id, project_id, trajectory_id, created_at FROM agency_objective_tasks ORDER BY 1",
+            ),
         ):
             digest.update(table.encode("utf-8"))
             digest.update(b"\0")
             if table not in known_tables:
                 digest.update(b"<missing>\0")
             else:
-                rows = connection.execute(f"SELECT {columns} FROM {table} ORDER BY 1").fetchall()  # noqa: S608
+                rows = connection.execute(query).fetchall()
                 for row in rows:
                     digest.update(repr(tuple(row)).encode("utf-8"))
                     digest.update(b"\0")
@@ -250,8 +265,8 @@ class LegacySQLiteSource:
             return
         with closing(self._connect()) as connection:
             cursor = connection.execute(
-                f"SELECT event_id, project_id, trajectory_id, parent_event_id, event_type, payload_json"  # noqa: S608
-                f" FROM {EVENTS_TABLE} ORDER BY event_id"
+                "SELECT event_id, project_id, trajectory_id, parent_event_id, event_type, payload_json"
+                " FROM agency_events ORDER BY event_id"
             )
             while rows := cursor.fetchmany(batch_size):
                 yield tuple(
@@ -277,7 +292,7 @@ class LegacySQLiteSource:
         with self._connect() as connection:
             rows = connection.execute(
                 "SELECT objective_id, project_id, title, description, trajectory_id"
-                f" FROM {OBJECTIVES_TABLE} ORDER BY objective_id"
+                " FROM agency_objectives ORDER BY objective_id"
             ).fetchall()
         return tuple(
             LegacyObjectiveRow(
@@ -295,8 +310,7 @@ class LegacySQLiteSource:
             return ()
         with self._connect() as connection:
             rows = connection.execute(
-                f"SELECT task_id, objective_id, project_id FROM {OBJECTIVE_TASKS_TABLE}"  # noqa: S608
-                " ORDER BY task_id"
+                "SELECT task_id, objective_id, project_id FROM agency_objective_tasks ORDER BY task_id"
             ).fetchall()
         return tuple(
             LegacyTaskRow(

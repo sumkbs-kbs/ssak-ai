@@ -587,32 +587,21 @@ class LLMWiki:
             seed_ids = [hit.entry.id for hit in direct_results if hit.entry.id is not None]
             if seed_ids and len(seed_ids) < limit:
                 relation_pairs_set: set[tuple[int, int]] = set()
-                category_clause = (
-                    " AND source_entry.category = ? AND target_entry.category = ?" if category is not None else ""
-                )
                 for offset in range(0, len(seed_ids), 400):
                     seed_chunk = seed_ids[offset : offset + 400]
-                    placeholders = ",".join("?" for _ in seed_chunk)
-                    if link_direction == "outbound":
-                        direction_clause = f"link.from_id IN ({placeholders})"
-                        relation_params: tuple[object, ...] = tuple(seed_chunk)
-                    elif link_direction == "backlinks":
-                        direction_clause = f"link.to_id IN ({placeholders})"
-                        relation_params = tuple(seed_chunk)
-                    else:
-                        direction_clause = f"(link.from_id IN ({placeholders}) OR link.to_id IN ({placeholders}))"
-                        relation_params = (*seed_chunk, *seed_chunk)
-                    if category is not None:
-                        relation_params = (*relation_params, category, category)
+                    seed_payload = json.dumps(seed_chunk)
                     link_rows = cast(
                         list[sqlite3.Row],
                         conn.execute(
-                            f"""SELECT link.from_id, link.to_id FROM wiki_links AS link
+                            """SELECT link.from_id, link.to_id FROM wiki_links AS link
                                 JOIN wiki_entries AS source_entry ON source_entry.id = link.from_id
                                 JOIN wiki_entries AS target_entry ON target_entry.id = link.to_id
-                                WHERE {direction_clause} AND link.relation = 'obsidian'{category_clause}
+                                WHERE ((? != 'backlinks' AND link.from_id IN (SELECT value FROM json_each(?)))
+                                    OR (? != 'outbound' AND link.to_id IN (SELECT value FROM json_each(?))))
+                                AND link.relation = 'obsidian'
+                                AND (? IS NULL OR (source_entry.category = ? AND target_entry.category = ?))
                                 ORDER BY link.from_id, link.to_id""",
-                            relation_params,
+                            (link_direction, seed_payload, link_direction, seed_payload, category, category, category),
                         ).fetchall(),
                     )
                     relation_pairs_set.update((int(row[0]), int(row[1])) for row in link_rows)

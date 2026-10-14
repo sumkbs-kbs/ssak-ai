@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import math
 import sqlite3
 from collections import defaultdict
@@ -53,10 +54,9 @@ def advance_reward_ticks(connection: sqlite3.Connection, events: Iterable[GraphR
     node_ids = tuple(sorted(node_positions))
     for offset in range(0, len(node_ids), 400):
         node_chunk = node_ids[offset : offset + 400]
-        placeholders = ",".join("?" for _ in node_chunk)
         rows = connection.execute(
-            f"SELECT entry_id, score FROM wiki_node_rewards WHERE entry_id IN ({placeholders})",
-            node_chunk,
+            "SELECT entry_id, score FROM wiki_node_rewards WHERE entry_id IN (SELECT value FROM json_each(?))",
+            (json.dumps(node_chunk),),
         ).fetchall()
         old_node_scores.update({int(row[0]): float(row[1]) for row in rows})
 
@@ -64,20 +64,30 @@ def advance_reward_ticks(connection: sqlite3.Connection, events: Iterable[GraphR
     link_pairs = tuple(sorted(link_positions))
     for offset in range(0, len(link_pairs), 300):
         link_chunk = link_pairs[offset : offset + 300]
-        where_clause = " OR ".join("(from_id = ? AND to_id = ?)" for _pair in link_chunk)
-        parameters = tuple(value for pair in link_chunk for value in pair)
         rows = connection.execute(
-            f"SELECT from_id, to_id, score FROM wiki_link_rewards WHERE {where_clause}",
-            parameters,
+            "SELECT from_id, to_id, score FROM wiki_link_rewards WHERE (from_id, to_id) IN"
+            " (SELECT json_extract(value, '$[0]'), json_extract(value, '$[1]') FROM json_each(?))",
+            (json.dumps(link_chunk),),
         ).fetchall()
         old_link_scores.update({(int(row[0]), int(row[1])): float(row[2]) for row in rows})
 
-    for table in ("wiki_node_rewards", "wiki_link_rewards"):
+    for clear_query, decay_query, prune_query in (
+        (
+            "DELETE FROM wiki_node_rewards",
+            "UPDATE wiki_node_rewards SET score = score * ?",
+            "DELETE FROM wiki_node_rewards WHERE score <= 0",
+        ),
+        (
+            "DELETE FROM wiki_link_rewards",
+            "UPDATE wiki_link_rewards SET score = score * ?",
+            "DELETE FROM wiki_link_rewards WHERE score <= 0",
+        ),
+    ):
         if decay_factor == 0:
-            _ = connection.execute(f"DELETE FROM {table}")
+            _ = connection.execute(clear_query)
         else:
-            _ = connection.execute(f"UPDATE {table} SET score = score * ?", (decay_factor,))
-            _ = connection.execute(f"DELETE FROM {table} WHERE score <= 0")
+            _ = connection.execute(decay_query, (decay_factor,))
+            _ = connection.execute(prune_query)
 
     for node_id in node_ids:
         score = _reward_score_after_events(old_node_scores.get(node_id, 0.0), node_positions[node_id], total_ticks)
@@ -140,11 +150,11 @@ def graph_deletion_events(
     incident_pairs: set[tuple[int, int]] = set()
     for offset in range(0, len(unique_ids), 400):
         chunk = unique_ids[offset : offset + 400]
-        placeholders = ",".join("?" for _ in chunk)
+        parameters = (json.dumps(chunk), json.dumps(chunk))
         rows = connection.execute(
-            f"SELECT from_id, to_id FROM wiki_links WHERE from_id IN ({placeholders}) "
-            f"OR to_id IN ({placeholders}) ORDER BY from_id, to_id",
-            (*chunk, *chunk),
+            "SELECT from_id, to_id FROM wiki_links WHERE from_id IN (SELECT value FROM json_each(?)) "
+            "OR to_id IN (SELECT value FROM json_each(?)) ORDER BY from_id, to_id",
+            parameters,
         ).fetchall()
         incident_pairs.update((int(row[0]), int(row[1])) for row in rows)
 
@@ -163,38 +173,38 @@ def delete_graph_rows(connection: sqlite3.Connection, entry_ids: tuple[int, ...]
     unique_ids = tuple(sorted(set(entry_ids)))
     chunks = tuple(unique_ids[offset : offset + 400] for offset in range(0, len(unique_ids), 400))
     for chunk in chunks:
-        placeholders = ",".join("?" for _ in chunk)
+        parameters = (json.dumps(chunk),)
         _ = connection.execute(
-            f"DELETE FROM wiki_link_rewards WHERE from_id IN ({placeholders})",
-            chunk,
+            "DELETE FROM wiki_link_rewards WHERE from_id IN (SELECT value FROM json_each(?))",
+            parameters,
         )
         _ = connection.execute(
-            f"DELETE FROM wiki_links WHERE from_id IN ({placeholders})",
-            chunk,
+            "DELETE FROM wiki_links WHERE from_id IN (SELECT value FROM json_each(?))",
+            parameters,
         )
     for chunk in chunks:
-        placeholders = ",".join("?" for _ in chunk)
+        parameters = (json.dumps(chunk),)
         _ = connection.execute(
-            f"DELETE FROM wiki_link_rewards WHERE to_id IN ({placeholders})",
-            chunk,
+            "DELETE FROM wiki_link_rewards WHERE to_id IN (SELECT value FROM json_each(?))",
+            parameters,
         )
         _ = connection.execute(
-            f"DELETE FROM wiki_links WHERE to_id IN ({placeholders})",
-            chunk,
+            "DELETE FROM wiki_links WHERE to_id IN (SELECT value FROM json_each(?))",
+            parameters,
         )
         _ = connection.execute(
-            f"DELETE FROM wiki_node_rewards WHERE entry_id IN ({placeholders})",
-            chunk,
+            "DELETE FROM wiki_node_rewards WHERE entry_id IN (SELECT value FROM json_each(?))",
+            parameters,
         )
 
 
 def validate_reward_rows(connection: sqlite3.Connection) -> bool:
     """Reject non-finite, zero, negative, or over-cap reward scores."""
-    for table, columns in (
-        ("wiki_node_rewards", "entry_id, score"),
-        ("wiki_link_rewards", "from_id, to_id, score"),
+    for query in (
+        "SELECT entry_id, score FROM wiki_node_rewards",
+        "SELECT from_id, to_id, score FROM wiki_link_rewards",
     ):
-        for row in connection.execute(f"SELECT {columns} FROM {table}").fetchall():
+        for row in connection.execute(query).fetchall():
             score = float(row[-1])
             if not math.isfinite(score) or score <= 0 or score > REWARD_CAP:
                 return False

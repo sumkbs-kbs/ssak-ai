@@ -989,7 +989,7 @@ class BrowserObserver:
         return hashlib.sha256(encoded.encode("utf-8")).hexdigest()[:16]
 
     def _token(self, snapshot_id: str, frame_label: str, raw_ref: str) -> str:
-        slug = hashlib.sha1(frame_label.encode("utf-8")).hexdigest()[:4]  # noqa: S324 - 식별용, 보안용 아님
+        slug = hashlib.sha1(frame_label.encode("utf-8"), usedforsecurity=False).hexdigest()[:4]
         return f"{self.session_tag}-{snapshot_id}-{slug}-e{raw_ref}"
 
     async def _popups(self, page: object) -> tuple[PopupInfo, ...]:
