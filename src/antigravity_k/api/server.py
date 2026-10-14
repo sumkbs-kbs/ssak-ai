@@ -108,7 +108,7 @@ async def lifespan(app: FastAPI):
     try:
         from antigravity_k.engine.event_bus import bridge_to_hook_event_bus
 
-        bridge_to_hook_event_bus(project_root=project_root)
+        bridge_to_hook_event_bus(project_root=str(config.paths.project_root))
         logger.info("[Startup] EventBus dual-sync bridge established")
     except Exception:
         logger.exception("[Startup] EventBus bridge skipped")
