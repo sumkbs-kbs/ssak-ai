@@ -22,14 +22,23 @@
 | Embedding 선행 게시 후보 | clean66·정적4·독립승인·커밋/푸시, 공개 strict/provider 검증 | [검수](raw/IMP07-RAG-EMBEDDING-PREREQUISITES-01/run-20261014T073427Z-codex-ec8d42a9/review/independent-review.md) |
 | RAG 모델 identity | clean/root 각각58·정적4·독립승인, 등록 모델/입력prefix·실패시 기존색인 보존 | [현재 트리 검수](raw/IMP07-RAG-EMBEDDING-IDENTITY-CURRENT-TREE-01/run-20261014T081845Z-b2eb1c1b/review/independent-review.md) |
 | 실제 Chroma keyword | clean/root 각각36·정적4·독립승인, keyword 모델0·hybrid stub1~2 | [현재 트리 검수](raw/IMP07-RAG-KEYWORD-CORPUS-CURRENT-TREE-01/run-20261014T083038Z-e1cdbd01/review/independent-review.md) |
+| 실제 의미 검색 | 30문서·20질의, 필수10/10 모두1위·탐색9/10, 실제 embedding27회·수정/삭제/벡터purge/peer 통과 | [실관측](raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/execution-20261014T092307Z-0eccc3a8/live-final-result.json) |
+| 기동 저장 경로 | GBrain·global memory·context store 명시경로/env 지원, 기존7+신규12·독립승인·푸시 | [검수](raw/IMP06-STARTUP-STORAGE-ROOT-CLOSURE-01/run-20261014T093201Z-cd1a16ca/review/independent-review.md) |
+| 기동 agency 경로 | configured project root 전달 한줄수정, real SQLite 포함 clean5·독립승인·푸시 | [검수](raw/IMP06-LIFESPAN-AGENCY-ROOT-01/run-20261014T094816Z-aea9f054/review/independent-review.md) |
+| 실제 auth/lifespan ON | 새v4 외부 HTTP401/200/200/200·정상종료·회수·격리/모델호출0, 주세션 byte대조 | [실관측](raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/final-live-result.json) |
 
 구조화 실관측 원본의 `format=omitted` 표기는 별도정정 기록으로 보존했습니다. 후속 writer 수정은 새 사본에서만 수행했고 원본144개는 불변입니다. 모의 writer회귀의 `INCONCLUSIVE_CLEANUP_NOT_CONFIRMED`는 OS cleanup PASS로 승격하지 않습니다. 과거 format생략 vision FAIL도 유지합니다.
 
-**현재 순서:** 1 기록생성기 완료 → 2 상태통합 완료 → 3 기능·의존fixture·소유증거 커밋/푸시 완료 → 4 provider/agent 실패·취소·권한·checkpoint 재개 scoped 완료 → **5 기억·검색품질 진행** → 6 확대제품검증 → 7 통합/패키징/soak. 옵션 IMP-16/18은 자동착수하지 않습니다.
 
-**NEXT_TASK=IMP-07-RAG-REAL-RETRIEVAL-01.** 우선순위4의 provider/agent 실패·취소·권한·checkpoint 재개는 검증한 실행 경계 범위에서 완료했습니다. Embedding 선행 `b9709def/2a8791ed`, RAG identity `4de2ef8b/f11c8563`는 커밋·푸시했습니다. Keyword 기능 `b7204877`도 독립승인 후 커밋했고 현재 트리 두 기능 이식과 추가증거 게시를 진행합니다. Clean/root의58 및36은 같은 사례의 별도 소스 검증이며 합산하지 않습니다. Staged97개는 보존합니다. 실제 검색 품질은 별도30문서·20질의 정답을 사전고정했고 메타데이터4요청만 실행해 Ollama0.40.3/Nomic 설치·embedding 기능·메타데이터상768차원을 확인했습니다. 추론은 아직0이며 설정 차원0/UNKNOWN·weights revision UNVERIFIED·기본 모델 활성화 없음은 유지합니다. 다음은 승인 소스를 고정한 실제 embedding/검색·격리·삭제·purge/peer 검증입니다. 다른 SDK 전체·full auth/startup/lifespan·임의 crash exactly-once·큰 corpus 성능은 별도입니다. 기존 Chroma SIGSEGV(-11)의 baseline/candidate 원문과 격리 한계도 유지합니다.
+**현재 순서:** 1 기록생성기·2 상태통합·3 기능 게시·4 provider/agent 실패 경계는 검증한 범위에서 완료했습니다. **5 실제 검색 품질은 통과했고 관리 API의 프로젝트 graph/vector 삭제·격리가 다음입니다.** 6 실제 인증·lifespan ON은 통과했으며 브라우저의 실패 상태·대기열 표시를 이어 확인합니다. 7 전체 gate·패키징·새8시간 soak는 아직 실행하지 않았습니다. 옵션 IMP-16/18은 자동착수하지 않습니다.
 
-원장복구는 정확한백업을 필요로 하는 별도항목이며 독립기능 진행을 무기한 막지 않습니다. 이 통합은 실행·변경 JSONL의 유실행을 재구성하거나 기존21개 parent를 전수재승인한 것이 아닙니다. [기존상태 preimage](raw/IMP09C-STATUS-RECONCILIATION-2026-10-14/run-20261014T043024Z-codex-86e22b4940/source-preimage/STATUS.md), [기존tasks preimage](raw/IMP09C-STATUS-RECONCILIATION-2026-10-14/run-20261014T043024Z-codex-86e22b4940/source-preimage/tasks.json).
+**NEXT_TASK=IMP-07-PROJECT-MEMORY-API-PURGE-01.** 실제 의미검색은 clean 후보 `7802aa1b`에 묶인 단회 관측입니다. 30A/2B 문서와 초기20질의, 추가 변경·격리질의를 포함해 embedding27회/입력57개와 신규metadata3회를 확인했습니다. 필수10개는 모두1위, 탐색9/10이며 한국어Q16 미적중은 그대로 남겼습니다. A 수정·삭제·재개방과 VectorStore.clear 잔여0, B벡터 hash·내용·외부 sentinel, 8클라이언트 두주기를 통과했습니다. 비교 baseline·기본hybrid품질·B graph·관리API purge는 이 관측의 범위 밖입니다. 설정차원0/UNKNOWN·weights revision UNVERIFIED도 유지합니다.
+
+기동 경로 수정 `7482ebb8`과 agency caller 수정 `e3ef8354`는 커밋·푸시하고 ROOT에 최소 차이로 반영했습니다. ROOT의 기존 Chroma lifecycle lock/close와 staged97은 보존했습니다. ROOT agency fixture의 최초 직접3FAIL/2PASS는 기존 RAG/IDE 구성과 clean fixture의 차이로 남겼고, 명시된 인접 fixture overlay의5PASS를 전체 ROOT suite 성공으로 부르지 않습니다. 역사 source-overlay symlink가 현재 소스를 가리켜 바뀐 dereferenced hash도 별도로 기록했습니다.
+
+기동 v2는 홈 경로 차단으로 HTTP0/exit1, v3는 HTTP4 인증·종료 구성요소를 관찰했으나 agency 경로·read-probe 가드 때문에 NO_SUCCESS입니다. v4 새후보 `e3ef8354`는 실제 외부 HTTP4회 401/200/200/200, 자식exit0·회수·그룹잔여0, 격리위반/모델호출0으로 통과했습니다. 기존 실패를 승격하거나 덮지 않았고 누적 HTTP는8회입니다. 주세션은 소스580개·공개파일87개·비공개 응답 schema/hash를 읽기로 대조했습니다. 독립 준비 검수는 승인됐고 독립 실관측 gate 검수는 미실행입니다. 브라우저·실모델·전체GA를 대신하지 않습니다.
+
+원장복구는 정확한 백업이 필요한 별도항목이며 과거 실행/변경 JSONL을 재구성하지 않습니다. 전체 IMP-09는 PARTIAL, 역사 원장은 NOT_RECOVERED, 원래 IMP-07 전체도 미완료입니다. 과거 집계를 현재 완료율로 사용하지 않습니다. [기존STATUS preimage](raw/IMP09C-STATUS-RECONCILIATION-2026-10-14/run-20261014T043024Z-codex-86e22b4940/source-preimage/STATUS.md), [기존tasks preimage](raw/IMP09C-STATUS-RECONCILIATION-2026-10-14/run-20261014T043024Z-codex-86e22b4940/source-preimage/tasks.json).
 
 ## 역사 스냅샷 — 2026-10-07 원문 보존
 

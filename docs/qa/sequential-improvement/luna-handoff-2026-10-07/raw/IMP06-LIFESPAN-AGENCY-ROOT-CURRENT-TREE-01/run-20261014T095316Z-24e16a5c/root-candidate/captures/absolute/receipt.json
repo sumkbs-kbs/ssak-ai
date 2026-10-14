@@ -1,0 +1,25 @@
+{
+  "scenario": "absolute",
+  "denied_mutations": [],
+  "socket_attempts": [],
+  "forbidden_imports": [
+    "chromadb"
+  ],
+  "agency_paths": [
+    "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st0/owned project/.antigravity_k/agency.db"
+  ],
+  "rag_roots": [],
+  "ide_roots": [
+    "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st0/owned project"
+  ],
+  "configured_root": "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st0/owned project",
+  "source_workspace": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "persisted_events": [
+    [
+      "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st0/owned project",
+      "hooks",
+      "observation",
+      "{\"event_name\": \"fixture-observation\", \"text\": \"fixture-observation: {\\\"result\\\": \\\"owned\\\"}\"}"
+    ]
+  ]
+}

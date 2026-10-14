@@ -1,0 +1,26 @@
+{
+  "runtime": {
+    "startup_probe/supervisor.py": "601443f766ea34895b6bc66bd950d87b84befb1ee367d3c0dbd2bcce401e983a",
+    "startup_probe/__init__.py": "b0ccb5435166718880491cb1f91fb403e816b1cb57033e268cad926123a51474",
+    "startup_probe/lifecycle.py": "cfa1b46e40410d5605ff56e9488187778386e977b0d09f7de618dc381a6c195a",
+    "startup_probe/entry.py": "aa1833e0c2bf28e0b9fcd446d6a7ec49470c6c4f71d15151ab512aecb9635a44",
+    "startup_probe/guard.py": "29b37742bc6a4d65c118a6e994d11b4f2c0f148793ab12bf059cfafbb664229d",
+    "startup_probe/contract.py": "3aafa7a1b4a01513bdeac0de014926b476a7964be5b80c04832a6b3eb8b06812"
+  },
+  "changed": [
+    "startup_probe/guard.py"
+  ],
+  "plan": "FROZEN_e3ef83547b70a4856ce196ef6c69fd4f4bc715f1",
+  "approval": "NOT_ISSUED",
+  "plan_sha256": "c74c49e7711f6f848fd475c0e4c1eba4bc18952bb5a00f339bc29fffddaa4f3a",
+  "probe_binding": {
+    "status": "PASS",
+    "sources": 580,
+    "backend_imports": 0,
+    "file_path": "/usr/bin/file",
+    "file_sha256": "8014815e1028410f48966f1880f99c842a5678cf2fcaa010e8d7e9e498f651d0",
+    "platform_path": "/Users/mr.k/miniforge3/lib/python3.13/platform.py",
+    "platform_sha256": "882e24bdc7bff673962c502d8904cf26d574cf7b1db1e113ecfbcb073aaaeec0",
+    "interpreter_target": "/Users/mr.k/miniforge3/bin/python3.13"
+  }
+}

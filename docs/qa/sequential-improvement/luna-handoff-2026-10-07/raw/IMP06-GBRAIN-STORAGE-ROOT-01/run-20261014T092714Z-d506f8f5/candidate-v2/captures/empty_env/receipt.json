@@ -1,0 +1,13 @@
+{
+  "scenario": "empty_env",
+  "denied_mutations": [],
+  "socket_attempts": [],
+  "embedding_attempts": [],
+  "client_paths": [
+    "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-507/test_fresh_gbrain_storage_root4/mock-home/.antigravity/gbrain/chroma"
+  ],
+  "home_unchanged": true,
+  "global_storage_dir": "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-507/test_fresh_gbrain_storage_root4/mock-home/.antigravity/gbrain",
+  "source_path": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/gbrain.py",
+  "source_sha256": "ab67f572a199d0b31787c4f6e1bd5aaeb62aaa29175817378e29eb0734269e49"
+}

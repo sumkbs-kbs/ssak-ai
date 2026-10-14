@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "git",
+    "apply",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-GBRAIN-STORAGE-ROOT-01/run-20261014T092714Z-d506f8f5/task-only.patch"
+  ],
+  "returncode": 0,
+  "matches": {
+    "src/antigravity_k/engine/gbrain.py": true,
+    "tests/test_gbrain_storage_root_contract.py": true
+  },
+  "preimage_head": "7802aa1b3043d66a80f6f891c6cf3db039b393a0",
+  "stderr": ""
+}

@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-c",
+    "from pathlib import Path; import sys; [compile(Path(p).read_text(),p,'exec') for p in sys.argv[1:]]; print('2 files compiled in memory')",
+    "src/antigravity_k/api/server.py",
+    "tests/test_lifespan_agency_root_contract.py"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "returncode": 0,
+  "source_sha256": {
+    "src/antigravity_k/api/server.py": "c94b3be073daa11d758df1a5dac4a30b26b5794679b72defe35bb409109c7500",
+    "tests/test_lifespan_agency_root_contract.py": "fe62bdd200d1b493104e6ab196b906e448fe4bbb066aef55340b51f546e4e0ca"
+  }
+}

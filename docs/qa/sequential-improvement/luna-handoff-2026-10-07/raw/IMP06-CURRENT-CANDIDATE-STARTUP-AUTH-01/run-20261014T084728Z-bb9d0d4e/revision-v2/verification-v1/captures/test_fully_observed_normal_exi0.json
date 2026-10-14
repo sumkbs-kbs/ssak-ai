@@ -1,0 +1,21 @@
+{
+  "outcome": "PASS_SCOPED_EXTERNAL_UVICORN_AUTH_LIFESPAN_ON",
+  "failures": [],
+  "exit_code": 0,
+  "reaped": true,
+  "group_empty": true,
+  "forced": false,
+  "deadline": 15,
+  "clock": 0,
+  "waits": [
+    10
+  ],
+  "signals": [],
+  "written_names": [
+    "launch.json",
+    "stop.requested",
+    "result.json"
+  ],
+  "terminal_file_written": true,
+  "emergency_count": 0
+}

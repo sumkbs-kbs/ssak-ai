@@ -1,0 +1,11 @@
+{
+  "head": "7482ebb8b76c7c686e729e68c48f7258e2cc7e66",
+  "count": 580,
+  "changed_vs_v2": [
+    "src/antigravity_k/engine/context_shaper.py",
+    "src/antigravity_k/engine/global_memory_provider.py",
+    "src/antigravity_k/engine/gbrain.py"
+  ],
+  "plan_sha256": "b11e6b51b145fe28954ffd641da99a46b625ddfd65c179c0936a538766405dd9",
+  "dotenv_unchanged": true
+}

@@ -1,0 +1,23 @@
+{
+  "new_lifespan_cases": [
+    {
+      "nodeid": "tests/test_lifespan_agency_root_contract.py::test_actual_lifespan_agency_storage_root[default]",
+      "invocation": "root-candidate-v2/captures/default/invocation.json",
+      "receipt": "root-candidate-v2/captures/default/receipt.json"
+    },
+    {
+      "nodeid": "tests/test_lifespan_agency_root_contract.py::test_actual_lifespan_agency_storage_root[relative]",
+      "invocation": "root-candidate-v2/captures/relative/invocation.json",
+      "receipt": "root-candidate-v2/captures/relative/receipt.json"
+    },
+    {
+      "nodeid": "tests/test_lifespan_agency_root_contract.py::test_actual_lifespan_agency_storage_root[absolute]",
+      "invocation": "root-candidate-v2/captures/absolute/invocation.json",
+      "receipt": "root-candidate-v2/captures/absolute/receipt.json"
+    }
+  ],
+  "additional_adjacent_cases": "tests/test_event_bus.py::TestHookEventBusBridge (2)",
+  "fixture_overlay": "root_fixture_overlay.py",
+  "overlay_sha256": "7157a1ff4f7fafeefcbb304a9c76b3264e460346795184b88f7cab7e53f85c0b",
+  "pytest_receipt": "root-candidate-v2/junit.xml"
+}

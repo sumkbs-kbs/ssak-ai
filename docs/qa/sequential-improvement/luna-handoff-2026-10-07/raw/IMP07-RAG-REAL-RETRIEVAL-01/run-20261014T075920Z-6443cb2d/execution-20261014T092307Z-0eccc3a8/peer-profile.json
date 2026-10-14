@@ -1,0 +1,14 @@
+{
+  "models": {
+    "embedding": [
+      {
+        "api_base": "http://127.0.0.1:11434",
+        "dimensions": 3,
+        "name": "fixture-precomputed-three-dimensions",
+        "provider": "ollama",
+        "repo": "fixture-precomputed-three-dimensions",
+        "role": "embedding"
+      }
+    ]
+  }
+}

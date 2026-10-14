@@ -1,0 +1,13 @@
+{
+  "scenario": "relative_env",
+  "denied_mutations": [],
+  "socket_attempts": [],
+  "embedding_attempts": [],
+  "client_paths": [
+    "relative brain/chroma"
+  ],
+  "home_unchanged": true,
+  "global_storage_dir": "relative brain",
+  "source_path": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/gbrain.py",
+  "source_sha256": "ab67f572a199d0b31787c4f6e1bd5aaeb62aaa29175817378e29eb0734269e49"
+}

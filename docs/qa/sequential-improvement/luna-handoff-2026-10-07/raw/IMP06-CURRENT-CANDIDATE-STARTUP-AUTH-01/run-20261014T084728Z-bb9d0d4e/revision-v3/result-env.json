@@ -1,0 +1,17 @@
+{
+  "state": "ENV_DELTA_OFFLINE_VERIFIED_PLAN_PENDING",
+  "red": "6 failed missing environment keys",
+  "green": "6 passed",
+  "static_checks": 4,
+  "static_exit_codes": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "prior32": "NOT_REPLAYED; ownership implementation byte-identical",
+  "actual_external_execution": 0,
+  "parent_changed": [],
+  "private_excluded": "parent revision-v2/live-once/auth-private/**",
+  "remaining": "Published source freeze, plan rebinding, independent review and live GO"
+}

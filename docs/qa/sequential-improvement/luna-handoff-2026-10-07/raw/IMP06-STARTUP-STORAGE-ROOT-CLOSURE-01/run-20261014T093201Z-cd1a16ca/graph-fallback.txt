@@ -1,0 +1,1 @@
+search_graph GlobalMemoryProvider|ContextShaper: Transport closed; exact class definitions located with rg fallback and constructors/dependencies read. No old evidence modified.

@@ -1,0 +1,58 @@
+FF......                                                                 [100%]
+=================================== FAILURES ===================================
+__________________ test_exact_interpreter_probe_allowed[file] __________________
+
+executable = 'file'
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-515/test_exact_interpreter_probe_a0')
+
+    @pytest.mark.parametrize("executable", ["file", "/usr/bin/file"])
+    def test_exact_interpreter_probe_allowed(executable: str, tmp_path: Path) -> None:
+        guard = Guard(tmp_path)
+        argv = [executable, "-b", str(Path(sys.executable).resolve())]
+>       guard.audit("subprocess.Popen", (executable, argv, None, {"PATH": "/usr/bin:/bin"}))
+
+test_read_probe.py:14: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+startup_probe/guard.py:64: in audit
+    self.deny("Unexpected child subprocess: " + executable)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = Guard(owned=PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-515/test_exact_i...'), violations=['Unexpected child subprocess: file'], binds=0, model_calls=0, scheduled_ticks=0, subprocesses=['file'])
+reason = 'Unexpected child subprocess: file'
+
+    def deny(self, reason: str) -> None:
+        self.violations.append(reason)
+>       raise ProbeError(reason)
+E       startup_probe.contract.ProbeError: Unexpected child subprocess: file
+
+startup_probe/guard.py:37: ProbeError
+_____________ test_exact_interpreter_probe_allowed[/usr/bin/file] ______________
+
+executable = '/usr/bin/file'
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-515/test_exact_interpreter_probe_a1')
+
+    @pytest.mark.parametrize("executable", ["file", "/usr/bin/file"])
+    def test_exact_interpreter_probe_allowed(executable: str, tmp_path: Path) -> None:
+        guard = Guard(tmp_path)
+        argv = [executable, "-b", str(Path(sys.executable).resolve())]
+>       guard.audit("subprocess.Popen", (executable, argv, None, {"PATH": "/usr/bin:/bin"}))
+
+test_read_probe.py:14: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+startup_probe/guard.py:64: in audit
+    self.deny("Unexpected child subprocess: " + executable)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = Guard(owned=PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-515/test_exact_i...nexpected child subprocess: /usr/bin/file'], binds=0, model_calls=0, scheduled_ticks=0, subprocesses=['/usr/bin/file'])
+reason = 'Unexpected child subprocess: /usr/bin/file'
+
+    def deny(self, reason: str) -> None:
+        self.violations.append(reason)
+>       raise ProbeError(reason)
+E       startup_probe.contract.ProbeError: Unexpected child subprocess: /usr/bin/file
+
+startup_probe/guard.py:37: ProbeError
+=========================== short test summary info ============================
+FAILED ../../../../../../../../../../../../../../dev::test_exact_interpreter_probe_allowed[file]
+FAILED ../../../../../../../../../../../../../../dev::test_exact_interpreter_probe_allowed[/usr/bin/file]
+2 failed, 6 passed in 0.09s

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "path": "root_fixture_overlay.py",
+  "sha256": "7157a1ff4f7fafeefcbb304a9c76b3264e460346795184b88f7cab7e53f85c0b",
+  "applied_by_argv": "root-candidate-v2/invocation.json",
+  "target_assertions": "Actual agency bridge/controller/SQLite path + persisted event assertions unchanged",
+  "added_adjacent_stubs": [
+    "VectorStore context manager",
+    "project_rag_vector_dir path calculation without mkdir"
+  ],
+  "adaptations": [
+    "Indexer accepts vector_store argument",
+    "RAG/IDE expected argument matches preexisting ROOT configured.resolve() behavior"
+  ]
+}

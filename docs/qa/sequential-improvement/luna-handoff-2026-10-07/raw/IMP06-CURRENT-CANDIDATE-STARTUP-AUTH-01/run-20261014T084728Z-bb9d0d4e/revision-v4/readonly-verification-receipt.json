@@ -1,0 +1,15 @@
+{
+  "operation": "Read bytes/JSON/hash only; no backend import, subprocess child, HTTP or inference replay",
+  "source_plan_sha256": "c74c49e7711f6f848fd475c0e4c1eba4bc18952bb5a00f339bc29fffddaa4f3a",
+  "result_sha256": "43b4a46b8bc06bf7bda986ac5ff572f602ca46e6ca0b8ee41b28a6dbb026ae36",
+  "guard_sha256": "e7194ee7093c78ea651604d9f5f0e67b8370c78d38a5d8d19eec4a316748643a",
+  "requests_receipts_sha256": {
+    "unauthenticated": "3a0a80e8e895a2d943595a3c380bb4853f720e07a54409ffb832d37eed35bbd2",
+    "login": "f8ae2085648cd21afd5191509ddc4370cb92d9699cbbfb168bf15d2ff13e0d08",
+    "authenticated": "eac798d2f0f969340f350310d0e03c41ba346c019b7819eab06c7d3f5c958915",
+    "health": "2c72d945eea1eec2e125344ff93b9240a41d3bd7b662085634920a7afcf48c12"
+  },
+  "private_validation": "4 response JSON schemas and receipt byte/SHA; PIN request matches local PIN; bearer nonempty; authenticated mode and health version valid",
+  "private_files_not_copied": true,
+  "checks": "PASS"
+}

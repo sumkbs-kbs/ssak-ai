@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+    "check",
+    "src/antigravity_k/engine/gbrain.py",
+    "src/antigravity_k/engine/global_memory_provider.py",
+    "src/antigravity_k/engine/context_shaper.py",
+    "tests/test_gbrain_storage_root_contract.py",
+    "tests/test_startup_storage_roots_contract.py"
+  ],
+  "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+  "returncode": 0,
+  "source_sha256": {
+    "src/antigravity_k/engine/gbrain.py": "ab67f572a199d0b31787c4f6e1bd5aaeb62aaa29175817378e29eb0734269e49",
+    "src/antigravity_k/engine/global_memory_provider.py": "79a99810ed8b8346280fcfc1db2bfcfbd384f5f968c6cb46e8908714a30baa4d",
+    "src/antigravity_k/engine/context_shaper.py": "5308fec1927d2692e14979e29ae3ff67b3f31de65caa02957cfb31b543e23c0a",
+    "tests/test_gbrain_storage_root_contract.py": "e0547fc7576a2ac463641417770f0a7c8506b92429754f79bd5daa7c0e1f4922",
+    "tests/test_startup_storage_roots_contract.py": "f58cd284ef608337502650799375b037cc7b298657893bc29e5e6d6d0da1a767"
+  }
+}

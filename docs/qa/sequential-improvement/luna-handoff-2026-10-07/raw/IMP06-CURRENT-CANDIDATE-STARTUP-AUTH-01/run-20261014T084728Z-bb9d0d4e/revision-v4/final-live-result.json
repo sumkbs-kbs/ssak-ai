@@ -1,0 +1,50 @@
+{
+  "verdict": "PASS_SCOPED_EXTERNAL_UVICORN_AUTH_LIFESPAN_ON",
+  "independent_review": "PENDING",
+  "candidate_head": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1",
+  "source_files_verified": 580,
+  "prepared_manifest_verified": 70,
+  "source_mismatches": [],
+  "http_statuses": [
+    401,
+    200,
+    200,
+    200
+  ],
+  "requests": 4,
+  "model_calls": 0,
+  "cleanup": {
+    "exit_code": 0,
+    "reaped": true,
+    "group_empty": true,
+    "forced": false
+  },
+  "elapsed_seconds": 7.2866750420071185,
+  "auth_private_schema_and_pin_match": true,
+  "private_content_exported": false,
+  "historical": {
+    "v2": "NO_SUCCESS import boundary, HTTP0 exit1",
+    "v3": "NO_SUCCESS isolation; HTTP4 auth/lifecycle components observed",
+    "v4": "PASS_SCOPED HTTP4"
+  },
+  "cumulative_http_requests": 8,
+  "automatic_retries": 0,
+  "observed_database_paths": [
+    "gbrain/chroma/chroma.sqlite3",
+    "project_root/.antigravity_k/agency.db",
+    "hooks/audit.sqlite3",
+    ".antigravity_k/agency.db",
+    "data/tasks.db",
+    ".antigravity/vault_data/.chroma/chroma.sqlite3",
+    ".antigravity/memory/scheduled_jobs.db",
+    ".antigravity/memory/cavemem.sqlite3",
+    ".antigravity/rag_vectors/chroma.sqlite3"
+  ],
+  "scope_limits": [
+    "No model/inference/live vision assessment",
+    "Python audit/model-entry guard, not complete OS syscall isolation",
+    "Read-only source-derived RAG scan outside owned state",
+    "Optional IDE unavailable; empty model config warning",
+    "Root dirty-tree composition and portability are separate scopes"
+  ]
+}

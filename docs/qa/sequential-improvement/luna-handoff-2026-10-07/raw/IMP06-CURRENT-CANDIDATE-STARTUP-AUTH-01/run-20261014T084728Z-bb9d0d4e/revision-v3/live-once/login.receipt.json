@@ -1,0 +1,8 @@
+{
+  "name": "login",
+  "method": "POST",
+  "path": "/api/auth/login",
+  "status": 200,
+  "bytes": 248,
+  "sha256": "f561c54c1237ae40099e6c0e0ca509b84d9f91c5f9d8fe2e5fdd30e6dc3ee9e9"
+}

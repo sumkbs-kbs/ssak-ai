@@ -1,0 +1,11 @@
+{
+  "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-GBRAIN-STORAGE-ROOT-01/run-20261014T092714Z-d506f8f5",
+  "manifest_sha256": "ff1345a4b5fcd51def1e71c39ad2398441151ebf28a55b02e9832cf8b39dea5c",
+  "verified_all_manifest_entries": true,
+  "unchanged_source_sha256": {
+    "src/antigravity_k/engine/gbrain.py": "ab67f572a199d0b31787c4f6e1bd5aaeb62aaa29175817378e29eb0734269e49",
+    "tests/test_gbrain_storage_root_contract.py": "e0547fc7576a2ac463641417770f0a7c8506b92429754f79bd5daa7c0e1f4922"
+  },
+  "result": "7 PASS retained, NOT rerun",
+  "junit": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-GBRAIN-STORAGE-ROOT-01/run-20261014T092714Z-d506f8f5/candidate-v2/junit.xml"
+}

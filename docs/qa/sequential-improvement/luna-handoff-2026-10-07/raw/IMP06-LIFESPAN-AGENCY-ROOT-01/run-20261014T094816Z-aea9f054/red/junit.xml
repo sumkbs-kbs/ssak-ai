@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.687" timestamp="2026-10-14T18:49:17.110380+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_lifespan_agency_root_contract" name="test_actual_lifespan_agency_storage_root[absolute]" time="0.633"><failure message="AssertionError: 설정 검증 1개 문제 발견:&#10;    - 모델 레지스트리 로드 실패: 설정 파일 없음: /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-519/test_actual_lifespan_agency_st0/absent-config.yaml&#10;  [Startup] 설정 검증 1개 문제 — 계속 시작하지만 확인 필요:&#10;    ⚠️  모델 레지스트리 로드 실패: 설정 파일 없음: /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-519/test_actual_lifespan_agency_st0/absent-config.yaml&#10;  [EventBus] HookEventBus 브릿지 설정 실패&#10;  Traceback (most recent call last):&#10;    File &quot;/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/event_bus.py&quot;, line 198, in bridge_to_hook_event_bus&#10;      persistent_agency = PersistentAgencyController(project_root)&#10;    File &quot;/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/persistent_agency.py&quot;, line 109, in __init__&#10;      self.store = PersistentAgencyStore(str(Path(self.project_root) / &quot;.antigravity_k&quot; / &quot;agency.db&quot;))&#10;                   ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-519/test_actual_lifespan_agency_st0/probe.py&quot;, line 88, in recording_init&#10;      original_init(self,db_path)&#10;      ~~~~~~~~~~~~~^^^^^^^^^^^^^^&#10;    File &quot;/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/persistent_agency_store.py&quot;, line 91, in __init__&#10;      p.parent.mkdir(parents=True, exist_ok=True)&#10;      ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/pathlib/_local.py&quot;, line 722, in mkdir&#10;      os.mkdir(self, mode)&#10;      ~~~~~~~~^^^^^^^^^^^^&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-519/test_actual_lifespan_agency_st0/probe.py&quot;, line 18, in audit&#10;      raise AssertionError(&quot;Nonowned mutation: &quot;+str(path))&#10;  AssertionError: Nonowned mutation: /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/.antigravity_k&#10;  Traceback (most recent call last):&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-519/test_actual_lifespan_agency_st0/probe.py&quot;, line 106, in &lt;module&gt;&#10;      asyncio.run(run())&#10;      ~~~~~~~~~~~^^^^^^^&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/asyncio/runners.py&quot;, line 195, in run&#10;      return runner.run(main)&#10;             ~~~~~~~~~~^^^^^^&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/asyncio/runners.py&quot;, line 118, in run&#10;      return self._loop.run_until_complete(task)&#10;             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/asyncio/base_events.py&quot;, line 725, in run_until_complete&#10;      return future.result()&#10;             ~~~~~~~~~~~~~^^&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-519/test_actual_lifespan_agency_st0/probe.py&quot;, line 96, in run&#10;      assert receipt[&quot;agency_paths&quot;]==[str(expected)]&#10;             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;  AssertionError&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '/private/var/folders/0c/ncf5l...ssert receipt[&quot;agency_paths&quot;]==[str(expected)]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n').returncode">tests/test_lifespan_agency_root_contract.py:156: in test_actual_lifespan_agency_storage_root
+    assert result.returncode == 0, result.stdout.decode() + result.stderr.decode()
+E   AssertionError: 설정 검증 1개 문제 발견:
+E       - 모델 레지스트리 로드 실패: 설정 파일 없음: /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-519/test_actual_lifespan_agency_st0/absent-config.yaml
+E     [Startup] 설정 검증 1개 문제 — 계속 시작하지만 확인 필요:
+E       ⚠️  모델 레지스트리 로드 실패: 설정 파일 없음: /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-519/test_actual_lifespan_agency_st0/absent-config.yaml
+E     [EventBus] HookEventBus 브릿지 설정 실패
+E     Traceback (most recent call last):
+E       File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/event_bus.py", line 198, in bridge_to_hook_event_bus
+E         persistent_agency = PersistentAgencyController(project_root)
+E       File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/persistent_agency.py", line 109, in __init__
+E         self.store = PersistentAgencyStore(str(Path(self.project_root) / ".antigravity_k" / "agency.db"))
+E                      ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-519/test_actual_lifespan_agency_st0/probe.py", line 88, in recording_init
+E         original_init(self,db_path)
+E         ~~~~~~~~~~~~~^^^^^^^^^^^^^^
+E       File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/persistent_agency_store.py", line 91, in __init__
+E         p.parent.mkdir(parents=True, exist_ok=True)
+E         ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       File "/Users/mr.k/miniforge3/lib/python3.13/pathlib/_local.py", line 722, in mkdir
+E         os.mkdir(self, mode)
+E         ~~~~~~~~^^^^^^^^^^^^
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-519/test_actual_lifespan_agency_st0/probe.py", line 18, in audit
+E         raise AssertionError("Nonowned mutation: "+str(path))
+E     AssertionError: Nonowned mutation: /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/.antigravity_k
+E     Traceback (most recent call last):
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-519/test_actual_lifespan_agency_st0/probe.py", line 106, in &lt;module&gt;
+E         asyncio.run(run())
+E         ~~~~~~~~~~~^^^^^^^
+E       File "/Users/mr.k/miniforge3/lib/python3.13/asyncio/runners.py", line 195, in run
+E         return runner.run(main)
+E                ~~~~~~~~~~^^^^^^
+E       File "/Users/mr.k/miniforge3/lib/python3.13/asyncio/runners.py", line 118, in run
+E         return self._loop.run_until_complete(task)
+E                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+E       File "/Users/mr.k/miniforge3/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+E         return future.result()
+E                ~~~~~~~~~~~~~^^
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-519/test_actual_lifespan_agency_st0/probe.py", line 96, in run
+E         assert receipt["agency_paths"]==[str(expected)]
+E                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E     AssertionError
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '/private/var/folders/0c/ncf5l...ssert receipt["agency_paths"]==[str(expected)]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n').returncode</failure></testcase></testsuite></testsuites>

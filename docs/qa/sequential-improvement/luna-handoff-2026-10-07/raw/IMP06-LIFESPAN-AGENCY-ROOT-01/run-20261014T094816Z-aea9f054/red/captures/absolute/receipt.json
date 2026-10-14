@@ -1,0 +1,22 @@
+{
+  "scenario": "absolute",
+  "denied_mutations": [
+    {
+      "event": "os.mkdir",
+      "path": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/.antigravity_k"
+    }
+  ],
+  "socket_attempts": [],
+  "forbidden_imports": [],
+  "agency_paths": [
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/.antigravity_k/agency.db"
+  ],
+  "rag_roots": [
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai"
+  ],
+  "ide_roots": [
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai"
+  ],
+  "configured_root": "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-519/test_actual_lifespan_agency_st0/owned project",
+  "source_workspace": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai"
+}

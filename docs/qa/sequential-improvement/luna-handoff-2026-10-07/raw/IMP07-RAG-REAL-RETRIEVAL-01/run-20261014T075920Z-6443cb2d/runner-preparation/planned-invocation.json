@@ -1,0 +1,21 @@
+{
+  "status": "PLANNED_NOT_EXECUTED",
+  "requires": "Root GO and newly reviewed source freeze after publication CAS",
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation/supervisor.py",
+    "--freeze",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation/approved-source-freeze-ROOT-MUST-CREATE.json",
+    "--go",
+    "ROOT_GO",
+    "--python",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation",
+  "expected_new_embedding_requests": 27,
+  "planned_ceiling": 28,
+  "hard_requested_ceiling": 30,
+  "new_metadata_requests": 3,
+  "historical_metadata_requests": 4
+}

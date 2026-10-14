@@ -1,0 +1,51 @@
+[
+  {
+    "scenario": "explicit",
+    "nodeid": "tests/test_gbrain_storage_root_contract.py::test_fresh_gbrain_storage_root[explicit]",
+    "invocation": "candidate-v2/captures/explicit/invocation.json",
+    "receipt": "candidate-v2/captures/explicit/receipt.json",
+    "observable": "fresh subprocess exit0, owned path, home unchanged, socket/embedding/nonowned mutation0"
+  },
+  {
+    "scenario": "empty_env",
+    "nodeid": "tests/test_gbrain_storage_root_contract.py::test_fresh_gbrain_storage_root[empty_env]",
+    "invocation": "candidate-v2/captures/empty_env/invocation.json",
+    "receipt": "candidate-v2/captures/empty_env/receipt.json",
+    "observable": "fresh subprocess exit0, owned path, home unchanged, socket/embedding/nonowned mutation0"
+  },
+  {
+    "scenario": "empty_explicit",
+    "nodeid": "tests/test_gbrain_storage_root_contract.py::test_fresh_gbrain_storage_root[empty_explicit]",
+    "invocation": "candidate-v2/captures/empty_explicit/invocation.json",
+    "receipt": "candidate-v2/captures/empty_explicit/receipt.json",
+    "observable": "fresh subprocess exit0, owned path, home unchanged, socket/embedding/nonowned mutation0"
+  },
+  {
+    "scenario": "default",
+    "nodeid": "tests/test_gbrain_storage_root_contract.py::test_fresh_gbrain_storage_root[default]",
+    "invocation": "candidate-v2/captures/default/invocation.json",
+    "receipt": "candidate-v2/captures/default/receipt.json",
+    "observable": "fresh subprocess exit0, owned path, home unchanged, socket/embedding/nonowned mutation0"
+  },
+  {
+    "scenario": "env",
+    "nodeid": "tests/test_gbrain_storage_root_contract.py::test_fresh_gbrain_storage_root[env]",
+    "invocation": "candidate-v2/captures/env/invocation.json",
+    "receipt": "candidate-v2/captures/env/receipt.json",
+    "observable": "fresh subprocess exit0, owned path, home unchanged, socket/embedding/nonowned mutation0"
+  },
+  {
+    "scenario": "native_import",
+    "nodeid": "tests/test_gbrain_storage_root_contract.py::test_fresh_gbrain_storage_root[native_import]",
+    "invocation": "candidate-v2/captures/native_import/invocation.json",
+    "receipt": "candidate-v2/captures/native_import/receipt.json",
+    "observable": "fresh subprocess exit0, owned path, home unchanged, socket/embedding/nonowned mutation0"
+  },
+  {
+    "scenario": "relative_env",
+    "nodeid": "tests/test_gbrain_storage_root_contract.py::test_fresh_gbrain_storage_root[relative_env]",
+    "invocation": "candidate-v2/captures/relative_env/invocation.json",
+    "receipt": "candidate-v2/captures/relative_env/receipt.json",
+    "observable": "fresh subprocess exit0, owned path, home unchanged, socket/embedding/nonowned mutation0"
+  }
+]

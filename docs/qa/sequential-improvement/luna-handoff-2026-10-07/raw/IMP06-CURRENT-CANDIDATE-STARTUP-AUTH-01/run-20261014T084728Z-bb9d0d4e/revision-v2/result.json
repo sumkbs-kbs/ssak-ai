@@ -1,0 +1,29 @@
+{
+  "status": "PREPARED_OFFLINE_OWNERSHIP_REPAIRED",
+  "independent_review": "PENDING",
+  "live_approval": "NOT_ISSUED_NOGO",
+  "live_execution": "NOT_RUN",
+  "tests_passed": 32,
+  "new_failure_scenarios": 8,
+  "checks": {
+    "pytest": 0,
+    "ruff": 0,
+    "format": 0,
+    "types": 0,
+    "compile": 0
+  },
+  "boundary": {
+    "attempts": [],
+    "product_modules": [],
+    "exitstatus": 0
+  },
+  "changed": [
+    "startup_probe/supervisor.py",
+    "startup_probe/lifecycle.py",
+    "test_lifecycle_contract.py"
+  ],
+  "plan_bytes_unchanged_from_v1": true,
+  "new_harness_binding": "source-binding.json",
+  "captures_are_pure_fakes": true,
+  "candidate_source_drift": []
+}

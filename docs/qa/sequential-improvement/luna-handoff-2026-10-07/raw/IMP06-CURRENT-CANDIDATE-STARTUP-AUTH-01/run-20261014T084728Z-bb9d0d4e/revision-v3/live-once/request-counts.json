@@ -1,0 +1,5 @@
+{
+  "attempts": 4,
+  "responses": 4,
+  "private_excluded": "auth-private/**"
+}

@@ -1,0 +1,6 @@
+{
+  "packet": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-STARTUP-STORAGE-ROOT-CLOSURE-01/run-20261014T093201Z-cd1a16ca",
+  "manifest_sha256": "4ea71e802942c27b6d5c6092c24bb5eb9d57034cd260c3f3c50a1cc079d7c9a3",
+  "patch_sha256": "892947e96c830b8c4fe11821d8c039416e871d1b6eaf613f5388e31f1685c31e",
+  "gbrain_adaptation": "Only exact constructor path and docstring replacements; entire ROOT lifecycle code retained."
+}

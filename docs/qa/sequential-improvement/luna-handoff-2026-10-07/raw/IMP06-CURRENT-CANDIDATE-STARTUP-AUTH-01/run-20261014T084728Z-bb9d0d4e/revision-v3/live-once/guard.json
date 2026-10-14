@@ -1,0 +1,14 @@
+{
+  "violations": [
+    "Unexpected child subprocess: file",
+    "Nonowned filesystem mutation: /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/.antigravity_k"
+  ],
+  "binds": 1,
+  "model_calls": 0,
+  "scheduled_ticks": 0,
+  "subprocesses": [
+    "file",
+    "code-server",
+    "git"
+  ]
+}

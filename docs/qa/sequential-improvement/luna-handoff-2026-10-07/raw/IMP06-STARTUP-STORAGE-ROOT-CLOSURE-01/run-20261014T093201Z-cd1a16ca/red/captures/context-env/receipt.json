@@ -1,0 +1,9 @@
+{
+  "provider": "context",
+  "scenario": "env",
+  "denied_mutations": [],
+  "socket_attempts": [],
+  "model_import_attempts": [
+    "antigravity_k.engine.model_manager"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "status": "NOT_ISSUED",
+  "required_scope": "STARTUP_AUTH_ONCE",
+  "required_plan_sha256": "128c4c13b4802bb3752fc1ae5df664e3da06056ce9e893cd4e6868d293d98766",
+  "required_harness_sha256": {
+    "supervisor.py": "2752e6530255d1e75cc34a046a5b58ca7d0cf22541bcd5d36d0bc90da02969d5",
+    "__init__.py": "b0ccb5435166718880491cb1f91fb403e816b1cb57033e268cad926123a51474",
+    "entry.py": "aa1833e0c2bf28e0b9fcd446d6a7ec49470c6c4f71d15151ab512aecb9635a44",
+    "guard.py": "4f21ec469f05506e45d4d8b7b8cbb72b98ea27b4606910c1106d3e268473ec8b",
+    "contract.py": "8f59aa436c4001c524372d20e9f4c738ab935fe2da917d5af63d6fa921f7d75b"
+  },
+  "note": "This is not an approval. Root must explicitly authorize after priority 5 and independent preparation review."
+}

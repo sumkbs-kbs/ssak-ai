@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-o",
+    "pythonpath=src:.",
+    "tests/test_gbrain_storage_root_contract.py::test_fresh_gbrain_storage_root[env]",
+    "-q",
+    "--tb=short",
+    "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-GBRAIN-STORAGE-ROOT-01/run-20261014T092714Z-d506f8f5/red/junit.xml"
+  ],
+  "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+  "env_overrides": {
+    "PYTHONPATH": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src:/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+    "GBRAIN_STORAGE_CAPTURE_ROOT": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-GBRAIN-STORAGE-ROOT-01/run-20261014T092714Z-d506f8f5/red/captures",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "source_sha256": {
+    "src/antigravity_k/engine/gbrain.py": "c59a19563e773a1d61bbe648b1c69f75080babdc58922d1cd6cc00aae6402201",
+    "tests/test_gbrain_storage_root_contract.py": "f0290de2030748cae41522adce339f609b75f69e9d5a0222c4efec6a1a6404ec"
+  }
+}

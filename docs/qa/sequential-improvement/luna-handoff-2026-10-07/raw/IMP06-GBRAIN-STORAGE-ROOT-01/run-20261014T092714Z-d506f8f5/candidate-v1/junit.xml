@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="7" time="2.486" timestamp="2026-10-14T18:28:30.309891+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_gbrain_storage_root_contract" name="test_fresh_gbrain_storage_root[env]" time="0.506" /><testcase classname="tests.test_gbrain_storage_root_contract" name="test_fresh_gbrain_storage_root[explicit]" time="0.248" /><testcase classname="tests.test_gbrain_storage_root_contract" name="test_fresh_gbrain_storage_root[empty_explicit]" time="0.255" /><testcase classname="tests.test_gbrain_storage_root_contract" name="test_fresh_gbrain_storage_root[default]" time="0.273" /><testcase classname="tests.test_gbrain_storage_root_contract" name="test_fresh_gbrain_storage_root[empty_env]" time="0.263" /><testcase classname="tests.test_gbrain_storage_root_contract" name="test_fresh_gbrain_storage_root[relative_env]" time="0.294" /><testcase classname="tests.test_gbrain_storage_root_contract" name="test_fresh_gbrain_storage_root[native_import]" time="0.588"><failure message="AssertionError: [GBrain] chromadb 초기화 실패, 벡터 검색을 비활성화합니다.&#10;  Traceback (most recent call last):&#10;    File &quot;/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/gbrain.py&quot;, line 250, in __init__&#10;      cast(object, self.chroma_client.get_or_create_collection(name=&quot;gbrain_nodes&quot;)),&#10;                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/client.py&quot;, line 376, in get_or_create_collection&#10;      return Collection(&#10;          client=self._server,&#10;      ...&lt;2 lines&gt;...&#10;          data_loader=data_loader,&#10;      )&#10;    File &quot;/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/models/CollectionCommon.py&quot;, line 138, in __init__&#10;      validate_embedding_function(embedding_function)&#10;      ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/types.py&quot;, line 996, in validate_embedding_function&#10;      raise ValueError(&#10;      ...&lt;3 lines&gt;...&#10;      )&#10;  ValueError: Expected EmbeddingFunction.__call__ to have the following signature: odict_keys(['self', 'input']), got odict_keys(['args', 'kwargs'])&#10;  Please see https://docs.trychroma.com/guides/embeddings for details of the EmbeddingFunction interface.&#10;  Please note the recent change to the EmbeddingFunction interface: https://docs.trychroma.com/deployment/migration#migration-to-0.4.16---november-7,-2023 &#10;  &#10;  Traceback (most recent call last):&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-506/test_fresh_gbrain_storage_root6/probe.py&quot;, line 88, in &lt;module&gt;&#10;      assert gbrain.global_gbrain.collection.count()==0&#10;             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;  AttributeError: 'NoneType' object has no attribute 'count'&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '/private/var/folders/0c/ncf5l...0\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: \'NoneType\' object has no attribute \'count\'\n').returncode">tests/test_gbrain_storage_root_contract.py:152: in test_fresh_gbrain_storage_root
+    assert result.returncode == 0, result.stdout.decode() + result.stderr.decode()
+E   AssertionError: [GBrain] chromadb 초기화 실패, 벡터 검색을 비활성화합니다.
+E     Traceback (most recent call last):
+E       File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/gbrain.py", line 250, in __init__
+E         cast(object, self.chroma_client.get_or_create_collection(name="gbrain_nodes")),
+E                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+E       File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/client.py", line 376, in get_or_create_collection
+E         return Collection(
+E             client=self._server,
+E         ...&lt;2 lines&gt;...
+E             data_loader=data_loader,
+E         )
+E       File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/models/CollectionCommon.py", line 138, in __init__
+E         validate_embedding_function(embedding_function)
+E         ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+E       File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/chromadb/api/types.py", line 996, in validate_embedding_function
+E         raise ValueError(
+E         ...&lt;3 lines&gt;...
+E         )
+E     ValueError: Expected EmbeddingFunction.__call__ to have the following signature: odict_keys(['self', 'input']), got odict_keys(['args', 'kwargs'])
+E     Please see https://docs.trychroma.com/guides/embeddings for details of the EmbeddingFunction interface.
+E     Please note the recent change to the EmbeddingFunction interface: https://docs.trychroma.com/deployment/migration#migration-to-0.4.16---november-7,-2023 
+E     
+E     Traceback (most recent call last):
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-506/test_fresh_gbrain_storage_root6/probe.py", line 88, in &lt;module&gt;
+E         assert gbrain.global_gbrain.collection.count()==0
+E                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E     AttributeError: 'NoneType' object has no attribute 'count'
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '/private/var/folders/0c/ncf5l...0\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: \'NoneType\' object has no attribute \'count\'\n').returncode</failure></testcase></testsuite></testsuites>

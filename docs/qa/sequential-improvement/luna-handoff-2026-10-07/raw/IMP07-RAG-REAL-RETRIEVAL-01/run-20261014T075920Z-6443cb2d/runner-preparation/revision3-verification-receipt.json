@@ -1,0 +1,101 @@
+{
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation",
+  "commands": [
+    {
+      "name": "offline",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "--import-mode=importlib",
+        "--rootdir=..",
+        "--confcutdir=.",
+        "-o",
+        "cache_dir=runner-preparation/revision3-offline-cache",
+        "--basetemp=revision3-offline-tmp",
+        "test_control.py",
+        "-q",
+        "--junitxml=revision3-offline-junit.xml"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation",
+      "exit": 0,
+      "stdout": "revision3-offline-stdout.log",
+      "stderr": "revision3-offline-stderr.log",
+      "exit_authority": "observed subprocess returncode printed in captured exec output",
+      "timing": "individual timing lost when wrapper failed after all four commands; JUnit preserves test duration"
+    },
+    {
+      "name": "full-ruff",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "check",
+        "control.py",
+        "runner.py",
+        "supervisor.py",
+        "test_control.py"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation",
+      "exit": 0,
+      "stdout": "revision3-full-ruff-stdout.log",
+      "stderr": "revision3-full-ruff-stderr.log",
+      "exit_authority": "observed subprocess returncode printed in captured exec output",
+      "timing": "individual timing lost when wrapper failed after all four commands; JUnit preserves test duration"
+    },
+    {
+      "name": "format-check",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "format",
+        "--check",
+        "control.py",
+        "runner.py",
+        "supervisor.py",
+        "test_control.py"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation",
+      "exit": 0,
+      "stdout": "revision3-format-check-stdout.log",
+      "stderr": "revision3-format-check-stderr.log",
+      "exit_authority": "observed subprocess returncode printed in captured exec output",
+      "timing": "individual timing lost when wrapper failed after all four commands; JUnit preserves test duration"
+    },
+    {
+      "name": "full-types",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+        "--project",
+        "basedpyright.json",
+        "control.py",
+        "runner.py",
+        "supervisor.py",
+        "test_control.py"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation",
+      "exit": 1,
+      "stdout": "revision3-full-types-stdout.log",
+      "stderr": "revision3-full-types-stderr.log",
+      "exit_authority": "observed subprocess returncode printed in captured exec output",
+      "timing": "individual timing lost when wrapper failed after all four commands; JUnit preserves test duration"
+    }
+  ],
+  "capture_limit": "The first capture wrapper used system python3 only for orchestration. After successful pytest/Ruff/format and nonzero types, its compile() rejected Python match syntax before serializing the in-memory receipt. Raw subprocess stdout/stderr/JUnit were already persisted. No successful tests or statics were replayed. Command receipt reconstructed from exact executed argv and observed printed exits. Source hashes below first persisted after verification, not falsely labelled before/after that test run.",
+  "source_bindings_after_verification": {
+    "control.py": {
+      "sha256": "f307666224aa23104e1c295bf57d0002f7a1fbf282a9423a5a411a3ec3e1e9d5",
+      "mtime_ns": 1791968616857667622
+    },
+    "runner.py": {
+      "sha256": "303d75956d241cb5857bdcd8e755b4c3282b3cb77877fedc9c1cb2ace3f35582",
+      "mtime_ns": 1791969514313237520
+    },
+    "supervisor.py": {
+      "sha256": "d2ae24e25d27c61a3300b0782b9f140a60ec1e5c01b0b21afd457f62a3b2ebcd",
+      "mtime_ns": 1791968532977737106
+    },
+    "test_control.py": {
+      "sha256": "86cdd2dbe11d0fc0ce3d1f1bea6f160d93db954490777cb1cb61887ed5d8040c",
+      "mtime_ns": 1791969537047076681
+    }
+  }
+}

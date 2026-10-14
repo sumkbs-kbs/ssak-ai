@@ -1,0 +1,14 @@
+{
+  "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[explicit-memory]",
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-514/test_fresh_storage_root_explic0/probe.py",
+    "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-514/test_fresh_storage_root_explic0",
+    "memory",
+    "explicit"
+  ],
+  "cwd": "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-514/test_fresh_storage_root_explic0",
+  "returncode": 0,
+  "home_changed_by_harness": false,
+  "probe_sha256": "693ac92e00958a8de375509c095be24e35da429c3c4601097aa06b75bbce0054"
+}

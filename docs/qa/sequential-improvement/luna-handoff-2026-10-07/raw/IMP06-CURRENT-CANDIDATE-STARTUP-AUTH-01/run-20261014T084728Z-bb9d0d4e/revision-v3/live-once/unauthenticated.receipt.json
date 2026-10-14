@@ -1,0 +1,8 @@
+{
+  "name": "unauthenticated",
+  "method": "GET",
+  "path": "/api/system/access-mode",
+  "status": 401,
+  "bytes": 54,
+  "sha256": "7e44adf588eebf3809fcdea67c8ac61452976944365fada5ed9c525bd24fb80d"
+}

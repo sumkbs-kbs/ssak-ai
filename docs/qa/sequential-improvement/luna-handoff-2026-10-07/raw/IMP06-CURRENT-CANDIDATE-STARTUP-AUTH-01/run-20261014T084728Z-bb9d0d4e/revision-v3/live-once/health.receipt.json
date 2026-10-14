@@ -1,0 +1,8 @@
+{
+  "name": "health",
+  "method": "GET",
+  "path": "/v1/health",
+  "status": 200,
+  "bytes": 161,
+  "sha256": "8fc7f1e414af7e8dae0a4de2011c970770830f8a358bcec535a8fb13fa2e4790"
+}

@@ -1,0 +1,1483 @@
+{
+  "schema": "path -> [sha256, bytes]",
+  "relative_paths_base": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d",
+  "absolute_paths": "current clean source files outside run; read-only bindings, not copied",
+  "self_excluded": true,
+  "raw_database_policy": "All persist-a/persist-b/persist-peers files retained locally and individually sealed; no native API reopened",
+  "entries": {
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/__init__.py": [
+      "d2fc29a4984b56caa48fb4899bb6112cb71fb954ef1fb12a853d3b5d9ba87156",
+      95
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/config.py": [
+      "6721ba3d22f9eb9ce509caf06fcca966f4605f3134d2c4a249aceea803549346",
+      28920
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/__init__.py": [
+      "5bbdd42a951d5a9d0de6cc7d360c623185258ae325d3ea534419bde07c9b1d58",
+      748
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/capability_policy.py": [
+      "013f1dbe86c39b828192a2e5e0ef6255e073b785b4afc6bb563588177137b767",
+      11610
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/cognitive/__init__.py": [
+      "acd272a3d326cd029d68be3e6014fc6bd44ca4496e9253b7b59181c0d26606f1",
+      1063
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/cognitive/models.py": [
+      "afe99ffae7ebb74d29e34a82aab34da2a119317e437529ddcca53e89be204945",
+      40359
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/cognitive/protected_targets.py": [
+      "d18548cfa59870667f5080b92bb218c6b7b7bb1ec310bc40a287f143bc9ceea8",
+      28636
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/cognitive/references.py": [
+      "8887785ef432dba2ce98681a5b220dadb2577a3aa80fb12b3901e0aedb0e49d4",
+      11749
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/collective_intelligence.py": [
+      "5dc3e0c924db0e059ae71e6b169ed94f4ef7e18b2d1c832dd69c62299e4ef549",
+      10428
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/context_budget.py": [
+      "4658ec1d338b154ae18d80cbec49324d103f27feabe70de02b2ca9cbd1a04136",
+      13000
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/cost_guard.py": [
+      "5a9c8b34b4e1eb430d00de49b4e6186f266fc624a7d362a61e5e8679b4adafc3",
+      18813
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/embeddings.py": [
+      "3522ff04d2df755bfeab8dadc1eaa9339b309db46b7c927efba50b9ad998b0cb",
+      6540
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/local_model_discovery.py": [
+      "1023e489d4eb0460e330736c5b70f4a3ffb2af3ae4f2b500e28d9d8d259ea818",
+      25561
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/local_runtime.py": [
+      "9b1028015f083e3dde96d3b119729f21dfc077d9cb19c95d13011cf136b074e0",
+      8382
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/long_context_capabilities.py": [
+      "cec9ff5aff06792a756032d6bf5ec98c2ae2f1d369107cd3be01ef8b26fa9b36",
+      1872
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/long_context_fusion.py": [
+      "fa1d42df8d3500a44ccabd0a493771a9e4c86d8805e42c3d73fb7186b4e39823",
+      6772
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/long_context_metadata.py": [
+      "b17691747069f64853645b2c7fe306b70097c769c0ef6400f6beb87c99e12bf0",
+      2658
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/long_context_policy.py": [
+      "2b9b1faeb1de1fe58035832d6e9c6db4cef1d01f8871ed9c7f9f3920b393f7cb",
+      2729
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/memory_policy.py": [
+      "cee8504d083569097b8089fe203f5f96ccb56df85824fddbbbacda4e71faa1e1",
+      5307
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/model_calibration.py": [
+      "7c225c44c6ebf885616d7b67a7313e4893d09ba86e625a4a06294586a4fc9c6c",
+      14923
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/model_manager.py": [
+      "43cf767e440c4d2c831bc82bfd22abf4f3679d19fb715ae3acd8d1e6ea3450fd",
+      82914
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/model_memory_calibration.py": [
+      "b97f746df1b3f7d47fa8b7565eb5ed4b17c9acc8ba6c8be82c3d6786456e2e44",
+      4564
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/model_policy.py": [
+      "8470bf0a9c0d11cf8c290cec3c1b6f07f51c3b7bb462d93df98d7fa3a5bf38ff",
+      3741
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/model_registry.py": [
+      "8febe07ec3e0b00c87b83afd31475727c893885c97f760aadcf3f1409e0e6bda",
+      29103
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/model_router.py": [
+      "312d0daeb44e9bda72c231ad7b46963ca5ad376a0c9f3f02172b8d469a87ed8a",
+      35402
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/multimodal.py": [
+      "d57fb2c55bd155373b582e8c119b627da037d7de4b8e984f120f96becb48ee60",
+      20375
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/ollama_process_snapshot.py": [
+      "45137a8920e649b01b866fff6fa19c0fd5d57e5ebb5c05f0cda6e902872d3db8",
+      701
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/project_embedding_binding.py": [
+      "593d1263f39584ac9ac05347069f03441cc6e0df4f92412372e09502bf169a68",
+      5145
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/protocol_translator.py": [
+      "f8d42ce763c6e92b6746d67436c1f40b0f4110a86683f8206738042890da24f8",
+      18526
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/provider_adapters/dev_shims.py": [
+      "d9d3733f94b9e34b3f98d498856ee19e603fb5852446dfb19d9495aa5674c7a2",
+      4269
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/provider_adapters/embedding_providers.py": [
+      "7a4655a8135a9c1c94ff8a9db5edd8d0075c9e8fbd8661ed23412c66fbed5e6f",
+      6120
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py": [
+      "d12b348d181820807eb6493e072723b475cf2440182eeb60bfeab71a9a0bdf11",
+      65281
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/provider_adapters/transport_errors.py": [
+      "6b936e5de490edfe6ef7630187ed98517c2877533c3570c74e8eef7455581ac2",
+      2175
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/provider_adapters/unsloth_provider.py": [
+      "5ba0ad31a5d089309f6a22d1ec898c37e7f269bb60263ec15f0167ac1735277e",
+      3661
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/provider_capabilities.py": [
+      "65eb5f5adef480c093bb90e4ce925548106152477f7263e7257a0e21774db8f5",
+      3055
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/provider_capability_models.py": [
+      "d5b1043c3e60ec1a340e69568924c56a5f644903381e9b3e0d58b75252b56a98",
+      2974
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/provider_capability_probe.py": [
+      "f32af71f9a8e434dd8774f60c2815b447e6f7b66cced43272c1c87737b7f2d29",
+      9029
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/provider_capability_probe_runtime.py": [
+      "10ec8aeb67d70ecab4d325a85f47cdb606d89bd610dd86252e54e58f4357507e",
+      8833
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/provider_capability_probe_utils.py": [
+      "0fbfdae0b157cc452fd50157c7de2d6f6ddb03ebfc9e1efec9b12a4eb51c9376",
+      2480
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/rag_indexer.py": [
+      "aab8bf7af20d8e4b16743b2d9b47e694417fcaf0503a067b7a2fd88677ae195c",
+      48468
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/sampling_config.py": [
+      "4db29f894006525c1a028c2564b5ced2e8d63ca2893bb0a36e9c96532abdba67",
+      2308
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/structured_output.py": [
+      "8de992101920b544acef6c32b4f4d863ac90cad4c04e468dea6bb279c3de30d6",
+      6093
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/usage_tracker.py": [
+      "66ac28231d2e852a99f62cfd39273846d2475bb32ecbc522499da02b0640a2de",
+      15817
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/vector_store.py": [
+      "8c61b1d66b1b2c2ed4e8f3978d2e355bb5fa6166af92f266e15da84fd68984b0",
+      21157
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/runtime_paths.py": [
+      "618406eb44f174970e7ea0be08acc9b958fc79fba61c2459417dd69c29b9af9a",
+      698
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/tools/__init__.py": [
+      "8ff45f4e14415f815fb6ae5a6a0e79d99be8a73f4460fa07d76c72ee3ee66748",
+      511
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/tools/base_tool.py": [
+      "333461180f05955194a4d976829a2f737c272cfa2e0d4536020a2b2b5e84e95b",
+      6317
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/tools/egress_policy.py": [
+      "07e53cef7c3b2fdab320ac03fc966a9a442439a0feccab256e1245ab3130aa93",
+      5114
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/tools/permission_gate.py": [
+      "5a1a118081f1b00f815e29804ea9d88f366a2e725d852057c0caf463d6f189f9",
+      19833
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/tools/tool_contracts.py": [
+      "9c4aaefcc418dbc02f12c125d21f1b5f146f5e64192fc2152b07df56951a27d8",
+      1661
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/tools/tool_path.py": [
+      "964328848eaf55c2ac6fafea3c658b457d9984f051000e35b9399dac10cbd135",
+      15297
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/tools/tool_registry.py": [
+      "21b33f18f1e8d028560ffbf2e06b51aaff2f9e39cd10fd424195f80514509597",
+      18850
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/tools/web_search_models.py": [
+      "22bc1dd767c90b8c4897f1a91caf069974ab5999709da7a3dddbbc76c4a86e30",
+      932
+    ],
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/tools/web_search_quality.py": [
+      "507081e4c8ae54858752be619dfb17ba7f40caa40db36747af7c4c892710981e",
+      12320
+    ],
+    "acceptance-plan.md": [
+      "bdbe0c5f1e3d1e74d927aa4861e695232142d957319ce3b55eba230b5c0f931d",
+      12253
+    ],
+    "artifact-manifest.sha256": [
+      "c91fc3cc40b4ebf34a95128de89c8501ea83cd6e5618540667b33c85f5ea2eb8",
+      4900
+    ],
+    "corpus-a/01-room-cancellations.md": [
+      "6fc43040b192b8db1da43ea7fd184addf229b226e93b74ee67b566943057b94c",
+      371
+    ],
+    "corpus-a/02-evening-step-free-access.md": [
+      "e81bbb8bc1c3b995d05710f0529cd095179583d5ba2f72f240b3796d7c15f0b1",
+      368
+    ],
+    "corpus-a/03-fridge-power-loss.md": [
+      "6b4c58b91e5f4790f52fcd15225a3a7b08e6a8d0bdd24ade4304054ee3f0069c",
+      349
+    ],
+    "corpus-a/04-archive-preservation-scans.md": [
+      "4754fedc7b52ab71433b31ed35c43284405ae37ea84cbd21f52254a0e09b4215",
+      375
+    ],
+    "corpus-a/05-projector-deposits.md": [
+      "d8227ebdd7405b48d529b3b911803930c694a295938372270b00be70e1f5f928",
+      360
+    ],
+    "corpus-a/06-lost-keys.md": [
+      "a87359547b312c89d1d43e7b165d16dfac7e2e3000f9144711afdb7d175ae74d",
+      369
+    ],
+    "corpus-a/07-rainwater-garden.md": [
+      "84e62a6d3d799fba897fd9b1fdab8db7032b7048666797dc826280d7228394aa",
+      347
+    ],
+    "corpus-a/08-child-photo-consent.md": [
+      "91e20825d55474a3f1fb4e77293c4b37b3a9f1db7d7b187a6f1c850850e00491",
+      422
+    ],
+    "corpus-a/09-hearing-loop.md": [
+      "98c554b258e3d6a619cba6bb1f4ff9739becf212ebdb5bd317cf28d0a29650e6",
+      383
+    ],
+    "corpus-a/10-heat-refuge.md": [
+      "546412e56d67a2c50543ead6ce5f8b6a12ad1d659be9038592cf5d66ade91dd3",
+      347
+    ],
+    "corpus-a/11-low-stimulation-room.md": [
+      "c30c9a63f6730785162e0770e55dd4c1de70cb9831e3539b29fdc65757701565",
+      356
+    ],
+    "corpus-a/12-tool-loan-extension.md": [
+      "d90d4ab8841f9374a87d009c7921f2bb4c6639ccf989abb51253b93b330f54ef",
+      340
+    ],
+    "corpus-a/13-workshop-waitlist.md": [
+      "6f7334e9f8a46cebd6f2a5c1ebbede3dd4292e963076f1c09078720e3612e60a",
+      350
+    ],
+    "corpus-a/14-emergency-charging.md": [
+      "e4e8b599d80e61e5d022c748113f286253a6c8cf5c8a0c74888745f8aeb91e91",
+      364
+    ],
+    "corpus-a/15-bicycle-locker-collection.md": [
+      "08ad82724a6b7581b686f15b6c3ca84d2ef5a0e2664eaf22efa62701d16ac206",
+      357
+    ],
+    "corpus-a/16-compost-inputs.md": [
+      "fe8350b2ddba55563084011528bd98b3b5f9fea4e47ba133362ea1d260520e70",
+      341
+    ],
+    "corpus-a/17-paint-waste.md": [
+      "6ff95bf3327051f10d55d187ebd589a70de1e4e38e60ad77f901e708f3de3d7e",
+      336
+    ],
+    "corpus-a/18-seed-library-return.md": [
+      "0ba2ed0868fdc471ece995743b0fc503516adba600c1b0098ca0b261c6bc19e4",
+      351
+    ],
+    "corpus-a/19-event-interpretation.md": [
+      "138af406a7c01c0051003e7bb0e707376c12b413c086edb7b5d0d6de7628feb8",
+      404
+    ],
+    "corpus-a/20-attendance-privacy.md": [
+      "41a385d6e27cb522e942bb695463841db632e353064e14fe5a1894e2b33c68e2",
+      410
+    ],
+    "corpus-a/21-outdoor-pitch-cancellations.md": [
+      "c1e03f5fa080e8eb94fda765db443f5e4bec9f3bc97905b0bb8e4290dc3cbdae",
+      341
+    ],
+    "corpus-a/22-chest-freezer-outage.md": [
+      "a617c8fe621b9f01417a0e8bb01f1cf09e245fbb5b198326b242a1528242d854",
+      382
+    ],
+    "corpus-a/23-equipment-late-fees.md": [
+      "fdcc5e62213a39fd283161023751a4ca53901687c355d96cf784234d6dc7acf0",
+      358
+    ],
+    "corpus-a/24-market-first-aid.md": [
+      "e78380f225e950ef14d9b22187bc1985140897798cd594c2e48a15ebc9cc9840",
+      346
+    ],
+    "corpus-a/25-library-book-renewals.md": [
+      "4b3762235b58ac0cd94f3af5e89f7762cee367ff68dcb4bc67f140c73306a227",
+      304
+    ],
+    "corpus-a/26-building-photographs.md": [
+      "55551f993d9412f700ca767b14fe5240eb6ff6edee9a897c69a985a564ec22ba",
+      382
+    ],
+    "corpus-a/27-portable-speaker-charging.md": [
+      "0e9909f73fc7d72fd31b480eb394e0c2072f933ee72c0ad1d74a81262f59dfc9",
+      350
+    ],
+    "corpus-a/28-winter-warming-room.md": [
+      "19f796205d7f46088f5b9d3d2727cb90c6a839c312109c8466f65505d94cc293",
+      311
+    ],
+    "corpus-a/29-food-donation.md": [
+      "33ee070a1acc82c69230796772f1fc8517048f9f3670fa5018e32a6ac160cdf5",
+      326
+    ],
+    "corpus-a/30-newsletter-subscribers.md": [
+      "6d25682d0f51de0a9a453e872f431989cc4efe6d6636621ab266cf666ddeb7e8",
+      379
+    ],
+    "corpus-b/01-room-cancellations.md": [
+      "588e71db3856ce722bfbb4ba8b673c40df026c241bf022b8051989f3363812d5",
+      310
+    ],
+    "corpus-b/06-lost-keys.md": [
+      "9632a5806f3edf1f1c7e75739ac174e9cc710f815e4869e33c3a8bca1acbd286",
+      325
+    ],
+    "execution-20261014T092307Z-0eccc3a8/actual-imports-before.json": [
+      "cf48dd1e0eb3aa92fc6a8cac6faab77179927c820932ffeb81b5f07c8221f1b5",
+      11077
+    ],
+    "execution-20261014T092307Z-0eccc3a8/approved-freeze.json": [
+      "6ef5ca4f4137c9ec9c167bc55fe4b9232f03b2519132ea186fc9d69a70f44060",
+      4825
+    ],
+    "execution-20261014T092307Z-0eccc3a8/binding.json": [
+      "a853294464a30c0b2bb56e92897aa866792ba476298740f9ffc511405f7b20db",
+      347
+    ],
+    "execution-20261014T092307Z-0eccc3a8/handoff-ko.md": [
+      "748ea12b5b09bf1768c8eaf3e5b4cb181dab73dd6b0bb394a59fce8c5c8ae9a4",
+      4655
+    ],
+    "execution-20261014T092307Z-0eccc3a8/initial-a-store.json": [
+      "91d9401c7ef8075df02a94a823709dc84e377426c609b202705c3702f06aa06a",
+      718737
+    ],
+    "execution-20261014T092307Z-0eccc3a8/initial-b-store.json": [
+      "510dac431723f5da2392070f8d0dd84bd76acf8fad24b4b71e1225c4ce1bd7f1",
+      48304
+    ],
+    "execution-20261014T092307Z-0eccc3a8/initial-metrics.json": [
+      "b1317af849424a4b3598ab7f0db0f0ee0a4bdd9511e9c1f99d1e1b9b1b67f0e0",
+      3901
+    ],
+    "execution-20261014T092307Z-0eccc3a8/invocation.json": [
+      "ad015b4459e22ab9cc482a5b0f54b4e12e7b67146ce2314d1bbaf808ea6d7cda",
+      3376
+    ],
+    "execution-20261014T092307Z-0eccc3a8/live-final-result.json": [
+      "3f9be58becba930800321d12854be0e1438ce3c6b52a834982efddd691912020",
+      24772
+    ],
+    "execution-20261014T092307Z-0eccc3a8/mutated-reopened-a-store.json": [
+      "47f91b8f374703364abe3bd67bb337ccb913aaef8c6257e9ec49f4c4b79bed74",
+      694788
+    ],
+    "execution-20261014T092307Z-0eccc3a8/network.jsonl": [
+      "cec32415f22e1eee4e40c806ea3c91de26167bd44bdceb65e8d1b2ebcd94d19d",
+      2250
+    ],
+    "execution-20261014T092307Z-0eccc3a8/outside-projects/key-register.md": [
+      "78a79dbc6b8f16c6adf4fdbe7a5f755b4231cdd09e1ec832ff2f0b72f7e182fb",
+      342
+    ],
+    "execution-20261014T092307Z-0eccc3a8/owned-model-profile.json": [
+      "38cdc45fa7c5f982657fd67c1f7bb81fa8f76f8e631f8189978d69d624c39795",
+      277
+    ],
+    "execution-20261014T092307Z-0eccc3a8/peer-cycles.json": [
+      "e7d495a598f9ec34cd8a798ac211fc5c8e1ecf65ecd3ab3f461c17be816aa120",
+      3548
+    ],
+    "execution-20261014T092307Z-0eccc3a8/peer-profile.json": [
+      "06594eeeff40bc883c9e87cc1f0ecd5b6a5eb6df6fc1620ec741fc19439f1213",
+      303
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-a/8b16503d-f83d-4806-a1a2-832e5da7c5f5/data_level0.bin": [
+      "c7e2a5c66a30e0d9228b85d06681048e2d25425ad5b7f8f10b672c87ac37e001",
+      321200
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-a/8b16503d-f83d-4806-a1a2-832e5da7c5f5/header.bin": [
+      "03cb3ac86f3e5bcb15e88b9bf99f760ec6b33e31d64a699e129b49868db6d733",
+      100
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-a/8b16503d-f83d-4806-a1a2-832e5da7c5f5/length.bin": [
+      "7a12e561363385e9dfeeab326368731c030ed4b374e7f5897ac819159d2884c5",
+      400
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-a/8b16503d-f83d-4806-a1a2-832e5da7c5f5/link_lists.bin": [
+      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      0
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-a/chroma.sqlite3": [
+      "2d2c54a6fce85f74a69d3d82510dcd66575b35ff408f48db2ee489da31d7b8da",
+      479232
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-a/rag-manifest.json": [
+      "2cd8f12c86298f89de09e60f2cce985c51f4ec69e6442f72e489b5322741e5b2",
+      1903
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-b/5924c3d0-3d66-4f06-9919-7429eac3382e/data_level0.bin": [
+      "eca9082b66a778d4ff627b4b27a54e84698d7919e7232be8f68f4bb4fbc1a4f1",
+      321200
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-b/5924c3d0-3d66-4f06-9919-7429eac3382e/header.bin": [
+      "03cb3ac86f3e5bcb15e88b9bf99f760ec6b33e31d64a699e129b49868db6d733",
+      100
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-b/5924c3d0-3d66-4f06-9919-7429eac3382e/length.bin": [
+      "7a12e561363385e9dfeeab326368731c030ed4b374e7f5897ac819159d2884c5",
+      400
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-b/5924c3d0-3d66-4f06-9919-7429eac3382e/link_lists.bin": [
+      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      0
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-b/chroma.sqlite3": [
+      "0f4fdac2ca03b743c385eac5318a20006edb0daffd7feed30db5a4a1de4ccd3b",
+      196608
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-b/rag-manifest.json": [
+      "871aabde65e2483a32e4f9af2fa20cd652f731b1bafe063d8e4fdeb27d1fc2f2",
+      144
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-peers/9b46888e-9a2a-4933-88df-d6522a2a4c9b/data_level0.bin": [
+      "95ba8c7d307641ef5cbe95853866268c6aa5580d50300aca9432b14a9c0fba90",
+      15200
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-peers/9b46888e-9a2a-4933-88df-d6522a2a4c9b/header.bin": [
+      "d8e58061428a9211ad4ca81d0977d60083adf89c4e6dafc735f09b6a3b2154ef",
+      100
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-peers/9b46888e-9a2a-4933-88df-d6522a2a4c9b/length.bin": [
+      "7a12e561363385e9dfeeab326368731c030ed4b374e7f5897ac819159d2884c5",
+      400
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-peers/9b46888e-9a2a-4933-88df-d6522a2a4c9b/link_lists.bin": [
+      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      0
+    ],
+    "execution-20261014T092307Z-0eccc3a8/persist-peers/chroma.sqlite3": [
+      "f424ed41c54fd2346421669e1243732b4733f5b5bee8b6aa47a2372b99e6e5e3",
+      188416
+    ],
+    "execution-20261014T092307Z-0eccc3a8/phase.json": [
+      "104f477ad7b41529dcaf62fdcabe75990dd1a06218537ccf1e1e7bde3b882049",
+      61
+    ],
+    "execution-20261014T092307Z-0eccc3a8/post-models.json": [
+      "86e90da0ba718be9c20fb4b5f875fc713adbed298d699e4ef1367044e074e753",
+      608
+    ],
+    "execution-20261014T092307Z-0eccc3a8/post-mutation-q01-check.json": [
+      "f5ef2497687ded24ba569658112f7ddf5481ab821ad176dc74140f927130403b",
+      910
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/01-room-cancellations.md": [
+      "f9f7c94917389e20fab23fcb50a22581e434adb8947ee383e4321f3edbea222a",
+      386
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/02-evening-step-free-access.md": [
+      "e81bbb8bc1c3b995d05710f0529cd095179583d5ba2f72f240b3796d7c15f0b1",
+      368
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/03-fridge-power-loss.md": [
+      "6b4c58b91e5f4790f52fcd15225a3a7b08e6a8d0bdd24ade4304054ee3f0069c",
+      349
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/04-archive-preservation-scans.md": [
+      "4754fedc7b52ab71433b31ed35c43284405ae37ea84cbd21f52254a0e09b4215",
+      375
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/05-projector-deposits.md": [
+      "d8227ebdd7405b48d529b3b911803930c694a295938372270b00be70e1f5f928",
+      360
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/07-rainwater-garden.md": [
+      "84e62a6d3d799fba897fd9b1fdab8db7032b7048666797dc826280d7228394aa",
+      347
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/08-child-photo-consent.md": [
+      "91e20825d55474a3f1fb4e77293c4b37b3a9f1db7d7b187a6f1c850850e00491",
+      422
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/09-hearing-loop.md": [
+      "98c554b258e3d6a619cba6bb1f4ff9739becf212ebdb5bd317cf28d0a29650e6",
+      383
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/10-heat-refuge.md": [
+      "546412e56d67a2c50543ead6ce5f8b6a12ad1d659be9038592cf5d66ade91dd3",
+      347
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/11-low-stimulation-room.md": [
+      "c30c9a63f6730785162e0770e55dd4c1de70cb9831e3539b29fdc65757701565",
+      356
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/12-tool-loan-extension.md": [
+      "d90d4ab8841f9374a87d009c7921f2bb4c6639ccf989abb51253b93b330f54ef",
+      340
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/13-workshop-waitlist.md": [
+      "6f7334e9f8a46cebd6f2a5c1ebbede3dd4292e963076f1c09078720e3612e60a",
+      350
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/14-emergency-charging.md": [
+      "e4e8b599d80e61e5d022c748113f286253a6c8cf5c8a0c74888745f8aeb91e91",
+      364
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/15-bicycle-locker-collection.md": [
+      "08ad82724a6b7581b686f15b6c3ca84d2ef5a0e2664eaf22efa62701d16ac206",
+      357
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/16-compost-inputs.md": [
+      "fe8350b2ddba55563084011528bd98b3b5f9fea4e47ba133362ea1d260520e70",
+      341
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/17-paint-waste.md": [
+      "6ff95bf3327051f10d55d187ebd589a70de1e4e38e60ad77f901e708f3de3d7e",
+      336
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/18-seed-library-return.md": [
+      "0ba2ed0868fdc471ece995743b0fc503516adba600c1b0098ca0b261c6bc19e4",
+      351
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/19-event-interpretation.md": [
+      "138af406a7c01c0051003e7bb0e707376c12b413c086edb7b5d0d6de7628feb8",
+      404
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/20-attendance-privacy.md": [
+      "41a385d6e27cb522e942bb695463841db632e353064e14fe5a1894e2b33c68e2",
+      410
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/21-outdoor-pitch-cancellations.md": [
+      "c1e03f5fa080e8eb94fda765db443f5e4bec9f3bc97905b0bb8e4290dc3cbdae",
+      341
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/22-chest-freezer-outage.md": [
+      "a617c8fe621b9f01417a0e8bb01f1cf09e245fbb5b198326b242a1528242d854",
+      382
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/23-equipment-late-fees.md": [
+      "fdcc5e62213a39fd283161023751a4ca53901687c355d96cf784234d6dc7acf0",
+      358
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/24-market-first-aid.md": [
+      "e78380f225e950ef14d9b22187bc1985140897798cd594c2e48a15ebc9cc9840",
+      346
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/25-library-book-renewals.md": [
+      "4b3762235b58ac0cd94f3af5e89f7762cee367ff68dcb4bc67f140c73306a227",
+      304
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/26-building-photographs.md": [
+      "55551f993d9412f700ca767b14fe5240eb6ff6edee9a897c69a985a564ec22ba",
+      382
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/27-portable-speaker-charging.md": [
+      "0e9909f73fc7d72fd31b480eb394e0c2072f933ee72c0ad1d74a81262f59dfc9",
+      350
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/28-winter-warming-room.md": [
+      "19f796205d7f46088f5b9d3d2727cb90c6a839c312109c8466f65505d94cc293",
+      311
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/29-food-donation.md": [
+      "33ee070a1acc82c69230796772f1fc8517048f9f3670fa5018e32a6ac160cdf5",
+      326
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-a/30-newsletter-subscribers.md": [
+      "6d25682d0f51de0a9a453e872f431989cc4efe6d6636621ab266cf666ddeb7e8",
+      379
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-b/01-room-cancellations.md": [
+      "588e71db3856ce722bfbb4ba8b673c40df026c241bf022b8051989f3363812d5",
+      310
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-b/06-lost-keys.md": [
+      "9632a5806f3edf1f1c7e75739ac174e9cc710f815e4869e33c3a8bca1acbd286",
+      325
+    ],
+    "execution-20261014T092307Z-0eccc3a8/project-lifecycle.json": [
+      "66ca67006f5e37c5144c10af8ca421e73377abd3a150aba0e58f9ad0e4091838",
+      2825
+    ],
+    "execution-20261014T092307Z-0eccc3a8/query-results.jsonl": [
+      "255af7c5d76e35f5ffe0b2253aa8ecc95e68b66b60983646285a2b33d25eb9e3",
+      127107
+    ],
+    "execution-20261014T092307Z-0eccc3a8/readonly-verification-receipt.json": [
+      "bc86611018702a90cb4f7be083b195dc75ddba9a73b98bc904c3f56773435c80",
+      50047
+    ],
+    "execution-20261014T092307Z-0eccc3a8/result.json": [
+      "4579ed38b6174b31d17b1e75be21bc3aba3bad39c9fc63ce66b450d3060af816",
+      8843
+    ],
+    "execution-20261014T092307Z-0eccc3a8/root-tool-receipt.json": [
+      "03c37295d2962e13f0ce1ecab67c6617d487c8d5c913709613e1595170ca9c36",
+      1489
+    ],
+    "execution-20261014T092307Z-0eccc3a8/semantic-close.json": [
+      "9e91dac7974aa4c757cc0d9dec5a3d818e3f4e9b4557a251d203d97221f83985",
+      442
+    ],
+    "execution-20261014T092307Z-0eccc3a8/sources-after.json": [
+      "3b276d3142510a7a208be8f4064fbf0a5745a3a6223f71b7483b6e25cc872afc",
+      14708
+    ],
+    "execution-20261014T092307Z-0eccc3a8/stderr.log": [
+      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      0
+    ],
+    "execution-20261014T092307Z-0eccc3a8/stdout.log": [
+      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      0
+    ],
+    "execution-20261014T092307Z-0eccc3a8/supervisor-source-after.json": [
+      "9c6e10f098df19f2b13f803a5ee18cfb812950e884bac72030cb8c3bba2c0368",
+      4613
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/001.headers.json": [
+      "44866204143d207cda282a27b8226feb20a1348cb5e9038323963cbaa2cdd666",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/001.receipt.json": [
+      "768c080b87597a156b5594ca1571d5860d188dc13dd1cb1c5e07667dd8f00ca0",
+      1117
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/001.request.bin": [
+      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      0
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/001.response.bin": [
+      "498bf120ff9d0c23fbdf052af845a3134c8560c117cc1a5a26f00bff60f40f51",
+      2723
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/001.response.partial.bin": [
+      "498bf120ff9d0c23fbdf052af845a3134c8560c117cc1a5a26f00bff60f40f51",
+      2723
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/001.start.json": [
+      "9194b7df1194b5e92181f49edfff5f0c60214b28ef51cbd91b0b6dcc56caba58",
+      649
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/002.headers.json": [
+      "eb5784ff71c70217577eefa6961223ffbfbcb62045061ad4eac180b92638cac7",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/002.receipt.json": [
+      "a6e0f907d0918868123b79da9fe33bc57d8f31a76a86185f3b3cbb2bb085b26b",
+      3390
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/002.request.bin": [
+      "27c08d6eb5ba0a05441e2e9b2d265be6b864e70fd7e03d51df22053b8fbdee02",
+      11531
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/002.response.bin": [
+      "74dc0d6d4e7810e64c17324db91969b5fdfceada185e576869e24cd085e07901",
+      285022
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/002.response.partial.bin": [
+      "74dc0d6d4e7810e64c17324db91969b5fdfceada185e576869e24cd085e07901",
+      285022
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/002.start.json": [
+      "946aef167b6be5b38c2bb5f66496ac00d2f299e5406ef7d4b0cda643420eac1d",
+      2921
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/003.headers.json": [
+      "283b983d6216c78f6ba32fb7a67e38590d9d4dc0ce4f255c839b40ef36e09700",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/003.receipt.json": [
+      "a401e8eaec8702eeb7886da88836367a26fc4b3ba8a7b8c32c00741009eb8ce7",
+      1375
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/003.request.bin": [
+      "33e6818d78ae872c948956b6496e7f77ab345284d1826f276150c541fae2486d",
+      743
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/003.response.bin": [
+      "57c82c4efe06542aeaa3ea55aca1327479763594a27463567dd55beb52af186b",
+      19192
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/003.response.partial.bin": [
+      "57c82c4efe06542aeaa3ea55aca1327479763594a27463567dd55beb52af186b",
+      19192
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/003.start.json": [
+      "35ddd0c79ee1987fb5a3ac6c1fdda13d4ae00fe21e5e426644261547b44edf78",
+      905
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/004.headers.json": [
+      "1985868246467e9bf05e5873c09c5c8e169e4d429b7691648d3f099150c59ac8",
+      273
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/004.receipt.json": [
+      "0cc151aad37b80ca1506d56dd85a615476a75b5b073f2b0f356bd6c2a6d13cc2",
+      1302
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/004.request.bin": [
+      "195ef73efcd7a92c868b4f46c3bffcd7f28456fc4086980b98211119ff2a3f0c",
+      166
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/004.response.bin": [
+      "f8e03426ab3848f1efad7709860f85fef01b7d5ff32abf79013cc320e39750a5",
+      9635
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/004.response.partial.bin": [
+      "f8e03426ab3848f1efad7709860f85fef01b7d5ff32abf79013cc320e39750a5",
+      9635
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/004.start.json": [
+      "fd6be3b432a6611babe6f9e827cc710abf12099a0ec98392b1b374fdb4bda42c",
+      833
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/005.headers.json": [
+      "9f4655fa587eb042833933ae3a5614b534fdf7ef0d844170f5fe10853bf81010",
+      273
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/005.receipt.json": [
+      "d84a1f7c68c65ed3828a132fa62e08332e3dd5b3b1606a66c4154d455464363c",
+      1304
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/005.request.bin": [
+      "d41b486775fb2be40b13122f847e9bfbaa0e3b226d0673d51a19565e45897242",
+      169
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/005.response.bin": [
+      "ce5b20b48d438da5a004c62517caac3a5d42f45e28734ed522eb941f407dafd3",
+      9622
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/005.response.partial.bin": [
+      "ce5b20b48d438da5a004c62517caac3a5d42f45e28734ed522eb941f407dafd3",
+      9622
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/005.start.json": [
+      "8b690f2ff953ac53e8294da9400ae70f1bcb3a8902540411984182dd5d819302",
+      835
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/006.headers.json": [
+      "62ef91c0a388c4ae98d9b3461dc6b00a6d0907d13e3d2767fe60956785ca82d5",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/006.receipt.json": [
+      "201ab7953f8e8ac3be6aff02993e8c951032e2801e486a041b70263b1d74f663",
+      1302
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/006.request.bin": [
+      "2b18e6fb7b6e479857a614389abcaa24c2932cbfeebea1697064961f70abbceb",
+      178
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/006.response.bin": [
+      "c6e210dbb4e29e1f518222e7e2e7990c48925ef6ba9c88e7443c53bbc6abbad3",
+      9612
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/006.response.partial.bin": [
+      "c6e210dbb4e29e1f518222e7e2e7990c48925ef6ba9c88e7443c53bbc6abbad3",
+      9612
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/006.start.json": [
+      "07053b433dde990e91dcaa3e48c6c5504a4c1ee1ac3cc5fca26ffcac34008d91",
+      833
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/007.headers.json": [
+      "a278529e8ba01be3e42ed73a135e9816da778b5db0c963654b6d193cfe885db8",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/007.receipt.json": [
+      "d9e3f188c12f80a5c6fa97edbe7d2ab27337ffae1da6578c7e48cd7b0529f2ea",
+      1302
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/007.request.bin": [
+      "213d8631d6d1296d284c07dcf835c343041444500e389a83b990f5076bcb1853",
+      196
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/007.response.bin": [
+      "266fee8b04324a0728e370afc2503f9834292ad99348f916d1a7a79b413aee7e",
+      9602
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/007.response.partial.bin": [
+      "266fee8b04324a0728e370afc2503f9834292ad99348f916d1a7a79b413aee7e",
+      9602
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/007.start.json": [
+      "e9dee063022f950b5ad7c9ff5fdbf1378fc927a6a7ae7989de962084f065f915",
+      833
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/008.headers.json": [
+      "1707931d30e4e563c0afd783dcb63b800d82b8ed0235bb1cdf23e8cc1d7332ca",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/008.receipt.json": [
+      "a323f2a37d3bdae2c6c94a9aedd9de4b9a4225fa9cf3dc9871c8a4f4d7a77aa6",
+      1302
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/008.request.bin": [
+      "c1beb880cd8507b025ef0df4b6dd56fb61568705d81671b6ee2d6392141deadd",
+      172
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/008.response.bin": [
+      "babe309f487a0c2326afa92ba8f74d4ab3fd3a6d9bb8ecf53b5ca6d6718b9309",
+      9613
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/008.response.partial.bin": [
+      "babe309f487a0c2326afa92ba8f74d4ab3fd3a6d9bb8ecf53b5ca6d6718b9309",
+      9613
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/008.start.json": [
+      "c22f98a9d47ebd2378b3560e8dbbba30bbd519661405c6770658a5d02299fd38",
+      833
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/009.headers.json": [
+      "8df51012ed771aa4da3d61c79f2962ed0e76886ea385a28061ceff1250dc4a3c",
+      274
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/009.receipt.json": [
+      "b71d6ca58a1320fc1fe31390ce1a51e931cb3a197059a2f382d7023bfef23f2e",
+      1303
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/009.request.bin": [
+      "893080b0cd82aa2d964954fcd9a8e028b220d696b557039efdee2d4ca4a42e8d",
+      173
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/009.response.bin": [
+      "f4814c273ce5fc4b9b5c9d180b84dd2f4bad34a5d59b7722e77b0caa76630d64",
+      9644
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/009.response.partial.bin": [
+      "f4814c273ce5fc4b9b5c9d180b84dd2f4bad34a5d59b7722e77b0caa76630d64",
+      9644
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/009.start.json": [
+      "80666d6590b037fdb56564c638be19d8a87f870783ba2937189b3c3f9ed07eb6",
+      835
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/010.headers.json": [
+      "acab1655a5307d70c455a4aab433668ef5ed496bc6e5f0bb139fe13d715b2454",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/010.receipt.json": [
+      "72375dd25f666e66da8c60b7b6886c1f795de8d24c958a8308c2b6fdadcc2e1f",
+      1305
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/010.request.bin": [
+      "95884623972b22e899c96912bc9c8d5744e3a547af8e8dd0669c7d869c1da860",
+      160
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/010.response.bin": [
+      "2471759318676fc6afa81c473e73d7020f0cdb05a40237c380298b562806db5e",
+      9591
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/010.response.partial.bin": [
+      "2471759318676fc6afa81c473e73d7020f0cdb05a40237c380298b562806db5e",
+      9591
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/010.start.json": [
+      "c1f35784acbf5a2dc47b732eb38dab920f5aaa02c990f7bd3a0c8315fbc63c58",
+      836
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/011.headers.json": [
+      "1221ce3b7f829a82cbf409beb03b8341b8d2e34f3bd63e332da4b14aa17a6c91",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/011.receipt.json": [
+      "d87f47e32fa832846d92ed6a3aaeb657937fcde9a430a74dca7f90e4e38a3f75",
+      1305
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/011.request.bin": [
+      "94ea62f46f36a4fb0bd76a43683f77457b85a44c12032d0247e6a05ae61ce9ba",
+      200
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/011.response.bin": [
+      "35fafd2c5c80a3a64e85dbc766ae4176ebaa108add55160cc9f27e78695be453",
+      9623
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/011.response.partial.bin": [
+      "35fafd2c5c80a3a64e85dbc766ae4176ebaa108add55160cc9f27e78695be453",
+      9623
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/011.start.json": [
+      "4f54005299ddf648bc54a6f03ebdcc78da8557029c907d1c5ebde048fab7d5bb",
+      836
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/012.headers.json": [
+      "8063bdd2c6b11f4fa37eeabe5418b7bb3978fcdcd510d5937580d3bb942c667c",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/012.receipt.json": [
+      "c6b8b2f4e02b00bc32c7f2b20ae5062b967f89238a36d90a23c72aad543843e2",
+      1305
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/012.request.bin": [
+      "b0256c0caf0312b3700a9acfcd5350901d773df77011055a473411bc36ced3a3",
+      191
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/012.response.bin": [
+      "ff470657bfa3357d68d6907f05895dc70e396319d95a5b9d1a07677ace0677e1",
+      9623
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/012.response.partial.bin": [
+      "ff470657bfa3357d68d6907f05895dc70e396319d95a5b9d1a07677ace0677e1",
+      9623
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/012.start.json": [
+      "344636a6b8ffd633f414bc62b85494891e47f720eecd8482cd3e93c75157fd7d",
+      836
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/013.headers.json": [
+      "ea72b46a5a1fd74d6fe72153c9d469ed9a7c74e33d7afa840aa00c7cc79278a8",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/013.receipt.json": [
+      "21aeffdb6a3d1250bb719bfadce2846528b4a1114d26ca1ab2d8740e544ef1a6",
+      1305
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/013.request.bin": [
+      "3032128f251cbfddb9dfc1997679d37dc277d913764543c85144e039b87d39d6",
+      182
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/013.response.bin": [
+      "35eee56f0ef31a0e194d720d8591510ffd121cfe56754f99df5466356c770c27",
+      9636
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/013.response.partial.bin": [
+      "35eee56f0ef31a0e194d720d8591510ffd121cfe56754f99df5466356c770c27",
+      9636
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/013.start.json": [
+      "d09350e11d501307044e4d636d77ddb846597972dbc186f35c421fd25184f648",
+      836
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/014.headers.json": [
+      "ae3886fa7082f9ce68a88c113d0594099cc66ec42037f2a32cbc6971fb10f06a",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/014.receipt.json": [
+      "3da3fc40edb27a18b2a63e7e74cc9b841e5b81cc33186842f0380245ef69490a",
+      1305
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/014.request.bin": [
+      "d4806e9bf2beb10dda40c860b269775f890db1082fc684fb38f7bdbbe7a7dd3b",
+      214
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/014.response.bin": [
+      "c210554add7ad7ae8405d4b9c140b696073e858647728c9defb467f23f2a741a",
+      9643
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/014.response.partial.bin": [
+      "c210554add7ad7ae8405d4b9c140b696073e858647728c9defb467f23f2a741a",
+      9643
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/014.start.json": [
+      "4018c01be14c53fd0817278635ca4e0ca1889bbe950e2b33bf82e8c1af0165c8",
+      836
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/015.headers.json": [
+      "f5b099af4b00f34ae2b2c91c4c7f1ecdc389cae47ee8adfd6264906cf53126f4",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/015.receipt.json": [
+      "a2305c4246c98d38777f151d423c5580e110e9c5c16bb70bb41d3195422ba34f",
+      1305
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/015.request.bin": [
+      "711e08f4da6021c5353f07febcc666746add12420ab22e3281ca5ab22992d3b3",
+      212
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/015.response.bin": [
+      "bf4ef43ac0e0d045c04b514f4cf24accc0be801f7ab9140d67936d31c98c562d",
+      9624
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/015.response.partial.bin": [
+      "bf4ef43ac0e0d045c04b514f4cf24accc0be801f7ab9140d67936d31c98c562d",
+      9624
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/015.start.json": [
+      "b2a0a0f35af37c3fa978b2c89d32fd013b313c7f5512409f55866f9d97722196",
+      836
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/016.headers.json": [
+      "c37757c8d1ff710fa2b3d23d8e6492f74fff64cf8f52a7307b67622e1f37acfa",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/016.receipt.json": [
+      "bd578ff5d1bbac134bc8476b0268bea65baf1cca7ce1733bdf940621ebd88a2f",
+      1305
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/016.request.bin": [
+      "74d54666d10dd925323534635ac8ec5849ad9c5dc55ead9f6ba3901dc613843b",
+      214
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/016.response.bin": [
+      "15615904f15d4c2a93b65917ad306c8483009cde8bb465b2428d37325ea6c4f0",
+      9654
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/016.response.partial.bin": [
+      "15615904f15d4c2a93b65917ad306c8483009cde8bb465b2428d37325ea6c4f0",
+      9654
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/016.start.json": [
+      "e304f9aa9ca04973b1defbcdc59d7a54da151266307cfd56a53b482db8511735",
+      836
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/017.headers.json": [
+      "0ce098a47268b766bbb1e6303bd236577010bafb2d97e2c279194820562563f1",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/017.receipt.json": [
+      "fdd533307014022e8be22032d829b3d8e1303470aabbffb77c5d9c00aee9a06a",
+      1305
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/017.request.bin": [
+      "b1819c4e766ec9a5f93a84e779bb409c17aa4db17e9ed211be578c7e201d7593",
+      215
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/017.response.bin": [
+      "03646a285e32cfa683a552313cdff1afe7b044178e1744f754c12000d2608658",
+      9636
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/017.response.partial.bin": [
+      "03646a285e32cfa683a552313cdff1afe7b044178e1744f754c12000d2608658",
+      9636
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/017.start.json": [
+      "b6c0d3cf728c8cba6a4115fc87109f08d13fe6189d9db55392185bdf0a0ac7da",
+      836
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/018.headers.json": [
+      "a79b2aed1107801fa8099db31e1005ddd8867612afd5efe0a28710eb9761c628",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/018.receipt.json": [
+      "4024ea48bf4e811f34328e87b483b004ab7ff43d75b111aa827252b675379c3d",
+      1305
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/018.request.bin": [
+      "f120206443f2c970a54531dee21e58f5f8fba20358acf757a2e2cd908d26d76f",
+      222
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/018.response.bin": [
+      "00647e3f5431b525f9aced42a87ae20dd18bfc6aa177fedc52c5790573780739",
+      9639
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/018.response.partial.bin": [
+      "00647e3f5431b525f9aced42a87ae20dd18bfc6aa177fedc52c5790573780739",
+      9639
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/018.start.json": [
+      "a5dd7cdf48a2637a827ef662f56b885bb6130ba2cb6c71dbe71ba71118118d7b",
+      836
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/019.headers.json": [
+      "b19955d314a6809fe41d8344dd6a98b5331514f5434d345f938e88cdec936d1c",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/019.receipt.json": [
+      "9ac6b08248b4684044c6aa4f4b90ac840ddc729fe36b8157ca3053c3a4a4aac6",
+      1305
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/019.request.bin": [
+      "196c26c998b80ca09500cabb1e93c36124b90db9d352106b9a778c114659cc48",
+      192
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/019.response.bin": [
+      "1b0bfb2bbc54d8f47c1c310e04bb9fe89dce237159eff8d950d4db2b85aca671",
+      9595
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/019.response.partial.bin": [
+      "1b0bfb2bbc54d8f47c1c310e04bb9fe89dce237159eff8d950d4db2b85aca671",
+      9595
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/019.start.json": [
+      "bc8e1969adb4dd6217de3d120ad33f64e38ac1709897e28ef0ec9ead0f3cdc03",
+      836
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/020.headers.json": [
+      "61f603cc793916799b28b116c205acfdf509d2d9b491016573a4db4cf382fab2",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/020.receipt.json": [
+      "cf1fc775810d2c83776d745b17415ae43c7e373b5925a5eb8ecf9a19bf8d16b8",
+      1305
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/020.request.bin": [
+      "16b6020b1b5500f9767ca67391925a212cfdd624d95cf4493570e4ea00577885",
+      195
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/020.response.bin": [
+      "5fa1d0da54c7b76a3d13f6220963a50eafbc1b645b91c48312b5d6aa15ce4821",
+      9643
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/020.response.partial.bin": [
+      "5fa1d0da54c7b76a3d13f6220963a50eafbc1b645b91c48312b5d6aa15ce4821",
+      9643
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/020.start.json": [
+      "7186f0ad0434a43a7d376c024c49303f24affc7755dff44bd91699ec3df31dbc",
+      836
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/021.headers.json": [
+      "88c71b491b0f38da4306377fe3121d4fd84ff4b396ee9ced13291ce7b9c6b555",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/021.receipt.json": [
+      "c0d1c932daabae08d859c2fe6dacb5a150a1dfa395a106dc30ba95e6874684c8",
+      1305
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/021.request.bin": [
+      "48f746059115b534eaf5f2be2616e09b6754452480828c756021227056b3c5ab",
+      222
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/021.response.bin": [
+      "4cb1fedb97da1785d4a55d365496e5f24e96ba616a7e81afff985ecf98b4327d",
+      9628
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/021.response.partial.bin": [
+      "4cb1fedb97da1785d4a55d365496e5f24e96ba616a7e81afff985ecf98b4327d",
+      9628
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/021.start.json": [
+      "1fc236baa85269c7993aa6e47f1b907798907349e3f31592291c5872dc12dccf",
+      836
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/022.headers.json": [
+      "350a890cb234866f70965ae7e20bd4236e88d32b17f34260960b86653aa0d0b8",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/022.receipt.json": [
+      "40aa3194af9067ee63adf73b5651f2ee6148086b177620714cb73a248a65eb90",
+      1305
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/022.request.bin": [
+      "9332ce9d0ca4b108c281424039d7f4fd0af81149f59bace918d09af1b84d19a6",
+      255
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/022.response.bin": [
+      "3a3a4370f365f73c285ea8a75334f866ef78c2a777371fc4f8cf58f146a0ef11",
+      9632
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/022.response.partial.bin": [
+      "3a3a4370f365f73c285ea8a75334f866ef78c2a777371fc4f8cf58f146a0ef11",
+      9632
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/022.start.json": [
+      "2244ead309bd07adb0afa6a5b525049355e972ef6593f222d179c18057f23889",
+      836
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/023.headers.json": [
+      "3d98ad87fb433f78500a62aaa96c63aadc68443a8ef72fab35dc416b5a0b467a",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/023.receipt.json": [
+      "a59509ad1780f317f4edd9bcf3501c941d2d64ab8f328a841d0393ff90c86928",
+      1305
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/023.request.bin": [
+      "15ed59094d5ad74ebc6d3548b624e7ff927784ce299a0b21ab204d60a969ac2d",
+      243
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/023.response.bin": [
+      "126aa023673eb5bebab1632e0dadad3fe11d1e5fe12cc0626d821a99e9972135",
+      9643
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/023.response.partial.bin": [
+      "126aa023673eb5bebab1632e0dadad3fe11d1e5fe12cc0626d821a99e9972135",
+      9643
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/023.start.json": [
+      "c26ca01a47478112fe63598f1065fde89149dad20a6ee2aeb0bfb3073a0c31d5",
+      836
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/024.headers.json": [
+      "e24194493d90865b6de4a9b969358d3a08031cdd5715798ce5a3ad5e034f3135",
+      275
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/024.receipt.json": [
+      "c300cb53b57364ad36fcdaa2c7c0d84775bdc95ae25395533275324122d8b095",
+      1305
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/024.request.bin": [
+      "195ef73efcd7a92c868b4f46c3bffcd7f28456fc4086980b98211119ff2a3f0c",
+      166
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/024.response.bin": [
+      "7e9c7a267756916c48ad1417601456cad86c8cd47ecc1dd8636ecd8264b4c82b",
+      9635
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/024.response.partial.bin": [
+      "7e9c7a267756916c48ad1417601456cad86c8cd47ecc1dd8636ecd8264b4c82b",
+      9635
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/024.start.json": [
+      "11488a40ba720595b82a30b9da40c02c3efcfad5be104138d964089103169c09",
+      836
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/025.headers.json": [
+      "bc221f9efa3dd192730412281dcaaf722857b7cdd7419bc8c8960828186301d7",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/025.receipt.json": [
+      "eaee76723bb56be8b33cb0fe09c598d7e64484c51b8e0aab46c0c5333803716a",
+      1304
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/025.request.bin": [
+      "893080b0cd82aa2d964954fcd9a8e028b220d696b557039efdee2d4ca4a42e8d",
+      173
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/025.response.bin": [
+      "54698a43108a373a1fea874970065bf6cfe5f50b41356dafb39f38acee476790",
+      9644
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/025.response.partial.bin": [
+      "54698a43108a373a1fea874970065bf6cfe5f50b41356dafb39f38acee476790",
+      9644
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/025.start.json": [
+      "75835e7ef14fa946f0975153f86da8803d915532b647fa55465d3acedebb88dc",
+      836
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/026.headers.json": [
+      "4901f2ba91876b591c80daca2a574d525936c46dcce718b4094223dc15d3a8be",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/026.receipt.json": [
+      "5bf2c0a3dd6528daca8dd33ea43f703d18563414933d406b3c7131470b5d304a",
+      1304
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/026.request.bin": [
+      "ff9918b4e9233c000522fd1b1c00bbd513944eab3b2fad1509273ab5f61bb779",
+      471
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/026.response.bin": [
+      "0e78355ac4090200ca5644b3c6e81d8cdb27f491b26cddec0dde166b0471dd8a",
+      9624
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/026.response.partial.bin": [
+      "0e78355ac4090200ca5644b3c6e81d8cdb27f491b26cddec0dde166b0471dd8a",
+      9624
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/026.start.json": [
+      "615ed2d00aa2a99afd1ffc04f729c82ca7cae8eb1191191190afe0659f943420",
+      835
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/027.headers.json": [
+      "a1d861b4cb3161914058607edfcb7c959326da1cb156549468a1e13400e21604",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/027.receipt.json": [
+      "e96fb6a8a86f87c3e817d73e3d0e7b31c9292071b05712fed097e54904d0beae",
+      1310
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/027.request.bin": [
+      "195ef73efcd7a92c868b4f46c3bffcd7f28456fc4086980b98211119ff2a3f0c",
+      166
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/027.response.bin": [
+      "8202e993271f660329ce652b40f680988f7316b0c9c969d1ac4e7b9d6ee94685",
+      9636
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/027.response.partial.bin": [
+      "8202e993271f660329ce652b40f680988f7316b0c9c969d1ac4e7b9d6ee94685",
+      9636
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/027.start.json": [
+      "e43c260eb80fdc96aecdf2cea3417765f13d48b0bdc8ad3c31117b2f75c6cfd6",
+      842
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/028.headers.json": [
+      "25fdaa9160602bdd1aefd42144f1ec7a844a2814e0ff3fa6430008efaa238ab7",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/028.receipt.json": [
+      "36a23f2434ec2bec2f3fae0d3de5924c5c4b95dd49569efeaa866a51a1b37e01",
+      1308
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/028.request.bin": [
+      "893080b0cd82aa2d964954fcd9a8e028b220d696b557039efdee2d4ca4a42e8d",
+      173
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/028.response.bin": [
+      "9b2fbec357e4436519d6520712d395b96626e3054b01986d0817654b73a64498",
+      9645
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/028.response.partial.bin": [
+      "9b2fbec357e4436519d6520712d395b96626e3054b01986d0817654b73a64498",
+      9645
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/028.start.json": [
+      "bc54e540e71eca11c0c337d6e02df3b9f9cb319f65d84a508e334ad3653752f4",
+      840
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/029.headers.json": [
+      "5a5e96ceb7802ef9701dae2a1d4e604657504ebb577d959f3b81d9e1de061999",
+      276
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/029.receipt.json": [
+      "acf5ac36b07b93caad7f468bb19f952f1a225b04d324ad2343b1df64eb62daa9",
+      1120
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/029.request.bin": [
+      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      0
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/029.response.bin": [
+      "498bf120ff9d0c23fbdf052af845a3134c8560c117cc1a5a26f00bff60f40f51",
+      2723
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/029.response.partial.bin": [
+      "498bf120ff9d0c23fbdf052af845a3134c8560c117cc1a5a26f00bff60f40f51",
+      2723
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/029.start.json": [
+      "a58803c331932f6e5832b9d63e1fab7eb856b631a32e0e0c6fb882de5185cec1",
+      651
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/030.headers.json": [
+      "77ac4cc6d802762346a0c862c7dbe73016129827091814a3264f6f7a8a728d45",
+      269
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/030.receipt.json": [
+      "900f34376293700962973c58cce727a46fbebe724d924de2925ee73f77745bed",
+      1108
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/030.request.bin": [
+      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      0
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/030.response.bin": [
+      "e50076c802162f06d674be71ae609ffc626bce1f13170dc88cdb64f6c45bad38",
+      431
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/030.response.partial.bin": [
+      "e50076c802162f06d674be71ae609ffc626bce1f13170dc88cdb64f6c45bad38",
+      431
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire/030.start.json": [
+      "a658c078d4129a386bd3f20a50a2a45fbc9aab24973c25b3f9e673206af73859",
+      647
+    ],
+    "execution-20261014T092307Z-0eccc3a8/wire-to-storage-map.json": [
+      "4fb1e1a75a9a9b999f359df823506b2536fa23e011e735cf0ef6a3a41b6cc5c0",
+      5542
+    ],
+    "fixture-manifest.sha256": [
+      "8a92bd375a38036107165f61f3d44677d4987b45eca87300e36aa2d1e40fd499",
+      3723
+    ],
+    "handoff.md": [
+      "f91cd27085c4576408a735e2b5a6e45c0763375066a480219eba87f32941052d",
+      2470
+    ],
+    "inventory.json": [
+      "ac6f74d57a13a4f4c46087946b76935535e86ed4c7ebfc6f8d15edf1cd1f397a",
+      369
+    ],
+    "metadata-preflight/handoff.md": [
+      "f48e61b5bf6bb69cbadeb19fdaf5daff826ad3e2e3a64c4bcb117e93edec7162",
+      2109
+    ],
+    "metadata-preflight/invocation.json": [
+      "d639f027790891a27d36a492a2004163f00013039eff50bc4461f3196687dfa3",
+      2710
+    ],
+    "metadata-preflight/preflight.py": [
+      "eae0b1d1184fc8020bde5780884c3d5a6956f232fab932bab7eb028f16f68274",
+      1670
+    ],
+    "metadata-preflight/ps.response.bin": [
+      "a6fe9ec6e26a38d99fca418b69826e0238b7a2bb319ff05eb153a6fcfd1fa28d",
+      13
+    ],
+    "metadata-preflight/requests.jsonl": [
+      "060f8550f1e21d3e0d2ad30fed6c7d5bd37308ed16c01574ba4233af5e9f1e1c",
+      1584
+    ],
+    "metadata-preflight/show.response.bin": [
+      "feb45bb371eed428a163e9bfb688c3c5f94b73433108f24c2877bda6d46f4d48",
+      24674
+    ],
+    "metadata-preflight/summary.json": [
+      "b32285305af0ab96b4e244c1a7918556941ce74245c193f4697770803349cfd8",
+      2306
+    ],
+    "metadata-preflight/supervisor.mjs": [
+      "47835a1faa65e59f0d56555c11475b60fa913fba9a441078e019d4ded13da9f1",
+      4532
+    ],
+    "metadata-preflight/tags.response.bin": [
+      "498bf120ff9d0c23fbdf052af845a3134c8560c117cc1a5a26f00bff60f40f51",
+      2723
+    ],
+    "metadata-preflight/version.response.bin": [
+      "390eeacbb33026a8ac714dd132b267c54afe570bef37e0cc313e0de45a779945",
+      20
+    ],
+    "mutation/01-room-cancellations.md": [
+      "f9f7c94917389e20fab23fcb50a22581e434adb8947ee383e4321f3edbea222a",
+      386
+    ],
+    "oracles.json": [
+      "ebc595b0b8c185a81b954e91ccc6671ae62315dba1703ebbf4a64d2f2459a912",
+      3858
+    ],
+    "outside-projects/key-register.md": [
+      "78a79dbc6b8f16c6adf4fdbe7a5f755b4231cdd09e1ec832ff2f0b72f7e182fb",
+      342
+    ],
+    "profile-clarification.json": [
+      "158b9a1527a047a371468c2b1bc5ab6194b4565f277855490607050220fc0c89",
+      1042
+    ],
+    "queries.json": [
+      "4935b57e619d00aa3a081f08af4bb246594bb1b5d3d4baa8f16aa3845c6545d5",
+      3762
+    ],
+    "runner-preparation/basedpyright.json": [
+      "dfd1c6378f659e18dc80fb0f0adfd6a2a1bc27473be914e903497ae481bab0a7",
+      130
+    ],
+    "runner-preparation/control.py": [
+      "f307666224aa23104e1c295bf57d0002f7a1fbf282a9423a5a411a3ec3e1e9d5",
+      14161
+    ],
+    "runner-preparation/runner.py": [
+      "303d75956d241cb5857bdcd8e755b4c3282b3cb77877fedc9c1cb2ace3f35582",
+      29143
+    ],
+    "runner-preparation/supervisor.py": [
+      "d2ae24e25d27c61a3300b0782b9f140a60ec1e5c01b0b21afd457f62a3b2ebcd",
+      8627
+    ],
+    "runner-preparation/test_control.py": [
+      "86cdd2dbe11d0fc0ce3d1f1bea6f160d93db954490777cb1cb61887ed5d8040c",
+      22140
+    ]
+  },
+  "file_count": 368,
+  "total_bytes": 5354788
+}

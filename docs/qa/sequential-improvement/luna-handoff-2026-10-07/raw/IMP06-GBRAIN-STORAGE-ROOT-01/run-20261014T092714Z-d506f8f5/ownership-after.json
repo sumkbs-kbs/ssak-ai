@@ -1,0 +1,10 @@
+{
+  "head": "7802aa1b3043d66a80f6f891c6cf3db039b393a0",
+  "protected_files": 577,
+  "unowned_source_changes": [],
+  "owned_sha256": {
+    "src/antigravity_k/engine/gbrain.py": "ab67f572a199d0b31787c4f6e1bd5aaeb62aaa29175817378e29eb0734269e49",
+    "tests/test_gbrain_storage_root_contract.py": "e0547fc7576a2ac463641417770f0a7c8506b92429754f79bd5daa7c0e1f4922"
+  },
+  "status": " M src/antigravity_k/engine/gbrain.py\n?? tests/test_gbrain_storage_root_contract.py\n"
+}

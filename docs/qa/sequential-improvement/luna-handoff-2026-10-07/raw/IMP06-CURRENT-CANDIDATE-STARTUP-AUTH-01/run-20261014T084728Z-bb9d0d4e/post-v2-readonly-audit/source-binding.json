@@ -1,0 +1,15 @@
+{
+  "api/dependencies.py": "e0996e163a9399d45b8732a0821701a82c211bc5c56e5eae4de678f9cbc7080e",
+  "engine/gbrain.py": "ab67f572a199d0b31787c4f6e1bd5aaeb62aaa29175817378e29eb0734269e49",
+  "engine/failure_memory.py": "ce18580b24b34cc9c7e842b91686a9b6235a49d632f86e0b1c5ca7962caa7067",
+  "engine/engine_context.py": "8759c1e4a7918b8205178bb5ecf05f45a6da448a12a290c033430fa73666c64c",
+  "engine/project_runtime.py": "c466b5fb45a25e8c47113c6d7def9e201a9d43a22227a86b475696252ae0d1d0",
+  "engine/context_shaper.py": "3ffa80968ef54e9ddb6b8f00345955fd0728b84894b19f051c24510ed3c23846",
+  "engine/global_memory_provider.py": "75538522242a80d2293db0907c2e22e27614fcba961cc8dd53b49f80f9ae1afb",
+  "engine/session_manager.py": "a6fefeaba5d6c62d6bde13fa696987835925cd61bda59a6f8937598bf4720e22",
+  "engine/conversation_store.py": "7763f0a1cd80a751da13dcefae5f228c21d6a4e999448e17373beca59f310fbf",
+  "engine/task_runner.py": "5cf8c52389295e52d97888dcd4ddde38c8adcbe6f1751f1586add9276c2c79e1",
+  "engine/benchmark_harness.py": "d89d30e0960c000ba70e582d257fa680c94c8ce56fa8dec869a81fad30cf3eb1",
+  "engine/persistent_agency_store.py": "d0cc2cda1ed658eff0ef6ff05cc1db79861c5fac06dc0799c4f00288f0176d46",
+  "engine/audit_logger.py": "a9000330a45a647a981615ea0bf8124295215221b4b324260054bc9dcef24f41"
+}

@@ -1,0 +1,29 @@
+{
+  "authorization": "PENDING_ROOT_GO",
+  "retrieval_mode": "semantic",
+  "source_root": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+  "candidate_commit": "PENDING_ROOT_PUBLICATION_CAS_AFTER_KEYWORD",
+  "sources": {
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/__init__.py": "d2fc29a4984b56caa48fb4899bb6112cb71fb954ef1fb12a853d3b5d9ba87156",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/config.py": "6721ba3d22f9eb9ce509caf06fcca966f4605f3134d2c4a249aceea803549346",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/__init__.py": "5bbdd42a951d5a9d0de6cc7d360c623185258ae325d3ea534419bde07c9b1d58",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/embeddings.py": "3522ff04d2df755bfeab8dadc1eaa9339b309db46b7c927efba50b9ad998b0cb",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/project_embedding_binding.py": "593d1263f39584ac9ac05347069f03441cc6e0df4f92412372e09502bf169a68",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/vector_store.py": "8c61b1d66b1b2c2ed4e8f3978d2e355bb5fa6166af92f266e15da84fd68984b0",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/rag_indexer.py": "aab8bf7af20d8e4b16743b2d9b47e694417fcaf0503a067b7a2fd88677ae195c",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/model_registry.py": "8febe07ec3e0b00c87b83afd31475727c893885c97f760aadcf3f1409e0e6bda",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/provider_adapters/embedding_providers.py": "7a4655a8135a9c1c94ff8a9db5edd8d0075c9e8fbd8661ed23412c66fbed5e6f",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/long_context_fusion.py": "fa1d42df8d3500a44ccabd0a493771a9e4c86d8805e42c3d73fb7186b4e39823",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/collective_intelligence.py": "5dc3e0c924db0e059ae71e6b169ed94f4ef7e18b2d1c832dd69c62299e4ef549",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/model_manager.py": "43cf767e440c4d2c831bc82bfd22abf4f3679d19fb715ae3acd8d1e6ea3450fd",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/model_router.py": "312d0daeb44e9bda72c231ad7b46963ca5ad376a0c9f3f02172b8d469a87ed8a",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/protocol_translator.py": "f8d42ce763c6e92b6746d67436c1f40b0f4110a86683f8206738042890da24f8",
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/usage_tracker.py": "66ac28231d2e852a99f62cfd39273846d2475bb32ecbc522499da02b0640a2de",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation/control.py": "b06727c85ca7dc82d4b7fe169454e1cf7841a1a816e499f65ae781d64adff2b4",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation/runner.py": "85348181472fef57659c44b843621bf1b3ee5e8e8cea2a8e235a13bbf95d69a9",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation/supervisor.py": "00f5bfc64e9b23d157e0dbe3b990498069f3bae4c698b8b75be9a1421ea45969",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation/test_control.py": "3bcc0d18057a406258a4d570d56c2a83d17fdf7dadcc23bbac5bc1c34110ae10",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/fixture-manifest.sha256": "8a92bd375a38036107165f61f3d44677d4987b45eca87300e36aa2d1e40fd499",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/profile-clarification.json": "158b9a1527a047a371468c2b1bc5ab6194b4565f277855490607050220fc0c89"
+  }
+}

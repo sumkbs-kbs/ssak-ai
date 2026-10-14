@@ -1,0 +1,12 @@
+{
+  "provider": "context",
+  "scenario": "explicit",
+  "denied_mutations": [],
+  "socket_attempts": [],
+  "model_import_attempts": [],
+  "storage_dir": "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-510/test_fresh_storage_root_explic1/explicit",
+  "home_unchanged": true,
+  "round_trip": true,
+  "source_path": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/context_shaper.py",
+  "source_sha256": "5308fec1927d2692e14979e29ae3ff67b3f31de65caa02957cfb31b543e23c0a"
+}

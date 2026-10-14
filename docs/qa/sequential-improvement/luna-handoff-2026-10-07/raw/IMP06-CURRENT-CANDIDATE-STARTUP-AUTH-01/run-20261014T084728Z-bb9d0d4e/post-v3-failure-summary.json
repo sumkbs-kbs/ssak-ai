@@ -1,0 +1,24 @@
+{
+  "overall": "NO_SUCCESS",
+  "scope": "Auth/lifecycle observed; isolation failed",
+  "parent_result_sha256": "4d837337cfd35cd4fc5c47cbd8824a8a979ec8e8b953d0108acca7dfda95d389",
+  "parent_guard_sha256": "9386ccd446d19007138b51a04479b0b415c357a1f583eb5eb17b2230d597910e",
+  "exit": 0,
+  "reaped": true,
+  "group_empty": true,
+  "forced": false,
+  "binds": 1,
+  "model_calls": 0,
+  "guard_violations": [
+    "Unexpected child subprocess: file",
+    "Nonowned filesystem mutation: /Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/.antigravity_k"
+  ],
+  "http_sequence_parent_report": [
+    401,
+    200,
+    200,
+    200
+  ],
+  "private_excluded": "revision-v3/live-once/auth-private/**",
+  "extra_execution": 0
+}

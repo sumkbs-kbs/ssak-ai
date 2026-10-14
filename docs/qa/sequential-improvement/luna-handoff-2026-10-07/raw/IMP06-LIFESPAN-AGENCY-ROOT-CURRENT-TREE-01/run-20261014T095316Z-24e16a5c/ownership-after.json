@@ -1,0 +1,21 @@
+{
+  "head_before": "7482ebb8b76c7c686e729e68c48f7258e2cc7e66",
+  "head_after": "7482ebb8b76c7c686e729e68c48f7258e2cc7e66",
+  "owned_sha256": {
+    "src/antigravity_k/api/server.py": "c94b3be073daa11d758df1a5dac4a30b26b5794679b72defe35bb409109c7500",
+    "tests/test_lifespan_agency_root_contract.py": "fe62bdd200d1b493104e6ab196b906e448fe4bbb066aef55340b51f546e4e0ca"
+  },
+  "independent_protected_python_unchanged": 5184,
+  "owned_source_symlink_aliases": {
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-AGENT-FAILURE-TERMINAL-01/run-20261014T065423Z-boundary/baseline-overlay/src/antigravity_k/api/server.py": {
+      "before_sha256": "2cf6b4e5808b3228878ddd7da07c864c80c223d503963a842e3daa9fef3379fb",
+      "after_sha256": "c94b3be073daa11d758df1a5dac4a30b26b5794679b72defe35bb409109c7500",
+      "link": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/server.py",
+      "resolved_target": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/server.py"
+    }
+  },
+  "staged97_entries_unchanged": true,
+  "index_entries_before_sha256": "aa314a0ddff0ffd65af9e7ae715064271dc773fbdca0fff2627cd50eae5d12d0",
+  "index_entries_after_sha256": "aa314a0ddff0ffd65af9e7ae715064271dc773fbdca0fff2627cd50eae5d12d0",
+  "whole_server_inverse_one_line_matches_preimage": true
+}

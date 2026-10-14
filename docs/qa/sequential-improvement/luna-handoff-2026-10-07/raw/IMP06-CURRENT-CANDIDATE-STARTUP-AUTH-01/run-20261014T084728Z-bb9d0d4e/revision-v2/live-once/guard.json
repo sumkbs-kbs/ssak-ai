@@ -1,0 +1,9 @@
+{
+  "violations": [
+    "Nonowned filesystem mutation: /Users/mr.k/.antigravity/gbrain"
+  ],
+  "binds": 0,
+  "model_calls": 0,
+  "scheduled_ticks": 0,
+  "subprocesses": []
+}

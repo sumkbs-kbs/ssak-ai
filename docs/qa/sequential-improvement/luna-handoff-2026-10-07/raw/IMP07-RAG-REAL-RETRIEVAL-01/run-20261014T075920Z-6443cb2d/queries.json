@@ -1,0 +1,25 @@
+{
+  "status": "FROZEN_BEFORE_EXECUTION",
+  "queries": [
+    {"id":"Q01","group":"controlled","language":"en","text":"How far ahead must an organizer cancel a paid indoor workshop to receive a full refund?"},
+    {"id":"Q02","group":"controlled","language":"en","text":"How can a wheelchair user enter an evening class after the main library doors have closed?"},
+    {"id":"Q03","group":"controlled","language":"en","text":"What must the kitchen do with chilled milk and soft cheese after a long refrigerator power failure?"},
+    {"id":"Q04","group":"controlled","language":"en","text":"Which file format and scanning resolution should the archive use for the preservation master of a donated photograph?"},
+    {"id":"Q05","group":"controlled","language":"en","text":"When is the deposit refunded after a borrowed projector and all its accessories are returned?"},
+    {"id":"Q06","group":"controlled","language":"ko","text":"안내 데스크에 맡긴 분실 열쇠를 주말에 찾으려면 어디로 가야 하나요?"},
+    {"id":"Q07","group":"controlled","language":"ko","text":"옥상 빗물통의 물을 공동 텃밭에서 먹을 채소에 줘도 되나요?"},
+    {"id":"Q08","group":"controlled","language":"ko","text":"행사에 온 어린이의 얼굴 사진을 공개 게시판에 올리기 전에 어떤 동의를 확인해야 하나요?"},
+    {"id":"Q09","group":"controlled","language":"ko","text":"보청기의 텔레코일 기능으로 안내를 들으려면 허브의 어느 위치를 이용해야 하나요?"},
+    {"id":"Q10","group":"controlled","language":"ko","text":"폭염 경보가 내린 평일에 냉방 쉼터는 몇 시부터 몇 시까지 이용할 수 있나요?"},
+    {"id":"Q11","group":"exploratory","language":"en","text":"The market crowd and bright lights are overwhelming, but I am not injured. Where may I take a calm break without making an appointment?"},
+    {"id":"Q12","group":"exploratory","language":"en","text":"My repair will take longer than expected. Can I keep the hub's borrowed screwdriver beyond its due time, and what could prevent that?"},
+    {"id":"Q13","group":"exploratory","language":"en","text":"I was told that a place has opened in a class that was full. How long can I leave that offer unanswered before it goes to someone else?"},
+    {"id":"Q14","group":"exploratory","language":"en","text":"The electricity has failed and my communication device is running flat. Which outlets can still help me, and can I heat water there too?"},
+    {"id":"Q15","group":"exploratory","language":"en","text":"My cycle storage rental has ended but my helmet and jacket are still inside. How long will staff keep those belongings before giving them away?"},
+    {"id":"Q16","group":"exploratory","language":"ko","text":"공동 식사 후 남은 밥과 기름진 반찬을 밭의 흙을 좋게 만드는 재료로 섞어도 될까요?"},
+    {"id":"Q17","group":"exploratory","language":"ko","text":"벽화 작업을 마치고 붓을 헹궜더니 물에 색이 남았어요. 이 물은 어디에 모아야 하나요?"},
+    {"id":"Q18","group":"exploratory","language":"ko","text":"나눔으로 받아 심은 작물이 잘 자랐어요. 다음에 다른 사람도 심을 수 있도록 언제 얼마를 돌려주면 되나요?"},
+    {"id":"Q19","group":"exploratory","language":"ko","text":"행사 진행 언어를 이해하기 어려운 참여자가 내용을 다른 언어로 듣고 싶어 해요. 준비를 맡은 사람에게 얼마나 미리 알려야 하나요?"},
+    {"id":"Q20","group":"exploratory","language":"ko","text":"일회성 모임의 설문까지 끝났는데 참가자 전화번호가 작업 파일과 자동 저장 사본에 남아 있어요. 각각 어떻게 정리하나요?"}
+  ]
+}

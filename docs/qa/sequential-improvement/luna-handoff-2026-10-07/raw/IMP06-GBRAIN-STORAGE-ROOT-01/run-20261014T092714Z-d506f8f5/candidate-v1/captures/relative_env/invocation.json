@@ -1,0 +1,13 @@
+{
+  "nodeid": "tests/test_gbrain_storage_root_contract.py::test_fresh_gbrain_storage_root[relative_env]",
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-506/test_fresh_gbrain_storage_root5/probe.py",
+    "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-506/test_fresh_gbrain_storage_root5",
+    "relative_env"
+  ],
+  "cwd": "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-506/test_fresh_gbrain_storage_root5",
+  "returncode": 0,
+  "home_changed_by_harness": false,
+  "probe_sha256": "c4402ef83defc370b682e21617f12a3ad379012c1e02a3addfd6f552dc48ead2"
+}

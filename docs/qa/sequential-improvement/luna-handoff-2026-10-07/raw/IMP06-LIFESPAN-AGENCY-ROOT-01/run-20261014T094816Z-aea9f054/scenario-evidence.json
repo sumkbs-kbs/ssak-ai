@@ -1,0 +1,44 @@
+{
+  "new_cases": [
+    {
+      "nodeid": "tests/test_lifespan_agency_root_contract.py::test_actual_lifespan_agency_storage_root[default]",
+      "invocation": "candidate-v1/captures/default/invocation.json",
+      "receipt": "candidate-v1/captures/default/receipt.json",
+      "observable": "lifespan entry/exit; actual configured SQLite hook event persistence for absolute/relative, default bridge argument unchanged, RAG/IDE source roots unchanged; guards0"
+    },
+    {
+      "nodeid": "tests/test_lifespan_agency_root_contract.py::test_actual_lifespan_agency_storage_root[relative]",
+      "invocation": "candidate-v1/captures/relative/invocation.json",
+      "receipt": "candidate-v1/captures/relative/receipt.json",
+      "observable": "lifespan entry/exit; actual configured SQLite hook event persistence for absolute/relative, default bridge argument unchanged, RAG/IDE source roots unchanged; guards0"
+    },
+    {
+      "nodeid": "tests/test_lifespan_agency_root_contract.py::test_actual_lifespan_agency_storage_root[absolute]",
+      "invocation": "candidate-v1/captures/absolute/invocation.json",
+      "receipt": "candidate-v1/captures/absolute/receipt.json",
+      "observable": "lifespan entry/exit; actual configured SQLite hook event persistence for absolute/relative, default bridge argument unchanged, RAG/IDE source roots unchanged; guards0"
+    }
+  ],
+  "all_cases": [
+    {
+      "classname": "tests.test_lifespan_agency_root_contract",
+      "name": "test_actual_lifespan_agency_storage_root[absolute]"
+    },
+    {
+      "classname": "tests.test_lifespan_agency_root_contract",
+      "name": "test_actual_lifespan_agency_storage_root[relative]"
+    },
+    {
+      "classname": "tests.test_lifespan_agency_root_contract",
+      "name": "test_actual_lifespan_agency_storage_root[default]"
+    },
+    {
+      "classname": "tests.test_event_bus.TestHookEventBusBridge",
+      "name": "test_bridge_publishes_plain_agent_turn_events"
+    },
+    {
+      "classname": "tests.test_event_bus.TestHookEventBusBridge",
+      "name": "test_bridge_does_not_re_publish_directly_published_kinds"
+    }
+  ]
+}

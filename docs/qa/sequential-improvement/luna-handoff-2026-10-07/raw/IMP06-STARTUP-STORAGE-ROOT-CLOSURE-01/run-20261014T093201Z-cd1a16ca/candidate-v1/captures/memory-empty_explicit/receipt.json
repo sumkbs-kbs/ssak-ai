@@ -1,0 +1,12 @@
+{
+  "provider": "memory",
+  "scenario": "empty_explicit",
+  "denied_mutations": [],
+  "socket_attempts": [],
+  "model_import_attempts": [],
+  "storage_dir": "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-510/test_fresh_storage_root_empty_0/isolated \uc800\uc7a5\uc18c/nested",
+  "home_unchanged": true,
+  "round_trip": true,
+  "source_path": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/global_memory_provider.py",
+  "source_sha256": "79a99810ed8b8346280fcfc1db2bfcfbd384f5f968c6cb46e8908714a30baa4d"
+}

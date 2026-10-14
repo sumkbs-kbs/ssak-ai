@@ -1,0 +1,19 @@
+{
+  "outcome": "NO_SUCCESS",
+  "failures": [
+    "observation:ProbeError"
+  ],
+  "cleanup": {
+    "observed": {
+      "exit_code": 1,
+      "reaped": true,
+      "group_empty": true,
+      "forced": false
+    },
+    "errors": [],
+    "cleanup_deadline": 890472.002636625,
+    "signal_races": 0
+  },
+  "elapsed_seconds": 3.1544814590597525,
+  "terminal_file_written": true
+}

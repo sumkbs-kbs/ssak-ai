@@ -1,0 +1,44 @@
+--- a/startup_probe/guard.py
++++ b/startup_probe/guard.py
+@@ -7,8 +7,10 @@
+ 
+ from __future__ import annotations
+ 
++import hashlib
+ import json
+ import os
++import platform
+ import sys
+ import threading
+ from dataclasses import dataclass, field
+@@ -19,6 +21,8 @@
+ from startup_probe.contract import ProbeError
+ 
+ T = TypeVar("T")
++_FILE_SHA = "8014815e1028410f48966f1880f99c842a5678cf2fcaa010e8d7e9e498f651d0"
++_PLATFORM_SHA = "882e24bdc7bff673962c502d8904cf26d574cf7b1db1e113ecfbcb073aaaeec0"
+ 
+ 
+ @dataclass(slots=True)
+@@ -60,7 +64,20 @@
+             executable = args[0]
+             if isinstance(executable, str):
+                 self.subprocesses.append(executable)
+-                if Path(executable).name not in ("git", "code-server"):
++                if executable in ("file", "/usr/bin/file"):
++                    expected = [executable, "-b", str(Path(sys.executable).resolve())]
++                    environment = args[3]
++                    safe_path = isinstance(environment, dict) and environment.get("PATH") == "/usr/bin:/bin"
++                    if args[1] != expected or not safe_path:
++                        self.deny("Unexpected readonly probe arguments")
++                    file_sha = hashlib.sha256(Path("/usr/bin/file").read_bytes()).hexdigest()
++                    platform_sha = hashlib.sha256(Path(platform.__file__).read_bytes()).hexdigest()
++                    if file_sha != _FILE_SHA or platform_sha != _PLATFORM_SHA:
++                        self.deny("Readonly probe implementation drift")
++                    self.subprocesses.append(
++                        json.dumps({"argv": expected, "file_sha256": file_sha, "platform_sha256": platform_sha})
++                    )
++                elif Path(executable).name not in ("git", "code-server"):
+                     self.deny("Unexpected child subprocess: " + executable)
+ 
+     def profile(self, frame: FrameType, event: str, arg: T) -> None:

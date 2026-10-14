@@ -1,0 +1,63 @@
+{
+  "absolute_deadline_monotonic": 890390.964934958,
+  "elapsed_seconds": 0.011422457988373935,
+  "error": null,
+  "headers": [
+    [
+      "host",
+      "127.0.0.1:11434"
+    ],
+    [
+      "accept",
+      "*/*"
+    ],
+    [
+      "accept-encoding",
+      "gzip, deflate, br"
+    ],
+    [
+      "connection",
+      "keep-alive"
+    ],
+    [
+      "user-agent",
+      "python-httpx/0.28.1"
+    ],
+    [
+      "content-length",
+      "222"
+    ],
+    [
+      "content-type",
+      "application/json"
+    ]
+  ],
+  "input_sha256": [
+    "0b2423c32355762f09ca69d342ce4f61a35d06b206b4de7a1c0bd3a2c97fc26a"
+  ],
+  "method": "POST",
+  "partial_sha256": "00647e3f5431b525f9aced42a87ae20dd18bfc6aa177fedc52c5790573780739",
+  "phase": "queries-a",
+  "received_bytes": 9639,
+  "request_sha256": "f120206443f2c970a54531dee21e58f5f8fba20358acf757a2e2cd908d26d76f",
+  "response_headers": [
+    [
+      "content-type",
+      "application/json; charset=utf-8"
+    ],
+    [
+      "date",
+      "Wed, 14 Oct 2026 09:23:09 GMT"
+    ],
+    [
+      "transfer-encoding",
+      "chunked"
+    ]
+  ],
+  "response_sha256": "00647e3f5431b525f9aced42a87ae20dd18bfc6aa177fedc52c5790573780739",
+  "sequence": 18,
+  "started_monotonic": 890335.964934958,
+  "status": 200,
+  "timeout": 55.0,
+  "url": "http://127.0.0.1:11434/api/embed"
+}

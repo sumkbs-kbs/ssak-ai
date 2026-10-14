@@ -1,0 +1,21 @@
+{
+  "scenario": "default",
+  "denied_mutations": [
+    {
+      "event": "os.mkdir",
+      "path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.antigravity/rag_vectors"
+    }
+  ],
+  "socket_attempts": [],
+  "forbidden_imports": [
+    "chromadb"
+  ],
+  "agency_paths": [],
+  "rag_roots": [],
+  "ide_roots": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai"
+  ],
+  "configured_root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "source_workspace": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "default_bridge_root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai"
+}

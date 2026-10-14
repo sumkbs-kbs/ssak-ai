@@ -1,0 +1,17 @@
+{
+  "status": "APPENDED_BEFORE_INFERENCE",
+  "supersedes_only": "Ambiguous repository wording in frozen acceptance-plan.md and preflight summary; originals remain immutable",
+  "profile": {"name": "nomic-embed-text:latest", "provider": "ollama", "repo": "nomic-embed-text:latest", "role": "embedding", "dimensions": 0, "api_base": "http://127.0.0.1:11434"},
+  "upstream_model_card": "nomic-ai/nomic-embed-text-v1.5",
+  "upstream_model_card_is_wire_model": false,
+  "configured_revision_status": "UNVERIFIED",
+  "observed_preflight_digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+  "retrieval_mode": "semantic",
+  "additional_metadata_requests_planned": ["GET /api/tags immediately before inference", "GET /api/tags after semantic phase", "GET /api/ps after semantic phase"],
+  "historical_metadata_requests": 4,
+  "new_requests_executed_in_preparation": 0,
+  "planned_embedding_requests": 27,
+  "planned_ceiling": 28,
+  "hard_ceiling": 30,
+  "execution_authorization": "PENDING_ROOT_GO_AND_FINAL_SOURCE_FREEZE"
+}

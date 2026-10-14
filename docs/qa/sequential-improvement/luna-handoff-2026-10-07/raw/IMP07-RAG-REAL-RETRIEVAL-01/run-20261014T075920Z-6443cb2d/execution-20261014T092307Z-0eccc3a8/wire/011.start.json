@@ -1,0 +1,45 @@
+{
+  "absolute_deadline_monotonic": 890390.875438541,
+  "error": null,
+  "headers": [
+    [
+      "host",
+      "127.0.0.1:11434"
+    ],
+    [
+      "accept",
+      "*/*"
+    ],
+    [
+      "accept-encoding",
+      "gzip, deflate, br"
+    ],
+    [
+      "connection",
+      "keep-alive"
+    ],
+    [
+      "user-agent",
+      "python-httpx/0.28.1"
+    ],
+    [
+      "content-length",
+      "200"
+    ],
+    [
+      "content-type",
+      "application/json"
+    ]
+  ],
+  "input_sha256": [
+    "482c5d1a26838f9b66f13d90ebba59d926d96303e6b992585c97c98d5879778c"
+  ],
+  "method": "POST",
+  "phase": "queries-a",
+  "request_sha256": "94ea62f46f36a4fb0bd76a43683f77457b85a44c12032d0247e6a05ae61ce9ba",
+  "sequence": 11,
+  "started_monotonic": 890335.875438541,
+  "status": null,
+  "timeout": 55.0,
+  "url": "http://127.0.0.1:11434/api/embed"
+}

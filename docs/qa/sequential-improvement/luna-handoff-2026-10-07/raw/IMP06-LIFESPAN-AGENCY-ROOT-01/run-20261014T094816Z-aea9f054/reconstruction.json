@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "git",
+    "apply",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-LIFESPAN-AGENCY-ROOT-01/run-20261014T094816Z-aea9f054/task-only.patch"
+  ],
+  "returncode": 0,
+  "matches": {
+    "src/antigravity_k/api/server.py": true,
+    "tests/test_lifespan_agency_root_contract.py": true
+  },
+  "head": "7482ebb8b76c7c686e729e68c48f7258e2cc7e66"
+}

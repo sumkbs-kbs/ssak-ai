@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "-c",
+    "from pathlib import Path; files = [\"control.py\", \"runner.py\", \"supervisor.py\", \"test_control.py\"]; [compile(Path(name).read_bytes(), name, \"exec\") for name in files]; print(\"4 compile checks passed\")"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation",
+  "exit": 0,
+  "started_unix": 1791969568.806505,
+  "elapsed_seconds": 0.025188207626342773,
+  "source_before": {
+    "control.py": "f307666224aa23104e1c295bf57d0002f7a1fbf282a9423a5a411a3ec3e1e9d5",
+    "runner.py": "303d75956d241cb5857bdcd8e755b4c3282b3cb77877fedc9c1cb2ace3f35582",
+    "supervisor.py": "d2ae24e25d27c61a3300b0782b9f140a60ec1e5c01b0b21afd457f62a3b2ebcd",
+    "test_control.py": "86cdd2dbe11d0fc0ce3d1f1bea6f160d93db954490777cb1cb61887ed5d8040c"
+  },
+  "source_after": {
+    "control.py": "f307666224aa23104e1c295bf57d0002f7a1fbf282a9423a5a411a3ec3e1e9d5",
+    "runner.py": "303d75956d241cb5857bdcd8e755b4c3282b3cb77877fedc9c1cb2ace3f35582",
+    "supervisor.py": "d2ae24e25d27c61a3300b0782b9f140a60ec1e5c01b0b21afd457f62a3b2ebcd",
+    "test_control.py": "86cdd2dbe11d0fc0ce3d1f1bea6f160d93db954490777cb1cb61887ed5d8040c"
+  },
+  "unchanged": true
+}

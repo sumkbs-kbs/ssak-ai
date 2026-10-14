@@ -1,0 +1,14 @@
+{
+  "revision2-manifest.sha256": {
+    "entries": 29,
+    "all_sha256_match": true
+  },
+  "fixture-manifest.sha256": {
+    "entries": 38,
+    "all_sha256_match": true
+  },
+  "artifact-manifest.sha256": {
+    "entries": 50,
+    "all_sha256_match": true
+  }
+}

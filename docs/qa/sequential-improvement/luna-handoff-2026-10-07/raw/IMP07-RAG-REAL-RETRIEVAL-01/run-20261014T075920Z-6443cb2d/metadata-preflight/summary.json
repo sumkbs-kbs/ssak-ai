@@ -1,0 +1,75 @@
+{
+  "status": "PREPARED_METADATA_AVAILABLE_NOT_INFERRED",
+  "installedModel": {
+    "name": "nomic-embed-text:latest",
+    "model": "nomic-embed-text:latest",
+    "modified_at": "2026-07-23T21:27:03.949784142+09:00",
+    "size": 274302450,
+    "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "nomic-bert",
+      "families": [
+        "nomic-bert"
+      ],
+      "parameter_size": "137M",
+      "quantization_level": "F16",
+      "context_length": 2048,
+      "embedding_length": 768,
+      "runner": "ggml"
+    },
+    "capabilities": [
+      "embedding"
+    ]
+  },
+  "ollamaVersion": {
+    "version": "0.40.3"
+  },
+  "capabilities": [
+    "embedding"
+  ],
+  "advertisedDimensions": {
+    "nomic-bert.embedding_length": 768
+  },
+  "modelInfo": {
+    "general.architecture": "nomic-bert",
+    "general.file_type": 1,
+    "general.parameter_count": 136727040,
+    "nomic-bert.attention.causal": false,
+    "nomic-bert.attention.head_count": 12,
+    "nomic-bert.attention.layer_norm_epsilon": 1e-12,
+    "nomic-bert.block_count": 12,
+    "nomic-bert.context_length": 2048,
+    "nomic-bert.embedding_length": 768,
+    "nomic-bert.feed_forward_length": 3072,
+    "nomic-bert.pooling_type": 1,
+    "nomic-bert.rope.freq_base": 1000,
+    "tokenizer.ggml.bos_token_id": 101,
+    "tokenizer.ggml.cls_token_id": 101,
+    "tokenizer.ggml.eos_token_id": 102,
+    "tokenizer.ggml.mask_token_id": 103,
+    "tokenizer.ggml.model": "bert",
+    "tokenizer.ggml.padding_token_id": 0,
+    "tokenizer.ggml.scores": [],
+    "tokenizer.ggml.seperator_token_id": 102,
+    "tokenizer.ggml.token_type": [],
+    "tokenizer.ggml.token_type_count": 2,
+    "tokenizer.ggml.tokens": [],
+    "tokenizer.ggml.unknown_token_id": 100
+  },
+  "runningModels": {
+    "models": []
+  },
+  "declaredRepository": "nomic-ai/nomic-embed-text-v1.5",
+  "featureConfiguredRevision": "UNVERIFIED",
+  "configuredDimension": 0,
+  "configuredDimensionStatus": "UNKNOWN",
+  "metadataRequestsAttempted": 4,
+  "metadataRequestsSucceeded": 4,
+  "embeddingInferences": 0,
+  "chatInferences": 0,
+  "pulls": 0,
+  "unloads": 0,
+  "limitation": "Installed tag metadata is not an embedding/retrieval result or proof of the declared repository mapping."
+}

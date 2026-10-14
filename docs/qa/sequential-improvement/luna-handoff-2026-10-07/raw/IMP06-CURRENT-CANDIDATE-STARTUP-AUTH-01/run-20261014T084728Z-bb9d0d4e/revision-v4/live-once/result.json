@@ -1,0 +1,17 @@
+{
+  "outcome": "PASS_SCOPED_EXTERNAL_UVICORN_AUTH_LIFESPAN_ON",
+  "failures": [],
+  "cleanup": {
+    "observed": {
+      "exit_code": 0,
+      "reaped": true,
+      "group_empty": true,
+      "forced": false
+    },
+    "errors": [],
+    "cleanup_deadline": 892508.25421975,
+    "signal_races": 0
+  },
+  "elapsed_seconds": 7.2866750420071185,
+  "terminal_file_written": true
+}

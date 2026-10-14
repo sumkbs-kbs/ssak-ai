@@ -1,0 +1,46 @@
+{
+  "scenario": "absolute",
+  "denied_mutations": [],
+  "socket_attempts": [],
+  "forbidden_imports": [],
+  "agency_paths": [
+    "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-520/test_actual_lifespan_agency_st0/owned project/.antigravity_k/agency.db"
+  ],
+  "rag_roots": [
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai"
+  ],
+  "ide_roots": [
+    "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai"
+  ],
+  "configured_root": "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-520/test_actual_lifespan_agency_st0/owned project",
+  "source_workspace": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+  "persisted_events": [
+    [
+      "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-520/test_actual_lifespan_agency_st0/owned project",
+      "hooks",
+      "observation",
+      "{\"event_name\": \"fixture-observation\", \"text\": \"fixture-observation: {\\\"result\\\": \\\"owned\\\"}\"}"
+    ]
+  ],
+  "hook_shutdown": true,
+  "audit_shutdown": true,
+  "ide_shutdown": true,
+  "modules": {
+    "antigravity_k.api.server": {
+      "path": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/server.py",
+      "sha256": "6b5945cefe9d39294a1a3372bf812e9e5d28bd6e190f59846a6b4ce81a7655a7"
+    },
+    "antigravity_k.engine.event_bus": {
+      "path": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/event_bus.py",
+      "sha256": "b96ac8a3b3c5c7c7d08cb0c8a527b8e1bd31744de6cdadc031696a5c7d75d379"
+    },
+    "antigravity_k.engine.persistent_agency": {
+      "path": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/persistent_agency.py",
+      "sha256": "97a2a2e7af41804c84853d98420a0532d03565ed0b7278815fae5aa382fc9ffc"
+    },
+    "antigravity_k.engine.persistent_agency_store": {
+      "path": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/persistent_agency_store.py",
+      "sha256": "d0cc2cda1ed658eff0ef6ff05cc1db79861c5fac06dc0799c4f00288f0176d46"
+    }
+  }
+}

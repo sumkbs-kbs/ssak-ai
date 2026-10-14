@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "-m",
+    "runner-preparation.supervisor",
+    "--freeze",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation/approved-source-freeze-20261014-root.json",
+    "--go",
+    "ROOT_GO",
+    "--python",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d",
+  "started": {
+    "current_time": "2026-10-14 09:23:07 UTC"
+  },
+  "completed": {
+    "current_time": "2026-10-14 09:23:35 UTC"
+  },
+  "initial": {
+    "chunk_id": "6fab03",
+    "wall_time_seconds": 1.001045083,
+    "session_id": 72584,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "completion": {
+    "chunk_id": "6fddd8",
+    "wall_time_seconds": 0.000014417,
+    "exit_code": 0,
+    "original_token_count": 69,
+    "output": "{\"execution\": \"/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/execution-20261014T092307Z-0eccc3a8\", \"exit_code\": 0, \"timed_out\": false, \"remaining_count\": 0}\n"
+  },
+  "scope": "Root observed real supervisor invocation once; no inference replay"
+}

@@ -1,0 +1,9 @@
+{
+  "head": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1",
+  "source_count": 580,
+  "changed_vs_v3": [
+    "src/antigravity_k/api/server.py"
+  ],
+  "plan_sha256": "c74c49e7711f6f848fd475c0e4c1eba4bc18952bb5a00f339bc29fffddaa4f3a",
+  "metadata": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1\n7482ebb8b76c7c686e729e68c48f7258e2cc7e66\nfix: use configured project root for startup agency\n"
+}

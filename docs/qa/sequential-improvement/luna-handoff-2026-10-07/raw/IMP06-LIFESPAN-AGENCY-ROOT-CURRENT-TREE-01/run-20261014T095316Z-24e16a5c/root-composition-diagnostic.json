@@ -1,0 +1,7 @@
+{
+  "target_change_only": true,
+  "preexisting_root_project_root": "str(config.paths.project_root.resolve())",
+  "preexisting_root_rag_native_store": true,
+  "initial_result": "3 failing child fixture composition assertions; adjacent bridge2 pass",
+  "root_test_adjustment_needed": "stub ROOT RAG vector factory and vector-directory helper; preserve ROOT preimage configured-root RAG/IDE args, keep actual agency bridge/controller/SQLite"
+}

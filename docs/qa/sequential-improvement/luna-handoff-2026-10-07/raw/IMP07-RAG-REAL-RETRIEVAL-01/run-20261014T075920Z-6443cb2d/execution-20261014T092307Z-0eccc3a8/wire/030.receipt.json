@@ -1,0 +1,53 @@
+{
+  "absolute_deadline_monotonic": 890346.246290041,
+  "elapsed_seconds": 0.004084459040313959,
+  "error": null,
+  "headers": [
+    [
+      "host",
+      "127.0.0.1:11434"
+    ],
+    [
+      "accept",
+      "*/*"
+    ],
+    [
+      "accept-encoding",
+      "gzip, deflate, br"
+    ],
+    [
+      "connection",
+      "keep-alive"
+    ],
+    [
+      "user-agent",
+      "python-httpx/0.28.1"
+    ]
+  ],
+  "input_sha256": [],
+  "method": "GET",
+  "partial_sha256": "e50076c802162f06d674be71ae609ffc626bce1f13170dc88cdb64f6c45bad38",
+  "phase": "post-ps",
+  "received_bytes": 431,
+  "request_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "response_headers": [
+    [
+      "content-type",
+      "application/json; charset=utf-8"
+    ],
+    [
+      "date",
+      "Wed, 14 Oct 2026 09:23:09 GMT"
+    ],
+    [
+      "content-length",
+      "431"
+    ]
+  ],
+  "response_sha256": "e50076c802162f06d674be71ae609ffc626bce1f13170dc88cdb64f6c45bad38",
+  "sequence": 30,
+  "started_monotonic": 890336.246290041,
+  "status": 200,
+  "timeout": 10.0,
+  "url": "http://127.0.0.1:11434/api/ps"
+}

@@ -1,0 +1,14 @@
+{
+  "models": {
+    "embedding": [
+      {
+        "api_base": "http://127.0.0.1:11434",
+        "dimensions": 0,
+        "name": "nomic-embed-text:latest",
+        "provider": "ollama",
+        "repo": "nomic-embed-text:latest",
+        "role": "embedding"
+      }
+    ]
+  }
+}

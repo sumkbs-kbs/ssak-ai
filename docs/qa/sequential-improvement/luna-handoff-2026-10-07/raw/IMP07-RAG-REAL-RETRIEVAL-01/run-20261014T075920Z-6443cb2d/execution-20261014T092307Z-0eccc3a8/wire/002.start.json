@@ -1,0 +1,74 @@
+{
+  "absolute_deadline_monotonic": 890389.76742075,
+  "error": null,
+  "headers": [
+    [
+      "host",
+      "127.0.0.1:11434"
+    ],
+    [
+      "accept",
+      "*/*"
+    ],
+    [
+      "accept-encoding",
+      "gzip, deflate, br"
+    ],
+    [
+      "connection",
+      "keep-alive"
+    ],
+    [
+      "user-agent",
+      "python-httpx/0.28.1"
+    ],
+    [
+      "content-length",
+      "11531"
+    ],
+    [
+      "content-type",
+      "application/json"
+    ]
+  ],
+  "input_sha256": [
+    "b777c3e238137543168d6febdb0f65860bce6de71f943a112e879d0fb5b565fa",
+    "9fb8cd6d5cbbace67c4fecbb08c97aea5a3ca8f8716f30ab37f80ef316682147",
+    "5b742a8b940f7030daf5826a5d9091d96fd5432446561587ca449e848a77497e",
+    "5a7b00d7e8fd9647e4ef1bcd57ee7ee0c2fe787372747390547d38a4abafec57",
+    "698a4d4bcdd8b961063b8a4c0b72b05c786e1595709a178f676f18f9a0b26399",
+    "166a14d6e6a6bb1663a9a43af9f516aea43e645a999af2f5b8d22332e4eac668",
+    "afb45714bd390fb02262283e00bd45c61597b849cef30634ff27f7a4f38366e2",
+    "845c3463efd96d369f8511a0bfbbf5891623e7065722dda191bb67d7864be08d",
+    "7101f038f5e5fadbf40c885474c9d3feffe0d4823dbb6a222a3124720f8784c7",
+    "3908a7291ef82b296b8bb4bfbe012b55dd6d8dad492957f86219adeda39d75ef",
+    "bd693bee476fab133bca21ea2128f41e355473d5dfe0d3d6538b6856c0d58014",
+    "51cd6a16419497546901c0a1ee92f20b83f37ac31a2ca53e7e54d19e6ae6e264",
+    "565261e180ffbb1e882604f5b197e069da79b86d68eca6f354e0b0dcba962a6e",
+    "de538b295824b9c5cbc55af94ecffc7fd08c965cb52575707e00cce59b74bf8d",
+    "aad8268fe666856954dfbf72db424ca401eaa57be54539f439f648a23757bacd",
+    "1b353536324324aa4339988e10a19e7360569b1aa21d6a476e1915010e27fbda",
+    "c6252a3825225c8816a974f78740f0213580227a62a340b06c094dad92e8363b",
+    "0d3c318c2c28cc833858ed5f321ddc9fca267c64a97dc7344a40467f12f3b302",
+    "aa43b13973f1b8dbb1dc274028a89752b51b9b44d0f03930182d44f114d42985",
+    "f7852e3dd6a6d5c304e39e026d00bf96e95afdf31763f5c1fe850555e62e51fc",
+    "e1c8e1529add8a919b9cb555fd64a31e31ad4158df9d6d791acfb4cb7d53370b",
+    "9096923fc9164d39da03c199ecb1a17a3f64f4414e27c2ac0a58cc9a2528b49b",
+    "5438575480138737f913dbe2a933f3b074d1d173126bd1003476cd36eeedb048",
+    "1de911ea4ec1cbe79a4ed4a999e6c9d3b815c8064c9f1eaf2869a4131e7196a6",
+    "d43db68ba719d88461e7936f70f5727170efb346c963348105aa4c650ad98d96",
+    "f5e3692103177529049072c99093564cc95c1c066ee05c6e145b745e52fc408f",
+    "ad6d4c61ffe05a7ced49c0bf4a9c3ebb26dfe1155ca02a25f5aa7beee715af00",
+    "f08ee4e1ad30a20e2b35b668e46a6fe4a19c670adfa00af317a9230c91b50f19",
+    "2a287cfd43e5421a274aa8b6f26d4930d0e8f55290996ccb408d90ecefe02ca7",
+    "a51793a659a1e959072e077619edf660b3bccd7d1091f6fbb1597ca70fcfbde2"
+  ],
+  "method": "POST",
+  "phase": "index-a",
+  "request_sha256": "27c08d6eb5ba0a05441e2e9b2d265be6b864e70fd7e03d51df22053b8fbdee02",
+  "sequence": 2,
+  "started_monotonic": 890334.76742075,
+  "status": null,
+  "timeout": 55.0,
+  "url": "http://127.0.0.1:11434/api/embed"
+}

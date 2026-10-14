@@ -1,0 +1,1 @@
+search_graph(project=Ssak-Ai,name_pattern=GBrain) failed Transport closed; full constructor/module read at exact gbrain.py path. Core README authority and CONTEXT_AND_MEMORY reread.

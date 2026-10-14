@@ -1,0 +1,74 @@
+[
+  {
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[explicit-context]",
+    "invocation": "candidate-v1/captures/context-explicit/invocation.json",
+    "receipt": "candidate-v1/captures/context-explicit/receipt.json",
+    "observable": "exit0, storage directory and roundtrip assertions, unchanged HOME, guarded NN/native backend import0/socket0/nonowned mutation0"
+  },
+  {
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[empty_env-memory]",
+    "invocation": "candidate-v1/captures/memory-empty_env/invocation.json",
+    "receipt": "candidate-v1/captures/memory-empty_env/receipt.json",
+    "observable": "exit0, storage directory and roundtrip assertions, unchanged HOME, guarded NN/native backend import0/socket0/nonowned mutation0"
+  },
+  {
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[relative_env-context]",
+    "invocation": "candidate-v1/captures/context-relative_env/invocation.json",
+    "receipt": "candidate-v1/captures/context-relative_env/receipt.json",
+    "observable": "exit0, storage directory and roundtrip assertions, unchanged HOME, guarded NN/native backend import0/socket0/nonowned mutation0"
+  },
+  {
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[empty_env-context]",
+    "invocation": "candidate-v1/captures/context-empty_env/invocation.json",
+    "receipt": "candidate-v1/captures/context-empty_env/receipt.json",
+    "observable": "exit0, storage directory and roundtrip assertions, unchanged HOME, guarded NN/native backend import0/socket0/nonowned mutation0"
+  },
+  {
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[relative_env-memory]",
+    "invocation": "candidate-v1/captures/memory-relative_env/invocation.json",
+    "receipt": "candidate-v1/captures/memory-relative_env/receipt.json",
+    "observable": "exit0, storage directory and roundtrip assertions, unchanged HOME, guarded NN/native backend import0/socket0/nonowned mutation0"
+  },
+  {
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[empty_explicit-context]",
+    "invocation": "candidate-v1/captures/context-empty_explicit/invocation.json",
+    "receipt": "candidate-v1/captures/context-empty_explicit/receipt.json",
+    "observable": "exit0, storage directory and roundtrip assertions, unchanged HOME, guarded NN/native backend import0/socket0/nonowned mutation0"
+  },
+  {
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[default-memory]",
+    "invocation": "candidate-v1/captures/memory-default/invocation.json",
+    "receipt": "candidate-v1/captures/memory-default/receipt.json",
+    "observable": "exit0, storage directory and roundtrip assertions, unchanged HOME, guarded NN/native backend import0/socket0/nonowned mutation0"
+  },
+  {
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[env-context]",
+    "invocation": "candidate-v1/captures/context-env/invocation.json",
+    "receipt": "candidate-v1/captures/context-env/receipt.json",
+    "observable": "exit0, storage directory and roundtrip assertions, unchanged HOME, guarded NN/native backend import0/socket0/nonowned mutation0"
+  },
+  {
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[explicit-memory]",
+    "invocation": "candidate-v1/captures/memory-explicit/invocation.json",
+    "receipt": "candidate-v1/captures/memory-explicit/receipt.json",
+    "observable": "exit0, storage directory and roundtrip assertions, unchanged HOME, guarded NN/native backend import0/socket0/nonowned mutation0"
+  },
+  {
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[default-context]",
+    "invocation": "candidate-v1/captures/context-default/invocation.json",
+    "receipt": "candidate-v1/captures/context-default/receipt.json",
+    "observable": "exit0, storage directory and roundtrip assertions, unchanged HOME, guarded NN/native backend import0/socket0/nonowned mutation0"
+  },
+  {
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[env-memory]",
+    "invocation": "candidate-v1/captures/memory-env/invocation.json",
+    "receipt": "candidate-v1/captures/memory-env/receipt.json",
+    "observable": "exit0, storage directory and roundtrip assertions, unchanged HOME, guarded NN/native backend import0/socket0/nonowned mutation0"
+  },
+  {
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[empty_explicit-memory]",
+    "invocation": "candidate-v1/captures/memory-empty_explicit/invocation.json",
+    "receipt": "candidate-v1/captures/memory-empty_explicit/receipt.json",
+    "observable": "exit0, storage directory and roundtrip assertions, unchanged HOME, guarded NN/native backend import0/socket0/nonowned mutation0"
+  }
+]

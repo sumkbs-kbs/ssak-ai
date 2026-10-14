@@ -1,0 +1,12 @@
+{
+  "provider": "memory",
+  "scenario": "relative_env",
+  "denied_mutations": [],
+  "socket_attempts": [],
+  "model_import_attempts": [],
+  "storage_dir": "relative store",
+  "home_unchanged": true,
+  "round_trip": true,
+  "source_path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/global_memory_provider.py",
+  "source_sha256": "79a99810ed8b8346280fcfc1db2bfcfbd384f5f968c6cb46e8908714a30baa4d"
+}

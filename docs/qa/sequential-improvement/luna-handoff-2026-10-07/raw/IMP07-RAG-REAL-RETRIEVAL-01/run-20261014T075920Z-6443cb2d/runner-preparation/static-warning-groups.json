@@ -1,0 +1,38 @@
+{
+  "status": "ERROR_ONLY_PASS_WITH_WARNINGS",
+  "actual_exit": 1,
+  "summary": "0 errors, 231 warnings, 0 notes",
+  "groups": {
+    "reportUnannotatedClassAttribute": 6,
+    "reportUnusedCallResult": 31,
+    "reportImplicitOverride": 7,
+    "reportUnknownParameterType": 27,
+    "reportMissingParameterType": 29,
+    "reportUnknownArgumentType": 47,
+    "reportUnknownMemberType": 37,
+    "reportUnknownVariableType": 28,
+    "reportUnknownLambdaType": 1,
+    "reportAny": 17,
+    "reportPrivateUsage": 1
+  },
+  "per_file": {
+    "control.py": 33,
+    "runner.py": 98,
+    "supervisor.py": 6,
+    "test_control.py": 94
+  },
+  "first_example_per_category": {
+    "reportUnannotatedClassAttribute": "control.py:31:5 - warning: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)",
+    "reportUnusedCallResult": "control.py:104:5 - warning: Result of call expression is of type \"int\" and is not used; assign to variable \"_\" if this is intentional (reportUnusedCallResult)",
+    "reportImplicitOverride": "control.py:318:13 - warning: Method \"connect\" is not marked as override but is overriding a method in class \"socket\" (reportImplicitOverride)",
+    "reportUnknownParameterType": "control.py:318:27 - warning: Type of parameter \"address\" is unknown (reportUnknownParameterType)",
+    "reportMissingParameterType": "control.py:318:27 - warning: Type annotation is missing for parameter \"address\" (reportMissingParameterType)",
+    "reportUnknownMemberType": "runner.py:67:5 - warning: Type of \"get_stats\" is unknown (reportUnknownMemberType)",
+    "reportUnknownVariableType": "runner.py:68:5 - warning: Type of \"collection\" is unknown (reportUnknownVariableType)",
+    "reportUnknownLambdaType": "runner.py:73:65 - warning: Return type of lambda is unknown (reportUnknownLambdaType)",
+    "reportAny": "runner.py:127:9 - warning: Return type is Any (reportAny)",
+    "reportPrivateUsage": "runner.py:474:45 - warning: \"_closed\" is protected and used outside of the class in which it is declared (reportPrivateUsage)"
+  },
+  "new_QA_warnings_not_preexisting_baseline": true,
+  "standalone_import_diagnostic_setting": "basedpyright.json disables reportImplicitRelativeImport only, because these four files are directly executed scripts; no Any casts/suppressions added"
+}

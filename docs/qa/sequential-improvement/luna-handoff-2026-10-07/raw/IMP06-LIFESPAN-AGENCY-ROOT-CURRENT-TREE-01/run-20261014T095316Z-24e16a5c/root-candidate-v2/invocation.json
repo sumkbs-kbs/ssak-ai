@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-p",
+    "root_fixture_overlay",
+    "-o",
+    "pythonpath=src:.",
+    "tests/test_lifespan_agency_root_contract.py",
+    "tests/test_event_bus.py::TestHookEventBusBridge",
+    "-q",
+    "--tb=short",
+    "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-LIFESPAN-AGENCY-ROOT-CURRENT-TREE-01/run-20261014T095316Z-24e16a5c/root-candidate-v2/junit.xml"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "env_overrides": {
+    "PYTHONPATH": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-LIFESPAN-AGENCY-ROOT-CURRENT-TREE-01/run-20261014T095316Z-24e16a5c:/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src:/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+    "LIFESPAN_AGENCY_CAPTURE_ROOT": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-LIFESPAN-AGENCY-ROOT-CURRENT-TREE-01/run-20261014T095316Z-24e16a5c/root-candidate-v2/captures",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "source_sha256": {
+    "src/antigravity_k/api/server.py": "c94b3be073daa11d758df1a5dac4a30b26b5794679b72defe35bb409109c7500",
+    "tests/test_lifespan_agency_root_contract.py": "fe62bdd200d1b493104e6ab196b906e448fe4bbb066aef55340b51f546e4e0ca"
+  }
+}

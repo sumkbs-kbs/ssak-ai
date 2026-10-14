@@ -1,0 +1,42 @@
+{
+  "status": "PREPARED_OFFLINE_VERIFIED",
+  "independent_review": "PENDING",
+  "live_approval": "NOT_ISSUED",
+  "live_execution": "NOT_RUN",
+  "offline_tests": 24,
+  "checks": {
+    "pytest": 0,
+    "ruff": 0,
+    "format": 0,
+    "types": 0,
+    "compile": 0
+  },
+  "boundary": {
+    "attempts": [],
+    "product_modules": [],
+    "exitstatus": 0
+  },
+  "candidate_head": "7802aa1b3043d66a80f6f891c6cf3db039b393a0",
+  "app_version": "0.1.0",
+  "plan": "plan.json",
+  "source_binding": "source-binding.json",
+  "staged_sha256_unchanged": "84297d5d47940af4560187d6b9f531b3b1eed5a7fa6cd1dca20c4da48fddab6f",
+  "initial_errors": [
+    "Directory helper system Python3.9 could not import datetime.UTC before directory creation; original tool transcript only.",
+    "precheck-v1 import sorting and package import-boundary diagnostics preserved.",
+    "precheck-v2 24 PASS with one pytest cache write warning under /dev; no cache created there, final plugin disables cacheprovider."
+  ],
+  "changed_candidates": [
+    "Wall-clock client request bound and expanded model/default embedding guard after first pass.",
+    "Installed Uvicorn SIGTERM replay inspected; graceful stop-file protocol added before any live execution.",
+    "Approval includes package init; full_access and persistent auth-file acceptance checks added."
+  ],
+  "limitations": [
+    "Actual startup/auth/runtime-health/shutdown/OS reap are unobserved until GO.",
+    "Guard audits Python sockets and model entrypoints; no OS packet-capture or native extension network claim.",
+    "Real lifespan source-derived RAG scan remains enabled and may read candidate source.",
+    "Scheduled jobs remain active; observed ticks counted, never suppressed.",
+    "Optional startup failures remain in genuine stderr; no product exception suppression or dependency override.",
+    "Secret PIN/JWT/raw login and server raw logs stay under auth-private and must never be published."
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "status": "REVIEW_PENDING_NO_GO",
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v3",
+  "environment": {
+    "PYTHONPATH": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v3",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-m",
+    "startup_probe.supervisor",
+    "<NEW_EXPLICIT_APPROVAL_JSON>"
+  ],
+  "required_approval": "approval-required.json",
+  "owned_attempt": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v3/live-once",
+  "budget_seconds": 90,
+  "requests": [
+    "GET /api/system/access-mode unauthenticated",
+    "POST /api/auth/login temporary PIN",
+    "GET /api/system/access-mode Bearer",
+    "GET /v1/health Bearer"
+  ],
+  "private_excluded": "live-once/auth-private/**"
+}

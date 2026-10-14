@@ -1,0 +1,20 @@
+{
+  "app_source": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/api/server.py",
+  "app_version": "0.1.0",
+  "python": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+  "candidate_head": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1",
+  "versions": {
+    "uvicorn": "0.48.0",
+    "fastapi": "0.136.3",
+    "python-dotenv": "1.2.2",
+    "pydantic": "2.13.4"
+  },
+  "source_derived_rag_root": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+  "configured_project_root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/live-once/project_root",
+  "configured_data_dir": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/live-once/data_dir",
+  "configured_vectors_dir": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/live-once/vectors_dir",
+  "configured_pin_hash_file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/live-once/auth-private/pin-hash",
+  "configured_token_secret_file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/live-once/auth-private/token-secret",
+  "lifespan": "on",
+  "dependency_overrides": 0
+}

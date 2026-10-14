@@ -1,0 +1,26 @@
+{
+  "candidates": [
+    {
+      "absent_48_hour_fact": true,
+      "canonical_content": true,
+      "current_provenance": true,
+      "current_source_hash": true,
+      "current_stored_content": true,
+      "id": "68a0df1077becb3d",
+      "passed": true,
+      "rank": 1,
+      "returned_24_hour_fact": true,
+      "returned_content_sha256": "f9f7c94917389e20fab23fcb50a22581e434adb8947ee383e4321f3edbea222a"
+    }
+  ],
+  "canonical_content_stripped_sha256": "5f69b465ac82181815a37d7f193f233c39ad9332afe09b6a420b8335c2374ce2",
+  "canonical_source": "01-room-cancellations.md",
+  "content_changed": true,
+  "expected_source_md5": "06d28f5586b5c2d59d7bc90dc5d461f7",
+  "passed": true,
+  "previous_content_stripped_sha256": "43a8be61991dab128cc789ed951dcf46169f86cf208318410bc6f3acce53fbf1",
+  "previous_source_md5": "10834f445adadc32b5d4e5216a270c21",
+  "query_id": "Q01",
+  "rank": 1,
+  "source_changed": true
+}

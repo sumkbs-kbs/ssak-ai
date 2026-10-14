@@ -1,0 +1,49 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/startup_entry.py:8:1
+   |
+ 6 |   """Genuine product lifespan and Uvicorn entry, with observation-only guards."""
+ 7 |
+ 8 | / from __future__ import annotations
+ 9 | |
+10 | | import os
+11 | | import socket
+12 | | import sys
+13 | | from pathlib import Path
+14 | |
+15 | | import uvicorn
+16 | |
+17 | | from startup_contract import ProbeError, SourcePlan, Started, verify_sources
+18 | | from startup_guard import Guard
+   | |_______________________________^
+   |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/test_startup_contract.py:8:1
+   |
+ 6 |   """Pure contract checks; no product import, socket, HTTP, Chroma, or process launch."""
+ 7 |
+ 8 | / import json
+ 9 | | from pathlib import Path
+10 | |
+11 | | import pytest
+12 | | from pydantic import ValidationError
+13 | |
+14 | | from startup_contract import (
+15 | |     Cleanup,
+16 | |     ProbeError,
+17 | |     SourcePlan,
+18 | |     Started,
+19 | |     child_environment,
+20 | |     digest,
+21 | |     remaining,
+22 | |     require_approval,
+23 | |     verify_sources,
+24 | | )
+25 | | from startup_guard import Guard
+   | |_______________________________^
+   |
+help: Organize imports
+
+Found 2 errors.
+[*] 2 fixable with the `--fix` option.

@@ -1,0 +1,8 @@
+{
+  "command": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-c",
+    "import json,sys,platform,hashlib;from pathlib import Path;from pydantic import ValidationError;from startup_probe.contract import SourcePlan,verify_sources;from startup_probe.guard import _FILE_SHA,_PLATFORM_SHA;p=SourcePlan.model_validate_json(Path(\"plan.json\").read_bytes());verify_sources(p);raw=p.model_dump();raw[\"extra\"]=1\ntry:SourcePlan.model_validate(raw)\nexcept ValidationError:pass\nelse:raise AssertionError(\"extra accepted\")\nassert hashlib.sha256(Path(\"/usr/bin/file\").read_bytes()).hexdigest()==_FILE_SHA;assert hashlib.sha256(Path(platform.__file__).read_bytes()).hexdigest()==_PLATFORM_SHA;assert not any(n.startswith((\"antigravity_k\",\"uvicorn\",\"chromadb\")) for n in sys.modules);print(json.dumps({\"status\":\"PASS\",\"sources\":len(p.source_hashes),\"backend_imports\":0,\"file_path\":\"/usr/bin/file\",\"file_sha256\":_FILE_SHA,\"platform_path\":platform.__file__,\"platform_sha256\":_PLATFORM_SHA,\"interpreter_target\":str(Path(sys.executable).resolve())}))"
+  ],
+  "exit": 0
+}

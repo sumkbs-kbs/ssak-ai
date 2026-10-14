@@ -1,0 +1,190 @@
+{
+  "parent-preservation-before.json": {
+    "bytes": 10803,
+    "sha256": "80f39b8c79fc0a3fb647856d73aed001c7a1d7185f135abba5c7ea8503a23ed7"
+  },
+  "test_environment_delta.py": {
+    "bytes": 1291,
+    "sha256": "924fb9fac217a7edf06601fab0e453ea6b7ba4d3dfd81998cb5d19c866a2d757"
+  },
+  "format-preparation.stdout": {
+    "bytes": 19,
+    "sha256": "413a709001976657cb743636fd34e48fc41d8d302d665460d3f874b3313da127"
+  },
+  "source-binding.json": {
+    "bytes": 926,
+    "sha256": "3e2e9078870ac502d627389a026a78d2497c7f6c795038028d3cfb33752628fd"
+  },
+  "approval-required.json": {
+    "bytes": 820,
+    "sha256": "6cf5b443eba02b7c82e830b8b567b64536b05d1fa21160f1cc6d058dfd11ea35"
+  },
+  "plan-check.stdout": {
+    "bytes": 85,
+    "sha256": "41004dc4f0273014f9db4f1ffb04b4c086cdfa4b2a14e09a7aa1a178be77ab29"
+  },
+  "test_startup_contract.py": {
+    "bytes": 5781,
+    "sha256": "c6ba70ebf49de0beb087a37c3d34c8a0b78811581e62dabdca801c8484b258ef"
+  },
+  "plan.json": {
+    "bytes": 70832,
+    "sha256": "b11e6b51b145fe28954ffd641da99a46b625ddfd65c179c0936a538766405dd9"
+  },
+  "env-only.patch": {
+    "bytes": 790,
+    "sha256": "ddd4668ad5165352117f20d70115f43e4b223911c0d0a138181069c5da034b41"
+  },
+  "test_lifecycle_contract.py": {
+    "bytes": 8187,
+    "sha256": "8977b51ffbd3b3c42c7a4b5f837d12b69d890df4e82717b24282443f45f76bb5"
+  },
+  "plan-check.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "preservation.json": {
+    "bytes": 112,
+    "sha256": "8984096764b0cae97ac4b0c60fe7923be94ebf60c09bf9334a3ffc2bdbbf3673"
+  },
+  "format-preparation.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "plan-check-receipt.json": {
+    "bytes": 741,
+    "sha256": "4813ac17c58582ae1345458527da2322e456655cf90b004bd6eca8dda00e246b"
+  },
+  "source-binding-final.json": {
+    "bytes": 1027,
+    "sha256": "40d9542ec3b505869bc4c22060c5bb352ae7f9b0be5548eb6fc65f76de28953f"
+  },
+  "result-env.json": {
+    "bytes": 493,
+    "sha256": "54f6eeef0ea3663cf5c458c5cf70e65f5637926e8f9e57fc8afe68557f3568c1"
+  },
+  "offline_guard.py": {
+    "bytes": 1092,
+    "sha256": "caac88c7c9f8efe39d225a5344c1dd5d274f267187df837edc29600c7d3f42b1"
+  },
+  "execution-packet.json": {
+    "bytes": 1192,
+    "sha256": "79adf3dc81d85db0e32fb5de6c3148368be108294f28ae862a075d6216acaa3f"
+  },
+  "plan-state.json": {
+    "bytes": 174,
+    "sha256": "81835bc3492af22a404c53ddec609a4907ef9634fd57e6491709758279577cc4"
+  },
+  "plan-rebinding.json": {
+    "bytes": 361,
+    "sha256": "b9b2229189300f297939afc35ce7991c47c0a395ac638f981eba47bc7b94c29e"
+  },
+  "HANDOFF.md": {
+    "bytes": 1563,
+    "sha256": "23fb20f900d053ca841e8fa2bce9616b661fb3d249b048dd33a7e81c0402844c"
+  },
+  "preimage/contract.py": {
+    "bytes": 5210,
+    "sha256": "8f59aa436c4001c524372d20e9f4c738ab935fe2da917d5af63d6fa921f7d75b"
+  },
+  "green-env/sources.json": {
+    "bytes": 573,
+    "sha256": "8053b0451b599c266ca4f57bc8edc0ff2449f33f814d9a3957741221fd3a1f2c"
+  },
+  "green-env/ruff.stdout": {
+    "bytes": 19,
+    "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+  },
+  "green-env/receipts.json": {
+    "bytes": 3201,
+    "sha256": "32c1dba1e1c85ffc759d27fa064997159a30f69daabbc16e1f663dcc22a2946c"
+  },
+  "green-env/ruff.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "green-env/compile.stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "green-env/types.stdout": {
+    "bytes": 30,
+    "sha256": "56882e01cb80173ef053c4096e4ee43e3123a15f5c0a06715f96988d48fbd91c"
+  },
+  "green-env/pytest.stdout": {
+    "bytes": 98,
+    "sha256": "fac8aaadc73a18f429accef33900b10cfd78bd95c7687ad6e7c91bc437aa1b8d"
+  },
+  "green-env/format.stdout": {
+    "bytes": 26,
+    "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938"
+  },
+  "green-env/format.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "green-env/boundary.json": {
+    "bytes": 64,
+    "sha256": "e570f20f0174915ed650c9db76a1109ccbf92faba46945bb0fb246fc6d781079"
+  },
+  "green-env/junit.xml": {
+    "bytes": 952,
+    "sha256": "32531d123f0f25c1c797e2f8ad54484885205014adebd9ac25fb2a8cc2d8cbd5"
+  },
+  "green-env/pytest.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "green-env/compile.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "green-env/types.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "startup_probe/supervisor.py": {
+    "bytes": 9278,
+    "sha256": "601443f766ea34895b6bc66bd950d87b84befb1ee367d3c0dbd2bcce401e983a"
+  },
+  "startup_probe/__init__.py": {
+    "bytes": 49,
+    "sha256": "b0ccb5435166718880491cb1f91fb403e816b1cb57033e268cad926123a51474"
+  },
+  "startup_probe/lifecycle.py": {
+    "bytes": 7135,
+    "sha256": "cfa1b46e40410d5605ff56e9488187778386e977b0d09f7de618dc381a6c195a"
+  },
+  "startup_probe/entry.py": {
+    "bytes": 4382,
+    "sha256": "aa1833e0c2bf28e0b9fcd446d6a7ec49470c6c4f71d15151ab512aecb9635a44"
+  },
+  "startup_probe/guard.py": {
+    "bytes": 4089,
+    "sha256": "4f21ec469f05506e45d4d8b7b8cbb72b98ea27b4606910c1106d3e268473ec8b"
+  },
+  "startup_probe/contract.py": {
+    "bytes": 5598,
+    "sha256": "3aafa7a1b4a01513bdeac0de014926b476a7964be5b80c04832a6b3eb8b06812"
+  },
+  "red-env/stdout": {
+    "bytes": 6929,
+    "sha256": "1bfd51fbdd14489067cab9054ecaae78f82d79676aa6a053f23629e0de472e72"
+  },
+  "red-env/stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "red-env/boundary.json": {
+    "bytes": 64,
+    "sha256": "12d43c6a64390650e23ceba9003f2c216b054cbbe47a6707673c0e8f0d7952d9"
+  },
+  "red-env/junit.xml": {
+    "bytes": 6830,
+    "sha256": "0c071f3dc3ce96f159f4ba07c10ee85560787a95b6437bd597b1a3bc428607eb"
+  },
+  "red-env/receipt.json": {
+    "bytes": 670,
+    "sha256": "0f55a7ba1b5141ce096ab9a7e220c31135fa126b85292ec17ba4796d1fb1f50d"
+  }
+}

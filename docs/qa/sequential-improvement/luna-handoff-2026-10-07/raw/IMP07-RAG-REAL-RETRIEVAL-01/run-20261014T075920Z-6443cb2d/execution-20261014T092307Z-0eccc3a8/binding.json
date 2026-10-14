@@ -1,0 +1,12 @@
+{
+  "configured_dimensions": 0,
+  "document_prefix": "search_document: ",
+  "endpoint": "http://127.0.0.1:11434",
+  "profile_name": "nomic-embed-text:latest",
+  "provider": "ollama",
+  "query_prefix": "search_query: ",
+  "version": 1,
+  "weight_revision": null,
+  "weight_revision_status": "UNVERIFIED",
+  "wire_model": "nomic-embed-text:latest"
+}

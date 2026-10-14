@@ -1,0 +1,8 @@
+{
+  "command": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-c",
+    "import json,sys; from pathlib import Path; from startup_probe.contract import SourcePlan,verify_sources; from pydantic import ValidationError; p=SourcePlan.model_validate_json(Path(\"plan.json\").read_bytes()); verify_sources(p); raw=p.model_dump(); raw[\"unexpected\"]=True\ntry: SourcePlan.model_validate(raw)\nexcept ValidationError: pass\nelse: raise AssertionError(\"extra field accepted\")\nassert not any(n.startswith((\"antigravity_k\",\"uvicorn\",\"chromadb\")) for n in sys.modules); print(json.dumps({\"sources\":len(p.source_hashes),\"extra_fields\":\"rejected\",\"backend_imports\":0,\"status\":\"PASS\"}))"
+  ],
+  "exit": 0
+}

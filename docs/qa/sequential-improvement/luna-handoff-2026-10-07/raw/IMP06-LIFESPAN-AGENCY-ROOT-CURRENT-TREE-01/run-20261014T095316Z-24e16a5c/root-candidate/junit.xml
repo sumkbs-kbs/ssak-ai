@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="5" time="1.452" timestamp="2026-10-14T18:53:18.235488+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_lifespan_agency_root_contract" name="test_actual_lifespan_agency_storage_root[absolute]" time="0.547"><failure message="AssertionError: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/config.py:62: UserWarning: Config file '/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st0/absent.env' not found.&#10;    warnings.warn(f&quot;Config file '{env_file}' not found.&quot;)&#10;  설정 검증 1개 문제 발견:&#10;    - 모델 레지스트리 로드 실패: 설정 파일 없음: /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st0/absent-config.yaml&#10;  [Startup] 설정 검증 1개 문제 — 계속 시작하지만 확인 필요:&#10;    ⚠️  모델 레지스트리 로드 실패: 설정 파일 없음: /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st0/absent-config.yaml&#10;  [RAG] Background indexing failed&#10;  Traceback (most recent call last):&#10;    File &quot;/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/server.py&quot;, line 126, in _run_index&#10;      with VectorStore(str(project_rag_vector_dir(project_root)), collection_name=&quot;project_code&quot;) as store:&#10;           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/vector_store.py&quot;, line 110, in __init__&#10;      raise RuntimeError(message)&#10;  RuntimeError: VectorStore requires chromadb but it is unavailable: AssertionError: Native model import forbidden&#10;  Traceback (most recent call last):&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st0/probe.py&quot;, line 106, in &lt;module&gt;&#10;      asyncio.run(run())&#10;      ~~~~~~~~~~~^^^^^^^&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/asyncio/runners.py&quot;, line 195, in run&#10;      return runner.run(main)&#10;             ~~~~~~~~~~^^^^^^&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/asyncio/runners.py&quot;, line 118, in run&#10;      return self._loop.run_until_complete(task)&#10;             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/asyncio/base_events.py&quot;, line 725, in run_until_complete&#10;      return future.result()&#10;             ~~~~~~~~~~~~~^^&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st0/probe.py&quot;, line 105, in run&#10;      assert receipt[&quot;rag_roots&quot;]==[source_root] and receipt[&quot;ide_roots&quot;]==[source_root]&#10;             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;  AssertionError&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '/private/var/folders/0c/ncf5l...ource_root]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n').returncode">tests/test_lifespan_agency_root_contract.py:156: in test_actual_lifespan_agency_storage_root
+    assert result.returncode == 0, result.stdout.decode() + result.stderr.decode()
+E   AssertionError: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/config.py:62: UserWarning: Config file '/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st0/absent.env' not found.
+E       warnings.warn(f"Config file '{env_file}' not found.")
+E     설정 검증 1개 문제 발견:
+E       - 모델 레지스트리 로드 실패: 설정 파일 없음: /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st0/absent-config.yaml
+E     [Startup] 설정 검증 1개 문제 — 계속 시작하지만 확인 필요:
+E       ⚠️  모델 레지스트리 로드 실패: 설정 파일 없음: /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st0/absent-config.yaml
+E     [RAG] Background indexing failed
+E     Traceback (most recent call last):
+E       File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/server.py", line 126, in _run_index
+E         with VectorStore(str(project_rag_vector_dir(project_root)), collection_name="project_code") as store:
+E              ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/vector_store.py", line 110, in __init__
+E         raise RuntimeError(message)
+E     RuntimeError: VectorStore requires chromadb but it is unavailable: AssertionError: Native model import forbidden
+E     Traceback (most recent call last):
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st0/probe.py", line 106, in &lt;module&gt;
+E         asyncio.run(run())
+E         ~~~~~~~~~~~^^^^^^^
+E       File "/Users/mr.k/miniforge3/lib/python3.13/asyncio/runners.py", line 195, in run
+E         return runner.run(main)
+E                ~~~~~~~~~~^^^^^^
+E       File "/Users/mr.k/miniforge3/lib/python3.13/asyncio/runners.py", line 118, in run
+E         return self._loop.run_until_complete(task)
+E                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+E       File "/Users/mr.k/miniforge3/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+E         return future.result()
+E                ~~~~~~~~~~~~~^^
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st0/probe.py", line 105, in run
+E         assert receipt["rag_roots"]==[source_root] and receipt["ide_roots"]==[source_root]
+E                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E     AssertionError
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '/private/var/folders/0c/ncf5l...ource_root]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n').returncode</failure></testcase><testcase classname="tests.test_lifespan_agency_root_contract" name="test_actual_lifespan_agency_storage_root[relative]" time="0.345"><failure message="AssertionError: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/config.py:62: UserWarning: Config file '/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st1/absent.env' not found.&#10;    warnings.warn(f&quot;Config file '{env_file}' not found.&quot;)&#10;  설정 검증 1개 문제 발견:&#10;    - 모델 레지스트리 로드 실패: 설정 파일 없음: /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st1/absent-config.yaml&#10;  [Startup] 설정 검증 1개 문제 — 계속 시작하지만 확인 필요:&#10;    ⚠️  모델 레지스트리 로드 실패: 설정 파일 없음: /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st1/absent-config.yaml&#10;  [RAG] Background indexing failed&#10;  Traceback (most recent call last):&#10;    File &quot;/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/server.py&quot;, line 126, in _run_index&#10;      with VectorStore(str(project_rag_vector_dir(project_root)), collection_name=&quot;project_code&quot;) as store:&#10;           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/vector_store.py&quot;, line 110, in __init__&#10;      raise RuntimeError(message)&#10;  RuntimeError: VectorStore requires chromadb but it is unavailable: AssertionError: Native model import forbidden&#10;  Traceback (most recent call last):&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st1/probe.py&quot;, line 106, in &lt;module&gt;&#10;      asyncio.run(run())&#10;      ~~~~~~~~~~~^^^^^^^&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/asyncio/runners.py&quot;, line 195, in run&#10;      return runner.run(main)&#10;             ~~~~~~~~~~^^^^^^&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/asyncio/runners.py&quot;, line 118, in run&#10;      return self._loop.run_until_complete(task)&#10;             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/asyncio/base_events.py&quot;, line 725, in run_until_complete&#10;      return future.result()&#10;             ~~~~~~~~~~~~~^^&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st1/probe.py&quot;, line 105, in run&#10;      assert receipt[&quot;rag_roots&quot;]==[source_root] and receipt[&quot;ide_roots&quot;]==[source_root]&#10;             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;  AssertionError&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '/private/var/folders/0c/ncf5l...ource_root]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n').returncode">tests/test_lifespan_agency_root_contract.py:156: in test_actual_lifespan_agency_storage_root
+    assert result.returncode == 0, result.stdout.decode() + result.stderr.decode()
+E   AssertionError: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/config.py:62: UserWarning: Config file '/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st1/absent.env' not found.
+E       warnings.warn(f"Config file '{env_file}' not found.")
+E     설정 검증 1개 문제 발견:
+E       - 모델 레지스트리 로드 실패: 설정 파일 없음: /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st1/absent-config.yaml
+E     [Startup] 설정 검증 1개 문제 — 계속 시작하지만 확인 필요:
+E       ⚠️  모델 레지스트리 로드 실패: 설정 파일 없음: /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st1/absent-config.yaml
+E     [RAG] Background indexing failed
+E     Traceback (most recent call last):
+E       File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/server.py", line 126, in _run_index
+E         with VectorStore(str(project_rag_vector_dir(project_root)), collection_name="project_code") as store:
+E              ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/vector_store.py", line 110, in __init__
+E         raise RuntimeError(message)
+E     RuntimeError: VectorStore requires chromadb but it is unavailable: AssertionError: Native model import forbidden
+E     Traceback (most recent call last):
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st1/probe.py", line 106, in &lt;module&gt;
+E         asyncio.run(run())
+E         ~~~~~~~~~~~^^^^^^^
+E       File "/Users/mr.k/miniforge3/lib/python3.13/asyncio/runners.py", line 195, in run
+E         return runner.run(main)
+E                ~~~~~~~~~~^^^^^^
+E       File "/Users/mr.k/miniforge3/lib/python3.13/asyncio/runners.py", line 118, in run
+E         return self._loop.run_until_complete(task)
+E                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+E       File "/Users/mr.k/miniforge3/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+E         return future.result()
+E                ~~~~~~~~~~~~~^^
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st1/probe.py", line 105, in run
+E         assert receipt["rag_roots"]==[source_root] and receipt["ide_roots"]==[source_root]
+E                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E     AssertionError
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '/private/var/folders/0c/ncf5l...ource_root]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n').returncode</failure></testcase><testcase classname="tests.test_lifespan_agency_root_contract" name="test_actual_lifespan_agency_storage_root[default]" time="0.327"><failure message="AssertionError: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/config.py:62: UserWarning: Config file '/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st2/absent.env' not found.&#10;    warnings.warn(f&quot;Config file '{env_file}' not found.&quot;)&#10;  설정 검증 1개 문제 발견:&#10;    - 모델 레지스트리 로드 실패: 설정 파일 없음: /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st2/absent-config.yaml&#10;  [Startup] 설정 검증 1개 문제 — 계속 시작하지만 확인 필요:&#10;    ⚠️  모델 레지스트리 로드 실패: 설정 파일 없음: /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st2/absent-config.yaml&#10;  [RAG] Background indexing failed&#10;  Traceback (most recent call last):&#10;    File &quot;/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/server.py&quot;, line 126, in _run_index&#10;      with VectorStore(str(project_rag_vector_dir(project_root)), collection_name=&quot;project_code&quot;) as store:&#10;                           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^&#10;    File &quot;/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/project_memory_paths.py&quot;, line 32, in project_rag_vector_dir&#10;      return _project_subdir(project_root, &quot;.antigravity&quot;, &quot;rag_vectors&quot;)&#10;    File &quot;/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/project_memory_paths.py&quot;, line 15, in _project_subdir&#10;      target.mkdir(parents=True, exist_ok=True)&#10;      ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/pathlib/_local.py&quot;, line 722, in mkdir&#10;      os.mkdir(self, mode)&#10;      ~~~~~~~~^^^^^^^^^^^^&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st2/probe.py&quot;, line 18, in audit&#10;      raise AssertionError(&quot;Nonowned mutation: &quot;+str(path))&#10;  AssertionError: Nonowned mutation: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.antigravity/rag_vectors&#10;  Traceback (most recent call last):&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st2/probe.py&quot;, line 106, in &lt;module&gt;&#10;      asyncio.run(run())&#10;      ~~~~~~~~~~~^^^^^^^&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/asyncio/runners.py&quot;, line 195, in run&#10;      return runner.run(main)&#10;             ~~~~~~~~~~^^^^^^&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/asyncio/runners.py&quot;, line 118, in run&#10;      return self._loop.run_until_complete(task)&#10;             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/asyncio/base_events.py&quot;, line 725, in run_until_complete&#10;      return future.result()&#10;             ~~~~~~~~~~~~~^^&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st2/probe.py&quot;, line 105, in run&#10;      assert receipt[&quot;rag_roots&quot;]==[source_root] and receipt[&quot;ide_roots&quot;]==[source_root]&#10;             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;  AssertionError&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '/private/var/folders/0c/ncf5l...ource_root]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n').returncode">tests/test_lifespan_agency_root_contract.py:156: in test_actual_lifespan_agency_storage_root
+    assert result.returncode == 0, result.stdout.decode() + result.stderr.decode()
+E   AssertionError: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/config.py:62: UserWarning: Config file '/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st2/absent.env' not found.
+E       warnings.warn(f"Config file '{env_file}' not found.")
+E     설정 검증 1개 문제 발견:
+E       - 모델 레지스트리 로드 실패: 설정 파일 없음: /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st2/absent-config.yaml
+E     [Startup] 설정 검증 1개 문제 — 계속 시작하지만 확인 필요:
+E       ⚠️  모델 레지스트리 로드 실패: 설정 파일 없음: /private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st2/absent-config.yaml
+E     [RAG] Background indexing failed
+E     Traceback (most recent call last):
+E       File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/server.py", line 126, in _run_index
+E         with VectorStore(str(project_rag_vector_dir(project_root)), collection_name="project_code") as store:
+E                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+E       File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/project_memory_paths.py", line 32, in project_rag_vector_dir
+E         return _project_subdir(project_root, ".antigravity", "rag_vectors")
+E       File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/project_memory_paths.py", line 15, in _project_subdir
+E         target.mkdir(parents=True, exist_ok=True)
+E         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       File "/Users/mr.k/miniforge3/lib/python3.13/pathlib/_local.py", line 722, in mkdir
+E         os.mkdir(self, mode)
+E         ~~~~~~~~^^^^^^^^^^^^
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st2/probe.py", line 18, in audit
+E         raise AssertionError("Nonowned mutation: "+str(path))
+E     AssertionError: Nonowned mutation: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.antigravity/rag_vectors
+E     Traceback (most recent call last):
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st2/probe.py", line 106, in &lt;module&gt;
+E         asyncio.run(run())
+E         ~~~~~~~~~~~^^^^^^^
+E       File "/Users/mr.k/miniforge3/lib/python3.13/asyncio/runners.py", line 195, in run
+E         return runner.run(main)
+E                ~~~~~~~~~~^^^^^^
+E       File "/Users/mr.k/miniforge3/lib/python3.13/asyncio/runners.py", line 118, in run
+E         return self._loop.run_until_complete(task)
+E                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+E       File "/Users/mr.k/miniforge3/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+E         return future.result()
+E                ~~~~~~~~~~~~~^^
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-521/test_actual_lifespan_agency_st2/probe.py", line 105, in run
+E         assert receipt["rag_roots"]==[source_root] and receipt["ide_roots"]==[source_root]
+E                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E     AssertionError
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '/private/var/folders/0c/ncf5l...ource_root]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n').returncode</failure></testcase><testcase classname="tests.test_event_bus.TestHookEventBusBridge" name="test_bridge_publishes_plain_agent_turn_events" time="0.001" /><testcase classname="tests.test_event_bus.TestHookEventBusBridge" name="test_bridge_does_not_re_publish_directly_published_kinds" time="0.001" /></testsuite></testsuites>

@@ -1,0 +1,15 @@
+--- a/startup_probe/contract.py
++++ b/startup_probe/contract.py
+@@ -129,6 +129,12 @@
+             "ANTIGRAVITY_VAULT_PATH": str(owned / "vault"),
+             "AGK_ALLOWED_ROOTS": str(owned),
+             "AGK_DATA_DIR": str(owned / "data"),
++            "AGK_GBRAIN_DIR": str(owned / "gbrain"),
++            "AGK_GLOBAL_MEMORY_DIR": str(owned / "global-memory"),
++            "AGK_CONTEXT_STORE_DIR": str(owned / "context-store"),
++            "AGK_CONVERSATION_STORE_DIR": str(owned / "conversations"),
++            "AGK_TASK_DB_PATH": str(owned / "data/tasks.db"),
++            "AGK_BENCHMARK_DB": str(owned / "data/benchmarks.db"),
+             "TMPDIR": str(owned / "tmp"),
+             "XDG_CACHE_HOME": str(owned / "cache"),
+             "HF_HOME": str(owned / "cache/huggingface"),

@@ -1,0 +1,49 @@
+{
+  "timestamp": "2026-10-14T08:45:52.219349+00:00",
+  "invocations": [
+    {
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "check",
+        "--isolated",
+        "--select",
+        "F,E9",
+        "control.py",
+        "runner.py",
+        "supervisor.py",
+        "test_control.py"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation",
+      "exit": 0,
+      "log": "static-final-ruff.log"
+    },
+    {
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+        "--project",
+        "basedpyright.json",
+        "control.py",
+        "runner.py",
+        "supervisor.py",
+        "test_control.py"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation",
+      "exit": 1,
+      "log": "static-final-types.log"
+    }
+  ],
+  "compiled": [
+    "control.py",
+    "runner.py",
+    "supervisor.py",
+    "test_control.py"
+  ],
+  "final_code_sha256": {
+    "control.py": "b06727c85ca7dc82d4b7fe169454e1cf7841a1a816e499f65ae781d64adff2b4",
+    "runner.py": "85348181472fef57659c44b843621bf1b3ee5e8e8cea2a8e235a13bbf95d69a9",
+    "supervisor.py": "00f5bfc64e9b23d157e0dbe3b990498069f3bae4c698b8b75be9a1421ea45969",
+    "test_control.py": "3bcc0d18057a406258a4d570d56c2a83d17fdf7dadcc23bbac5bc1c34110ae10"
+  },
+  "offline_tests": "offline-reviewed-receipt.json; 28 pass; control.py/test_control.py/supervisor.py unchanged since that run; runner.py subsequently adds concurrent peer-read observations and renames HTTP close counter, neither executed offline",
+  "no_quality_execution": true
+}

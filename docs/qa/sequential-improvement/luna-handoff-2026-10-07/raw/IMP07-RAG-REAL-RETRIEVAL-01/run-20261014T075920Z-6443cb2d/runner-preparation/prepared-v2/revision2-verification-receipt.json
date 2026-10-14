@@ -1,0 +1,105 @@
+{
+  "invocations": [
+    {
+      "label": "revision2-offline",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "--import-mode=importlib",
+        "--rootdir=..",
+        "--confcutdir=.",
+        "-o",
+        "cache_dir=runner-preparation/revision2-offline-cache",
+        "--basetemp=revision2-offline-tmp",
+        "test_control.py",
+        "-q",
+        "--junitxml=revision2-offline-junit.xml"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation",
+      "started": "2026-10-14T09:03:36.899792+00:00",
+      "elapsed_seconds": 0.7047673329943791,
+      "exit": 0,
+      "stdout": "revision2-offline-stdout.log",
+      "stderr": "revision2-offline-stderr.log"
+    },
+    {
+      "label": "revision2-full-ruff",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "check",
+        "control.py",
+        "runner.py",
+        "supervisor.py",
+        "test_control.py"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation",
+      "started": "2026-10-14T09:03:37.604700+00:00",
+      "elapsed_seconds": 0.01063725003041327,
+      "exit": 0,
+      "stdout": "revision2-full-ruff-stdout.log",
+      "stderr": "revision2-full-ruff-stderr.log"
+    },
+    {
+      "label": "revision2-format-check",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "format",
+        "--check",
+        "control.py",
+        "runner.py",
+        "supervisor.py",
+        "test_control.py"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation",
+      "started": "2026-10-14T09:03:37.615354+00:00",
+      "elapsed_seconds": 0.00994316698051989,
+      "exit": 0,
+      "stdout": "revision2-format-check-stdout.log",
+      "stderr": "revision2-format-check-stderr.log"
+    },
+    {
+      "label": "revision2-full-types",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+        "--project",
+        "basedpyright.json",
+        "control.py",
+        "runner.py",
+        "supervisor.py",
+        "test_control.py"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation",
+      "started": "2026-10-14T09:03:37.625309+00:00",
+      "elapsed_seconds": 0.8259608750231564,
+      "exit": 1,
+      "stdout": "revision2-full-types-stdout.log",
+      "stderr": "revision2-full-types-stderr.log"
+    }
+  ],
+  "source_before": {
+    "control.py": "f307666224aa23104e1c295bf57d0002f7a1fbf282a9423a5a411a3ec3e1e9d5",
+    "runner.py": "1fefcecc0f1e44f6f5f82510dc556519fe2976fed80480efa2d4a3285f61eaa9",
+    "supervisor.py": "d2ae24e25d27c61a3300b0782b9f140a60ec1e5c01b0b21afd457f62a3b2ebcd",
+    "test_control.py": "751aefbe0435e3b08f7fb5890b6169ac174ea975a31c1c955ac9e365528f5069"
+  },
+  "source_after": {
+    "control.py": "f307666224aa23104e1c295bf57d0002f7a1fbf282a9423a5a411a3ec3e1e9d5",
+    "runner.py": "1fefcecc0f1e44f6f5f82510dc556519fe2976fed80480efa2d4a3285f61eaa9",
+    "supervisor.py": "d2ae24e25d27c61a3300b0782b9f140a60ec1e5c01b0b21afd457f62a3b2ebcd",
+    "test_control.py": "751aefbe0435e3b08f7fb5890b6169ac174ea975a31c1c955ac9e365528f5069"
+  },
+  "source_unchanged": true,
+  "compiled_four_files": [
+    "control.py",
+    "runner.py",
+    "supervisor.py",
+    "test_control.py"
+  ],
+  "actual_quality_execution": "NOT_RUN",
+  "actual_embedding_requests": 0,
+  "new_metadata_requests": 0,
+  "native_lifecycle_runs": 0,
+  "module_cli_processes": "Pending-freeze refusal only; actual stdout/stderr/argv are preserved under revision2-offline-tmp"
+}

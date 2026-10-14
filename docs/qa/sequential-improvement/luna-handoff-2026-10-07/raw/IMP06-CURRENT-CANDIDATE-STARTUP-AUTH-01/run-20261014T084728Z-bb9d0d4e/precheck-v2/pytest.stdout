@@ -1,0 +1,8 @@
+........................                                                 [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/_pytest/cacheprovider.py:469
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/_pytest/cacheprovider.py:469: PytestCacheWarning: could not create cache path /dev/.pytest_cache/v/cache/nodeids: [Errno 1] Operation not permitted: '/dev/pytest-cache-files-0e3_p7s9'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+24 passed, 1 warning in 0.10s

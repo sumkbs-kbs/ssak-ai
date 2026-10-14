@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.558" timestamp="2026-10-14T18:28:22.358007+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_gbrain_storage_root_contract" name="test_fresh_gbrain_storage_root[env]" time="0.511"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-505/test_fresh_gbrain_storage_root0/probe.py&quot;, line 69, in &lt;module&gt;&#10;      from antigravity_k.engine import gbrain&#10;    File &quot;/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/gbrain.py&quot;, line 694, in &lt;module&gt;&#10;      global_gbrain = GBrain()&#10;    File &quot;/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/gbrain.py&quot;, line 210, in __init__&#10;      self.storage_dir.mkdir(parents=True, exist_ok=True)&#10;      ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/pathlib/_local.py&quot;, line 722, in mkdir&#10;      os.mkdir(self, mode)&#10;      ~~~~~~~~^^^^^^^^^^^^&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-505/test_fresh_gbrain_storage_root0/probe.py&quot;, line 24, in audit&#10;      raise AssertionError(&quot;Nonowned filesystem mutation: &quot;+str(path))&#10;  AssertionError: Nonowned filesystem mutation: /Users/mr.k/.antigravity/gbrain&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '/private/var/folders/0c/ncf5l...ed filesystem mutation: &quot;+str(path))\nAssertionError: Nonowned filesystem mutation: /Users/mr.k/.antigravity/gbrain\n').returncode">tests/test_gbrain_storage_root_contract.py:152: in test_fresh_gbrain_storage_root
+    assert result.returncode == 0, result.stdout.decode() + result.stderr.decode()
+E   AssertionError: Traceback (most recent call last):
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-505/test_fresh_gbrain_storage_root0/probe.py", line 69, in &lt;module&gt;
+E         from antigravity_k.engine import gbrain
+E       File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/gbrain.py", line 694, in &lt;module&gt;
+E         global_gbrain = GBrain()
+E       File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/gbrain.py", line 210, in __init__
+E         self.storage_dir.mkdir(parents=True, exist_ok=True)
+E         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       File "/Users/mr.k/miniforge3/lib/python3.13/pathlib/_local.py", line 722, in mkdir
+E         os.mkdir(self, mode)
+E         ~~~~~~~~^^^^^^^^^^^^
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-505/test_fresh_gbrain_storage_root0/probe.py", line 24, in audit
+E         raise AssertionError("Nonowned filesystem mutation: "+str(path))
+E     AssertionError: Nonowned filesystem mutation: /Users/mr.k/.antigravity/gbrain
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '/private/var/folders/0c/ncf5l...ed filesystem mutation: "+str(path))\nAssertionError: Nonowned filesystem mutation: /Users/mr.k/.antigravity/gbrain\n').returncode</failure></testcase></testsuite></testsuites>

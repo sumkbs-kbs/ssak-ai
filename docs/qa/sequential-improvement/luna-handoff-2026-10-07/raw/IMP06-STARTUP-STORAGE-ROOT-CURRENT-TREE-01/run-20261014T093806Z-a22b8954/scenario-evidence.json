@@ -1,0 +1,116 @@
+[
+  {
+    "suite": "root-gbrain",
+    "nodeid": "tests/test_gbrain_storage_root_contract.py::test_fresh_gbrain_storage_root[explicit]",
+    "invocation": "root-gbrain/captures/explicit/invocation.json",
+    "receipt": "root-gbrain/captures/explicit/receipt.json"
+  },
+  {
+    "suite": "root-gbrain",
+    "nodeid": "tests/test_gbrain_storage_root_contract.py::test_fresh_gbrain_storage_root[empty_env]",
+    "invocation": "root-gbrain/captures/empty_env/invocation.json",
+    "receipt": "root-gbrain/captures/empty_env/receipt.json"
+  },
+  {
+    "suite": "root-gbrain",
+    "nodeid": "tests/test_gbrain_storage_root_contract.py::test_fresh_gbrain_storage_root[empty_explicit]",
+    "invocation": "root-gbrain/captures/empty_explicit/invocation.json",
+    "receipt": "root-gbrain/captures/empty_explicit/receipt.json"
+  },
+  {
+    "suite": "root-gbrain",
+    "nodeid": "tests/test_gbrain_storage_root_contract.py::test_fresh_gbrain_storage_root[default]",
+    "invocation": "root-gbrain/captures/default/invocation.json",
+    "receipt": "root-gbrain/captures/default/receipt.json"
+  },
+  {
+    "suite": "root-gbrain",
+    "nodeid": "tests/test_gbrain_storage_root_contract.py::test_fresh_gbrain_storage_root[env]",
+    "invocation": "root-gbrain/captures/env/invocation.json",
+    "receipt": "root-gbrain/captures/env/receipt.json"
+  },
+  {
+    "suite": "root-gbrain",
+    "nodeid": "tests/test_gbrain_storage_root_contract.py::test_fresh_gbrain_storage_root[native_import]",
+    "invocation": "root-gbrain/captures/native_import/invocation.json",
+    "receipt": "root-gbrain/captures/native_import/receipt.json"
+  },
+  {
+    "suite": "root-gbrain",
+    "nodeid": "tests/test_gbrain_storage_root_contract.py::test_fresh_gbrain_storage_root[relative_env]",
+    "invocation": "root-gbrain/captures/relative_env/invocation.json",
+    "receipt": "root-gbrain/captures/relative_env/receipt.json"
+  },
+  {
+    "suite": "root-other-stores",
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[explicit-context]",
+    "invocation": "root-other-stores/captures/context-explicit/invocation.json",
+    "receipt": "root-other-stores/captures/context-explicit/receipt.json"
+  },
+  {
+    "suite": "root-other-stores",
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[empty_env-memory]",
+    "invocation": "root-other-stores/captures/memory-empty_env/invocation.json",
+    "receipt": "root-other-stores/captures/memory-empty_env/receipt.json"
+  },
+  {
+    "suite": "root-other-stores",
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[relative_env-context]",
+    "invocation": "root-other-stores/captures/context-relative_env/invocation.json",
+    "receipt": "root-other-stores/captures/context-relative_env/receipt.json"
+  },
+  {
+    "suite": "root-other-stores",
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[empty_env-context]",
+    "invocation": "root-other-stores/captures/context-empty_env/invocation.json",
+    "receipt": "root-other-stores/captures/context-empty_env/receipt.json"
+  },
+  {
+    "suite": "root-other-stores",
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[relative_env-memory]",
+    "invocation": "root-other-stores/captures/memory-relative_env/invocation.json",
+    "receipt": "root-other-stores/captures/memory-relative_env/receipt.json"
+  },
+  {
+    "suite": "root-other-stores",
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[empty_explicit-context]",
+    "invocation": "root-other-stores/captures/context-empty_explicit/invocation.json",
+    "receipt": "root-other-stores/captures/context-empty_explicit/receipt.json"
+  },
+  {
+    "suite": "root-other-stores",
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[default-memory]",
+    "invocation": "root-other-stores/captures/memory-default/invocation.json",
+    "receipt": "root-other-stores/captures/memory-default/receipt.json"
+  },
+  {
+    "suite": "root-other-stores",
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[env-context]",
+    "invocation": "root-other-stores/captures/context-env/invocation.json",
+    "receipt": "root-other-stores/captures/context-env/receipt.json"
+  },
+  {
+    "suite": "root-other-stores",
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[explicit-memory]",
+    "invocation": "root-other-stores/captures/memory-explicit/invocation.json",
+    "receipt": "root-other-stores/captures/memory-explicit/receipt.json"
+  },
+  {
+    "suite": "root-other-stores",
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[default-context]",
+    "invocation": "root-other-stores/captures/context-default/invocation.json",
+    "receipt": "root-other-stores/captures/context-default/receipt.json"
+  },
+  {
+    "suite": "root-other-stores",
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[env-memory]",
+    "invocation": "root-other-stores/captures/memory-env/invocation.json",
+    "receipt": "root-other-stores/captures/memory-env/receipt.json"
+  },
+  {
+    "suite": "root-other-stores",
+    "nodeid": "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[empty_explicit-memory]",
+    "invocation": "root-other-stores/captures/memory-empty_explicit/invocation.json",
+    "receipt": "root-other-stores/captures/memory-empty_explicit/receipt.json"
+  }
+]

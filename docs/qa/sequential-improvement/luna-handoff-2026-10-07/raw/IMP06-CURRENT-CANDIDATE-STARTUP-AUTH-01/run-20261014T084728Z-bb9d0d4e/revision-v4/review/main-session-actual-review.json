@@ -1,0 +1,26 @@
+{
+  "reviewer": "main session",
+  "classification": "PASS_SCOPED_BYTE_RECONCILIATION",
+  "scope": "Current fixed startup/auth/health/lifespan observation; independent preparation reviews separately retained",
+  "command": ".venv/bin/python -B review/verify_actual_bytes.py",
+  "observed": {
+    "scope": "main-session byte-only verification; no backend/native/HTTP replay",
+    "public_manifest_entries": 87,
+    "candidate_sources": 580,
+    "candidate": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1",
+    "http_statuses": [
+      401,
+      200,
+      200,
+      200
+    ],
+    "private_schema_pin_match": true,
+    "credential_values_exported": false,
+    "cleanup_verified": true,
+    "guard_violations": 0,
+    "model_calls": 0
+  },
+  "exit_code": 0,
+  "independent_actual_gate_review": "NOT_RUN",
+  "limits": "No UI/model quality/full GA claim; prior failed attempts remain NO_SUCCESS"
+}

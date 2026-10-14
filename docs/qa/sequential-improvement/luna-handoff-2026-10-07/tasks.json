@@ -1,6 +1,6 @@
 {
   "current_snapshot": {
-    "as_of_utc": "2026-10-14T08:34:00Z",
+    "as_of_utc": "2026-10-14T11:35:15Z",
     "scope": "Listed IMP-09 scoped evidence and active priority queue only; other parent acceptance not re-audited",
     "authority": "This current_snapshot and STATUS.md current section take precedence for listed rows; original recorded_at/summary/tasks/subtasks below remain historical",
     "parent_status": {
@@ -137,11 +137,12 @@
       },
       {
         "id": "IMP-07-RAG-KEYWORD-CORPUS-01",
-        "status": "APPROVED_SCOPED_COMMITTED",
+        "status": "APPROVED_SCOPED_AND_PUSHED",
         "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-KEYWORD-CORPUS-01/run-20261014T082059Z-fb430307/review/independent-review.md",
         "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-KEYWORD-CORPUS-01/run-20261014T082059Z-fb430307/scenario-evidence.json",
         "feature_commit": "b7204877619ba2bf70e125ec9a093a09d4bd960d",
-        "limits": "Clean36/root36 same cases separatelybound; keywordmodel0, hybridstub1..2; no semanticquality/largedataperfclaim"
+        "limits": "Clean36/root36 same cases separatelybound; keywordmodel0, hybridstub1..2; no semanticquality/largedataperfclaim",
+        "qa_commit": "7802aa1b3043d66a80f6f891c6cf3db039b393a0"
       },
       {
         "id": "IMP-07-RAG-KEYWORD-CORPUS-CURRENT-TREE-01",
@@ -149,13 +150,61 @@
         "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-KEYWORD-CORPUS-CURRENT-TREE-01/run-20261014T083038Z-e1cdbd01/review/independent-review.md",
         "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-KEYWORD-CORPUS-CURRENT-TREE-01/run-20261014T083038Z-e1cdbd01/result.json",
         "limits": "Root36/static4; identicalapprovedkeyword/RRF/provenance; otherrootcode/staged97 preserved"
+      },
+      {
+        "id": "IMP-07-RAG-REAL-RETRIEVAL-01",
+        "status": "APPROVED_SCOPED_REAL_RETRIEVAL",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/execution-20261014T092307Z-0eccc3a8/review/independent-actual-evidence-review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/execution-20261014T092307Z-0eccc3a8/live-final-result.json",
+        "candidate_commit": "7802aa1b3043d66a80f6f891c6cf3db039b393a0",
+        "limits": "30A+2B authored fixture, controlled10/10 rank1, exploratory9/10 Q16miss; actual27embedding/57inputs and3newmetadata; mutation/purge/8peers2cycles PASS. No baseline/defaulthybrid/Bgraph or managementAPI purge proof; fullIMP07 PARTIAL"
+      },
+      {
+        "id": "IMP-06-STARTUP-STORAGE-ROOT-CLOSURE-01",
+        "status": "APPROVED_SCOPED_AND_PUSHED",
+        "feature_commit": "7482ebb8b76c7c686e729e68c48f7258e2cc7e66",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-STARTUP-STORAGE-ROOT-CLOSURE-01/run-20261014T093201Z-cd1a16ca/review/independent-review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-STARTUP-STORAGE-ROOT-CLOSURE-01/run-20261014T093201Z-cd1a16ca/scenario-evidence.json",
+        "limits": "Three ctor overrides explicit path > dedicated env > legacyhome. Retained7 and new12 separate; rootcompositionseparately7+12; no HOME rewrite"
+      },
+      {
+        "id": "IMP-06-STARTUP-STORAGE-ROOT-CURRENT-TREE-01",
+        "status": "APPROVED_SCOPED_ROOT_COMPOSITION",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-STARTUP-STORAGE-ROOT-CURRENT-TREE-01/run-20261014T093806Z-a22b8954/review/independent-review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-STARTUP-STORAGE-ROOT-CURRENT-TREE-01/run-20261014T093806Z-a22b8954/scenario-evidence.json",
+        "limits": "ROOT lifecyclelock/no-globalclear preserved, independentfiles5129 unchanged; three historical source symlink aliases changed dereferenced content honestly recorded; staged97 unchanged"
+      },
+      {
+        "id": "IMP-06-LIFESPAN-AGENCY-ROOT-01",
+        "status": "APPROVED_SCOPED_AND_PUSHED",
+        "feature_commit": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-LIFESPAN-AGENCY-ROOT-01/run-20261014T094816Z-aea9f054/review/independent-review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-LIFESPAN-AGENCY-ROOT-01/run-20261014T094816Z-aea9f054/scenario-evidence.json",
+        "limits": "Single bridge caller uses config.paths.project_root; clean5/static4, actualSQLite persistence; RAG/IDE old workspace unchanged"
+      },
+      {
+        "id": "IMP-06-LIFESPAN-AGENCY-ROOT-CURRENT-TREE-01",
+        "status": "APPROVED_SCOPED_ROOT_COMPOSITION_WITH_FIXTURE_OVERLAY",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-LIFESPAN-AGENCY-ROOT-CURRENT-TREE-01/run-20261014T095316Z-24e16a5c/review/independent-review.md",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-LIFESPAN-AGENCY-ROOT-CURRENT-TREE-01/run-20261014T095316Z-24e16a5c/scenario-evidence.json",
+        "limits": "RootalreadyconfiguredRAG/IDE: directcleanfixture3FAIL/2PASS retained; evidence-local adjacentstuboverlay5PASS/static4; not unmodified ROOT suite PASS"
+      },
+      {
+        "id": "IMP-06-CURRENT-CANDIDATE-STARTUP-AUTH-01",
+        "status": "PASS_SCOPED_MAIN_VERIFIED_EXTERNAL_UVICORN_AUTH_LIFESPAN_ON",
+        "review": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/review/main-session-actual-review.json",
+        "result": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v4/final-live-result.json",
+        "candidate_commit": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1",
+        "independent_preparation_review": "APPROVED",
+        "independent_actual_review": "NOT_RUN",
+        "limits": "Freshv4 genuine4HTTP401/200/200/200, child25538exit0/reaped/groupempty, guards0/model0; source580/publicmanifest87verified. v2NO_SUCCESS0HTTP and v3NO_SUCCESS4HTTP retained; cumulative8. No browser/liveNN/fullGA; optionalIDE/emptyconfiglimits"
       }
     ],
     "current_capability_boundary": {
       "json_schema": "EXPLICIT_NATIVE_OLLAMA_QWEN3_NON_STREAM_ONLY",
       "streaming_structured_requests": "EXPLICIT400_OUTSIDE_CURRENT_SUPPORT",
       "general_model_quality": "NOT_ESTABLISHED",
-      "full_lifespan_on": "NOT_VERIFIED_BY_SCOPED_LIFESPAN_OFF_CASES",
+      "full_lifespan_on": "PASS_SCOPED_EXTERNAL_AUTH_HEALTH_LIFESPAN_ON_MODEL0_BROWSER_NOT_RUN",
       "installed_model_matrix": "INCOMPLETE",
       "historical_format_omitted_vision": "FAIL_SEMANTIC_UNCHANGED",
       "native_direct_failure": "TYPED502_503_504_NO_AUTOMATIC_NATIVE_RETRY",
@@ -166,7 +215,9 @@
       "default_agent_failure": "TYPED_FAILED_TASK_TERMINAL_NO_ASSISTANT_SUCCESS_OR_QUEUE",
       "native_startup_fixture_sigsegv": "BASELINE_AND_CANDIDATE_MINUS11_PRESERVED_ROUTING_FIXTURES_ISOLATED_NOT_PRODUCTION_FIX",
       "rag_keyword_provider_calls": "ZERO_FOR_PUBLIC_CHROMA_EXPORT_HYBRID_EXISTING1_OR2",
-      "rag_semantic_quality": "PREPARED30_DOC20_QUERY_METADATA_ONLY_INFERENCE_NOT_RUN"
+      "rag_semantic_quality": "PASS_SCOPED_CONTROLLED10_EXPLORATORY9_REAL27_EMBEDDING_REQUESTS",
+      "project_rag_management_api_purge": "NOT_RUN_B_GRAPH_AND_BOUND_VECTOR_COVERAGE_PENDING",
+      "startup_storage_roots": "EXPLICIT_GBRAIN_GLOBAL_MEMORY_CONTEXT_STORE_OVERRIDES_AND_CONFIGURED_AGENCY_ROOT"
     },
     "priority_queue": [
       {
@@ -242,10 +293,10 @@
       {
         "priority": 5,
         "id": "MEMORY_SEARCH_QUALITY",
-        "status": "IN_PROGRESS",
+        "status": "IN_PROGRESS_REAL_RETRIEVAL_PASSED_MANAGEMENT_PURGE_PENDING",
         "scope": "Publish approved strict/native embedding dependency closure, then explicit opt-in RAG embedding identity and source-bound retrieval quality",
-        "next_concrete_task": "FROZEN_REAL_EMBEDDING30_DOC20_QUERY_THEN_STARTUP_ACCEPTANCE",
-        "current_task": "IMP-07-RAG-REAL-RETRIEVAL-01",
+        "next_concrete_task": "ACTUAL_MANAGEMENT_API_A_PURGE_B_GRAPH_VECTOR_PRESERVATION_NN0",
+        "current_task": "IMP-07-PROJECT-MEMORY-API-PURGE-01",
         "completed_subtasks": [
           {
             "id": "IMP-07-RAG-EMBEDDING-PREREQUISITES-01",
@@ -263,20 +314,48 @@
             "id": "IMP-07-RAG-KEYWORD-CORPUS-01",
             "status": "DONE_SCOPED_REVIEWED_COMMITTED_ROOT_INTEGRATED",
             "feature_commit": "b7204877619ba2bf70e125ec9a093a09d4bd960d"
+          },
+          {
+            "id": "IMP-07-RAG-REAL-RETRIEVAL-01",
+            "status": "DONE_SCOPED_REAL_RETRIEVAL_REVIEWED",
+            "candidate_commit": "7802aa1b3043d66a80f6f891c6cf3db039b393a0"
           }
         ]
       },
       {
         "priority": 6,
         "id": "EXPANDED_PRODUCT_ACCEPTANCE",
-        "status": "NOT_REASSESSED",
-        "scope": "Full startup/lifespan, vision corpus, UI/performance, integration; consult latest independent evidence before execution"
+        "status": "IN_PROGRESS_EXTERNAL_STARTUP_AUTH_PASSED_BROWSER_PENDING",
+        "scope": "Full startup/lifespan, vision corpus, UI/performance, integration; consult latest independent evidence before execution",
+        "completed_subtasks": [
+          {
+            "id": "IMP-06-STARTUP-STORAGE-ROOT-CLOSURE-01",
+            "status": "DONE_SCOPED_REVIEWED_PUSHED",
+            "feature_commit": "7482ebb8b76c7c686e729e68c48f7258e2cc7e66"
+          },
+          {
+            "id": "IMP-06-LIFESPAN-AGENCY-ROOT-01",
+            "status": "DONE_SCOPED_REVIEWED_PUSHED",
+            "feature_commit": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1"
+          },
+          {
+            "id": "IMP-06-CURRENT-CANDIDATE-STARTUP-AUTH-01",
+            "status": "PASS_SCOPED_EXTERNAL_AUTH_LIFESPAN_ON_MAIN_BYTE_VERIFIED",
+            "candidate_commit": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1"
+          }
+        ],
+        "next_concrete_task": "REAL_BROWSER_LOGIN_TYPED_SSE_FAILURE_AND_QUEUED_TASK_FAILED_TERMINAL_NN0"
       },
       {
         "priority": 7,
         "id": "INTEGRATED_RELEASE_ACCEPTANCE",
-        "status": "NOT_REASSESSED",
-        "scope": "IMP-01/02 integration, IMP-19 packaging, IMP-20 newcandidate8hsoak; release distinct"
+        "status": "PREPARATION_REQUIRED_NOT_RUN",
+        "scope": "IMP-01/02 integration, IMP-19 packaging, IMP-20 newcandidate8hsoak; release distinct",
+        "preconditions": [
+          "Soak runner uses hardcoded main checkout; fix candidate/output/interpreter path contract before run",
+          "Docker local desktop daemon unavailable at last read-only preflight",
+          "Freeze generated dashboard/SBOM before full23gate and new8hsoak; older evidence not reused as current"
+        ]
       }
     ],
     "optional_not_automatically_selected": [
@@ -295,7 +374,7 @@
       "status_commit": "8ed827654cb608c55b22fe75b295abf3365114f4",
       "direct_transport_feature_commit": "8b22847730f5419307dda66f5ca6ab57fc1b023f",
       "direct_transport_qa_commit": "50437f0ccbb0dd512204ce38b640bd5c238eb97a",
-      "latest_remote_sha_verified": "f11c8563e88540c8c8322ba98c23eff53e0604e6",
+      "latest_remote_sha_verified": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1",
       "native_stream_feature_commit": "97f898661195623ba87eb826e94b03538aecb38f",
       "native_stream_qa_commit": "d2aed8c1f7237f08f7b497e6760b792754c61b1e",
       "compatible_transport_feature_commit": "bad768d9bf07a805446edac98861d0a2f596b124",
@@ -312,9 +391,13 @@
       "embedding_prerequisites_qa_commit": "2a8791ed8259543b54a12225bcc46cea69451efa",
       "rag_identity_feature_commit": "4de2ef8b3df692e36f2e39230e6428e041c158d4",
       "rag_identity_qa_commit": "f11c8563e88540c8c8322ba98c23eff53e0604e6",
-      "rag_keyword_feature_commit": "b7204877619ba2bf70e125ec9a093a09d4bd960d"
+      "rag_keyword_feature_commit": "b7204877619ba2bf70e125ec9a093a09d4bd960d",
+      "rag_keyword_qa_commit": "7802aa1b3043d66a80f6f891c6cf3db039b393a0",
+      "startup_storage_feature_commit": "7482ebb8b76c7c686e729e68c48f7258e2cc7e66",
+      "lifespan_agency_feature_commit": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1",
+      "current_followup_qa": "VERIFIED_LOCAL_AWAITING_OWNED_EVIDENCE_PUBLICATION"
     },
-    "next_task": "IMP-07-RAG-REAL-RETRIEVAL-01",
+    "next_task": "IMP-07-PROJECT-MEMORY-API-PURGE-01",
     "do_not_repeat": "Use saved successful receipts unless source, environment or a new failure hypothesis changes; do not replay old inference or reconstruct lost ledgers"
   },
   "recorded_at": "2026-10-07T13:16:06.378463+00:00",

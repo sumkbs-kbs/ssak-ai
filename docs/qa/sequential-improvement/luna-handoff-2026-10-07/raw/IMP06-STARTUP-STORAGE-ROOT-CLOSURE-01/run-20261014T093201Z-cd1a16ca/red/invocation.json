@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-o",
+    "pythonpath=src:.",
+    "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[env-memory]",
+    "tests/test_startup_storage_roots_contract.py::test_fresh_storage_root[env-context]",
+    "-q",
+    "--tb=short",
+    "--junitxml=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-STARTUP-STORAGE-ROOT-CLOSURE-01/run-20261014T093201Z-cd1a16ca/red/junit.xml"
+  ],
+  "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+  "env_overrides": {
+    "PYTHONPATH": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src:/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+    "STARTUP_STORAGE_CAPTURE_ROOT": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-STARTUP-STORAGE-ROOT-CLOSURE-01/run-20261014T093201Z-cd1a16ca/red/captures",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "source_sha256": {
+    "src/antigravity_k/engine/global_memory_provider.py": "75538522242a80d2293db0907c2e22e27614fcba961cc8dd53b49f80f9ae1afb",
+    "src/antigravity_k/engine/context_shaper.py": "3ffa80968ef54e9ddb6b8f00345955fd0728b84894b19f051c24510ed3c23846",
+    "tests/test_startup_storage_roots_contract.py": "e93491c1221f61882e7561d04c6982a3160e76244a0778d1226264b6e00ce9b6"
+  }
+}

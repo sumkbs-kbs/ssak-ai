@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "git",
+    "apply",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-LIFESPAN-AGENCY-ROOT-CURRENT-TREE-01/run-20261014T095316Z-24e16a5c/root-preimage-only.patch"
+  ],
+  "returncode": 0,
+  "matches": {
+    "src/antigravity_k/api/server.py": true,
+    "tests/test_lifespan_agency_root_contract.py": true
+  },
+  "basis": "exact dirty ROOT preimages"
+}

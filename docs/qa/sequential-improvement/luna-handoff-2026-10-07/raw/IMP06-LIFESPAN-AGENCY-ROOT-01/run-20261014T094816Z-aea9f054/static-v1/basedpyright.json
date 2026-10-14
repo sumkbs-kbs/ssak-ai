@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+    "--level",
+    "error",
+    "src/antigravity_k/api/server.py",
+    "tests/test_lifespan_agency_root_contract.py"
+  ],
+  "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+  "returncode": 0,
+  "source_sha256": {
+    "src/antigravity_k/api/server.py": "6b5945cefe9d39294a1a3372bf812e9e5d28bd6e190f59846a6b4ce81a7655a7",
+    "tests/test_lifespan_agency_root_contract.py": "fe62bdd200d1b493104e6ab196b906e448fe4bbb066aef55340b51f546e4e0ca"
+  }
+}

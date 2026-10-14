@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "-m",
+    "startup_probe.supervisor",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v3/root-approved-startup-once.json"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v3",
+  "started": {
+    "current_time": "2026-10-14 09:43:11 UTC"
+  },
+  "completed": {
+    "current_time": "2026-10-14 09:43:45 UTC"
+  },
+  "initial": {
+    "chunk_id": "286f9c",
+    "wall_time_seconds": 1.000746875,
+    "session_id": 61988,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "completion": {
+    "chunk_id": "9174b5",
+    "wall_time_seconds": 0.00001375,
+    "exit_code": 1,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "scope": "Root once execution of new published storage-root candidate; original attempt preserved"
+}

@@ -1,0 +1,300 @@
+--- prepared-v2/runner.py
++++ runner.py
+@@ -1,6 +1,7 @@
+ from __future__ import annotations
+ 
+ import argparse
++import hashlib
+ import importlib
+ import json
+ import resource
+@@ -12,7 +13,7 @@
+ import traceback
+ from concurrent.futures import ThreadPoolExecutor
+ from pathlib import Path
+-from typing import TYPE_CHECKING, ClassVar, Literal, TypedDict, override
++from typing import TYPE_CHECKING, ClassVar, Literal, NotRequired, TypedDict, override
+ 
+ import httpx
+ from pydantic import BaseModel, ConfigDict, RootModel, TypeAdapter, with_config
+@@ -44,6 +45,7 @@
+ @with_config(ConfigDict(strict=True, extra="allow"))
+ class SourceMetadata(TypedDict):
+     source: str
++    source_hash: NotRequired[str]
+ 
+ 
+ class StoredRow(TypedDict):
+@@ -59,10 +61,19 @@
+ 
+ 
+ @with_config(ConfigDict(strict=True, extra="allow"))
++class Provenance(TypedDict, total=False):
++    source: str
++    source_id: str
++    source_hash: str
++    freshness: str
++
++
++@with_config(ConfigDict(strict=True, extra="allow"))
+ class Match(TypedDict):
+     id: str
+     text: str
+     metadata: SourceMetadata
++    provenance: NotRequired[Provenance]
+ 
+ 
+ class QueryResult(TypedDict):
+@@ -133,6 +144,106 @@
+     dimensions: int
+     model: str
+     native_write_atomicity_claimed: bool
++
++
++class MutationMatchCheck(TypedDict):
++    rank: int
++    id: str
++    current_source_hash: bool
++    current_provenance: bool
++    current_stored_content: bool
++    canonical_content: bool
++    returned_24_hour_fact: bool
++    absent_48_hour_fact: bool
++    returned_content_sha256: str
++    passed: bool
++
++
++class MutationQueryCheck(TypedDict):
++    passed: bool
++    query_id: str
++    canonical_source: str
++    rank: int | None
++    expected_source_md5: str
++    previous_source_md5: str
++    canonical_content_stripped_sha256: str
++    previous_content_stripped_sha256: str
++    content_changed: bool
++    source_changed: bool
++    candidates: list[MutationMatchCheck]
++
++
++def check_mutated_q01(result: QueryResult, current: bytes, previous: bytes, reopened: Snapshot) -> MutationQueryCheck:
++    source = "01-room-cancellations.md"
++    current_hash = hashlib.md5(current, usedforsecurity=False).hexdigest()
++    previous_hash = hashlib.md5(previous, usedforsecurity=False).hexdigest()
++    canonical_text = current.decode("utf-8").strip()
++    candidates: list[MutationMatchCheck] = []
++    for rank, match in enumerate(result["matches"][:5], 1):
++        if match["metadata"]["source"] != source:
++            continue
++        provenance = match.get("provenance", {})
++        source_current = match["metadata"].get("source_hash") == current_hash
++        provenance_current = (
++            provenance.get("source") == source
++            and provenance.get("source_id") == match["id"]
++            and provenance.get("source_hash") == current_hash
++            and provenance.get("freshness") == "fresh"
++        )
++        stored_current = any(
++            row["id"] == match["id"]
++            and row["metadata"]["source"] == source
++            and row["metadata"].get("source_hash") == current_hash
++            and row["document"] == match["text"]
++            for row in reopened["rows"]
++        )
++        canonical_content = match["text"].strip() == canonical_text
++        current_fact = "24 hours" in match["text"]
++        stale_fact_absent = "48 hours" not in match["text"]
++        candidates.append(
++            {
++                "rank": rank,
++                "id": match["id"],
++                "current_source_hash": source_current,
++                "current_provenance": provenance_current,
++                "current_stored_content": stored_current,
++                "canonical_content": canonical_content,
++                "returned_24_hour_fact": current_fact,
++                "absent_48_hour_fact": stale_fact_absent,
++                "returned_content_sha256": hashlib.sha256(match["text"].encode()).hexdigest(),
++                "passed": all(
++                    (
++                        source_current,
++                        provenance_current,
++                        stored_current,
++                        canonical_content,
++                        current_fact,
++                        stale_fact_absent,
++                    )
++                ),
++            }
++        )
++    accepted_rank = next((row["rank"] for row in candidates if row["passed"]), None)
++    return {
++        "passed": (
++            result["query_id"] == "Q01"
++            and result["project_id"] == "fixture-alder-a"
++            and current_hash != previous_hash
++            and canonical_text != previous.decode("utf-8").strip()
++            and accepted_rank is not None
++            and all(row["absent_48_hour_fact"] for row in candidates)
++        ),
++        "query_id": result["query_id"],
++        "canonical_source": source,
++        "rank": accepted_rank,
++        "expected_source_md5": current_hash,
++        "previous_source_md5": previous_hash,
++        "canonical_content_stripped_sha256": hashlib.sha256(canonical_text.encode()).hexdigest(),
++        "previous_content_stripped_sha256": hashlib.sha256(previous.decode("utf-8").strip().encode()).hexdigest(),
++        "content_changed": canonical_text != previous.decode("utf-8").strip(),
++        "source_changed": current_hash != previous_hash,
++        "candidates": candidates,
++    }
+ 
+ 
+ def snapshot(store: VectorStore) -> Snapshot:
+@@ -339,6 +450,13 @@
+         )
+         budget.phase = "queries-mutated"
+         post_queries = [query(ai, item, "fixture-alder-a") for item in (queries[0], queries[5])]
++        post_q01 = check_mutated_q01(
++            post_queries[0],
++            (a_root / "01-room-cancellations.md").read_bytes(),
++            (fixture / "corpus-a/01-room-cancellations.md").read_bytes(),
++            changed,
++        )
++        save(out / "post-mutation-q01-check.json", post_q01)
+         post_deleted_absent = all(
+             row["metadata"]["source"] != "06-lost-keys.md" for result in post_queries for row in result["matches"]
+         )
+@@ -360,6 +478,7 @@
+             "deleted_source_absent": deleted_absent,
+             "edited_source_current": edit_current,
+             "postquery_deleted_absent": post_deleted_absent,
++            "postquery_q01_current": post_q01,
+             "purged_chunks": purged,
+             "purge_residual": residual,
+             "b_logical_equal": b_before == b_after,
+@@ -379,6 +498,7 @@
+             and deleted_absent
+             and edit_current
+             and post_deleted_absent
++            and post_q01["passed"]
+             and residual == 0
+             and b_before == b_after
+             and b_hashes_before == b_hashes_after
+@@ -386,7 +506,7 @@
+         )
+         return {
+             "status": "PASS_SCOPED" if passed else "FAIL",
+-            "semantic_quality_pass": metrics["controlled"]["recall_at_5"] == 1,
++            "semantic_quality_pass": metrics["controlled"]["recall_at_5"] == 1 and post_q01["passed"],
+             "metrics": metrics,
+             "lifecycle": lifecycle,
+             "graph_coverage": "UNVERIFIED",
+--- prepared-v2/test_control.py
++++ test_control.py
+@@ -503,3 +503,104 @@
+     )
+     assert rows.metadatas == [metadata] and rows.embeddings == [[0.1, 0.2, 0.3]]
+     assert RootModel[dict[str, object]].model_validate(matches[0]).root["provenance"] == {"source_id": "fixture"}
++
++
++@pytest.mark.parametrize(
++    ("case", "expected_rank"),
++    [
++        ("empty", None),
++        ("missing_source", None),
++        ("unrelated_source", None),
++        ("rank_six", None),
++        ("stale_source_hash", None),
++        ("stale_provenance_hash", None),
++        ("stale_content", None),
++        ("unrelated_content", None),
++        ("stale_stored_row", None),
++        ("missing_stored_row", None),
++        ("stale_freshness", None),
++        ("mismatched_id", None),
++        ("valid_first", 1),
++        ("valid_fifth", 5),
++    ],
++)
++def test_post_mutation_q01_requires_current_top_five_evidence(
++    case: str, expected_rank: int | None, tmp_path: Path
++) -> None:
++    from .control import save
++    from .runner import Match, QueryResult, Snapshot, check_mutated_q01
++
++    current = (FIXTURE / "mutation/01-room-cancellations.md").read_bytes()
++    previous = (FIXTURE / "corpus-a/01-room-cancellations.md").read_bytes()
++    current_hash = hashlib.md5(current, usedforsecurity=False).hexdigest()
++    previous_hash = hashlib.md5(previous, usedforsecurity=False).hexdigest()
++    text = current.decode().strip() + "\n"
++    match: Match = {
++        "id": "current-chunk",
++        "text": text,
++        "metadata": {"source": "01-room-cancellations.md", "source_hash": current_hash},
++        "provenance": {
++            "source": "01-room-cancellations.md",
++            "source_id": "current-chunk",
++            "source_hash": current_hash,
++            "freshness": "fresh",
++        },
++    }
++    reopened: Snapshot = {
++        "collection_metadata": {},
++        "rows": [
++            {
++                "id": match["id"],
++                "document": text,
++                "metadata": {"source": "01-room-cancellations.md", "source_hash": current_hash},
++                "embedding": [],
++            }
++        ],
++    }
++    unrelated: Match = {"id": "decoy", "text": "Workshop equipment guidance", "metadata": {"source": "decoy.md"}}
++    result: QueryResult = {
++        "query_id": "Q01",
++        "project_id": "fixture-alder-a",
++        "text": "How far ahead must an organizer cancel a paid indoor workshop to receive a full refund?",
++        "matches": [match],
++        "elapsed_seconds": 0,
++    }
++    provenance = match["provenance"]
++    if case == "empty":
++        result["matches"] = []
++    elif case == "missing_source":
++        del provenance["source"]
++    elif case == "unrelated_source":
++        result["matches"] = [unrelated]
++    elif case == "rank_six":
++        result["matches"] = [unrelated] * 5 + [match]
++    elif case == "stale_source_hash":
++        match["metadata"]["source_hash"] = previous_hash
++    elif case == "stale_provenance_hash":
++        provenance["source_hash"] = previous_hash
++    elif case == "stale_content":
++        match["text"] = previous.decode()
++    elif case == "unrelated_content":
++        match["text"] = "Equipment may be borrowed for 24 hours."
++    elif case == "stale_stored_row":
++        reopened["rows"][0]["metadata"]["source_hash"] = previous_hash
++    elif case == "missing_stored_row":
++        reopened["rows"] = []
++    elif case == "stale_freshness":
++        provenance["freshness"] = "stale"
++    elif case == "mismatched_id":
++        provenance["source_id"] = "other-chunk"
++    elif case == "valid_fifth":
++        result["matches"] = [unrelated] * 4 + [match]
++    else:
++        assert case == "valid_first"
++    evidence = check_mutated_q01(result, current, previous, reopened)
++    save(tmp_path / "post-mutation-q01-check.json", {"case": case, "input": result, "check": evidence})
++    assert evidence["passed"] is (expected_rank is not None)
++    assert evidence["rank"] == expected_rank
++    assert evidence["expected_source_md5"] == current_hash != previous_hash
++    assert evidence["source_changed"]
++    if expected_rank is not None:
++        assert evidence["candidates"][0]["returned_24_hour_fact"]
++        assert evidence["candidates"][0]["absent_48_hour_fact"]
++        assert evidence["candidates"][0]["returned_content_sha256"] == hashlib.sha256(text.encode()).hexdigest()

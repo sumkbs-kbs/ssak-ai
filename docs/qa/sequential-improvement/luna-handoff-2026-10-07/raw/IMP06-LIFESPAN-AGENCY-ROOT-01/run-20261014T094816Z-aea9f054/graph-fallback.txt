@@ -1,0 +1,1 @@
+search_graph lifespan/bridge: Transport closed. Exact server/event_bus/PersistentAgencyController/Store/PathConfig sources and existing test_event_bus bridge cases read.

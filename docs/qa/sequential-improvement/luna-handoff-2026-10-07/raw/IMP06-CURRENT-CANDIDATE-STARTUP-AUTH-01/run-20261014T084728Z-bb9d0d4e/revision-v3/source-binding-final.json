@@ -1,0 +1,20 @@
+{
+  "runtime": {
+    "startup_probe/supervisor.py": "601443f766ea34895b6bc66bd950d87b84befb1ee367d3c0dbd2bcce401e983a",
+    "startup_probe/__init__.py": "b0ccb5435166718880491cb1f91fb403e816b1cb57033e268cad926123a51474",
+    "startup_probe/lifecycle.py": "cfa1b46e40410d5605ff56e9488187778386e977b0d09f7de618dc381a6c195a",
+    "startup_probe/entry.py": "aa1833e0c2bf28e0b9fcd446d6a7ec49470c6c4f71d15151ab512aecb9635a44",
+    "startup_probe/guard.py": "4f21ec469f05506e45d4d8b7b8cbb72b98ea27b4606910c1106d3e268473ec8b",
+    "startup_probe/contract.py": "3aafa7a1b4a01513bdeac0de014926b476a7964be5b80c04832a6b3eb8b06812"
+  },
+  "unchanged_vs_accepted_v2": {
+    "startup_probe/supervisor.py": true,
+    "startup_probe/__init__.py": true,
+    "startup_probe/lifecycle.py": true,
+    "startup_probe/entry.py": true,
+    "startup_probe/guard.py": true
+  },
+  "plan": "FROZEN_7482ebb8b76c7c686e729e68c48f7258e2cc7e66",
+  "live": "NOT_AUTHORIZED",
+  "plan_sha256": "b11e6b51b145fe28954ffd641da99a46b625ddfd65c179c0936a538766405dd9"
+}

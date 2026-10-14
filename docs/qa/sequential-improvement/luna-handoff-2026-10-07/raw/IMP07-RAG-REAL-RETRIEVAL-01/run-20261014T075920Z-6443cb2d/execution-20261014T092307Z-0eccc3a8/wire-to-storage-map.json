@@ -1,0 +1,226 @@
+[
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "01a62bbf0ba54b35",
+    "phase": "index-a",
+    "source": "04-archive-preservation-scans.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "0cc28dcf6c2ed7a3",
+    "phase": "index-a",
+    "source": "23-equipment-late-fees.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "1a7097fbc24bc5e6",
+    "phase": "index-a",
+    "source": "29-food-donation.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "2050a31df649d094",
+    "phase": "index-a",
+    "source": "07-rainwater-garden.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "24823bda56e3883e",
+    "phase": "index-a",
+    "source": "05-projector-deposits.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "2c37db0c53d2ec91",
+    "phase": "index-a",
+    "source": "14-emergency-charging.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "358c04b8200633fc",
+    "phase": "index-a",
+    "source": "25-library-book-renewals.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "4065d0816c62ce4f",
+    "phase": "index-a",
+    "source": "09-hearing-loop.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "4d3200c73d9a1029",
+    "phase": "index-a",
+    "source": "24-market-first-aid.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "50421b2889b7c282",
+    "phase": "index-a",
+    "source": "12-tool-loan-extension.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "5646cd28cca59587",
+    "phase": "index-a",
+    "source": "26-building-photographs.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "5e83b4ff4f1a83fe",
+    "phase": "index-a",
+    "source": "10-heat-refuge.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "61bf0bcd94092ca7",
+    "phase": "index-a",
+    "source": "13-workshop-waitlist.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "64e9d51226240ee1",
+    "phase": "index-a",
+    "source": "18-seed-library-return.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "65e201710ef5041e",
+    "phase": "index-a",
+    "source": "08-child-photo-consent.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "707f0ba4082bdd7e",
+    "phase": "index-a",
+    "source": "03-fridge-power-loss.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "72af82b187757950",
+    "phase": "index-a",
+    "source": "16-compost-inputs.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "74262e8a557366ff",
+    "phase": "index-a",
+    "source": "19-event-interpretation.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "993c1e965f3bcf0e",
+    "phase": "index-a",
+    "source": "21-outdoor-pitch-cancellations.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "a8b4760509cea301",
+    "phase": "index-a",
+    "source": "02-evening-step-free-access.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "acdd137c882db466",
+    "phase": "index-a",
+    "source": "28-winter-warming-room.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "b34d31b0c875e73f",
+    "phase": "index-a",
+    "source": "01-room-cancellations.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "b6c2f695a925452c",
+    "phase": "index-a",
+    "source": "11-low-stimulation-room.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "cdde0894b486a9f1",
+    "phase": "index-a",
+    "source": "15-bicycle-locker-collection.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "d6294ee699cf394a",
+    "phase": "index-a",
+    "source": "22-chest-freezer-outage.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "e08c0b541096c643",
+    "phase": "index-a",
+    "source": "06-lost-keys.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "e11652f48020f937",
+    "phase": "index-a",
+    "source": "27-portable-speaker-charging.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "ebed810e2850fe62",
+    "phase": "index-a",
+    "source": "17-paint-waste.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "f0c3940202aa778a",
+    "phase": "index-a",
+    "source": "20-attendance-privacy.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "f5f076d834595c31",
+    "phase": "index-a",
+    "source": "30-newsletter-subscribers.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "71a5ecb11c958086",
+    "phase": "index-b",
+    "source": "06-lost-keys.md"
+  },
+  {
+    "canonical_text_and_float32_match": true,
+    "dimensions": 768,
+    "id": "ec7ed775c49b452c",
+    "phase": "index-b",
+    "source": "01-room-cancellations.md"
+  }
+]

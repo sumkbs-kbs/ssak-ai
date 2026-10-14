@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+    "format",
+    "--check",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/startup_probe/supervisor.py",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/startup_probe/__init__.py",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/startup_probe/entry.py",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/startup_probe/guard.py",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/startup_probe/contract.py",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/test_startup_contract.py",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/offline_guard.py"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "env_overrides": {
+    "PYTHONPATH": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "OFFLINE_BOUNDARY_PATH": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/precheck-v2/offline-boundary.json"
+  },
+  "exit": 0,
+  "source_sha256": {
+    "startup_probe/supervisor.py": "1de3c6f49f805d997bc9e587b13dd2a025179f2f2263977a69bc5f1580b21412",
+    "startup_probe/__init__.py": "b0ccb5435166718880491cb1f91fb403e816b1cb57033e268cad926123a51474",
+    "startup_probe/entry.py": "d3b7461902e4a4764c18f3880481b88e3f5e1c61fe79d80541805e910a6f1508",
+    "startup_probe/guard.py": "7f2ec2a54005e6743d65d6c47e6a7454b90dc465e86f40865b4effab229b6dc4",
+    "startup_probe/contract.py": "8f59aa436c4001c524372d20e9f4c738ab935fe2da917d5af63d6fa921f7d75b",
+    "test_startup_contract.py": "c6ba70ebf49de0beb087a37c3d34c8a0b78811581e62dabdca801c8484b258ef",
+    "offline_guard.py": "caac88c7c9f8efe39d225a5344c1dd5d274f267187df837edc29600c7d3f42b1"
+  }
+}

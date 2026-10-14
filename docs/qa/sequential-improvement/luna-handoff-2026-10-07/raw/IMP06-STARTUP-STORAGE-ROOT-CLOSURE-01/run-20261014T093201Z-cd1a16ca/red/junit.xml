@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.370" timestamp="2026-10-14T18:32:44.071479+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_startup_storage_roots_contract" name="test_fresh_storage_root[env-memory]" time="0.288"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-508/test_fresh_storage_root_env_me0/probe.py&quot;, line 54, in &lt;module&gt;&#10;      mod=importlib.import_module(&quot;antigravity_k.engine.global_memory_provider&quot; if provider==&quot;memory&quot; else &quot;antigravity_k.engine.context_shaper&quot;)&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/importlib/__init__.py&quot;, line 88, in import_module&#10;      return _bootstrap._gcd_import(name[level:], package, level)&#10;             ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1387, in _gcd_import&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1360, in _find_and_load&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1310, in _find_and_load_unlocked&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 488, in _call_with_frames_removed&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1387, in _gcd_import&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1360, in _find_and_load&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1331, in _find_and_load_unlocked&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 935, in _load_unlocked&#10;    File &quot;&lt;frozen importlib._bootstrap_external&gt;&quot;, line 1023, in exec_module&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 488, in _call_with_frames_removed&#10;    File &quot;/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/__init__.py&quot;, line 4, in &lt;module&gt;&#10;      from .model_manager import ModelManager&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1360, in _find_and_load&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1322, in _find_and_load_unlocked&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1262, in _find_spec&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-508/test_fresh_storage_root_env_me0/probe.py&quot;, line 31, in find_spec&#10;      raise AssertionError(&quot;Model/native storage import forbidden: &quot;+fullname)&#10;  AssertionError: Model/native storage import forbidden: antigravity_k.engine.model_manager&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '/private/var/folders/0c/ncf5l...t forbidden: &quot;+fullname)\nAssertionError: Model/native storage import forbidden: antigravity_k.engine.model_manager\n').returncode">tests/test_startup_storage_roots_contract.py:123: in test_fresh_storage_root
+    assert result.returncode == 0, result.stdout.decode() + result.stderr.decode()
+E   AssertionError: Traceback (most recent call last):
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-508/test_fresh_storage_root_env_me0/probe.py", line 54, in &lt;module&gt;
+E         mod=importlib.import_module("antigravity_k.engine.global_memory_provider" if provider=="memory" else "antigravity_k.engine.context_shaper")
+E       File "/Users/mr.k/miniforge3/lib/python3.13/importlib/__init__.py", line 88, in import_module
+E         return _bootstrap._gcd_import(name[level:], package, level)
+E                ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1387, in _gcd_import
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1360, in _find_and_load
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1310, in _find_and_load_unlocked
+E       File "&lt;frozen importlib._bootstrap&gt;", line 488, in _call_with_frames_removed
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1387, in _gcd_import
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1360, in _find_and_load
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1331, in _find_and_load_unlocked
+E       File "&lt;frozen importlib._bootstrap&gt;", line 935, in _load_unlocked
+E       File "&lt;frozen importlib._bootstrap_external&gt;", line 1023, in exec_module
+E       File "&lt;frozen importlib._bootstrap&gt;", line 488, in _call_with_frames_removed
+E       File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/__init__.py", line 4, in &lt;module&gt;
+E         from .model_manager import ModelManager
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1360, in _find_and_load
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1322, in _find_and_load_unlocked
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1262, in _find_spec
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-508/test_fresh_storage_root_env_me0/probe.py", line 31, in find_spec
+E         raise AssertionError("Model/native storage import forbidden: "+fullname)
+E     AssertionError: Model/native storage import forbidden: antigravity_k.engine.model_manager
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '/private/var/folders/0c/ncf5l...t forbidden: "+fullname)\nAssertionError: Model/native storage import forbidden: antigravity_k.engine.model_manager\n').returncode</failure></testcase><testcase classname="tests.test_startup_storage_roots_contract" name="test_fresh_storage_root[env-context]" time="0.034"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-508/test_fresh_storage_root_env_co0/probe.py&quot;, line 54, in &lt;module&gt;&#10;      mod=importlib.import_module(&quot;antigravity_k.engine.global_memory_provider&quot; if provider==&quot;memory&quot; else &quot;antigravity_k.engine.context_shaper&quot;)&#10;    File &quot;/Users/mr.k/miniforge3/lib/python3.13/importlib/__init__.py&quot;, line 88, in import_module&#10;      return _bootstrap._gcd_import(name[level:], package, level)&#10;             ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1387, in _gcd_import&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1360, in _find_and_load&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1310, in _find_and_load_unlocked&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 488, in _call_with_frames_removed&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1387, in _gcd_import&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1360, in _find_and_load&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1331, in _find_and_load_unlocked&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 935, in _load_unlocked&#10;    File &quot;&lt;frozen importlib._bootstrap_external&gt;&quot;, line 1023, in exec_module&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 488, in _call_with_frames_removed&#10;    File &quot;/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/__init__.py&quot;, line 4, in &lt;module&gt;&#10;      from .model_manager import ModelManager&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1360, in _find_and_load&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1322, in _find_and_load_unlocked&#10;    File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1262, in _find_spec&#10;    File &quot;/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-508/test_fresh_storage_root_env_co0/probe.py&quot;, line 31, in find_spec&#10;      raise AssertionError(&quot;Model/native storage import forbidden: &quot;+fullname)&#10;  AssertionError: Model/native storage import forbidden: antigravity_k.engine.model_manager&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '/private/var/folders/0c/ncf5l...t forbidden: &quot;+fullname)\nAssertionError: Model/native storage import forbidden: antigravity_k.engine.model_manager\n').returncode">tests/test_startup_storage_roots_contract.py:123: in test_fresh_storage_root
+    assert result.returncode == 0, result.stdout.decode() + result.stderr.decode()
+E   AssertionError: Traceback (most recent call last):
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-508/test_fresh_storage_root_env_co0/probe.py", line 54, in &lt;module&gt;
+E         mod=importlib.import_module("antigravity_k.engine.global_memory_provider" if provider=="memory" else "antigravity_k.engine.context_shaper")
+E       File "/Users/mr.k/miniforge3/lib/python3.13/importlib/__init__.py", line 88, in import_module
+E         return _bootstrap._gcd_import(name[level:], package, level)
+E                ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1387, in _gcd_import
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1360, in _find_and_load
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1310, in _find_and_load_unlocked
+E       File "&lt;frozen importlib._bootstrap&gt;", line 488, in _call_with_frames_removed
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1387, in _gcd_import
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1360, in _find_and_load
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1331, in _find_and_load_unlocked
+E       File "&lt;frozen importlib._bootstrap&gt;", line 935, in _load_unlocked
+E       File "&lt;frozen importlib._bootstrap_external&gt;", line 1023, in exec_module
+E       File "&lt;frozen importlib._bootstrap&gt;", line 488, in _call_with_frames_removed
+E       File "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai/src/antigravity_k/engine/__init__.py", line 4, in &lt;module&gt;
+E         from .model_manager import ModelManager
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1360, in _find_and_load
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1322, in _find_and_load_unlocked
+E       File "&lt;frozen importlib._bootstrap&gt;", line 1262, in _find_spec
+E       File "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-508/test_fresh_storage_root_env_co0/probe.py", line 31, in find_spec
+E         raise AssertionError("Model/native storage import forbidden: "+fullname)
+E     AssertionError: Model/native storage import forbidden: antigravity_k.engine.model_manager
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '/private/var/folders/0c/ncf5l...t forbidden: "+fullname)\nAssertionError: Model/native storage import forbidden: antigravity_k.engine.model_manager\n').returncode</failure></testcase></testsuite></testsuites>

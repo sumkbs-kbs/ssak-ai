@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "-m",
+    "startup_probe.supervisor",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v2/root-approved-startup-once.json"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v2",
+  "started": {
+    "current_time": "2026-10-14 09:25:06 UTC"
+  },
+  "completed": {
+    "current_time": "2026-10-14 09:25:34 UTC"
+  },
+  "initial": {
+    "chunk_id": "fd1c8e",
+    "wall_time_seconds": 1.002503583,
+    "session_id": 16477,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "completion": {
+    "chunk_id": "16e81e",
+    "wall_time_seconds": 0.000012666,
+    "exit_code": 1,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "scope": "Root observed external startup once; no repeat"
+}

@@ -1,0 +1,780 @@
+{
+  "status": "PASS_SCOPED",
+  "packaging_status": "READ_ONLY_BYTES_RECONCILED",
+  "execution": "execution-20261014T092307Z-0eccc3a8",
+  "source_root": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai",
+  "candidate_commit": "7802aa1b (root-reported; this packaging ran no Git command)",
+  "retrieval_mode": "semantic",
+  "api": "production RAGIndexer.search(query,n_results=5,mode=semantic)",
+  "initial_queries": [
+    {
+      "query_id": "Q01",
+      "group": "controlled",
+      "language": "en",
+      "canonical_source": "01-room-cancellations.md",
+      "rank": 1,
+      "top5_sources": [
+        "01-room-cancellations.md",
+        "05-projector-deposits.md",
+        "13-workshop-waitlist.md",
+        "21-outdoor-pitch-cancellations.md",
+        "23-equipment-late-fees.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.013313125004060566
+    },
+    {
+      "query_id": "Q02",
+      "group": "controlled",
+      "language": "en",
+      "canonical_source": "02-evening-step-free-access.md",
+      "rank": 1,
+      "top5_sources": [
+        "02-evening-step-free-access.md",
+        "24-market-first-aid.md",
+        "11-low-stimulation-room.md",
+        "01-room-cancellations.md",
+        "13-workshop-waitlist.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.012343542068265378
+    },
+    {
+      "query_id": "Q03",
+      "group": "controlled",
+      "language": "en",
+      "canonical_source": "03-fridge-power-loss.md",
+      "rank": 1,
+      "top5_sources": [
+        "03-fridge-power-loss.md",
+        "22-chest-freezer-outage.md",
+        "14-emergency-charging.md",
+        "24-market-first-aid.md",
+        "04-archive-preservation-scans.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.012257457943633199
+    },
+    {
+      "query_id": "Q04",
+      "group": "controlled",
+      "language": "en",
+      "canonical_source": "04-archive-preservation-scans.md",
+      "rank": 1,
+      "top5_sources": [
+        "04-archive-preservation-scans.md",
+        "25-library-book-renewals.md",
+        "12-tool-loan-extension.md",
+        "02-evening-step-free-access.md",
+        "22-chest-freezer-outage.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.012449542060494423
+    },
+    {
+      "query_id": "Q05",
+      "group": "controlled",
+      "language": "en",
+      "canonical_source": "05-projector-deposits.md",
+      "rank": 1,
+      "top5_sources": [
+        "05-projector-deposits.md",
+        "23-equipment-late-fees.md",
+        "12-tool-loan-extension.md",
+        "01-room-cancellations.md",
+        "25-library-book-renewals.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.012778999982401729
+    },
+    {
+      "query_id": "Q06",
+      "group": "controlled",
+      "language": "ko",
+      "canonical_source": "06-lost-keys.md",
+      "rank": 1,
+      "top5_sources": [
+        "06-lost-keys.md",
+        "08-child-photo-consent.md",
+        "19-event-interpretation.md",
+        "27-portable-speaker-charging.md",
+        "09-hearing-loop.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.012449290952645242
+    },
+    {
+      "query_id": "Q07",
+      "group": "controlled",
+      "language": "ko",
+      "canonical_source": "07-rainwater-garden.md",
+      "rank": 1,
+      "top5_sources": [
+        "07-rainwater-garden.md",
+        "06-lost-keys.md",
+        "17-paint-waste.md",
+        "09-hearing-loop.md",
+        "19-event-interpretation.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.012502625002525747
+    },
+    {
+      "query_id": "Q08",
+      "group": "controlled",
+      "language": "ko",
+      "canonical_source": "08-child-photo-consent.md",
+      "rank": 1,
+      "top5_sources": [
+        "08-child-photo-consent.md",
+        "19-event-interpretation.md",
+        "30-newsletter-subscribers.md",
+        "28-winter-warming-room.md",
+        "27-portable-speaker-charging.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.01217745803296566
+    },
+    {
+      "query_id": "Q09",
+      "group": "controlled",
+      "language": "ko",
+      "canonical_source": "09-hearing-loop.md",
+      "rank": 1,
+      "top5_sources": [
+        "09-hearing-loop.md",
+        "17-paint-waste.md",
+        "19-event-interpretation.md",
+        "27-portable-speaker-charging.md",
+        "16-compost-inputs.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.012408207985572517
+    },
+    {
+      "query_id": "Q10",
+      "group": "controlled",
+      "language": "ko",
+      "canonical_source": "10-heat-refuge.md",
+      "rank": 1,
+      "top5_sources": [
+        "10-heat-refuge.md",
+        "29-food-donation.md",
+        "18-seed-library-return.md",
+        "16-compost-inputs.md",
+        "28-winter-warming-room.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.012897209031507373
+    },
+    {
+      "query_id": "Q11",
+      "group": "exploratory",
+      "language": "en",
+      "canonical_source": "11-low-stimulation-room.md",
+      "rank": 1,
+      "top5_sources": [
+        "11-low-stimulation-room.md",
+        "24-market-first-aid.md",
+        "02-evening-step-free-access.md",
+        "21-outdoor-pitch-cancellations.md",
+        "14-emergency-charging.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.012551874970085919
+    },
+    {
+      "query_id": "Q12",
+      "group": "exploratory",
+      "language": "en",
+      "canonical_source": "12-tool-loan-extension.md",
+      "rank": 1,
+      "top5_sources": [
+        "12-tool-loan-extension.md",
+        "14-emergency-charging.md",
+        "01-room-cancellations.md",
+        "15-bicycle-locker-collection.md",
+        "05-projector-deposits.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.012747625005431473
+    },
+    {
+      "query_id": "Q13",
+      "group": "exploratory",
+      "language": "en",
+      "canonical_source": "13-workshop-waitlist.md",
+      "rank": 1,
+      "top5_sources": [
+        "13-workshop-waitlist.md",
+        "01-room-cancellations.md",
+        "12-tool-loan-extension.md",
+        "24-market-first-aid.md",
+        "25-library-book-renewals.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.012742333929054439
+    },
+    {
+      "query_id": "Q14",
+      "group": "exploratory",
+      "language": "en",
+      "canonical_source": "14-emergency-charging.md",
+      "rank": 1,
+      "top5_sources": [
+        "14-emergency-charging.md",
+        "22-chest-freezer-outage.md",
+        "03-fridge-power-loss.md",
+        "05-projector-deposits.md",
+        "12-tool-loan-extension.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.013272958109155297
+    },
+    {
+      "query_id": "Q15",
+      "group": "exploratory",
+      "language": "en",
+      "canonical_source": "15-bicycle-locker-collection.md",
+      "rank": 1,
+      "top5_sources": [
+        "15-bicycle-locker-collection.md",
+        "23-equipment-late-fees.md",
+        "01-room-cancellations.md",
+        "05-projector-deposits.md",
+        "13-workshop-waitlist.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.014010458020493388
+    },
+    {
+      "query_id": "Q16",
+      "group": "exploratory",
+      "language": "ko",
+      "canonical_source": "16-compost-inputs.md",
+      "rank": null,
+      "top5_sources": [
+        "30-newsletter-subscribers.md",
+        "29-food-donation.md",
+        "20-attendance-privacy.md",
+        "17-paint-waste.md",
+        "18-seed-library-return.md"
+      ],
+      "recall_at_5": 0,
+      "mrr_at_5": 0.0,
+      "ndcg_at_5": 0.0,
+      "elapsed_seconds": 0.013922249898314476
+    },
+    {
+      "query_id": "Q17",
+      "group": "exploratory",
+      "language": "ko",
+      "canonical_source": "17-paint-waste.md",
+      "rank": 1,
+      "top5_sources": [
+        "17-paint-waste.md",
+        "09-hearing-loop.md",
+        "29-food-donation.md",
+        "07-rainwater-garden.md",
+        "19-event-interpretation.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.015080916928127408
+    },
+    {
+      "query_id": "Q18",
+      "group": "exploratory",
+      "language": "ko",
+      "canonical_source": "18-seed-library-return.md",
+      "rank": 3,
+      "top5_sources": [
+        "29-food-donation.md",
+        "17-paint-waste.md",
+        "18-seed-library-return.md",
+        "06-lost-keys.md",
+        "26-building-photographs.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 0.3333333333333333,
+      "ndcg_at_5": 0.5,
+      "elapsed_seconds": 0.01676300005055964
+    },
+    {
+      "query_id": "Q19",
+      "group": "exploratory",
+      "language": "ko",
+      "canonical_source": "19-event-interpretation.md",
+      "rank": 1,
+      "top5_sources": [
+        "19-event-interpretation.md",
+        "08-child-photo-consent.md",
+        "29-food-donation.md",
+        "06-lost-keys.md",
+        "20-attendance-privacy.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "elapsed_seconds": 0.015595542034134269
+    },
+    {
+      "query_id": "Q20",
+      "group": "exploratory",
+      "language": "ko",
+      "canonical_source": "20-attendance-privacy.md",
+      "rank": 2,
+      "top5_sources": [
+        "08-child-photo-consent.md",
+        "20-attendance-privacy.md",
+        "30-newsletter-subscribers.md",
+        "26-building-photographs.md",
+        "19-event-interpretation.md"
+      ],
+      "recall_at_5": 1,
+      "mrr_at_5": 0.5,
+      "ndcg_at_5": 0.6309297535714575,
+      "elapsed_seconds": 0.015849666902795434
+    }
+  ],
+  "metrics": {
+    "all20": {
+      "queries": 20,
+      "hits": 19,
+      "recall_at_5": 0.95,
+      "mrr_at_5": 0.8916666666666666,
+      "ndcg_at_5": 0.9065464876785729,
+      "latency": {
+        "count": 20,
+        "method": "linear interpolation at (n-1)*p; seconds",
+        "min": 0.01217745803296566,
+        "p50": 0.012763312493916601,
+        "p90": 0.015620954521000386,
+        "p95": 0.015895333560183644,
+        "p99": 0.01658946675248444,
+        "max": 0.01676300005055964,
+        "mean": 0.01340570419561118
+      }
+    },
+    "groups": {
+      "controlled": {
+        "queries": 10,
+        "hits": 10,
+        "recall_at_5": 1.0,
+        "mrr_at_5": 1.0,
+        "ndcg_at_5": 1.0,
+        "latency": {
+          "count": 10,
+          "method": "linear interpolation at (n-1)*p; seconds",
+          "min": 0.01217745803296566,
+          "p50": 0.012449416506569833,
+          "p90": 0.012938800628762692,
+          "p95": 0.013125962816411629,
+          "p99": 0.01327569256653078,
+          "max": 0.013313125004060566,
+          "mean": 0.012557745806407183
+        }
+      },
+      "exploratory": {
+        "queries": 10,
+        "hits": 9,
+        "recall_at_5": 0.9,
+        "mrr_at_5": 0.7833333333333333,
+        "ndcg_at_5": 0.8130929753571458,
+        "latency": {
+          "count": 10,
+          "method": "linear interpolation at (n-1)*p; seconds",
+          "min": 0.012551874970085919,
+          "p50": 0.013966353959403932,
+          "p90": 0.015941000217571853,
+          "p95": 0.016352000134065747,
+          "p99": 0.016680800067260863,
+          "max": 0.01676300005055964,
+          "mean": 0.014253662584815174
+        }
+      }
+    },
+    "languages": {
+      "en": {
+        "queries": 10,
+        "hits": 10,
+        "recall_at_5": 1.0,
+        "mrr_at_5": 1.0,
+        "ndcg_at_5": 1.0,
+        "latency": {
+          "count": 10,
+          "method": "linear interpolation at (n-1)*p; seconds",
+          "min": 0.012257457943633199,
+          "p50": 0.012744979467242956,
+          "p90": 0.013382858305703849,
+          "p95": 0.013696658163098618,
+          "p99": 0.013947698049014435,
+          "max": 0.014010458020493388,
+          "mean": 0.012846791709307581
+        }
+      },
+      "ko": {
+        "queries": 10,
+        "hits": 9,
+        "recall_at_5": 0.9,
+        "mrr_at_5": 0.7833333333333333,
+        "ndcg_at_5": 0.8130929753571458,
+        "latency": {
+          "count": 10,
+          "method": "linear interpolation at (n-1)*p; seconds",
+          "min": 0.01217745803296566,
+          "p50": 0.013409729464910924,
+          "p90": 0.015941000217571853,
+          "p95": 0.016352000134065747,
+          "p99": 0.016680800067260863,
+          "max": 0.01676300005055964,
+          "mean": 0.013964616681914777
+        }
+      }
+    },
+    "group_language": {
+      "controlled_en": {
+        "queries": 5,
+        "hits": 5,
+        "recall_at_5": 1.0,
+        "mrr_at_5": 1.0,
+        "ndcg_at_5": 1.0,
+        "latency": {
+          "count": 5,
+          "method": "linear interpolation at (n-1)*p; seconds",
+          "min": 0.012257457943633199,
+          "p50": 0.012449542060494423,
+          "p90": 0.013099474995397032,
+          "p95": 0.0132062999997288,
+          "p99": 0.013291760003194214,
+          "max": 0.013313125004060566,
+          "mean": 0.012628533411771059
+        }
+      },
+      "controlled_ko": {
+        "queries": 5,
+        "hits": 5,
+        "recall_at_5": 1.0,
+        "mrr_at_5": 1.0,
+        "ndcg_at_5": 1.0,
+        "latency": {
+          "count": 5,
+          "method": "linear interpolation at (n-1)*p; seconds",
+          "min": 0.01217745803296566,
+          "p50": 0.012449290952645242,
+          "p90": 0.012739375419914722,
+          "p95": 0.012818292225711047,
+          "p99": 0.012881425670348107,
+          "max": 0.012897209031507373,
+          "mean": 0.012486958201043308
+        }
+      },
+      "exploratory_en": {
+        "queries": 5,
+        "hits": 5,
+        "recall_at_5": 1.0,
+        "mrr_at_5": 1.0,
+        "ndcg_at_5": 1.0,
+        "latency": {
+          "count": 5,
+          "method": "linear interpolation at (n-1)*p; seconds",
+          "min": 0.012551874970085919,
+          "p50": 0.012747625005431473,
+          "p90": 0.013715458055958151,
+          "p95": 0.01386295803822577,
+          "p99": 0.013980958024039864,
+          "max": 0.014010458020493388,
+          "mean": 0.013065050006844103
+        }
+      },
+      "exploratory_ko": {
+        "queries": 5,
+        "hits": 4,
+        "recall_at_5": 0.8,
+        "mrr_at_5": 0.5666666666666667,
+        "ndcg_at_5": 0.6261859507142915,
+        "latency": {
+          "count": 5,
+          "method": "linear interpolation at (n-1)*p; seconds",
+          "min": 0.013922249898314476,
+          "p50": 0.015595542034134269,
+          "p90": 0.016397666791453956,
+          "p95": 0.016580333421006798,
+          "p99": 0.016726466724649072,
+          "max": 0.01676300005055964,
+          "mean": 0.015442275162786245
+        }
+      }
+    }
+  },
+  "wire": {
+    "new_http_requests": 30,
+    "embedding_POST_requests": 27,
+    "new_metadata_GET_requests": 3,
+    "historical_metadata_requests_separate": 4,
+    "calls_by_phase": {
+      "pre-tags": 1,
+      "index-a": 1,
+      "index-b": 1,
+      "queries-a": 20,
+      "queries-b": 2,
+      "mutation": 1,
+      "queries-mutated": 2,
+      "post-tags": 1,
+      "post-ps": 1
+    },
+    "embedding_inputs_by_phase": {
+      "index-a": 30,
+      "index-b": 2,
+      "queries-a": 20,
+      "queries-b": 2,
+      "mutation": 1,
+      "queries-mutated": 2
+    },
+    "total_embedding_inputs": 57,
+    "response_dimensions": {
+      "768": 57
+    },
+    "model_tags": [
+      "nomic-embed-text:latest"
+    ],
+    "installed_digest_before_after": [
+      "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+      "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f"
+    ],
+    "embedding_request_latency_seconds": {
+      "count": 27,
+      "method": "linear interpolation at (n-1)*p; seconds",
+      "min": 0.009535166900604963,
+      "p50": 0.010427374974824488,
+      "p90": 0.01584297521039844,
+      "p95": 0.017592545610386878,
+      "p99": 0.71791971658822,
+      "max": 0.9638730000006035,
+      "mean": 0.047011478282338766
+    },
+    "initial_query_provider_latency_seconds": {
+      "count": 20,
+      "method": "linear interpolation at (n-1)*p; seconds",
+      "min": 0.009535166900604963,
+      "p50": 0.01007647899677977,
+      "p90": 0.0129251625854522,
+      "p95": 0.013246802060166374,
+      "p99": 0.013838493992807342,
+      "max": 0.013986416975967586,
+      "mean": 0.010676514485385268
+    },
+    "new_metadata_latency_seconds": {
+      "count": 3,
+      "method": "linear interpolation at (n-1)*p; seconds",
+      "min": 0.004084459040313959,
+      "p50": 0.036058833939023316,
+      "p90": 0.06373553399462253,
+      "p95": 0.06719512150157242,
+      "p99": 0.06996279150713236,
+      "max": 0.07065470900852233,
+      "mean": 0.03693266732928654
+    },
+    "loopback_connections_recorded": 30,
+    "chat_pull_unload_requests": 0,
+    "requests_replayed_during_packaging": 0
+  },
+  "representation": {
+    "configured_dimensions": 0,
+    "observed_dimensions": 768,
+    "upstream": "JSON numbers parsed as Python float64",
+    "stored": "binding float32 quantization represented as exported numeric arrays",
+    "initial_wire_storage_rows_verified": 32,
+    "mutated_wire_storage_rows_verified": 1,
+    "canonical_text_unchanged_before_prefixing": true,
+    "binding": {
+      "configured_dimensions": 0,
+      "document_prefix": "search_document: ",
+      "endpoint": "http://127.0.0.1:11434",
+      "profile_name": "nomic-embed-text:latest",
+      "provider": "ollama",
+      "query_prefix": "search_query: ",
+      "version": 1,
+      "weight_revision": null,
+      "weight_revision_status": "UNVERIFIED",
+      "wire_model": "nomic-embed-text:latest"
+    }
+  },
+  "mutation": {
+    "candidates": [
+      {
+        "absent_48_hour_fact": true,
+        "canonical_content": true,
+        "current_provenance": true,
+        "current_source_hash": true,
+        "current_stored_content": true,
+        "id": "68a0df1077becb3d",
+        "passed": true,
+        "rank": 1,
+        "returned_24_hour_fact": true,
+        "returned_content_sha256": "f9f7c94917389e20fab23fcb50a22581e434adb8947ee383e4321f3edbea222a"
+      }
+    ],
+    "canonical_content_stripped_sha256": "5f69b465ac82181815a37d7f193f233c39ad9332afe09b6a420b8335c2374ce2",
+    "canonical_source": "01-room-cancellations.md",
+    "content_changed": true,
+    "expected_source_md5": "06d28f5586b5c2d59d7bc90dc5d461f7",
+    "passed": true,
+    "previous_content_stripped_sha256": "43a8be61991dab128cc789ed951dcf46169f86cf208318410bc6f3acce53fbf1",
+    "previous_source_md5": "10834f445adadc32b5d4e5216a270c21",
+    "query_id": "Q01",
+    "rank": 1,
+    "source_changed": true
+  },
+  "isolation_purge": {
+    "b_file_hashes_after": {
+      "5924c3d0-3d66-4f06-9919-7429eac3382e/data_level0.bin": "cc25c8fc0866f2c9645621661a036a79d794618e6937ea5afdf7146d348f738f",
+      "5924c3d0-3d66-4f06-9919-7429eac3382e/header.bin": "03cb3ac86f3e5bcb15e88b9bf99f760ec6b33e31d64a699e129b49868db6d733",
+      "5924c3d0-3d66-4f06-9919-7429eac3382e/length.bin": "7a12e561363385e9dfeeab326368731c030ed4b374e7f5897ac819159d2884c5",
+      "5924c3d0-3d66-4f06-9919-7429eac3382e/link_lists.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "chroma.sqlite3": "84061605410eca94b471b0be4457587b4cbbe8842fd062335d5e0e875c9756b4",
+      "rag-manifest.json": "871aabde65e2483a32e4f9af2fa20cd652f731b1bafe063d8e4fdeb27d1fc2f2"
+    },
+    "b_file_hashes_before": {
+      "5924c3d0-3d66-4f06-9919-7429eac3382e/data_level0.bin": "cc25c8fc0866f2c9645621661a036a79d794618e6937ea5afdf7146d348f738f",
+      "5924c3d0-3d66-4f06-9919-7429eac3382e/header.bin": "03cb3ac86f3e5bcb15e88b9bf99f760ec6b33e31d64a699e129b49868db6d733",
+      "5924c3d0-3d66-4f06-9919-7429eac3382e/length.bin": "7a12e561363385e9dfeeab326368731c030ed4b374e7f5897ac819159d2884c5",
+      "5924c3d0-3d66-4f06-9919-7429eac3382e/link_lists.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "chroma.sqlite3": "84061605410eca94b471b0be4457587b4cbbe8842fd062335d5e0e875c9756b4",
+      "rag-manifest.json": "871aabde65e2483a32e4f9af2fa20cd652f731b1bafe063d8e4fdeb27d1fc2f2"
+    },
+    "b_file_hashes_equal": true,
+    "b_graph_coverage": "UNVERIFIED_NO_GRAPH_CREATED_BY_THIS_INTERFACE",
+    "b_logical_equal": true,
+    "deleted_source_absent": true,
+    "edited_source_current": true,
+    "indexed_chunks_a": 30,
+    "indexed_chunks_b": 2,
+    "leaked_rows": [],
+    "mutation_chunks": 1,
+    "postquery_deleted_absent": true,
+    "postquery_q01_current": {
+      "candidates": [
+        {
+          "absent_48_hour_fact": true,
+          "canonical_content": true,
+          "current_provenance": true,
+          "current_source_hash": true,
+          "current_stored_content": true,
+          "id": "68a0df1077becb3d",
+          "passed": true,
+          "rank": 1,
+          "returned_24_hour_fact": true,
+          "returned_content_sha256": "f9f7c94917389e20fab23fcb50a22581e434adb8947ee383e4321f3edbea222a"
+        }
+      ],
+      "canonical_content_stripped_sha256": "5f69b465ac82181815a37d7f193f233c39ad9332afe09b6a420b8335c2374ce2",
+      "canonical_source": "01-room-cancellations.md",
+      "content_changed": true,
+      "expected_source_md5": "06d28f5586b5c2d59d7bc90dc5d461f7",
+      "passed": true,
+      "previous_content_stripped_sha256": "43a8be61991dab128cc789ed951dcf46169f86cf208318410bc6f3acce53fbf1",
+      "previous_source_md5": "10834f445adadc32b5d4e5216a270c21",
+      "query_id": "Q01",
+      "rank": 1,
+      "source_changed": true
+    },
+    "purge_residual": 0,
+    "purged_chunks": 29,
+    "sentinel_unchanged": true
+  },
+  "peer": {
+    "cycles": 2,
+    "clients_each_cycle": 8,
+    "all_read_eight_ids": true,
+    "seven_survive_one_close_each_cycle": true,
+    "model": "fixture-precomputed-three-dimensions",
+    "dimensions": 3,
+    "semantic_quality_evidence": false,
+    "native_write_atomicity_claimed": false
+  },
+  "process": {
+    "child_pid": 13199,
+    "exit_code": 0,
+    "reaped": true,
+    "remaining_count": 0,
+    "timed_out": false,
+    "elapsed_seconds": 2.3965229159221053,
+    "cleanup_seconds_actual": 0.021955708973109722,
+    "signals": [],
+    "cleanup_errors": []
+  },
+  "post_model_state": {
+    "nomic_loaded_at_recorded_post_ps": true,
+    "forced_unload": false,
+    "recorded_post_ps": {
+      "models": [
+        {
+          "context_length": 2048,
+          "details": {
+            "families": [
+              "nomic-bert"
+            ],
+            "family": "nomic-bert",
+            "format": "gguf",
+            "parameter_size": "137M",
+            "parent_model": "",
+            "quantization_level": "F16"
+          },
+          "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+          "expires_at": "2026-10-14T18:28:09.524113+09:00",
+          "model": "nomic-embed-text:latest",
+          "name": "nomic-embed-text:latest",
+          "runner": "llamacpp",
+          "size": 382625382,
+          "size_vram": 382625382
+        }
+      ]
+    }
+  },
+  "limits": [
+    "Synthetic frozen single-project bilingual source-identification test; no improvement baseline or GA claim.",
+    "Exploratory Q16 Korean missed top5: exploratory9/10; all20=19/20; Korean9/10.",
+    "Semantic mode only; default hybrid quality not measured.",
+    "B graph UNVERIFIED; full original IMP07 not closed.",
+    "Peer3D precomputed test measures lifecycle only, not semantic quality or native write atomicity.",
+    "Clean candidate worktree tested; dirty root tree not neural-tested.",
+    "Configured dimensions0 remains UNKNOWN until observed; profile weight revision remains UNVERIFIED despite observed installed digest.",
+    "Historical52 offline tests passed; basedpyright exit1 with4 warnings. Historical wrapper lost pre-run SHA/timing; actual live run has separate source freeze and before/after receipts.",
+    "Purge residual0/B logical preservation are runtime interface observations, not a fresh database API inspection by packager.",
+    "Network logs are Python socket guard evidence, not an OS firewall or proof about unrelated processes."
+  ],
+  "original_full_imp07_closed": false,
+  "independent_actual_evidence_audit": "PENDING"
+}

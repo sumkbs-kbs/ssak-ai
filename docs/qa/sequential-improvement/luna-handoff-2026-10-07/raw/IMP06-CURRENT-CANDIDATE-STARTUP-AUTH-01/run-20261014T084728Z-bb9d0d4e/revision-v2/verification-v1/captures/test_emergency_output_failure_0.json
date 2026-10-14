@@ -1,0 +1,23 @@
+{
+  "outcome": "NO_SUCCESS",
+  "failures": [
+    "terminal_write:OSError",
+    "emergency_write:OSError"
+  ],
+  "exit_code": 0,
+  "reaped": true,
+  "group_empty": true,
+  "forced": false,
+  "deadline": 15,
+  "clock": 0,
+  "waits": [
+    10
+  ],
+  "signals": [],
+  "written_names": [
+    "launch.json",
+    "stop.requested"
+  ],
+  "terminal_file_written": false,
+  "emergency_count": 1
+}

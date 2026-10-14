@@ -1,0 +1,197 @@
+{
+  "controlled_all_ten": true,
+  "metrics": {
+    "controlled": {
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "recall_at_5": 1.0
+    },
+    "exploratory": {
+      "mrr_at_5": 0.7833333333333333,
+      "ndcg_at_5": 0.8130929753571458,
+      "recall_at_5": 0.9
+    }
+  },
+  "scores": [
+    {
+      "group": "controlled",
+      "language": "en",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q01",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "controlled",
+      "language": "en",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q02",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "controlled",
+      "language": "en",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q03",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "controlled",
+      "language": "en",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q04",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "controlled",
+      "language": "en",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q05",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "controlled",
+      "language": "ko",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q06",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "controlled",
+      "language": "ko",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q07",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "controlled",
+      "language": "ko",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q08",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "controlled",
+      "language": "ko",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q09",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "controlled",
+      "language": "ko",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q10",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "exploratory",
+      "language": "en",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q11",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "exploratory",
+      "language": "en",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q12",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "exploratory",
+      "language": "en",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q13",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "exploratory",
+      "language": "en",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q14",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "exploratory",
+      "language": "en",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q15",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "exploratory",
+      "language": "ko",
+      "mrr_at_5": 0.0,
+      "ndcg_at_5": 0.0,
+      "query_id": "Q16",
+      "rank": null,
+      "recall_at_5": 0
+    },
+    {
+      "group": "exploratory",
+      "language": "ko",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q17",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "exploratory",
+      "language": "ko",
+      "mrr_at_5": 0.3333333333333333,
+      "ndcg_at_5": 0.5,
+      "query_id": "Q18",
+      "rank": 3,
+      "recall_at_5": 1
+    },
+    {
+      "group": "exploratory",
+      "language": "ko",
+      "mrr_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "query_id": "Q19",
+      "rank": 1,
+      "recall_at_5": 1
+    },
+    {
+      "group": "exploratory",
+      "language": "ko",
+      "mrr_at_5": 0.5,
+      "ndcg_at_5": 0.6309297535714575,
+      "query_id": "Q20",
+      "rank": 2,
+      "recall_at_5": 1
+    }
+  ]
+}

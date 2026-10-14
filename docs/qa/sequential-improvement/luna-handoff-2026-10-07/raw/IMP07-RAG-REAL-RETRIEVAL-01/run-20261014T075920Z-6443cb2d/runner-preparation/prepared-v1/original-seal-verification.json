@@ -1,0 +1,8 @@
+{
+  "verified": {
+    "fixture-manifest.sha256": 38,
+    "artifact-manifest.sha256": 50
+  },
+  "original_fixture_manifest_sha256": "8a92bd375a38036107165f61f3d44677d4987b45eca87300e36aa2d1e40fd499",
+  "originals_rewritten": false
+}

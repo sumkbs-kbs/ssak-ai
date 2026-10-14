@@ -1,0 +1,106 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+__________ test_owned_override_replaces_parent[AGK_GBRAIN_DIR-gbrain] __________
+
+key = 'AGK_GBRAIN_DIR', relative = 'gbrain'
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-511/test_owned_override_replaces_p0')
+
+    @pytest.mark.parametrize(("key", "relative"), KEYS.items())
+    def test_owned_override_replaces_parent(key: str, relative: str, tmp_path: Path) -> None:
+        plan = SourcePlan(candidate=Path("/candidate"), candidate_head="pending", app_version="0.1.0",
+            python=Path("/venv/bin/python"), source_hashes={}, dotenv_path=Path("/dotenv.py"), dotenv_sha256="pending")
+        parent = {"HOME": "/unchanged/home", key: "/untrusted/shared", "AGK_STATE": "/unsupported"}
+        env = child_environment(parent, plan, tmp_path, "fixture-only")
+>       assert env[key] == str(tmp_path / relative)
+               ^^^^^^^^
+E       KeyError: 'AGK_GBRAIN_DIR'
+
+test_environment_delta.py:22: KeyError
+___ test_owned_override_replaces_parent[AGK_GLOBAL_MEMORY_DIR-global-memory] ___
+
+key = 'AGK_GLOBAL_MEMORY_DIR', relative = 'global-memory'
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-511/test_owned_override_replaces_p1')
+
+    @pytest.mark.parametrize(("key", "relative"), KEYS.items())
+    def test_owned_override_replaces_parent(key: str, relative: str, tmp_path: Path) -> None:
+        plan = SourcePlan(candidate=Path("/candidate"), candidate_head="pending", app_version="0.1.0",
+            python=Path("/venv/bin/python"), source_hashes={}, dotenv_path=Path("/dotenv.py"), dotenv_sha256="pending")
+        parent = {"HOME": "/unchanged/home", key: "/untrusted/shared", "AGK_STATE": "/unsupported"}
+        env = child_environment(parent, plan, tmp_path, "fixture-only")
+>       assert env[key] == str(tmp_path / relative)
+               ^^^^^^^^
+E       KeyError: 'AGK_GLOBAL_MEMORY_DIR'
+
+test_environment_delta.py:22: KeyError
+___ test_owned_override_replaces_parent[AGK_CONTEXT_STORE_DIR-context-store] ___
+
+key = 'AGK_CONTEXT_STORE_DIR', relative = 'context-store'
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-511/test_owned_override_replaces_p2')
+
+    @pytest.mark.parametrize(("key", "relative"), KEYS.items())
+    def test_owned_override_replaces_parent(key: str, relative: str, tmp_path: Path) -> None:
+        plan = SourcePlan(candidate=Path("/candidate"), candidate_head="pending", app_version="0.1.0",
+            python=Path("/venv/bin/python"), source_hashes={}, dotenv_path=Path("/dotenv.py"), dotenv_sha256="pending")
+        parent = {"HOME": "/unchanged/home", key: "/untrusted/shared", "AGK_STATE": "/unsupported"}
+        env = child_environment(parent, plan, tmp_path, "fixture-only")
+>       assert env[key] == str(tmp_path / relative)
+               ^^^^^^^^
+E       KeyError: 'AGK_CONTEXT_STORE_DIR'
+
+test_environment_delta.py:22: KeyError
+_ test_owned_override_replaces_parent[AGK_CONVERSATION_STORE_DIR-conversations] _
+
+key = 'AGK_CONVERSATION_STORE_DIR', relative = 'conversations'
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-511/test_owned_override_replaces_p3')
+
+    @pytest.mark.parametrize(("key", "relative"), KEYS.items())
+    def test_owned_override_replaces_parent(key: str, relative: str, tmp_path: Path) -> None:
+        plan = SourcePlan(candidate=Path("/candidate"), candidate_head="pending", app_version="0.1.0",
+            python=Path("/venv/bin/python"), source_hashes={}, dotenv_path=Path("/dotenv.py"), dotenv_sha256="pending")
+        parent = {"HOME": "/unchanged/home", key: "/untrusted/shared", "AGK_STATE": "/unsupported"}
+        env = child_environment(parent, plan, tmp_path, "fixture-only")
+>       assert env[key] == str(tmp_path / relative)
+               ^^^^^^^^
+E       KeyError: 'AGK_CONVERSATION_STORE_DIR'
+
+test_environment_delta.py:22: KeyError
+_____ test_owned_override_replaces_parent[AGK_TASK_DB_PATH-data/tasks.db] ______
+
+key = 'AGK_TASK_DB_PATH', relative = 'data/tasks.db'
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-511/test_owned_override_replaces_p4')
+
+    @pytest.mark.parametrize(("key", "relative"), KEYS.items())
+    def test_owned_override_replaces_parent(key: str, relative: str, tmp_path: Path) -> None:
+        plan = SourcePlan(candidate=Path("/candidate"), candidate_head="pending", app_version="0.1.0",
+            python=Path("/venv/bin/python"), source_hashes={}, dotenv_path=Path("/dotenv.py"), dotenv_sha256="pending")
+        parent = {"HOME": "/unchanged/home", key: "/untrusted/shared", "AGK_STATE": "/unsupported"}
+        env = child_environment(parent, plan, tmp_path, "fixture-only")
+>       assert env[key] == str(tmp_path / relative)
+               ^^^^^^^^
+E       KeyError: 'AGK_TASK_DB_PATH'
+
+test_environment_delta.py:22: KeyError
+___ test_owned_override_replaces_parent[AGK_BENCHMARK_DB-data/benchmarks.db] ___
+
+key = 'AGK_BENCHMARK_DB', relative = 'data/benchmarks.db'
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-511/test_owned_override_replaces_p5')
+
+    @pytest.mark.parametrize(("key", "relative"), KEYS.items())
+    def test_owned_override_replaces_parent(key: str, relative: str, tmp_path: Path) -> None:
+        plan = SourcePlan(candidate=Path("/candidate"), candidate_head="pending", app_version="0.1.0",
+            python=Path("/venv/bin/python"), source_hashes={}, dotenv_path=Path("/dotenv.py"), dotenv_sha256="pending")
+        parent = {"HOME": "/unchanged/home", key: "/untrusted/shared", "AGK_STATE": "/unsupported"}
+        env = child_environment(parent, plan, tmp_path, "fixture-only")
+>       assert env[key] == str(tmp_path / relative)
+               ^^^^^^^^
+E       KeyError: 'AGK_BENCHMARK_DB'
+
+test_environment_delta.py:22: KeyError
+=========================== short test summary info ============================
+FAILED ../../../../../../../../../../../../../../dev::test_owned_override_replaces_parent[AGK_GBRAIN_DIR-gbrain]
+FAILED ../../../../../../../../../../../../../../dev::test_owned_override_replaces_parent[AGK_GLOBAL_MEMORY_DIR-global-memory]
+FAILED ../../../../../../../../../../../../../../dev::test_owned_override_replaces_parent[AGK_CONTEXT_STORE_DIR-context-store]
+FAILED ../../../../../../../../../../../../../../dev::test_owned_override_replaces_parent[AGK_CONVERSATION_STORE_DIR-conversations]
+FAILED ../../../../../../../../../../../../../../dev::test_owned_override_replaces_parent[AGK_TASK_DB_PATH-data/tasks.db]
+FAILED ../../../../../../../../../../../../../../dev::test_owned_override_replaces_parent[AGK_BENCHMARK_DB-data/benchmarks.db]
+6 failed in 0.10s

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="6" time="0.094" timestamp="2026-10-14T18:35:20.288484+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="" name="test_owned_override_replaces_parent[AGK_GBRAIN_DIR-gbrain]" time="0.002"><failure message="KeyError: 'AGK_GBRAIN_DIR'">key = 'AGK_GBRAIN_DIR', relative = 'gbrain'
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-511/test_owned_override_replaces_p0')
+
+    @pytest.mark.parametrize(("key", "relative"), KEYS.items())
+    def test_owned_override_replaces_parent(key: str, relative: str, tmp_path: Path) -&gt; None:
+        plan = SourcePlan(candidate=Path("/candidate"), candidate_head="pending", app_version="0.1.0",
+            python=Path("/venv/bin/python"), source_hashes={}, dotenv_path=Path("/dotenv.py"), dotenv_sha256="pending")
+        parent = {"HOME": "/unchanged/home", key: "/untrusted/shared", "AGK_STATE": "/unsupported"}
+        env = child_environment(parent, plan, tmp_path, "fixture-only")
+&gt;       assert env[key] == str(tmp_path / relative)
+               ^^^^^^^^
+E       KeyError: 'AGK_GBRAIN_DIR'
+
+test_environment_delta.py:22: KeyError</failure></testcase><testcase classname="" name="test_owned_override_replaces_parent[AGK_GLOBAL_MEMORY_DIR-global-memory]" time="0.000"><failure message="KeyError: 'AGK_GLOBAL_MEMORY_DIR'">key = 'AGK_GLOBAL_MEMORY_DIR', relative = 'global-memory'
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-511/test_owned_override_replaces_p1')
+
+    @pytest.mark.parametrize(("key", "relative"), KEYS.items())
+    def test_owned_override_replaces_parent(key: str, relative: str, tmp_path: Path) -&gt; None:
+        plan = SourcePlan(candidate=Path("/candidate"), candidate_head="pending", app_version="0.1.0",
+            python=Path("/venv/bin/python"), source_hashes={}, dotenv_path=Path("/dotenv.py"), dotenv_sha256="pending")
+        parent = {"HOME": "/unchanged/home", key: "/untrusted/shared", "AGK_STATE": "/unsupported"}
+        env = child_environment(parent, plan, tmp_path, "fixture-only")
+&gt;       assert env[key] == str(tmp_path / relative)
+               ^^^^^^^^
+E       KeyError: 'AGK_GLOBAL_MEMORY_DIR'
+
+test_environment_delta.py:22: KeyError</failure></testcase><testcase classname="" name="test_owned_override_replaces_parent[AGK_CONTEXT_STORE_DIR-context-store]" time="0.000"><failure message="KeyError: 'AGK_CONTEXT_STORE_DIR'">key = 'AGK_CONTEXT_STORE_DIR', relative = 'context-store'
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-511/test_owned_override_replaces_p2')
+
+    @pytest.mark.parametrize(("key", "relative"), KEYS.items())
+    def test_owned_override_replaces_parent(key: str, relative: str, tmp_path: Path) -&gt; None:
+        plan = SourcePlan(candidate=Path("/candidate"), candidate_head="pending", app_version="0.1.0",
+            python=Path("/venv/bin/python"), source_hashes={}, dotenv_path=Path("/dotenv.py"), dotenv_sha256="pending")
+        parent = {"HOME": "/unchanged/home", key: "/untrusted/shared", "AGK_STATE": "/unsupported"}
+        env = child_environment(parent, plan, tmp_path, "fixture-only")
+&gt;       assert env[key] == str(tmp_path / relative)
+               ^^^^^^^^
+E       KeyError: 'AGK_CONTEXT_STORE_DIR'
+
+test_environment_delta.py:22: KeyError</failure></testcase><testcase classname="" name="test_owned_override_replaces_parent[AGK_CONVERSATION_STORE_DIR-conversations]" time="0.000"><failure message="KeyError: 'AGK_CONVERSATION_STORE_DIR'">key = 'AGK_CONVERSATION_STORE_DIR', relative = 'conversations'
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-511/test_owned_override_replaces_p3')
+
+    @pytest.mark.parametrize(("key", "relative"), KEYS.items())
+    def test_owned_override_replaces_parent(key: str, relative: str, tmp_path: Path) -&gt; None:
+        plan = SourcePlan(candidate=Path("/candidate"), candidate_head="pending", app_version="0.1.0",
+            python=Path("/venv/bin/python"), source_hashes={}, dotenv_path=Path("/dotenv.py"), dotenv_sha256="pending")
+        parent = {"HOME": "/unchanged/home", key: "/untrusted/shared", "AGK_STATE": "/unsupported"}
+        env = child_environment(parent, plan, tmp_path, "fixture-only")
+&gt;       assert env[key] == str(tmp_path / relative)
+               ^^^^^^^^
+E       KeyError: 'AGK_CONVERSATION_STORE_DIR'
+
+test_environment_delta.py:22: KeyError</failure></testcase><testcase classname="" name="test_owned_override_replaces_parent[AGK_TASK_DB_PATH-data/tasks.db]" time="0.000"><failure message="KeyError: 'AGK_TASK_DB_PATH'">key = 'AGK_TASK_DB_PATH', relative = 'data/tasks.db'
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-511/test_owned_override_replaces_p4')
+
+    @pytest.mark.parametrize(("key", "relative"), KEYS.items())
+    def test_owned_override_replaces_parent(key: str, relative: str, tmp_path: Path) -&gt; None:
+        plan = SourcePlan(candidate=Path("/candidate"), candidate_head="pending", app_version="0.1.0",
+            python=Path("/venv/bin/python"), source_hashes={}, dotenv_path=Path("/dotenv.py"), dotenv_sha256="pending")
+        parent = {"HOME": "/unchanged/home", key: "/untrusted/shared", "AGK_STATE": "/unsupported"}
+        env = child_environment(parent, plan, tmp_path, "fixture-only")
+&gt;       assert env[key] == str(tmp_path / relative)
+               ^^^^^^^^
+E       KeyError: 'AGK_TASK_DB_PATH'
+
+test_environment_delta.py:22: KeyError</failure></testcase><testcase classname="" name="test_owned_override_replaces_parent[AGK_BENCHMARK_DB-data/benchmarks.db]" time="0.000"><failure message="KeyError: 'AGK_BENCHMARK_DB'">key = 'AGK_BENCHMARK_DB', relative = 'data/benchmarks.db'
+tmp_path = PosixPath('/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-511/test_owned_override_replaces_p5')
+
+    @pytest.mark.parametrize(("key", "relative"), KEYS.items())
+    def test_owned_override_replaces_parent(key: str, relative: str, tmp_path: Path) -&gt; None:
+        plan = SourcePlan(candidate=Path("/candidate"), candidate_head="pending", app_version="0.1.0",
+            python=Path("/venv/bin/python"), source_hashes={}, dotenv_path=Path("/dotenv.py"), dotenv_sha256="pending")
+        parent = {"HOME": "/unchanged/home", key: "/untrusted/shared", "AGK_STATE": "/unsupported"}
+        env = child_environment(parent, plan, tmp_path, "fixture-only")
+&gt;       assert env[key] == str(tmp_path / relative)
+               ^^^^^^^^
+E       KeyError: 'AGK_BENCHMARK_DB'
+
+test_environment_delta.py:22: KeyError</failure></testcase></testsuite></testsuites>

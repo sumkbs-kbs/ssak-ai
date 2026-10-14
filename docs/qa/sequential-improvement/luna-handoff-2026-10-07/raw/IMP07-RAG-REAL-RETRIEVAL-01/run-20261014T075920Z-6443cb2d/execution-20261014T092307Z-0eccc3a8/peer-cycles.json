@@ -1,0 +1,208 @@
+[
+  {
+    "all_eight_ids_visible": true,
+    "client_identities": [
+      4509528912,
+      4509089328,
+      4509529168,
+      4521165968,
+      4509312944,
+      4509314864,
+      4509490256,
+      4504337088
+    ],
+    "closed_peer_state": {
+      "client_none": true,
+      "closed": true,
+      "collection_none": true
+    },
+    "concurrent_reads": {
+      "1": [
+        "peer-1",
+        "peer-2",
+        "peer-3",
+        "peer-4",
+        "peer-5",
+        "peer-6",
+        "peer-7",
+        "peer-8"
+      ],
+      "2": [
+        "peer-1",
+        "peer-2",
+        "peer-3",
+        "peer-4",
+        "peer-5",
+        "peer-6",
+        "peer-7",
+        "peer-8"
+      ],
+      "3": [
+        "peer-1",
+        "peer-2",
+        "peer-3",
+        "peer-4",
+        "peer-5",
+        "peer-6",
+        "peer-7",
+        "peer-8"
+      ],
+      "4": [
+        "peer-1",
+        "peer-2",
+        "peer-3",
+        "peer-4",
+        "peer-5",
+        "peer-6",
+        "peer-7",
+        "peer-8"
+      ],
+      "5": [
+        "peer-1",
+        "peer-2",
+        "peer-3",
+        "peer-4",
+        "peer-5",
+        "peer-6",
+        "peer-7",
+        "peer-8"
+      ],
+      "6": [
+        "peer-1",
+        "peer-2",
+        "peer-3",
+        "peer-4",
+        "peer-5",
+        "peer-6",
+        "peer-7",
+        "peer-8"
+      ],
+      "7": [
+        "peer-1",
+        "peer-2",
+        "peer-3",
+        "peer-4",
+        "peer-5",
+        "peer-6",
+        "peer-7",
+        "peer-8"
+      ],
+      "8": [
+        "peer-1",
+        "peer-2",
+        "peer-3",
+        "peer-4",
+        "peer-5",
+        "peer-6",
+        "peer-7",
+        "peer-8"
+      ]
+    },
+    "concurrent_reads_complete": true,
+    "cycle": 1,
+    "seven_survive_close": true
+  },
+  {
+    "all_eight_ids_visible": true,
+    "client_identities": [
+      4509355536,
+      4509539600,
+      4509541520,
+      4509358528,
+      4509293392,
+      4509293200,
+      4509330272,
+      4509486000
+    ],
+    "closed_peer_state": {
+      "client_none": true,
+      "closed": true,
+      "collection_none": true
+    },
+    "concurrent_reads": {
+      "1": [
+        "peer-1",
+        "peer-2",
+        "peer-3",
+        "peer-4",
+        "peer-5",
+        "peer-6",
+        "peer-7",
+        "peer-8"
+      ],
+      "2": [
+        "peer-1",
+        "peer-2",
+        "peer-3",
+        "peer-4",
+        "peer-5",
+        "peer-6",
+        "peer-7",
+        "peer-8"
+      ],
+      "3": [
+        "peer-1",
+        "peer-2",
+        "peer-3",
+        "peer-4",
+        "peer-5",
+        "peer-6",
+        "peer-7",
+        "peer-8"
+      ],
+      "4": [
+        "peer-1",
+        "peer-2",
+        "peer-3",
+        "peer-4",
+        "peer-5",
+        "peer-6",
+        "peer-7",
+        "peer-8"
+      ],
+      "5": [
+        "peer-1",
+        "peer-2",
+        "peer-3",
+        "peer-4",
+        "peer-5",
+        "peer-6",
+        "peer-7",
+        "peer-8"
+      ],
+      "6": [
+        "peer-1",
+        "peer-2",
+        "peer-3",
+        "peer-4",
+        "peer-5",
+        "peer-6",
+        "peer-7",
+        "peer-8"
+      ],
+      "7": [
+        "peer-1",
+        "peer-2",
+        "peer-3",
+        "peer-4",
+        "peer-5",
+        "peer-6",
+        "peer-7",
+        "peer-8"
+      ],
+      "8": [
+        "peer-1",
+        "peer-2",
+        "peer-3",
+        "peer-4",
+        "peer-5",
+        "peer-6",
+        "peer-7",
+        "peer-8"
+      ]
+    },
+    "concurrent_reads_complete": true,
+    "cycle": 2,
+    "seven_survive_close": true
+  }
+]

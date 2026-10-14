@@ -1,0 +1,12 @@
+{
+  "nodeid": "tests/test_lifespan_agency_root_contract.py::test_actual_lifespan_agency_storage_root[default]",
+  "argv": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-520/test_actual_lifespan_agency_st2/probe.py",
+    "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-520/test_actual_lifespan_agency_st2",
+    "default"
+  ],
+  "cwd": "/private/var/folders/0c/ncf5ly7d36q53dy94lv6x_7w0000gn/T/pytest-of-mr.k/pytest-520/test_actual_lifespan_agency_st2",
+  "returncode": 0,
+  "probe_sha256": "8bb89bb482cfdc515d520aeead9d27180ed7e812179a17a3e2a744b5bb5dc76a"
+}

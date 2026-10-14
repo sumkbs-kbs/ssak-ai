@@ -1,0 +1,25 @@
+{
+  "outcome": "NO_SUCCESS",
+  "failures": [],
+  "exit_code": null,
+  "reaped": false,
+  "group_empty": false,
+  "forced": true,
+  "deadline": 90,
+  "clock": 90.0,
+  "waits": [
+    2,
+    0.0,
+    0.0
+  ],
+  "signals": [
+    9
+  ],
+  "written_names": [
+    "launch.json",
+    "stop.requested",
+    "result.json"
+  ],
+  "terminal_file_written": true,
+  "emergency_count": 0
+}

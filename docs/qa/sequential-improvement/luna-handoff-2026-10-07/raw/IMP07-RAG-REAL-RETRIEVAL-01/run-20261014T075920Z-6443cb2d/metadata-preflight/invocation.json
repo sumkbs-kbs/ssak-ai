@@ -1,0 +1,34 @@
+{
+  "executable": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+  "args": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/metadata-preflight/preflight.py"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/metadata-preflight",
+  "started": "2026-10-14T08:08:32.836Z",
+  "ended": "2026-10-14T08:08:33.062Z",
+  "pid": 94981,
+  "code": 0,
+  "signal": null,
+  "timedOut": false,
+  "overallDeadlineSeconds": 45,
+  "perRequestTimeoutSeconds": 10,
+  "retries": 0,
+  "trust_env": false,
+  "follow_redirects": false,
+  "remainingOwnedProcesses": [],
+  "fixtureManifestBefore": "8a92bd375a38036107165f61f3d44677d4987b45eca87300e36aa2d1e40fd499",
+  "fixtureManifestAfter": "8a92bd375a38036107165f61f3d44677d4987b45eca87300e36aa2d1e40fd499",
+  "fixtureHashCheckExit": 0,
+  "boundBefore": {
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/metadata-preflight/preflight.py": "eae0b1d1184fc8020bde5780884c3d5a6956f232fab932bab7eb028f16f68274",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/metadata-preflight/supervisor.mjs": "47835a1faa65e59f0d56555c11475b60fa913fba9a441078e019d4ded13da9f1",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/config.yaml": "3948867a6b9ef51fc392e07d0015c45b7f881095942c4cbf64c503fdc08d8025",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/config.py": "6721ba3d22f9eb9ce509caf06fcca966f4605f3134d2c4a249aceea803549346"
+  },
+  "boundAfter": {
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/metadata-preflight/preflight.py": "eae0b1d1184fc8020bde5780884c3d5a6956f232fab932bab7eb028f16f68274",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/metadata-preflight/supervisor.mjs": "47835a1faa65e59f0d56555c11475b60fa913fba9a441078e019d4ded13da9f1",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/config.yaml": "3948867a6b9ef51fc392e07d0015c45b7f881095942c4cbf64c503fdc08d8025",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/config.py": "6721ba3d22f9eb9ce509caf06fcca966f4605f3134d2c4a249aceea803549346"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "provider": "context",
+  "scenario": "env",
+  "denied_mutations": [
+    {
+      "event": "os.mkdir",
+      "path": "/Users/mr.k/.antigravity/context_store"
+    }
+  ],
+  "socket_attempts": [],
+  "model_import_attempts": []
+}

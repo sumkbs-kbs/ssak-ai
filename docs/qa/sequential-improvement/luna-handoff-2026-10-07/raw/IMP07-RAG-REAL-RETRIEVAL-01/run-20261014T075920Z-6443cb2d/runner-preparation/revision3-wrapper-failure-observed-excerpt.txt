@@ -1,0 +1,15 @@
+Observed exec_command output excerpt (not a recreated subprocess log). The orchestration shell command exited 1 after the four child command return codes and outputs below were printed. This excerpt is transcribed from the tool result. Exact child stdout/stderr were already persisted separately.
+
+offline 0: 52 passed in 0.47s
+full-ruff 0: All checks passed!
+format-check 0: 4 files already formatted
+full-types 1: 0 errors, 4 warnings, 0 notes
+
+Traceback (most recent call last):
+  File "<stdin>", line 18, in <module>
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP07-RAG-REAL-RETRIEVAL-01/run-20261014T075920Z-6443cb2d/runner-preparation/control.py", line 356
+    match args:
+          ^
+SyntaxError: invalid syntax
+
+The failing compile() ran inside the system python3 orchestration wrapper. The actual pytest argv used the venv interpreter. Individual wrapper timings and pre-run hashes existed only in memory and were lost; reconstructed command metadata is explicitly labelled in revision3-verification-receipt.json. No test/statics replay followed this wrapper-only failure. Corrected compile command alone is captured in revision3-compile-receipt.json.

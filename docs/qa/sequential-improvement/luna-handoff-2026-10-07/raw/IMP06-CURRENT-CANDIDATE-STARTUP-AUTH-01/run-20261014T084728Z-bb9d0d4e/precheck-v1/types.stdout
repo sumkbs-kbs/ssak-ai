@@ -1,0 +1,23 @@
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/startup_entry.py
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/startup_entry.py:17:6 - error: Import from `startup_contract` is implicitly relative and will not work if this file is imported as a module
+    Use a relative import from `.startup_contract` instead
+    or specify the full module path: `docs.qa.sequential-improvement.luna-handoff-2026-10-07.raw.IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01.run-20261014T084728Z-bb9d0d4e.startup_contract` (reportImplicitRelativeImport)
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/startup_entry.py:18:6 - error: Import from `startup_guard` is implicitly relative and will not work if this file is imported as a module
+    Use a relative import from `.startup_guard` instead
+    or specify the full module path: `docs.qa.sequential-improvement.luna-handoff-2026-10-07.raw.IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01.run-20261014T084728Z-bb9d0d4e.startup_guard` (reportImplicitRelativeImport)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/startup_guard.py
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/startup_guard.py:19:6 - error: Import from `startup_contract` is implicitly relative and will not work if this file is imported as a module
+    Use a relative import from `.startup_contract` instead
+    or specify the full module path: `docs.qa.sequential-improvement.luna-handoff-2026-10-07.raw.IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01.run-20261014T084728Z-bb9d0d4e.startup_contract` (reportImplicitRelativeImport)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/startup_supervisor.py
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/startup_supervisor.py:23:6 - error: Import from `startup_contract` is implicitly relative and will not work if this file is imported as a module
+    Use a relative import from `.startup_contract` instead
+    or specify the full module path: `docs.qa.sequential-improvement.luna-handoff-2026-10-07.raw.IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01.run-20261014T084728Z-bb9d0d4e.startup_contract` (reportImplicitRelativeImport)
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/test_startup_contract.py
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/test_startup_contract.py:14:6 - error: Import from `startup_contract` is implicitly relative and will not work if this file is imported as a module
+    Use a relative import from `.startup_contract` instead
+    or specify the full module path: `docs.qa.sequential-improvement.luna-handoff-2026-10-07.raw.IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01.run-20261014T084728Z-bb9d0d4e.startup_contract` (reportImplicitRelativeImport)
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/test_startup_contract.py:25:6 - error: Import from `startup_guard` is implicitly relative and will not work if this file is imported as a module
+    Use a relative import from `.startup_guard` instead
+    or specify the full module path: `docs.qa.sequential-improvement.luna-handoff-2026-10-07.raw.IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01.run-20261014T084728Z-bb9d0d4e.startup_guard` (reportImplicitRelativeImport)
+6 errors, 0 warnings, 0 notes

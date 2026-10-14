@@ -1,0 +1,5 @@
+{
+  "original_probe_sha256": "8bb89bb482cfdc515d520aeead9d27180ed7e812179a17a3e2a744b5bb5dc76a",
+  "executed_probe_sha256": "e16fa10db03147c4ef124c5f4fec02981b2ff663f7e50c09d199223e86a8b5d8",
+  "reason": "ROOT preimage already uses configured RAG/IDE root and creates VectorStore; isolate these adjacent subsystems without changing agency bridge/store assertions"
+}

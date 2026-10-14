@@ -1,0 +1,28 @@
+{
+  "classification": "NO_SUCCESS_IMPORT_FILESYSTEM_BOUNDARY",
+  "observed_child_exit": 1,
+  "pid": 13840,
+  "reaped": true,
+  "group_empty": true,
+  "forced": false,
+  "binds": 0,
+  "requests_attempted": 0,
+  "responses": 0,
+  "model_calls": 0,
+  "lifespan_started": "NOT_OBSERVED",
+  "auth": "NOT_RUN",
+  "health": "NOT_RUN",
+  "blocker": "Eager global_gbrain constructor requests home directory outside owned root",
+  "raw_source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP06-CURRENT-CANDIDATE-STARTUP-AUTH-01/run-20261014T084728Z-bb9d0d4e/revision-v2/live-once",
+  "public_evidence_sha256": {
+    "result.json": "4348e390bc947a7333100d0c5937967621cd195781184bced3e2f8c4a544c0dc",
+    "guard.json": "1f495b50f0d8cb55cce34a205a989f2d671e58a69c2d7a56f20132a0a8b0fd3b",
+    "launch.json": "c7dfc96d202cd731b9efba5423faa5e7609ae13559d04ec26b17691b138570a5",
+    "request-counts.json": "44b764f62156876dd307a8ba5a6f7006a62ae9384943d816236e56d1052b6d39",
+    "stderr.log": "a285af3daf8f5d81d045b2e696d65ae93b4561fe80d3c0412bfe44a23ccb9aa2",
+    "stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "private_excluded": "auth-private/**",
+  "additional_execution": 0,
+  "no_claim": "No product HTTP, auth, startup or shutdown success inferred from successful process cleanup."
+}

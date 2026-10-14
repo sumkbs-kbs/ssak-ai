@@ -1,0 +1,17 @@
+{
+  "status": "PREPARED_NOT_EXECUTED",
+  "documentsA": 30,
+  "targets": 20,
+  "distractors": 10,
+  "documentsB": 2,
+  "queries": 20,
+  "controlled": 10,
+  "exploratory": 10,
+  "englishQueries": 10,
+  "koreanQueries": 10,
+  "allOracleSourcesExist": true,
+  "uniqueQueryIDs": 20,
+  "oracleQueryIDsMatch": true,
+  "retrievalMode": "semantic",
+  "embeddingInferences": 0
+}

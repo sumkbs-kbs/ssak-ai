@@ -1,0 +1,12 @@
+{
+  "provider": "memory",
+  "scenario": "env",
+  "denied_mutations": [
+    {
+      "event": "os.mkdir",
+      "path": "/Users/mr.k/.antigravity-k/memory"
+    }
+  ],
+  "socket_attempts": [],
+  "model_import_attempts": []
+}
