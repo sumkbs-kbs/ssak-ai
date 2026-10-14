@@ -1,0 +1,9 @@
+{
+  "nodeid": "tests/test_native_transport_error_contract.py::test_explicit_combo_keeps_existing_fallback",
+  "wire": [],
+  "manager_calls": 2,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": []
+}

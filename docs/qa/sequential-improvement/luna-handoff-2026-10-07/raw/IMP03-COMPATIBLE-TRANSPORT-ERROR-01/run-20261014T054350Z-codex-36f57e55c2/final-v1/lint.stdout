@@ -1,0 +1,20 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/test_compatible_transport_error_contract.py:1:1
+   |
+ 1 | / import io
+ 2 | | import json
+ 3 | | import os
+ 4 | | import uuid
+ 5 | | from dataclasses import replace
+ 6 | | from email.message import Message
+ 7 | | from pathlib import Path
+ 8 | | from urllib.error import HTTPError, URLError
+ 9 | |
+10 | | import pytest
+11 | | from tests.test_chat_structured_output_contract import product as product
+   | |_________________________________________________________________________^
+   |
+help: Organize imports
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-COMPATIBLE-TRANSPORT-ERROR-01/run-20261014T054350Z-codex-36f57e55c2/controlled-wire/observe_once.py"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-COMPATIBLE-TRANSPORT-ERROR-01/run-20261014T054350Z-codex-36f57e55c2/controlled-wire",
+  "source_path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src:/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "started_unix": 1791957089.641045,
+  "ended_unix": 1791957090.8772218,
+  "exit_code": 1,
+  "timeout_seconds": 20,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "9f7cd6bf3a6a4a2e962c99b97284646dc810e5cff50b5306fc02705ae36f4491",
+  "observer_sha256": "a6a461be97dffd9bd6e4e4ee5e76dbf40f7e3cb93acd1c4bc4c84922d68d41dd"
+}

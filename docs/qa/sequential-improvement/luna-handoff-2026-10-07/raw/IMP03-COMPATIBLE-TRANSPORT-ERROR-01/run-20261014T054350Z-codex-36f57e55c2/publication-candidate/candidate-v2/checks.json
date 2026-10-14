@@ -1,0 +1,72 @@
+{
+  "checks": [
+    {
+      "name": "focused",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-COMPATIBLE-TRANSPORT-ERROR-01/run-20261014T054350Z-codex-36f57e55c2/publication-candidate/cold_verify.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-COMPATIBLE-TRANSPORT-ERROR-01/run-20261014T054350Z-codex-36f57e55c2/publication-candidate/candidate-v2"
+      ],
+      "exit_code": 0,
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai"
+    },
+    {
+      "name": "lint",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "check",
+        "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+        "tests/test_compatible_transport_error_contract.py"
+      ],
+      "exit_code": 0,
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai"
+    },
+    {
+      "name": "format",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "format",
+        "--check",
+        "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+        "tests/test_compatible_transport_error_contract.py"
+      ],
+      "exit_code": 0,
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai"
+    },
+    {
+      "name": "types",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+        "--pythonpath",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "--level",
+        "error",
+        "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+        "tests/test_compatible_transport_error_contract.py"
+      ],
+      "exit_code": 0,
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai"
+    },
+    {
+      "name": "compile",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-c",
+        "import pathlib,sys; [compile(pathlib.Path(p).read_bytes(),p,'exec') for p in sys.argv[1:]]",
+        "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+        "tests/test_compatible_transport_error_contract.py"
+      ],
+      "exit_code": 0,
+      "cwd": "/Users/mr.k/.codex/worktrees/structured-output-publication/Ssak-Ai"
+    }
+  ],
+  "source_before": {
+    "src/antigravity_k/engine/provider_adapters/inference_providers.py": "0e758c675045b35d8b3b6a38577b6583ee2a255e8128a07c8c495b1eb92de97f",
+    "tests/test_compatible_transport_error_contract.py": "d284b38bf2379417c4cc0a345c7aa140c3b0de62d3c7a9558ec8a44581f4b629"
+  },
+  "source_after": {
+    "src/antigravity_k/engine/provider_adapters/inference_providers.py": "0e758c675045b35d8b3b6a38577b6583ee2a255e8128a07c8c495b1eb92de97f",
+    "tests/test_compatible_transport_error_contract.py": "d284b38bf2379417c4cc0a345c7aa140c3b0de62d3c7a9558ec8a44581f4b629"
+  },
+  "stable": true
+}

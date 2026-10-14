@@ -1,0 +1,26 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_literal_error_prefix_is_normal_content[ollama-/v1/messages]",
+  "wire": [],
+  "manager_calls": 1,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 200,
+      "body": "{\"id\":\"msg_b23e8b3a6ac24d2dbc8881fe\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"gemma4:compat\",\"content\":[{\"type\":\"text\",\"text\":\"[API Error] is the requested literal answer\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":1,\"output_tokens\":14}}",
+      "request": {
+        "model": "gemma4:compat",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "agent_mode": false,
+        "max_tokens": 128
+      }
+    }
+  ]
+}

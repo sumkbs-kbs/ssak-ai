@@ -1,0 +1,27 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[refused-/v1/chat/completions-lmstudio]",
+  "wire": [],
+  "manager_calls": 0,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 200,
+      "body": "data: {\"id\": \"chatcmpl-stream\", \"object\": \"chat.completion.chunk\", \"model\": \"contract-lmstudio\", \"choices\": [{\"delta\": {\"content\": \"[API Error for contract-lmstudio] <urlopen error private endpoint>\"}, \"index\": 0, \"finish_reason\": null}]}\n\ndata: [DONE]\n\n",
+      "request": {
+        "model": "contract-lmstudio",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "agent_mode": false,
+        "max_tokens": 128,
+        "stream": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,1150 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF......                                 [100%]
+=================================== FAILURES ===================================
+_ test_compatible_direct_transport_failure_once[lmstudio-http503-502-/v1/chat/completions] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a2e5160>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...nt': '[API Error for contract-lmstudio] HTTP Error 503: private endpoint'}],)], 'sleeps': [1.0, 2.0], ...}, 'lmstudio')
+route = '/v1/chat/completions', kind = 'http503', status = 502
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"chatcmpl-d4cfaed9ddc1","object":"chat.completion","created":1791956792,"model":"contract-lmstudio","choices":[{"index":0,"message":{"role":"assistant","content":"[API Error for contract-lmstudio] HTTP Error 503: private endpoint"},"finish_reason":"stop"}],"usage":{"prompt_tokens":7,"completion_tokens":17,"total_tokens":24}}
+E       assert 200 == 502
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 1.0초 후 재시도 (1/2) http://127.0.0.1:19191/v1/chat/completions
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 2.0초 후 재시도 (2/2) http://127.0.0.1:19191/v1/chat/completions
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.HTTPError: HTTP Error 503: private endpoint
+_ test_compatible_direct_transport_failure_once[lmstudio-http503-502-/v1/messages] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a332350>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes... 7, 'tokens_out': 17, 'latency_ms': 0.8761882781982422, ...}], 'persisted': [], 'sleeps': [1.0, 2.0], ...}, 'lmstudio')
+route = '/v1/messages', kind = 'http503', status = 502
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"msg_0885049e4a8f4290b8459770","type":"message","role":"assistant","model":"contract-lmstudio","content":[{"type":"text","text":"[API Error for contract-lmstudio] HTTP Error 503: private endpoint"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":1,"output_tokens":22}}
+E       assert 200 == 502
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 1.0초 후 재시도 (1/2) http://127.0.0.1:19191/v1/chat/completions
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 2.0초 후 재시도 (2/2) http://127.0.0.1:19191/v1/chat/completions
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.HTTPError: HTTP Error 503: private endpoint
+_ test_compatible_direct_transport_failure_once[lmstudio-refused-503-/v1/chat/completions] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a406d50>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes..., 'content': '[API Error for contract-lmstudio] <urlopen error private endpoint>'}],)], 'sleeps': [], ...}, 'lmstudio')
+route = '/v1/chat/completions', kind = 'refused', status = 503
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"chatcmpl-a0f52373376e","object":"chat.completion","created":1791956793,"model":"contract-lmstudio","choices":[{"index":0,"message":{"role":"assistant","content":"[API Error for contract-lmstudio] <urlopen error private endpoint>"},"finish_reason":"stop"}],"usage":{"prompt_tokens":7,"completion_tokens":17,"total_tokens":24}}
+E       assert 200 == 503
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.URLError: <urlopen error private endpoint>
+_ test_compatible_direct_transport_failure_once[lmstudio-refused-503-/v1/messages] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a37dcd0>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...ns_in': 7, 'tokens_out': 17, 'latency_ms': 0.48995018005371094, ...}], 'persisted': [], 'sleeps': [], ...}, 'lmstudio')
+route = '/v1/messages', kind = 'refused', status = 503
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"msg_e0bb36643ca44eaa84e8af9a","type":"message","role":"assistant","model":"contract-lmstudio","content":[{"type":"text","text":"[API Error for contract-lmstudio] <urlopen error private endpoint>"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":1,"output_tokens":22}}
+E       assert 200 == 503
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.URLError: <urlopen error private endpoint>
+_ test_compatible_direct_transport_failure_once[lmstudio-timeout-504-/v1/chat/completions] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a460b00>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...ole': 'assistant', 'content': '[API Error for contract-lmstudio] private timeout'}],)], 'sleeps': [], ...}, 'lmstudio')
+route = '/v1/chat/completions', kind = 'timeout', status = 504
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"chatcmpl-2309657e298b","object":"chat.completion","created":1791956793,"model":"contract-lmstudio","choices":[{"index":0,"message":{"role":"assistant","content":"[API Error for contract-lmstudio] private timeout"},"finish_reason":"stop"}],"usage":{"prompt_tokens":7,"completion_tokens":12,"total_tokens":19}}
+E       assert 200 == 504
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+TimeoutError: private timeout
+_ test_compatible_direct_transport_failure_once[lmstudio-timeout-504-/v1/messages] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a461480>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...ns_in': 7, 'tokens_out': 12, 'latency_ms': 0.42819976806640625, ...}], 'persisted': [], 'sleeps': [], ...}, 'lmstudio')
+route = '/v1/messages', kind = 'timeout', status = 504
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"msg_fc70a0a5ce7e40f38f38d50f","type":"message","role":"assistant","model":"contract-lmstudio","content":[{"type":"text","text":"[API Error for contract-lmstudio] private timeout"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":1,"output_tokens":16}}
+E       assert 200 == 504
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+TimeoutError: private timeout
+_ test_compatible_direct_transport_failure_once[openrouter-http503-502-/v1/chat/completions] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a4628b0>, {'model': 'contract-openrouter', 'project_id': 'default', 'm... '[API Error for contract-openrouter] HTTP Error 503: private endpoint'}],)], 'sleeps': [1.0, 2.0], ...}, 'openrouter')
+route = '/v1/chat/completions', kind = 'http503', status = 502
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"chatcmpl-0625e8d9db1e","object":"chat.completion","created":1791956793,"model":"contract-openrouter","choices":[{"index":0,"message":{"role":"assistant","content":"[API Error for contract-openrouter] HTTP Error 503: private endpoint"},"finish_reason":"stop"}],"usage":{"prompt_tokens":7,"completion_tokens":17,"total_tokens":24}}
+E       assert 200 == 502
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 1.0초 후 재시도 (1/2) http://127.0.0.1:19191/v1/chat/completions
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 2.0초 후 재시도 (2/2) http://127.0.0.1:19191/v1/chat/completions
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.HTTPError: HTTP Error 503: private endpoint
+_ test_compatible_direct_transport_failure_once[openrouter-http503-502-/v1/messages] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a462190>, {'model': 'contract-openrouter', 'project_id': 'default', 'm..., 'tokens_out': 17, 'latency_ms': 0.6549358367919922, ...}], 'persisted': [], 'sleeps': [1.0, 2.0], ...}, 'openrouter')
+route = '/v1/messages', kind = 'http503', status = 502
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"msg_dbf47c67735a409496e4fb93","type":"message","role":"assistant","model":"contract-openrouter","content":[{"type":"text","text":"[API Error for contract-openrouter] HTTP Error 503: private endpoint"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":1,"output_tokens":22}}
+E       assert 200 == 502
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 1.0초 후 재시도 (1/2) http://127.0.0.1:19191/v1/chat/completions
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 2.0초 후 재시도 (2/2) http://127.0.0.1:19191/v1/chat/completions
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.HTTPError: HTTP Error 503: private endpoint
+_ test_compatible_direct_transport_failure_once[openrouter-refused-503-/v1/chat/completions] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x149fbac40>, {'model': 'contract-openrouter', 'project_id': 'default', 'm...ontent': '[API Error for contract-openrouter] <urlopen error private endpoint>'}],)], 'sleeps': [], ...}, 'openrouter')
+route = '/v1/chat/completions', kind = 'refused', status = 503
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"chatcmpl-9fe8b2a6257a","object":"chat.completion","created":1791956793,"model":"contract-openrouter","choices":[{"index":0,"message":{"role":"assistant","content":"[API Error for contract-openrouter] <urlopen error private endpoint>"},"finish_reason":"stop"}],"usage":{"prompt_tokens":7,"completion_tokens":17,"total_tokens":24}}
+E       assert 200 == 503
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.URLError: <urlopen error private endpoint>
+_ test_compatible_direct_transport_failure_once[openrouter-refused-503-/v1/messages] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a37efd0>, {'model': 'contract-openrouter', 'project_id': 'default', 'm..._in': 7, 'tokens_out': 17, 'latency_ms': 0.40912628173828125, ...}], 'persisted': [], 'sleeps': [], ...}, 'openrouter')
+route = '/v1/messages', kind = 'refused', status = 503
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"msg_c517eeb3d5ad443593f8a3b4","type":"message","role":"assistant","model":"contract-openrouter","content":[{"type":"text","text":"[API Error for contract-openrouter] <urlopen error private endpoint>"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":1,"output_tokens":22}}
+E       assert 200 == 503
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.URLError: <urlopen error private endpoint>
+_ test_compatible_direct_transport_failure_once[openrouter-timeout-504-/v1/chat/completions] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a37e520>, {'model': 'contract-openrouter', 'project_id': 'default', 'm...: 'assistant', 'content': '[API Error for contract-openrouter] private timeout'}],)], 'sleeps': [], ...}, 'openrouter')
+route = '/v1/chat/completions', kind = 'timeout', status = 504
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"chatcmpl-e0317e706f32","object":"chat.completion","created":1791956793,"model":"contract-openrouter","choices":[{"index":0,"message":{"role":"assistant","content":"[API Error for contract-openrouter] private timeout"},"finish_reason":"stop"}],"usage":{"prompt_tokens":7,"completion_tokens":13,"total_tokens":20}}
+E       assert 200 == 504
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+TimeoutError: private timeout
+_ test_compatible_direct_transport_failure_once[openrouter-timeout-504-/v1/messages] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a37f100>, {'model': 'contract-openrouter', 'project_id': 'default', 'm...s_in': 7, 'tokens_out': 13, 'latency_ms': 0.6639957427978516, ...}], 'persisted': [], 'sleeps': [], ...}, 'openrouter')
+route = '/v1/messages', kind = 'timeout', status = 504
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"msg_773be7d0d8954a47a50f4164","type":"message","role":"assistant","model":"contract-openrouter","content":[{"type":"text","text":"[API Error for contract-openrouter] private timeout"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":1,"output_tokens":17}}
+E       assert 200 == 504
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+TimeoutError: private timeout
+_ test_compatible_direct_transport_failure_once[ollama-http503-502-/v1/chat/completions] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a37dcd0>, {'model': 'gemma4:compat', 'project_id': 'default', 'message...'content': '[API Error for gemma4:compat] HTTP Error 503: private endpoint'}],)], 'sleeps': [1.0, 2.0], ...}, 'ollama')
+route = '/v1/chat/completions', kind = 'http503', status = 502
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"chatcmpl-150735a85996","object":"chat.completion","created":1791956793,"model":"gemma4:compat","choices":[{"index":0,"message":{"role":"assistant","content":"[API Error for gemma4:compat] HTTP Error 503: private endpoint"},"finish_reason":"stop"}],"usage":{"prompt_tokens":7,"completion_tokens":16,"total_tokens":23}}
+E       assert 200 == 502
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 1.0초 후 재시도 (1/2) http://127.0.0.1:19191/v1/chat/completions
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 2.0초 후 재시도 (2/2) http://127.0.0.1:19191/v1/chat/completions
+ERROR    antigravity_k.inference_providers:inference_providers.py:640 Local API generation failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 618, in generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.HTTPError: HTTP Error 503: private endpoint
+_ test_compatible_direct_transport_failure_once[ollama-http503-502-/v1/messages] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a37f6f0>, {'model': 'gemma4:compat', 'project_id': 'default', 'message...': 7, 'tokens_out': 16, 'latency_ms': 0.7889270782470703, ...}], 'persisted': [], 'sleeps': [1.0, 2.0], ...}, 'ollama')
+route = '/v1/messages', kind = 'http503', status = 502
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"msg_dd0851f77cc44d84864cc361","type":"message","role":"assistant","model":"gemma4:compat","content":[{"type":"text","text":"[API Error for gemma4:compat] HTTP Error 503: private endpoint"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":1,"output_tokens":20}}
+E       assert 200 == 502
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 1.0초 후 재시도 (1/2) http://127.0.0.1:19191/v1/chat/completions
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 2.0초 후 재시도 (2/2) http://127.0.0.1:19191/v1/chat/completions
+ERROR    antigravity_k.inference_providers:inference_providers.py:640 Local API generation failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 618, in generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.HTTPError: HTTP Error 503: private endpoint
+_ test_compatible_direct_transport_failure_once[ollama-refused-503-/v1/chat/completions] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a37f230>, {'model': 'gemma4:compat', 'project_id': 'default', 'message...stant', 'content': '[API Error for gemma4:compat] <urlopen error private endpoint>'}],)], 'sleeps': [], ...}, 'ollama')
+route = '/v1/chat/completions', kind = 'refused', status = 503
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"chatcmpl-558029803218","object":"chat.completion","created":1791956793,"model":"gemma4:compat","choices":[{"index":0,"message":{"role":"assistant","content":"[API Error for gemma4:compat] <urlopen error private endpoint>"},"finish_reason":"stop"}],"usage":{"prompt_tokens":7,"completion_tokens":16,"total_tokens":23}}
+E       assert 200 == 503
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:640 Local API generation failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 618, in generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.URLError: <urlopen error private endpoint>
+_ test_compatible_direct_transport_failure_once[ollama-refused-503-/v1/messages] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x104f00fc0>, {'model': 'gemma4:compat', 'project_id': 'default', 'message...okens_in': 7, 'tokens_out': 16, 'latency_ms': 0.5538463592529297, ...}], 'persisted': [], 'sleeps': [], ...}, 'ollama')
+route = '/v1/messages', kind = 'refused', status = 503
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"msg_1404425f9e784f2c9a918359","type":"message","role":"assistant","model":"gemma4:compat","content":[{"type":"text","text":"[API Error for gemma4:compat] <urlopen error private endpoint>"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":1,"output_tokens":20}}
+E       assert 200 == 503
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:640 Local API generation failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 618, in generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.URLError: <urlopen error private endpoint>
+_ test_compatible_direct_transport_failure_once[ollama-timeout-504-/v1/chat/completions] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x149fbac40>, {'model': 'gemma4:compat', 'project_id': 'default', 'message...}, {'role': 'assistant', 'content': '[API Error for gemma4:compat] private timeout'}],)], 'sleeps': [], ...}, 'ollama')
+route = '/v1/chat/completions', kind = 'timeout', status = 504
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"chatcmpl-3d7d4c91b220","object":"chat.completion","created":1791956793,"model":"gemma4:compat","choices":[{"index":0,"message":{"role":"assistant","content":"[API Error for gemma4:compat] private timeout"},"finish_reason":"stop"}],"usage":{"prompt_tokens":7,"completion_tokens":11,"total_tokens":18}}
+E       assert 200 == 504
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:640 Local API generation failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 618, in generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+TimeoutError: private timeout
+_ test_compatible_direct_transport_failure_once[ollama-timeout-504-/v1/messages] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x149fba780>, {'model': 'gemma4:compat', 'project_id': 'default', 'message...kens_in': 7, 'tokens_out': 11, 'latency_ms': 0.41794776916503906, ...}], 'persisted': [], 'sleeps': [], ...}, 'ollama')
+route = '/v1/messages', kind = 'timeout', status = 504
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind,status", [("http503", 502), ("refused", 503), ("timeout", 504)])
+    def test_compatible_direct_transport_failure_once(compat_case, route, kind, status):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"msg_fa3a9603cea24a2caa8eacf5","type":"message","role":"assistant","model":"gemma4:compat","content":[{"type":"text","text":"[API Error for gemma4:compat] private timeout"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":1,"output_tokens":15}}
+E       assert 200 == 504
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:104: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:640 Local API generation failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 618, in generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+TimeoutError: private timeout
+_ test_compatible_stream_transport_failure_has_no_done[http503-/v1/chat/completions-lmstudio] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x149fbaea0>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...nt': '[API Error for contract-lmstudio] HTTP Error 503: private endpoint'}],)], 'sleeps': [1.0, 2.0], ...}, 'lmstudio')
+route = '/v1/chat/completions', kind = 'http503'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind", ["http503", "refused", "timeout"])
+    def test_compatible_stream_transport_failure_has_no_done(compat_case, route, kind):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json={**body, "stream": True})
+        assert response.status_code == 200
+>       assert "provider_transport_error" in response.text and "private" not in response.text
+E       assert ('provider_transport_error' in 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-lmstudio", "choices": [{"delta"...or for contract-lmstudio] HTTP Error 503: private endpoint"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n')
+E        +  where 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-lmstudio", "choices": [{"delta"...or for contract-lmstudio] HTTP Error 503: private endpoint"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:123: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 1.0초 후 재시도 (1/2) http://127.0.0.1:19191/v1/chat/completions
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 2.0초 후 재시도 (2/2) http://127.0.0.1:19191/v1/chat/completions
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.HTTPError: HTTP Error 503: private endpoint
+_ test_compatible_stream_transport_failure_has_no_done[http503-/v1/chat/completions-openrouter] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x149fba650>, {'model': 'contract-openrouter', 'project_id': 'default', 'm... '[API Error for contract-openrouter] HTTP Error 503: private endpoint'}],)], 'sleeps': [1.0, 2.0], ...}, 'openrouter')
+route = '/v1/chat/completions', kind = 'http503'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind", ["http503", "refused", "timeout"])
+    def test_compatible_stream_transport_failure_has_no_done(compat_case, route, kind):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json={**body, "stream": True})
+        assert response.status_code == 200
+>       assert "provider_transport_error" in response.text and "private" not in response.text
+E       assert ('provider_transport_error' in 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-openrouter", "choices": [{"delt... for contract-openrouter] HTTP Error 503: private endpoint"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n')
+E        +  where 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-openrouter", "choices": [{"delt... for contract-openrouter] HTTP Error 503: private endpoint"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:123: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 1.0초 후 재시도 (1/2) http://127.0.0.1:19191/v1/chat/completions
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 2.0초 후 재시도 (2/2) http://127.0.0.1:19191/v1/chat/completions
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.HTTPError: HTTP Error 503: private endpoint
+_ test_compatible_stream_transport_failure_has_no_done[http503-/v1/messages-lmstudio] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x149ef7bb0>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes... 7, 'tokens_out': 17, 'latency_ms': 1.2159347534179688, ...}], 'persisted': [], 'sleeps': [1.0, 2.0], ...}, 'lmstudio')
+route = '/v1/messages', kind = 'http503'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind", ["http503", "refused", "timeout"])
+    def test_compatible_stream_transport_failure_has_no_done(compat_case, route, kind):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json={**body, "stream": True})
+        assert response.status_code == 200
+>       assert "provider_transport_error" in response.text and "private" not in response.text
+E       assert ('provider_transport_error' in 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_9154d616a33248949b0a3741", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 22}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n')
+E        +  where 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_9154d616a33248949b0a3741", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 22}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:123: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 1.0초 후 재시도 (1/2) http://127.0.0.1:19191/v1/chat/completions
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 2.0초 후 재시도 (2/2) http://127.0.0.1:19191/v1/chat/completions
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.HTTPError: HTTP Error 503: private endpoint
+_ test_compatible_stream_transport_failure_has_no_done[http503-/v1/messages-openrouter] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x149fba780>, {'model': 'contract-openrouter', 'project_id': 'default', 'm..., 'tokens_out': 17, 'latency_ms': 0.7917881011962891, ...}], 'persisted': [], 'sleeps': [1.0, 2.0], ...}, 'openrouter')
+route = '/v1/messages', kind = 'http503'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind", ["http503", "refused", "timeout"])
+    def test_compatible_stream_transport_failure_has_no_done(compat_case, route, kind):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json={**body, "stream": True})
+        assert response.status_code == 200
+>       assert "provider_transport_error" in response.text and "private" not in response.text
+E       assert ('provider_transport_error' in 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_da79295d8f8f4603bdb752f7", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 22}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n')
+E        +  where 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_da79295d8f8f4603bdb752f7", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 22}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:123: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 1.0초 후 재시도 (1/2) http://127.0.0.1:19191/v1/chat/completions
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:109 [egress] HTTP 503 — 2.0초 후 재시도 (2/2) http://127.0.0.1:19191/v1/chat/completions
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.HTTPError: HTTP Error 503: private endpoint
+_ test_compatible_stream_transport_failure_has_no_done[refused-/v1/chat/completions-lmstudio] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x149fbab10>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes..., 'content': '[API Error for contract-lmstudio] <urlopen error private endpoint>'}],)], 'sleeps': [], ...}, 'lmstudio')
+route = '/v1/chat/completions', kind = 'refused'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind", ["http503", "refused", "timeout"])
+    def test_compatible_stream_transport_failure_has_no_done(compat_case, route, kind):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json={**body, "stream": True})
+        assert response.status_code == 200
+>       assert "provider_transport_error" in response.text and "private" not in response.text
+E       assert ('provider_transport_error' in 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-lmstudio", "choices": [{"delta"...or for contract-lmstudio] <urlopen error private endpoint>"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n')
+E        +  where 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-lmstudio", "choices": [{"delta"...or for contract-lmstudio] <urlopen error private endpoint>"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:123: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.URLError: <urlopen error private endpoint>
+_ test_compatible_stream_transport_failure_has_no_done[refused-/v1/chat/completions-openrouter] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a37cd60>, {'model': 'contract-openrouter', 'project_id': 'default', 'm...ontent': '[API Error for contract-openrouter] <urlopen error private endpoint>'}],)], 'sleeps': [], ...}, 'openrouter')
+route = '/v1/chat/completions', kind = 'refused'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind", ["http503", "refused", "timeout"])
+    def test_compatible_stream_transport_failure_has_no_done(compat_case, route, kind):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json={**body, "stream": True})
+        assert response.status_code == 200
+>       assert "provider_transport_error" in response.text and "private" not in response.text
+E       assert ('provider_transport_error' in 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-openrouter", "choices": [{"delt... for contract-openrouter] <urlopen error private endpoint>"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n')
+E        +  where 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-openrouter", "choices": [{"delt... for contract-openrouter] <urlopen error private endpoint>"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:123: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.URLError: <urlopen error private endpoint>
+_ test_compatible_stream_transport_failure_has_no_done[refused-/v1/messages-lmstudio] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a37dcd0>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...ens_in': 7, 'tokens_out': 17, 'latency_ms': 0.5090236663818359, ...}], 'persisted': [], 'sleeps': [], ...}, 'lmstudio')
+route = '/v1/messages', kind = 'refused'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind", ["http503", "refused", "timeout"])
+    def test_compatible_stream_transport_failure_has_no_done(compat_case, route, kind):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json={**body, "stream": True})
+        assert response.status_code == 200
+>       assert "provider_transport_error" in response.text and "private" not in response.text
+E       assert ('provider_transport_error' in 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_1ca15396e5d04a958b9f0dab", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 22}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n')
+E        +  where 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_1ca15396e5d04a958b9f0dab", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 22}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:123: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.URLError: <urlopen error private endpoint>
+_ test_compatible_stream_transport_failure_has_no_done[refused-/v1/messages-openrouter] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a37f5c0>, {'model': 'contract-openrouter', 'project_id': 'default', 'm...s_in': 7, 'tokens_out': 17, 'latency_ms': 0.7817745208740234, ...}], 'persisted': [], 'sleeps': [], ...}, 'openrouter')
+route = '/v1/messages', kind = 'refused'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind", ["http503", "refused", "timeout"])
+    def test_compatible_stream_transport_failure_has_no_done(compat_case, route, kind):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json={**body, "stream": True})
+        assert response.status_code == 200
+>       assert "provider_transport_error" in response.text and "private" not in response.text
+E       assert ('provider_transport_error' in 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_63e2020e3c7f4b71a41f97fa", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 22}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n')
+E        +  where 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_63e2020e3c7f4b71a41f97fa", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 22}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:123: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+urllib.error.URLError: <urlopen error private endpoint>
+_ test_compatible_stream_transport_failure_has_no_done[timeout-/v1/chat/completions-lmstudio] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x104f00fc0>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...ole': 'assistant', 'content': '[API Error for contract-lmstudio] private timeout'}],)], 'sleeps': [], ...}, 'lmstudio')
+route = '/v1/chat/completions', kind = 'timeout'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind", ["http503", "refused", "timeout"])
+    def test_compatible_stream_transport_failure_has_no_done(compat_case, route, kind):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json={**body, "stream": True})
+        assert response.status_code == 200
+>       assert "provider_transport_error" in response.text and "private" not in response.text
+E       assert ('provider_transport_error' in 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-lmstudio", "choices": [{"delta"...ntent": "[API Error for contract-lmstudio] private timeout"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n')
+E        +  where 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-lmstudio", "choices": [{"delta"...ntent": "[API Error for contract-lmstudio] private timeout"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:123: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+TimeoutError: private timeout
+_ test_compatible_stream_transport_failure_has_no_done[timeout-/v1/chat/completions-openrouter] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x149fbab10>, {'model': 'contract-openrouter', 'project_id': 'default', 'm...: 'assistant', 'content': '[API Error for contract-openrouter] private timeout'}],)], 'sleeps': [], ...}, 'openrouter')
+route = '/v1/chat/completions', kind = 'timeout'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind", ["http503", "refused", "timeout"])
+    def test_compatible_stream_transport_failure_has_no_done(compat_case, route, kind):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json={**body, "stream": True})
+        assert response.status_code == 200
+>       assert "provider_transport_error" in response.text and "private" not in response.text
+E       assert ('provider_transport_error' in 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-openrouter", "choices": [{"delt...ent": "[API Error for contract-openrouter] private timeout"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n')
+E        +  where 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-openrouter", "choices": [{"delt...ent": "[API Error for contract-openrouter] private timeout"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:123: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+TimeoutError: private timeout
+_ test_compatible_stream_transport_failure_has_no_done[timeout-/v1/messages-lmstudio] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a37c3e0>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...ens_in': 7, 'tokens_out': 12, 'latency_ms': 1.7991065979003906, ...}], 'persisted': [], 'sleeps': [], ...}, 'lmstudio')
+route = '/v1/messages', kind = 'timeout'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind", ["http503", "refused", "timeout"])
+    def test_compatible_stream_transport_failure_has_no_done(compat_case, route, kind):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json={**body, "stream": True})
+        assert response.status_code == 200
+>       assert "provider_transport_error" in response.text and "private" not in response.text
+E       assert ('provider_transport_error' in 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_c6a47e6514aa47ea851d6754", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 16}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n')
+E        +  where 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_c6a47e6514aa47ea851d6754", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 16}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:123: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+TimeoutError: private timeout
+_ test_compatible_stream_transport_failure_has_no_done[timeout-/v1/messages-openrouter] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a37cb00>, {'model': 'contract-openrouter', 'project_id': 'default', 'm...s_in': 7, 'tokens_out': 13, 'latency_ms': 1.8162727355957031, ...}], 'persisted': [], 'sleeps': [], ...}, 'openrouter')
+route = '/v1/messages', kind = 'timeout'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize("kind", ["http503", "refused", "timeout"])
+    def test_compatible_stream_transport_failure_has_no_done(compat_case, route, kind):
+        client, body, state, _ = compat_case
+        state["outcome"] = [fault(kind)]
+        response = client.post(route, json={**body, "stream": True})
+        assert response.status_code == 200
+>       assert "provider_transport_error" in response.text and "private" not in response.text
+E       assert ('provider_transport_error' in 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_cfe96ecc47be41c4b4306f82", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 17}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n')
+E        +  where 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_cfe96ecc47be41c4b4306f82", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 17}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:123: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 437, in stream_generate
+    with safe_urlopen(req, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/tools/egress_policy.py", line 103, in safe_urlopen
+    return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+                              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 49, in terminal
+    raise outcome
+TimeoutError: private timeout
+_ test_compatible_midstream_failure_is_not_success[/v1/chat/completions-lmstudio] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a37e520>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...t', 'content': 'partial[API Error for contract-lmstudio] private partial failure'}],)], 'sleeps': [], ...}, 'lmstudio')
+route = '/v1/chat/completions'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    def test_compatible_midstream_failure_is_not_success(compat_case, route):
+        client, body, state, _ = compat_case
+        state["outcome"] = [InterruptedSSE(b'data: {"choices":[{"delta":{"content":"partial"}}]}\n')]
+        response = client.post(route, json={**body, "stream": True})
+>       assert "partial" in response.text and "provider_transport_error" in response.text
+E       assert ('partial' in 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-lmstudio", "choices": [{"delta"..."[API Error for contract-lmstudio] private partial failure"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n' and 'provider_transport_error' in 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-lmstudio", "choices": [{"delta"..."[API Error for contract-lmstudio] private partial failure"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n')
+E        +  where 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-lmstudio", "choices": [{"delta"..."[API Error for contract-lmstudio] private partial failure"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n' = <Response [200 OK]>.text
+E        +  and   'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-lmstudio", "choices": [{"delta"..."[API Error for contract-lmstudio] private partial failure"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:144: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 440, in stream_generate
+    for line in response:
+                ^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 135, in __next__
+    raise TimeoutError("private partial failure")
+TimeoutError: private partial failure
+_ test_compatible_midstream_failure_is_not_success[/v1/chat/completions-openrouter] _
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a37eb10>, {'model': 'contract-openrouter', 'project_id': 'default', 'm...'content': 'partial[API Error for contract-openrouter] private partial failure'}],)], 'sleeps': [], ...}, 'openrouter')
+route = '/v1/chat/completions'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    def test_compatible_midstream_failure_is_not_success(compat_case, route):
+        client, body, state, _ = compat_case
+        state["outcome"] = [InterruptedSSE(b'data: {"choices":[{"delta":{"content":"partial"}}]}\n')]
+        response = client.post(route, json={**body, "stream": True})
+>       assert "partial" in response.text and "provider_transport_error" in response.text
+E       assert ('partial' in 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-openrouter", "choices": [{"delt...API Error for contract-openrouter] private partial failure"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n' and 'provider_transport_error' in 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-openrouter", "choices": [{"delt...API Error for contract-openrouter] private partial failure"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n')
+E        +  where 'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-openrouter", "choices": [{"delt...API Error for contract-openrouter] private partial failure"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n' = <Response [200 OK]>.text
+E        +  and   'data: {"id": "chatcmpl-stream", "object": "chat.completion.chunk", "model": "contract-openrouter", "choices": [{"delt...API Error for contract-openrouter] private partial failure"}, "index": 0, "finish_reason": null}]}\n\ndata: [DONE]\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:144: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 440, in stream_generate
+    for line in response:
+                ^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 135, in __next__
+    raise TimeoutError("private partial failure")
+TimeoutError: private partial failure
+___ test_compatible_midstream_failure_is_not_success[/v1/messages-lmstudio] ____
+
+compat_case = (<starlette.testclient.TestClient object at 0x149fbad70>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...ens_in': 7, 'tokens_out': 16, 'latency_ms': 1.1298656463623047, ...}], 'persisted': [], 'sleeps': [], ...}, 'lmstudio')
+route = '/v1/messages'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    def test_compatible_midstream_failure_is_not_success(compat_case, route):
+        client, body, state, _ = compat_case
+        state["outcome"] = [InterruptedSSE(b'data: {"choices":[{"delta":{"content":"partial"}}]}\n')]
+        response = client.post(route, json={**body, "stream": True})
+>       assert "partial" in response.text and "provider_transport_error" in response.text
+E       assert ('partial' in 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_03bdca8f340a40f980b24082", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 21}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' and 'provider_transport_error' in 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_03bdca8f340a40f980b24082", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 21}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n')
+E        +  where 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_03bdca8f340a40f980b24082", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 21}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' = <Response [200 OK]>.text
+E        +  and   'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_03bdca8f340a40f980b24082", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 21}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:144: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 440, in stream_generate
+    for line in response:
+                ^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 135, in __next__
+    raise TimeoutError("private partial failure")
+TimeoutError: private partial failure
+__ test_compatible_midstream_failure_is_not_success[/v1/messages-openrouter] ___
+
+compat_case = (<starlette.testclient.TestClient object at 0x14a37e780>, {'model': 'contract-openrouter', 'project_id': 'default', 'm...s_in': 7, 'tokens_out': 17, 'latency_ms': 1.9230842590332031, ...}], 'persisted': [], 'sleeps': [], ...}, 'openrouter')
+route = '/v1/messages'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    def test_compatible_midstream_failure_is_not_success(compat_case, route):
+        client, body, state, _ = compat_case
+        state["outcome"] = [InterruptedSSE(b'data: {"choices":[{"delta":{"content":"partial"}}]}\n')]
+        response = client.post(route, json={**body, "stream": True})
+>       assert "partial" in response.text and "provider_transport_error" in response.text
+E       assert ('partial' in 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_7bc904b5f218400d91521f69", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 22}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' and 'provider_transport_error' in 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_7bc904b5f218400d91521f69", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 22}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n')
+E        +  where 'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_7bc904b5f218400d91521f69", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 22}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' = <Response [200 OK]>.text
+E        +  and   'event: message_start\ndata: {"type": "message_start", "message": {"id": "msg_7bc904b5f218400d91521f69", "type": "mess...n", "stop_sequence": null}, "usage": {"output_tokens": 22}}\n\nevent: message_stop\ndata: {"type": "message_stop"}\n\n' = <Response [200 OK]>.text
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py:144: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:491 API stream failed (http://127.0.0.1:19191/v1/chat/completions)
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 440, in stream_generate
+    for line in response:
+                ^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_transport_error_contract.py", line 135, in __next__
+    raise TimeoutError("private partial failure")
+TimeoutError: private partial failure
+=============================== warnings summary ===============================
+tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[lmstudio-http503-502-/v1/chat/completions]
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[lmstudio-http503-502-/v1/chat/completions]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[lmstudio-http503-502-/v1/messages]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[lmstudio-refused-503-/v1/chat/completions]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[lmstudio-refused-503-/v1/messages]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[lmstudio-timeout-504-/v1/chat/completions]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[lmstudio-timeout-504-/v1/messages]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[openrouter-http503-502-/v1/chat/completions]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[openrouter-http503-502-/v1/messages]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[openrouter-refused-503-/v1/chat/completions]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[openrouter-refused-503-/v1/messages]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[openrouter-timeout-504-/v1/chat/completions]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[openrouter-timeout-504-/v1/messages]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[ollama-http503-502-/v1/chat/completions]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[ollama-http503-502-/v1/messages]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[ollama-refused-503-/v1/chat/completions]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[ollama-refused-503-/v1/messages]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[ollama-timeout-504-/v1/chat/completions]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[ollama-timeout-504-/v1/messages]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[http503-/v1/chat/completions-lmstudio]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[http503-/v1/chat/completions-openrouter]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[http503-/v1/messages-lmstudio]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[http503-/v1/messages-openrouter]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[refused-/v1/chat/completions-lmstudio]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[refused-/v1/chat/completions-openrouter]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[refused-/v1/messages-lmstudio]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[refused-/v1/messages-openrouter]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[timeout-/v1/chat/completions-lmstudio]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[timeout-/v1/chat/completions-openrouter]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[timeout-/v1/messages-lmstudio]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[timeout-/v1/messages-openrouter]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_midstream_failure_is_not_success[/v1/chat/completions-lmstudio]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_midstream_failure_is_not_success[/v1/chat/completions-openrouter]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_midstream_failure_is_not_success[/v1/messages-lmstudio]
+FAILED tests/test_compatible_transport_error_contract.py::test_compatible_midstream_failure_is_not_success[/v1/messages-openrouter]
+34 failed, 6 passed, 1 warning in 3.26s

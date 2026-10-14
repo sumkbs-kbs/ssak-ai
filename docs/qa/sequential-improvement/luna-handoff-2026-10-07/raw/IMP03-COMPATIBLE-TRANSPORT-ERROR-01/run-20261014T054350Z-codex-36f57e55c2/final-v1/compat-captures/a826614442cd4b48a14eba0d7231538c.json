@@ -1,0 +1,33 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[openrouter-refused-503-/v1/chat/completions]",
+  "wire": [
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "contract-openrouter",
+        "messages": [
+          {
+            "role": "user",
+            "content": "\uc548\ub155"
+          }
+        ],
+        "stream": true,
+        "temperature": 0.7,
+        "max_tokens": 128
+      },
+      "timeout": 300
+    }
+  ],
+  "usage": [
+    {
+      "model_name": "contract-openrouter",
+      "latency_ms": 0.08988380432128906,
+      "success": false,
+      "error": "The model provider is unavailable.",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0,
+  "sleeps": []
+}

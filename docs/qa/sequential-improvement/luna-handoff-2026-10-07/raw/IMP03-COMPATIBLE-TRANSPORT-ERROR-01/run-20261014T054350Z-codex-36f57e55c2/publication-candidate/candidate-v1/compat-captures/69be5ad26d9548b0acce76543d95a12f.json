@@ -1,0 +1,16 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_literal_error_prefix_is_normal_content[lmstudio-/v1/chat/completions]",
+  "wire": [],
+  "usage": [
+    {
+      "model_name": "contract-lmstudio",
+      "latency_ms": 0.06508827209472656,
+      "success": false,
+      "error": "assert False\n +  where False = <built-in method endswith of str object at 0x117a226a0>('/api/show')\n +    where <built-in method endswith of str object at 0x117a226a0> = 'http://127.0.0.1:19191/v1/models'.endswith\n +      where 'http://127.0.0.1:19191/v1/models' = <urllib.request.Request object at 0x1307de830>.full_url",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0,
+  "sleeps": []
+}

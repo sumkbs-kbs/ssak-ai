@@ -1,0 +1,22 @@
+{
+  "recorded_at": "2026-10-14T05:53:32.717102+00:00",
+  "scope": "LMStudio-compatible ASGI product and controlled loopback HTTP503; no model inference",
+  "product_post_limit": 1,
+  "provider_post_limit": 1,
+  "expected_product_status": 502,
+  "expected_upstream_status": 503,
+  "expected_error_type": "provider_transport_error",
+  "expected_success_usage": 0,
+  "expected_failed_usage": 1,
+  "expected_assistant_persistence": 0,
+  "expected_inference_calls": 0,
+  "source_sha256": {
+    "src/antigravity_k/api/routes/chat.py": "99669a95f7c7cc831f695f4ab81f4d5d268facd31901cb3db1d1d7252dd938c5",
+    "src/antigravity_k/api/routes/messages_api.py": "bc9c065ac21302a2c48fd3aaf3e18f3a1b990f37cd7a70a653208257c4a9816a",
+    "src/antigravity_k/engine/protocol_translator.py": "f8d42ce763c6e92b6746d67436c1f40b0f4110a86683f8206738042890da24f8",
+    "src/antigravity_k/engine/model_manager.py": "cf0867a8b8a934eddfad3ffcfc204781089f5960e30765c8cba6c26802bf1b7a",
+    "src/antigravity_k/engine/provider_adapters/inference_providers.py": "0e758c675045b35d8b3b6a38577b6583ee2a255e8128a07c8c495b1eb92de97f",
+    "src/antigravity_k/engine/provider_adapters/transport_errors.py": "6b936e5de490edfe6ef7630187ed98517c2877533c3570c74e8eef7455581ac2",
+    "src/antigravity_k/tools/egress_policy.py": "07e53cef7c3b2fdab320ac03fc966a9a442439a0feccab256e1245ab3130aa93"
+  }
+}

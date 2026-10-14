@@ -1,0 +1,26 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[openrouter-refused-503-/v1/chat/completions]",
+  "wire": [],
+  "manager_calls": 1,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 200,
+      "body": "{\"id\":\"chatcmpl-9fe8b2a6257a\",\"object\":\"chat.completion\",\"created\":1791956793,\"model\":\"contract-openrouter\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[API Error for contract-openrouter] <urlopen error private endpoint>\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":7,\"completion_tokens\":17,\"total_tokens\":24}}",
+      "request": {
+        "model": "contract-openrouter",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "agent_mode": false,
+        "max_tokens": 128
+      }
+    }
+  ]
+}

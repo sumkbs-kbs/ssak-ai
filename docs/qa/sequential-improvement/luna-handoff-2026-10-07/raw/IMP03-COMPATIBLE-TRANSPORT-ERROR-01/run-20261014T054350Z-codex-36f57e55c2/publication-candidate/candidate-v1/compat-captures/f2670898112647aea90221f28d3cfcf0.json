@@ -1,0 +1,16 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[refused-/v1/chat/completions-lmstudio]",
+  "wire": [],
+  "usage": [
+    {
+      "model_name": "contract-lmstudio",
+      "latency_ms": 0.07796287536621094,
+      "success": false,
+      "error": "assert False\n +  where False = <built-in method endswith of str object at 0x117a23190>('/api/show')\n +    where <built-in method endswith of str object at 0x117a23190> = 'http://127.0.0.1:19191/v1/models'.endswith\n +      where 'http://127.0.0.1:19191/v1/models' = <urllib.request.Request object at 0x136ef19c0>.full_url",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0,
+  "sleeps": []
+}

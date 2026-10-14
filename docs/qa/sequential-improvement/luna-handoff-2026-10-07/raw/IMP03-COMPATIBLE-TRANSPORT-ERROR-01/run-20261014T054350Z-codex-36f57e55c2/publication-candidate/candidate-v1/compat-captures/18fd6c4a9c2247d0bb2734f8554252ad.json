@@ -1,0 +1,16 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_midstream_failure_is_not_success[/v1/messages-lmstudio]",
+  "wire": [],
+  "usage": [
+    {
+      "model_name": "contract-lmstudio",
+      "latency_ms": 0.08869171142578125,
+      "success": false,
+      "error": "assert False\n +  where False = <built-in method endswith of str object at 0x11326e010>('/api/show')\n +    where <built-in method endswith of str object at 0x11326e010> = 'http://127.0.0.1:19191/v1/models'.endswith\n +      where 'http://127.0.0.1:19191/v1/models' = <urllib.request.Request object at 0x1307ddff0>.full_url",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0,
+  "sleeps": []
+}

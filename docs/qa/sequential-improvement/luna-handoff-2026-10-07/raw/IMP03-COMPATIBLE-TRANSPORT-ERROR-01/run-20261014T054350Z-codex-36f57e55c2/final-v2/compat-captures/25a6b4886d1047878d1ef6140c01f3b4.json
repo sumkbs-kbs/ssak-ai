@@ -1,0 +1,37 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[ollama-timeout-504-/v1/chat/completions]",
+  "wire": [
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "gemma4:compat",
+        "stream": false,
+        "temperature": 0.7,
+        "max_tokens": 128,
+        "repeat_penalty": 1.3,
+        "options": {
+          "min_p": 0.05
+        },
+        "messages": [
+          {
+            "role": "user",
+            "content": "\uc548\ub155"
+          }
+        ]
+      },
+      "timeout": 300
+    }
+  ],
+  "usage": [
+    {
+      "model_name": "gemma4:compat",
+      "latency_ms": 0.07677078247070312,
+      "success": false,
+      "error": "The model provider request timed out.",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0,
+  "sleeps": []
+}

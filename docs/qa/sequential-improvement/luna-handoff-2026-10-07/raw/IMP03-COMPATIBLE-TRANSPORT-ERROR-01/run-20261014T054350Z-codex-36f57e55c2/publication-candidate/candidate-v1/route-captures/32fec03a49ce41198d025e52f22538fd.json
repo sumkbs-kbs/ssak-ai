@@ -1,0 +1,26 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[lmstudio-http503-502-/v1/chat/completions]",
+  "wire": [],
+  "manager_calls": 1,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 500,
+      "body": "{\"detail\":\"assert False\\n +  where False = <built-in method endswith of str object at 0x1132e3aa0>('/api/show')\\n +    where <built-in method endswith of str object at 0x1132e3aa0> = 'http://127.0.0.1:19191/v1/models'.endswith\\n +      where 'http://127.0.0.1:19191/v1/models' = <urllib.request.Request object at 0x1345717f0>.full_url\"}",
+      "request": {
+        "model": "contract-lmstudio",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "agent_mode": false,
+        "max_tokens": 128
+      }
+    }
+  ]
+}

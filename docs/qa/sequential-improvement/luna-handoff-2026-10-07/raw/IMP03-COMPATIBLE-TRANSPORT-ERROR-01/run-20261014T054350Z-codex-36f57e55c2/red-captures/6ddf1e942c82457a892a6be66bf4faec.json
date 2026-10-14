@@ -1,0 +1,34 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[timeout-/v1/messages-openrouter]",
+  "wire": [
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "contract-openrouter",
+        "messages": [
+          {
+            "role": "user",
+            "content": "User: \uc548\ub155\n\nAssistant:"
+          }
+        ],
+        "stream": true,
+        "temperature": 1.0,
+        "max_tokens": 128
+      },
+      "timeout": 300
+    }
+  ],
+  "usage": [
+    {
+      "model_name": "contract-openrouter",
+      "tokens_in": 7,
+      "tokens_out": 13,
+      "latency_ms": 1.8162727355957031,
+      "success": true,
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0,
+  "sleeps": []
+}

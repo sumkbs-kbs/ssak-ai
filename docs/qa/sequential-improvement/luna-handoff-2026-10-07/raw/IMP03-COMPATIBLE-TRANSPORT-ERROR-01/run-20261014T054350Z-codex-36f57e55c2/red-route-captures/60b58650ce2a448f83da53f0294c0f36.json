@@ -1,0 +1,26 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[ollama-http503-502-/v1/chat/completions]",
+  "wire": [],
+  "manager_calls": 1,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 200,
+      "body": "{\"id\":\"chatcmpl-150735a85996\",\"object\":\"chat.completion\",\"created\":1791956793,\"model\":\"gemma4:compat\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[API Error for gemma4:compat] HTTP Error 503: private endpoint\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":7,\"completion_tokens\":16,\"total_tokens\":23}}",
+      "request": {
+        "model": "gemma4:compat",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "agent_mode": false,
+        "max_tokens": 128
+      }
+    }
+  ]
+}

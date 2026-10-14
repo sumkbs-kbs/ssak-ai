@@ -1,0 +1,13 @@
+{
+  "verdict": "INCONCLUSIVE_HARNESS_SETUP",
+  "external_exit_code": 1,
+  "cause": "ModelProfile has no api_key dataclass constructor field",
+  "product_posts": 0,
+  "provider_http_posts": 0,
+  "model_inference": 0,
+  "owned_server_created": true,
+  "owned_server_thread_started": false,
+  "cleanup_receipt": "NOT_OBSERVED_BEFORE_SETUP_EXCEPTION",
+  "original_observer_receipt_logs_and_acceptance": "PRESERVED",
+  "next_attempt": "New owned observer copy with valid ModelProfile fields only"
+}

@@ -1,0 +1,14 @@
+{
+  "files": [
+    {
+      "path": "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+      "sha256": "0e758c675045b35d8b3b6a38577b6583ee2a255e8128a07c8c495b1eb92de97f",
+      "matches": true
+    },
+    {
+      "path": "tests/test_compatible_transport_error_contract.py",
+      "sha256": "d284b38bf2379417c4cc0a345c7aa140c3b0de62d3c7a9558ec8a44581f4b629",
+      "matches": true
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "nodeid": "tests/test_native_stream_terminal_contract.py::test_incomplete_tool_stream_never_emits_or_retries[{\"message\": {\"content\": \"<tool_call>{\\\"name\\\":\\\"read_file\\\",\\\"arguments\\\":{}}</tool_call>\"}, \"done\": false}\\n]",
+  "wire": [],
+  "manager_calls": 0,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": []
+}

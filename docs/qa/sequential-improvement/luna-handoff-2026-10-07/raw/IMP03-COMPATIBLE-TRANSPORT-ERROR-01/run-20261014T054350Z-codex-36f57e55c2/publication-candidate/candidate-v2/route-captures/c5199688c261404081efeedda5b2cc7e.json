@@ -1,0 +1,31 @@
+{
+  "nodeid": "tests/test_native_stream_terminal_contract.py::test_direct_sse_failure_has_no_success_terminal[{\"message\": {\"content\": \"partial\"}, \"done\": false}\\n-/v1/chat/completions]",
+  "wire": [],
+  "manager_calls": 0,
+  "provider_calls": 0,
+  "metadata_calls": [
+    {
+      "name": "qwen3.8"
+    }
+  ],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 200,
+      "body": "data: {\"id\": \"chatcmpl-stream\", \"object\": \"chat.completion.chunk\", \"model\": \"qwen3.8\", \"choices\": [{\"delta\": {\"content\": \"partial\"}, \"index\": 0, \"finish_reason\": null}]}\n\nevent: error\ndata: {\"error\": {\"type\": \"provider_protocol_error\", \"code\": \"incomplete_stream\", \"message\": \"The model provider returned an invalid or incomplete stream.\"}}\n\n",
+      "request": {
+        "model": "qwen3.8",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "stream": true,
+        "agent_mode": false,
+        "max_tokens": 128
+      }
+    }
+  ]
+}

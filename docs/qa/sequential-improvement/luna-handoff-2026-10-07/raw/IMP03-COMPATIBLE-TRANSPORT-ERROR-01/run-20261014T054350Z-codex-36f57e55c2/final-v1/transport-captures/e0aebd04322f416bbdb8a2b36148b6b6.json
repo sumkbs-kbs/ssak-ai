@@ -1,0 +1,27 @@
+{
+  "nodeid": "tests/test_native_transport_error_contract.py::test_explicit_combo_keeps_existing_fallback",
+  "native_attempts": [
+    "http://localhost:11434/api/chat",
+    "http://localhost:11434/api/chat"
+  ],
+  "usage": [
+    {
+      "model_name": "qwen3.8",
+      "latency_ms": 0.08988380432128906,
+      "success": false,
+      "error": "The model provider returned an unsuccessful HTTP response.",
+      "combo_name": "transport-fallback",
+      "fallback_depth": 0
+    },
+    {
+      "model_name": "qwen3.8:fallback",
+      "tokens_in": 1,
+      "tokens_out": 5,
+      "latency_ms": 0.07200241088867188,
+      "success": true,
+      "combo_name": "transport-fallback",
+      "fallback_depth": 1
+    }
+  ],
+  "persisted_turns": 0
+}

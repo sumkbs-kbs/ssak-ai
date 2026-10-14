@@ -1,0 +1,34 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_literal_error_prefix_is_normal_content[openrouter-/v1/messages]",
+  "wire": [
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "contract-openrouter",
+        "messages": [
+          {
+            "role": "user",
+            "content": "User: \uc548\ub155\n\nAssistant:"
+          }
+        ],
+        "stream": true,
+        "temperature": 1.0,
+        "max_tokens": 128
+      },
+      "timeout": 300
+    }
+  ],
+  "usage": [
+    {
+      "model_name": "contract-openrouter",
+      "tokens_in": 7,
+      "tokens_out": 11,
+      "latency_ms": 0.10704994201660156,
+      "success": true,
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0,
+  "sleeps": []
+}

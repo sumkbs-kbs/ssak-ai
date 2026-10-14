@@ -1,0 +1,27 @@
+{
+  "nodeid": "tests/test_native_stream_terminal_contract.py::test_malformed_content_is_typed_failure_not_success[/v1/messages-None]",
+  "wire": [],
+  "manager_calls": 0,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 200,
+      "body": "event: message_start\ndata: {\"type\": \"message_start\", \"message\": {\"id\": \"msg_ed6463833aaf4fef9802c57a\", \"type\": \"message\", \"role\": \"assistant\", \"model\": \"qwen3.8\", \"content\": [], \"stop_reason\": null, \"usage\": {\"input_tokens\": 1, \"output_tokens\": 0}}}\n\nevent: error\ndata: {\"type\": \"error\", \"error\": {\"type\": \"provider_protocol_error\", \"code\": \"invalid_stream\", \"message\": \"The model provider returned an invalid or incomplete stream.\"}}\n\n",
+      "request": {
+        "model": "qwen3.8",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "stream": true,
+        "agent_mode": false,
+        "max_tokens": 128
+      }
+    }
+  ]
+}

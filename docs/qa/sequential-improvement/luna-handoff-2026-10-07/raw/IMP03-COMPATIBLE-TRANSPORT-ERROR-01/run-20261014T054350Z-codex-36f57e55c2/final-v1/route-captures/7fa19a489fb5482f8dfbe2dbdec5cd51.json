@@ -1,0 +1,26 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_literal_error_prefix_is_normal_content[openrouter-/v1/chat/completions]",
+  "wire": [],
+  "manager_calls": 1,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 200,
+      "body": "{\"id\":\"chatcmpl-7140b9e2ccc6\",\"object\":\"chat.completion\",\"created\":1791956829,\"model\":\"contract-openrouter\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[API Error] is the requested literal answer\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":7,\"completion_tokens\":11,\"total_tokens\":18}}",
+      "request": {
+        "model": "contract-openrouter",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "agent_mode": false,
+        "max_tokens": 128
+      }
+    }
+  ]
+}

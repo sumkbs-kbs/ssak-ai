@@ -1,0 +1,26 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_direct_transport_failure_once[lmstudio-timeout-504-/v1/messages]",
+  "wire": [],
+  "manager_calls": 1,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 200,
+      "body": "{\"id\":\"msg_fc70a0a5ce7e40f38f38d50f\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"contract-lmstudio\",\"content\":[{\"type\":\"text\",\"text\":\"[API Error for contract-lmstudio] private timeout\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":1,\"output_tokens\":16}}",
+      "request": {
+        "model": "contract-lmstudio",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "agent_mode": false,
+        "max_tokens": 128
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "task": "IMP-03-COMPATIBLE-TRANSPORT-ERROR-01",
+  "status": "COMPLETE_OFFLINE",
+  "review": "PENDING",
+  "checks": "final-v2/checks.json",
+  "junit": "final-v2/junit.xml",
+  "passed": 109,
+  "source_sha256": {
+    "src/antigravity_k/engine/provider_adapters/inference_providers.py": "0e758c675045b35d8b3b6a38577b6583ee2a255e8128a07c8c495b1eb92de97f",
+    "tests/test_compatible_transport_error_contract.py": "dd78e0f4bb700515bf0e15288765ca5df9ec81ff9439697c044a2989b23ea981"
+  },
+  "counts": {
+    "cases": 40,
+    "wire": 40,
+    "sleep": 0,
+    "success_usage": 6,
+    "failed_usage": 34
+  },
+  "patch": "task-only.patch",
+  "reconstruction": "patch-reconstruction.json",
+  "live": "NOT_RUN_BY_WORKER",
+  "commit_push": "NOT_PERFORMED",
+  "residual": "compatible SSE protocol error payload/malformed fields/EOF contract outside transport exception scope"
+}

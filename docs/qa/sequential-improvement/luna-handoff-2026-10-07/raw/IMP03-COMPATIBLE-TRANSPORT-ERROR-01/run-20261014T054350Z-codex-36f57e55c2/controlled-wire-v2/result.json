@@ -1,0 +1,5 @@
+{
+  "verdict": "PASS_SCOPED_LMSTUDIO_ASGI_REAL_PROVIDER_HTTP503",
+  "limits": "Controlled failure only; no live model/auth/Uvicorn/lifespan claim",
+  "observations": "observations.json"
+}
