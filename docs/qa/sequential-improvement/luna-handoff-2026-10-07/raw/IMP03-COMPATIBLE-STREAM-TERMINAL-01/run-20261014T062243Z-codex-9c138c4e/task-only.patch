@@ -1,0 +1,471 @@
+--- a/src/antigravity_k/engine/provider_adapters/inference_providers.py
++++ b/src/antigravity_k/engine/provider_adapters/inference_providers.py
+@@ -10,8 +10,21 @@
+ from collections.abc import Callable, Iterator
+ from importlib import import_module
+ from types import SimpleNamespace
+-from typing import TYPE_CHECKING, Any, ContextManager, Protocol, TypeAlias, cast, override, runtime_checkable
++from typing import (
++    TYPE_CHECKING,
++    Any,
++    ContextManager,
++    Final,
++    Literal,
++    Protocol,
++    TypeAlias,
++    cast,
++    override,
++    runtime_checkable,
++)
+ from urllib.error import HTTPError, URLError
++
++from pydantic import BaseModel, ConfigDict, Field, JsonValue, TypeAdapter, ValidationError
+ 
+ from antigravity_k.engine.context_budget import context_budget_for_context_length
+ 
+@@ -318,6 +331,114 @@
+             yield f"[API Error for {model_name}] {e}"
+ 
+ 
++class _CompatibleFunctionDelta(BaseModel):
++    model_config = ConfigDict(frozen=True, strict=True)
++    name: str = ""
++    arguments: str = ""
++
++
++class _CompatibleToolDelta(BaseModel):
++    model_config = ConfigDict(frozen=True, strict=True)
++    index: int = Field(ge=0)
++    id: str = ""
++    type: Literal["function"] = "function"
++    function: _CompatibleFunctionDelta = Field(default_factory=_CompatibleFunctionDelta)
++
++
++class _CompatibleDelta(BaseModel):
++    model_config = ConfigDict(frozen=True, strict=True)
++    content: str | None = None
++    tool_calls: list[_CompatibleToolDelta] | None = None
++
++
++class _CompatibleChoice(BaseModel):
++    model_config = ConfigDict(frozen=True, strict=True)
++    delta: _CompatibleDelta = Field(default_factory=_CompatibleDelta)
++    finish_reason: str | None = None
++
++
++class _CompatibleChunk(BaseModel):
++    model_config = ConfigDict(frozen=True, strict=True)
++    choices: list[_CompatibleChoice] = Field(default_factory=list)
++    error: JsonValue = None
++
++
++_COMPATIBLE_ARGUMENTS: Final = TypeAdapter(dict[str, JsonValue])
++
++
++def _compatible_events(response: Iterator[bytes]) -> Iterator[_CompatibleChunk | Literal["[DONE]"]]:
++    """Parse SSE data, including multiline JSON and legacy complete JSON lines."""
++    pending: list[str] = []
++    try:
++        for raw in response:
++            line = raw.decode("utf-8").rstrip("\r\n")
++            if not line:
++                if pending:
++                    raise NativeProtocolError("invalid_stream")
++                continue
++            if line.startswith(":") or line.startswith(("event:", "id:", "retry:")):
++                continue
++            data = line[5:].removeprefix(" ") if line.startswith("data:") else line
++            if not pending and data == "[DONE]":
++                yield "[DONE]"
++                return
++            pending.append(data)
++            payload = "\n".join(pending)
++            try:
++                json.loads(payload)
++            except json.JSONDecodeError:
++                continue
++            yield _CompatibleChunk.model_validate_json(payload)
++            pending.clear()
++    except (UnicodeDecodeError, ValidationError) as exc:
++        raise NativeProtocolError("invalid_stream") from exc
++    if pending:
++        raise NativeProtocolError("invalid_stream")
++
++
++def _compatible_output(response: Iterator[bytes], *, hold_content: bool) -> Iterator[str]:
++    """Withhold tool-capable output until the compatible stream completes."""
++    pending: dict[int, tuple[str, str]] = {}
++    content: list[str] = []
++    tool_finish = False
++    for chunk in _compatible_events(response):
++        if chunk == "[DONE]":
++            if pending and not tool_finish:
++                raise NativeProtocolError("incomplete_stream")
++            events: list[str] = []
++            for index in sorted(pending):
++                name, arguments = pending[index]
++                if not name:
++                    raise NativeProtocolError("invalid_stream")
++                try:
++                    parsed = _COMPATIBLE_ARGUMENTS.validate_json(arguments or "{}")
++                except ValidationError as exc:
++                    raise NativeProtocolError("invalid_stream") from exc
++                events.append(
++                    "\n<tool_call>\n"
++                    + json.dumps({"name": name, "arguments": parsed}, ensure_ascii=False)
++                    + "\n</tool_call>\n"
++                )
++            yield from content
++            yield from events
++            return
++        if "error" in chunk.model_fields_set or any(choice.finish_reason == "error" for choice in chunk.choices):
++            raise NativeProtocolError("upstream_stream_error")
++        if not chunk.choices:
++            continue
++        choice = chunk.choices[0]
++        for tool in choice.delta.tool_calls or []:
++            name, arguments = pending.get(tool.index, ("", ""))
++            pending[tool.index] = (name + tool.function.name, arguments + tool.function.arguments)
++        if choice.delta.content:
++            if hold_content or pending:
++                content.append(choice.delta.content)
++            else:
++                yield choice.delta.content
++        tool_finish = tool_finish or choice.finish_reason == "tool_calls"
++    raise NativeProtocolError("incomplete_stream")
++
++
+ class OpenRouterProvider(BaseInferenceProvider):
+     """Openrouterprovider.
+ 
+@@ -435,52 +556,7 @@
+         )
+         try:
+             with safe_urlopen(req, timeout=300, max_retries=0) as response:
+-                # 네이티브 tool_call 누적 버퍼 (스트리밍 tool_calls 조립용)
+-                pending_tool_calls: dict[int, JsonMap] = {}
+-                for line in response:
+-                    line_text = line.decode("utf-8").strip()
+-                    if not line_text or line_text == "data: [DONE]":
+-                        continue
+-                    if line_text.startswith("data: "):
+-                        line_text = line_text[6:]
+-                    try:
+-                        chunk = _as_json_map(cast(object, json.loads(line_text)))
+-                        choice = _first_choice(chunk)
+-                        if choice:
+-                            delta = cast(JsonMap, choice.get("delta", {}))
+-                            # 1. 일반 텍스트 content
+-                            if "content" in delta and delta["content"]:
+-                                yield delta["content"]
+-                            # 2. 네이티브 tool_calls 누적 (P1-1)
+-                            if "tool_calls" in delta:
+-                                for tc in _as_json_maps(cast(object, delta["tool_calls"])):
+-                                    idx = cast(int, tc.get("index", 0))
+-                                    if idx not in pending_tool_calls:
+-                                        pending_tool_calls[idx] = {
+-                                            "id": tc.get("id", ""),
+-                                            "type": "function",
+-                                            "function": {"name": "", "arguments": ""},
+-                                        }
+-                                    func = _as_json_map(cast(object, tc.get("function", {})))
+-                                    if func.get("name"):
+-                                        pending_tool_calls[idx]["function"]["name"] += func["name"]
+-                                    if func.get("arguments"):
+-                                        pending_tool_calls[idx]["function"]["arguments"] += func["arguments"]
+-                            # 3. finish_reason이 tool_calls면 조립된 tool_call을 이벤트로 yield
+-                            finish_reason = choice.get("finish_reason")
+-                            if finish_reason == "tool_calls" and pending_tool_calls:
+-                                for idx in sorted(pending_tool_calls):
+-                                    tc = pending_tool_calls[idx]
+-                                    # 표준 XML 도구 호출 포맷으로 변환하여 ToolCallParser가 처리하도록
+-                                    tool_event = (
+-                                        f"\n<tool_call>\n"
+-                                        f"{json.dumps({'name': tc['function']['name'], 'arguments': json.loads(tc['function']['arguments'] or '{}')}, ensure_ascii=False)}\n"
+-                                        f"</tool_call>\n"
+-                                    )
+-                                    yield tool_event
+-                                pending_tool_calls.clear()
+-                    except json.JSONDecodeError:
+-                        continue
++                yield from _compatible_output(iter(response), hold_content=bool(tools_schema))
+         except HTTPError as exc:
+             raise NativeTransportError(TransportFailure.HTTP, upstream_status=exc.code) from exc
+         except TimeoutError as exc:
+--- a/src/antigravity_k/api/routes/chat.py
++++ b/src/antigravity_k/api/routes/chat.py
+@@ -1439,6 +1439,8 @@
+         raise HTTPException(status_code=502, detail={"type": "structured_output_error", "message": str(exc)}) from exc
+     except NativeTransportError as exc:
+         raise HTTPException(status_code=exc.status_code, detail=exc.detail()) from exc
++    except NativeProtocolError as exc:
++        raise HTTPException(status_code=502, detail=exc.detail()) from exc
+     except Exception as e:
+         logger.error("Generation error: %s", e, exc_info=True)
+         raise HTTPException(status_code=500, detail=str(e))
+--- a/src/antigravity_k/api/routes/messages_api.py
++++ b/src/antigravity_k/api/routes/messages_api.py
+@@ -514,6 +514,8 @@
+         text = await run_in_threadpool(_generate)
+     except NativeTransportError as exc:
+         return JSONResponse({"error": exc.detail()}, status_code=exc.status_code)
++    except NativeProtocolError as exc:
++        return JSONResponse({"error": exc.detail()}, status_code=502)
+     except Exception as exc:  # noqa: BLE001
+         logger.exception("generate failed")
+         gen_err, gen_status = _error(529, "api_error", f"Model generation failed: {exc}")
+--- /dev/null
++++ b/tests/test_compatible_stream_terminal_contract.py
+@@ -0,0 +1,252 @@
++import json
++import os
++import uuid
++from pathlib import Path
++
++import pytest
++
++from tests.test_chat_structured_output_contract import product as product
++from tests.test_compatible_transport_error_contract import compat_case as compat_case
++
++TOOLS = [{"type": "function", "function": {"name": "read_file", "parameters": {"type": "object"}}}]
++
++
++def frame(delta, finish=None):
++    return {"choices": [{"index": 0, "delta": delta, "finish_reason": finish}]}
++
++
++def wire(*chunks, done=True):
++    return b"".join(b"data: " + json.dumps(chunk).encode() + b"\n\n" for chunk in chunks) + (
++        b"data: [DONE]\n\n" if done else b""
++    )
++
++
++CALL = frame(
++    {
++        "tool_calls": [
++            {
++                "index": 0,
++                "id": "call_owned",
++                "type": "function",
++                "function": {"name": "read_file", "arguments": '{"file_path":"sentinel"}'},
++            }
++        ]
++    },
++    "tool_calls",
++)
++ERROR = {"error": {"code": 500, "message": "private upstream detail"}}
++
++
++@pytest.fixture
++def terminal_case(compat_case, request):
++    client, body, state, provider = compat_case
++    captures = []
++    yield client, body, state, captures
++    export = os.environ.get("COMPAT_STREAM_CAPTURE_ROOT")
++    if export:
++        target = Path(export)
++        target.mkdir(parents=True, exist_ok=True)
++        (target / (uuid.uuid4().hex + ".json")).write_text(
++            json.dumps(
++                {
++                    "nodeid": request.node.nodeid,
++                    "provider": provider,
++                    "captures": captures,
++                    "wire": state["wire"],
++                    "usage": state["usage"],
++                    "persisted": len(state["persisted"]),
++                    "sleeps": state["sleeps"],
++                },
++                indent=2,
++            )
++        )
++
++
++@pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
++@pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
++@pytest.mark.parametrize(
++    "payload,code",
++    [
++        (wire(ERROR), "upstream_stream_error"),
++        (wire(frame({}, "error")), "upstream_stream_error"),
++        (b"data: broken\n\ndata: [DONE]\n\n", "invalid_stream"),
++        (b"data: \xff\n\n", "invalid_stream"),
++        (wire(frame({"content": ["partial"]})), "invalid_stream"),
++        (wire(frame({"content": 1})), "invalid_stream"),
++        (wire(frame({"tool_calls": [{"index": 0, "function": {"name": 1}}]})), "invalid_stream"),
++        (wire(frame({"tool_calls": [{"index": 0, "function": {"arguments": {}}}]})), "invalid_stream"),
++        (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
++    ],
++)
++def test_bad_sse_is_typed_failed_terminal(terminal_case, route, payload, code):
++    client, body, state, captures = terminal_case
++    state["outcome"] = [payload]
++    response = client.post(route, json={**body, "stream": True})
++    captures.append({"upstream_hex": payload.hex(), "response": response.text})
++    assert "provider_protocol_error" in response.text and code in response.text
++    assert "[DONE]" not in response.text and "message_stop" not in response.text
++    assert "private upstream" not in response.text
++    assert [row["success"] for row in state["usage"]] == [False]
++    assert len(state["wire"]) == 1 and state["persisted"] == [] and state["sleeps"] == []
++
++
++@pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
++@pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
++def test_normal_nullable_multiline_comments_and_usage_remain_success(terminal_case, route):
++    client, body, state, captures = terminal_case
++    payload = b': OPENROUTER PROCESSING\n\ndata: {\ndata: "choices":[{"delta":{"content":null}}]}\n\n' + wire(
++        frame({"content": "[API Error] literal"}, "stop"),
++        {**frame({"content": ""}, "stop"), "usage": {"completion_tokens": 1}},
++        {"choices": [], "usage": {}},
++    )
++    state["outcome"] = [payload]
++    response = client.post(route, json={**body, "stream": True})
++    captures.append({"upstream_hex": payload.hex(), "response": response.text})
++    assert "[API Error] literal" in response.text and "provider_protocol_error" not in response.text
++    assert "[DONE]" in response.text if route.endswith("completions") else "message_stop" in response.text
++    assert [row["success"] for row in state["usage"]] == [True]
++
++
++@pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
++@pytest.mark.parametrize("completed_first", [False, True])
++def test_real_tool_loop_holds_incomplete_tools_and_never_replays(terminal_case, monkeypatch, tmp_path, completed_first):
++    from antigravity_k.engine.tool_loop import ToolLoopEngine
++    from antigravity_k.tools import egress_policy
++    from tests.test_tool_loop import mock_orch
++
++    client, body, state, captures = terminal_case
++    manager = client.contract_manager
++    first = wire(CALL, done=completed_first)
++    responses = [first, wire(ERROR)]
++    terminal = egress_policy.urllib.request.urlopen
++
++    def next_response(target, **kwargs):
++        state["outcome"] = [responses[min(len(state["wire"]), 1)]]
++        return terminal(target, **kwargs)
++
++    monkeypatch.setattr(egress_policy.urllib.request, "urlopen", next_response)
++    sentinel = tmp_path / "sentinel"
++    sentinel.write_text("owned read-only sentinel")
++    dispatch = []
++    outcomes = []
++    orch = mock_orch._get_wrapped_function()()
++    orch.manager = manager
++    orch.project_root = str(tmp_path)
++    orch._prepare_agent_prompt.return_value = (
++        body["model"],
++        "",
++        "",
++        "",
++        "Read sentinel",
++        [{"role": "user", "content": "Read sentinel"}],
++    )
++    manager.get(body["model"])
++
++    async def read_owned(*args, **kwargs):
++        dispatch.append("read_file")
++        return sentinel.read_text()
++
++    orch.ctx.tool_executor.execute_async = read_owned
++    engine = ToolLoopEngine(orch, outcome_recorder=lambda outcome: outcomes.append(outcome))
++    monkeypatch.setattr(engine, "_native_tools_kwargs", lambda *args, **kwargs: {"tools": TOOLS})
++    list(engine.run_loop([{"role": "user", "content": "Read sentinel"}], "CODER", "code", 3, body["model"]))
++    captures.append(
++        {
++            "upstream_hex": [r.hex() for r in responses],
++            "dispatch": dispatch,
++            "outcome_success": [o.success for o in outcomes],
++        }
++    )
++    assert dispatch == (["read_file"] if completed_first else [])
++    assert len(state["wire"]) == (2 if completed_first else 1)
++    assert outcomes and outcomes[-1].success is False
++    assert [r["success"] for r in state["usage"]] == ([True, False] if completed_first else [False])
++    assert sentinel.read_text() == "owned read-only sentinel"
++
++
++@pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
++def test_fragmented_tools_require_terminal_before_emission(terminal_case):
++    client, body, state, captures = terminal_case
++    payload = wire(
++        frame({"content": None, "tool_calls": [{"index": 0, "function": {"name": "read_", "arguments": '{"file_'}}]}),
++        frame(
++            {"tool_calls": [{"index": 0, "function": {"name": "file", "arguments": 'path":"sentinel"}'}}]}, "tool_calls"
++        ),
++    )
++    state["outcome"] = [payload]
++    chunks = list(client.contract_manager.stream_generate("Read sentinel", body["model"], tools=TOOLS))
++    captures.append({"upstream_hex": payload.hex(), "chunks": chunks})
++    assert len(chunks) == 1 and '"name": "read_file"' in chunks[0] and '"file_path": "sentinel"' in chunks[0]
++    assert [row["success"] for row in state["usage"]] == [True]
++
++
++@pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
++@pytest.mark.parametrize(
++    "delta",
++    [
++        None,
++        [],
++        {"tool_calls": {}},
++        {"tool_calls": [None]},
++        {"tool_calls": [{"index": True}]},
++        {"tool_calls": [{"index": -1}]},
++        {"tool_calls": [{"index": 0, "function": None}]},
++        {"tool_calls": [{"index": 0, "function": {"name": "read_file", "arguments": "[]"}}]},
++    ],
++)
++def test_malformed_tool_shape_never_emits(terminal_case, delta):
++    from antigravity_k.engine.provider_adapters.transport_errors import NativeProtocolError
++
++    client, body, state, captures = terminal_case
++    payload = wire(frame(delta, "tool_calls"))
++    state["outcome"] = [payload]
++    emitted = []
++    with pytest.raises(NativeProtocolError) as failure:
++        for chunk in client.contract_manager.stream_generate("Read sentinel", body["model"], tools=TOOLS):
++            emitted.append(chunk)
++    captures.append({"upstream_hex": payload.hex(), "emitted": emitted, "error": failure.value.detail()})
++    assert failure.value.code == "invalid_stream" and emitted == []
++    assert [row["success"] for row in state["usage"]] == [False]
++    assert len(state["wire"]) == 1 and state["sleeps"] == []
++
++
++@pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
++@pytest.mark.parametrize("explicit_error", [False, True])
++def test_textual_tool_is_held_before_failed_terminal(terminal_case, explicit_error):
++    from antigravity_k.engine.provider_adapters.transport_errors import NativeProtocolError
++
++    client, body, state, captures = terminal_case
++    xml = '<tool_call>{"name":"read_file","arguments":{"file_path":"sentinel"}}</tool_call>'
++    payload = wire(frame({"content": xml}), *([ERROR] if explicit_error else []), done=False)
++    state["outcome"] = [payload]
++    emitted = []
++    with pytest.raises(NativeProtocolError) as failure:
++        for chunk in client.contract_manager.stream_generate("Read sentinel", body["model"], tools=TOOLS):
++            emitted.append(chunk)
++    captures.append({"upstream_hex": payload.hex(), "emitted": emitted, "error": failure.value.detail()})
++    assert emitted == []
++    assert failure.value.code == ("upstream_stream_error" if explicit_error else "incomplete_stream")
++    assert [row["success"] for row in state["usage"]] == [False]
++
++
++@pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
++@pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
++@pytest.mark.parametrize(
++    "payload,code",
++    [
++        (wire(ERROR), "upstream_stream_error"),
++        (wire(frame({"content": []})), "invalid_stream"),
++        (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
++    ],
++)
++def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
++    client, body, state, captures = terminal_case
++    state["outcome"] = [payload]
++    response = client.post(route, json=body)
++    captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
++    assert response.status_code == 502
++    error = response.json().get("detail", response.json().get("error"))
++    assert error["type"] == "provider_protocol_error" and error["code"] == code
++    assert "private upstream" not in response.text
++    assert [row["success"] for row in state["usage"]] == [False]
++    assert state["persisted"] == [] and len(state["wire"]) == 1

@@ -1,0 +1,27 @@
+{
+  "nodeid": "tests/test_native_stream_terminal_contract.py::test_direct_sse_failure_has_no_success_terminal[{\"message\": {\"content\": \"partial\"}, \"done\": false}\\n-/v1/messages]",
+  "wire": [],
+  "manager_calls": 0,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 200,
+      "body": "event: message_start\ndata: {\"type\": \"message_start\", \"message\": {\"id\": \"msg_1eb4e20bc7684c91b73fe030\", \"type\": \"message\", \"role\": \"assistant\", \"model\": \"qwen3.8\", \"content\": [], \"stop_reason\": null, \"usage\": {\"input_tokens\": 1, \"output_tokens\": 0}}}\n\nevent: content_block_start\ndata: {\"type\": \"content_block_start\", \"index\": 0, \"content_block\": {\"type\": \"text\", \"text\": \"\"}}\n\nevent: content_block_delta\ndata: {\"type\": \"content_block_delta\", \"index\": 0, \"delta\": {\"type\": \"text_delta\", \"text\": \"partial\"}}\n\nevent: error\ndata: {\"type\": \"error\", \"error\": {\"type\": \"provider_protocol_error\", \"code\": \"incomplete_stream\", \"message\": \"The model provider returned an invalid or incomplete stream.\"}}\n\n",
+      "request": {
+        "model": "qwen3.8",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "stream": true,
+        "agent_mode": false,
+        "max_tokens": 128
+      }
+    }
+  ]
+}

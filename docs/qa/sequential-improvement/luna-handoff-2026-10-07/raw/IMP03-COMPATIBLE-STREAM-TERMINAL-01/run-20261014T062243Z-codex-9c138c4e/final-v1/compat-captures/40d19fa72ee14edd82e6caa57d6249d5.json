@@ -1,0 +1,33 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_midstream_failure_is_not_success[/v1/messages-lmstudio]",
+  "wire": [
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "contract-lmstudio",
+        "messages": [
+          {
+            "role": "user",
+            "content": "User: \uc548\ub155\n\nAssistant:"
+          }
+        ],
+        "stream": true,
+        "temperature": 1.0,
+        "max_tokens": 128
+      },
+      "timeout": 300
+    }
+  ],
+  "usage": [
+    {
+      "model_name": "contract-lmstudio",
+      "latency_ms": 0.21719932556152344,
+      "success": false,
+      "error": "The model provider request timed out.",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0,
+  "sleeps": []
+}

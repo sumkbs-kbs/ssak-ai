@@ -1,0 +1,26 @@
+{
+  "nodeid": "tests/test_compatible_stream_terminal_contract.py::test_nonstream_protocol_failure_returns_typed_502[data: {\"choices\": [{\"index\": 0, \"delta\": {\"content\": []}, \"finish_reason\": null}]}\\n\\ndata: [DONE]\\n\\n-invalid_stream-/v1/messages-lmstudio]",
+  "wire": [],
+  "manager_calls": 1,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 502,
+      "body": "{\"error\":{\"type\":\"provider_protocol_error\",\"code\":\"invalid_stream\",\"message\":\"The model provider returned an invalid or incomplete stream.\"}}",
+      "request": {
+        "model": "contract-lmstudio",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "agent_mode": false,
+        "max_tokens": 128
+      }
+    }
+  ]
+}

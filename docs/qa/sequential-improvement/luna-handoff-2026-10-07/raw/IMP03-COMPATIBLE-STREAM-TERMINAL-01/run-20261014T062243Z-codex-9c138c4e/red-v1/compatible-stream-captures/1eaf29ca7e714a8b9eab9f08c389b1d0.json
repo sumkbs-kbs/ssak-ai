@@ -1,0 +1,35 @@
+{
+  "nodeid": "tests/test_compatible_stream_terminal_contract.py::test_bad_sse_is_typed_failed_terminal[data: {\"choices\": [{\"index\": 0, \"delta\": {\"content\": [\"partial\"]}, \"finish_reason\": null}]}\\n\\ndata: [DONE]\\n\\n-invalid_stream-/v1/chat/completions-openrouter]",
+  "provider": "openrouter",
+  "captures": [],
+  "wire": [
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "contract-openrouter",
+        "messages": [
+          {
+            "role": "user",
+            "content": "\uc548\ub155"
+          }
+        ],
+        "stream": true,
+        "temperature": 0.7,
+        "max_tokens": 128
+      },
+      "timeout": 300
+    }
+  ],
+  "usage": [
+    {
+      "model_name": "contract-openrouter",
+      "latency_ms": 0.09965896606445312,
+      "success": false,
+      "error": "can only concatenate str (not \"list\") to str",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted": 0,
+  "sleeps": []
+}

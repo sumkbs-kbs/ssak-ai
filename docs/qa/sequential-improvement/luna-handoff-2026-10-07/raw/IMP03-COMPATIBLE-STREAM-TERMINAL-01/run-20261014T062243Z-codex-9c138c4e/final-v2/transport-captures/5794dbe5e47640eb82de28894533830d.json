@@ -1,0 +1,17 @@
+{
+  "nodeid": "tests/test_native_transport_error_contract.py::test_native_transport_failure_is_non_success_once[failure4-504-None-/v1/messages]",
+  "native_attempts": [
+    "http://localhost:11434/api/chat"
+  ],
+  "usage": [
+    {
+      "model_name": "qwen3.8",
+      "latency_ms": 0.08392333984375,
+      "success": false,
+      "error": "The model provider request timed out.",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0
+}

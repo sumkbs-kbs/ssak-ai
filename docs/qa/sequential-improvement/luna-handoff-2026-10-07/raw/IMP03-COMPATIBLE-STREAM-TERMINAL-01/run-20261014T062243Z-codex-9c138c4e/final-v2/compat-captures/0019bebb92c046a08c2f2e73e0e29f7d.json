@@ -1,0 +1,45 @@
+{
+  "nodeid": "tests/test_compatible_stream_terminal_contract.py::test_malformed_tool_shape_never_emits[delta5-openrouter]",
+  "wire": [
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "contract-openrouter",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Read sentinel"
+          }
+        ],
+        "stream": true,
+        "temperature": 0.7,
+        "max_tokens": 4096,
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "parameters": {
+                "type": "object"
+              }
+            }
+          }
+        ],
+        "tool_choice": "auto"
+      },
+      "timeout": 300
+    }
+  ],
+  "usage": [
+    {
+      "model_name": "contract-openrouter",
+      "latency_ms": 0.11324882507324219,
+      "success": false,
+      "error": "The model provider returned an invalid or incomplete stream.",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0,
+  "sleeps": []
+}

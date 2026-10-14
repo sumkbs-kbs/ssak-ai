@@ -1,0 +1,27 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[timeout-/v1/chat/completions-lmstudio]",
+  "wire": [],
+  "manager_calls": 0,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 200,
+      "body": "event: error\ndata: {\"error\": {\"type\": \"provider_transport_error\", \"code\": \"provider_timeout\", \"message\": \"The model provider request timed out.\"}}\n\n",
+      "request": {
+        "model": "contract-lmstudio",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "agent_mode": false,
+        "max_tokens": 128,
+        "stream": true
+      }
+    }
+  ]
+}

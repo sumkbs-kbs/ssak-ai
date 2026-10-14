@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "name": "focused",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-COMPATIBLE-STREAM-TERMINAL-01/run-20261014T062243Z-codex-9c138c4e/cold_verify.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-COMPATIBLE-STREAM-TERMINAL-01/run-20261014T062243Z-codex-9c138c4e/direct-red-v1"
+      ],
+      "exit_code": 1,
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai"
+    },
+    {
+      "name": "lint",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "check",
+        "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+        "tests/test_compatible_stream_terminal_contract.py",
+        "src/antigravity_k/api/routes/chat.py",
+        "src/antigravity_k/api/routes/messages_api.py"
+      ],
+      "exit_code": 0,
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai"
+    },
+    {
+      "name": "format",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "format",
+        "--check",
+        "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+        "tests/test_compatible_stream_terminal_contract.py",
+        "src/antigravity_k/api/routes/chat.py",
+        "src/antigravity_k/api/routes/messages_api.py"
+      ],
+      "exit_code": 0,
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai"
+    },
+    {
+      "name": "types",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+        "--pythonpath",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "--level",
+        "error",
+        "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+        "tests/test_compatible_stream_terminal_contract.py",
+        "src/antigravity_k/api/routes/chat.py",
+        "src/antigravity_k/api/routes/messages_api.py"
+      ],
+      "exit_code": 0,
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai"
+    },
+    {
+      "name": "compile",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-c",
+        "import pathlib,sys; [compile(pathlib.Path(p).read_bytes(),p,'exec') for p in sys.argv[1:]]",
+        "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+        "tests/test_compatible_stream_terminal_contract.py",
+        "src/antigravity_k/api/routes/chat.py",
+        "src/antigravity_k/api/routes/messages_api.py"
+      ],
+      "exit_code": 0,
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai"
+    }
+  ],
+  "source_before": {
+    "src/antigravity_k/engine/provider_adapters/inference_providers.py": "d12b348d181820807eb6493e072723b475cf2440182eeb60bfeab71a9a0bdf11",
+    "tests/test_compatible_stream_terminal_contract.py": "c74c954eef9991d41dc691ec3eb64b2b7812071dbc02d24908528c4eed125478",
+    "src/antigravity_k/api/routes/chat.py": "99669a95f7c7cc831f695f4ab81f4d5d268facd31901cb3db1d1d7252dd938c5",
+    "src/antigravity_k/api/routes/messages_api.py": "bc9c065ac21302a2c48fd3aaf3e18f3a1b990f37cd7a70a653208257c4a9816a"
+  },
+  "source_after": {
+    "src/antigravity_k/engine/provider_adapters/inference_providers.py": "d12b348d181820807eb6493e072723b475cf2440182eeb60bfeab71a9a0bdf11",
+    "tests/test_compatible_stream_terminal_contract.py": "c74c954eef9991d41dc691ec3eb64b2b7812071dbc02d24908528c4eed125478",
+    "src/antigravity_k/api/routes/chat.py": "99669a95f7c7cc831f695f4ab81f4d5d268facd31901cb3db1d1d7252dd938c5",
+    "src/antigravity_k/api/routes/messages_api.py": "bc9c065ac21302a2c48fd3aaf3e18f3a1b990f37cd7a70a653208257c4a9816a"
+  },
+  "stable": true
+}

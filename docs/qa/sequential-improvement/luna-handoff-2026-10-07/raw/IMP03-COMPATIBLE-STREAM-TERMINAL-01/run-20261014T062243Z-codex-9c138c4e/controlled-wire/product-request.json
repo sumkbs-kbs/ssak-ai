@@ -1,0 +1,14 @@
+{
+  "model": "lmstudio/qwen3.6",
+  "project_id": "default",
+  "messages": [
+    {
+      "role": "user",
+      "content": "안녕"
+    }
+  ],
+  "agent_mode": false,
+  "stream": true,
+  "max_tokens": 16,
+  "temperature": 0
+}

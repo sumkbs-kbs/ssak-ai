@@ -1,0 +1,43 @@
+{
+  "nodeid": "tests/test_native_stream_terminal_contract.py::test_malformed_content_is_typed_failure_not_success[/v1/messages-content4]",
+  "wire": [
+    {
+      "model": "qwen3.8",
+      "stream": true,
+      "keep_alive": "30m",
+      "think": false,
+      "options": {
+        "num_ctx": 32768,
+        "num_predict": 4096,
+        "temperature": 0.5,
+        "repeat_penalty": 1.0,
+        "min_p": 0.05
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "/no_think\nAnswer directly. Do not output hidden reasoning, thinking traces, <think>, or <thought> blocks."
+        },
+        {
+          "role": "user",
+          "content": "User: 안녕\n\nAssistant:"
+        }
+      ]
+    }
+  ],
+  "upstream_hex_or_error_type": [
+    "7b226d657373616765223a207b22636f6e74656e74223a207b7d7d2c2022646f6e65223a20747275657d0a"
+  ],
+  "usage": [
+    {
+      "model_name": "qwen3.8",
+      "latency_ms": 0.14591217041015625,
+      "success": false,
+      "error": "The model provider returned an invalid or incomplete stream.",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0,
+  "sleeps": []
+}

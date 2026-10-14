@@ -1,0 +1,33 @@
+{
+  "nodeid": "tests/test_compatible_stream_terminal_contract.py::test_bad_sse_is_typed_failed_terminal[data: \\xff\\n\\n-invalid_stream-/v1/messages-lmstudio]",
+  "wire": [
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "contract-lmstudio",
+        "messages": [
+          {
+            "role": "user",
+            "content": "User: \uc548\ub155\n\nAssistant:"
+          }
+        ],
+        "stream": true,
+        "temperature": 1.0,
+        "max_tokens": 128
+      },
+      "timeout": 300
+    }
+  ],
+  "usage": [
+    {
+      "model_name": "contract-lmstudio",
+      "latency_ms": 0.11610984802246094,
+      "success": false,
+      "error": "'utf-8' codec can't decode byte 0xff in position 6: invalid start byte",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0,
+  "sleeps": []
+}

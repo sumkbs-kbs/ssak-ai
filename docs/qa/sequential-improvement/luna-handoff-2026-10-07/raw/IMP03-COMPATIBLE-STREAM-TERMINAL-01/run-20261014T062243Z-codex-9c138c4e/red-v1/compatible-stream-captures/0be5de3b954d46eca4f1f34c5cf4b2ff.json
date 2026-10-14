@@ -1,0 +1,40 @@
+{
+  "nodeid": "tests/test_compatible_stream_terminal_contract.py::test_bad_sse_is_typed_failed_terminal[data: {\"choices\": [{\"index\": 0, \"delta\": {\"tool_calls\": [{\"index\": 0, \"function\": {\"name\": 1}}]}, \"finish_reason\": null}]}\\n\\ndata: [DONE]\\n\\n-invalid_stream-/v1/messages-lmstudio]",
+  "provider": "lmstudio",
+  "captures": [
+    {
+      "upstream_hex": "646174613a207b2263686f69636573223a205b7b22696e646578223a20302c202264656c7461223a207b22746f6f6c5f63616c6c73223a205b7b22696e646578223a20302c202266756e6374696f6e223a207b226e616d65223a20317d7d5d7d2c202266696e6973685f726561736f6e223a206e756c6c7d5d7d0a0a646174613a205b444f4e455d0a0a",
+      "response": "event: message_start\ndata: {\"type\": \"message_start\", \"message\": {\"id\": \"msg_9e74915204ef427bb3cf1d67\", \"type\": \"message\", \"role\": \"assistant\", \"model\": \"contract-lmstudio\", \"content\": [], \"stop_reason\": null, \"usage\": {\"input_tokens\": 1, \"output_tokens\": 0}}}\n\nevent: content_block_start\ndata: {\"type\": \"content_block_start\", \"index\": 0, \"content_block\": {\"type\": \"text\", \"text\": \"\"}}\n\nevent: content_block_delta\ndata: {\"type\": \"content_block_delta\", \"index\": 0, \"delta\": {\"type\": \"text_delta\", \"text\": \"[API Error] can only concatenate str (not \\\"int\\\") to str\"}}\n\nevent: content_block_stop\ndata: {\"type\": \"content_block_stop\", \"index\": 0}\n\nevent: message_delta\ndata: {\"type\": \"message_delta\", \"delta\": {\"stop_reason\": \"end_turn\", \"stop_sequence\": null}, \"usage\": {\"output_tokens\": 18}}\n\nevent: message_stop\ndata: {\"type\": \"message_stop\"}\n\n"
+    }
+  ],
+  "wire": [
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "contract-lmstudio",
+        "messages": [
+          {
+            "role": "user",
+            "content": "User: \uc548\ub155\n\nAssistant:"
+          }
+        ],
+        "stream": true,
+        "temperature": 1.0,
+        "max_tokens": 128
+      },
+      "timeout": 300
+    }
+  ],
+  "usage": [
+    {
+      "model_name": "contract-lmstudio",
+      "latency_ms": 0.10514259338378906,
+      "success": false,
+      "error": "can only concatenate str (not \"int\") to str",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted": 0,
+  "sleeps": []
+}

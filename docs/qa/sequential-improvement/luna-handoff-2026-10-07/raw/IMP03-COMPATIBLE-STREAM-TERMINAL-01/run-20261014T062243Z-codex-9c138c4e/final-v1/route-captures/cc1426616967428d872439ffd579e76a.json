@@ -1,0 +1,27 @@
+{
+  "nodeid": "tests/test_compatible_stream_terminal_contract.py::test_bad_sse_is_typed_failed_terminal[data: \\xff\\n\\n-invalid_stream-/v1/chat/completions-lmstudio]",
+  "wire": [],
+  "manager_calls": 0,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 200,
+      "body": "event: error\ndata: {\"error\": {\"type\": \"provider_protocol_error\", \"code\": \"invalid_stream\", \"message\": \"The model provider returned an invalid or incomplete stream.\"}}\n\n",
+      "request": {
+        "model": "contract-lmstudio",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "agent_mode": false,
+        "max_tokens": 128,
+        "stream": true
+      }
+    }
+  ]
+}

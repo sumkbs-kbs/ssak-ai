@@ -1,0 +1,46 @@
+{
+  "nodeid": "tests/test_compatible_stream_terminal_contract.py::test_fragmented_tools_require_terminal_before_emission[lmstudio]",
+  "wire": [
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "contract-lmstudio",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Read sentinel"
+          }
+        ],
+        "stream": true,
+        "temperature": 0.7,
+        "max_tokens": 4096,
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "parameters": {
+                "type": "object"
+              }
+            }
+          }
+        ],
+        "tool_choice": "auto"
+      },
+      "timeout": 300
+    }
+  ],
+  "usage": [
+    {
+      "model_name": "contract-lmstudio",
+      "tokens_in": 3,
+      "tokens_out": 22,
+      "latency_ms": 0.1399517059326172,
+      "success": true,
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0,
+  "sleeps": []
+}

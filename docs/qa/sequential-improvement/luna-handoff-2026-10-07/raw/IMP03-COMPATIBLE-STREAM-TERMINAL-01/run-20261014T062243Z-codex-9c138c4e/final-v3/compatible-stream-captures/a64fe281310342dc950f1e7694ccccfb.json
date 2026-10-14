@@ -1,0 +1,41 @@
+{
+  "nodeid": "tests/test_compatible_stream_terminal_contract.py::test_normal_nullable_multiline_comments_and_usage_remain_success[/v1/messages-openrouter]",
+  "provider": "openrouter",
+  "captures": [
+    {
+      "upstream_hex": "3a204f50454e524f555445522050524f43455353494e470a0a646174613a207b0a646174613a202263686f69636573223a5b7b2264656c7461223a7b22636f6e74656e74223a6e756c6c7d7d5d7d0a0a646174613a207b2263686f69636573223a205b7b22696e646578223a20302c202264656c7461223a207b22636f6e74656e74223a20225b415049204572726f725d206c69746572616c227d2c202266696e6973685f726561736f6e223a202273746f70227d5d7d0a0a646174613a207b2263686f69636573223a205b7b22696e646578223a20302c202264656c7461223a207b22636f6e74656e74223a2022227d2c202266696e6973685f726561736f6e223a202273746f70227d5d2c20227573616765223a207b22636f6d706c6574696f6e5f746f6b656e73223a20317d7d0a0a646174613a207b2263686f69636573223a205b5d2c20227573616765223a207b7d7d0a0a646174613a205b444f4e455d0a0a",
+      "response": "event: message_start\ndata: {\"type\": \"message_start\", \"message\": {\"id\": \"msg_ae4ac36ddbfb42daa0110f5f\", \"type\": \"message\", \"role\": \"assistant\", \"model\": \"contract-openrouter\", \"content\": [], \"stop_reason\": null, \"usage\": {\"input_tokens\": 1, \"output_tokens\": 0}}}\n\nevent: content_block_start\ndata: {\"type\": \"content_block_start\", \"index\": 0, \"content_block\": {\"type\": \"text\", \"text\": \"\"}}\n\nevent: content_block_delta\ndata: {\"type\": \"content_block_delta\", \"index\": 0, \"delta\": {\"type\": \"text_delta\", \"text\": \"[API Error] literal\"}}\n\nevent: content_block_stop\ndata: {\"type\": \"content_block_stop\", \"index\": 0}\n\nevent: message_delta\ndata: {\"type\": \"message_delta\", \"delta\": {\"stop_reason\": \"end_turn\", \"stop_sequence\": null}, \"usage\": {\"output_tokens\": 6}}\n\nevent: message_stop\ndata: {\"type\": \"message_stop\"}\n\n"
+    }
+  ],
+  "wire": [
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "contract-openrouter",
+        "messages": [
+          {
+            "role": "user",
+            "content": "User: \uc548\ub155\n\nAssistant:"
+          }
+        ],
+        "stream": true,
+        "temperature": 1.0,
+        "max_tokens": 128
+      },
+      "timeout": 300
+    }
+  ],
+  "usage": [
+    {
+      "model_name": "contract-openrouter",
+      "tokens_in": 7,
+      "tokens_out": 5,
+      "latency_ms": 0.36597251892089844,
+      "success": true,
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted": 0,
+  "sleeps": []
+}

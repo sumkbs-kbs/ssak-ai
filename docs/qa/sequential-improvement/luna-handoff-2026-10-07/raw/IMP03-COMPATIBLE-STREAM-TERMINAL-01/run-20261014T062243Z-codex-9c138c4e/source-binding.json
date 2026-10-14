@@ -1,0 +1,18 @@
+{
+  "src/antigravity_k/engine/provider_adapters/inference_providers.py": {
+    "before": "0e758c675045b35d8b3b6a38577b6583ee2a255e8128a07c8c495b1eb92de97f",
+    "after": "d12b348d181820807eb6493e072723b475cf2440182eeb60bfeab71a9a0bdf11"
+  },
+  "src/antigravity_k/api/routes/chat.py": {
+    "before": "99669a95f7c7cc831f695f4ab81f4d5d268facd31901cb3db1d1d7252dd938c5",
+    "after": "79cb99a0ece7bffee7c85b7bd7e1444a77b6b5934fab8e5a80ba38e9e38b1100"
+  },
+  "src/antigravity_k/api/routes/messages_api.py": {
+    "before": "bc9c065ac21302a2c48fd3aaf3e18f3a1b990f37cd7a70a653208257c4a9816a",
+    "after": "b1ea96a88aa1a4f30430a7b2b4dbbb4dfa81997786fa8373d016ed6ef607b6c9"
+  },
+  "tests/test_compatible_stream_terminal_contract.py": {
+    "before": null,
+    "after": "c74c954eef9991d41dc691ec3eb64b2b7812071dbc02d24908528c4eed125478"
+  }
+}

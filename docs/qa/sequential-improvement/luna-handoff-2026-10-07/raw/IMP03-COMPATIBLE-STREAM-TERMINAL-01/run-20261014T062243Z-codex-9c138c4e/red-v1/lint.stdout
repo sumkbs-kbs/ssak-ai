@@ -1,0 +1,12 @@
+F401 [*] `io` imported but unused
+ --> tests/test_compatible_stream_terminal_contract.py:1:8
+  |
+1 | import io
+  |        ^^
+2 | import json
+3 | import os
+  |
+help: Remove unused import: `io`
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.

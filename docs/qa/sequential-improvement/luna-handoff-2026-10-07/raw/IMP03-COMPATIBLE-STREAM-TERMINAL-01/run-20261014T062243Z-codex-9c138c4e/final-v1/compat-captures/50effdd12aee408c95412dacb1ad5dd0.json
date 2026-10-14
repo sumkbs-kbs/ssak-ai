@@ -1,0 +1,33 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[timeout-/v1/chat/completions-lmstudio]",
+  "wire": [
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "contract-lmstudio",
+        "messages": [
+          {
+            "role": "user",
+            "content": "\uc548\ub155"
+          }
+        ],
+        "stream": true,
+        "temperature": 0.7,
+        "max_tokens": 128
+      },
+      "timeout": 300
+    }
+  ],
+  "usage": [
+    {
+      "model_name": "contract-lmstudio",
+      "latency_ms": 0.08511543273925781,
+      "success": false,
+      "error": "The model provider request timed out.",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0,
+  "sleeps": []
+}

@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="12" skipped="0" tests="12" time="1.880" timestamp="2026-10-14T15:31:14.322654+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_compatible_stream_terminal_contract" name="test_nonstream_protocol_failure_returns_typed_502[data: {&quot;error&quot;: {&quot;code&quot;: 500, &quot;message&quot;: &quot;private upstream detail&quot;}}\n\ndata: [DONE]\n\n-upstream_stream_error-/v1/chat/completions-lmstudio]" time="1.180"><failure message="assert 500 == 502&#10; +  where 500 = &lt;Response [500 Internal Server Error]&gt;.status_code">terminal_case = (&lt;starlette.testclient.TestClient object at 0x133d3f8c0&gt;, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...f4e455d0a0a', 'response': '{"detail":"The model provider returned an invalid or incomplete stream."}', 'status': 500}])
+route = '/v1/chat/completions'
+payload = b'data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n'
+code = 'upstream_stream_error'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+&gt;       assert response.status_code == 502
+E       assert 500 == 502
+E        +  where 500 = &lt;Response [500 Internal Server Error]&gt;.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError</failure></testcase><testcase classname="tests.test_compatible_stream_terminal_contract" name="test_nonstream_protocol_failure_returns_typed_502[data: {&quot;error&quot;: {&quot;code&quot;: 500, &quot;message&quot;: &quot;private upstream detail&quot;}}\n\ndata: [DONE]\n\n-upstream_stream_error-/v1/chat/completions-openrouter]" time="0.023"><failure message="assert 500 == 502&#10; +  where 500 = &lt;Response [500 Internal Server Error]&gt;.status_code">terminal_case = (&lt;starlette.testclient.TestClient object at 0x13402ac10&gt;, {'model': 'contract-openrouter', 'project_id': 'default', 'm...f4e455d0a0a', 'response': '{"detail":"The model provider returned an invalid or incomplete stream."}', 'status': 500}])
+route = '/v1/chat/completions'
+payload = b'data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n'
+code = 'upstream_stream_error'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+&gt;       assert response.status_code == 502
+E       assert 500 == 502
+E        +  where 500 = &lt;Response [500 Internal Server Error]&gt;.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError</failure></testcase><testcase classname="tests.test_compatible_stream_terminal_contract" name="test_nonstream_protocol_failure_returns_typed_502[data: {&quot;error&quot;: {&quot;code&quot;: 500, &quot;message&quot;: &quot;private upstream detail&quot;}}\n\ndata: [DONE]\n\n-upstream_stream_error-/v1/messages-lmstudio]" time="0.021"><failure message="assert 529 == 502&#10; +  where 529 = &lt;Response [529 ]&gt;.status_code">terminal_case = (&lt;starlette.testclient.TestClient object at 0x1340eb9d0&gt;, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...,"message":"Model generation failed: The model provider returned an invalid or incomplete stream."}}', 'status': 529}])
+route = '/v1/messages'
+payload = b'data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n'
+code = 'upstream_stream_error'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+&gt;       assert response.status_code == 502
+E       assert 529 == 502
+E        +  where 529 = &lt;Response [529 ]&gt;.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError</failure></testcase><testcase classname="tests.test_compatible_stream_terminal_contract" name="test_nonstream_protocol_failure_returns_typed_502[data: {&quot;error&quot;: {&quot;code&quot;: 500, &quot;message&quot;: &quot;private upstream detail&quot;}}\n\ndata: [DONE]\n\n-upstream_stream_error-/v1/messages-openrouter]" time="0.022"><failure message="assert 529 == 502&#10; +  where 529 = &lt;Response [529 ]&gt;.status_code">terminal_case = (&lt;starlette.testclient.TestClient object at 0x1342363f0&gt;, {'model': 'contract-openrouter', 'project_id': 'default', 'm...,"message":"Model generation failed: The model provider returned an invalid or incomplete stream."}}', 'status': 529}])
+route = '/v1/messages'
+payload = b'data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n'
+code = 'upstream_stream_error'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+&gt;       assert response.status_code == 502
+E       assert 529 == 502
+E        +  where 529 = &lt;Response [529 ]&gt;.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError</failure></testcase><testcase classname="tests.test_compatible_stream_terminal_contract" name="test_nonstream_protocol_failure_returns_typed_502[data: {&quot;choices&quot;: [{&quot;index&quot;: 0, &quot;delta&quot;: {&quot;content&quot;: []}, &quot;finish_reason&quot;: null}]}\n\ndata: [DONE]\n\n-invalid_stream-/v1/chat/completions-lmstudio]" time="0.022"><failure message="assert 500 == 502&#10; +  where 500 = &lt;Response [500 Internal Server Error]&gt;.status_code">terminal_case = (&lt;starlette.testclient.TestClient object at 0x1342a1810&gt;, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...f4e455d0a0a', 'response': '{"detail":"The model provider returned an invalid or incomplete stream."}', 'status': 500}])
+route = '/v1/chat/completions'
+payload = b'data: {"choices": [{"index": 0, "delta": {"content": []}, "finish_reason": null}]}\n\ndata: [DONE]\n\n'
+code = 'invalid_stream'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+&gt;       assert response.status_code == 502
+E       assert 500 == 502
+E        +  where 500 = &lt;Response [500 Internal Server Error]&gt;.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError</failure></testcase><testcase classname="tests.test_compatible_stream_terminal_contract" name="test_nonstream_protocol_failure_returns_typed_502[data: {&quot;choices&quot;: [{&quot;index&quot;: 0, &quot;delta&quot;: {&quot;content&quot;: []}, &quot;finish_reason&quot;: null}]}\n\ndata: [DONE]\n\n-invalid_stream-/v1/chat/completions-openrouter]" time="0.024"><failure message="assert 500 == 502&#10; +  where 500 = &lt;Response [500 Internal Server Error]&gt;.status_code">terminal_case = (&lt;starlette.testclient.TestClient object at 0x1342a3490&gt;, {'model': 'contract-openrouter', 'project_id': 'default', 'm...f4e455d0a0a', 'response': '{"detail":"The model provider returned an invalid or incomplete stream."}', 'status': 500}])
+route = '/v1/chat/completions'
+payload = b'data: {"choices": [{"index": 0, "delta": {"content": []}, "finish_reason": null}]}\n\ndata: [DONE]\n\n'
+code = 'invalid_stream'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+&gt;       assert response.status_code == 502
+E       assert 500 == 502
+E        +  where 500 = &lt;Response [500 Internal Server Error]&gt;.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError</failure></testcase><testcase classname="tests.test_compatible_stream_terminal_contract" name="test_nonstream_protocol_failure_returns_typed_502[data: {&quot;choices&quot;: [{&quot;index&quot;: 0, &quot;delta&quot;: {&quot;content&quot;: []}, &quot;finish_reason&quot;: null}]}\n\ndata: [DONE]\n\n-invalid_stream-/v1/messages-lmstudio]" time="0.022"><failure message="assert 529 == 502&#10; +  where 529 = &lt;Response [529 ]&gt;.status_code">terminal_case = (&lt;starlette.testclient.TestClient object at 0x1342a36f0&gt;, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...,"message":"Model generation failed: The model provider returned an invalid or incomplete stream."}}', 'status': 529}])
+route = '/v1/messages'
+payload = b'data: {"choices": [{"index": 0, "delta": {"content": []}, "finish_reason": null}]}\n\ndata: [DONE]\n\n'
+code = 'invalid_stream'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+&gt;       assert response.status_code == 502
+E       assert 529 == 502
+E        +  where 529 = &lt;Response [529 ]&gt;.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError</failure></testcase><testcase classname="tests.test_compatible_stream_terminal_contract" name="test_nonstream_protocol_failure_returns_typed_502[data: {&quot;choices&quot;: [{&quot;index&quot;: 0, &quot;delta&quot;: {&quot;content&quot;: []}, &quot;finish_reason&quot;: null}]}\n\ndata: [DONE]\n\n-invalid_stream-/v1/messages-openrouter]" time="0.021"><failure message="assert 529 == 502&#10; +  where 529 = &lt;Response [529 ]&gt;.status_code">terminal_case = (&lt;starlette.testclient.TestClient object at 0x1342a2190&gt;, {'model': 'contract-openrouter', 'project_id': 'default', 'm...,"message":"Model generation failed: The model provider returned an invalid or incomplete stream."}}', 'status': 529}])
+route = '/v1/messages'
+payload = b'data: {"choices": [{"index": 0, "delta": {"content": []}, "finish_reason": null}]}\n\ndata: [DONE]\n\n'
+code = 'invalid_stream'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+&gt;       assert response.status_code == 502
+E       assert 529 == 502
+E        +  where 529 = &lt;Response [529 ]&gt;.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError</failure></testcase><testcase classname="tests.test_compatible_stream_terminal_contract" name="test_nonstream_protocol_failure_returns_typed_502[data: {&quot;choices&quot;: [{&quot;index&quot;: 0, &quot;delta&quot;: {&quot;content&quot;: &quot;partial&quot;}, &quot;finish_reason&quot;: null}]}\n\n-incomplete_stream-/v1/chat/completions-lmstudio]" time="0.022"><failure message="assert 500 == 502&#10; +  where 500 = &lt;Response [500 Internal Server Error]&gt;.status_code">terminal_case = (&lt;starlette.testclient.TestClient object at 0x1342a08a0&gt;, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...c7d5d7d0a0a', 'response': '{"detail":"The model provider returned an invalid or incomplete stream."}', 'status': 500}])
+route = '/v1/chat/completions'
+payload = b'data: {"choices": [{"index": 0, "delta": {"content": "partial"}, "finish_reason": null}]}\n\n'
+code = 'incomplete_stream'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+&gt;       assert response.status_code == 502
+E       assert 500 == 502
+E        +  where 500 = &lt;Response [500 Internal Server Error]&gt;.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError</failure></testcase><testcase classname="tests.test_compatible_stream_terminal_contract" name="test_nonstream_protocol_failure_returns_typed_502[data: {&quot;choices&quot;: [{&quot;index&quot;: 0, &quot;delta&quot;: {&quot;content&quot;: &quot;partial&quot;}, &quot;finish_reason&quot;: null}]}\n\n-incomplete_stream-/v1/chat/completions-openrouter]" time="0.021"><failure message="assert 500 == 502&#10; +  where 500 = &lt;Response [500 Internal Server Error]&gt;.status_code">terminal_case = (&lt;starlette.testclient.TestClient object at 0x1342a1f30&gt;, {'model': 'contract-openrouter', 'project_id': 'default', 'm...c7d5d7d0a0a', 'response': '{"detail":"The model provider returned an invalid or incomplete stream."}', 'status': 500}])
+route = '/v1/chat/completions'
+payload = b'data: {"choices": [{"index": 0, "delta": {"content": "partial"}, "finish_reason": null}]}\n\n'
+code = 'incomplete_stream'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+&gt;       assert response.status_code == 502
+E       assert 500 == 502
+E        +  where 500 = &lt;Response [500 Internal Server Error]&gt;.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError</failure></testcase><testcase classname="tests.test_compatible_stream_terminal_contract" name="test_nonstream_protocol_failure_returns_typed_502[data: {&quot;choices&quot;: [{&quot;index&quot;: 0, &quot;delta&quot;: {&quot;content&quot;: &quot;partial&quot;}, &quot;finish_reason&quot;: null}]}\n\n-incomplete_stream-/v1/messages-lmstudio]" time="0.020"><failure message="assert 529 == 502&#10; +  where 529 = &lt;Response [529 ]&gt;.status_code">terminal_case = (&lt;starlette.testclient.TestClient object at 0x134237ce0&gt;, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...,"message":"Model generation failed: The model provider returned an invalid or incomplete stream."}}', 'status': 529}])
+route = '/v1/messages'
+payload = b'data: {"choices": [{"index": 0, "delta": {"content": "partial"}, "finish_reason": null}]}\n\n'
+code = 'incomplete_stream'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+&gt;       assert response.status_code == 502
+E       assert 529 == 502
+E        +  where 529 = &lt;Response [529 ]&gt;.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError</failure></testcase><testcase classname="tests.test_compatible_stream_terminal_contract" name="test_nonstream_protocol_failure_returns_typed_502[data: {&quot;choices&quot;: [{&quot;index&quot;: 0, &quot;delta&quot;: {&quot;content&quot;: &quot;partial&quot;}, &quot;finish_reason&quot;: null}]}\n\n-incomplete_stream-/v1/messages-openrouter]" time="0.021"><failure message="assert 529 == 502&#10; +  where 529 = &lt;Response [529 ]&gt;.status_code">terminal_case = (&lt;starlette.testclient.TestClient object at 0x1342a1f30&gt;, {'model': 'contract-openrouter', 'project_id': 'default', 'm...,"message":"Model generation failed: The model provider returned an invalid or incomplete stream."}}', 'status': 529}])
+route = '/v1/messages'
+payload = b'data: {"choices": [{"index": 0, "delta": {"content": "partial"}, "finish_reason": null}]}\n\n'
+code = 'incomplete_stream'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+&gt;       assert response.status_code == 502
+E       assert 529 == 502
+E        +  where 529 = &lt;Response [529 ]&gt;.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,9 @@
+{
+  "nodeid": "tests/test_compatible_stream_terminal_contract.py::test_malformed_tool_shape_never_emits[None-openrouter]",
+  "wire": [],
+  "manager_calls": 0,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": []
+}

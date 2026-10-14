@@ -1,0 +1,41 @@
+{
+  "nodeid": "tests/test_compatible_stream_terminal_contract.py::test_bad_sse_is_typed_failed_terminal[data: {\"error\": {\"code\": 500, \"message\": \"private upstream detail\"}}\\n\\ndata: [DONE]\\n\\n-upstream_stream_error-/v1/chat/completions-openrouter]",
+  "provider": "openrouter",
+  "captures": [
+    {
+      "upstream_hex": "646174613a207b226572726f72223a207b22636f6465223a203530302c20226d657373616765223a20227072697661746520757073747265616d2064657461696c227d7d0a0a646174613a205b444f4e455d0a0a",
+      "response": "data: [DONE]\n\n"
+    }
+  ],
+  "wire": [
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "contract-openrouter",
+        "messages": [
+          {
+            "role": "user",
+            "content": "\uc548\ub155"
+          }
+        ],
+        "stream": true,
+        "temperature": 0.7,
+        "max_tokens": 128
+      },
+      "timeout": 300
+    }
+  ],
+  "usage": [
+    {
+      "model_name": "contract-openrouter",
+      "tokens_in": 7,
+      "tokens_out": 0,
+      "latency_ms": 1.5170574188232422,
+      "success": true,
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted": 1,
+  "sleeps": []
+}

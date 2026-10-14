@@ -1,0 +1,9 @@
+{
+  "nodeid": "tests/test_compatible_stream_terminal_contract.py::test_fragmented_tools_require_terminal_before_emission[openrouter]",
+  "wire": [],
+  "manager_calls": 0,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": []
+}

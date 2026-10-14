@@ -1,0 +1,97 @@
+{
+  "nodeid": "tests/test_compatible_stream_terminal_contract.py::test_real_tool_loop_holds_incomplete_tools_and_never_replays[True-lmstudio]",
+  "provider": "lmstudio",
+  "captures": [
+    {
+      "upstream_hex": [
+        "646174613a207b2263686f69636573223a205b7b22696e646578223a20302c202264656c7461223a207b22746f6f6c5f63616c6c73223a205b7b22696e646578223a20302c20226964223a202263616c6c5f6f776e6564222c202274797065223a202266756e6374696f6e222c202266756e6374696f6e223a207b226e616d65223a2022726561645f66696c65222c2022617267756d656e7473223a20227b5c2266696c655f706174685c223a5c2273656e74696e656c5c227d227d7d5d7d2c202266696e6973685f726561736f6e223a2022746f6f6c5f63616c6c73227d5d7d0a0a646174613a205b444f4e455d0a0a",
+        "646174613a207b226572726f72223a207b22636f6465223a203530302c20226d657373616765223a20227072697661746520757073747265616d2064657461696c227d7d0a0a646174613a205b444f4e455d0a0a"
+      ],
+      "dispatch": [
+        "read_file"
+      ],
+      "outcome_success": [
+        false
+      ]
+    }
+  ],
+  "wire": [
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "contract-lmstudio",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Read sentinel"
+          }
+        ],
+        "stream": true,
+        "temperature": 0.7,
+        "max_tokens": 4096,
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "parameters": {
+                "type": "object"
+              }
+            }
+          }
+        ],
+        "tool_choice": "auto"
+      },
+      "timeout": 300
+    },
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "contract-lmstudio",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Read sentinel<tool_call>\n{\"name\": \"read_file\", \"arguments\": {\"file_path\": \"sentinel\"}}\n</tool_call>\n<tool_response>\n[TOOL_EVIDENCE] {\"original_chars\": 24, \"sha256_prefix\": \"befc97fedf470525\", \"source\": \"sentinel\", \"tool\": \"read_file\", \"truncated\": false}\n[UNTRUSTED_TOOL_RESULT]\nowned read-only sentinel\n[/UNTRUSTED_TOOL_RESULT]\n</tool_response>\nAssistant: "
+          }
+        ],
+        "stream": true,
+        "temperature": 0.7,
+        "max_tokens": 4096,
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "parameters": {
+                "type": "object"
+              }
+            }
+          }
+        ],
+        "tool_choice": "auto"
+      },
+      "timeout": 300
+    }
+  ],
+  "usage": [
+    {
+      "model_name": "contract-lmstudio",
+      "tokens_in": 3,
+      "tokens_out": 22,
+      "latency_ms": 0.1881122589111328,
+      "success": true,
+      "combo_name": "",
+      "fallback_depth": 0
+    },
+    {
+      "model_name": "contract-lmstudio",
+      "latency_ms": 0.06818771362304688,
+      "success": false,
+      "error": "The model provider returned an invalid or incomplete stream.",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted": 0,
+  "sleeps": []
+}

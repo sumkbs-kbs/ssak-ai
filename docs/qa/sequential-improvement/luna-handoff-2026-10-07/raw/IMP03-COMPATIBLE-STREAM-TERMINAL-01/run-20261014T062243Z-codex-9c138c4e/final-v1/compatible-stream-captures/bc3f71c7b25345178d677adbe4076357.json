@@ -1,0 +1,40 @@
+{
+  "nodeid": "tests/test_compatible_stream_terminal_contract.py::test_bad_sse_is_typed_failed_terminal[data: broken\\n\\ndata: [DONE]\\n\\n-invalid_stream-/v1/messages-openrouter]",
+  "provider": "openrouter",
+  "captures": [
+    {
+      "upstream_hex": "646174613a2062726f6b656e0a0a646174613a205b444f4e455d0a0a",
+      "response": "event: message_start\ndata: {\"type\": \"message_start\", \"message\": {\"id\": \"msg_692981431cc04f1e80108b27\", \"type\": \"message\", \"role\": \"assistant\", \"model\": \"contract-openrouter\", \"content\": [], \"stop_reason\": null, \"usage\": {\"input_tokens\": 1, \"output_tokens\": 0}}}\n\nevent: error\ndata: {\"type\": \"error\", \"error\": {\"type\": \"provider_protocol_error\", \"code\": \"invalid_stream\", \"message\": \"The model provider returned an invalid or incomplete stream.\"}}\n\n"
+    }
+  ],
+  "wire": [
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "contract-openrouter",
+        "messages": [
+          {
+            "role": "user",
+            "content": "User: \uc548\ub155\n\nAssistant:"
+          }
+        ],
+        "stream": true,
+        "temperature": 1.0,
+        "max_tokens": 128
+      },
+      "timeout": 300
+    }
+  ],
+  "usage": [
+    {
+      "model_name": "contract-openrouter",
+      "latency_ms": 0.10228157043457031,
+      "success": false,
+      "error": "The model provider returned an invalid or incomplete stream.",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted": 0,
+  "sleeps": []
+}

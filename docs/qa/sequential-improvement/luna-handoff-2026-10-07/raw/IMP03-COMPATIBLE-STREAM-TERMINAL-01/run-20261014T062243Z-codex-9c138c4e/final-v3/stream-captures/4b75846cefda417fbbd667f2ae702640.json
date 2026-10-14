@@ -1,0 +1,43 @@
+{
+  "nodeid": "tests/test_native_stream_terminal_contract.py::test_direct_sse_failure_has_no_success_terminal[{\"message\": {\"content\": \"partial\"}, \"done\": false}\\n-/v1/chat/completions]",
+  "wire": [
+    {
+      "model": "qwen3.8",
+      "stream": true,
+      "keep_alive": "30m",
+      "think": false,
+      "options": {
+        "num_ctx": 32768,
+        "num_predict": 128,
+        "temperature": 0.7,
+        "repeat_penalty": 1.0,
+        "min_p": 0.05
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "/no_think\nAnswer directly. Do not output hidden reasoning, thinking traces, <think>, or <thought> blocks."
+        },
+        {
+          "role": "user",
+          "content": "안녕"
+        }
+      ]
+    }
+  ],
+  "upstream_hex_or_error_type": [
+    "7b226d657373616765223a207b22636f6e74656e74223a20227061727469616c227d2c2022646f6e65223a2066616c73657d0a"
+  ],
+  "usage": [
+    {
+      "model_name": "qwen3.8",
+      "latency_ms": 0.1900196075439453,
+      "success": false,
+      "error": "The model provider returned an invalid or incomplete stream.",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0,
+  "sleeps": []
+}

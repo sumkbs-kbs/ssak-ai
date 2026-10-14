@@ -1,0 +1,8 @@
+{
+  "new_cases": 78,
+  "terminal_sink_calls": 80,
+  "retry_sleeps": 0,
+  "success_usage": 8,
+  "failed_usage": 72,
+  "socket_attempts": []
+}

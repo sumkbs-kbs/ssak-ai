@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "git",
+    "apply",
+    "--unsafe-paths",
+    "--directory=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-COMPATIBLE-STREAM-TERMINAL-01/run-20261014T062243Z-codex-9c138c4e/publication-candidate/reconstruction",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-COMPATIBLE-STREAM-TERMINAL-01/run-20261014T062243Z-codex-9c138c4e/publication-candidate/candidate.patch"
+  ],
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "byte_identical": {
+    "src/antigravity_k/engine/provider_adapters/inference_providers.py": true,
+    "tests/test_compatible_stream_terminal_contract.py": true,
+    "src/antigravity_k/api/routes/chat.py": true,
+    "src/antigravity_k/api/routes/messages_api.py": true
+  }
+}

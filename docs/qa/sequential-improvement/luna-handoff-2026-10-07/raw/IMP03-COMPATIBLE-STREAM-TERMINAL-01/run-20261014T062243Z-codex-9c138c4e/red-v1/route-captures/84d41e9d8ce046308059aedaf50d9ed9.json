@@ -1,0 +1,27 @@
+{
+  "nodeid": "tests/test_compatible_transport_error_contract.py::test_compatible_stream_transport_failure_has_no_done[refused-/v1/messages-openrouter]",
+  "wire": [],
+  "manager_calls": 0,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": [
+    {
+      "status": 200,
+      "body": "event: message_start\ndata: {\"type\": \"message_start\", \"message\": {\"id\": \"msg_e8cf7348909b474eaa23d574\", \"type\": \"message\", \"role\": \"assistant\", \"model\": \"contract-openrouter\", \"content\": [], \"stop_reason\": null, \"usage\": {\"input_tokens\": 1, \"output_tokens\": 0}}}\n\nevent: error\ndata: {\"type\": \"error\", \"error\": {\"type\": \"provider_transport_error\", \"code\": \"provider_unavailable\", \"message\": \"The model provider is unavailable.\"}}\n\n",
+      "request": {
+        "model": "contract-openrouter",
+        "project_id": "default",
+        "messages": [
+          {
+            "role": "user",
+            "content": "안녕"
+          }
+        ],
+        "agent_mode": false,
+        "max_tokens": 128,
+        "stream": true
+      }
+    }
+  ]
+}

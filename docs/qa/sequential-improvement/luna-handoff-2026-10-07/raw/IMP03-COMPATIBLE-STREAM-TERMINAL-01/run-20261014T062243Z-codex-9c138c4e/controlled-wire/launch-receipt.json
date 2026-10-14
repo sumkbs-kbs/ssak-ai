@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-COMPATIBLE-STREAM-TERMINAL-01/run-20261014T062243Z-codex-9c138c4e/controlled-wire/observe_once.py"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-COMPATIBLE-STREAM-TERMINAL-01/run-20261014T062243Z-codex-9c138c4e/controlled-wire",
+  "source_path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src:/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "started_unix": 1791959575.529284,
+  "ended_unix": 1791959576.817686,
+  "exit_code": 0,
+  "timeout_seconds": 20,
+  "stdout_sha256": "25aa92f4cdf4fc66e3122100b656a258b2899eb2b99dc849afcc56357ba280f6",
+  "stderr_sha256": "899c22188fb4ae0e870b50f527ed52892a87ec8ea73dc0d83a7dd4407a3c9f42",
+  "observer_sha256": "8e219dc5fe739dda42f24a94cb5ff891caf2ac3975a8db4e331b99e228637f9c"
+}

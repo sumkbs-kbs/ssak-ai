@@ -1,0 +1,54 @@
+{
+  "nodeid": "tests/test_native_stream_terminal_contract.py::test_incomplete_tool_stream_never_emits_or_retries[{\"message\": {\"tool_calls\": [{\"function\": {\"name\": \"read_file\", \"arguments\": {\"file_path\": \"sentinel\"}}}]}, \"done\": false}\\n{\"done\": 1}\\n]",
+  "wire": [
+    {
+      "model": "qwen3.8",
+      "stream": true,
+      "keep_alive": "30m",
+      "think": false,
+      "options": {
+        "num_ctx": 32768,
+        "num_predict": 4096,
+        "temperature": 0.5,
+        "repeat_penalty": 1.0,
+        "min_p": 0.05
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "/no_think\nAnswer directly. Do not output hidden reasoning, thinking traces, <think>, or <thought> blocks."
+        },
+        {
+          "role": "user",
+          "content": "read sentinel"
+        }
+      ],
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "parameters": {
+              "type": "object"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "upstream_hex_or_error_type": [
+    "7b226d657373616765223a207b22746f6f6c5f63616c6c73223a205b7b2266756e6374696f6e223a207b226e616d65223a2022726561645f66696c65222c2022617267756d656e7473223a207b2266696c655f70617468223a202273656e74696e656c227d7d7d5d7d2c2022646f6e65223a2066616c73657d0a7b22646f6e65223a20317d0a"
+  ],
+  "usage": [
+    {
+      "model_name": "qwen3.8",
+      "latency_ms": 0.09703636169433594,
+      "success": false,
+      "error": "The model provider returned an invalid or incomplete stream.",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0,
+  "sleeps": []
+}

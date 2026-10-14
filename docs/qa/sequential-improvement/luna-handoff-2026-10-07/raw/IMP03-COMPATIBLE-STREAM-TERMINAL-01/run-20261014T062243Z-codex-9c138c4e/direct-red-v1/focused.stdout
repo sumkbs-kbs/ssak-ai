@@ -1,0 +1,850 @@
+FFFFFFFFFFFF                                                             [100%]
+=================================== FAILURES ===================================
+_ test_nonstream_protocol_failure_returns_typed_502[data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n-upstream_stream_error-/v1/chat/completions-lmstudio] _
+
+terminal_case = (<starlette.testclient.TestClient object at 0x133d3f8c0>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...f4e455d0a0a', 'response': '{"detail":"The model provider returned an invalid or incomplete stream."}', 'status': 500}])
+route = '/v1/chat/completions'
+payload = b'data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n'
+code = 'upstream_stream_error'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+>       assert response.status_code == 502
+E       assert 500 == 502
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.model_router:model_router.py:239 [contract-lmstudio] 사용 불가 마킹 — 쿨다운: 60.0초, 재시도: 0회, 사유: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.model_manager:model_manager.py:749 [contract-lmstudio] 단일 모델 추론 실패: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.api.chat:chat.py:1443 Generation error: The model provider returned an invalid or incomplete stream.
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/chat.py", line 1417, in chat_completions
+    response_text = manager.generate(prompt=prompt, target=target_model, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py", line 76, in record_generate
+    return generate(*args, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 705, in generate
+    response_text = self._do_generate(loaded, prompt, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 1232, in _do_generate
+    return provider.generate(loaded, prompt, **provider_kwargs)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 466, in generate
+    for chunk in self.stream_generate(loaded, prompt, **kwargs):
+                 ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 559, in stream_generate
+    yield from _compatible_output(iter(response), hold_content=bool(tools_schema))
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 426, in _compatible_output
+    raise NativeProtocolError("upstream_stream_error")
+antigravity_k.engine.provider_adapters.transport_errors.NativeProtocolError: The model provider returned an invalid or incomplete stream.
+_ test_nonstream_protocol_failure_returns_typed_502[data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n-upstream_stream_error-/v1/chat/completions-openrouter] _
+
+terminal_case = (<starlette.testclient.TestClient object at 0x13402ac10>, {'model': 'contract-openrouter', 'project_id': 'default', 'm...f4e455d0a0a', 'response': '{"detail":"The model provider returned an invalid or incomplete stream."}', 'status': 500}])
+route = '/v1/chat/completions'
+payload = b'data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n'
+code = 'upstream_stream_error'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+>       assert response.status_code == 502
+E       assert 500 == 502
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.model_router:model_router.py:239 [contract-openrouter] 사용 불가 마킹 — 쿨다운: 60.0초, 재시도: 0회, 사유: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.model_manager:model_manager.py:749 [contract-openrouter] 단일 모델 추론 실패: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.api.chat:chat.py:1443 Generation error: The model provider returned an invalid or incomplete stream.
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/chat.py", line 1417, in chat_completions
+    response_text = manager.generate(prompt=prompt, target=target_model, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py", line 76, in record_generate
+    return generate(*args, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 705, in generate
+    response_text = self._do_generate(loaded, prompt, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 1232, in _do_generate
+    return provider.generate(loaded, prompt, **provider_kwargs)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 466, in generate
+    for chunk in self.stream_generate(loaded, prompt, **kwargs):
+                 ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 559, in stream_generate
+    yield from _compatible_output(iter(response), hold_content=bool(tools_schema))
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 426, in _compatible_output
+    raise NativeProtocolError("upstream_stream_error")
+antigravity_k.engine.provider_adapters.transport_errors.NativeProtocolError: The model provider returned an invalid or incomplete stream.
+_ test_nonstream_protocol_failure_returns_typed_502[data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n-upstream_stream_error-/v1/messages-lmstudio] _
+
+terminal_case = (<starlette.testclient.TestClient object at 0x1340eb9d0>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...,"message":"Model generation failed: The model provider returned an invalid or incomplete stream."}}', 'status': 529}])
+route = '/v1/messages'
+payload = b'data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n'
+code = 'upstream_stream_error'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+>       assert response.status_code == 502
+E       assert 529 == 502
+E        +  where 529 = <Response [529 ]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.model_router:model_router.py:239 [contract-lmstudio] 사용 불가 마킹 — 쿨다운: 60.0초, 재시도: 0회, 사유: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.model_manager:model_manager.py:749 [contract-lmstudio] 단일 모델 추론 실패: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.api.messages:messages_api.py:518 generate failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/messages_api.py", line 514, in create_message
+    text = await run_in_threadpool(_generate)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 2518, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 1002, in run
+    result = context.run(func, *args)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/messages_api.py", line 506, in _generate
+    return manager.generate(
+           ~~~~~~~~~~~~~~~~^
+        prompt=prompt,
+        ^^^^^^^^^^^^^^
+    ...<2 lines>...
+        temperature=temperature,
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py", line 76, in record_generate
+    return generate(*args, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 705, in generate
+    response_text = self._do_generate(loaded, prompt, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 1232, in _do_generate
+    return provider.generate(loaded, prompt, **provider_kwargs)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 466, in generate
+    for chunk in self.stream_generate(loaded, prompt, **kwargs):
+                 ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 559, in stream_generate
+    yield from _compatible_output(iter(response), hold_content=bool(tools_schema))
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 426, in _compatible_output
+    raise NativeProtocolError("upstream_stream_error")
+antigravity_k.engine.provider_adapters.transport_errors.NativeProtocolError: The model provider returned an invalid or incomplete stream.
+_ test_nonstream_protocol_failure_returns_typed_502[data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n-upstream_stream_error-/v1/messages-openrouter] _
+
+terminal_case = (<starlette.testclient.TestClient object at 0x1342363f0>, {'model': 'contract-openrouter', 'project_id': 'default', 'm...,"message":"Model generation failed: The model provider returned an invalid or incomplete stream."}}', 'status': 529}])
+route = '/v1/messages'
+payload = b'data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n'
+code = 'upstream_stream_error'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+>       assert response.status_code == 502
+E       assert 529 == 502
+E        +  where 529 = <Response [529 ]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.model_router:model_router.py:239 [contract-openrouter] 사용 불가 마킹 — 쿨다운: 60.0초, 재시도: 0회, 사유: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.model_manager:model_manager.py:749 [contract-openrouter] 단일 모델 추론 실패: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.api.messages:messages_api.py:518 generate failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/messages_api.py", line 514, in create_message
+    text = await run_in_threadpool(_generate)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 2518, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 1002, in run
+    result = context.run(func, *args)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/messages_api.py", line 506, in _generate
+    return manager.generate(
+           ~~~~~~~~~~~~~~~~^
+        prompt=prompt,
+        ^^^^^^^^^^^^^^
+    ...<2 lines>...
+        temperature=temperature,
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py", line 76, in record_generate
+    return generate(*args, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 705, in generate
+    response_text = self._do_generate(loaded, prompt, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 1232, in _do_generate
+    return provider.generate(loaded, prompt, **provider_kwargs)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 466, in generate
+    for chunk in self.stream_generate(loaded, prompt, **kwargs):
+                 ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 559, in stream_generate
+    yield from _compatible_output(iter(response), hold_content=bool(tools_schema))
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 426, in _compatible_output
+    raise NativeProtocolError("upstream_stream_error")
+antigravity_k.engine.provider_adapters.transport_errors.NativeProtocolError: The model provider returned an invalid or incomplete stream.
+_ test_nonstream_protocol_failure_returns_typed_502[data: {"choices": [{"index": 0, "delta": {"content": []}, "finish_reason": null}]}\n\ndata: [DONE]\n\n-invalid_stream-/v1/chat/completions-lmstudio] _
+
+terminal_case = (<starlette.testclient.TestClient object at 0x1342a1810>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...f4e455d0a0a', 'response': '{"detail":"The model provider returned an invalid or incomplete stream."}', 'status': 500}])
+route = '/v1/chat/completions'
+payload = b'data: {"choices": [{"index": 0, "delta": {"content": []}, "finish_reason": null}]}\n\ndata: [DONE]\n\n'
+code = 'invalid_stream'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+>       assert response.status_code == 502
+E       assert 500 == 502
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.model_router:model_router.py:239 [contract-lmstudio] 사용 불가 마킹 — 쿨다운: 60.0초, 재시도: 0회, 사유: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.model_manager:model_manager.py:749 [contract-lmstudio] 단일 모델 추론 실패: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.api.chat:chat.py:1443 Generation error: The model provider returned an invalid or incomplete stream.
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 391, in _compatible_events
+    yield _CompatibleChunk.model_validate_json(payload)
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/pydantic/main.py", line 782, in model_validate_json
+    return cls.__pydantic_validator__.validate_json(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        json_data, strict=strict, extra=extra, context=context, by_alias=by_alias, by_name=by_name
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for _CompatibleChunk
+choices.0.delta.content
+  Input should be a valid string [type=string_type, input_value=[], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/chat.py", line 1417, in chat_completions
+    response_text = manager.generate(prompt=prompt, target=target_model, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py", line 76, in record_generate
+    return generate(*args, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 705, in generate
+    response_text = self._do_generate(loaded, prompt, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 1232, in _do_generate
+    return provider.generate(loaded, prompt, **provider_kwargs)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 466, in generate
+    for chunk in self.stream_generate(loaded, prompt, **kwargs):
+                 ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 559, in stream_generate
+    yield from _compatible_output(iter(response), hold_content=bool(tools_schema))
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 404, in _compatible_output
+    for chunk in _compatible_events(response):
+                 ~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 394, in _compatible_events
+    raise NativeProtocolError("invalid_stream") from exc
+antigravity_k.engine.provider_adapters.transport_errors.NativeProtocolError: The model provider returned an invalid or incomplete stream.
+_ test_nonstream_protocol_failure_returns_typed_502[data: {"choices": [{"index": 0, "delta": {"content": []}, "finish_reason": null}]}\n\ndata: [DONE]\n\n-invalid_stream-/v1/chat/completions-openrouter] _
+
+terminal_case = (<starlette.testclient.TestClient object at 0x1342a3490>, {'model': 'contract-openrouter', 'project_id': 'default', 'm...f4e455d0a0a', 'response': '{"detail":"The model provider returned an invalid or incomplete stream."}', 'status': 500}])
+route = '/v1/chat/completions'
+payload = b'data: {"choices": [{"index": 0, "delta": {"content": []}, "finish_reason": null}]}\n\ndata: [DONE]\n\n'
+code = 'invalid_stream'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+>       assert response.status_code == 502
+E       assert 500 == 502
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.model_router:model_router.py:239 [contract-openrouter] 사용 불가 마킹 — 쿨다운: 60.0초, 재시도: 0회, 사유: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.model_manager:model_manager.py:749 [contract-openrouter] 단일 모델 추론 실패: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.api.chat:chat.py:1443 Generation error: The model provider returned an invalid or incomplete stream.
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 391, in _compatible_events
+    yield _CompatibleChunk.model_validate_json(payload)
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/pydantic/main.py", line 782, in model_validate_json
+    return cls.__pydantic_validator__.validate_json(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        json_data, strict=strict, extra=extra, context=context, by_alias=by_alias, by_name=by_name
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for _CompatibleChunk
+choices.0.delta.content
+  Input should be a valid string [type=string_type, input_value=[], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/chat.py", line 1417, in chat_completions
+    response_text = manager.generate(prompt=prompt, target=target_model, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py", line 76, in record_generate
+    return generate(*args, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 705, in generate
+    response_text = self._do_generate(loaded, prompt, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 1232, in _do_generate
+    return provider.generate(loaded, prompt, **provider_kwargs)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 466, in generate
+    for chunk in self.stream_generate(loaded, prompt, **kwargs):
+                 ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 559, in stream_generate
+    yield from _compatible_output(iter(response), hold_content=bool(tools_schema))
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 404, in _compatible_output
+    for chunk in _compatible_events(response):
+                 ~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 394, in _compatible_events
+    raise NativeProtocolError("invalid_stream") from exc
+antigravity_k.engine.provider_adapters.transport_errors.NativeProtocolError: The model provider returned an invalid or incomplete stream.
+_ test_nonstream_protocol_failure_returns_typed_502[data: {"choices": [{"index": 0, "delta": {"content": []}, "finish_reason": null}]}\n\ndata: [DONE]\n\n-invalid_stream-/v1/messages-lmstudio] _
+
+terminal_case = (<starlette.testclient.TestClient object at 0x1342a36f0>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...,"message":"Model generation failed: The model provider returned an invalid or incomplete stream."}}', 'status': 529}])
+route = '/v1/messages'
+payload = b'data: {"choices": [{"index": 0, "delta": {"content": []}, "finish_reason": null}]}\n\ndata: [DONE]\n\n'
+code = 'invalid_stream'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+>       assert response.status_code == 502
+E       assert 529 == 502
+E        +  where 529 = <Response [529 ]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.model_router:model_router.py:239 [contract-lmstudio] 사용 불가 마킹 — 쿨다운: 60.0초, 재시도: 0회, 사유: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.model_manager:model_manager.py:749 [contract-lmstudio] 단일 모델 추론 실패: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.api.messages:messages_api.py:518 generate failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 391, in _compatible_events
+    yield _CompatibleChunk.model_validate_json(payload)
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/pydantic/main.py", line 782, in model_validate_json
+    return cls.__pydantic_validator__.validate_json(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        json_data, strict=strict, extra=extra, context=context, by_alias=by_alias, by_name=by_name
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for _CompatibleChunk
+choices.0.delta.content
+  Input should be a valid string [type=string_type, input_value=[], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/messages_api.py", line 514, in create_message
+    text = await run_in_threadpool(_generate)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 2518, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 1002, in run
+    result = context.run(func, *args)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/messages_api.py", line 506, in _generate
+    return manager.generate(
+           ~~~~~~~~~~~~~~~~^
+        prompt=prompt,
+        ^^^^^^^^^^^^^^
+    ...<2 lines>...
+        temperature=temperature,
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py", line 76, in record_generate
+    return generate(*args, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 705, in generate
+    response_text = self._do_generate(loaded, prompt, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 1232, in _do_generate
+    return provider.generate(loaded, prompt, **provider_kwargs)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 466, in generate
+    for chunk in self.stream_generate(loaded, prompt, **kwargs):
+                 ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 559, in stream_generate
+    yield from _compatible_output(iter(response), hold_content=bool(tools_schema))
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 404, in _compatible_output
+    for chunk in _compatible_events(response):
+                 ~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 394, in _compatible_events
+    raise NativeProtocolError("invalid_stream") from exc
+antigravity_k.engine.provider_adapters.transport_errors.NativeProtocolError: The model provider returned an invalid or incomplete stream.
+_ test_nonstream_protocol_failure_returns_typed_502[data: {"choices": [{"index": 0, "delta": {"content": []}, "finish_reason": null}]}\n\ndata: [DONE]\n\n-invalid_stream-/v1/messages-openrouter] _
+
+terminal_case = (<starlette.testclient.TestClient object at 0x1342a2190>, {'model': 'contract-openrouter', 'project_id': 'default', 'm...,"message":"Model generation failed: The model provider returned an invalid or incomplete stream."}}', 'status': 529}])
+route = '/v1/messages'
+payload = b'data: {"choices": [{"index": 0, "delta": {"content": []}, "finish_reason": null}]}\n\ndata: [DONE]\n\n'
+code = 'invalid_stream'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+>       assert response.status_code == 502
+E       assert 529 == 502
+E        +  where 529 = <Response [529 ]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.model_router:model_router.py:239 [contract-openrouter] 사용 불가 마킹 — 쿨다운: 60.0초, 재시도: 0회, 사유: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.model_manager:model_manager.py:749 [contract-openrouter] 단일 모델 추론 실패: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.api.messages:messages_api.py:518 generate failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 391, in _compatible_events
+    yield _CompatibleChunk.model_validate_json(payload)
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/pydantic/main.py", line 782, in model_validate_json
+    return cls.__pydantic_validator__.validate_json(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        json_data, strict=strict, extra=extra, context=context, by_alias=by_alias, by_name=by_name
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for _CompatibleChunk
+choices.0.delta.content
+  Input should be a valid string [type=string_type, input_value=[], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/messages_api.py", line 514, in create_message
+    text = await run_in_threadpool(_generate)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 2518, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 1002, in run
+    result = context.run(func, *args)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/messages_api.py", line 506, in _generate
+    return manager.generate(
+           ~~~~~~~~~~~~~~~~^
+        prompt=prompt,
+        ^^^^^^^^^^^^^^
+    ...<2 lines>...
+        temperature=temperature,
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py", line 76, in record_generate
+    return generate(*args, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 705, in generate
+    response_text = self._do_generate(loaded, prompt, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 1232, in _do_generate
+    return provider.generate(loaded, prompt, **provider_kwargs)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 466, in generate
+    for chunk in self.stream_generate(loaded, prompt, **kwargs):
+                 ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 559, in stream_generate
+    yield from _compatible_output(iter(response), hold_content=bool(tools_schema))
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 404, in _compatible_output
+    for chunk in _compatible_events(response):
+                 ~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 394, in _compatible_events
+    raise NativeProtocolError("invalid_stream") from exc
+antigravity_k.engine.provider_adapters.transport_errors.NativeProtocolError: The model provider returned an invalid or incomplete stream.
+_ test_nonstream_protocol_failure_returns_typed_502[data: {"choices": [{"index": 0, "delta": {"content": "partial"}, "finish_reason": null}]}\n\n-incomplete_stream-/v1/chat/completions-lmstudio] _
+
+terminal_case = (<starlette.testclient.TestClient object at 0x1342a08a0>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...c7d5d7d0a0a', 'response': '{"detail":"The model provider returned an invalid or incomplete stream."}', 'status': 500}])
+route = '/v1/chat/completions'
+payload = b'data: {"choices": [{"index": 0, "delta": {"content": "partial"}, "finish_reason": null}]}\n\n'
+code = 'incomplete_stream'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+>       assert response.status_code == 502
+E       assert 500 == 502
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.model_router:model_router.py:239 [contract-lmstudio] 사용 불가 마킹 — 쿨다운: 60.0초, 재시도: 0회, 사유: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.model_manager:model_manager.py:749 [contract-lmstudio] 단일 모델 추론 실패: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.api.chat:chat.py:1443 Generation error: The model provider returned an invalid or incomplete stream.
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/chat.py", line 1417, in chat_completions
+    response_text = manager.generate(prompt=prompt, target=target_model, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py", line 76, in record_generate
+    return generate(*args, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 705, in generate
+    response_text = self._do_generate(loaded, prompt, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 1232, in _do_generate
+    return provider.generate(loaded, prompt, **provider_kwargs)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 466, in generate
+    for chunk in self.stream_generate(loaded, prompt, **kwargs):
+                 ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 559, in stream_generate
+    yield from _compatible_output(iter(response), hold_content=bool(tools_schema))
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 439, in _compatible_output
+    raise NativeProtocolError("incomplete_stream")
+antigravity_k.engine.provider_adapters.transport_errors.NativeProtocolError: The model provider returned an invalid or incomplete stream.
+_ test_nonstream_protocol_failure_returns_typed_502[data: {"choices": [{"index": 0, "delta": {"content": "partial"}, "finish_reason": null}]}\n\n-incomplete_stream-/v1/chat/completions-openrouter] _
+
+terminal_case = (<starlette.testclient.TestClient object at 0x1342a1f30>, {'model': 'contract-openrouter', 'project_id': 'default', 'm...c7d5d7d0a0a', 'response': '{"detail":"The model provider returned an invalid or incomplete stream."}', 'status': 500}])
+route = '/v1/chat/completions'
+payload = b'data: {"choices": [{"index": 0, "delta": {"content": "partial"}, "finish_reason": null}]}\n\n'
+code = 'incomplete_stream'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+>       assert response.status_code == 502
+E       assert 500 == 502
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.model_router:model_router.py:239 [contract-openrouter] 사용 불가 마킹 — 쿨다운: 60.0초, 재시도: 0회, 사유: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.model_manager:model_manager.py:749 [contract-openrouter] 단일 모델 추론 실패: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.api.chat:chat.py:1443 Generation error: The model provider returned an invalid or incomplete stream.
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/chat.py", line 1417, in chat_completions
+    response_text = manager.generate(prompt=prompt, target=target_model, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py", line 76, in record_generate
+    return generate(*args, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 705, in generate
+    response_text = self._do_generate(loaded, prompt, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 1232, in _do_generate
+    return provider.generate(loaded, prompt, **provider_kwargs)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 466, in generate
+    for chunk in self.stream_generate(loaded, prompt, **kwargs):
+                 ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 559, in stream_generate
+    yield from _compatible_output(iter(response), hold_content=bool(tools_schema))
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 439, in _compatible_output
+    raise NativeProtocolError("incomplete_stream")
+antigravity_k.engine.provider_adapters.transport_errors.NativeProtocolError: The model provider returned an invalid or incomplete stream.
+_ test_nonstream_protocol_failure_returns_typed_502[data: {"choices": [{"index": 0, "delta": {"content": "partial"}, "finish_reason": null}]}\n\n-incomplete_stream-/v1/messages-lmstudio] _
+
+terminal_case = (<starlette.testclient.TestClient object at 0x134237ce0>, {'model': 'contract-lmstudio', 'project_id': 'default', 'mes...,"message":"Model generation failed: The model provider returned an invalid or incomplete stream."}}', 'status': 529}])
+route = '/v1/messages'
+payload = b'data: {"choices": [{"index": 0, "delta": {"content": "partial"}, "finish_reason": null}]}\n\n'
+code = 'incomplete_stream'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+>       assert response.status_code == 502
+E       assert 529 == 502
+E        +  where 529 = <Response [529 ]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.model_router:model_router.py:239 [contract-lmstudio] 사용 불가 마킹 — 쿨다운: 60.0초, 재시도: 0회, 사유: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.model_manager:model_manager.py:749 [contract-lmstudio] 단일 모델 추론 실패: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.api.messages:messages_api.py:518 generate failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/messages_api.py", line 514, in create_message
+    text = await run_in_threadpool(_generate)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 2518, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 1002, in run
+    result = context.run(func, *args)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/messages_api.py", line 506, in _generate
+    return manager.generate(
+           ~~~~~~~~~~~~~~~~^
+        prompt=prompt,
+        ^^^^^^^^^^^^^^
+    ...<2 lines>...
+        temperature=temperature,
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py", line 76, in record_generate
+    return generate(*args, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 705, in generate
+    response_text = self._do_generate(loaded, prompt, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 1232, in _do_generate
+    return provider.generate(loaded, prompt, **provider_kwargs)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 466, in generate
+    for chunk in self.stream_generate(loaded, prompt, **kwargs):
+                 ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 559, in stream_generate
+    yield from _compatible_output(iter(response), hold_content=bool(tools_schema))
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 439, in _compatible_output
+    raise NativeProtocolError("incomplete_stream")
+antigravity_k.engine.provider_adapters.transport_errors.NativeProtocolError: The model provider returned an invalid or incomplete stream.
+_ test_nonstream_protocol_failure_returns_typed_502[data: {"choices": [{"index": 0, "delta": {"content": "partial"}, "finish_reason": null}]}\n\n-incomplete_stream-/v1/messages-openrouter] _
+
+terminal_case = (<starlette.testclient.TestClient object at 0x1342a1f30>, {'model': 'contract-openrouter', 'project_id': 'default', 'm...,"message":"Model generation failed: The model provider returned an invalid or incomplete stream."}}', 'status': 529}])
+route = '/v1/messages'
+payload = b'data: {"choices": [{"index": 0, "delta": {"content": "partial"}, "finish_reason": null}]}\n\n'
+code = 'incomplete_stream'
+
+    @pytest.mark.parametrize("compat_case", ["lmstudio", "openrouter"], indirect=True)
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "payload,code",
+        [
+            (wire(ERROR), "upstream_stream_error"),
+            (wire(frame({"content": []})), "invalid_stream"),
+            (wire(frame({"content": "partial"}), done=False), "incomplete_stream"),
+        ],
+    )
+    def test_nonstream_protocol_failure_returns_typed_502(terminal_case, route, payload, code):
+        client, body, state, captures = terminal_case
+        state["outcome"] = [payload]
+        response = client.post(route, json=body)
+        captures.append({"upstream_hex": payload.hex(), "response": response.text, "status": response.status_code})
+>       assert response.status_code == 502
+E       assert 529 == 502
+E        +  where 529 = <Response [529 ]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_compatible_stream_terminal_contract.py:247: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.model_router:model_router.py:239 [contract-openrouter] 사용 불가 마킹 — 쿨다운: 60.0초, 재시도: 0회, 사유: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.model_manager:model_manager.py:749 [contract-openrouter] 단일 모델 추론 실패: The model provider returned an invalid or incomplete stream.
+ERROR    antigravity_k.api.messages:messages_api.py:518 generate failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/messages_api.py", line 514, in create_message
+    text = await run_in_threadpool(_generate)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 2518, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 1002, in run
+    result = context.run(func, *args)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/api/routes/messages_api.py", line 506, in _generate
+    return manager.generate(
+           ~~~~~~~~~~~~~~~~^
+        prompt=prompt,
+        ^^^^^^^^^^^^^^
+    ...<2 lines>...
+        temperature=temperature,
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_chat_structured_output_contract.py", line 76, in record_generate
+    return generate(*args, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 705, in generate
+    response_text = self._do_generate(loaded, prompt, **kwargs)
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/model_manager.py", line 1232, in _do_generate
+    return provider.generate(loaded, prompt, **provider_kwargs)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 466, in generate
+    for chunk in self.stream_generate(loaded, prompt, **kwargs):
+                 ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 559, in stream_generate
+    yield from _compatible_output(iter(response), hold_content=bool(tools_schema))
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 439, in _compatible_output
+    raise NativeProtocolError("incomplete_stream")
+antigravity_k.engine.provider_adapters.transport_errors.NativeProtocolError: The model provider returned an invalid or incomplete stream.
+=============================== warnings summary ===============================
+tests/test_compatible_stream_terminal_contract.py::test_nonstream_protocol_failure_returns_typed_502[data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n-upstream_stream_error-/v1/chat/completions-lmstudio]
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_compatible_stream_terminal_contract.py::test_nonstream_protocol_failure_returns_typed_502[data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n-upstream_stream_error-/v1/chat/completions-lmstudio]
+FAILED tests/test_compatible_stream_terminal_contract.py::test_nonstream_protocol_failure_returns_typed_502[data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n-upstream_stream_error-/v1/chat/completions-openrouter]
+FAILED tests/test_compatible_stream_terminal_contract.py::test_nonstream_protocol_failure_returns_typed_502[data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n-upstream_stream_error-/v1/messages-lmstudio]
+FAILED tests/test_compatible_stream_terminal_contract.py::test_nonstream_protocol_failure_returns_typed_502[data: {"error": {"code": 500, "message": "private upstream detail"}}\n\ndata: [DONE]\n\n-upstream_stream_error-/v1/messages-openrouter]
+FAILED tests/test_compatible_stream_terminal_contract.py::test_nonstream_protocol_failure_returns_typed_502[data: {"choices": [{"index": 0, "delta": {"content": []}, "finish_reason": null}]}\n\ndata: [DONE]\n\n-invalid_stream-/v1/chat/completions-lmstudio]
+FAILED tests/test_compatible_stream_terminal_contract.py::test_nonstream_protocol_failure_returns_typed_502[data: {"choices": [{"index": 0, "delta": {"content": []}, "finish_reason": null}]}\n\ndata: [DONE]\n\n-invalid_stream-/v1/chat/completions-openrouter]
+FAILED tests/test_compatible_stream_terminal_contract.py::test_nonstream_protocol_failure_returns_typed_502[data: {"choices": [{"index": 0, "delta": {"content": []}, "finish_reason": null}]}\n\ndata: [DONE]\n\n-invalid_stream-/v1/messages-lmstudio]
+FAILED tests/test_compatible_stream_terminal_contract.py::test_nonstream_protocol_failure_returns_typed_502[data: {"choices": [{"index": 0, "delta": {"content": []}, "finish_reason": null}]}\n\ndata: [DONE]\n\n-invalid_stream-/v1/messages-openrouter]
+FAILED tests/test_compatible_stream_terminal_contract.py::test_nonstream_protocol_failure_returns_typed_502[data: {"choices": [{"index": 0, "delta": {"content": "partial"}, "finish_reason": null}]}\n\n-incomplete_stream-/v1/chat/completions-lmstudio]
+FAILED tests/test_compatible_stream_terminal_contract.py::test_nonstream_protocol_failure_returns_typed_502[data: {"choices": [{"index": 0, "delta": {"content": "partial"}, "finish_reason": null}]}\n\n-incomplete_stream-/v1/chat/completions-openrouter]
+FAILED tests/test_compatible_stream_terminal_contract.py::test_nonstream_protocol_failure_returns_typed_502[data: {"choices": [{"index": 0, "delta": {"content": "partial"}, "finish_reason": null}]}\n\n-incomplete_stream-/v1/messages-lmstudio]
+FAILED tests/test_compatible_stream_terminal_contract.py::test_nonstream_protocol_failure_returns_typed_502[data: {"choices": [{"index": 0, "delta": {"content": "partial"}, "finish_reason": null}]}\n\n-incomplete_stream-/v1/messages-openrouter]
+12 failed, 175 deselected, 1 warning in 1.96s

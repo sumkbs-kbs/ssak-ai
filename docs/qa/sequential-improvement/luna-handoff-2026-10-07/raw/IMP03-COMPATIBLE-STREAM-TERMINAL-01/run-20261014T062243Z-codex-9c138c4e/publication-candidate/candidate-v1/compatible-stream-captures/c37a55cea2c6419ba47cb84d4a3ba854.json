@@ -1,0 +1,55 @@
+{
+  "nodeid": "tests/test_compatible_stream_terminal_contract.py::test_fragmented_tools_require_terminal_before_emission[openrouter]",
+  "provider": "openrouter",
+  "captures": [
+    {
+      "upstream_hex": "646174613a207b2263686f69636573223a205b7b22696e646578223a20302c202264656c7461223a207b22636f6e74656e74223a206e756c6c2c2022746f6f6c5f63616c6c73223a205b7b22696e646578223a20302c202266756e6374696f6e223a207b226e616d65223a2022726561645f222c2022617267756d656e7473223a20227b5c2266696c655f227d7d5d7d2c202266696e6973685f726561736f6e223a206e756c6c7d5d7d0a0a646174613a207b2263686f69636573223a205b7b22696e646578223a20302c202264656c7461223a207b22746f6f6c5f63616c6c73223a205b7b22696e646578223a20302c202266756e6374696f6e223a207b226e616d65223a202266696c65222c2022617267756d656e7473223a2022706174685c223a5c2273656e74696e656c5c227d227d7d5d7d2c202266696e6973685f726561736f6e223a2022746f6f6c5f63616c6c73227d5d7d0a0a646174613a205b444f4e455d0a0a",
+      "chunks": [
+        "\n<tool_call>\n{\"name\": \"read_file\", \"arguments\": {\"file_path\": \"sentinel\"}}\n</tool_call>\n"
+      ]
+    }
+  ],
+  "wire": [
+    {
+      "url": "http://127.0.0.1:19191/v1/chat/completions",
+      "body": {
+        "model": "contract-openrouter",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Read sentinel"
+          }
+        ],
+        "stream": true,
+        "temperature": 0.7,
+        "max_tokens": 4096,
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "parameters": {
+                "type": "object"
+              }
+            }
+          }
+        ],
+        "tool_choice": "auto"
+      },
+      "timeout": 300
+    }
+  ],
+  "usage": [
+    {
+      "model_name": "contract-openrouter",
+      "tokens_in": 3,
+      "tokens_out": 22,
+      "latency_ms": 0.18596649169921875,
+      "success": true,
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted": 0,
+  "sleeps": []
+}

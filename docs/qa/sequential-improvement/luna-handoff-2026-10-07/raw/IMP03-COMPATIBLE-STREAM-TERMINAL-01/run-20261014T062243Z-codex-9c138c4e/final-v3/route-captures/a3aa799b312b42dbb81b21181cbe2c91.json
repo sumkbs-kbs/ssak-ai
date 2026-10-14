@@ -1,0 +1,9 @@
+{
+  "nodeid": "tests/test_compatible_stream_terminal_contract.py::test_real_tool_loop_holds_incomplete_tools_and_never_replays[True-lmstudio]",
+  "wire": [],
+  "manager_calls": 0,
+  "provider_calls": 0,
+  "metadata_calls": [],
+  "upstream_content": "{\"red_circles\":2,\"blue_squares\":1}",
+  "responses": []
+}

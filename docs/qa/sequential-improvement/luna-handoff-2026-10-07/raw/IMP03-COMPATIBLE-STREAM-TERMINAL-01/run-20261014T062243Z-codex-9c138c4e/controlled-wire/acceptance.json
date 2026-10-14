@@ -1,0 +1,23 @@
+{
+  "recorded_at": "2026-10-14T06:32:56.595335+00:00",
+  "scope": "LMStudio-compatible ASGI streaming product and controlled loopback HTTP200 SSE error; no model inference",
+  "product_post_limit": 1,
+  "provider_post_limit": 1,
+  "expected_product_status": 200,
+  "expected_upstream_status": 200,
+  "expected_error_type": "provider_protocol_error",
+  "expected_error_code": "upstream_stream_error",
+  "expected_success_usage": 0,
+  "expected_failed_usage": 1,
+  "expected_assistant_persistence": 0,
+  "expected_inference_calls": 0,
+  "source_sha256": {
+    "src/antigravity_k/api/routes/chat.py": "79cb99a0ece7bffee7c85b7bd7e1444a77b6b5934fab8e5a80ba38e9e38b1100",
+    "src/antigravity_k/api/routes/messages_api.py": "b1ea96a88aa1a4f30430a7b2b4dbbb4dfa81997786fa8373d016ed6ef607b6c9",
+    "src/antigravity_k/engine/protocol_translator.py": "f8d42ce763c6e92b6746d67436c1f40b0f4110a86683f8206738042890da24f8",
+    "src/antigravity_k/engine/model_manager.py": "cf0867a8b8a934eddfad3ffcfc204781089f5960e30765c8cba6c26802bf1b7a",
+    "src/antigravity_k/engine/provider_adapters/inference_providers.py": "d12b348d181820807eb6493e072723b475cf2440182eeb60bfeab71a9a0bdf11",
+    "src/antigravity_k/engine/provider_adapters/transport_errors.py": "6b936e5de490edfe6ef7630187ed98517c2877533c3570c74e8eef7455581ac2",
+    "src/antigravity_k/tools/egress_policy.py": "07e53cef7c3b2fdab320ac03fc966a9a442439a0feccab256e1245ab3130aa93"
+  }
+}
