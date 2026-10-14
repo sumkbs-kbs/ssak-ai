@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import json
 import os
 import subprocess
+from io import BytesIO
 from pathlib import Path
 from typing import Final
+from urllib.request import Request
 
+from pytest import MonkeyPatch
 from typer.testing import CliRunner
 
 from antigravity_k.cli import app
@@ -49,11 +53,27 @@ def test_module_cli_models_includes_default_local_qwen_profile() -> None:
     assert "Ollama" in result.stdout
 
 
-def test_model_list_includes_models_discovered_from_local_backends() -> None:
-    result = _run_cli("model", "list")
+def test_model_list_includes_models_discovered_from_local_backends(monkeypatch: MonkeyPatch, tmp_path: Path) -> None:
+    requests: list[str] = []
 
-    assert result.returncode == 0, result.stderr
+    def metadata_response(request: Request, *, timeout: float) -> BytesIO:
+        requests.append(request.full_url)
+        if request.full_url.endswith("/api/tags"):
+            return BytesIO(
+                json.dumps(
+                    {"models": [{"name": "llava:latest", "details": {"family": "llava", "parameter_size": "7B"}}]}
+                ).encode()
+            )
+        return BytesIO(b'{"data": []}')
+
+    monkeypatch.setenv("AGK_LOCAL_MODEL_DIRS", str(tmp_path))
+    monkeypatch.setattr("antigravity_k.engine.local_model_discovery.safe_urlopen", metadata_response)
+    result = CliRunner().invoke(app, ["model", "list"])
+
+    assert result.exit_code == 0, result.output
+    assert any(url.endswith("/api/tags") for url in requests)
     assert "llava:latest" in result.stdout
+    assert result.stdout.index("Vision Models") < result.stdout.index("llava:latest")
 
 
 def test_model_list_min_quality_filters_to_balanced_or_better() -> None:
