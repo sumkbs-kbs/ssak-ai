@@ -1,0 +1,17 @@
+{
+  "nodeid": "tests/test_native_transport_error_contract.py::test_native_transport_failure_is_non_success_once[failure0-502-503-/v1/chat/completions]",
+  "native_attempts": [
+    "http://localhost:11434/api/chat"
+  ],
+  "usage": [
+    {
+      "model_name": "qwen3.8",
+      "latency_ms": 14.0228271484375,
+      "success": false,
+      "error": "The model provider returned an unsuccessful HTTP response.",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0
+}

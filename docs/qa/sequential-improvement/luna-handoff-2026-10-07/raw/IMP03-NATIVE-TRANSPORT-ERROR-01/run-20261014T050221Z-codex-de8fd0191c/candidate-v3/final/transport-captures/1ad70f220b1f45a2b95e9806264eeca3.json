@@ -1,0 +1,17 @@
+{
+  "nodeid": "tests/test_native_transport_error_contract.py::test_transport_error_is_distinct_from_structured_validation",
+  "native_attempts": [
+    "http://localhost:11434/api/chat"
+  ],
+  "usage": [
+    {
+      "model_name": "qwen3.8",
+      "latency_ms": 0.07891654968261719,
+      "success": false,
+      "error": "The model provider returned an unsuccessful HTTP response.",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "persisted_turns": 0
+}

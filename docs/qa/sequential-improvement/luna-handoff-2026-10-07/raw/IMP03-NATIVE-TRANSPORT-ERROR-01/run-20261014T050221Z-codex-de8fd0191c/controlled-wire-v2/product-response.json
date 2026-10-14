@@ -1,0 +1,15 @@
+{
+  "status": 502,
+  "headers": {
+    "content-length": "168",
+    "content-type": "application/json"
+  },
+  "json": {
+    "detail": {
+      "type": "provider_transport_error",
+      "code": "upstream_http_error",
+      "message": "The model provider returned an unsuccessful HTTP response.",
+      "upstream_status": 503
+    }
+  }
+}

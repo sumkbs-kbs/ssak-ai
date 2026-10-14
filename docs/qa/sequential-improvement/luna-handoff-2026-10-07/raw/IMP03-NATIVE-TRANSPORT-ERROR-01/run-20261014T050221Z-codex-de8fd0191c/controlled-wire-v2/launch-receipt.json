@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-TRANSPORT-ERROR-01/run-20261014T050221Z-codex-de8fd0191c/controlled-wire-v2/observe_once.py"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-TRANSPORT-ERROR-01/run-20261014T050221Z-codex-de8fd0191c/controlled-wire-v2",
+  "source_path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src:/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "started_unix": 1791954936.9060009,
+  "ended_unix": 1791954938.302645,
+  "exit_code": 0,
+  "timeout_seconds": 20,
+  "stdout_sha256": "fbf028668af706819122168a7112ce4842a806d5fe3414313878903f2a208b7b",
+  "stderr_sha256": "00634ddb87df9f4b5797b1ff76d2b651b3c4d85c14641dfa1cca6db0c713273e",
+  "observer_sha256": "2eaffe5c249d1625b2c2642fccac8a2c1b5698b6e06a006529e62eba21b5c748"
+}

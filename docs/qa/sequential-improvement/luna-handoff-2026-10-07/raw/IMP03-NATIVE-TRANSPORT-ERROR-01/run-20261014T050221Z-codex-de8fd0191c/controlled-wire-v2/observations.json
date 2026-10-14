@@ -1,0 +1,43 @@
+{
+  "status": 502,
+  "body": {
+    "detail": {
+      "type": "provider_transport_error",
+      "code": "upstream_http_error",
+      "message": "The model provider returned an unsuccessful HTTP response.",
+      "upstream_status": 503
+    }
+  },
+  "product_asgi_posts": 1,
+  "provider_http_posts": 1,
+  "provider_requests": [
+    {
+      "method": "POST",
+      "path": "/api/chat",
+      "bytes": 407,
+      "sha256": "2ee10387b8e371fdcd567ce74ebc8b5de2cedd5a830aafdc7ff19bdf5198f69f"
+    }
+  ],
+  "provider_response_status": 503,
+  "retry_posts": 0,
+  "usage": [
+    {
+      "model_name": "qwen3.8",
+      "timestamp": 1791954938.07725,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "latency_ms": 8.420944213867188,
+      "success": false,
+      "error": "The model provider returned an unsuccessful HTTP response.",
+      "combo_name": "",
+      "fallback_depth": 0
+    }
+  ],
+  "success_usage": 0,
+  "failure_usage": 1,
+  "assistant_records": 0,
+  "model_inference": 0,
+  "real_ollama": 0,
+  "product_external_http": 0,
+  "source_changed_during_observation": []
+}

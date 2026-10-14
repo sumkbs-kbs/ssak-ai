@@ -1,0 +1,70 @@
+FF.                                                                      [100%]
+=================================== FAILURES ===================================
+__________ test_native_failure_through_real_safe_helper_has_no_retry ___________
+
+transport_case = (<starlette.testclient.TestClient object at 0x1291a81a0>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{... [], ['http://localhost:11434/api/chat', 'http://localhost:11434/api/chat', 'http://localhost:11434/api/chat'], ['ok'])
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10aedf680>
+
+    def test_native_failure_through_real_safe_helper_has_no_retry(transport_case, monkeypatch):
+        from antigravity_k.engine.provider_adapters import inference_providers
+        from antigravity_k.tools import egress_policy
+    
+        client, body, records, persistence, attempts, _ = transport_case
+        sleeps = []
+        error = HTTPError("http://127.0.0.1:11434/api/chat", 503, "private", Message(), None)
+    
+        def terminal(request, **kwargs):
+            attempts.append(request.full_url)
+            raise error
+    
+        monkeypatch.setattr(inference_providers, "safe_urlopen", egress_policy.safe_urlopen)
+        monkeypatch.setattr(egress_policy.urllib.request, "urlopen", terminal)
+        monkeypatch.setattr(egress_policy, "_retry_sleep", sleeps.append)
+        response = client.post("/v1/chat/completions", json=body)
+        assert response.status_code == 502
+>       assert len(attempts) == 1
+E       AssertionError: assert 3 == 1
+E        +  where 3 = len(['http://localhost:11434/api/chat', 'http://localhost:11434/api/chat', 'http://localhost:11434/api/chat'])
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py:179: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:105 [egress] HTTP 503 — 1.0초 후 재시도 (1/2) http://localhost:11434/api/chat
+WARNING  antigravity_k.tools.egress_policy:egress_policy.py:105 [egress] HTTP 503 — 2.0초 후 재시도 (2/2) http://localhost:11434/api/chat
+WARNING  antigravity_k.model_router:model_router.py:239 [qwen3.8] 사용 불가 마킹 — 쿨다운: 60.0초, 재시도: 0회, 사유: The model provider returned an unsuccessful HTTP response.
+ERROR    antigravity_k.model_manager:model_manager.py:749 [qwen3.8] 단일 모델 추론 실패: The model provider returned an unsuccessful HTTP response.
+___________ test_safe_helper_no_retry_preserves_original_http_error ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x129161f20>
+
+    def test_safe_helper_no_retry_preserves_original_http_error(monkeypatch):
+        from antigravity_k.tools import egress_policy
+    
+        calls, sleeps = [], []
+        error = HTTPError("http://127.0.0.1/api/chat", 503, "private", Message(), None)
+    
+        def terminal(*args, **kwargs):
+            calls.append(args)
+            raise error
+    
+        monkeypatch.setattr(egress_policy.urllib.request, "urlopen", terminal)
+        monkeypatch.setattr(egress_policy, "_retry_sleep", sleeps.append)
+        with pytest.raises(HTTPError) as captured:
+>           egress_policy.safe_urlopen(Request(error.url, data=b"{}"), max_retries=0)
+E           TypeError: safe_urlopen() got an unexpected keyword argument 'max_retries'
+
+tests/test_native_transport_error_contract.py:198: TypeError
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1464
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1464: PytestConfigWarning: Unknown config option: asyncio_mode
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+tests/test_native_transport_error_contract.py::test_native_failure_through_real_safe_helper_has_no_retry
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_native_transport_error_contract.py::test_native_failure_through_real_safe_helper_has_no_retry
+FAILED tests/test_native_transport_error_contract.py::test_safe_helper_no_retry_preserves_original_http_error
+2 failed, 1 passed, 17 deselected, 2 warnings in 1.53s

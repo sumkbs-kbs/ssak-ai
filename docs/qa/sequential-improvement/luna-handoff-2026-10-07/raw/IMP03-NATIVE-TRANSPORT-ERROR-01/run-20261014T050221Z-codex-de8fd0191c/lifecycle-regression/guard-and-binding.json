@@ -1,0 +1,26 @@
+{
+  "pytest_exit": 0,
+  "physical_socket_attempts": [
+    "(('localhost', 11434), 2, None)",
+    "(('localhost', 11434), 2, None)",
+    "(('localhost', 11434), 2, None)",
+    "(('localhost', 11434), 2, None)",
+    "(('localhost', 11434), 2, None)",
+    "(('localhost', 11434), 2, None)"
+  ],
+  "subprocess_launches": [
+    "('file', ['file', '-b', '/Users/mr.k/miniforge3/bin/python3.13'], None)",
+    "('git', ['git', 'rev-parse', '--abbrev-ref', 'HEAD'], PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-TRANSPORT-ERROR-01/run-20261014T050221Z-codex-de8fd0191c/lifecycle-regression/state/pytest-temp/test_mid_token_aclose_from_oth0'))",
+    "('git', ['git', 'status', '--short'], PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-TRANSPORT-ERROR-01/run-20261014T050221Z-codex-de8fd0191c/lifecycle-regression/state/pytest-temp/test_mid_token_aclose_from_oth0'))",
+    "('git', ['git', 'diff', '--name-only', 'HEAD~1', 'HEAD'], PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-TRANSPORT-ERROR-01/run-20261014T050221Z-codex-de8fd0191c/lifecycle-regression/state/pytest-temp/test_mid_token_aclose_from_oth0'))",
+    "('git', ['git', 'rev-parse', '--abbrev-ref', 'HEAD'], PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-TRANSPORT-ERROR-01/run-20261014T050221Z-codex-de8fd0191c/lifecycle-regression/state/pytest-temp/test_mid_token_aclose_from_oth0'))",
+    "('git', ['git', 'status', '--short'], PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-TRANSPORT-ERROR-01/run-20261014T050221Z-codex-de8fd0191c/lifecycle-regression/state/pytest-temp/test_mid_token_aclose_from_oth0'))",
+    "('git', ['git', 'diff', '--name-only', 'HEAD~1', 'HEAD'], PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-TRANSPORT-ERROR-01/run-20261014T050221Z-codex-de8fd0191c/lifecycle-regression/state/pytest-temp/test_mid_token_aclose_from_oth0'))",
+    "('git', ['git', 'rev-parse', '--abbrev-ref', 'HEAD'], PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-TRANSPORT-ERROR-01/run-20261014T050221Z-codex-de8fd0191c/lifecycle-regression/state/pytest-temp/test_inflight_model_pull_cance0'))",
+    "('git', ['git', 'status', '--short'], PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-TRANSPORT-ERROR-01/run-20261014T050221Z-codex-de8fd0191c/lifecycle-regression/state/pytest-temp/test_inflight_model_pull_cance0'))",
+    "('git', ['git', 'diff', '--name-only', 'HEAD~1', 'HEAD'], PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP03-NATIVE-TRANSPORT-ERROR-01/run-20261014T050221Z-codex-de8fd0191c/lifecycle-regression/state/pytest-temp/test_inflight_model_pull_cance0'))",
+    "('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', ['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python', '-c', 'import time; time.sleep(30)'], None)"
+  ],
+  "source_drift": [],
+  "limits": "Existing mocked model/runtime boundaries with real threads, SQLite and owned sleep child; no OS restart/live inference claim"
+}

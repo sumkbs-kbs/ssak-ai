@@ -1,0 +1,111 @@
+{
+  "task": "IMP-03-NATIVE-TRANSPORT-ERROR-01",
+  "candidate": "v3",
+  "status": "COMPLETE_OFFLINE",
+  "review": "PENDING",
+  "supersedes": "../result.json direct retry0 evidence claim; previous artifacts preserved",
+  "source_sha256": {
+    "src/antigravity_k/engine/provider_adapters/inference_providers.py": "12a416a0a8b9d24734be022a2615269fcfe43ed108495328bb85db0b10292cc0",
+    "src/antigravity_k/engine/provider_adapters/transport_errors.py": "3b090969a16ab63faa0c1945fd23aa6cefddd0e568a9413402cc8441f0c3502a",
+    "src/antigravity_k/api/routes/chat.py": "88bd3e03972d9cc3f62c8553d83ddc05fba0edbe81172334a851e5bccd5e1fe2",
+    "src/antigravity_k/api/routes/messages_api.py": "c3158f44bd35d68259832cf094e022bc2c2848c44ea42983d339574238b61f48",
+    "tests/test_native_transport_error_contract.py": "44032cc1666db8909c6288fe6593338862b86c25128449bba52f721987933b32",
+    "src/antigravity_k/tools/egress_policy.py": "07e53cef7c3b2fdab320ac03fc966a9a442439a0feccab256e1245ab3130aa93"
+  },
+  "first_validation": {
+    "tests": 76,
+    "passed": 75,
+    "failed": 1,
+    "reason": "pytest_asyncio not loaded with plugin autoload disabled",
+    "junit": "final/junit.xml"
+  },
+  "failed_case_repair": {
+    "passed": 1,
+    "failed": 0,
+    "junit": "async-repair-junit.xml",
+    "receipt": "async-repair-receipt.json"
+  },
+  "final_scenarios_satisfied": 76,
+  "single_green_full_invocation": false,
+  "statics": [
+    {
+      "name": "lint",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "check",
+        "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+        "src/antigravity_k/engine/provider_adapters/transport_errors.py",
+        "src/antigravity_k/api/routes/chat.py",
+        "src/antigravity_k/api/routes/messages_api.py",
+        "tests/test_native_transport_error_contract.py",
+        "src/antigravity_k/tools/egress_policy.py"
+      ],
+      "exit_code": 0,
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai"
+    },
+    {
+      "name": "format",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/ruff",
+        "format",
+        "--check",
+        "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+        "src/antigravity_k/engine/provider_adapters/transport_errors.py",
+        "src/antigravity_k/api/routes/chat.py",
+        "src/antigravity_k/api/routes/messages_api.py",
+        "tests/test_native_transport_error_contract.py",
+        "src/antigravity_k/tools/egress_policy.py"
+      ],
+      "exit_code": 0,
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai"
+    },
+    {
+      "name": "types",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/basedpyright",
+        "--pythonpath",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "--level",
+        "error",
+        "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+        "src/antigravity_k/engine/provider_adapters/transport_errors.py",
+        "src/antigravity_k/api/routes/chat.py",
+        "src/antigravity_k/api/routes/messages_api.py",
+        "tests/test_native_transport_error_contract.py",
+        "src/antigravity_k/tools/egress_policy.py"
+      ],
+      "exit_code": 0,
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai"
+    },
+    {
+      "name": "compile",
+      "argv": [
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/bin/python",
+        "-c",
+        "import pathlib,sys; [compile(pathlib.Path(p).read_bytes(),p,'exec') for p in sys.argv[1:]]",
+        "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+        "src/antigravity_k/engine/provider_adapters/transport_errors.py",
+        "src/antigravity_k/api/routes/chat.py",
+        "src/antigravity_k/api/routes/messages_api.py",
+        "tests/test_native_transport_error_contract.py",
+        "src/antigravity_k/tools/egress_policy.py"
+      ],
+      "exit_code": 0,
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai"
+    }
+  ],
+  "red": {
+    "failed": 2,
+    "passed": 1,
+    "junit": "red-junit.xml",
+    "test_source": "red-test-source.py"
+  },
+  "root_live_observation": "separate owner; not included",
+  "worker_physical_network": 0,
+  "patches": [
+    "task-only.patch",
+    "retry-delta.patch"
+  ],
+  "reconstruction": "patch-reconstruction.json",
+  "commit_push": "NOT_PERFORMED_BY_WORKER"
+}

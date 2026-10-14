@@ -1,0 +1,352 @@
+FFFFFFFFF....                                                            [100%]
+=================================== FAILURES ===================================
+_ test_native_transport_failure_is_non_success_once[failure0-502-503-/v1/chat/completions] _
+
+transport_case = (<starlette.testclient.TestClient object at 0x1303dfe00>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...rror 503: private server detail'}],)], ['http://localhost:11434/api/chat'], [<HTTPError 503: 'private server detail'>])
+route = '/v1/chat/completions'
+failure = <HTTPError 503: 'private server detail'>, status = 502, upstream = 503
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "failure,status,upstream",
+        [
+            (HTTPError("http://secret.invalid", 503, "private server detail", Message(), None), 502, 503),
+            (URLError(ConnectionRefusedError("private endpoint")), 503, None),
+            (TimeoutError("private endpoint"), 504, None),
+            (URLError(TimeoutError("private endpoint")), 504, None),
+        ],
+    )
+    def test_native_transport_failure_is_non_success_once(transport_case, route, failure, status, upstream):
+        client, body, records, persistence, attempts, outcome = transport_case
+        outcome[0] = failure
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"chatcmpl-0dd96686477a","object":"chat.completion","created":1791954269,"model":"qwen3.8","choices":[{"index":0,"message":{"role":"assistant","content":"[API Error for qwen3.8] HTTP Error 503: private server detail"},"finish_reason":"stop"}],"usage":{"prompt_tokens":7,"completion_tokens":15,"total_tokens":22}}
+E       assert 200 == 502
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py:65: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:706 Local native API generation failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 690, in _generate_native
+    with safe_urlopen(request, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py", line 39, in terminal
+    raise outcome[0]
+urllib.error.HTTPError: HTTP Error 503: private server detail
+_ test_native_transport_failure_is_non_success_once[failure0-502-503-/v1/messages] _
+
+transport_case = (<starlette.testclient.TestClient object at 0x1306e9f90>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...cy_ms': 0.4322528839111328, ...}], [], ['http://localhost:11434/api/chat'], [<HTTPError 503: 'private server detail'>])
+route = '/v1/messages', failure = <HTTPError 503: 'private server detail'>
+status = 502, upstream = 503
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "failure,status,upstream",
+        [
+            (HTTPError("http://secret.invalid", 503, "private server detail", Message(), None), 502, 503),
+            (URLError(ConnectionRefusedError("private endpoint")), 503, None),
+            (TimeoutError("private endpoint"), 504, None),
+            (URLError(TimeoutError("private endpoint")), 504, None),
+        ],
+    )
+    def test_native_transport_failure_is_non_success_once(transport_case, route, failure, status, upstream):
+        client, body, records, persistence, attempts, outcome = transport_case
+        outcome[0] = failure
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"msg_a17a874e5ef44438a78b1ab1","type":"message","role":"assistant","model":"qwen3.8","content":[{"type":"text","text":"[API Error for qwen3.8] HTTP Error 503: private server detail"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":1,"output_tokens":20}}
+E       assert 200 == 502
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py:65: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:706 Local native API generation failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 690, in _generate_native
+    with safe_urlopen(request, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py", line 39, in terminal
+    raise outcome[0]
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 690, in _generate_native
+    with safe_urlopen(request, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py", line 39, in terminal
+    raise outcome[0]
+urllib.error.HTTPError: HTTP Error 503: private server detail
+_ test_native_transport_failure_is_non_success_once[failure1-503-None-/v1/chat/completions] _
+
+transport_case = (<starlette.testclient.TestClient object at 0x13078ec10>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...r private endpoint>'}],)], ['http://localhost:11434/api/chat'], [URLError(ConnectionRefusedError('private endpoint'))])
+route = '/v1/chat/completions'
+failure = URLError(ConnectionRefusedError('private endpoint')), status = 503
+upstream = None
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "failure,status,upstream",
+        [
+            (HTTPError("http://secret.invalid", 503, "private server detail", Message(), None), 502, 503),
+            (URLError(ConnectionRefusedError("private endpoint")), 503, None),
+            (TimeoutError("private endpoint"), 504, None),
+            (URLError(TimeoutError("private endpoint")), 504, None),
+        ],
+    )
+    def test_native_transport_failure_is_non_success_once(transport_case, route, failure, status, upstream):
+        client, body, records, persistence, attempts, outcome = transport_case
+        outcome[0] = failure
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"chatcmpl-64c856de24cd","object":"chat.completion","created":1791954269,"model":"qwen3.8","choices":[{"index":0,"message":{"role":"assistant","content":"[API Error for qwen3.8] <urlopen error private endpoint>"},"finish_reason":"stop"}],"usage":{"prompt_tokens":7,"completion_tokens":14,"total_tokens":21}}
+E       assert 200 == 503
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py:65: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:706 Local native API generation failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 690, in _generate_native
+    with safe_urlopen(request, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py", line 39, in terminal
+    raise outcome[0]
+urllib.error.URLError: <urlopen error private endpoint>
+_ test_native_transport_failure_is_non_success_once[failure1-503-None-/v1/messages] _
+
+transport_case = (<starlette.testclient.TestClient object at 0x1307c4b00>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...91670227050781, ...}], [], ['http://localhost:11434/api/chat'], [URLError(ConnectionRefusedError('private endpoint'))])
+route = '/v1/messages'
+failure = URLError(ConnectionRefusedError('private endpoint')), status = 503
+upstream = None
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "failure,status,upstream",
+        [
+            (HTTPError("http://secret.invalid", 503, "private server detail", Message(), None), 502, 503),
+            (URLError(ConnectionRefusedError("private endpoint")), 503, None),
+            (TimeoutError("private endpoint"), 504, None),
+            (URLError(TimeoutError("private endpoint")), 504, None),
+        ],
+    )
+    def test_native_transport_failure_is_non_success_once(transport_case, route, failure, status, upstream):
+        client, body, records, persistence, attempts, outcome = transport_case
+        outcome[0] = failure
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"msg_abf9b3f1d1234158a563a120","type":"message","role":"assistant","model":"qwen3.8","content":[{"type":"text","text":"[API Error for qwen3.8] <urlopen error private endpoint>"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":1,"output_tokens":18}}
+E       assert 200 == 503
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py:65: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:706 Local native API generation failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 690, in _generate_native
+    with safe_urlopen(request, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py", line 39, in terminal
+    raise outcome[0]
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 690, in _generate_native
+    with safe_urlopen(request, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py", line 39, in terminal
+    raise outcome[0]
+urllib.error.URLError: <urlopen error private endpoint>
+_ test_native_transport_failure_is_non_success_once[failure2-504-None-/v1/chat/completions] _
+
+transport_case = (<starlette.testclient.TestClient object at 0x1307c7950>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...API Error for qwen3.8] private endpoint'}],)], ['http://localhost:11434/api/chat'], [TimeoutError('private endpoint')])
+route = '/v1/chat/completions', failure = TimeoutError('private endpoint')
+status = 504, upstream = None
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "failure,status,upstream",
+        [
+            (HTTPError("http://secret.invalid", 503, "private server detail", Message(), None), 502, 503),
+            (URLError(ConnectionRefusedError("private endpoint")), 503, None),
+            (TimeoutError("private endpoint"), 504, None),
+            (URLError(TimeoutError("private endpoint")), 504, None),
+        ],
+    )
+    def test_native_transport_failure_is_non_success_once(transport_case, route, failure, status, upstream):
+        client, body, records, persistence, attempts, outcome = transport_case
+        outcome[0] = failure
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"chatcmpl-467f269083be","object":"chat.completion","created":1791954269,"model":"qwen3.8","choices":[{"index":0,"message":{"role":"assistant","content":"[API Error for qwen3.8] private endpoint"},"finish_reason":"stop"}],"usage":{"prompt_tokens":7,"completion_tokens":10,"total_tokens":17}}
+E       assert 200 == 504
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py:65: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:706 Local native API generation failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 690, in _generate_native
+    with safe_urlopen(request, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py", line 39, in terminal
+    raise outcome[0]
+TimeoutError: private endpoint
+_ test_native_transport_failure_is_non_success_once[failure2-504-None-/v1/messages] _
+
+transport_case = (<starlette.testclient.TestClient object at 0x1307e6060>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...10, 'latency_ms': 0.40435791015625, ...}], [], ['http://localhost:11434/api/chat'], [TimeoutError('private endpoint')])
+route = '/v1/messages', failure = TimeoutError('private endpoint'), status = 504
+upstream = None
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "failure,status,upstream",
+        [
+            (HTTPError("http://secret.invalid", 503, "private server detail", Message(), None), 502, 503),
+            (URLError(ConnectionRefusedError("private endpoint")), 503, None),
+            (TimeoutError("private endpoint"), 504, None),
+            (URLError(TimeoutError("private endpoint")), 504, None),
+        ],
+    )
+    def test_native_transport_failure_is_non_success_once(transport_case, route, failure, status, upstream):
+        client, body, records, persistence, attempts, outcome = transport_case
+        outcome[0] = failure
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"msg_233e11fcc7184cd8a71f1621","type":"message","role":"assistant","model":"qwen3.8","content":[{"type":"text","text":"[API Error for qwen3.8] private endpoint"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":1,"output_tokens":13}}
+E       assert 200 == 504
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py:65: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:706 Local native API generation failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 690, in _generate_native
+    with safe_urlopen(request, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py", line 39, in terminal
+    raise outcome[0]
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 690, in _generate_native
+    with safe_urlopen(request, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py", line 39, in terminal
+    raise outcome[0]
+TimeoutError: private endpoint
+_ test_native_transport_failure_is_non_success_once[failure3-504-None-/v1/chat/completions] _
+
+transport_case = (<starlette.testclient.TestClient object at 0x1307e5810>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...lopen error private endpoint>'}],)], ['http://localhost:11434/api/chat'], [URLError(TimeoutError('private endpoint'))])
+route = '/v1/chat/completions'
+failure = URLError(TimeoutError('private endpoint')), status = 504
+upstream = None
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "failure,status,upstream",
+        [
+            (HTTPError("http://secret.invalid", 503, "private server detail", Message(), None), 502, 503),
+            (URLError(ConnectionRefusedError("private endpoint")), 503, None),
+            (TimeoutError("private endpoint"), 504, None),
+            (URLError(TimeoutError("private endpoint")), 504, None),
+        ],
+    )
+    def test_native_transport_failure_is_non_success_once(transport_case, route, failure, status, upstream):
+        client, body, records, persistence, attempts, outcome = transport_case
+        outcome[0] = failure
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"chatcmpl-0a713dbc84e6","object":"chat.completion","created":1791954269,"model":"qwen3.8","choices":[{"index":0,"message":{"role":"assistant","content":"[API Error for qwen3.8] <urlopen error private endpoint>"},"finish_reason":"stop"}],"usage":{"prompt_tokens":7,"completion_tokens":14,"total_tokens":21}}
+E       assert 200 == 504
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py:65: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:706 Local native API generation failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 690, in _generate_native
+    with safe_urlopen(request, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py", line 39, in terminal
+    raise outcome[0]
+urllib.error.URLError: <urlopen error private endpoint>
+_ test_native_transport_failure_is_non_success_once[failure3-504-None-/v1/messages] _
+
+transport_case = (<starlette.testclient.TestClient object at 0x1307e69e0>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...ms': 0.39696693420410156, ...}], [], ['http://localhost:11434/api/chat'], [URLError(TimeoutError('private endpoint'))])
+route = '/v1/messages', failure = URLError(TimeoutError('private endpoint'))
+status = 504, upstream = None
+
+    @pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
+    @pytest.mark.parametrize(
+        "failure,status,upstream",
+        [
+            (HTTPError("http://secret.invalid", 503, "private server detail", Message(), None), 502, 503),
+            (URLError(ConnectionRefusedError("private endpoint")), 503, None),
+            (TimeoutError("private endpoint"), 504, None),
+            (URLError(TimeoutError("private endpoint")), 504, None),
+        ],
+    )
+    def test_native_transport_failure_is_non_success_once(transport_case, route, failure, status, upstream):
+        client, body, records, persistence, attempts, outcome = transport_case
+        outcome[0] = failure
+        response = client.post(route, json=body)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"id":"msg_091d40d023484adf9c8e0d00","type":"message","role":"assistant","model":"qwen3.8","content":[{"type":"text","text":"[API Error for qwen3.8] <urlopen error private endpoint>"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":1,"output_tokens":18}}
+E       assert 200 == 504
+E        +  where 200 = <Response [200 OK]>.status_code
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py:65: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:706 Local native API generation failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 690, in _generate_native
+    with safe_urlopen(request, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py", line 39, in terminal
+    raise outcome[0]
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 690, in _generate_native
+    with safe_urlopen(request, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py", line 39, in terminal
+    raise outcome[0]
+urllib.error.URLError: <urlopen error private endpoint>
+_________ test_transport_error_is_distinct_from_structured_validation __________
+
+transport_case = (<starlette.testclient.TestClient object at 0x1307c7950>, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{...': 12, 'latency_ms': 0.37980079650878906, ...}], [], ['http://localhost:11434/api/chat'], [<HTTPError 503: 'private'>])
+
+    def test_transport_error_is_distinct_from_structured_validation(transport_case):
+        client, body, records, persistence, attempts, outcome = transport_case
+        outcome[0] = HTTPError("http://secret.invalid", 503, "private", Message(), None)
+        response = client.post("/v1/chat/completions", json={**body, "response_format": {"type": "json_object"}})
+        assert response.status_code == 502
+>       assert response.json()["detail"]["type"] == "provider_transport_error"
+E       AssertionError: assert 'structured_output_error' == 'provider_transport_error'
+E         
+E         - provider_transport_error
+E         + structured_output_error
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py:80: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    antigravity_k.inference_providers:inference_providers.py:706 Local native API generation failed
+Traceback (most recent call last):
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/src/antigravity_k/engine/provider_adapters/inference_providers.py", line 690, in _generate_native
+    with safe_urlopen(request, timeout=300) as response:
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py", line 39, in terminal
+    raise outcome[0]
+urllib.error.HTTPError: HTTP Error 503: private
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1464
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1464: PytestConfigWarning: Unknown config option: asyncio_mode
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+tests/test_native_transport_error_contract.py::test_native_transport_failure_is_non_success_once[failure0-502-503-/v1/chat/completions]
+  /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_native_transport_error_contract.py::test_native_transport_failure_is_non_success_once[failure0-502-503-/v1/chat/completions]
+FAILED tests/test_native_transport_error_contract.py::test_native_transport_failure_is_non_success_once[failure0-502-503-/v1/messages]
+FAILED tests/test_native_transport_error_contract.py::test_native_transport_failure_is_non_success_once[failure1-503-None-/v1/chat/completions]
+FAILED tests/test_native_transport_error_contract.py::test_native_transport_failure_is_non_success_once[failure1-503-None-/v1/messages]
+FAILED tests/test_native_transport_error_contract.py::test_native_transport_failure_is_non_success_once[failure2-504-None-/v1/chat/completions]
+FAILED tests/test_native_transport_error_contract.py::test_native_transport_failure_is_non_success_once[failure2-504-None-/v1/messages]
+FAILED tests/test_native_transport_error_contract.py::test_native_transport_failure_is_non_success_once[failure3-504-None-/v1/chat/completions]
+FAILED tests/test_native_transport_error_contract.py::test_native_transport_failure_is_non_success_once[failure3-504-None-/v1/messages]
+FAILED tests/test_native_transport_error_contract.py::test_transport_error_is_distinct_from_structured_validation
+9 failed, 4 passed, 2 warnings in 2.04s

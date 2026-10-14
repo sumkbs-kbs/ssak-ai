@@ -1,0 +1,22 @@
+{
+  "recorded_at": "2026-10-14T05:15:38.036501+00:00",
+  "scope": "ASGI product request and controlled loopback provider HTTP503, no model inference",
+  "product_post_limit": 1,
+  "provider_post_limit": 1,
+  "expected_product_status": 502,
+  "expected_upstream_status": 503,
+  "expected_error_type": "provider_transport_error",
+  "expected_success_usage": 0,
+  "expected_failed_usage": 1,
+  "expected_assistant_persistence": 0,
+  "expected_inference_calls": 0,
+  "source_sha256": {
+    "src/antigravity_k/api/routes/chat.py": "88bd3e03972d9cc3f62c8553d83ddc05fba0edbe81172334a851e5bccd5e1fe2",
+    "src/antigravity_k/api/routes/messages_api.py": "c3158f44bd35d68259832cf094e022bc2c2848c44ea42983d339574238b61f48",
+    "src/antigravity_k/engine/protocol_translator.py": "f8d42ce763c6e92b6746d67436c1f40b0f4110a86683f8206738042890da24f8",
+    "src/antigravity_k/engine/model_manager.py": "cf0867a8b8a934eddfad3ffcfc204781089f5960e30765c8cba6c26802bf1b7a",
+    "src/antigravity_k/engine/provider_adapters/inference_providers.py": "12a416a0a8b9d24734be022a2615269fcfe43ed108495328bb85db0b10292cc0",
+    "src/antigravity_k/engine/provider_adapters/transport_errors.py": "3b090969a16ab63faa0c1945fd23aa6cefddd0e568a9413402cc8441f0c3502a",
+    "src/antigravity_k/tools/egress_policy.py": "07e53cef7c3b2fdab320ac03fc966a9a442439a0feccab256e1245ab3130aa93"
+  }
+}

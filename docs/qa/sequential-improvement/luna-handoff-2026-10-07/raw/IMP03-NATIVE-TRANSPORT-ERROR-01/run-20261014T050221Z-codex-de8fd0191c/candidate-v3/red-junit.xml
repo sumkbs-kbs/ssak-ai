@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="3" time="1.497" timestamp="2026-10-14T14:13:03.494357+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_native_transport_error_contract" name="test_native_failure_through_real_safe_helper_has_no_retry" time="1.382"><failure message="AssertionError: assert 3 == 1&#10; +  where 3 = len(['http://localhost:11434/api/chat', 'http://localhost:11434/api/chat', 'http://localhost:11434/api/chat'])">transport_case = (&lt;starlette.testclient.TestClient object at 0x1291a81a0&gt;, {'model': 'qwen3.8', 'project_id': 'default', 'messages': [{... [], ['http://localhost:11434/api/chat', 'http://localhost:11434/api/chat', 'http://localhost:11434/api/chat'], ['ok'])
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x10aedf680&gt;
+
+    def test_native_failure_through_real_safe_helper_has_no_retry(transport_case, monkeypatch):
+        from antigravity_k.engine.provider_adapters import inference_providers
+        from antigravity_k.tools import egress_policy
+    
+        client, body, records, persistence, attempts, _ = transport_case
+        sleeps = []
+        error = HTTPError("http://127.0.0.1:11434/api/chat", 503, "private", Message(), None)
+    
+        def terminal(request, **kwargs):
+            attempts.append(request.full_url)
+            raise error
+    
+        monkeypatch.setattr(inference_providers, "safe_urlopen", egress_policy.safe_urlopen)
+        monkeypatch.setattr(egress_policy.urllib.request, "urlopen", terminal)
+        monkeypatch.setattr(egress_policy, "_retry_sleep", sleeps.append)
+        response = client.post("/v1/chat/completions", json=body)
+        assert response.status_code == 502
+&gt;       assert len(attempts) == 1
+E       AssertionError: assert 3 == 1
+E        +  where 3 = len(['http://localhost:11434/api/chat', 'http://localhost:11434/api/chat', 'http://localhost:11434/api/chat'])
+
+/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/tests/test_native_transport_error_contract.py:179: AssertionError</failure></testcase><testcase classname="tests.test_native_transport_error_contract" name="test_safe_helper_no_retry_preserves_original_http_error" time="0.001"><failure message="TypeError: safe_urlopen() got an unexpected keyword argument 'max_retries'">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x129161f20&gt;
+
+    def test_safe_helper_no_retry_preserves_original_http_error(monkeypatch):
+        from antigravity_k.tools import egress_policy
+    
+        calls, sleeps = [], []
+        error = HTTPError("http://127.0.0.1/api/chat", 503, "private", Message(), None)
+    
+        def terminal(*args, **kwargs):
+            calls.append(args)
+            raise error
+    
+        monkeypatch.setattr(egress_policy.urllib.request, "urlopen", terminal)
+        monkeypatch.setattr(egress_policy, "_retry_sleep", sleeps.append)
+        with pytest.raises(HTTPError) as captured:
+&gt;           egress_policy.safe_urlopen(Request(error.url, data=b"{}"), max_retries=0)
+E           TypeError: safe_urlopen() got an unexpected keyword argument 'max_retries'
+
+tests/test_native_transport_error_contract.py:198: TypeError</failure></testcase><testcase classname="tests.test_native_transport_error_contract" name="test_safe_helper_default_get_keeps_two_retries" time="0.001" /></testsuite></testsuites>

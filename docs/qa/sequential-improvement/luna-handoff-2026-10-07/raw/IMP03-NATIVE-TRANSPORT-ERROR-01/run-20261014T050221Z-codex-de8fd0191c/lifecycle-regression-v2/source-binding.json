@@ -1,0 +1,15 @@
+{
+  "src/antigravity_k/api/routes/chat.py": "88bd3e03972d9cc3f62c8553d83ddc05fba0edbe81172334a851e5bccd5e1fe2",
+  "src/antigravity_k/api/chat_agent_stream_generator.py": "ab24b814c7ae8d5f8f6631828ae5388db471354c08da8d25bc4c83545b26e6ef",
+  "src/antigravity_k/engine/task_runner.py": "3dea2e5484a0ff820206d3a9e86a9ee760dbdc1794a9be8cddc970fc4d6b46b7",
+  "src/antigravity_k/engine/task_state_store.py": "7894542e57b3ebc105c5d19502ab50d5ce1f67f25bfe49edba9afd9ab1db12ed",
+  "src/antigravity_k/engine/task_process_ownership.py": "95b67a75df746abb7c800504aae669ee12902a2cb0cef9cbdbee6af181f390b7",
+  "src/antigravity_k/engine/task_context_snapshot.py": "736192ea76439b35d77f0e08d5e698d4c76fe98fefe6346a0fbcb43bb4abc309",
+  "src/antigravity_k/engine/agent_runtime.py": "c35b473da14e5007068046db0d90f3c880c59b7436b7d2bab847412493acc57a",
+  "src/antigravity_k/engine/provider_adapters/inference_providers.py": "12a416a0a8b9d24734be022a2615269fcfe43ed108495328bb85db0b10292cc0",
+  "src/antigravity_k/engine/provider_adapters/transport_errors.py": "3b090969a16ab63faa0c1945fd23aa6cefddd0e568a9413402cc8441f0c3502a",
+  "src/antigravity_k/tools/egress_policy.py": "07e53cef7c3b2fdab320ac03fc966a9a442439a0feccab256e1245ab3130aa93",
+  "tests/test_chat_stream_cancel_cleanup.py": "73a37c21256dbb482a35325792ad58c248db048b4c18fd2b2bacd97cb30ebefc",
+  "tests/test_cr14_task_cancel_ownership.py": "0fde98ef61bc450891e4ea0aeb3e5bd41d746d7663fec1c02c933e3e9e1c4d95",
+  "tests/test_task_runner_resume.py": "85dc8d7b7d7c5cae0d206ed257e02aebd459fa57cf1b6697b01d11941f5d972b"
+}

@@ -1,0 +1,144 @@
+--- a/src/antigravity_k/engine/provider_adapters/inference_providers.py
++++ b/src/antigravity_k/engine/provider_adapters/inference_providers.py
+@@ -689,7 +689,7 @@
+             headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"},
+         )
+         try:
+-            with safe_urlopen(request, timeout=300) as response:
++            with safe_urlopen(request, timeout=300, max_retries=0) as response:
+                 message = _as_json_map(
+                     _as_json_map(cast(object, json.loads(response.read().decode("utf-8")))).get("message")
+                 )
+--- a/tests/test_native_transport_error_contract.py
++++ b/tests/test_native_transport_error_contract.py
+@@ -9,6 +9,7 @@
+ from email.message import Message
+ from pathlib import Path
+ from urllib.error import HTTPError, URLError
++from urllib.request import Request
+ 
+ import pytest
+ 
+@@ -40,6 +41,7 @@
+         return original_add(self, *args, **kwargs)
+ 
+     def terminal(request, **kwargs):
++        assert kwargs["max_retries"] == 0
+         attempts.append(request.full_url)
+         if isinstance(outcome[0], Exception):
+             raise outcome[0]
+@@ -156,3 +158,72 @@
+     assert manager.generate("hello", "transport-fallback") == "fallback succeeded"
+     assert [record["success"] for record in records] == [False, True]
+     assert len(attempts) == 2
++
++
++def test_native_failure_through_real_safe_helper_has_no_retry(transport_case, monkeypatch):
++    from antigravity_k.engine.provider_adapters import inference_providers
++    from antigravity_k.tools import egress_policy
++
++    client, body, records, persistence, attempts, _ = transport_case
++    sleeps = []
++    error = HTTPError("http://127.0.0.1:11434/api/chat", 503, "private", Message(), None)
++
++    def terminal(request, **kwargs):
++        attempts.append(request.full_url)
++        raise error
++
++    monkeypatch.setattr(inference_providers, "safe_urlopen", egress_policy.safe_urlopen)
++    monkeypatch.setattr(egress_policy.urllib.request, "urlopen", terminal)
++    monkeypatch.setattr(egress_policy, "_retry_sleep", sleeps.append)
++    response = client.post("/v1/chat/completions", json=body)
++    assert response.status_code == 502
++    assert len(attempts) == 1
++    assert sleeps == []
++    assert [record["success"] for record in records] == [False]
++    assert persistence == []
++
++
++def test_safe_helper_no_retry_preserves_original_http_error(monkeypatch):
++    from antigravity_k.tools import egress_policy
++
++    calls, sleeps = [], []
++    error = HTTPError("http://127.0.0.1/api/chat", 503, "private", Message(), None)
++
++    def terminal(*args, **kwargs):
++        calls.append(args)
++        raise error
++
++    monkeypatch.setattr(egress_policy.urllib.request, "urlopen", terminal)
++    monkeypatch.setattr(egress_policy, "_retry_sleep", sleeps.append)
++    with pytest.raises(HTTPError) as captured:
++        egress_policy.safe_urlopen(Request(error.url, data=b"{}"), max_retries=0)
++    assert captured.value is error
++    assert len(calls) == 1 and sleeps == []
++
++
++def test_safe_helper_default_get_keeps_two_retries(monkeypatch):
++    from antigravity_k.tools import egress_policy
++
++    calls, sleeps = [], []
++    error = HTTPError("http://127.0.0.1/health", 503, "private", Message(), None)
++
++    def terminal(*args, **kwargs):
++        calls.append(args)
++        raise error
++
++    monkeypatch.setattr(egress_policy.urllib.request, "urlopen", terminal)
++    monkeypatch.setattr(egress_policy, "_retry_sleep", sleeps.append)
++    with pytest.raises(HTTPError) as captured:
++        egress_policy.safe_urlopen(error.url)
++    assert captured.value is error
++    assert len(calls) == 3 and sleeps == [1.0, 2.0]
++
++
++def test_safe_helper_no_retry_still_blocks_private_destination(monkeypatch):
++    from antigravity_k.tools import egress_policy
++
++    calls = []
++    monkeypatch.setattr(egress_policy.urllib.request, "urlopen", lambda *args, **kwargs: calls.append(args))
++    with pytest.raises(egress_policy.EgressPolicyError):
++        egress_policy.safe_urlopen("http://10.0.0.1/private", max_retries=0)
++    assert calls == []
+--- a/src/antigravity_k/tools/egress_policy.py
++++ b/src/antigravity_k/tools/egress_policy.py
+@@ -82,23 +82,27 @@
+     target: str | Request,
+     allow_local: bool = True,
+     timeout: float | None = None,
++    *,
++    max_retries: int = _MAX_RETRIES,
+ ) -> HTTPResponse:
+     """egress 정책 검증 후 urlopen — 일시적 HTTP 오류(429/5xx)는 재시도한다.
+ 
+     재시도는 연결 설정 단계에서 거부된 경우에만 안전하므로 여기서만
+     수행한다 (응답 소비 중 오류는 호출자 몫). Retry-After 헤더를 존중하고
+-    최대 2회 재시도한다.
++    기본 최대 2회 재시도한다. 재전송하면 안 되는 호출은 max_retries=0을 사용한다.
+     """
++    if max_retries < 0:
++        raise ValueError("max_retries must be non-negative")
+     _ = validate_egress_url(_target_url(target), allow_local=allow_local)
+     last_error: urllib.error.HTTPError | None = None
+-    for attempt in range(_MAX_RETRIES + 1):
++    for attempt in range(max_retries + 1):
+         try:
+             # validate_egress_url above allowlists HTTP(S) before this sink.
+             if timeout is None:
+                 return cast(HTTPResponse, urllib.request.urlopen(target))  # nosec B310
+             return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+         except urllib.error.HTTPError as error:
+-            if error.code not in _RETRYABLE_STATUS or attempt >= _MAX_RETRIES:
++            if error.code not in _RETRYABLE_STATUS or attempt >= max_retries:
+                 raise
+             last_error = error
+             delay = _retry_delay(attempt, error)
+@@ -107,7 +111,7 @@
+                 error.code,
+                 delay,
+                 attempt + 1,
+-                _MAX_RETRIES,
++                max_retries,
+                 _target_url(target)[:120],
+             )
+             _retry_sleep(delay)

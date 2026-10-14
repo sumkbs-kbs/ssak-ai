@@ -1,0 +1,19 @@
+{
+  "verdict": "FAIL_RETRY_BOUNDARY_OBSERVED",
+  "scope": "First controlled local provider HTTP503 observation",
+  "product_asgi_posts_started": 1,
+  "provider_requests_received_by_controlled_server": 1,
+  "provider_response_status_sent": 503,
+  "egress_retry_decisions_observed": 1,
+  "additional_provider_request_receipt": "NOT_OBSERVED",
+  "observed_warning": "[egress] HTTP 503 - 1.0-second retry (1/2) to the owned loopback /api/chat endpoint",
+  "warning_provenance": "Native tool transcript; local complete stdout/stderr capture was not configured for this observer",
+  "external_process_pid": 69311,
+  "external_termination": "SIGINT requested without observed exit, then SIGTERM",
+  "external_exit_code": 143,
+  "internal_cleanup_receipt": "NOT_OBSERVED",
+  "assistant_result_and_usage": "NOT_OBSERVED_BEFORE_TERMINATION",
+  "real_ollama_and_model_inference": 0,
+  "historical_request_and_acceptance": "PRESERVED_NO_REPLAY",
+  "source_gap": "safe_urlopen retries 429/5xx twice by default; inference adapter did not disable it"
+}

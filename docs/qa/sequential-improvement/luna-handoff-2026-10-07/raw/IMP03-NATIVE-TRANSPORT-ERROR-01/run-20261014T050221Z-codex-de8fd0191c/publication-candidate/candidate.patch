@@ -1,0 +1,418 @@
+--- a/src/antigravity_k/engine/provider_adapters/inference_providers.py
++++ b/src/antigravity_k/engine/provider_adapters/inference_providers.py
+@@ -11,6 +11,7 @@
+ from importlib import import_module
+ from types import SimpleNamespace
+ from typing import TYPE_CHECKING, Any, ContextManager, Protocol, TypeAlias, cast, override, runtime_checkable
++from urllib.error import HTTPError, URLError
+ 
+ from antigravity_k.engine.context_budget import context_budget_for_context_length
+ 
+@@ -18,6 +19,7 @@
+ # `engine/__init__ → model_manager → inference_providers` 와 순환한다(게이트:
+ # reportImportCycles). leaf 모듈에서 이름을 직접 가져온다.
+ from antigravity_k.engine.multimodal import adapter_messages
++from antigravity_k.engine.provider_adapters.transport_errors import NativeTransportError, TransportFailure
+ from antigravity_k.tools.egress_policy import safe_urlopen
+ 
+ if TYPE_CHECKING:
+@@ -687,7 +689,7 @@
+             headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"},
+         )
+         try:
+-            with safe_urlopen(request, timeout=300) as response:
++            with safe_urlopen(request, timeout=300, max_retries=0) as response:
+                 message = _as_json_map(
+                     _as_json_map(cast(object, json.loads(response.read().decode("utf-8")))).get("message")
+                 )
+@@ -702,9 +704,15 @@
+                         for call in native_tool_calls
+                     )
+                 return content
+-        except Exception as e:
+-            logger.exception("Local native API generation failed")
+-            return f"[API Error for {loaded.profile.name}] {e}"
++        except HTTPError as exc:
++            raise NativeTransportError(TransportFailure.HTTP, upstream_status=exc.code) from exc
++        except TimeoutError as exc:
++            raise NativeTransportError(TransportFailure.TIMEOUT) from exc
++        except URLError as exc:
++            failure = TransportFailure.TIMEOUT if isinstance(exc.reason, TimeoutError) else TransportFailure.UNAVAILABLE
++            raise NativeTransportError(failure) from exc
++        except OSError as exc:
++            raise NativeTransportError(TransportFailure.UNAVAILABLE) from exc
+ 
+     def _iter_stream_response(
+         self, response: Iterator[bytes], tools_schema: list[DynamicValue] | None = None
+--- /dev/null
++++ b/src/antigravity_k/engine/provider_adapters/transport_errors.py
+@@ -0,0 +1,57 @@
++"""Native provider transport failures, safe to expose at API boundaries."""
++
++from dataclasses import dataclass
++from enum import StrEnum
++from typing import NotRequired, TypedDict, assert_never
++
++
++class TransportFailure(StrEnum):
++    HTTP = "upstream_http_error"
++    UNAVAILABLE = "provider_unavailable"
++    TIMEOUT = "provider_timeout"
++
++
++class TransportErrorDetail(TypedDict):
++    type: str
++    code: str
++    message: str
++    upstream_status: NotRequired[int]
++
++
++@dataclass(slots=True)
++class NativeTransportError(RuntimeError):
++    failure: TransportFailure
++    upstream_status: int | None = None
++
++    def __str__(self) -> str:
++        match self.failure:
++            case TransportFailure.HTTP:
++                return "The model provider returned an unsuccessful HTTP response."
++            case TransportFailure.UNAVAILABLE:
++                return "The model provider is unavailable."
++            case TransportFailure.TIMEOUT:
++                return "The model provider request timed out."
++            case unreachable:
++                assert_never(unreachable)
++
++    @property
++    def status_code(self) -> int:
++        match self.failure:
++            case TransportFailure.HTTP:
++                return 502
++            case TransportFailure.UNAVAILABLE:
++                return 503
++            case TransportFailure.TIMEOUT:
++                return 504
++            case unreachable:
++                assert_never(unreachable)
++
++    def detail(self) -> TransportErrorDetail:
++        result: TransportErrorDetail = {
++            "type": "provider_transport_error",
++            "code": self.failure.value,
++            "message": str(self),
++        }
++        if self.upstream_status is not None:
++            result["upstream_status"] = self.upstream_status
++        return result
+--- a/src/antigravity_k/api/routes/chat.py
++++ b/src/antigravity_k/api/routes/chat.py
+@@ -21,6 +21,7 @@
+ from antigravity_k.engine.audit_logger import get_audit_logger
+ from antigravity_k.engine.model_manager import ModelManager
+ from antigravity_k.engine.protocol_translator import APIFormat, ProtocolTranslator
++from antigravity_k.engine.provider_adapters.transport_errors import NativeTransportError
+ from antigravity_k.engine.structured_output import StructuredOutputError, parse_output_contract
+ from antigravity_k.engine.tokenizer import TokenEstimator
+ 
+@@ -1460,6 +1461,8 @@
+             return translator.translate_response(internal_resp, target=target_format)
+     except StructuredOutputError as exc:
+         raise HTTPException(status_code=502, detail={"type": "structured_output_error", "message": str(exc)}) from exc
++    except NativeTransportError as exc:
++        raise HTTPException(status_code=exc.status_code, detail=exc.detail()) from exc
+     except Exception as e:
+         logger.error("Generation error: %s", e, exc_info=True)
+         raise HTTPException(status_code=500, detail=str(e))
+--- a/src/antigravity_k/api/routes/messages_api.py
++++ b/src/antigravity_k/api/routes/messages_api.py
+@@ -33,6 +33,7 @@
+ )
+ from antigravity_k.engine.model_manager import ModelManager
+ from antigravity_k.engine.protocol_translator import APIFormat, ProtocolTranslator
++from antigravity_k.engine.provider_adapters.transport_errors import NativeTransportError
+ 
+ logger = logging.getLogger("antigravity_k.api.messages")
+ 
+@@ -448,6 +449,8 @@
+ 
+     try:
+         text = await run_in_threadpool(_generate)
++    except NativeTransportError as exc:
++        return JSONResponse({"error": exc.detail()}, status_code=exc.status_code)
+     except Exception as exc:  # noqa: BLE001
+         logger.exception("generate failed")
+         gen_err, gen_status = _error(529, "api_error", f"Model generation failed: {exc}")
+--- /dev/null
++++ b/tests/test_native_transport_error_contract.py
+@@ -0,0 +1,229 @@
++from __future__ import annotations
++
++import io
++import json
++import os
++import uuid
++from contextlib import contextmanager
++from dataclasses import replace
++from email.message import Message
++from pathlib import Path
++from urllib.error import HTTPError, URLError
++from urllib.request import Request
++
++import pytest
++
++from tests.test_chat_structured_output_contract import product as product
++
++
++@pytest.fixture
++def transport_case(product, monkeypatch, request):
++    from antigravity_k.api.routes import messages_api
++    from antigravity_k.engine.provider_adapters import inference_providers
++    from antigravity_k.engine.session_manager import SessionManager
++
++    client, body, _, _, _ = product
++    client.app.include_router(messages_api.router)
++    manager = client.contract_manager
++    records = []
++    persistence = []
++    attempts = []
++    outcome = ["ok"]
++    original_record = manager.tracker.record
++    original_add = SessionManager.add_turn
++
++    def record(*args, **kwargs):
++        records.append(kwargs)
++        return original_record(*args, **kwargs)
++
++    def add(self, *args, **kwargs):
++        persistence.append(args)
++        return original_add(self, *args, **kwargs)
++
++    def terminal(request, **kwargs):
++        assert kwargs["max_retries"] == 0
++        attempts.append(request.full_url)
++        if isinstance(outcome[0], Exception):
++            raise outcome[0]
++        return io.BytesIO(json.dumps({"message": {"content": outcome[0]}, "done": True}).encode())
++
++    monkeypatch.setattr(manager.tracker, "record", record)
++    monkeypatch.setattr(SessionManager, "add_turn", add)
++    monkeypatch.setattr(inference_providers, "safe_urlopen", terminal)
++    body["messages"][0]["content"] = "안녕"
++    body["agent_mode"] = False
++    body["max_tokens"] = 128
++    yield client, body, records, persistence, attempts, outcome
++    export = os.environ.get("TRANSPORT_CAPTURE_ROOT")
++    if export:
++        target = Path(export)
++        target.mkdir(parents=True, exist_ok=True)
++        (target / (uuid.uuid4().hex + ".json")).write_text(
++            json.dumps(
++                {
++                    "nodeid": request.node.nodeid,
++                    "native_attempts": attempts,
++                    "usage": records,
++                    "persisted_turns": len(persistence),
++                },
++                indent=2,
++            )
++        )
++
++
++@pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
++@pytest.mark.parametrize(
++    "failure,status,upstream",
++    [
++        (HTTPError("http://secret.invalid", 503, "private server detail", Message(), None), 502, 503),
++        (URLError(ConnectionRefusedError("private endpoint")), 503, None),
++        (ConnectionRefusedError("private endpoint"), 503, None),
++        (TimeoutError("private endpoint"), 504, None),
++        (URLError(TimeoutError("private endpoint")), 504, None),
++    ],
++)
++def test_native_transport_failure_is_non_success_once(transport_case, route, failure, status, upstream):
++    client, body, records, persistence, attempts, outcome = transport_case
++    outcome[0] = failure
++    response = client.post(route, json=body)
++    assert response.status_code == status, response.text
++    error = response.json().get("detail", response.json().get("error"))
++    assert error["type"] == "provider_transport_error"
++    assert error.get("upstream_status") == upstream
++    assert "private" not in response.text and "secret.invalid" not in response.text
++    assert len(attempts) == 1
++    assert [record["success"] for record in records] == [False]
++    assert persistence == []
++
++
++def test_transport_error_is_distinct_from_structured_validation(transport_case):
++    client, body, records, persistence, attempts, outcome = transport_case
++    outcome[0] = HTTPError("http://secret.invalid", 503, "private", Message(), None)
++    response = client.post("/v1/chat/completions", json={**body, "response_format": {"type": "json_object"}})
++    assert response.status_code == 502
++    assert response.json()["detail"]["type"] == "provider_transport_error"
++    assert [record["success"] for record in records] == [False]
++    assert len(attempts) == 1 and persistence == []
++
++
++@pytest.mark.parametrize("route", ["/v1/chat/completions", "/v1/messages"])
++@pytest.mark.parametrize("text", ["ordinary reply", "[API Error for qwen3.8] this is valid requested text"])
++def test_native_success_is_not_classified_by_prefix(transport_case, route, text):
++    client, body, records, _, attempts, outcome = transport_case
++    outcome[0] = text
++    response = client.post(route, json=body)
++    assert response.status_code == 200, response.text
++    payload = response.json()
++    actual = (
++        payload["choices"][0]["message"]["content"] if route.endswith("completions") else payload["content"][0]["text"]
++    )
++    assert actual == text
++    assert [record["success"] for record in records] == [True]
++    assert len(attempts) == 1
++
++
++def test_transport_error_preserves_exception_through_generator_context():
++    from antigravity_k.engine.provider_adapters.transport_errors import NativeTransportError, TransportFailure
++
++    @contextmanager
++    def boundary():
++        yield
++
++    error = NativeTransportError(TransportFailure.HTTP, upstream_status=503)
++    with pytest.raises(NativeTransportError) as captured, boundary():
++        raise error
++    assert captured.value is error
++    assert captured.value.upstream_status == 503
++
++
++def test_explicit_combo_keeps_existing_fallback(transport_case, monkeypatch):
++    from antigravity_k.engine.model_router import ModelCombo
++    from antigravity_k.engine.provider_adapters import inference_providers
++
++    client, body, records, _, attempts, _ = transport_case
++    manager = client.contract_manager
++    original = manager._registry.get_model(body["model"])
++    assert original is not None
++    alternate = "qwen3.8:fallback"
++    manager._registry._models[alternate] = replace(original, name=alternate, repo=alternate)
++    manager.router.register_combo(ModelCombo(name="transport-fallback", models=[original.name, alternate]))
++
++    def terminal(request, **kwargs):
++        attempts.append(request.full_url)
++        if len(attempts) == 1:
++            raise HTTPError(request.full_url, 503, "unavailable", Message(), None)
++        return io.BytesIO(b'{"message":{"content":"fallback succeeded"},"done":true}')
++
++    monkeypatch.setattr(inference_providers, "safe_urlopen", terminal)
++    assert manager.generate("hello", "transport-fallback") == "fallback succeeded"
++    assert [record["success"] for record in records] == [False, True]
++    assert len(attempts) == 2
++
++
++def test_native_failure_through_real_safe_helper_has_no_retry(transport_case, monkeypatch):
++    from antigravity_k.engine.provider_adapters import inference_providers
++    from antigravity_k.tools import egress_policy
++
++    client, body, records, persistence, attempts, _ = transport_case
++    sleeps = []
++    error = HTTPError("http://127.0.0.1:11434/api/chat", 503, "private", Message(), None)
++
++    def terminal(request, **kwargs):
++        attempts.append(request.full_url)
++        raise error
++
++    monkeypatch.setattr(inference_providers, "safe_urlopen", egress_policy.safe_urlopen)
++    monkeypatch.setattr(egress_policy.urllib.request, "urlopen", terminal)
++    monkeypatch.setattr(egress_policy, "_retry_sleep", sleeps.append)
++    response = client.post("/v1/chat/completions", json=body)
++    assert response.status_code == 502
++    assert len(attempts) == 1
++    assert sleeps == []
++    assert [record["success"] for record in records] == [False]
++    assert persistence == []
++
++
++def test_safe_helper_no_retry_preserves_original_http_error(monkeypatch):
++    from antigravity_k.tools import egress_policy
++
++    calls, sleeps = [], []
++    error = HTTPError("http://127.0.0.1/api/chat", 503, "private", Message(), None)
++
++    def terminal(*args, **kwargs):
++        calls.append(args)
++        raise error
++
++    monkeypatch.setattr(egress_policy.urllib.request, "urlopen", terminal)
++    monkeypatch.setattr(egress_policy, "_retry_sleep", sleeps.append)
++    with pytest.raises(HTTPError) as captured:
++        egress_policy.safe_urlopen(Request(error.url, data=b"{}"), max_retries=0)
++    assert captured.value is error
++    assert len(calls) == 1 and sleeps == []
++
++
++def test_safe_helper_default_get_keeps_two_retries(monkeypatch):
++    from antigravity_k.tools import egress_policy
++
++    calls, sleeps = [], []
++    error = HTTPError("http://127.0.0.1/health", 503, "private", Message(), None)
++
++    def terminal(*args, **kwargs):
++        calls.append(args)
++        raise error
++
++    monkeypatch.setattr(egress_policy.urllib.request, "urlopen", terminal)
++    monkeypatch.setattr(egress_policy, "_retry_sleep", sleeps.append)
++    with pytest.raises(HTTPError) as captured:
++        egress_policy.safe_urlopen(error.url)
++    assert captured.value is error
++    assert len(calls) == 3 and sleeps == [1.0, 2.0]
++
++
++def test_safe_helper_no_retry_still_blocks_private_destination(monkeypatch):
++    from antigravity_k.tools import egress_policy
++
++    calls = []
++    monkeypatch.setattr(egress_policy.urllib.request, "urlopen", lambda *args, **kwargs: calls.append(args))
++    with pytest.raises(egress_policy.EgressPolicyError):
++        egress_policy.safe_urlopen("http://10.0.0.1/private", max_retries=0)
++    assert calls == []
+--- a/src/antigravity_k/tools/egress_policy.py
++++ b/src/antigravity_k/tools/egress_policy.py
+@@ -82,23 +82,27 @@
+     target: str | Request,
+     allow_local: bool = True,
+     timeout: float | None = None,
++    *,
++    max_retries: int = _MAX_RETRIES,
+ ) -> HTTPResponse:
+     """egress 정책 검증 후 urlopen — 일시적 HTTP 오류(429/5xx)는 재시도한다.
+ 
+     재시도는 연결 설정 단계에서 거부된 경우에만 안전하므로 여기서만
+     수행한다 (응답 소비 중 오류는 호출자 몫). Retry-After 헤더를 존중하고
+-    최대 2회 재시도한다.
++    기본 최대 2회 재시도한다. 재전송하면 안 되는 호출은 max_retries=0을 사용한다.
+     """
++    if max_retries < 0:
++        raise ValueError("max_retries must be non-negative")
+     _ = validate_egress_url(_target_url(target), allow_local=allow_local)
+     last_error: urllib.error.HTTPError | None = None
+-    for attempt in range(_MAX_RETRIES + 1):
++    for attempt in range(max_retries + 1):
+         try:
+             # validate_egress_url above allowlists HTTP(S) before this sink.
+             if timeout is None:
+                 return cast(HTTPResponse, urllib.request.urlopen(target))  # nosec B310
+             return cast(HTTPResponse, urllib.request.urlopen(target, timeout=timeout))  # nosec B310
+         except urllib.error.HTTPError as error:
+-            if error.code not in _RETRYABLE_STATUS or attempt >= _MAX_RETRIES:
++            if error.code not in _RETRYABLE_STATUS or attempt >= max_retries:
+                 raise
+             last_error = error
+             delay = _retry_delay(attempt, error)
+@@ -107,7 +111,7 @@
+                 error.code,
+                 delay,
+                 attempt + 1,
+-                _MAX_RETRIES,
++                max_retries,
+                 _target_url(target)[:120],
+             )
+             _retry_sleep(delay)

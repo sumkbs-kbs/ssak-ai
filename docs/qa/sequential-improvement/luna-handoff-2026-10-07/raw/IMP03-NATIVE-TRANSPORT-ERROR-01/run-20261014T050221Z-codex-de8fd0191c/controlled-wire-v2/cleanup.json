@@ -1,0 +1,10 @@
+{
+  "server_thread_alive": false,
+  "server_closed": true,
+  "urllib_request_attempts": [
+    "http://127.0.0.1:53732/api/chat"
+  ],
+  "socket_connections": [
+    "('127.0.0.1', 53732)"
+  ]
+}

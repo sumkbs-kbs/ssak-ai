@@ -1,0 +1,35 @@
+{
+  "files": [
+    {
+      "path": "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+      "sha256": "12a416a0a8b9d24734be022a2615269fcfe43ed108495328bb85db0b10292cc0",
+      "matches": true
+    },
+    {
+      "path": "src/antigravity_k/engine/provider_adapters/transport_errors.py",
+      "sha256": "3b090969a16ab63faa0c1945fd23aa6cefddd0e568a9413402cc8441f0c3502a",
+      "matches": true
+    },
+    {
+      "path": "src/antigravity_k/api/routes/chat.py",
+      "sha256": "3510e58546a86dc26dd9b6019ccbf7af6b79ca50af03f0fe65c225f29022210c",
+      "matches": true
+    },
+    {
+      "path": "src/antigravity_k/api/routes/messages_api.py",
+      "sha256": "8a53582786e7662d15aaf5fa0b11282e0b556c6feaa99123fd7e90626c6315b7",
+      "matches": true
+    },
+    {
+      "path": "tests/test_native_transport_error_contract.py",
+      "sha256": "44032cc1666db8909c6288fe6593338862b86c25128449bba52f721987933b32",
+      "matches": true
+    },
+    {
+      "path": "src/antigravity_k/tools/egress_policy.py",
+      "sha256": "07e53cef7c3b2fdab320ac03fc966a9a442439a0feccab256e1245ab3130aa93",
+      "matches": true
+    }
+  ],
+  "exit_code": 0
+}

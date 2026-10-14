@@ -1,0 +1,59 @@
+[
+  {
+    "patch": "task-only.patch",
+    "exit_code": 0,
+    "files": [
+      {
+        "path": "tests/test_native_transport_error_contract.py",
+        "sha256": "44032cc1666db8909c6288fe6593338862b86c25128449bba52f721987933b32",
+        "matches": true
+      },
+      {
+        "path": "src/antigravity_k/tools/egress_policy.py",
+        "sha256": "07e53cef7c3b2fdab320ac03fc966a9a442439a0feccab256e1245ab3130aa93",
+        "matches": true
+      },
+      {
+        "path": "src/antigravity_k/engine/provider_adapters/transport_errors.py",
+        "sha256": "3b090969a16ab63faa0c1945fd23aa6cefddd0e568a9413402cc8441f0c3502a",
+        "matches": true
+      },
+      {
+        "path": "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+        "sha256": "12a416a0a8b9d24734be022a2615269fcfe43ed108495328bb85db0b10292cc0",
+        "matches": true
+      },
+      {
+        "path": "src/antigravity_k/api/routes/messages_api.py",
+        "sha256": "c3158f44bd35d68259832cf094e022bc2c2848c44ea42983d339574238b61f48",
+        "matches": true
+      },
+      {
+        "path": "src/antigravity_k/api/routes/chat.py",
+        "sha256": "88bd3e03972d9cc3f62c8553d83ddc05fba0edbe81172334a851e5bccd5e1fe2",
+        "matches": true
+      }
+    ]
+  },
+  {
+    "patch": "retry-delta.patch",
+    "exit_code": 0,
+    "files": [
+      {
+        "path": "tests/test_native_transport_error_contract.py",
+        "sha256": "44032cc1666db8909c6288fe6593338862b86c25128449bba52f721987933b32",
+        "matches": true
+      },
+      {
+        "path": "src/antigravity_k/tools/egress_policy.py",
+        "sha256": "07e53cef7c3b2fdab320ac03fc966a9a442439a0feccab256e1245ab3130aa93",
+        "matches": true
+      },
+      {
+        "path": "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+        "sha256": "12a416a0a8b9d24734be022a2615269fcfe43ed108495328bb85db0b10292cc0",
+        "matches": true
+      }
+    ]
+  }
+]
