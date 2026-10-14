@@ -241,11 +241,14 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="서버를 세우지 않는다(계약 이빨 — 이 모드에서는 스펙이 실패해야 한다).",
     )
+    parser.add_argument("--spec", action="append", default=[], dest="specs", help="소유 서버에서 실행할 명시적 스펙.")
     args = parser.parse_args(argv)
     if args.skip_server:
         # 닫힌 포트 — Chromium 이 UNSAFE 로 거절하는 :1 대신 연결 거부되는 고번호.
         # disclosure·hub 도 상대경로라 같은 닫힌 포트에서 실패해야 한다(이빨).
         closed = "http://127.0.0.1:59999"
+        if args.specs:
+            return run_playwright(closed, args.specs, grep_invert=None, label="selected-skip-server") or 1
         rc_main = _run_main_suite(closed)
         rc_disc = run_playwright(
             closed,
@@ -267,10 +270,15 @@ def main(argv: list[str] | None = None) -> int:
         state = Path(tmp)
         proc = start_server(port, state)
         try:
-            rc = _run_main_suite(f"http://127.0.0.1:{port}")
+            base_url = f"http://127.0.0.1:{port}"
+            rc = (
+                run_playwright(base_url, args.specs, grep_invert=None, label="selected")
+                if args.specs
+                else _run_main_suite(base_url)
+            )
         finally:
             _stop(proc)
-    if rc != 0:
+    if rc != 0 or args.specs:
         return rc
     rc_disc = _run_disclosure_seeded()
     if rc_disc != 0:

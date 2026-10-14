@@ -39,6 +39,9 @@ import json
 import re
 from pathlib import Path
 from typing import Any, cast
+from unittest.mock import MagicMock
+
+import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 GATE_MANIFEST = REPO_ROOT / "scripts" / "commercial_ga_gates.json"
@@ -76,9 +79,10 @@ def _script_owned_specs() -> list[str]:
     return re.findall(r'"([^"]+\.spec\.ts)"', match.group(1))
 
 
-def test_the_ambient_gate_is_required_and_starts_a_server() -> None:
+@pytest.mark.parametrize("gate_id", [AMBIENT_GATE_ID, "accessibility-e2e"])
+def test_the_ambient_gate_is_required_and_starts_a_server(gate_id: str) -> None:
     """게이트는 required 이고, 명령이 서버를 세우는 스크립트를 부른다."""
-    gate = _ambient_gate()
+    gate = next(row for row in _manifest()["gates"] if row["id"] == gate_id)
     assert gate["required"] is True
     command = [str(token) for token in gate["command"]]
     assert "scripts/run_dashboard_e2e_ambient.py" in " ".join(command) or any(
@@ -86,6 +90,39 @@ def test_the_ambient_gate_is_required_and_starts_a_server() -> None:
     ), f"서버 기동 스크립트가 명령에 없다: {command}"
     assert "--skip-server" not in command, "게이트 명령이 서버를 건너뛰면 안 된다"
     assert AMBIENT_SCRIPT.is_file(), "게이트 스크립트 파일이 없다"
+    if gate_id == "accessibility-e2e":
+        selected = command.index("--spec")
+        assert command[selected + 1] == "e2e/tests/accessibility.spec.ts"
+
+
+@pytest.mark.parametrize("exit_code", [0, 1])
+def test_selected_spec_owns_server_cleanup_and_propagates_failure(
+    monkeypatch: pytest.MonkeyPatch, exit_code: int
+) -> None:
+    from scripts import run_dashboard_e2e_ambient as gate
+
+    process = MagicMock()
+    start = MagicMock(return_value=process)
+    stop = MagicMock()
+    run = MagicMock(return_value=exit_code)
+    other_suites = MagicMock(side_effect=AssertionError("Explicit selection ran another suite"))
+    monkeypatch.setattr(gate, "_free_port", lambda: 45678)
+    monkeypatch.setattr(gate, "start_server", start)
+    monkeypatch.setattr(gate, "_stop", stop)
+    monkeypatch.setattr(gate, "run_playwright", run)
+    monkeypatch.setattr(gate, "_run_main_suite", other_suites)
+    monkeypatch.setattr(gate, "_run_disclosure_seeded", other_suites)
+    monkeypatch.setattr(gate, "_run_hub_seeded", other_suites)
+
+    assert gate.main(["--spec", "e2e/tests/accessibility.spec.ts"]) == exit_code
+    start.assert_called_once()
+    run.assert_called_once_with(
+        "http://127.0.0.1:45678",
+        ["e2e/tests/accessibility.spec.ts"],
+        grep_invert=None,
+        label="selected",
+    )
+    stop.assert_called_once_with(process)
 
 
 def _script_disclosure_specs() -> list[str]:
