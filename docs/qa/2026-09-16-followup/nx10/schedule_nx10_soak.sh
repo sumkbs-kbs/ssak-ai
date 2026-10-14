@@ -20,17 +20,19 @@
 
 set -u
 
-REPO="${NX10_REPO:-/Users/mr.k/program/coding/ssak_comp/Ssak-Ai}"
-OUT="${NX10_OUT:-$REPO/docs/qa/2026-09-16-followup/nx10}"
-RUNNER="${NX10_RUNNER:-$OUT/run_nx10_soak.sh}"
+REPO="${NX10_REPO:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)}"
+OUT="${NX10_SOAK_OUT_DIR:-${NX10_OUT:-$REPO/docs/qa/2026-09-16-followup/nx10}}"
+RUNNER="${NX10_RUNNER:-$REPO/docs/qa/2026-09-16-followup/nx10/run_nx10_soak.sh}"
+export NX10_REPO="$REPO" NX10_OUT="$OUT" NX10_SOAK_OUT_DIR="$OUT" NX10_RUNNER="$RUNNER"
 SCHEDULE="$OUT/soak-schedule.txt"
 LOG="$OUT/soak-schedule.log"
 LOCK="$OUT/.soak-arm.lock"   # 예약 단일 잠금 — 상세는 soak_control.sh 참조
 # 지문 계산은 **venv 파이썬**으로 한다. 시스템 `python`/`python3` 는 3.9 일 수 있고(실측:
 # /usr/bin/python3 = 3.9.6), 그러면 `ga_gate.py` 의 3.12 문법에서 SyntaxError 가 나
 # 지문이 UNVERIFIED 로 떨어져 **22:00 에 아무것도 하지 않고 중단**된다.
-PY_FP="$REPO/.venv/bin/python"
-[ -x "$PY_FP" ] || PY_FP="python3"
+PY_FP="${NX10_PYTHON:-$REPO/.venv/bin/python}"
+[ -x "$PY_FP" ] || { printf 'Candidate interpreter unavailable: %s\n' "$PY_FP" >&2; exit 2; }
+export NX10_PYTHON="$PY_FP"
 AT_LOCAL="${NX10_SOAK_AT:-22:00}"
 # 기본값은 **예약하는 시점의 트리 지문**이다(고정 해시를 하드코딩하지 않는다 — 낡은 해시가 남아
 # 있으면 정상 예약도 드리프트로 오판한다). 값을 넘기면 그 값이 우선이고 출처를 기록한다.
@@ -123,6 +125,7 @@ if [ "$DRY_RUN" = "1" ]; then
 fi
 
 # 여기서 잠금을 잡는다: 대기 중인 예약은 하나만 존재해야 한다.
+mkdir -p "$OUT" || exit 2
 _acquire_lock
 # 대기 중 중단(TERM/HUP/INT)되더라도 내 잠금은 풀고 죽는다 — 남겨 두면 다음 예약이 stale 판정을 본다.
 trap '_release_lock' EXIT INT TERM HUP

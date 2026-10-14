@@ -57,10 +57,12 @@ _nx10_repo_root() {
   done
   return 1
 }
-REPO="${NX10_REPO:-$(_nx10_repo_root || printf '%s' /Users/mr.k/program/coding/ssak_comp/Ssak-Ai)}"
-OUT="${NX10_OUT:-$REPO/docs/qa/2026-09-16-followup/nx10}"
-SCHEDULER="${NX10_SCHEDULER:-$OUT/schedule_nx10_soak.sh}"
-RUNNER="${NX10_RUNNER:-$OUT/run_nx10_soak.sh}"
+REPO="${NX10_REPO:-$(_nx10_repo_root)}"
+[ -n "$REPO" ] || { printf 'Candidate repository unavailable\n' >&2; exit 2; }
+OUT="${NX10_SOAK_OUT_DIR:-${NX10_OUT:-$REPO/docs/qa/2026-09-16-followup/nx10}}"
+SCHEDULER="${NX10_SCHEDULER:-$REPO/docs/qa/2026-09-16-followup/nx10/schedule_nx10_soak.sh}"
+RUNNER="${NX10_RUNNER:-$REPO/docs/qa/2026-09-16-followup/nx10/run_nx10_soak.sh}"
+export NX10_REPO="$REPO" NX10_OUT="$OUT" NX10_SOAK_OUT_DIR="$OUT" NX10_RUNNER="$RUNNER"
 PATTERN="${NX10_SCHED_PATTERN:-schedule_nx10_soak.sh}"
 GRACE="${NX10_CANCEL_GRACE:-15}"
 SCREEN_NAME="${NX10_SCREEN_NAME:-nx10soak}"
@@ -72,7 +74,8 @@ RUNLOCK="$OUT/.soak-run.lock"       # 8시간 실행 단일 잠금 — runner �
 EXIT_TXT="$OUT/soak-exit.txt"
 SCHED_LOG="$OUT/soak-schedule.log"
 SCHEDULE="$OUT/soak-schedule.txt"
-VENV_PY="$REPO/.venv/bin/python"
+VENV_PY="${NX10_PYTHON:-$REPO/.venv/bin/python}"
+export NX10_PYTHON="$VENV_PY"
 
 _utc() { date -u +%FT%TZ; }
 

@@ -21,13 +21,15 @@
 
 set -u
 
-REPO="/Users/mr.k/program/coding/ssak_comp/Ssak-Ai"
+REPO="${NX10_REPO:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)}"
 OUT_REL="${NX10_SOAK_OUT_REL:-docs/qa/2026-09-16-followup/nx10}"
 # 증거 경로를 **절대경로로 덮어쓸 수 있게** 둔다: 그래야 "동시 실행을 거부하는가"를 임시 디렉터리에서
 # 검증할 수 있다(거부 경로가 본 증거에 시험 흔적을 남기지 않는다).
 cd "$REPO" || exit 1
-OUT="${NX10_SOAK_OUT_DIR:-$REPO/$OUT_REL}"
-PY="$REPO/.venv/bin/python"
+OUT="${NX10_SOAK_OUT_DIR:-${NX10_OUT:-$REPO/$OUT_REL}}"
+PY="${NX10_PYTHON:-$REPO/.venv/bin/python}"
+[ -x "$PY" ] || { printf 'Candidate interpreter unavailable: %s\n' "$PY" >&2; exit 2; }
+mkdir -p "$OUT" || exit 2
 SOAK_SECONDS="${SOAK_SECONDS:-28800}"
 REPORT="$OUT/soak-${SOAK_SECONDS}.json"
 # ── 보존 캡(측정 설정 — 기록에 남긴다) ─────────────────────────────────────────
@@ -40,7 +42,7 @@ REPORT="$OUT/soak-${SOAK_SECONDS}.json"
 # 8시간 예상 쓰기량(≈4.5 GB)이 여유 있게 들어가는 값으로 올리고, 그 사실을 기록·문서에 남긴다.
 # soft cap 은 기본값을 그대로 둔다(경고·`journals_over_soft_cap` 관측이 그대로 살아 있다).
 export AGK_CONVERSATION_JOURNAL_HARD_CAP_MB="${AGK_CONVERSATION_JOURNAL_HARD_CAP_MB:-8192}"
-RETENTION_CAPS="$("$REPO/.venv/bin/python" -c "import sys; sys.path.insert(0,'src'); from antigravity_k.engine.conversation_retention import resolve_policy as r; p=r(); print('soft=%dMiB hard=%dMiB' % (p.soft_cap_bytes//1048576, p.hard_cap_bytes//1048576))" 2>/dev/null || echo unknown)"
+RETENTION_CAPS="$("$PY" -c "import sys; sys.path.insert(0,'src'); from antigravity_k.engine.conversation_retention import resolve_policy as r; p=r(); print('soft=%dMiB hard=%dMiB' % (p.soft_cap_bytes//1048576, p.hard_cap_bytes//1048576))" 2>/dev/null || echo unknown)"
 # 작업 디렉토리는 **저장소 밖**에 둔다 — 8시간 soak 은 수백 MB~수 GB 를 쓰므로 공유 체크아웃을
 # 더럽히면 다른 레인의 `git status`/프라이어블 worktree 판정에 끼어든다. (60초 리허설은
 # 저장소 안에 만들었던 적이 있다 — 그 디렉토리들은 증거로 남기고, 정식 실행부터는 /tmp 를 쓴다.)
