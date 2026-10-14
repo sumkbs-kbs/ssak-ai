@@ -1,0 +1,15 @@
+{
+  "schema": "ssak.imp09c.closeout.parent-alias-correction.v1",
+  "source_correction_path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-OFFLINE-GATE-01/run-20261013T062916Z-de47ef10-99da-40a8-acb0-3867808f6903/parent-evidence-correction.json",
+  "source_correction_sha256": "332b20b3081bbadfcfa8be08a132f226c399ea01658fabe601c86ee9a0ece6f5",
+  "observed_alias_path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-RUNTIME-COMPATIBILITY-01/run-20261012T233025Z-526f7458-a984-4e89-97c7-7f509a59addc/attempts/selector-exec-e1cca7f7688e4900a5b9c9ecda70b2ed/fixtures/test_imp09c_rc_02_origin_classcurrent/127.0.0.1.jsonl",
+  "raw_directory_symlink_target": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-RUNTIME-COMPATIBILITY-01/run-20261012T233025Z-526f7458-a984-4e89-97c7-7f509a59addc/attempts/selector-exec-e1cca7f7688e4900a5b9c9ecda70b2ed/fixtures/test_imp09c_rc_02_origin_class1",
+  "resolved_journal_target": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-RUNTIME-COMPATIBILITY-01/run-20261012T233025Z-526f7458-a984-4e89-97c7-7f509a59addc/attempts/selector-exec-e1cca7f7688e4900a5b9c9ecda70b2ed/fixtures/test_imp09c_rc_02_origin_class1/127.0.0.1.jsonl",
+  "actual_alias_target_absolute": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-RUNTIME-COMPATIBILITY-01/run-20261012T233025Z-526f7458-a984-4e89-97c7-7f509a59addc/attempts/selector-exec-e1cca7f7688e4900a5b9c9ecda70b2ed/fixtures/test_imp09c_rc_02_origin_class1/127.0.0.1.jsonl",
+  "resolved_journal_sha256": "7c60fcbdc9a7f5110edfae1c390909dc1a2e5536897a1b6594411cc0f22972e1",
+  "resolved_journal_bytes": 979,
+  "superseded_target_absolute": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-RUNTIME-COMPATIBILITY-01/run-20261012T233025Z-526f7458-a984-4e89-97c7-7f509a59addc/attempts/selector-exec-b51955dd6fe24a92931aca15c31ab278/fixtures/test_imp09c_rc_02_origin_class1",
+  "invocation_count_with_alias": 2,
+  "alias_aggregate_increment": 0,
+  "historical_start_time_target_claimed": false
+}

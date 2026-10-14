@@ -1,0 +1,61 @@
+{
+  "observed_by": "root tool outputs",
+  "source_scope": [
+    "capture_gate.py",
+    "preserve_inputs.py",
+    "audit_artifacts.py",
+    "seal_artifacts.py"
+  ],
+  "previous_failure": {
+    "command": "python -m basedpyright --level error capture_gate.py preserve_inputs.py audit_artifacts.py",
+    "exit_code": 1,
+    "errors": 1,
+    "message": "audit_artifacts.py:14:6 reportImplicitRelativeImport: preserve_inputs is implicitly relative",
+    "resolution": "Use a standalone no-follow file inventory in the audit script; final same-helper static checks exit 0."
+  },
+  "final_checks": [
+    {
+      "kind": "ruff-lint",
+      "command": "python -m ruff check --no-cache '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/capture_gate.py' '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/preserve_inputs.py' '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/audit_artifacts.py'",
+      "chunk_id": "9f0a83",
+      "wall_time_seconds": 0.000003542,
+      "exit_code": 0,
+      "original_token_count": 5,
+      "output": "All checks passed!\n"
+    },
+    {
+      "kind": "ruff-format",
+      "command": "python -m ruff format --check --no-cache '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/capture_gate.py' '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/preserve_inputs.py' '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/audit_artifacts.py'",
+      "chunk_id": "4fe3d8",
+      "wall_time_seconds": 0.000005958,
+      "exit_code": 0,
+      "original_token_count": 7,
+      "output": "3 files already formatted\n"
+    },
+    {
+      "kind": "basedpyright",
+      "command": "python -m basedpyright --level error '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/capture_gate.py' '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/preserve_inputs.py' '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/audit_artifacts.py'",
+      "chunk_id": "7ae627",
+      "wall_time_seconds": 0.264750291,
+      "exit_code": 0,
+      "original_token_count": 8,
+      "output": "0 errors, 0 warnings, 0 notes\n"
+    },
+    {
+      "kind": "seal-ruff",
+      "chunk_id": "a60862",
+      "wall_time_seconds": 0.000005333,
+      "exit_code": 0,
+      "original_token_count": 5,
+      "output": "All checks passed!\n"
+    },
+    {
+      "kind": "seal-basedpyright",
+      "chunk_id": "6c9359",
+      "wall_time_seconds": 0.175653458,
+      "exit_code": 0,
+      "original_token_count": 8,
+      "output": "0 errors, 0 warnings, 0 notes\n"
+    }
+  ]
+}

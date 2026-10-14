@@ -1,0 +1,28 @@
+.....F................                                                   [100%]
+=================================== FAILURES ===================================
+_______ test_imp09c_fg_04_main_mismatched_binding_and_guard_fail_closed ________
+
+tmp_path = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP...ex-d6851e1f-71d862ec/attempts/selector-exec-51e0520c0da44f9e998ba40c3e56ff2f/fixtures/test_imp09c_fg_04_main_mismatc0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x107871220>
+
+    def test_imp09c_fg_04_main_mismatched_binding_and_guard_fail_closed(tmp_path: Path, monkeypatch: Any) -> None:
+        run, parent, expected, _, _ = _main_fixture(tmp_path / "mismatch")
+        code, receipt, _ = _run_main_mocked(run, parent, expected, monkeypatch, inject_binding_mismatch=True)
+        assert code != 0 and receipt["selector_evidence_valid"] is False
+>       assert any("pytest result selector/binding" in error for error in receipt["selector_evidence_errors"])
+E       assert False
+E        +  where False = any(<generator object test_imp09c_fg_04_main_mismatched_binding_and_guard_fail_closed.<locals>.<genexpr> at 0x1069618a0>)
+
+../../test_runtime_final_gate_contract.py:675: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{"receipt": "checks-5eccdedba8dd4cd28feaafc4718d279e.json", "checks": [{"exit_code": 1, "attempt": "attempts/cold-selector-fixture"}, {"exit_code": 0, "attempt": "attempts/static-1-simulated"}, {"exit_code": 0, "attempt": "attempts/static-2-simulated"}, {"exit_code": 0, "attempt": "attempts/static-3-simulated"}, {"exit_code": 0, "attempt": "attempts/static-4-simulated"}], "protected_changed": [], "overall_valid": false, "delivery_artifacts": {"counts": {"invocations": {"invocation_count": 0, "aliases": []}, "journal_records": 0, "cases": {"tests": 0, "selected": 22, "passed": 0, "failures": 0, "errors": 0, "skipped": 0}}, "counts_sha256": "9a283ffe13ab1f5f89ba44f91a639a5aacbe6f184845cc7defe37019b4316e62", "inventory_sha256": "654de38807ac4123359517309a58c50ab4da1cd3c79b7e9c6d2bb8cce6e6a0de", "inventory_path": "delivery-inventory.json", "inventory_files": 39, "inventory_symlinks": 0}}
+=============================== warnings summary ===============================
+../../../../../../../../../../../../../miniforge3/lib/python3.13/site-packages/_pytest/config/__init__.py:1434
+  /Users/mr.k/miniforge3/lib/python3.13/site-packages/_pytest/config/__init__.py:1434: PytestConfigWarning: Unknown config option: asyncio_mode
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED ../../test_runtime_final_gate_contract.py::test_imp09c_fg_04_main_mismatched_binding_and_guard_fail_closed
+1 failed, 21 passed, 1 warning in 0.83s

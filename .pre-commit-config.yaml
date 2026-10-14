@@ -6,8 +6,10 @@ repos:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
         types_or: [python, pyi, jupyter]
+        exclude: &immutable_qa ^docs/qa/sequential-improvement/[^/]+/raw/
       - id: ruff-format
         types_or: [python, pyi, jupyter]
+        exclude: *immutable_qa
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
@@ -19,22 +21,24 @@ repos:
       # 커밋 시 trailing-whitespace 가 번들 11개를 다시 써서 커밋이 중단됐다.
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
-        exclude: ^src/antigravity_k/dashboard_dist/
+        exclude: &immutable_bytes ^(src/antigravity_k/dashboard_dist/|docs/qa/sequential-improvement/[^/]+/raw/)
       - id: end-of-file-fixer
-        exclude: ^src/antigravity_k/dashboard_dist/
+        exclude: *immutable_bytes
       - id: check-yaml
         args: [--allow-multiple-documents]
       - id: check-toml
       - id: check-json
+        exclude: *immutable_qa
       # 번들 크기는 빌드가 정한다(모나코·TS 워커는 원래 MB 단위). 소스에만 상한을 적용한다.
       - id: check-added-large-files
         args: [--maxkb=1024]
-        exclude: ^src/antigravity_k/dashboard_dist/
+        exclude: *immutable_bytes
       - id: detect-private-key
       - id: check-merge-conflict
       - id: check-case-conflict
       - id: mixed-line-ending
         args: [--fix=lf]
+        exclude: *immutable_bytes
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.14.1

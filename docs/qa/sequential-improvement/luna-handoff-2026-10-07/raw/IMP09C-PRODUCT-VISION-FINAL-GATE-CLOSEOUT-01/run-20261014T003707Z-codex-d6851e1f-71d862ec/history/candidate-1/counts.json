@@ -1,0 +1,15 @@
+{
+  "invocations": {
+    "invocation_count": 0,
+    "aliases": []
+  },
+  "journal_records": 0,
+  "cases": {
+    "tests": 0,
+    "selected": 0,
+    "passed": 0,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}

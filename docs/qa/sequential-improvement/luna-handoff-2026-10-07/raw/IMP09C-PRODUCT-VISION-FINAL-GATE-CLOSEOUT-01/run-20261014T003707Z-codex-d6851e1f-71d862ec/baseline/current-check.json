@@ -1,0 +1,17 @@
+{
+  "schema": "ssak.imp09c.inherited-baseline-current-check.v1",
+  "checked_at_utc": "2026-10-14T00:45:46.432245+00:00",
+  "inherited_baseline_sha256": "1699a4dfdb6c40bf8f48966bf35fed8d94cfb7e657542baff9b000e1d71fea25",
+  "inherited_paths": 21,
+  "additional_declared_paths": 3,
+  "additional_new_paths": 0,
+  "deduplicated_equal_hash_paths": [
+    "src/antigravity_k/api/auth_policy.py",
+    "src/antigravity_k/api/routes/system_api.py",
+    "src/antigravity_k/tools/egress_policy.py"
+  ],
+  "unique_protected_paths": 21,
+  "matched_paths": 21,
+  "mismatches": {},
+  "result": "MATCH"
+}

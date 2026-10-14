@@ -1,0 +1,15 @@
+{
+  "task_id": "IMP-09-C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01",
+  "attempt_id": "codex-final-gate-candidate-2",
+  "execution_binding_id": "b3a5701518a5edf08596ff70",
+  "execution_binding_sha256": "b3a5701518a5edf08596ff701aa09b2010740da80db6a98f8dde6e23a57443f4",
+  "stage": "cleanup",
+  "deadline_seconds": 5.0,
+  "deadline_elapsed_seconds": 6.0,
+  "total_elapsed_seconds": 6.0,
+  "verdict": "INCONCLUSIVE_RESULT_UNKNOWN_NO_REDISPATCH",
+  "raw_product_response_sha256": "4ed93496be6f4fe8355bdda92bbd1e522aecba9cb067d75d6777f677de598d1b",
+  "raw_provider_response_sha256": "9c18744363f77419d1c86533dbd0f5819d3b83a963ddf2b95f4fe0b4a7547ca1",
+  "product_dispatches": 1,
+  "provider_wires": 1
+}

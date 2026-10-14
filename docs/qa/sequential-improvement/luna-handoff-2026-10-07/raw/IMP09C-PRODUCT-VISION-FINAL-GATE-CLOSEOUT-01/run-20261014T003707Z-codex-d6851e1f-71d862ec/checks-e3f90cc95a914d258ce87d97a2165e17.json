@@ -1,0 +1,907 @@
+{
+  "task_id": "IMP-09-C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01",
+  "invocation_id": "e3f90cc95a914d258ce87d97a2165e17",
+  "parent_invocation_id": "e3f90cc95a914d258ce87d97a2165e17",
+  "parent_capture_id": "cold-selector-869041f69ccf4b569e8bf7ae24d91571",
+  "child_invocation_id": null,
+  "status": "INCONCLUSIVE_DELIVERY_OR_SELECTOR_EVIDENCE",
+  "selector_invocation_id": "e3f90cc95a914d258ce87d97a2165e17",
+  "selector_invocation_source_sha256": {
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+  },
+  "selector_parent_capture_path": "attempts/cold-selector-869041f69ccf4b569e8bf7ae24d91571",
+  "started_at_utc": "2026-10-14T00:45:12.828915+00:00",
+  "finished_at_utc": "2026-10-14T00:45:14.034914+00:00",
+  "run_directory": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec",
+  "state_directory": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/offline-state/check-e3f90cc95a914d258ce87d97a2165e17",
+  "source_sha256_at_invocation_start": {
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+  },
+  "candidate_source_bound_before_cold_selector": {
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+  },
+  "cold_selector_sources_at_execution": {
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+  },
+  "cold_selector_sources_after_execution": {
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+  },
+  "protected_files_before": {
+    "captured_at_utc": "2026-10-12T21:59:05.873661+00:00",
+    "files": [
+      {
+        "path": "src/antigravity_k/api/routes/chat.py",
+        "bytes": 61723,
+        "sha256": "21c07609c0fbd5d5cbe15f2704e56c5bb9cba9d7ec7b089af1780183b9e6cbe1",
+        "expected_sha256": "21c07609c0fbd5d5cbe15f2704e56c5bb9cba9d7ec7b089af1780183b9e6cbe1",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/engine/conversation_store.py",
+        "bytes": 73900,
+        "sha256": "98dcbe3890dc4e1481ae2fa5a35cefeea328925a5d61e7572e60cb749c2db496",
+        "expected_sha256": "98dcbe3890dc4e1481ae2fa5a35cefeea328925a5d61e7572e60cb749c2db496",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/engine/protocol_translator.py",
+        "bytes": 18266,
+        "sha256": "891144e6311bac6764e9f139cd235ce5e706ad00abc179e2c238266668af500e",
+        "expected_sha256": "891144e6311bac6764e9f139cd235ce5e706ad00abc179e2c238266668af500e",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/engine/model_manager.py",
+        "bytes": 85133,
+        "sha256": "cf0867a8b8a934eddfad3ffcfc204781089f5960e30765c8cba6c26802bf1b7a",
+        "expected_sha256": "cf0867a8b8a934eddfad3ffcfc204781089f5960e30765c8cba6c26802bf1b7a",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+        "bytes": 59973,
+        "sha256": "a23ce7e0f6a0f3e65d25831f7a1bd92b2dc1ddea9e18264a67c80eae7d619c1a",
+        "expected_sha256": "a23ce7e0f6a0f3e65d25831f7a1bd92b2dc1ddea9e18264a67c80eae7d619c1a",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/api/server.py",
+        "bytes": 33763,
+        "sha256": "2cf6b4e5808b3228878ddd7da07c864c80c223d503963a842e3daa9fef3379fb",
+        "expected_sha256": "2cf6b4e5808b3228878ddd7da07c864c80c223d503963a842e3daa9fef3379fb",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/api/dependencies.py",
+        "bytes": 35216,
+        "sha256": "64bcea9f345cce3ba85da4329bc83443720621b24e3ff6f0061adda0440eb1de",
+        "expected_sha256": "64bcea9f345cce3ba85da4329bc83443720621b24e3ff6f0061adda0440eb1de",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/config.py",
+        "bytes": 28920,
+        "sha256": "6721ba3d22f9eb9ce509caf06fcca966f4605f3134d2c4a249aceea803549346",
+        "expected_sha256": "6721ba3d22f9eb9ce509caf06fcca966f4605f3134d2c4a249aceea803549346",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/engine/project_registry.py",
+        "bytes": 18594,
+        "sha256": "f97c4d2f04f45dc7a8ca545aac05d24ce1fe445c4e4230f149c4a5b8e882df18",
+        "expected_sha256": "f97c4d2f04f45dc7a8ca545aac05d24ce1fe445c4e4230f149c4a5b8e882df18",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/engine/model_registry.py",
+        "bytes": 29103,
+        "sha256": "8febe07ec3e0b00c87b83afd31475727c893885c97f760aadcf3f1409e0e6bda",
+        "expected_sha256": "8febe07ec3e0b00c87b83afd31475727c893885c97f760aadcf3f1409e0e6bda",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/api/project_binding.py",
+        "bytes": 15269,
+        "sha256": "a73892bc1027d88b38aa4fc2ac2bc9cbb502941e8a208611b080326bf93697c7",
+        "expected_sha256": "a73892bc1027d88b38aa4fc2ac2bc9cbb502941e8a208611b080326bf93697c7",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/api/auth_routes.py",
+        "bytes": 24921,
+        "sha256": "280327194371a88baa7cc7c3840f400357014060571203a27a6352fdd469e46c",
+        "expected_sha256": "280327194371a88baa7cc7c3840f400357014060571203a27a6352fdd469e46c",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/engine/session_manager.py",
+        "bytes": 52349,
+        "sha256": "a6fefeaba5d6c62d6bde13fa696987835925cd61bda59a6f8937598bf4720e22",
+        "expected_sha256": "a6fefeaba5d6c62d6bde13fa696987835925cd61bda59a6f8937598bf4720e22",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/engine/usage_tracker.py",
+        "bytes": 15817,
+        "sha256": "66ac28231d2e852a99f62cfd39273846d2475bb32ecbc522499da02b0640a2de",
+        "expected_sha256": "66ac28231d2e852a99f62cfd39273846d2475bb32ecbc522499da02b0640a2de",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/engine/audit_logger.py",
+        "bytes": 8491,
+        "sha256": "a9000330a45a647a981615ea0bf8124295215221b4b324260054bc9dcef24f41",
+        "expected_sha256": "a9000330a45a647a981615ea0bf8124295215221b4b324260054bc9dcef24f41",
+        "match": true
+      },
+      {
+        "path": "tests/test_chat_vision_routing_contract.py",
+        "bytes": 23349,
+        "sha256": "558857bb7a8b9a6a21f55d5d6552b4cdc6f90e2df2001732208c7bb83c85138c",
+        "expected_sha256": "558857bb7a8b9a6a21f55d5d6552b4cdc6f90e2df2001732208c7bb83c85138c",
+        "match": true
+      },
+      {
+        "path": "tests/fixtures/vision_shapes_384x256.png.b64",
+        "bytes": 1785,
+        "sha256": "b37f9f02d1ad805f5004cc78ce9f5fd2da0a2780fbe6a2af591d57cd18abee31",
+        "expected_sha256": "b37f9f02d1ad805f5004cc78ce9f5fd2da0a2780fbe6a2af591d57cd18abee31",
+        "match": true
+      },
+      {
+        "path": "config.yaml",
+        "bytes": 21191,
+        "sha256": "3948867a6b9ef51fc392e07d0015c45b7f881095942c4cbf64c503fdc08d8025",
+        "expected_sha256": "3948867a6b9ef51fc392e07d0015c45b7f881095942c4cbf64c503fdc08d8025",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/api/routes/system_api.py",
+        "bytes": 96252,
+        "sha256": "610334086c50b0b0e0ff09b57d3ae45e7b46739be8316baa7627ade67d35c7a6",
+        "expected_sha256": "610334086c50b0b0e0ff09b57d3ae45e7b46739be8316baa7627ade67d35c7a6",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/api/auth_policy.py",
+        "bytes": 9872,
+        "sha256": "d99b35ca9a6ab458d1bf70879b92b1591d765cd09cc80e2d91e72bb46e69ef8c",
+        "expected_sha256": "d99b35ca9a6ab458d1bf70879b92b1591d765cd09cc80e2d91e72bb46e69ef8c",
+        "match": true
+      },
+      {
+        "path": "src/antigravity_k/tools/egress_policy.py",
+        "bytes": 4913,
+        "sha256": "c1b36445d9e906b1cb8b999bd772bf58d83b29d766d396fc1e0698f5d991a699",
+        "expected_sha256": "c1b36445d9e906b1cb8b999bd772bf58d83b29d766d396fc1e0698f5d991a699",
+        "match": true
+      }
+    ],
+    "sha256": "1699a4dfdb6c40bf8f48966bf35fed8d94cfb7e657542baff9b000e1d71fea25"
+  },
+  "protected_current_check": {
+    "checked_at_utc": "2026-10-14T00:45:12.828915+00:00",
+    "matched_paths": 21,
+    "protected_paths": 21,
+    "mismatches": {}
+  },
+  "protected_files_after": {
+    "src/antigravity_k/api/routes/chat.py": "21c07609c0fbd5d5cbe15f2704e56c5bb9cba9d7ec7b089af1780183b9e6cbe1",
+    "src/antigravity_k/engine/conversation_store.py": "98dcbe3890dc4e1481ae2fa5a35cefeea328925a5d61e7572e60cb749c2db496",
+    "src/antigravity_k/engine/protocol_translator.py": "891144e6311bac6764e9f139cd235ce5e706ad00abc179e2c238266668af500e",
+    "src/antigravity_k/engine/model_manager.py": "cf0867a8b8a934eddfad3ffcfc204781089f5960e30765c8cba6c26802bf1b7a",
+    "src/antigravity_k/engine/provider_adapters/inference_providers.py": "a23ce7e0f6a0f3e65d25831f7a1bd92b2dc1ddea9e18264a67c80eae7d619c1a",
+    "src/antigravity_k/api/server.py": "2cf6b4e5808b3228878ddd7da07c864c80c223d503963a842e3daa9fef3379fb",
+    "src/antigravity_k/api/dependencies.py": "64bcea9f345cce3ba85da4329bc83443720621b24e3ff6f0061adda0440eb1de",
+    "src/antigravity_k/config.py": "6721ba3d22f9eb9ce509caf06fcca966f4605f3134d2c4a249aceea803549346",
+    "src/antigravity_k/engine/project_registry.py": "f97c4d2f04f45dc7a8ca545aac05d24ce1fe445c4e4230f149c4a5b8e882df18",
+    "src/antigravity_k/engine/model_registry.py": "8febe07ec3e0b00c87b83afd31475727c893885c97f760aadcf3f1409e0e6bda",
+    "src/antigravity_k/api/project_binding.py": "a73892bc1027d88b38aa4fc2ac2bc9cbb502941e8a208611b080326bf93697c7",
+    "src/antigravity_k/api/auth_routes.py": "280327194371a88baa7cc7c3840f400357014060571203a27a6352fdd469e46c",
+    "src/antigravity_k/engine/session_manager.py": "a6fefeaba5d6c62d6bde13fa696987835925cd61bda59a6f8937598bf4720e22",
+    "src/antigravity_k/engine/usage_tracker.py": "66ac28231d2e852a99f62cfd39273846d2475bb32ecbc522499da02b0640a2de",
+    "src/antigravity_k/engine/audit_logger.py": "a9000330a45a647a981615ea0bf8124295215221b4b324260054bc9dcef24f41",
+    "tests/test_chat_vision_routing_contract.py": "558857bb7a8b9a6a21f55d5d6552b4cdc6f90e2df2001732208c7bb83c85138c",
+    "tests/fixtures/vision_shapes_384x256.png.b64": "b37f9f02d1ad805f5004cc78ce9f5fd2da0a2780fbe6a2af591d57cd18abee31",
+    "config.yaml": "3948867a6b9ef51fc392e07d0015c45b7f881095942c4cbf64c503fdc08d8025",
+    "src/antigravity_k/api/routes/system_api.py": "610334086c50b0b0e0ff09b57d3ae45e7b46739be8316baa7627ade67d35c7a6",
+    "src/antigravity_k/api/auth_policy.py": "d99b35ca9a6ab458d1bf70879b92b1591d765cd09cc80e2d91e72bb46e69ef8c",
+    "src/antigravity_k/tools/egress_policy.py": "c1b36445d9e906b1cb8b999bd772bf58d83b29d766d396fc1e0698f5d991a699"
+  },
+  "protected_changed": [],
+  "task_run_source_before": {
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+  },
+  "task_run_source_after": {
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+  },
+  "task_run_source_drift": {},
+  "selector_evidence_valid": false,
+  "selector_evidence_errors": [
+    "ValueError: parent command did not complete successfully"
+  ],
+  "test_state_guarded_paths": [
+    "data/projects.json",
+    "projects.json",
+    "src/antigravity_k/engine/project_registry.py",
+    "src/antigravity_k/engine/project_registry.py.lock"
+  ],
+  "state_env_overrides_values_not_recorded": true,
+  "test_state_guards": {
+    "paths": [
+      "data/projects.json",
+      "projects.json",
+      "src/antigravity_k/engine/project_registry.py",
+      "src/antigravity_k/engine/project_registry.py.lock"
+    ],
+    "env_values_recorded": false,
+    "changed_names": []
+  },
+  "checks": [
+    {
+      "attempt": "attempts/cold-selector-869041f69ccf4b569e8bf7ae24d91571",
+      "check_kind": "cold-selector",
+      "argv": [
+        "/Users/mr.k/miniforge3/bin/python",
+        "-B",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py",
+        "--offline-tests",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/offline-state/check-e3f90cc95a914d258ce87d97a2165e17"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+      "started_at_utc": "2026-10-14T00:45:12.838272+00:00",
+      "finished_at_utc": "2026-10-14T00:45:12.907051+00:00",
+      "elapsed_seconds_monotonic": 0.06965854193549603,
+      "exit_code": 3,
+      "environment_changed_names": [
+        "AGK_ALLOWED_ROOTS",
+        "AGK_AUDIT_LOG_DIR",
+        "AGK_AUTH_PIN_HASH_FILE",
+        "AGK_AUTH_TOKEN_SECRET_FILE",
+        "AGK_AUTO_DISCOVER_LOCAL_MODELS",
+        "AGK_CONFIG_FILE",
+        "AGK_ENV_FILE",
+        "AGK_HOOK_VAULT_DIR",
+        "AGK_PATH_PROJECT_ROOT",
+        "AGK_SESSION_BASE_DIR",
+        "AGK_USAGE_DB",
+        "ANTIGRAVITY_VAULT_PATH",
+        "HOME",
+        "IMP09C_CHILD_OUTPUT_PATH",
+        "IMP09C_FORCE_NEW_SELECTOR",
+        "IMP09C_PARENT_CAPTURE_ID",
+        "IMP09C_PARENT_CAPTURE_START_SHA256",
+        "IMP09C_PARENT_DISPATCH_SHA256",
+        "IMP09C_PARENT_INVOCATION_ID",
+        "IMP09C_PROTECTED_TEST_PATHS",
+        "IMP09C_SELECTOR_SCOPE"
+      ],
+      "environment_values_recorded": false,
+      "invocation_id": "e3f90cc95a914d258ce87d97a2165e17",
+      "capture_id": "cold-selector-869041f69ccf4b569e8bf7ae24d91571",
+      "capture_mode": "SUBPROCESS",
+      "expected_nodeids": [
+        "test_imp09c_fg_01_driver_success_requires_explicit_parent_child_receipts",
+        "test_imp09c_fg_01_final_reducer_rejects_errors_even_if_chain_claims_valid",
+        "test_imp09c_fg_02_missing_ambiguous_and_stale_children_fail_closed",
+        "test_imp09c_fg_03_zero_failure_error_skip_and_receipt_mismatch_fail_closed",
+        "test_imp09c_fg_04_main_executes_real_driver_with_mocked_capture",
+        "test_imp09c_fg_04_main_mismatched_binding_and_guard_fail_closed",
+        "test_imp09c_fg_04_main_existing_child_is_read_only",
+        "test_imp09c_fg_04_main_missing_child_and_reducer_error_fail_closed",
+        "test_imp09c_fg_10_main_owns_inventory_and_counts_writer",
+        "test_imp09c_fg_05_symlink_inventory_does_not_follow_directory_aliases",
+        "test_imp09c_fg_06_alias_journal_does_not_increase_invocation_counts",
+        "test_imp09c_fg_07_partial_body_timeout_preserves_prefix_and_bounded_deadline",
+        "test_imp09c_fg_08_supervise_once_success_requires_reaped_cleanup",
+        "test_imp09c_fg_11_cleanup_failure_and_late_deadline_fail_closed[cleanup-exception]",
+        "test_imp09c_fg_11_cleanup_failure_and_late_deadline_fail_closed[cleanup-unknown]",
+        "test_imp09c_fg_11_cleanup_failure_and_late_deadline_fail_closed[cleanup-slow]",
+        "test_imp09c_fg_11_cleanup_failure_and_late_deadline_fail_closed[cleanup-late]",
+        "test_imp09c_fg_09_pre_wire_source_drift_remains_non_success[source-drift]",
+        "test_imp09c_fg_09_pre_wire_source_drift_remains_non_success[request-drift]",
+        "test_imp09c_fg_09_pre_wire_source_drift_remains_non_success[binding-drift]",
+        "test_imp09c_fg_09_pre_wire_source_drift_remains_non_success[wire-expired]",
+        "test_imp09c_fg_12_post_cleanup_source_drift_is_reduced_to_failure"
+      ],
+      "parent_dispatch_sha256": "44c04c160f8d671022da0a6018444b5a9a3201770fac74b929aa35d01c136680",
+      "parent_capture_start_sha256": "bd9abe95de212ee929d80463a976a6b08a23087ab6870e8a9c1a75bf6973672e",
+      "source_snapshot_sha256": {
+        "run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "sources_at_execution": {
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "sources_after_execution": {
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "stdout": {
+        "path": "attempts/cold-selector-869041f69ccf4b569e8bf7ae24d91571/stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "attempts/cold-selector-869041f69ccf4b569e8bf7ae24d91571/stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "failure_verdict": "INCONCLUSIVE_CHILD_EVIDENCE",
+      "selector_evidence_errors": [
+        "ValueError: parent command did not complete successfully"
+      ],
+      "selected_nodeids": [],
+      "selector_counts": {
+        "tests": 0,
+        "selected": 0,
+        "passed": 0,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "selector_evidence_valid": false,
+      "selector_invocation": "attempts/cold-selector-869041f69ccf4b569e8bf7ae24d91571/selector-invocation.json",
+      "child_invocation": null,
+      "selector_started_at_utc": null,
+      "selector_ended_at_utc": null,
+      "selector_exit_code": null
+    },
+    {
+      "attempt": "attempts/static-1-340f7443f64445cd89c12c9e1b0527fd",
+      "check_kind": "static-1",
+      "argv": [
+        "/Users/mr.k/miniforge3/bin/python",
+        "-B",
+        "-m",
+        "ruff",
+        "check",
+        "--no-cache",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+      "started_at_utc": "2026-10-14T00:45:12.909208+00:00",
+      "finished_at_utc": "2026-10-14T00:45:12.943372+00:00",
+      "elapsed_seconds_monotonic": 0.03451400005724281,
+      "exit_code": 0,
+      "environment_changed_names": [
+        "AGK_ALLOWED_ROOTS",
+        "AGK_AUDIT_LOG_DIR",
+        "AGK_AUTH_PIN_HASH_FILE",
+        "AGK_AUTH_TOKEN_SECRET_FILE",
+        "AGK_AUTO_DISCOVER_LOCAL_MODELS",
+        "AGK_CONFIG_FILE",
+        "AGK_ENV_FILE",
+        "AGK_HOOK_VAULT_DIR",
+        "AGK_PATH_PROJECT_ROOT",
+        "AGK_SESSION_BASE_DIR",
+        "AGK_USAGE_DB",
+        "ANTIGRAVITY_VAULT_PATH",
+        "HOME",
+        "IMP09C_FORCE_NEW_SELECTOR",
+        "IMP09C_PROTECTED_TEST_PATHS",
+        "IMP09C_SELECTOR_SCOPE"
+      ],
+      "environment_values_recorded": false,
+      "invocation_id": "e3f90cc95a914d258ce87d97a2165e17",
+      "capture_id": "static-1-340f7443f64445cd89c12c9e1b0527fd",
+      "capture_mode": "SUBPROCESS",
+      "expected_nodeids": null,
+      "parent_dispatch_sha256": null,
+      "parent_capture_start_sha256": null,
+      "source_snapshot_sha256": {
+        "run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "sources_at_execution": {
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "sources_after_execution": {
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "stdout": {
+        "path": "attempts/static-1-340f7443f64445cd89c12c9e1b0527fd/stdout.txt",
+        "bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "stderr": {
+        "path": "attempts/static-1-340f7443f64445cd89c12c9e1b0527fd/stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "selected_nodeids": [],
+      "selector_counts": null
+    },
+    {
+      "attempt": "attempts/static-2-89fb8092952e4202a7b3809e5d082132",
+      "check_kind": "static-2",
+      "argv": [
+        "/Users/mr.k/miniforge3/bin/python",
+        "-B",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "--no-cache",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+      "started_at_utc": "2026-10-14T00:45:12.946575+00:00",
+      "finished_at_utc": "2026-10-14T00:45:12.977693+00:00",
+      "elapsed_seconds_monotonic": 0.031513917027041316,
+      "exit_code": 0,
+      "environment_changed_names": [
+        "AGK_ALLOWED_ROOTS",
+        "AGK_AUDIT_LOG_DIR",
+        "AGK_AUTH_PIN_HASH_FILE",
+        "AGK_AUTH_TOKEN_SECRET_FILE",
+        "AGK_AUTO_DISCOVER_LOCAL_MODELS",
+        "AGK_CONFIG_FILE",
+        "AGK_ENV_FILE",
+        "AGK_HOOK_VAULT_DIR",
+        "AGK_PATH_PROJECT_ROOT",
+        "AGK_SESSION_BASE_DIR",
+        "AGK_USAGE_DB",
+        "ANTIGRAVITY_VAULT_PATH",
+        "HOME",
+        "IMP09C_FORCE_NEW_SELECTOR",
+        "IMP09C_PROTECTED_TEST_PATHS",
+        "IMP09C_SELECTOR_SCOPE"
+      ],
+      "environment_values_recorded": false,
+      "invocation_id": "e3f90cc95a914d258ce87d97a2165e17",
+      "capture_id": "static-2-89fb8092952e4202a7b3809e5d082132",
+      "capture_mode": "SUBPROCESS",
+      "expected_nodeids": null,
+      "parent_dispatch_sha256": null,
+      "parent_capture_start_sha256": null,
+      "source_snapshot_sha256": {
+        "run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "sources_at_execution": {
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "sources_after_execution": {
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "stdout": {
+        "path": "attempts/static-2-89fb8092952e4202a7b3809e5d082132/stdout.txt",
+        "bytes": 26,
+        "sha256": "eee76f865de5a9f2456950f710ae5d5f9b5bd0ea02aa54f614c5eed6642a0bfd"
+      },
+      "stderr": {
+        "path": "attempts/static-2-89fb8092952e4202a7b3809e5d082132/stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "selected_nodeids": [],
+      "selector_counts": null
+    },
+    {
+      "attempt": "attempts/static-3-a596863372d1400abad2a09387fa6cea",
+      "check_kind": "static-3",
+      "argv": [
+        "/Users/mr.k/miniforge3/bin/python",
+        "-B",
+        "-m",
+        "basedpyright",
+        "--level",
+        "error",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+      "started_at_utc": "2026-10-14T00:45:12.979982+00:00",
+      "finished_at_utc": "2026-10-14T00:45:13.978515+00:00",
+      "elapsed_seconds_monotonic": 0.9988618750358,
+      "exit_code": 0,
+      "environment_changed_names": [
+        "AGK_ALLOWED_ROOTS",
+        "AGK_AUDIT_LOG_DIR",
+        "AGK_AUTH_PIN_HASH_FILE",
+        "AGK_AUTH_TOKEN_SECRET_FILE",
+        "AGK_AUTO_DISCOVER_LOCAL_MODELS",
+        "AGK_CONFIG_FILE",
+        "AGK_ENV_FILE",
+        "AGK_HOOK_VAULT_DIR",
+        "AGK_PATH_PROJECT_ROOT",
+        "AGK_SESSION_BASE_DIR",
+        "AGK_USAGE_DB",
+        "ANTIGRAVITY_VAULT_PATH",
+        "HOME",
+        "IMP09C_FORCE_NEW_SELECTOR",
+        "IMP09C_PROTECTED_TEST_PATHS",
+        "IMP09C_SELECTOR_SCOPE"
+      ],
+      "environment_values_recorded": false,
+      "invocation_id": "e3f90cc95a914d258ce87d97a2165e17",
+      "capture_id": "static-3-a596863372d1400abad2a09387fa6cea",
+      "capture_mode": "SUBPROCESS",
+      "expected_nodeids": null,
+      "parent_dispatch_sha256": null,
+      "parent_capture_start_sha256": null,
+      "source_snapshot_sha256": {
+        "run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "sources_at_execution": {
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "sources_after_execution": {
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "stdout": {
+        "path": "attempts/static-3-a596863372d1400abad2a09387fa6cea/stdout.txt",
+        "bytes": 30,
+        "sha256": "56882e01cb80173ef053c4096e4ee43e3123a15f5c0a06715f96988d48fbd91c"
+      },
+      "stderr": {
+        "path": "attempts/static-3-a596863372d1400abad2a09387fa6cea/stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "selected_nodeids": [],
+      "selector_counts": null
+    },
+    {
+      "attempt": "attempts/static-4-3f3a4499c21a44ff89d1049a06d01181",
+      "check_kind": "static-4",
+      "argv": [
+        "/Users/mr.k/miniforge3/bin/python",
+        "-B",
+        "-c",
+        "from pathlib import Path; paths=['/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py', '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py', '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py', '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py', '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py', '/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py']; [compile(Path(p).read_bytes(),p,'exec') for p in paths]; print('in-memory compile passed')"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+      "started_at_utc": "2026-10-14T00:45:13.980706+00:00",
+      "finished_at_utc": "2026-10-14T00:45:14.031657+00:00",
+      "elapsed_seconds_monotonic": 0.051315292017534375,
+      "exit_code": 0,
+      "environment_changed_names": [
+        "AGK_ALLOWED_ROOTS",
+        "AGK_AUDIT_LOG_DIR",
+        "AGK_AUTH_PIN_HASH_FILE",
+        "AGK_AUTH_TOKEN_SECRET_FILE",
+        "AGK_AUTO_DISCOVER_LOCAL_MODELS",
+        "AGK_CONFIG_FILE",
+        "AGK_ENV_FILE",
+        "AGK_HOOK_VAULT_DIR",
+        "AGK_PATH_PROJECT_ROOT",
+        "AGK_SESSION_BASE_DIR",
+        "AGK_USAGE_DB",
+        "ANTIGRAVITY_VAULT_PATH",
+        "HOME",
+        "IMP09C_FORCE_NEW_SELECTOR",
+        "IMP09C_PROTECTED_TEST_PATHS",
+        "IMP09C_SELECTOR_SCOPE"
+      ],
+      "environment_values_recorded": false,
+      "invocation_id": "e3f90cc95a914d258ce87d97a2165e17",
+      "capture_id": "static-4-3f3a4499c21a44ff89d1049a06d01181",
+      "capture_mode": "SUBPROCESS",
+      "expected_nodeids": null,
+      "parent_dispatch_sha256": null,
+      "parent_capture_start_sha256": null,
+      "source_snapshot_sha256": {
+        "run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "sources_at_execution": {
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "sources_after_execution": {
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "stdout": {
+        "path": "attempts/static-4-3f3a4499c21a44ff89d1049a06d01181/stdout.txt",
+        "bytes": 25,
+        "sha256": "33364c770b4c6e107d3df586fb52ebe4118394028b9d3616e1cead93fb8b97fa"
+      },
+      "stderr": {
+        "path": "attempts/static-4-3f3a4499c21a44ff89d1049a06d01181/stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "selected_nodeids": [],
+      "selector_counts": null
+    }
+  ],
+  "all_exit_zero": false,
+  "overall_valid": false,
+  "selector_counts": {
+    "tests": 0,
+    "selected": 0,
+    "passed": 0,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "selector_nodeids": [],
+  "actual_external_http": 0,
+  "actual_socket_connect": 0,
+  "actual_socket_bind_listen": 0,
+  "actual_worker_process": 0,
+  "actual_uvicorn": 0,
+  "actual_ollama": 0,
+  "actual_inference": 0,
+  "selector_evidence_source": "explicit_parent_child_receipt_chain",
+  "selector_execution_provenance": "INCONCLUSIVE_CHILD_EVIDENCE",
+  "simulated_capture_used_for_receipt": false,
+  "child_observation": {
+    "parent_invocation_id": "e3f90cc95a914d258ce87d97a2165e17",
+    "invocation_id": "e3f90cc95a914d258ce87d97a2165e17",
+    "parent_capture_path": "attempts/cold-selector-869041f69ccf4b569e8bf7ae24d91571",
+    "expected_selector_sha256": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+    "parent_capture_id": "cold-selector-869041f69ccf4b569e8bf7ae24d91571",
+    "child_invocation_id": null,
+    "owned_output_path": null,
+    "command_receipt": {
+      "check_kind": "cold-selector",
+      "argv": [
+        "/Users/mr.k/miniforge3/bin/python",
+        "-B",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py",
+        "--offline-tests",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/offline-state/check-e3f90cc95a914d258ce87d97a2165e17"
+      ],
+      "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+      "started_at_utc": "2026-10-14T00:45:12.838272+00:00",
+      "finished_at_utc": "2026-10-14T00:45:12.907051+00:00",
+      "elapsed_seconds_monotonic": 0.06965854193549603,
+      "exit_code": 3,
+      "environment_changed_names": [
+        "AGK_ALLOWED_ROOTS",
+        "AGK_AUDIT_LOG_DIR",
+        "AGK_AUTH_PIN_HASH_FILE",
+        "AGK_AUTH_TOKEN_SECRET_FILE",
+        "AGK_AUTO_DISCOVER_LOCAL_MODELS",
+        "AGK_CONFIG_FILE",
+        "AGK_ENV_FILE",
+        "AGK_HOOK_VAULT_DIR",
+        "AGK_PATH_PROJECT_ROOT",
+        "AGK_SESSION_BASE_DIR",
+        "AGK_USAGE_DB",
+        "ANTIGRAVITY_VAULT_PATH",
+        "HOME",
+        "IMP09C_CHILD_OUTPUT_PATH",
+        "IMP09C_FORCE_NEW_SELECTOR",
+        "IMP09C_PARENT_CAPTURE_ID",
+        "IMP09C_PARENT_CAPTURE_START_SHA256",
+        "IMP09C_PARENT_DISPATCH_SHA256",
+        "IMP09C_PARENT_INVOCATION_ID",
+        "IMP09C_PROTECTED_TEST_PATHS",
+        "IMP09C_SELECTOR_SCOPE"
+      ],
+      "environment_values_recorded": false,
+      "invocation_id": "e3f90cc95a914d258ce87d97a2165e17",
+      "capture_id": "cold-selector-869041f69ccf4b569e8bf7ae24d91571",
+      "capture_mode": "SUBPROCESS",
+      "expected_nodeids": [
+        "test_imp09c_fg_01_driver_success_requires_explicit_parent_child_receipts",
+        "test_imp09c_fg_01_final_reducer_rejects_errors_even_if_chain_claims_valid",
+        "test_imp09c_fg_02_missing_ambiguous_and_stale_children_fail_closed",
+        "test_imp09c_fg_03_zero_failure_error_skip_and_receipt_mismatch_fail_closed",
+        "test_imp09c_fg_04_main_executes_real_driver_with_mocked_capture",
+        "test_imp09c_fg_04_main_mismatched_binding_and_guard_fail_closed",
+        "test_imp09c_fg_04_main_existing_child_is_read_only",
+        "test_imp09c_fg_04_main_missing_child_and_reducer_error_fail_closed",
+        "test_imp09c_fg_10_main_owns_inventory_and_counts_writer",
+        "test_imp09c_fg_05_symlink_inventory_does_not_follow_directory_aliases",
+        "test_imp09c_fg_06_alias_journal_does_not_increase_invocation_counts",
+        "test_imp09c_fg_07_partial_body_timeout_preserves_prefix_and_bounded_deadline",
+        "test_imp09c_fg_08_supervise_once_success_requires_reaped_cleanup",
+        "test_imp09c_fg_11_cleanup_failure_and_late_deadline_fail_closed[cleanup-exception]",
+        "test_imp09c_fg_11_cleanup_failure_and_late_deadline_fail_closed[cleanup-unknown]",
+        "test_imp09c_fg_11_cleanup_failure_and_late_deadline_fail_closed[cleanup-slow]",
+        "test_imp09c_fg_11_cleanup_failure_and_late_deadline_fail_closed[cleanup-late]",
+        "test_imp09c_fg_09_pre_wire_source_drift_remains_non_success[source-drift]",
+        "test_imp09c_fg_09_pre_wire_source_drift_remains_non_success[request-drift]",
+        "test_imp09c_fg_09_pre_wire_source_drift_remains_non_success[binding-drift]",
+        "test_imp09c_fg_09_pre_wire_source_drift_remains_non_success[wire-expired]",
+        "test_imp09c_fg_12_post_cleanup_source_drift_is_reduced_to_failure"
+      ],
+      "parent_dispatch_sha256": "44c04c160f8d671022da0a6018444b5a9a3201770fac74b929aa35d01c136680",
+      "parent_capture_start_sha256": "bd9abe95de212ee929d80463a976a6b08a23087ab6870e8a9c1a75bf6973672e",
+      "source_snapshot_sha256": {
+        "run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "sources_at_execution": {
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "sources_after_execution": {
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "8c21146e655ca51117e2db54454f64f962cad39ac14a7c445f24ca5e14836dd6",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+        "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+      },
+      "stdout": {
+        "path": "attempts/cold-selector-869041f69ccf4b569e8bf7ae24d91571/stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "attempts/cold-selector-869041f69ccf4b569e8bf7ae24d91571/stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "command_receipt_sha256": "b37b12ca2dfeb92ec01a4ba7e5405be8544b32e911acb541b818cc607dc74804",
+    "command_exit_code": 3,
+    "child_completion": {},
+    "evidence_inventory": null,
+    "selector_evidence_valid": false,
+    "selector_evidence_errors": [
+      "ValueError: parent command did not complete successfully"
+    ],
+    "source": "INCONCLUSIVE_CHILD_EVIDENCE"
+  },
+  "selector_parent_dispatch_path": "attempts/cold-selector-869041f69ccf4b569e8bf7ae24d91571/parent-dispatch.json",
+  "selector_child_output_path": null,
+  "delivery_artifacts": {
+    "counts": {
+      "invocations": {
+        "invocation_count": 0,
+        "aliases": []
+      },
+      "journal_records": 0,
+      "cases": {
+        "tests": 0,
+        "selected": 0,
+        "passed": 0,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "counts_sha256": "ca8e8be500c65d5ffe356478630d3d376ac3f043644b0fecd6803c8e62724086",
+    "counts_path": "delivery/e3f90cc95a914d258ce87d97a2165e17/counts.json",
+    "inventory_sha256": "c1ba8405d523a8624538c0bb8ca9c756effbbbbe0fff296430795ecb6d4dffd8",
+    "inventory_path": "delivery/e3f90cc95a914d258ce87d97a2165e17/inventory.json",
+    "inventory_files": 973,
+    "inventory_symlinks": 17
+  },
+  "parent_alias_correction": {
+    "path": "parent-evidence-correction.json",
+    "sha256": "fb2689e92f3a6bae2cc06b93378b47fea8d38f959ffcb4915fa84c8c321cf65d",
+    "alias_aggregate_increment": 0
+  },
+  "checks_artifact_path": "checks-e3f90cc95a914d258ce87d97a2165e17.json",
+  "final_reduction": {
+    "valid": false,
+    "selector_evidence_valid": false,
+    "selected": 0,
+    "expected_selected": 22,
+    "protected_changed": [],
+    "source_drift": {},
+    "delivery_valid": true,
+    "errors": [
+      "ValueError: parent command did not complete successfully",
+      "selector evidence reducer returned non-valid"
+    ]
+  },
+  "exit_code": 1
+}

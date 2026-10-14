@@ -1,0 +1,21 @@
+{
+  "limits": {
+    "ollama_get_version_preflight": 1,
+    "ollama_get_tags_preflight": 1,
+    "ollama_get_ps_preflight": 1,
+    "ollama_post_show_preflight": 1,
+    "ollama_get_ps_postflight": 1,
+    "product_internal_capability_show": 2,
+    "product_authenticated_chat_post": 1,
+    "ollama_chat_inference_wire": 1,
+    "retry_wire": 0,
+    "redirect_follow_wire": 0,
+    "native_inference_wire": 0,
+    "tool_execution": 0
+  },
+  "journal_retained": true,
+  "scope": "task-wide durable journal; isolated fake fixtures have separate simulated task worlds; no live budget consumed",
+  "readiness_get_anonymous": 1,
+  "readiness_get_bearer": 1,
+  "live_authorization": "NOT_ISSUED"
+}

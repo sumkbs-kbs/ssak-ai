@@ -1,0 +1,12 @@
+{
+  "schema": "ssak.imp09c.inherited-parent-baseline.v1",
+  "meaning": "INHERITED_PARENT_BASELINE",
+  "source_path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-RUNTIME-COMPATIBILITY-01/run-20261012T233025Z-526f7458-a984-4e89-97c7-7f509a59addc/baseline/protected-before.json",
+  "source_task": "IMP-09-C-PRODUCT-VISION-RUNTIME-COMPATIBILITY-01",
+  "source_execution_binding_path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-RUNTIME-COMPATIBILITY-01/run-20261012T233025Z-526f7458-a984-4e89-97c7-7f509a59addc/execution-binding.json",
+  "source_execution_binding_sha256": "65b647ce5885cdc1f390b297900639d055c81b214077360f06a755284e1c4fcb",
+  "source_sha256": "1699a4dfdb6c40bf8f48966bf35fed8d94cfb7e657542baff9b000e1d71fea25",
+  "source_files": 21,
+  "inherited_at_utc": "2026-10-13T23:26:42+00:00",
+  "historical_fg_task_start_reconstructed": false
+}

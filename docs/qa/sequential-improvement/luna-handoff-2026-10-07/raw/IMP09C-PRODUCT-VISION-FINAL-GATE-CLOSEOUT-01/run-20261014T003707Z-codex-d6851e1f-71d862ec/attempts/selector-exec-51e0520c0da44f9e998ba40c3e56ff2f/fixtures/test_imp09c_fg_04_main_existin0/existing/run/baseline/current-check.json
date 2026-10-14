@@ -1,0 +1,13 @@
+{
+  "schema": "ssak.imp09c.inherited-baseline-current-check.v1",
+  "checked_at_utc": "2026-10-13T00:00:00+00:00",
+  "inherited_baseline_sha256": "55d5e3dbd01c8708f75c0d65525ec4a11dfc03d2b2c40870a8794871c57f35fd",
+  "inherited_paths": 0,
+  "additional_declared_paths": 3,
+  "additional_new_paths": 3,
+  "deduplicated_equal_hash_paths": [],
+  "unique_protected_paths": 3,
+  "matched_paths": 3,
+  "mismatches": {},
+  "result": "MATCH"
+}

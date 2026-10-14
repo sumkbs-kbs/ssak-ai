@@ -1,0 +1,66 @@
+{
+  "task_id": "IMP-09-C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01",
+  "reviewed_at_utc": "2026-10-14T00:53:06Z",
+  "input_run": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261013T232642Z-549e2e47-9d69-4fd7-95d2-ff660a38d3d2",
+  "submitted_verdict": "NEEDS_REVISION",
+  "findings": [
+    {
+      "id": "RF-01",
+      "severity": "P1",
+      "problem": "Child source maps used bare filenames while parent validator required repository-relative keys; child precheck omitted required source map and expected node inventory.",
+      "resolution": "Emit one normalized complete map in every child receipt and required precheck fields.",
+      "status": "RESOLVED"
+    },
+    {
+      "id": "RF-02",
+      "severity": "P1",
+      "problem": "Latest input copied another run's candidate-4 execution binding; four current source hashes differed. No current-source completion receipts existed.",
+      "resolution": "Create an isolated owned request/registry and candidate binding. Superseding this owned codex candidate archives predecessor bytes and uses safe task/run IDs.",
+      "status": "RESOLVED"
+    },
+    {
+      "id": "RF-03",
+      "severity": "P1",
+      "problem": "Delivery writer returned inventory digest, then main overwrote that file with a final seal, invalidating receipt reference.",
+      "resolution": "Per-invocation immutable counts and inventory with explicit receipt paths; final manifest sealed after outer launch output closes.",
+      "status": "RESOLVED"
+    },
+    {
+      "id": "RF-04",
+      "severity": "P2",
+      "problem": "SIMULATED_CAPTURE early rejection prevented negative fixture assertions from exercising child binding/guard checks.",
+      "resolution": "Keep synthetic provenance as non-success while validating child artifacts and asserting the specific binding/guard rejection reason.",
+      "status": "RESOLVED"
+    }
+  ],
+  "final_code_review": {
+    "reviewer": "closeout_code_audit",
+    "verdict": "APPROVE_SCOPED_OFFLINE",
+    "code_quality": "CLEAR",
+    "blockers": [],
+    "executed_tests": 0,
+    "executed_network": 0
+  },
+  "evidence_chain_review": {
+    "reviewer": "closeout_evidence_audit",
+    "verdict": "PASS_CURRENT_SOURCE_OFFLINE_CHAIN",
+    "executed_tests": 0,
+    "executed_network": 0,
+    "final_package_review": "PASS_SCOPED_OFFLINE",
+    "reviewed_manifest": {
+      "path": "history/package-review/artifact-manifest.json",
+      "sha256": "2be5d37e300d17ff1c2017fd9995a7282e88b342f4baec55b4d7a025cefc4441",
+      "files": 1920,
+      "symlinks": 34,
+      "mismatches": []
+    }
+  },
+  "limitation": {
+    "kind": "DURING_RUN_SNAPSHOT_WITH_ACTIVE_OUTER_STDOUT",
+    "mismatches": [
+      "launches/gate-37df3c4d565d499d89eb7ab34f61a274/stdout.txt"
+    ],
+    "historical_bytes_preserved": true,
+    "final_seal_requires_closed_outputs": true
+  }
+}

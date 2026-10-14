@@ -1,0 +1,15 @@
+{
+  "invocations": {
+    "invocation_count": 2,
+    "aliases": [
+      {
+        "path": "attempts/run-a/fixtures/classcurrent/class0/journal.jsonl",
+        "target": "attempts/run-a/fixtures/class1/journal.jsonl"
+      }
+    ]
+  },
+  "journal_records": 3,
+  "cases": {
+    "selected": 3
+  }
+}

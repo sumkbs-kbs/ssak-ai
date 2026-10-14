@@ -1,0 +1,218 @@
+diff --git a/run_harness.py b/run_harness.py
+--- a/run_harness.py
++++ b/run_harness.py
+@@ -84,7 +84,7 @@
+     "test_runtime_final_gate_contract.py",
+ )
+ EXECUTION_BINDING_SCHEMA_VERSION = 2
+-EXECUTION_BINDING_ATTEMPT_ID = "final-gate-closeout-candidate-5"
++EXECUTION_BINDING_ATTEMPT_ID = "codex-final-gate-candidate-2"
+ ADDITIONAL_RUNTIME_SOURCES = {
+     "src/antigravity_k/api/routes/system_api.py": "610334086c50b0b0e0ff09b57d3ae45e7b46739be8316baa7627ade67d35c7a6",
+     "src/antigravity_k/api/auth_policy.py": "d99b35ca9a6ab458d1bf70879b92b1591d765cd09cc80e2d91e72bb46e69ef8c",
+@@ -643,7 +643,10 @@
+             previous.get("task_id") != TASK_ID
+             or previous.get("run_id") != run.name
+             or not isinstance(previous.get("attempt_id"), str)
+-            or re.fullmatch(r"final-gate-closeout-candidate-[1-9][0-9]*", str(previous.get("attempt_id"))) is None
++            or re.fullmatch(
++                r"(?:final-gate-closeout|codex-final-gate)-candidate-[1-9][0-9]*", str(previous.get("attempt_id"))
++            )
++            is None
+             or previous.get("attempt_id") == EXECUTION_BINDING_ATTEMPT_ID
+         ):
+             raise ValueError("previous binding identity is not a distinct candidate in this task/run")
+@@ -2452,6 +2455,12 @@
+         for name, source_hash in implementation_source_sha256.items()
+     ):
+         raise ValueError("implementation sources drifted after parent dispatch")
++    dispatch_sources = {
++        str((Path(__file__).resolve().parent / name).relative_to(root)): source_hash
++        for name, source_hash in implementation_source_sha256.items()
++    }
++    if source_sha256_at_dispatch != dispatch_sources:
++        raise ValueError("parent dispatch source inventory must match the complete implementation inventory")
+     owned_output_path_rel = invocation.relative_to(Path(__file__).resolve().parent).as_posix()
+     selector_sha256_at_dispatch = sha256(selector.read_bytes())
+     harness_sha256_at_dispatch = sha256(Path(__file__).read_bytes())
+@@ -2471,7 +2480,7 @@
+         "started_at_utc": dispatch_started_at,
+         "harness_sha256_at_dispatch": harness_sha256_at_dispatch,
+         "selector_sha256_at_dispatch": selector_sha256_at_dispatch,
+-        "source_sha256_at_dispatch": implementation_source_sha256,
++        "source_sha256_at_dispatch": dispatch_sources,
+         "expected_nodeids": expected_nodeids,
+         "parent_invocation_id": parent_invocation_id,
+         "parent_capture_id": parent_capture_id,
+@@ -2498,7 +2507,7 @@
+             "child_invocation_id": invocation.name,
+             "owned_output_path": owned_output_path_rel,
+             "dispatch_sha256": dispatch_sha256,
+-            "source_sha256_at_dispatch": implementation_source_sha256,
++            "source_sha256_at_dispatch": dispatch_sources,
+             "expected_nodeids": expected_nodeids,
+             "started_at_utc": child_started_at,
+             "finished_at_utc": utc_now(),
+@@ -2518,7 +2527,7 @@
+                 "parent_dispatch_sha256": parent_dispatch_sha256,
+                 "child_invocation_id": invocation.name,
+                 "owned_output_path": owned_output_path_rel,
+-                "source_sha256_at_dispatch": implementation_source_sha256,
++                "source_sha256_at_dispatch": dispatch_sources,
+                 "expected_nodeids": expected_nodeids,
+             },
+             ensure_ascii=False,
+@@ -2537,6 +2546,8 @@
+         "attempt_id": invocation.name,
+         "selector_sha256": sha256(selector.read_bytes()),
+         "source_sha256_at_gate": cast(dict[str, str], actual_source),
++        "source_sha256_at_dispatch": dispatch_sources,
++        "expected_nodeids": expected_nodeids,
+     }
+     (invocation / "precheck.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+     if report["status"] != "READY":
+@@ -2572,7 +2583,7 @@
+                 "selector": str(selector),
+                 "selector_sha256": sha256(selector.read_bytes()),
+                 "guard_counters_before": dict(counters),
+-                "source_sha256_at_dispatch": implementation_source_sha256,
++                "source_sha256_at_dispatch": dispatch_sources,
+                 "expected_nodeids": expected_nodeids,
+                 "parent_invocation_id": parent_invocation_id,
+                 "parent_capture_id": parent_capture_id,
+@@ -2635,7 +2646,7 @@
+         "child_invocation_id": invocation.name,
+         "dispatch_sha256": dispatch_sha256,
+     }
+-    receipt["source_sha256_at_dispatch"] = implementation_source_sha256
++    receipt["source_sha256_at_dispatch"] = dispatch_sources
+     receipt["expected_nodeids"] = expected_nodeids
+     (invocation / "pytest-result.json").write_text(
+         json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+@@ -2652,7 +2663,7 @@
+                 "after_sha256": after_protected_hashes,
+                 "violations": violations,
+                 "guard_counters": counters,
+-                "source_sha256_at_dispatch": implementation_source_sha256,
++                "source_sha256_at_dispatch": dispatch_sources,
+             },
+             ensure_ascii=False,
+             indent=2,
+diff --git a/run_offline_prechecks.py b/run_offline_prechecks.py
+--- a/run_offline_prechecks.py
++++ b/run_offline_prechecks.py
+@@ -362,9 +362,6 @@
+         ):
+             raise ValueError("explicit child invocation is outside the owned attempts directory")
+         output["child_path"] = child_path
+-        if parent_command.get("capture_mode") == "SIMULATED_CAPTURE":
+-            output["errors"].append("SIMULATED_CAPTURE_NOT_EXECUTION")
+-            return output
+         parent_dispatch_sha = digest(parent_dispatch_path)
+         if (
+             parent_dispatch.get("parent_invocation_id") != invocation_id
+@@ -632,7 +629,7 @@
+     }
+ 
+ 
+-def inventory_tree(root: Path) -> dict[str, list[dict[str, Any]]]:
++def inventory_tree(root: Path, *, excluded: frozenset[str] = frozenset()) -> dict[str, list[dict[str, Any]]]:
+     """Return regular-file digests and symlink targets without descending through aliases."""
+     files: list[dict[str, Any]] = []
+     symlinks: list[dict[str, Any]] = []
+@@ -644,7 +641,7 @@
+                 path = Path(entry.path)
+                 rel = path.relative_to(root).as_posix()
+                 if (
+-                    rel in {"artifact-manifest.json", "worklog.jsonl"}
++                    rel in {"artifact-manifest.json", "worklog.jsonl"} | excluded
+                     or (path.parent == root and path.name.startswith("checks-") and path.suffix == ".json")
+                     or "__pycache__" in path.parts
+                 ):
+@@ -772,21 +769,31 @@
+     run: Path,
+     records: list[dict[str, Any]] | None = None,
+     selector_counts: dict[str, Any] | None = None,
++    *,
++    invocation_id: str | None = None,
+ ) -> dict[str, Any]:
+     """Write inventory/count outputs using the same reducers exercised by FG tests."""
+     invocation_records = collect_invocation_records(run) if records is None else records
+     aggregate = aggregate_invocations(invocation_records)
+     cases = selector_counts if selector_counts is not None else {"selected": len(EXPECTED_NODEIDS)}
+     counts = {"invocations": aggregate, "journal_records": len(invocation_records), "cases": cases}
+-    counts_path = run / "counts.json"
+-    inventory_path = run / "artifact-manifest.json"
+-    counts_path.write_text(json.dumps(counts, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+-    inventory = inventory_tree(run)
+-    inventory_path.write_text(json.dumps(inventory, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
++    delivery_root = run / "delivery" / (invocation_id or uuid.uuid4().hex)
++    delivery_root.mkdir(parents=True, exist_ok=False)
++    counts_path = delivery_root / "counts.json"
++    inventory_path = delivery_root / "inventory.json"
++    counts_raw = json.dumps(counts, ensure_ascii=False, indent=2) + "\n"
++    with counts_path.open("x", encoding="utf-8") as stream:
++        stream.write(counts_raw)
++    (run / "counts.json").write_text(counts_raw, encoding="utf-8")
++    inventory = inventory_tree(run, excluded=frozenset({inventory_path.relative_to(run).as_posix()}))
++    with inventory_path.open("x", encoding="utf-8") as stream:
++        stream.write(json.dumps(inventory, ensure_ascii=False, indent=2) + "\n")
+     return {
+         "counts": counts,
+         "counts_sha256": digest(counts_path),
++        "counts_path": counts_path.relative_to(run).as_posix(),
+         "inventory_sha256": digest(inventory_path),
++        "inventory_path": inventory_path.relative_to(run).as_posix(),
+         "inventory_files": len(inventory["files"]),
+         "inventory_symlinks": len(inventory["symlinks"]),
+     }
+@@ -1378,13 +1385,13 @@
+     delivery_valid = False
+     try:
+         alias_correction = write_parent_alias_correction(RUN)
+-        delivery = write_delivery_artifacts(RUN, selector_counts=selector_result)
+-        counts_path = RUN / "counts.json"
+-        inventory_path = RUN / "artifact-manifest.json"
++        delivery = write_delivery_artifacts(RUN, selector_counts=selector_result, invocation_id=run_id)
++        counts_path = RUN / delivery["counts_path"]
++        inventory_path = RUN / delivery["inventory_path"]
+         written_counts = _json_object(counts_path)
+         written_inventory = _json_object(inventory_path)
+         expected_counts = delivery.get("counts")
+-        current_inventory = inventory_tree(RUN)
++        current_inventory = inventory_tree(RUN, excluded=frozenset({delivery["inventory_path"]}))
+         if (
+             written_counts != expected_counts
+             or written_inventory.get("files") != current_inventory["files"]
+diff --git a/test_runtime_final_gate_contract.py b/test_runtime_final_gate_contract.py
+--- a/test_runtime_final_gate_contract.py
++++ b/test_runtime_final_gate_contract.py
+@@ -672,9 +672,14 @@
+     run, parent, expected, _, _ = _main_fixture(tmp_path / "mismatch")
+     code, receipt, _ = _run_main_mocked(run, parent, expected, monkeypatch, inject_binding_mismatch=True)
+     assert code != 0 and receipt["selector_evidence_valid"] is False
++    assert any("pytest result selector/binding" in error for error in receipt["selector_evidence_errors"])
+     run2, parent2, expected2, _, _ = _main_fixture(tmp_path / "guard")
+     code2, receipt2, _ = _run_main_mocked(run2, parent2, expected2, monkeypatch, inject_guard_violation=True)
+     assert code2 != 0 and receipt2["selector_evidence_valid"] is False
++    assert any(
++        "guard" in error and error != "SIMULATED_CAPTURE_NOT_EXECUTION"
++        for error in receipt2["selector_evidence_errors"]
++    )
+ 
+ 
+ def test_imp09c_fg_04_main_existing_child_is_read_only(tmp_path: Path, monkeypatch: Any) -> None:
+@@ -723,6 +728,13 @@
+     assert (run / "counts.json").is_file() and (run / "artifact-manifest.json").is_file()
+     written_counts = json.loads((run / "counts.json").read_text(encoding="utf-8"))
+     assert written_counts == receipt["delivery_artifacts"]["counts"]
++    delivery_path = run / receipt["delivery_artifacts"]["inventory_path"]
++    assert delivery_path.name == "inventory.json" and delivery_path.parent.parent.name == "delivery"
++    assert driver.digest(delivery_path) == receipt["delivery_artifacts"]["inventory_sha256"]
++    assert (
++        driver.digest(run / receipt["delivery_artifacts"]["counts_path"])
++        == receipt["delivery_artifacts"]["counts_sha256"]
++    )
+     manifest = json.loads((run / "artifact-manifest.json").read_text(encoding="utf-8"))
+     assert manifest["files"] == driver.inventory_tree(run)["files"]
+     assert manifest["symlinks"] == driver.inventory_tree(run)["symlinks"]

@@ -1,0 +1,8 @@
+{
+  "parent_invocation_id": "fixture-parent",
+  "parent_capture_id": "cold-selector-fixture",
+  "child_invocation_id": "selector-exec-fixture",
+  "owned_output_path": "attempts/selector-exec-fixture",
+  "parent_dispatch_sha256": "16f61f43e69bff5c7eff9e3e06957bba63e49b728a5606583e9b117910eaa937",
+  "parent_capture_start_sha256": "79084fcf8fbfbc8eb9eb8db6f1d5e999665f5516684a4469a5061944d393a1b9"
+}

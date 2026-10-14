@@ -1,0 +1,8 @@
+{
+  "src/antigravity_k/api/routes/system_api.py": {
+    "bytes": 96252,
+    "sha256": "610334086c50b0b0e0ff09b57d3ae45e7b46739be8316baa7627ade67d35c7a6",
+    "recorded_at_utc": "2026-10-12T11:54:04.785757+00:00",
+    "timing": "additional dependency introduced after candidate-2; not original task-start snapshot"
+  }
+}

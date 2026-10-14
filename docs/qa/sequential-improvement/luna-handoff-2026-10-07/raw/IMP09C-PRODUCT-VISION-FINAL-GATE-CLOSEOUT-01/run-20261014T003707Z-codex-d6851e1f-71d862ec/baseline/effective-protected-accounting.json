@@ -1,0 +1,11 @@
+{
+  "inherited_parent_paths": 21,
+  "additional_declared_paths": 3,
+  "additional_new_paths": 0,
+  "equal_hash_duplicates_deduplicated": [
+    "src/antigravity_k/api/auth_policy.py",
+    "src/antigravity_k/api/routes/system_api.py",
+    "src/antigravity_k/tools/egress_policy.py"
+  ],
+  "unique_protected_paths": 21
+}

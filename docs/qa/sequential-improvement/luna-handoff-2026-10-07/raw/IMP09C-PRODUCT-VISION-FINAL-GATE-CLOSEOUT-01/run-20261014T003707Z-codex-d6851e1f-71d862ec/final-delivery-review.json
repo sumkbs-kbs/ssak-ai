@@ -1,0 +1,29 @@
+{
+  "reviewer_task": "closeout_evidence_audit",
+  "review_mode": "READ_ONLY_SAVED_ARTIFACTS",
+  "verdict": "PASS_SCOPED_OFFLINE",
+  "recorded_by": "root",
+  "recorded_at_utc": "2026-10-14 00:56:31 UTC",
+  "reviewed_manifest_path": "history/package-review/artifact-manifest.json",
+  "reviewed_manifest_sha256": "2be5d37e300d17ff1c2017fd9995a7282e88b342f4baec55b4d7a025cefc4441",
+  "checks": {
+    "file_count": 1920,
+    "symlink_count": 34,
+    "file_mismatches": 0,
+    "symlink_mismatches": 0,
+    "uncovered_items": 0,
+    "phantom_items": 0,
+    "source_binding_files": 6,
+    "protected_source_files": 21,
+    "patch_reconstruction_files": 3,
+    "final_junit_passed": 22,
+    "core_static_exit_zero": 4
+  },
+  "patch_sha256": "cce79f80278cf2bfdb574567ad0658d658d28bd05e414cecdca224f236a3017b",
+  "root_final_seal": "artifact-manifest.json",
+  "root_reseal_reason": "Only verdict metadata, its review record, archive, and append-only worklog added after independent review; implementation and tests unchanged.",
+  "product_live_vision": "NOT_RUN",
+  "live_authorization": "NOT_ISSUED",
+  "overall_imp09": "PARTIAL",
+  "ledger": "NOT_RECOVERED"
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "ssak.runtime-origin-contract.v1",
+  "task_id": "IMP-09-C-PRODUCT-VISION-RUNTIME-COMPATIBILITY-01",
+  "source": {
+    "config_path": "config.yaml",
+    "config_sha256": "3948867a6b9ef51fc392e07d0015c45b7f881095942c4cbf64c503fdc08d8025",
+    "provider_path": "src/antigravity_k/engine/provider_adapters/inference_providers.py",
+    "provider_sha256": "a23ce7e0f6a0f3e65d25831f7a1bd92b2dc1ddea9e18264a67c80eae7d619c1a",
+    "resolver_symbol": "OllamaProvider._resolve_endpoint"
+  },
+  "configured_base_url": "http://localhost:11434",
+  "resolved_api_base_expected": "http://localhost:11434/v1",
+  "equivalence": {
+    "scheme": "http",
+    "port": 11434,
+    "accepted_host_spellings": ["localhost", "127.0.0.1"],
+    "canonical_comparison_origin": "http://127.0.0.1:11434",
+    "reject_userinfo": true,
+    "reject_query": true,
+    "reject_fragment": true,
+    "reject_other_hosts_ports_schemes": true,
+    "preserve_actual_request_url": true,
+    "preserve_actual_request_body": true,
+    "dns_resolution": false
+  },
+  "comparison_contract": {
+    "accepted_origin_spellings": ["http://localhost:11434", "http://127.0.0.1:11434"],
+    "canonical_comparison_origin": "http://127.0.0.1:11434",
+    "actual_provider_url_preserved": true,
+    "url_path_allowed_for_provider_request": "/api/chat",
+    "reject_userinfo_query_fragment": true,
+    "reject_other_scheme_host_port_and_near_match_hosts": true,
+    "dns_resolution": false
+  },
+  "rbc_findings": ["RBC-01", "RBC-02"],
+  "binding_sha256": "UNFROZEN",
+  "live_authorization": "NOT_ISSUED",
+  "runtime_observation": "NOT_RUN"
+}

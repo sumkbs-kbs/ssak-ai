@@ -1,0 +1,10 @@
+{
+  "src/antigravity_k/api/auth_policy.py": {
+    "bytes": 9872,
+    "sha256": "d99b35ca9a6ab458d1bf70879b92b1591d765cd09cc80e2d91e72bb46e69ef8c"
+  },
+  "src/antigravity_k/tools/egress_policy.py": {
+    "bytes": 4913,
+    "sha256": "c1b36445d9e906b1cb8b999bd772bf58d83b29d766d396fc1e0698f5d991a699"
+  }
+}

@@ -1,0 +1,185 @@
+{
+  "task_id": "IMP-09-C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01",
+  "run_id": "run-20261014T003707Z-codex-d6851e1f-71d862ec",
+  "completed_at_utc": "2026-10-14T00:53:06Z",
+  "status": "COMPLETE_OFFLINE_GATE",
+  "original_submission_review": "NEEDS_REVISION",
+  "direct_followup": "IMPLEMENTED_AND_VERIFIED_IN_OWNED_COPY",
+  "independent_review": {
+    "code": "APPROVED_OFFLINE",
+    "evidence_chain": "PASS",
+    "final_package": "APPROVED_OFFLINE"
+  },
+  "changed_implementation_files": [
+    "run_harness.py",
+    "run_offline_prechecks.py",
+    "test_runtime_final_gate_contract.py"
+  ],
+  "execution_binding": {
+    "path": "execution-binding.json",
+    "sha256": "7825c406adec5ff37a8fa195e80ea788878446c66f0aadc861c6fb57a8c68733",
+    "source_count": 6,
+    "current_hash_mismatches": []
+  },
+  "acceptance": {
+    "final_receipt": "checks-956ad18301aa472b81ff2e9c74263531.json",
+    "selector_counts": {
+      "tests": 22,
+      "selected": 22,
+      "passed": 22,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "selector_evidence_errors": [],
+    "overall_valid": true,
+    "static_checks": [
+      {
+        "kind": "static-1",
+        "exit_code": 0,
+        "attempt": "attempts/static-1-69188f2496c34dbe90cce756a6da8c6b"
+      },
+      {
+        "kind": "static-2",
+        "exit_code": 0,
+        "attempt": "attempts/static-2-d9388532cce94d53b7cd1a9346167961"
+      },
+      {
+        "kind": "static-3",
+        "exit_code": 0,
+        "attempt": "attempts/static-3-d9c520753b1348eb9016a6b424e15751"
+      },
+      {
+        "kind": "static-4",
+        "exit_code": 0,
+        "attempt": "attempts/static-4-03129bd2754f4f398e1827f4ad4c1b30"
+      }
+    ]
+  },
+  "stored_artifact_audit": {
+    "path": "artifact-audit-final.json",
+    "status": "PASS_SCOPED_STORED_ARTIFACTS",
+    "protected": {
+      "count": 21,
+      "mismatches": []
+    },
+    "preserved_inputs": {
+      "count": 3769,
+      "missing": [],
+      "added": [],
+      "changed": []
+    },
+    "patch": {
+      "path": "task-only.patch",
+      "sha256": "cce79f80278cf2bfdb574567ad0658d658d28bd05e414cecdca224f236a3017b",
+      "git_apply_exit_code_observed_by_root": 0,
+      "reconstructed": [
+        "run_harness.py",
+        "run_offline_prechecks.py",
+        "test_runtime_final_gate_contract.py"
+      ],
+      "mismatches": []
+    },
+    "delivery_receipt_hashes_match": true
+  },
+  "history": {
+    "source": "artifact-audit-final.json",
+    "records": [
+      {
+        "path": "checks-91812c68349845988f1576e8be6bd26a.json",
+        "sha256": "07bb4bef773a50d39144a38d5cc59269173abe73bacd11ec6150c377ba2a38a4",
+        "overall_valid": false,
+        "reported_counts": {
+          "tests": 0,
+          "selected": 0,
+          "passed": 0,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "errors": [
+          "ValueError: parent command did not complete successfully"
+        ],
+        "child_output": null
+      },
+      {
+        "path": "checks-956ad18301aa472b81ff2e9c74263531.json",
+        "sha256": "3874c961764cfb3eb9dbaca9d0cb16d7681c5d772a463b2fd8c233f0e21c90f0",
+        "overall_valid": true,
+        "reported_counts": {
+          "tests": 22,
+          "selected": 22,
+          "passed": 22,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "errors": [],
+        "child_output": "attempts/selector-exec-a3d015e9098e4d24822dbb5944285da6"
+      },
+      {
+        "path": "checks-e3f90cc95a914d258ce87d97a2165e17.json",
+        "sha256": "4b627793fce9a5edef259ce2149156fa3dc12de69f2cf5d66221bb9672651f5e",
+        "overall_valid": false,
+        "reported_counts": {
+          "tests": 0,
+          "selected": 0,
+          "passed": 0,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "errors": [
+          "ValueError: parent command did not complete successfully"
+        ],
+        "child_output": null
+      }
+    ],
+    "successful_old_suites_replayed": 0,
+    "preparation_rebind_failure": "ValueError: previous binding identity is not a distinct candidate in this task/run",
+    "preparation_failure_and_following_guarded_precheck_preserved": true,
+    "initial_support_script_type_error_preserved_in": "support-checks.json"
+  },
+  "delivery_snapshot_limitation": {
+    "kind": "DURING_RUN_SNAPSHOT_WITH_ACTIVE_OUTER_STDOUT",
+    "mismatches": [
+      "launches/gate-37df3c4d565d499d89eb7ab34f61a274/stdout.txt"
+    ],
+    "historical_bytes_preserved": true,
+    "final_seal_requires_closed_outputs": true
+  },
+  "actual_calls": {
+    "http": 0,
+    "socket_connect": 0,
+    "socket_bind": 0,
+    "socket_listen": 0,
+    "product_worker": 0,
+    "uvicorn": 0,
+    "ollama": 0,
+    "inference": 0
+  },
+  "mock_totals_across_all_history": "NOT_AGGREGATED_AS_REAL_INVOCATIONS",
+  "warning": {
+    "count": 1,
+    "kind": "PytestConfigWarning",
+    "message": "Unknown config option: asyncio_mode",
+    "boundary": "Plugin autoload deliberately disabled in cold offline execution; existing warning retained."
+  },
+  "status_boundaries": {
+    "overall_imp09": "PARTIAL",
+    "product_live_vision": "NOT_RUN",
+    "live_authorization": "NOT_ISSUED",
+    "historical_ledger": "NOT_RECOVERED",
+    "commit": "NOT_PERFORMED",
+    "push": "NOT_PERFORMED"
+  },
+  "artifacts": {
+    "review": "review.json",
+    "handoff": "handoff-ko.md",
+    "patch": "task-only.patch",
+    "checks": "checks-956ad18301aa472b81ff2e9c74263531.json",
+    "artifact_audit": "artifact-audit-final.json",
+    "manifest": "artifact-manifest.json",
+    "next_work": "next-work.md"
+  }
+}

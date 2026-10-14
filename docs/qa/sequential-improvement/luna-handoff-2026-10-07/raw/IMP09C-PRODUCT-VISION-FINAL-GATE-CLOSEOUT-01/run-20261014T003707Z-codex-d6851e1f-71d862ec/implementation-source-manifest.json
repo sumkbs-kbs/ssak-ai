@@ -1,0 +1,38 @@
+{
+  "task_id": "IMP-09-C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01",
+  "run_id": "run-20261014T003707Z-codex-d6851e1f-71d862ec",
+  "execution_binding_id": "7825c406adec5ff37a8fa195",
+  "execution_binding_sha256": "7825c406adec5ff37a8fa195e80ea788878446c66f0aadc861c6fb57a8c68733",
+  "sources": {
+    "run_harness.py": {
+      "path": "run_harness.py",
+      "bytes": 156600,
+      "sha256": "3c63ec4f6446323d9cba8d222728c8a9431df385b408728c2de1194f4073e186"
+    },
+    "runtime_adapter.py": {
+      "path": "runtime_adapter.py",
+      "bytes": 46891,
+      "sha256": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187"
+    },
+    "test_runtime_bridge_contract.py": {
+      "path": "test_runtime_bridge_contract.py",
+      "bytes": 32967,
+      "sha256": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486"
+    },
+    "test_runtime_compatibility_contract.py": {
+      "path": "test_runtime_compatibility_contract.py",
+      "bytes": 23932,
+      "sha256": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894"
+    },
+    "run_offline_prechecks.py": {
+      "path": "run_offline_prechecks.py",
+      "bytes": 73911,
+      "sha256": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+    },
+    "test_runtime_final_gate_contract.py": {
+      "path": "test_runtime_final_gate_contract.py",
+      "bytes": 45873,
+      "sha256": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb"
+    }
+  }
+}

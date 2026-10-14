@@ -1,0 +1,177 @@
+{
+  "schema": "ssak.imp09c.closeout.artifact-manifest.v1",
+  "task_id": "IMP-09-C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01",
+  "run_id": "run",
+  "sealed_at_utc": "2026-10-13T00:00:00+00:00",
+  "files": [
+    {
+      "path": "attempts/cold-selector-fixture/capture-start.json",
+      "bytes": 4441,
+      "sha256": "dd7f716aaf99dfcfb586403760e33fa62ce776dbca99803cdd41c1b519fd4dcc"
+    },
+    {
+      "path": "attempts/cold-selector-fixture/command.json",
+      "bytes": 6272,
+      "sha256": "1f8215e2851f7607b64eef70738e0877ae84263c3c4e089a79f0c88ca9af6c37"
+    },
+    {
+      "path": "attempts/cold-selector-fixture/parent-dispatch.json",
+      "bytes": 4918,
+      "sha256": "63815283980a7602e964896072e7b3f2b3a9f8858d20cc79dc6ca8ef0630ed39"
+    },
+    {
+      "path": "attempts/cold-selector-fixture/selector-invocation.json",
+      "bytes": 4466,
+      "sha256": "99cd4230b970d11e92ef978b221a61e720498414692261772d9333eef02cbc28"
+    },
+    {
+      "path": "attempts/static-1-simulated/command.json",
+      "bytes": 4563,
+      "sha256": "59a611628178b1204ea63744f987dfe7d9cbf3cbe8a45108d7055f45efa25c49"
+    },
+    {
+      "path": "attempts/static-1-simulated/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "attempts/static-1-simulated/stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "attempts/static-2-simulated/command.json",
+      "bytes": 4579,
+      "sha256": "df85de9e6b0d96c67e0267a8e06c789d96159f2546a8ff5db0e505d47a1216fd"
+    },
+    {
+      "path": "attempts/static-2-simulated/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "attempts/static-2-simulated/stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "attempts/static-3-simulated/command.json",
+      "bytes": 4568,
+      "sha256": "4fbcdcca0385a223dfecbba3aac135caf6a7cf504ac3f5da7fcae6b189cdc4a2"
+    },
+    {
+      "path": "attempts/static-3-simulated/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "attempts/static-3-simulated/stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "attempts/static-4-simulated/command.json",
+      "bytes": 5321,
+      "sha256": "d14e484208c6e040365a88685f2d7f8c78f92cca334379cc44678663f69e9c22"
+    },
+    {
+      "path": "attempts/static-4-simulated/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "attempts/static-4-simulated/stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "baseline/additional-readiness-source.json",
+      "bytes": 320,
+      "sha256": "529c2802518918236aa7d4029cb2924f6cf535fb20e7f6d2fc0ff654b34b23ff"
+    },
+    {
+      "path": "baseline/additional-runtime-sources.json",
+      "bytes": 305,
+      "sha256": "40dde7d99a57978de35d03473caa000df18ab532c7bda6c0f08bfc9f21ccc9cc"
+    },
+    {
+      "path": "baseline/current-check.json",
+      "bytes": 434,
+      "sha256": "b24e40497d8586c6aa79b266f144dd933c6e5262939b154a9fe1ff9482013d60"
+    },
+    {
+      "path": "baseline/effective-protected-accounting.json",
+      "bytes": 172,
+      "sha256": "7f1f26e43bd7b921bb078c9822cdb7039bf2d30fb81177cd3b371d54aa76b7f6"
+    },
+    {
+      "path": "baseline/protected-before.json",
+      "bytes": 61,
+      "sha256": "55d5e3dbd01c8708f75c0d65525ec4a11dfc03d2b2c40870a8794871c57f35fd"
+    },
+    {
+      "path": "budgets.json",
+      "bytes": 685,
+      "sha256": "c0f313e65b365433334356bdba0681d32d5586d51271f83fa1a06cf36486eca4"
+    },
+    {
+      "path": "counts.json",
+      "bytes": 219,
+      "sha256": "ca8e8be500c65d5ffe356478630d3d376ac3f043644b0fecd6803c8e62724086"
+    },
+    {
+      "path": "delivery-inventory.json",
+      "bytes": 5329,
+      "sha256": "8321a90e8893cd0908b803b3ba996919747287bae73cdcdcd9031e6a54fbad24"
+    },
+    {
+      "path": "endpoint-contract.json",
+      "bytes": 1597,
+      "sha256": "0ed6ff77434c30dae9d50c66a86f216daca9e4851564b3da7fe460678dff3879"
+    },
+    {
+      "path": "execution-binding.json",
+      "bytes": 5715,
+      "sha256": "22bbb21b3f9c3b0c6378ccfbf00fc8e69e567d93b3d5ffe4135002ad1b108d4b"
+    },
+    {
+      "path": "offline-state/check-f1c2f27a91d247dc8d683e14e261e8bc/config/owned-config.yaml",
+      "bytes": 21191,
+      "sha256": "3948867a6b9ef51fc392e07d0015c45b7f881095942c4cbf64c503fdc08d8025"
+    },
+    {
+      "path": "offline-state/check-f1c2f27a91d247dc8d683e14e261e8bc/env.empty",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "parent-evidence-correction.json",
+      "bytes": 2300,
+      "sha256": "fb2689e92f3a6bae2cc06b93378b47fea8d38f959ffcb4915fa84c8c321cf65d"
+    },
+    {
+      "path": "request.binding.json",
+      "bytes": 677,
+      "sha256": "31f9eb4db6e717b549d508acf3f297f14a9dacdaed7ba7de8922049724bc590a"
+    },
+    {
+      "path": "request.json",
+      "bytes": 2288,
+      "sha256": "19512feff793f913ce405bb3d71cc6122634d2382881beb8f4dad23237b95c29"
+    },
+    {
+      "path": "runtime-bridge-contract.json",
+      "bytes": 3726,
+      "sha256": "bb4caa2ac551907fee49f908b0f0b239f63a7a8016893e1c0ce125ff68b3fdd1"
+    }
+  ],
+  "symlinks": [],
+  "checks_receipt": {
+    "path": "checks-f1c2f27a91d247dc8d683e14e261e8bc.json",
+    "sha256": "413892981e319ea8f0c6258a8b616d4fbd4e5291ddbe8a7efe4a05c39418a1db"
+  },
+  "worklog": {
+    "path": "worklog.jsonl",
+    "sha256": "03aa8347efe5546b5ab0199684c088e078206eae5b2264bf9f1929995a84b1b6"
+  }
+}

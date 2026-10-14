@@ -1,0 +1,46 @@
+{
+  "capture_id": "cold-selector-fixture",
+  "invocation_id": "fixture-parent",
+  "argv": [
+    "/Users/mr.k/miniforge3/bin/python",
+    "-B",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py",
+    "--offline-tests",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/attempts/selector-exec-a3d015e9098e4d24822dbb5944285da6/fixtures/test_imp09c_fg_03_zero_failure0/error/run/offline-state"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai",
+  "started_at_utc": "2026-10-13T00:00:00+00:00",
+  "sources_at_execution": {
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_harness.py": "3c63ec4f6446323d9cba8d222728c8a9431df385b408728c2de1194f4073e186",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/runtime_adapter.py": "c7fe2f31e8066eaf6cd3db1f83e404a6f0f23069d7887db32f4933d2a5068187",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_bridge_contract.py": "8cc9a9c7e048080824933f4e2a0b6bf3f6a64cbc2651e3e62a71e2b44f99b486",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_compatibility_contract.py": "30a1bfd313c7e92149d4f004867d1e6a5a59eb8b830dbc72359761e0d13df894",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/test_runtime_final_gate_contract.py": "057dd431467f8988d96e4fc292404314d0a75eabf5db0fe9a27aeeb10cc4b2eb",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP09C-PRODUCT-VISION-FINAL-GATE-CLOSEOUT-01/run-20261014T003707Z-codex-d6851e1f-71d862ec/run_offline_prechecks.py": "52052a9dec80db4bbaa3fdd958054aa70c3ee0e2d141501995187e79c7c13a9a"
+  },
+  "expected_nodeids": [
+    "test_imp09c_fg_01_driver_success_requires_explicit_parent_child_receipts",
+    "test_imp09c_fg_01_final_reducer_rejects_errors_even_if_chain_claims_valid",
+    "test_imp09c_fg_02_missing_ambiguous_and_stale_children_fail_closed",
+    "test_imp09c_fg_03_zero_failure_error_skip_and_receipt_mismatch_fail_closed",
+    "test_imp09c_fg_04_main_executes_real_driver_with_mocked_capture",
+    "test_imp09c_fg_04_main_mismatched_binding_and_guard_fail_closed",
+    "test_imp09c_fg_04_main_existing_child_is_read_only",
+    "test_imp09c_fg_04_main_missing_child_and_reducer_error_fail_closed",
+    "test_imp09c_fg_10_main_owns_inventory_and_counts_writer",
+    "test_imp09c_fg_05_symlink_inventory_does_not_follow_directory_aliases",
+    "test_imp09c_fg_06_alias_journal_does_not_increase_invocation_counts",
+    "test_imp09c_fg_07_partial_body_timeout_preserves_prefix_and_bounded_deadline",
+    "test_imp09c_fg_08_supervise_once_success_requires_reaped_cleanup",
+    "test_imp09c_fg_11_cleanup_failure_and_late_deadline_fail_closed[cleanup-exception]",
+    "test_imp09c_fg_11_cleanup_failure_and_late_deadline_fail_closed[cleanup-unknown]",
+    "test_imp09c_fg_11_cleanup_failure_and_late_deadline_fail_closed[cleanup-slow]",
+    "test_imp09c_fg_11_cleanup_failure_and_late_deadline_fail_closed[cleanup-late]",
+    "test_imp09c_fg_09_pre_wire_source_drift_remains_non_success[source-drift]",
+    "test_imp09c_fg_09_pre_wire_source_drift_remains_non_success[request-drift]",
+    "test_imp09c_fg_09_pre_wire_source_drift_remains_non_success[binding-drift]",
+    "test_imp09c_fg_09_pre_wire_source_drift_remains_non_success[wire-expired]",
+    "test_imp09c_fg_12_post_cleanup_source_drift_is_reduced_to_failure"
+  ]
+}
