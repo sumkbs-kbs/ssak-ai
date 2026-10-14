@@ -4,6 +4,7 @@
  * Fetch wrapper with PIN auth, error handling, and SSE streaming support.
  */
 
+import { z } from 'zod';
 import { createAccessPinHeaders } from '../utils/accessPinCredential';
 import { ChatFinalContentFrameSchema, ChatStatusFrameSchema } from './chatStreamFrameSchema';
 import {
@@ -293,6 +294,33 @@ function parseSseData(input: string, flush: boolean): ParsedSseData {
   };
 }
 
+const ChatProviderErrorFrameSchema = z.object({
+  error: z.discriminatedUnion('type', [
+    z.object({
+      type: z.literal('provider_protocol_error'),
+      code: z.enum(['invalid_stream', 'upstream_stream_error', 'incomplete_stream']),
+      message: z.string().trim().min(1),
+    }),
+    z.object({
+      type: z.literal('provider_transport_error'),
+      code: z.enum(['upstream_http_error', 'provider_unavailable', 'provider_timeout']),
+      message: z.string().trim().min(1),
+    }),
+  ]),
+});
+
+class ChatProviderStreamError extends Error {
+  readonly name = 'ChatProviderStreamError';
+  readonly type: z.infer<typeof ChatProviderErrorFrameSchema>['error']['type'];
+  readonly code: z.infer<typeof ChatProviderErrorFrameSchema>['error']['code'];
+
+  constructor(error: z.infer<typeof ChatProviderErrorFrameSchema>['error']) {
+    super(error.message);
+    this.type = error.type;
+    this.code = error.code;
+  }
+}
+
 function emitChatFrame(
   frame: string,
   handlers: ChatStreamHandlers,
@@ -305,6 +333,9 @@ function emitChatFrame(
   } catch {
     return;
   }
+
+  const failure = ChatProviderErrorFrameSchema.safeParse(raw);
+  if (failure.success) throw new ChatProviderStreamError(failure.data.error);
 
   if (raw && typeof raw === 'object' && 'agk_status' in raw) {
     const status = ChatStatusFrameSchema.safeParse(raw);

@@ -56,6 +56,45 @@ describe('ChatPage stream channel ownership', () => {
     await waitFor(() => expect(client.streamChatCompletion).toHaveBeenCalled());
   }
 
+  it('preserves the queued turn and partial answer when the real parser receives a typed stream error', async () => {
+    // Given
+    vi.mocked(client.streamChatCompletion).mockRestore();
+    const encoder = new TextEncoder();
+    const wire = new TransformStream<Uint8Array, Uint8Array>();
+    const writer = wire.writable.getWriter();
+    const chatRequests: string[] = [];
+    vi.mocked(fetch).mockImplementation(async (input) => {
+      if (input === '/v1/chat/completions') {
+        chatRequests.push(input);
+        return new Response(wire.readable, { status: 200, headers: { 'Content-Type': 'text/event-stream' } });
+      }
+      return new Response('{}', { status: 200 });
+    });
+    await act(async () => render(<MemoryRouter><ChatPage /></MemoryRouter>));
+    const input = screen.getByRole('textbox', { name: '메시지 입력' });
+    fireEvent.change(input, { target: { value: 'first-turn' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    await waitFor(() => expect(chatRequests).toHaveLength(1));
+    await act(async () => writer.write(encoder.encode('data: {"choices":[{"delta":{"content":"partial-answer"}}]}\n\n')));
+    fireEvent.change(input, { target: { value: 'queued-turn' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(screen.getByText('queued-turn')).toBeInTheDocument();
+
+    // When
+    await act(async () => {
+      await writer.write(encoder.encode('event: error\ndata: {"error":{"type":"provider_protocol_error","code":"incomplete_stream","message":"Incomplete stream"}}\n\n'));
+      await writer.close();
+    });
+    await waitFor(() => expect(useChatStore.getState().isStreaming).toBe(false));
+
+    // Then
+    expect(chatRequests).toHaveLength(1);
+    expect(useChatStore.getState().messages.at(-1)?.content).toBe('partial-answer');
+    expect(screen.getByText('queued-turn')).toBeInTheDocument();
+    expect(screen.getByText('Incomplete stream')).toBeInTheDocument();
+    expect(useChatStore.getState().messages.filter((message) => message.role === 'user')).toHaveLength(1);
+  });
+
   it('shows progress as accessible working status without adding it to the assistant body', async () => {
     // Given
     await act(async () => render(<MemoryRouter><ChatPage /></MemoryRouter>));
