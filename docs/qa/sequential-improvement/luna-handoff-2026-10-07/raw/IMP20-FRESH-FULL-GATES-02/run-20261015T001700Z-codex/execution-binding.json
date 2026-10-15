@@ -1,0 +1,38 @@
+{
+  "recorded_at": "2026-10-15T00:17:12.724640+00:00",
+  "candidate": {
+    "head": "7360c78544abeea41e38c65faa6eba2610a8a33b",
+    "working_fingerprint": "d3573bbe6712d3dc4ad41a3959945187fee9e8f43a5e8e4658a16873e3bafbeb",
+    "commit_fingerprint": "d3573bbe6712d3dc4ad41a3959945187fee9e8f43a5e8e4658a16873e3bafbeb"
+  },
+  "manifest_sha256": "7ec8fc7b17c5aac4eb37f83a33c0bc5f82e590a42c4e088550c0407f6cd95690",
+  "runner_sha256": "c0e5f67522825fdeaaea54e55023501015fd9320ab72f3fe4a41c295d606b5ce",
+  "provider_boundary_sha256": "f11c2d4bc0994a91346f107010f77ca304d09fdea2261b947c44d636078ca52b",
+  "isolated_config_sha256": "87f2fc3e3a09fd967e493fda40a59df7840fa4ab9c7b883ca31a703097bbad8a",
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-02/run-20261015T001700Z-codex/provider-boundary.sb",
+    "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "scripts/ga_gate.py",
+    "--manifest",
+    "scripts/commercial_ga_gates.json",
+    "--output",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-02/run-20261015T001700Z-codex/gate-report.json"
+  ],
+  "cwd": "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai",
+  "selected": 23,
+  "merge": false,
+  "reserved_base_bound_not_listening": "http://127.0.0.1:61614",
+  "auto_discovery": true,
+  "provider_home_weight_reads_denied": [
+    "/Users/mr.k/.cache/huggingface/hub",
+    "/Users/mr.k/models",
+    "/Users/mr.k/Library/Application Support/LM Studio/models",
+    "/Users/mr.k/.ollama/models",
+    "/Users/mr.k/.lmstudio/models"
+  ],
+  "build_stamp_environment_overrides": false,
+  "notes": "OS policy inherited across sanitized subprocess environments. Audit/install Internet and gate-owned dynamic localhost listeners are permitted. Policy control does not count all denied attempts or establish model quality."
+}

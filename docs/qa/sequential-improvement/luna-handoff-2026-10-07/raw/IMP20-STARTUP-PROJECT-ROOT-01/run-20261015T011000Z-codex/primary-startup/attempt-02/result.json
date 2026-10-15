@@ -1,0 +1,201 @@
+{
+  "verdict": "FAIL",
+  "failure": null,
+  "checks": {
+    "one_health_get_200": true,
+    "live_storage_paths_exist": true,
+    "startup_completed": true,
+    "rag_tiny_project_one": true,
+    "default_hook_path": true,
+    "default_audit_path": true,
+    "hook_shutdown": true,
+    "application_shutdown": true,
+    "normal_reap": false,
+    "audit_integrity_after_exit": true,
+    "source_unchanged": true
+  },
+  "request_count": 1,
+  "harness_product_posts": 0,
+  "harness_inference_requests": 0,
+  "curl_exit": 0,
+  "http_status": 200,
+  "server_exit": -15,
+  "reaped": true,
+  "forced": false,
+  "process_group_empty": true,
+  "elapsed_seconds": 17.823765250001088,
+  "files_observed_while_live": {
+    "audit_db_exists": true,
+    "hook_events_exists": true
+  },
+  "project_files_after_exit": [
+    {
+      "path": ".antigravity/memory/cavemem.sqlite3",
+      "bytes": 32768,
+      "sha256": "79e05ebfde8cb018f4b479829bb88d18a295edb018398fb9b73f087903df5555"
+    },
+    {
+      "path": ".antigravity/memory/scheduled_jobs.db",
+      "bytes": 32768,
+      "sha256": "689e76ec8ac648e8cada98ebe9853306a4df6d717edf3268e11adc75ed3839ac"
+    },
+    {
+      "path": ".antigravity/rag_vectors/chroma.sqlite3",
+      "bytes": 188416,
+      "sha256": "10103bfdf9e6a8049bd6ceb02295dfd271ca34bb1c85c3dcd086c366a14f02d3"
+    },
+    {
+      "path": ".antigravity/sessions/.locks/7dccf6ef_a5c5a72f249540e09a3846fb76d317a8.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".antigravity/sessions/7dccf6ef_a5c5a72f249540e09a3846fb76d317a8.json",
+      "bytes": 609,
+      "sha256": "c52b041934561a2cd0ba3be8c6c34356893e73706100f225676bdbf721237d76"
+    },
+    {
+      "path": ".antigravity/vault_data/.chroma/chroma.sqlite3",
+      "bytes": 188416,
+      "sha256": "bec56f67dae65027bf65e060037c075c763a72211447d19209665719aec45a70"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/HEAD",
+      "bytes": 21,
+      "sha256": "28d25bf82af4c0e2b72f50959b2beb859e3e60b9630a5e8c603dad4ddb2b6e80"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/config",
+      "bytes": 137,
+      "sha256": "cae33efdb02cf774435c1ff9cb16bcc1014606908530c6e1dc727615fe3e8cda"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/description",
+      "bytes": 73,
+      "sha256": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/hooks/applypatch-msg.sample",
+      "bytes": 478,
+      "sha256": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/hooks/commit-msg.sample",
+      "bytes": 1972,
+      "sha256": "efc1401b0e99d1ff51494d154d98b46c1e99059bcd8bf9f73cecde19fd3eb23b"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/hooks/fsmonitor-watchman.sample",
+      "bytes": 4611,
+      "sha256": "9159720099ad5595b8e66645cbfd47763c1e920f46e0b50ae75e642bbec57ef0"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/hooks/post-update.sample",
+      "bytes": 189,
+      "sha256": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/hooks/pre-applypatch.sample",
+      "bytes": 424,
+      "sha256": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/hooks/pre-commit.sample",
+      "bytes": 1649,
+      "sha256": "57185b7b9f05239d7ab52db045f5b89eb31348d7b2177eab214f5eb872e1971b"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/hooks/pre-merge-commit.sample",
+      "bytes": 416,
+      "sha256": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/hooks/pre-push.sample",
+      "bytes": 1374,
+      "sha256": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/hooks/pre-rebase.sample",
+      "bytes": 4898,
+      "sha256": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/hooks/pre-receive.sample",
+      "bytes": 544,
+      "sha256": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/hooks/prepare-commit-msg.sample",
+      "bytes": 1492,
+      "sha256": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/hooks/push-to-checkout.sample",
+      "bytes": 2783,
+      "sha256": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/hooks/sendemail-validate.sample",
+      "bytes": 2308,
+      "sha256": "44ebfc923dc5466bc009602f0ecf067b9c65459abfe8868ddc49b78e6ced7a92"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/hooks/update.sample",
+      "bytes": 3650,
+      "sha256": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106"
+    },
+    {
+      "path": ".antigravity/vault_data/.git/info/exclude",
+      "bytes": 240,
+      "sha256": "6671fe83b7a07c8932ee89164d1f2793b2318058eb8b98dc5c06ee0a5a3b0ec1"
+    },
+    {
+      "path": ".antigravity_k/agency.db",
+      "bytes": 57344,
+      "sha256": "bfa20d6c18617b1b7f3ca18af8f9fc15b2781d0cccfaeee3cd51ff6d6e3f8d49"
+    },
+    {
+      "path": "data/projects.json",
+      "bytes": 361,
+      "sha256": "d5f682553453621ac2592df49885f09be09c32cc0abe826d758224739fc6dd7e"
+    },
+    {
+      "path": "data/projects.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "one.py",
+      "bytes": 34,
+      "sha256": "dfeb97943d3c24ffe08ebce316c2b3eca12a78a62fd414a89a4fcdcb611c935e"
+    },
+    {
+      "path": "vault_data/audit.sqlite3",
+      "bytes": 28672,
+      "sha256": "c525a4dca5c02accb77327adaed651a3a5835a569bb261d870d775e83039c906"
+    },
+    {
+      "path": "vault_data/hooks/events.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "sources_before": {
+    "src/antigravity_k/api/server.py": "0ffb369335863d266f56e2903067610ed3a2d67dea15dd4d746683b7333bb306",
+    "tests/test_lifespan_agency_root_contract.py": "16b6d8cb74f013022648d12ae0bd7cb568ecb2559afca9522bff8f03a81039cf",
+    "tests/test_lifespan_configured_project_root.py": "e6fd37b5b5379b1c0909b1ac26e748df149110717bbba22d753d1b99ea36321f"
+  },
+  "sources_after": {
+    "src/antigravity_k/api/server.py": "0ffb369335863d266f56e2903067610ed3a2d67dea15dd4d746683b7333bb306",
+    "tests/test_lifespan_agency_root_contract.py": "16b6d8cb74f013022648d12ae0bd7cb568ecb2559afca9522bff8f03a81039cf",
+    "tests/test_lifespan_configured_project_root.py": "e6fd37b5b5379b1c0909b1ac26e748df149110717bbba22d753d1b99ea36321f"
+  },
+  "audit_close_method": "NOT_INSTRUMENTED; see actual application_shutdown check and post-exit read-only integrity",
+  "ide_listener": "NOT_TESTED",
+  "global_provider_call_count": "NOT_INSTRUMENTED",
+  "limitations": [
+    "No model inference requests were issued by this QA client; no independent global call counter.",
+    "No authentication, IDE listener, full gates, soak, or model quality assertion.",
+    "Private runtime includes credentials and is excluded from publication."
+  ]
+}

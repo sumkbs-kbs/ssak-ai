@@ -1,0 +1,27 @@
+[
+  {
+    "event": "subprocess.Popen",
+    "executable": "ps",
+    "argv": [
+      "ps",
+      "-u",
+      "501",
+      "-o",
+      "pid="
+    ],
+    "cwd": "None"
+  },
+  {
+    "event": "subprocess.Popen",
+    "executable": "sandbox-exec",
+    "argv": [
+      "sandbox-exec",
+      "-f",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-GATE-ENVIRONMENT-01/run-20261015T011500Z-codex/product-sandbox-only/private-runtime/tmp/tmp2zfkvvgb.sb",
+      "sh",
+      "-c",
+      "ulimit -t 60 2>/dev/null; ulimit -u 760 2>/dev/null; ulimit -v 2097152 2>/dev/null; exec sh -c '/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python -B probe.py'"
+    ],
+    "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-GATE-ENVIRONMENT-01/run-20261015T011500Z-codex/product-sandbox-only/private-runtime/pytest/test_python_runs_inside_worksp0"
+  }
+]

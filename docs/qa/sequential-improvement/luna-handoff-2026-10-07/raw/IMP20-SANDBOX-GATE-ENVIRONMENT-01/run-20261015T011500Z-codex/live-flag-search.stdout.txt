@@ -1,0 +1,2 @@
+tests/test_finetune_evaluation_backends.py:377:        environment={"backend": "ollama"},
+tests/test_ssak_browser_loop.py:882:_LIVE = os.environ.get("SSAK_LIVE_MODEL_TASKS", "").strip() in {"1", "true", "yes"}

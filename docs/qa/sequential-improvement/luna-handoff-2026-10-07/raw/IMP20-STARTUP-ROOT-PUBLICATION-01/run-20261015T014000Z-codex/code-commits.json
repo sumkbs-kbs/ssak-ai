@@ -1,0 +1,37 @@
+{
+  "recorded_at": "2026-10-15T01:35:24.009296+00:00",
+  "commits": [
+    {
+      "label": "startup",
+      "head": "2499fb40832ced46ae68798901c6247c355dff5d",
+      "parent": "7360c78544abeea41e38c65faa6eba2610a8a33b",
+      "paths": [
+        "src/antigravity_k/api/server.py",
+        "tests/test_lifespan_agency_root_contract.py",
+        "tests/test_lifespan_configured_project_root.py"
+      ],
+      "message": "fix: honor configured project root during startup",
+      "normal_commit_exit": 0
+    },
+    {
+      "label": "doctor",
+      "head": "58d941b340a29a8717dcfbc87348b8542fe0bd77",
+      "parent": "2499fb40832ced46ae68798901c6247c355dff5d",
+      "paths": [
+        "tests/test_doctor.py"
+      ],
+      "message": "test: isolate doctor capability checks from catalog order",
+      "normal_commit_exit": 0
+    }
+  ],
+  "source_hashes": {
+    "src/antigravity_k/api/server.py": "0ffb369335863d266f56e2903067610ed3a2d67dea15dd4d746683b7333bb306",
+    "tests/test_lifespan_agency_root_contract.py": "16b6d8cb74f013022648d12ae0bd7cb568ecb2559afca9522bff8f03a81039cf",
+    "tests/test_lifespan_configured_project_root.py": "e6fd37b5b5379b1c0909b1ac26e748df149110717bbba22d753d1b99ea36321f",
+    "tests/test_doctor.py": "261e0b7a3b124b6668401bb1766d19244d6c23c6a540fffe25052ee22afb6e57"
+  },
+  "independent_review_sha256": "305682c31dc4c3eb35ff63a224bf48ee814fbc75b741c5659f32663b961d2371",
+  "candidate_clean": true,
+  "root_integration": "PENDING",
+  "push": "PENDING"
+}

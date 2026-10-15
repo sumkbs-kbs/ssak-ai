@@ -1,0 +1,12 @@
+{
+  "executable": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+  "resolved_executable": "/Users/mr.k/miniforge3/bin/python3.13",
+  "prefix": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv",
+  "base_prefix": "/Users/mr.k/miniforge3",
+  "product_runtime_read_paths": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv",
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin",
+    "/Users/mr.k/miniforge3",
+    "/Users/mr.k/miniforge3/bin"
+  ]
+}

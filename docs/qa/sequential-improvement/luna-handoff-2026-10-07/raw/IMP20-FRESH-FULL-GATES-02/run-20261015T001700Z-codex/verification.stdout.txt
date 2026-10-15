@@ -1,0 +1,6 @@
+{
+  "verdict": "FAIL",
+  "problems": [
+    "required_red: required gates failed: python-tests"
+  ]
+}

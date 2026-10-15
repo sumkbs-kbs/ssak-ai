@@ -1,0 +1,51 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__ TestDoctorCommand.test_doctor_uses_capability_probe_for_local_model_health __
+
+self = <tests.test_doctor.TestDoctorCommand object at 0x106380c80>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x106a31590>
+
+    def test_doctor_uses_capability_probe_for_local_model_health(self, monkeypatch: pytest.MonkeyPatch):
+        """로컬 모델 헬스는 ProviderCapabilityProbe 결과로 표시한다."""
+        from antigravity_k.engine.provider_capabilities import LocalProviderCapabilityProbe
+    
+        def fake_observe(
+            self: LocalProviderCapabilityProbe,
+            profile: ModelProfile,
+            *,
+            refresh: bool = False,
+        ) -> ProviderCapability:
+            _ = self
+            _ = refresh
+            status = "available" if profile.backend == "mlx" else "unavailable"
+            detail = (
+                "LM Studio server reachable; configured model identifiers are not loaded."
+                if profile.backend == "lmstudio"
+                else "URLError: connection refused"
+            )
+            reported_model_ids = ["qwen/qwen3-30b-a3b-instruct"] if profile.backend == "lmstudio" else []
+            return {
+                "model": profile.name,
+                "provider": profile.backend,
+                "is_local": True,
+                "native_tool_calling": "unsupported" if profile.backend == "mlx" else "supported",
+                "runtime_status": status,
+                "source": f"{profile.backend}:test",
+                "detail": detail,
+                "reported_capabilities": [],
+                "reported_model_count": 0,
+                "reported_model_ids": reported_model_ids,
+            }
+    
+        monkeypatch.setattr(LocalProviderCapabilityProbe, "observe", fake_observe)
+        result = runner.invoke(app, ["doctor"], env={"COLUMNS": "200"})
+        normalized_output = " ".join(result.output.replace("│", " ").split())
+    
+        assert "Local model health" in normalized_output
+>       assert "qwen3.8" in normalized_output
+E       AssertionError: assert 'qwen3.8' in '🩺 Ssak-Ai Doctor ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━... 0 failed ╰───────────────────────────────────╯ ⚠️ Some warnings detected. The app may work but check the items above.'
+
+tests/test_doctor.py:120: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_doctor.py::TestDoctorCommand::test_doctor_uses_capability_probe_for_local_model_health
+1 failed in 0.44s

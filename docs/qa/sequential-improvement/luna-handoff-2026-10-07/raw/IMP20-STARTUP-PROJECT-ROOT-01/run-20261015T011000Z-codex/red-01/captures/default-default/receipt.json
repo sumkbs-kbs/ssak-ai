@@ -1,0 +1,25 @@
+{
+  "rag_roots": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai"
+  ],
+  "ide_roots": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai"
+  ],
+  "hook_roots": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/vault_data"
+  ],
+  "audit_roots": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/vault_data"
+  ],
+  "bridge_roots": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai"
+  ],
+  "forbidden": [],
+  "configured_root": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+  "source_root": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+  "server_sha256": "6b5945cefe9d39294a1a3372bf812e9e5d28bd6e190f59846a6b4ce81a7655a7",
+  "ide_started": true,
+  "hook_closed": true,
+  "audit_closed": true,
+  "ide_closed": true
+}

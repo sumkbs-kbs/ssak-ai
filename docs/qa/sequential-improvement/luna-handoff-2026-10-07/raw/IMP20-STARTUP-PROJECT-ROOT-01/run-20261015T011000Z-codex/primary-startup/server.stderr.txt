@@ -1,0 +1,45 @@
+2026-10-15 10:27:30,449 INFO uvicorn.error Started server process [95169]
+2026-10-15 10:27:30,449 INFO uvicorn.error Waiting for application startup.
+2026-10-15 10:27:30,464 INFO antigravity_k.config 설정 검증 통과: 문제 없음
+2026-10-15 10:27:30,465 INFO antigravity_k.engine.hook_event_bus [HookEventBus] Initialized at /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/private-runtime/project_root/vault_data/hooks, start_offset=0
+2026-10-15 10:27:30,465 INFO antigravity_k.api.server [Startup] HookEventBus initialized
+2026-10-15 10:27:30,468 INFO antigravity_k.engine.audit_db [AuditDb] Initialized at /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/private-runtime/project_root/vault_data/audit.sqlite3
+2026-10-15 10:27:30,468 INFO antigravity_k.api.server [Startup] AuditDb initialized
+2026-10-15 10:27:30,469 INFO antigravity_k.engine.panel_activity_tracker [PanelActivityTracker] HookEventBus에 연결 완료
+2026-10-15 10:27:30,469 INFO antigravity_k.api.server [Startup] PanelActivityTracker initialized
+2026-10-15 10:27:30,471 INFO antigravity_k.engine.event_bus [EventBus] HookEventBus 듀얼 싱크 브릿지 설정 완료
+2026-10-15 10:27:30,471 INFO antigravity_k.api.server [Startup] EventBus dual-sync bridge established
+2026-10-15 10:27:30,477 INFO antigravity_k.api.server [RAG] Background indexing started
+2026-10-15 10:27:30,482 INFO antigravity_k.api.server [RAG] Background indexing complete: 1 files indexed
+2026-10-15 10:27:30,482 INFO antigravity_k.engine.ide_server Optional IDE unavailable: code-server executable not found in PATH.
+2026-10-15 10:27:30,482 INFO antigravity_k.api.server [Startup] IDE Server initialized on port 8080
+2026-10-15 10:27:30,482 INFO antigravity_k.api.server [Startup] API Cache periodic cleanup started (interval=300s)
+2026-10-15 10:27:30,482 INFO antigravity_k.api.server [Startup] Scheduled job loop started (interval=15s)
+2026-10-15 10:27:30,512 INFO uvicorn.error Application startup complete.
+2026-10-15 10:27:30,512 INFO uvicorn.error Uvicorn running on http://127.0.0.1:49656 (Press CTRL+C to quit)
+2026-10-15 10:27:30,579 INFO antigravity_k.ops http.request.started
+2026-10-15 10:27:30,581 INFO antigravity_k.api.dependencies Lazy initializing ModelManager...
+2026-10-15 10:27:30,596 INFO antigravity_k.model_router 콤보 로드: collective-council (3개 모델, collective)
+2026-10-15 10:27:30,596 INFO antigravity_k.model_router 콤보 로드: orchestrator-swarm (5개 모델, fallback)
+2026-10-15 10:27:30,596 INFO antigravity_k.model_router 콤보 로드: reasoning-swarm (5개 모델, fallback)
+2026-10-15 10:27:30,596 INFO antigravity_k.model_router 콤보 로드: coding-swarm (5개 모델, fallback)
+2026-10-15 10:27:30,596 INFO antigravity_k.model_router 콤보 로드: vision-swarm (4개 모델, fallback)
+2026-10-15 10:27:30,596 INFO antigravity_k.model_router 콤보 로드: critic-swarm (5개 모델, fallback)
+2026-10-15 10:27:30,596 WARNING antigravity_k.model_calibration 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/private-runtime/data/benchmarks/local-model-stable-simple.json
+2026-10-15 10:27:30,596 WARNING antigravity_k.model_calibration 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/private-runtime/data/benchmarks/local-model-frontier.json
+2026-10-15 10:27:35,663 INFO uvicorn.error Shutting down
+2026-10-15 10:27:35,764 INFO uvicorn.error Waiting for background tasks to complete. (CTRL+C to force quit)
+2026-10-15 10:27:45,514 INFO antigravity_k.engine.memory_provider Memory provider registered: builtin (external=False)
+2026-10-15 10:27:45,514 INFO antigravity_k.engine.memory_provider Memory provider registered: episodic (external=False)
+2026-10-15 10:27:45,514 INFO antigravity_k.engine.memory_provider Memory provider registered: working_memory (external=False)
+2026-10-15 10:27:45,514 INFO antigravity_k.engine.memory_provider Memory provider registered: global (external=False)
+2026-10-15 10:27:45,515 INFO antigravity_k.engine.memory_provider Memory provider registered: project (external=False)
+2026-10-15 10:27:45,515 INFO antigravity_k.engine.memory_provider Memory provider registered: memory_service (external=False)
+2026-10-15 10:27:45,515 INFO antigravity_k.engine.memory_provider Memory provider registered: wiki (external=False)
+2026-10-15 10:27:45,515 INFO antigravity_k.engine.memory_provider Memory provider registered: gbrain (external=False)
+2026-10-15 10:27:45,515 INFO antigravity_k.engine.memory_provider Memory provider registered: project_vector (external=False)
+2026-10-15 10:27:45,515 INFO antigravity_k.engine.memory_provider Memory provider registered: search_cache (external=False)
+2026-10-15 10:27:45,527 INFO antigravity_k.engine.vector_store Initialized ChromaDB VectorStore at /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.antigravity/vault_data/.chroma, collection: vault_notes
+2026-10-15 10:27:45,542 INFO antigravity_k.tools.permission_gate PermissionGate initialized: mode=auto-pilot, project_root=/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai
+2026-10-15 10:27:45,542 INFO antigravity_k.tools.permission_gate PermissionGate initialized: mode=auto-pilot, project_root=/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai
+2026-10-15 10:27:45,545 WARNING antigravity_k.engine.skill_loader Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.240" timestamp="2026-10-15T10:18:08.693923+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="tests.test_cr03_sandbox_read_boundary.TestWorkspaceStillRuns" name="test_python_runs_inside_workspace" time="0.166"><failure message="AssertionError: sandbox-exec: sandbox_apply: Operation not permitted&#10;  &#10;assert False is True&#10; +  where False = SandboxResult(success=False, stdout='', stderr='sandbox-exec: sandbox_apply: Operation not permitted\n', return_code=71, timed_out=False, sandboxed=True, output_truncated=False, error='').success">self = &lt;tests.test_cr03_sandbox_read_boundary.TestWorkspaceStillRuns object at 0x1040f7d50&gt;
+workdir = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP...NT-01/run-20261015T011500Z-codex/with-artificial-outer-profile/private-runtime/pytest/test_python_runs_inside_worksp0')
+
+    def test_python_runs_inside_workspace(self, workdir: Path) -&gt; None:
+        result = _run_probe(workdir, "print('PYTHON_OK')\n")
+    
+        assert result.sandboxed is True
+&gt;       assert result.success is True, result.error or result.stderr
+E       AssertionError: sandbox-exec: sandbox_apply: Operation not permitted
+E         
+E       assert False is True
+E        +  where False = SandboxResult(success=False, stdout='', stderr='sandbox-exec: sandbox_apply: Operation not permitted\n', return_code=71, timed_out=False, sandboxed=True, output_truncated=False, error='').success
+
+tests/test_cr03_sandbox_read_boundary.py:121: AssertionError</failure></testcase></testsuite></testsuites>

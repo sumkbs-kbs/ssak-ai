@@ -1,6 +1,6 @@
 {
   "current_snapshot": {
-    "as_of_utc": "2026-10-15T00:14:00Z",
+    "as_of_utc": "2026-10-15T01:38:05Z",
     "scope": "Listed IMP-09 scoped evidence and active priority queue only; other parent acceptance not re-audited",
     "authority": "This current_snapshot and STATUS.md current section take precedence for listed rows; original recorded_at/summary/tasks/subtasks below remain historical",
     "parent_status": {
@@ -406,7 +406,7 @@
       {
         "priority": 7,
         "id": "INTEGRATED_RELEASE_ACCEPTANCE",
-        "status": "IN_PROGRESS_ROUND2_REPAIRS_APPROVED_PUSHED_FRESH_FULL_GATE_NOT_RUN",
+        "status": "IN_PROGRESS_STARTUP_ROOT_DOCTOR_REVIEW_AND_PUBLISH",
         "scope": "IMP-01/02 integration, IMP-19 packaging, IMP-20 newcandidate8hsoak; release distinct",
         "preconditions": [
           "Portable output/candidate/interpreter passed7 and pushed",
@@ -416,9 +416,10 @@
           "Prerequisite range481a634..f3a42e6f and followup f3a42..a7c1dc2f independently approved and pushed",
           "First fresh full23 at30233787 diagnosed20PASS3FAIL; Python interrupted9FAIL355PASS17deselected, dashboard-unit1243PASS1FAIL, accessibility33PASS2FAIL",
           "Repair range30233787..1e9dfb87 independently APPROVED scoped prerequisites, ROOT integrated and remote SHA verified",
-          "Round2 same-candidate full23 NOT_RUN; new8hsoak NOT_RUN"
+          "Round2 exact original23 at7360c785 completed22PASS1FAIL, gateexit1 and unchanged source fingerprint; Python deliberately interrupted, not accepted",
+          "new8hsoak NOT_RUN"
         ],
-        "candidate_commit": "1e9dfb87b185f3d20792d3f4bff4a25189947c15",
+        "candidate_commit": "7360c78544abeea41e38c65faa6eba2610a8a33b",
         "completed_subtasks": [
           {
             "id": "IMP-20-SOAK-CANDIDATE-PATH-CONTRACT-01",
@@ -473,7 +474,42 @@
           "separate_targeted_results": "Embedding5, cognitive145, evidence-gate36, current source-bound migration30, accessibility35, final provenance3; final106 bundle files byte-identical to standard rebuild",
           "limits": "Separate scoped invocations, not a fresh full23 pass. Historical migration test-execution byte gap remains historical. Existing test module type4errors156warnings retained with zero added diagnostics. ROOT independent UI/bundle and staged97 preserved."
         },
-        "remaining": "Round2 same-candidate full23 NOT_RUN, any newly reproduced failures, new8hsoak NOT_RUN and release approval; reviewed prerequisite repairs pushed through1e9dfb87"
+        "round2_full_gate_execution": {
+          "status": "FAIL_FRESH_SAME_CANDIDATE_GATES",
+          "started_at": "2026-10-15T00:17:12.728445Z",
+          "candidate_commit": "7360c78544abeea41e38c65faa6eba2610a8a33b",
+          "code_fingerprint": "d3573bbe6712d3dc4ad41a3959945187fee9e8f43a5e8e4658a16873e3bafbeb",
+          "report": "raw/IMP20-FRESH-FULL-GATES-02/run-20261015T001700Z-codex/gate-report.json",
+          "result": "raw/IMP20-FRESH-FULL-GATES-02/run-20261015T001700Z-codex/result.json",
+          "observed_completed_gates": "Original23 selected exactly;22PASS1FAIL; gate process exit1",
+          "source_unchanged": true,
+          "whole_python": "DELIBERATELY_INTERRUPTED_UV_WRAPPER_EXIT1_PYTEST_CHILD_EXIT_NOT_OBSERVED_PARTIAL_FAILED50_NOT_COMPLETED_SUMMARY",
+          "python_interruption_completion": "raw/IMP20-FRESH-FULL-GATES-02/run-20261015T001700Z-codex/python-interruption-completion.json",
+          "new_8h_soak": "NOT_RUN",
+          "limits": "Overall FAIL; interrupted Python is not accepted. Outer OS sandbox nested EPERM and Doctor YAML ordering are execution-environment findings, separate from the product startup-root defect. Historical runs are not merged."
+        },
+        "startup_root_doctor_followup": {
+          "status": "APPROVED_SCOPED_COMMITTED_PUSHED_ROOT_INTEGRATED",
+          "startup_result": "raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/result.json",
+          "offline_result": "Three files; final35PASS and static checks PASS",
+          "independent_review": "APPROVE_SCOPED",
+          "independent_review_path": ".omo/evidence/IMP20-STARTUP-ROOT-DOCTOR-review.md",
+          "new_commit": "58d941b340a29a8717dcfbc87348b8542fe0bd77",
+          "startup_feature_commit": "2499fb40832ced46ae68798901c6247c355dff5d",
+          "remote_sha_verified": "58d941b340a29a8717dcfbc87348b8542fe0bd77",
+          "doctor_cause": "Harness YAML sort_keys=True reordered original model groups; product Doctor first-model behavior unchanged. Explicit registry fixture is separate hermeticity hardening.",
+          "doctor_cause_evidence": "raw/IMP20-DOCTOR-GATE-FIXTURE-01/run-20261015T011500Z-codex/order-preservation/cause-distinction-ko.md",
+          "outer_sandbox_evidence": "raw/IMP20-SANDBOX-GATE-ENVIRONMENT-01/run-20261015T011500Z-codex/result.json",
+          "root_candidate_boundary": "ROOT server independent resolve and vectorstore RAG changes preserved; ROOT is not claimed identical to reviewed candidate",
+          "first_actual_attempt": "FAIL_HEALTH_5S_TIMEOUT_FORCED_EXIT_MINUS9_PRESERVED",
+          "second_actual_attempt": "HTTP200_GRACEFUL_SIGTERM_ACTUAL_EXIT_MINUS15_NOT_ZERO_RAW_HARNESS_FAIL_PRESERVED",
+          "stored_observation_review": "PASS_SCOPED_STARTUP_HEALTH_GRACEFUL_SIGTERM_SEPARATE_FROM_RAW_HARNESS_ACCEPTANCE",
+          "stored_review_result": "raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/attempt-02/review-result.json",
+          "round3_full23": "PREPARING_NOT_RUN_NEW_HOME_ALL_PROVIDER_ENDPOINTS_REDIRECT_YAML_ORDER_PRESERVED_ORIGINAL23_COMMANDS",
+          "new_8h_soak": "NOT_RUN",
+          "release_approval": "NOT_ISSUED"
+        },
+        "remaining": "Publish scoped repair evidence, freeze a new candidate and run corrected round3 original23; new8hsoak NOT_RUN and release approval NOT_ISSUED. Startup and Doctor code pushed through58d941b3."
       }
     ],
     "optional_not_automatically_selected": [
@@ -492,7 +528,7 @@
       "status_commit": "8ed827654cb608c55b22fe75b295abf3365114f4",
       "direct_transport_feature_commit": "8b22847730f5419307dda66f5ca6ab57fc1b023f",
       "direct_transport_qa_commit": "50437f0ccbb0dd512204ce38b640bd5c238eb97a",
-      "latest_remote_sha_verified": "1e9dfb87b185f3d20792d3f4bff4a25189947c15",
+      "latest_remote_sha_verified": "58d941b340a29a8717dcfbc87348b8542fe0bd77",
       "native_stream_feature_commit": "97f898661195623ba87eb826e94b03538aecb38f",
       "native_stream_qa_commit": "d2aed8c1f7237f08f7b497e6760b792754c61b1e",
       "compatible_transport_feature_commit": "bad768d9bf07a805446edac98861d0a2f596b124",
@@ -513,13 +549,13 @@
       "rag_keyword_qa_commit": "7802aa1b3043d66a80f6f891c6cf3db039b393a0",
       "startup_storage_feature_commit": "7482ebb8b76c7c686e729e68c48f7258e2cc7e66",
       "lifespan_agency_feature_commit": "e3ef83547b70a4856ce196ef6c69fd4f4bc715f1",
-      "current_followup_qa": "HISTORICAL_D868_15PASS8FAIL_FIRST_FRESH_302_20PASS3FAIL_ROUND2_REPAIRS_APPROVED_PUSHED_NEW_FULL23_NOT_RUN",
+      "current_followup_qa": "HISTORICAL_D868_15PASS8FAIL_FIRST_FRESH_302_20PASS3FAIL_ROUND2_7360_22PASS1FAIL_PYTHON_INTERRUPTED_STARTUP_ROOT_DOCTOR_APPROVED_PUBLICATION_IN_PROGRESS_ROUND3_NOT_RUN",
       "search_startup_qa_commit": "04ba85924fd79bde9d92052b86b2925506e15f03",
       "project_memory_purge_feature_commit": "6f0bd05d84506ab9435bbc4866f2acf2cb49585b",
       "agent_lazy_feature_commit": "0e49b627db4351c5aaf51abaa6465da3fcfdc8f5",
       "task_global_cursor_feature_commit": "c12830506c50d887606aebfd5d54351133101463"
     },
-    "next_task": "IMP20-FRESH-FULL-GATES-02",
+    "next_task": "IMP20-FRESH-FULL-GATES-03",
     "do_not_repeat": "Use saved successful receipts unless source, environment or a new failure hypothesis changes; do not replay old inference or reconstruct lost ledgers"
   },
   "recorded_at": "2026-10-07T13:16:06.378463+00:00",

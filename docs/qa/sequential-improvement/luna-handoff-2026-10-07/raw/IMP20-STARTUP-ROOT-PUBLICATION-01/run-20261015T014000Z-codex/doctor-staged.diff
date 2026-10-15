@@ -1,0 +1,71 @@
+diff --git a/tests/test_doctor.py b/tests/test_doctor.py
+index 673a5716..c1cf6802 100644
+--- a/tests/test_doctor.py
++++ b/tests/test_doctor.py
+@@ -5,13 +5,16 @@ Uses Typer's CliRunner to invoke the command and verify output.
+ 
+ from __future__ import annotations
+ 
++import json
++import socket
++from pathlib import Path
+ from typing import final
+ 
+ import pytest
+ from typer.testing import CliRunner
+ 
+ from antigravity_k.cli import app
+-from antigravity_k.engine.model_registry import ModelProfile
++from antigravity_k.engine.model_registry import ModelProfile, ModelRegistry
+ from antigravity_k.engine.provider_capabilities import ProviderCapability
+ 
+ runner = CliRunner()
+@@ -80,10 +83,30 @@ class TestDoctorCommand:
+         result = runner.invoke(app, ["doctor"])
+         assert "Model" in result.output or "registry" in result.output.lower()
+ 
+-    def test_doctor_uses_capability_probe_for_local_model_health(self, monkeypatch: pytest.MonkeyPatch):
++    def test_doctor_uses_capability_probe_for_local_model_health(
++        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
++    ) -> None:
+         """로컬 모델 헬스는 ProviderCapabilityProbe 결과로 표시한다."""
+         from antigravity_k.engine.provider_capabilities import LocalProviderCapabilityProbe
+ 
++        profiles = [
++            ModelProfile(name="qwen3.8", repo="qwen3.8:latest", role="reasoning", provider="ollama"),
++            ModelProfile(name="lmstudio/qwen3.6", repo="qwen3.6:latest", role="reasoning", provider="lmstudio"),
++            ModelProfile(name="mlx-test", repo="mlx/test", role="reasoning", provider="mlx"),
++        ]
++        registry_config = tmp_path / "doctor-models.json"
++        _ = registry_config.write_text(
++            json.dumps({"models": {"reasoning": [profile.to_dict() for profile in profiles]}})
++        )
++        registry = ModelRegistry(config_path=str(registry_config))
++        monkeypatch.setattr("antigravity_k.cli.ModelRegistry", lambda: registry)
++
++        def fake_port_probe(_socket: socket.socket, _address: tuple[str, int]) -> int:
++            return 61
++
++        monkeypatch.setattr(socket.socket, "connect_ex", fake_port_probe)
++        observed: list[tuple[str, bool]] = []
++
+         def fake_observe(
+             self: LocalProviderCapabilityProbe,
+             profile: ModelProfile,
+@@ -91,7 +114,7 @@ class TestDoctorCommand:
+             refresh: bool = False,
+         ) -> ProviderCapability:
+             _ = self
+-            _ = refresh
++            observed.append((profile.name, refresh))
+             status = "available" if profile.backend == "mlx" else "unavailable"
+             detail = (
+                 "LM Studio server reachable; configured model identifiers are not loaded."
+@@ -116,6 +139,7 @@ class TestDoctorCommand:
+         result = runner.invoke(app, ["doctor"], env={"COLUMNS": "200"})
+         normalized_output = " ".join(result.output.replace("│", " ").split())
+ 
++        assert observed == [(profile.name, False) for profile in profiles]
+         assert "Local model health" in normalized_output
+         assert "qwen3.8" in normalized_output
+         assert "lmstudio/qwen3.6" in normalized_output

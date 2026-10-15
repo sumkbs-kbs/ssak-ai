@@ -1,0 +1,21 @@
+{
+  "recorded_at": "2026-10-15T01:42:36.574253+00:00",
+  "first_stage_exit": 1,
+  "reason": "Twelve explicit manifest-verified agency stdout/stderr .log artifacts match the general ignore rule. Partial owned staging was preserved. Add only these approved public evidence paths with git add -f; no hooks or tests are disabled.",
+  "ignored_public_paths": [
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-01/agency-captures/absolute/stderr.log",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-01/agency-captures/absolute/stdout.log",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-01/agency-captures/default/stderr.log",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-01/agency-captures/default/stdout.log",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-01/agency-captures/relative/stderr.log",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-01/agency-captures/relative/stdout.log",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-02/agency-captures/absolute/stderr.log",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-02/agency-captures/absolute/stdout.log",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-02/agency-captures/default/stderr.log",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-02/agency-captures/default/stdout.log",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-02/agency-captures/relative/stderr.log",
+    "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-02/agency-captures/relative/stdout.log"
+  ],
+  "staged_before_completion": 335,
+  "private_files_added": 0
+}

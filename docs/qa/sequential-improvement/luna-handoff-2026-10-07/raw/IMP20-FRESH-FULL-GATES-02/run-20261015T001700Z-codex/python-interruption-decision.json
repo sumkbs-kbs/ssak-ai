@@ -1,0 +1,15 @@
+{
+  "recorded_at": "2026-10-15T01:12:21.397976+00:00",
+  "candidate": "7360c78544abeea41e38c65faa6eba2610a8a33b",
+  "reason": "New bounded real-lifespan regression proves explicit configured startup root is ignored (4FAIL/2PASS). Preserve this obsolete full Python run as interrupted and spend the remaining budget on the corrected candidate.",
+  "red_receipt": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/red-01/receipt.json",
+  "red_junit": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/red-01/junit.xml",
+  "red_receipt_sha256": "cfc1c65310edcf42d51d5f318a220a7506e7df970b825b42a0b9001b1095ccb2",
+  "red_junit_sha256": "60415ea12ef9ed8f28fd56e491b5cb984e9d060f12c1904faa841c6c04114e34",
+  "unchanged_server_sha256": "6b5945cefe9d39294a1a3372bf812e9e5d28bd6e190f59846a6b4ce81a7655a7",
+  "gate_process_parent": 59401,
+  "target_group": 59935,
+  "target_command_verified": "59401 uv run --isolated --frozen --extra dev --extra rag --extra documents pytest tests/ -m not benchmark -v --tb=short",
+  "signal": "SIGINT",
+  "other_gates": "Continue normally on the unchanged candidate; do not merge with a later candidate."
+}

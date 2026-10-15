@@ -1,0 +1,6 @@
+{
+  "blocked_connect": 0,
+  "mock_connect_ex": 1,
+  "blocked_bind": 0,
+  "blocked_listen": 0
+}

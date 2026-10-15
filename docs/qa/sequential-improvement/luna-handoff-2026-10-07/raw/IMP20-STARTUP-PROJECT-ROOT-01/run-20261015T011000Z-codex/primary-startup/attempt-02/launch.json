@@ -1,0 +1,23 @@
+{
+  "pid": 95849,
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-02/run-20261015T001700Z-codex/provider-boundary.sb",
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "-m",
+    "uvicorn",
+    "antigravity_k.api.server:app",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "49730",
+    "--loop",
+    "asyncio",
+    "--lifespan",
+    "on",
+    "--log-config",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/attempt-02/private-runtime/logging.json"
+  ]
+}

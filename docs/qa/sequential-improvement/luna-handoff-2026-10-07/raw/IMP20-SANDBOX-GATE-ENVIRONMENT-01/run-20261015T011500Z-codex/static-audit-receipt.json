@@ -1,0 +1,15 @@
+{
+  "command": [
+    "rg",
+    "-n",
+    "-i",
+    "(getenv|environ|skipif).*(live|integration|ollama)|(live|integration|ollama).*(getenv|environ|skipif)",
+    "tests",
+    "--glob",
+    "*.py"
+  ],
+  "cwd": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+  "exit_code": 0,
+  "scope": "Bounded source audit, not exhaustive call graph or runtime no-inference proof",
+  "original_manifest_sha256": "e3f5271fa70ac4ef03a59f954d49263d203898a043167c99a2578ab10c1e2da6"
+}

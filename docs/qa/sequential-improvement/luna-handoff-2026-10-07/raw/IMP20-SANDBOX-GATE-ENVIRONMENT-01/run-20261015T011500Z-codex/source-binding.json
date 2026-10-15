@@ -1,0 +1,13 @@
+{
+  "repo": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+  "head": "7360c78544abeea41e38c65faa6eba2610a8a33b",
+  "sources": {
+    "tests/test_cr03_sandbox_read_boundary.py": "5ead664dc5ba77de358343054f646abc920c465cc7d887ffb0e5b23cce77e7b9",
+    "tests/test_cr04_shell_api_boundary.py": "a1d768f9224ec48fee0dfdf1a7749a40f381f8f7d7aa59b13639a4d5204235d6",
+    "tests/conftest.py": "66a90cd1654457b603c7e779a23c52ee7fb7c440ca4cc4ce9d78af2c2a81b4f2",
+    "src/antigravity_k/engine/sandbox.py": "003ae0fd87360d068d669460566b298f4e913c9fc0bff3da87a12976130dcc16",
+    "src/antigravity_k/api/routes/agent_tools.py": "1402020069e8d80d950c5afb2c63e131282b7a6d2685b2eae477b07d9e4ce526"
+  },
+  "profile": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-02/run-20261015T001700Z-codex/provider-boundary.sb",
+  "profile_sha256": "f11c2d4bc0994a91346f107010f77ca304d09fdea2261b947c44d636078ca52b"
+}

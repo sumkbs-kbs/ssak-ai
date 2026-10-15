@@ -1,0 +1,207 @@
+{
+  "status": "COMPLETE_OFFLINE",
+  "independent_review": "PENDING",
+  "root_cause": "The original test relied on external catalog order. yaml.safe_dump sorts groups, putting coding before reasoning; Doctor legitimately selects the first profile per provider, so qwen3-coder-next replaces the hardcoded qwen3.8 representative.",
+  "change": "Only test_doctor.py. Real isolated ModelRegistry with explicit Ollama/LM Studio/MLX profiles. Existing output assertions retained; exact observe(profile, refresh=False) sequence added. Port availability is mocked.",
+  "scenarios": [
+    {
+      "scenario": "red-01",
+      "invocation": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-01/run-20261014T234000Z-codex/provider-boundary.sb",
+        "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "doctor_guard",
+        "-q",
+        "tests/test_doctor.py::TestDoctorCommand::test_doctor_uses_capability_probe_for_local_model_health",
+        "--basetemp",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DOCTOR-GATE-FIXTURE-01/run-20261015T011500Z-codex/red-01/private-runtime/pytest",
+        "--junitxml",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DOCTOR-GATE-FIXTURE-01/run-20261015T011500Z-codex/red-01/junit.xml"
+      ],
+      "exit_code": 0,
+      "junit": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "1",
+        "time": "0.460",
+        "timestamp": "2026-10-15T10:18:08.921265+09:00",
+        "hostname": "MrKui-MacBookPro.local"
+      },
+      "guard": {
+        "blocked_connect": 0,
+        "mock_connect_ex": 1,
+        "blocked_bind": 0,
+        "blocked_listen": 0
+      },
+      "artifact": "red-01/receipt.json"
+    },
+    {
+      "scenario": "red-02-ambient",
+      "invocation": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-01/run-20261014T234000Z-codex/provider-boundary.sb",
+        "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "doctor_guard",
+        "-q",
+        "tests/test_doctor.py::TestDoctorCommand::test_doctor_uses_capability_probe_for_local_model_health",
+        "--basetemp",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DOCTOR-GATE-FIXTURE-01/run-20261015T011500Z-codex/red-02-ambient/private-runtime/pytest",
+        "--junitxml",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DOCTOR-GATE-FIXTURE-01/run-20261015T011500Z-codex/red-02-ambient/junit.xml"
+      ],
+      "exit_code": 1,
+      "junit": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "1",
+        "skipped": "0",
+        "tests": "1",
+        "time": "0.380",
+        "timestamp": "2026-10-15T10:19:06.524831+09:00",
+        "hostname": "MrKui-MacBookPro.local"
+      },
+      "guard": {
+        "blocked_connect": 0,
+        "mock_connect_ex": 1,
+        "blocked_bind": 0,
+        "blocked_listen": 0
+      },
+      "artifact": "red-02-ambient/receipt.json"
+    },
+    {
+      "scenario": "red-03-full-env",
+      "invocation": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-01/run-20261014T234000Z-codex/provider-boundary.sb",
+        "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "doctor_guard",
+        "-q",
+        "tests/test_doctor.py::TestDoctorCommand::test_doctor_uses_capability_probe_for_local_model_health",
+        "--basetemp",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DOCTOR-GATE-FIXTURE-01/run-20261015T011500Z-codex/red-03-full-env/private-runtime/pytest",
+        "--junitxml",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DOCTOR-GATE-FIXTURE-01/run-20261015T011500Z-codex/red-03-full-env/junit.xml"
+      ],
+      "exit_code": 1,
+      "junit": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "1",
+        "skipped": "0",
+        "tests": "1",
+        "time": "0.442",
+        "timestamp": "2026-10-15T10:19:39.928693+09:00",
+        "hostname": "MrKui-MacBookPro.local"
+      },
+      "guard": {
+        "blocked_connect": 0,
+        "mock_connect_ex": 1,
+        "blocked_bind": 0,
+        "blocked_listen": 0
+      },
+      "artifact": "red-03-full-env/receipt.json"
+    },
+    {
+      "scenario": "green-01-full-env",
+      "invocation": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-01/run-20261014T234000Z-codex/provider-boundary.sb",
+        "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "doctor_guard",
+        "-q",
+        "tests/test_doctor.py::TestDoctorCommand::test_doctor_uses_capability_probe_for_local_model_health",
+        "tests/test_doctor.py::TestDoctorCommand::test_doctor_in_version_help",
+        "tests/test_doctor.py::TestDoctorCommand::test_run_command_uses_agent_runtime",
+        "--basetemp",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DOCTOR-GATE-FIXTURE-01/run-20261015T011500Z-codex/green-01-full-env/private-runtime/pytest",
+        "--junitxml",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DOCTOR-GATE-FIXTURE-01/run-20261015T011500Z-codex/green-01-full-env/junit.xml"
+      ],
+      "exit_code": 0,
+      "junit": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "3",
+        "time": "1.888",
+        "timestamp": "2026-10-15T10:20:30.935439+09:00",
+        "hostname": "MrKui-MacBookPro.local"
+      },
+      "guard": {
+        "blocked_connect": 0,
+        "mock_connect_ex": 0,
+        "blocked_bind": 0,
+        "blocked_listen": 0
+      },
+      "artifact": "green-01-full-env/receipt.json"
+    },
+    {
+      "scenario": "green-02-ambient",
+      "invocation": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-01/run-20261014T234000Z-codex/provider-boundary.sb",
+        "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "doctor_guard",
+        "-q",
+        "tests/test_doctor.py::TestDoctorCommand::test_doctor_uses_capability_probe_for_local_model_health",
+        "--basetemp",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DOCTOR-GATE-FIXTURE-01/run-20261015T011500Z-codex/green-02-ambient/private-runtime/pytest",
+        "--junitxml",
+        "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DOCTOR-GATE-FIXTURE-01/run-20261015T011500Z-codex/green-02-ambient/junit.xml"
+      ],
+      "exit_code": 0,
+      "junit": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "1",
+        "time": "0.506",
+        "timestamp": "2026-10-15T10:21:20.757537+09:00",
+        "hostname": "MrKui-MacBookPro.local"
+      },
+      "guard": {
+        "blocked_connect": 0,
+        "mock_connect_ex": 0,
+        "blocked_bind": 0,
+        "blocked_listen": 0
+      },
+      "artifact": "green-02-ambient/receipt.json"
+    }
+  ],
+  "static_checks": "candidate-01-static/checks.json",
+  "type_baseline": "0 errors / 0 warnings before and after",
+  "limits": [
+    "This is a scoped fixture repair, not a full Python suite or all-23 gate pass.",
+    "Outer harness reserves one non-listening loopback port for full-env scenarios; tests have zero actual network connections/listeners.",
+    "red-01 is a preserved passing baseline; red-02 is a separate ambient-config sensitivity failure; red-03 reproduces the full-gate config transformation failure."
+  ]
+}

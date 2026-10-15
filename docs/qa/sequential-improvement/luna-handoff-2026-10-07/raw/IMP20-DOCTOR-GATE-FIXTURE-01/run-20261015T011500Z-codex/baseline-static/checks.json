@@ -1,0 +1,40 @@
+[
+  {
+    "name": "type",
+    "command": [
+      "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/basedpyright",
+      "--outputjson",
+      "tests/test_doctor.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "lint",
+    "command": [
+      "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/ruff",
+      "check",
+      "tests/test_doctor.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "format",
+    "command": [
+      "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/ruff",
+      "format",
+      "--check",
+      "tests/test_doctor.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "compile",
+    "command": [
+      "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+      "-B",
+      "-c",
+      "from pathlib import Path; p=Path(\"tests/test_doctor.py\"); compile(p.read_bytes(),str(p),\"exec\")"
+    ],
+    "exit_code": 0
+  }
+]

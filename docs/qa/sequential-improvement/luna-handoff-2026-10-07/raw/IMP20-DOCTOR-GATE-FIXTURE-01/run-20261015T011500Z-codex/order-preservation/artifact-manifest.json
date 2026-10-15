@@ -1,0 +1,52 @@
+[
+  {
+    "path": "cause-distinction-ko.md",
+    "bytes": 1348,
+    "sha256": "5c34846c2ad4ba0b8b95a9dec1db1a048cc8a4eaceb47dc81ca46e3e9898367f"
+  },
+  {
+    "path": "guard.json",
+    "bytes": 95,
+    "sha256": "e32669a0984353c885362aea7b739c6ebe0398caf687c9afb1f1daf772f13929"
+  },
+  {
+    "path": "junit.xml",
+    "bytes": 378,
+    "sha256": "b36a908b125832ced3ae43e40d98480f4b26bc455abee83b4a71538a408456a7"
+  },
+  {
+    "path": "overlay/tests/conftest.py",
+    "bytes": 15335,
+    "sha256": "66a90cd1654457b603c7e779a23c52ee7fb7c440ca4cc4ce9d78af2c2a81b4f2"
+  },
+  {
+    "path": "overlay/tests/test_doctor.py",
+    "bytes": 6647,
+    "sha256": "dde2ffaa24215d86f87969c2c78dfe3a1b2add44616fdede48c459c0ac36cd70"
+  },
+  {
+    "path": "receipt.json",
+    "bytes": 1875,
+    "sha256": "3942f24541c6d40997c67c763a9529743a657a73692a6903b176995bab1d9ef1"
+  },
+  {
+    "path": "source-binding.json",
+    "bytes": 18776,
+    "sha256": "606482bfe4e8424ce5e5998b10ae2a4ea1025ddcf3acb9d48cf2e1054cff0313"
+  },
+  {
+    "path": "stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "stdout.txt",
+    "bytes": 98,
+    "sha256": "acb50bc88917f57929611d63c707e0ccd387dae970fefba6e9100a81f12eba7b"
+  },
+  {
+    "path": "verify_preimage.py",
+    "bytes": 5859,
+    "sha256": "1bd2ba3389af3d02d5b7903caafed2dcbfbe145e173c94b0e7d0af441eba7e9c"
+  }
+]

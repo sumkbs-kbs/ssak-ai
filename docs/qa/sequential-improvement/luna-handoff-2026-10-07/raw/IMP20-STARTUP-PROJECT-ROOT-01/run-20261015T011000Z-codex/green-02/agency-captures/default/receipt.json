@@ -1,0 +1,37 @@
+{
+  "scenario": "default",
+  "denied_mutations": [],
+  "socket_attempts": [],
+  "forbidden_imports": [],
+  "agency_paths": [],
+  "rag_roots": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai"
+  ],
+  "ide_roots": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai"
+  ],
+  "configured_root": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+  "source_workspace": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+  "default_bridge_root": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+  "hook_shutdown": true,
+  "audit_shutdown": true,
+  "ide_shutdown": true,
+  "modules": {
+    "antigravity_k.api.server": {
+      "path": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/api/server.py",
+      "sha256": "0ffb369335863d266f56e2903067610ed3a2d67dea15dd4d746683b7333bb306"
+    },
+    "antigravity_k.engine.event_bus": {
+      "path": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/engine/event_bus.py",
+      "sha256": "b96ac8a3b3c5c7c7d08cb0c8a527b8e1bd31744de6cdadc031696a5c7d75d379"
+    },
+    "antigravity_k.engine.persistent_agency": {
+      "path": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/engine/persistent_agency.py",
+      "sha256": "97a2a2e7af41804c84853d98420a0532d03565ed0b7278815fae5aa382fc9ffc"
+    },
+    "antigravity_k.engine.persistent_agency_store": {
+      "path": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/engine/persistent_agency_store.py",
+      "sha256": "d0cc2cda1ed658eff0ef6ff05cc1db79861c5fac06dc0799c4f00288f0176d46"
+    }
+  }
+}

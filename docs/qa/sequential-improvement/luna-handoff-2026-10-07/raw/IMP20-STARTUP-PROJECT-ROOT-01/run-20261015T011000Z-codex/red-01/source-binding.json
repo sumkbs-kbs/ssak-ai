@@ -1,0 +1,14 @@
+[
+  {
+    "path": "src/antigravity_k/api/server.py",
+    "sha256": "6b5945cefe9d39294a1a3372bf812e9e5d28bd6e190f59846a6b4ce81a7655a7"
+  },
+  {
+    "path": "tests/test_lifespan_configured_project_root.py",
+    "sha256": "544ac75f3beb88c07dccf63d7082bea3fd348207860461a725080c5695714f6f"
+  },
+  {
+    "path": "tests/test_lifespan_agency_root_contract.py",
+    "sha256": "fe62bdd200d1b493104e6ab196b906e448fe4bbb066aef55340b51f546e4e0ca"
+  }
+]

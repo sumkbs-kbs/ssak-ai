@@ -1,0 +1,5 @@
+{
+  "source": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-01/run-20261014T234000Z-codex/os-guard-control.json",
+  "source_sha256": "50230a2ced104390a423665bed080f4b10674003e0417cf422521d10e2445e92",
+  "scope": "Reuse of prior owned blocked/allowed listener policy control, not a newly measured control invocation."
+}

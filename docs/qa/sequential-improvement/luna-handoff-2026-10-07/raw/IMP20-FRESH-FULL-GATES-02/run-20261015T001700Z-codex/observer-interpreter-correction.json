@@ -1,0 +1,9 @@
+{
+  "scope": "Read-only progress observer launcher correction, not a gate failure",
+  "failed_command": "python3 -B observe.py",
+  "exit_code": 1,
+  "runtime": "System Python3.9",
+  "stderr": "ImportError: cannot import name 'UTC' from 'datetime' (/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/datetime.py)",
+  "correction": "Invoke the observer with the candidate's .venv/bin/python. The formal gates already use their own frozen Python runtime.",
+  "test_reruns": 0
+}

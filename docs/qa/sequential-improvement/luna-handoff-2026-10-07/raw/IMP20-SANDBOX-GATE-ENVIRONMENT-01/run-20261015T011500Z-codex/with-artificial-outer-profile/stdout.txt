@@ -1,0 +1,28 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________ TestWorkspaceStillRuns.test_python_runs_inside_workspace ___________
+
+self = <tests.test_cr03_sandbox_read_boundary.TestWorkspaceStillRuns object at 0x1040f7d50>
+workdir = PosixPath('/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP...NT-01/run-20261015T011500Z-codex/with-artificial-outer-profile/private-runtime/pytest/test_python_runs_inside_worksp0')
+
+    def test_python_runs_inside_workspace(self, workdir: Path) -> None:
+        result = _run_probe(workdir, "print('PYTHON_OK')\n")
+    
+        assert result.sandboxed is True
+>       assert result.success is True, result.error or result.stderr
+E       AssertionError: sandbox-exec: sandbox_apply: Operation not permitted
+E         
+E       assert False is True
+E        +  where False = SandboxResult(success=False, stdout='', stderr='sandbox-exec: sandbox_apply: Operation not permitted\n', return_code=71, timed_out=False, sandboxed=True, output_truncated=False, error='').success
+
+tests/test_cr03_sandbox_read_boundary.py:121: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1464
+  /Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1464: PytestConfigWarning: Unknown config option: asyncio_mode
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_cr03_sandbox_read_boundary.py::TestWorkspaceStillRuns::test_python_runs_inside_workspace
+1 failed, 1 warning in 0.24s

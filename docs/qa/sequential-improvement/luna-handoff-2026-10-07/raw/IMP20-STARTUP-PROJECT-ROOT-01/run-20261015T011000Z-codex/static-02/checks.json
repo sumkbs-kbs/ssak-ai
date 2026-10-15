@@ -1,0 +1,55 @@
+[
+  {
+    "name": "ruff",
+    "command": [
+      "ruff",
+      "check",
+      "src/antigravity_k/api/server.py",
+      "tests/test_lifespan_agency_root_contract.py",
+      "tests/test_lifespan_configured_project_root.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "format",
+    "command": [
+      "ruff",
+      "format",
+      "--check",
+      "src/antigravity_k/api/server.py",
+      "tests/test_lifespan_agency_root_contract.py",
+      "tests/test_lifespan_configured_project_root.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "type",
+    "command": [
+      "basedpyright",
+      "--level",
+      "error",
+      "src/antigravity_k/api/server.py",
+      "tests/test_lifespan_agency_root_contract.py",
+      "tests/test_lifespan_configured_project_root.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "diff-check",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "memory-compile",
+    "paths": [
+      "src/antigravity_k/api/server.py",
+      "tests/test_lifespan_agency_root_contract.py",
+      "tests/test_lifespan_configured_project_root.py"
+    ],
+    "exit_code": 0
+  }
+]

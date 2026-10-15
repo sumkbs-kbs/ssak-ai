@@ -1,0 +1,32 @@
+[
+  {
+    "path": "src/antigravity_k/config.py",
+    "sha256": "6721ba3d22f9eb9ce509caf06fcca966f4605f3134d2c4a249aceea803549346",
+    "equals_clean_start_HEAD": true
+  },
+  {
+    "path": "src/antigravity_k/engine/rag_indexer.py",
+    "sha256": "aab8bf7af20d8e4b16743b2d9b47e694417fcaf0503a067b7a2fd88677ae195c",
+    "equals_clean_start_HEAD": true
+  },
+  {
+    "path": "src/antigravity_k/engine/event_bus.py",
+    "sha256": "b96ac8a3b3c5c7c7d08cb0c8a527b8e1bd31744de6cdadc031696a5c7d75d379",
+    "equals_clean_start_HEAD": true
+  },
+  {
+    "path": "src/antigravity_k/engine/ide_server.py",
+    "sha256": "b675e0c91c505365554fb4b07af2af2e04f8e2f93fc3b95f62a5fe2500ede689",
+    "equals_clean_start_HEAD": true
+  },
+  {
+    "path": "src/antigravity_k/engine/hook_event_bus.py",
+    "sha256": "591e3e83f8fd2bb4e39018175689e0a77bae2ad5bba4b5b60dc8dee5cd2062cf",
+    "equals_clean_start_HEAD": true
+  },
+  {
+    "path": "src/antigravity_k/engine/audit_db.py",
+    "sha256": "493a004cd941f4efccba2da5fc6d33c88cd1280972b23d4b7b0ee12f3741b9ea",
+    "equals_clean_start_HEAD": true
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "candidate": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+  "head": "7360c78544abeea41e38c65faa6eba2610a8a33b",
+  "sources": {
+    "src/antigravity_k/api/server.py": "0ffb369335863d266f56e2903067610ed3a2d67dea15dd4d746683b7333bb306",
+    "tests/test_lifespan_agency_root_contract.py": "16b6d8cb74f013022648d12ae0bd7cb568ecb2559afca9522bff8f03a81039cf",
+    "tests/test_lifespan_configured_project_root.py": "e6fd37b5b5379b1c0909b1ac26e748df149110717bbba22d753d1b99ea36321f"
+  },
+  "source_binding_sha256": "fb2677bbe8ac7a52f7d7ef0e75354a9e006b42b6bd33c4485d0188a0406309bd",
+  "harness_sha256": "168b5668909099d58f346fe332305aea76c1a38a5015ac62f8a4a55cd02b96a4",
+  "contract_sha256": "3aafa7a1b4a01513bdeac0de014926b476a7964be5b80c04832a6b3eb8b06812",
+  "profile_sha256": "f11c2d4bc0994a91346f107010f77ca304d09fdea2261b947c44d636078ca52b",
+  "config_sha256": "3ad419e858c7c5f391ce4929897f3d1f6dc0d4bc8ad3e01bbb33fdfedd66a409",
+  "tiny_project_sha256": "dfeb97943d3c24ffe08ebce316c2b3eca12a78a62fd414a89a4fcdcb611c935e",
+  "cwd": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-02/run-20261015T001700Z-codex/provider-boundary.sb",
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "-m",
+    "uvicorn",
+    "antigravity_k.api.server:app",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "49656",
+    "--loop",
+    "asyncio",
+    "--lifespan",
+    "on",
+    "--log-config",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/private-runtime/logging.json"
+  ],
+  "curl_command": [
+    "/usr/bin/curl",
+    "-i",
+    "--noproxy",
+    "*",
+    "--max-time",
+    "5",
+    "--silent",
+    "--show-error",
+    "http://127.0.0.1:49656/health"
+  ],
+  "project_root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/private-runtime/project_root",
+  "hook_override_present": false,
+  "provider_bound_not_listening": "http://127.0.0.1:49655",
+  "started_at": "2026-10-15T01:27:28.980562+00:00",
+  "limits_seconds": {
+    "startup": 60,
+    "curl": 5,
+    "graceful": 10,
+    "forced_reap": 5
+  },
+  "harness_product_posts": 0,
+  "harness_inference_requests": 0,
+  "global_provider_call_instrumentation": "NOT_INSTRUMENTED"
+}

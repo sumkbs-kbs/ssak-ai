@@ -1,0 +1,32 @@
+[
+  {
+    "path": "full-suite-boundary-audit.md",
+    "bytes": 3543,
+    "sha256": "bb65b0d7e92ba6e5b54cf011287109e7db41c93792fd55e041ad3ce133e52b15"
+  },
+  {
+    "path": "capture_static_audit.py",
+    "bytes": 2122,
+    "sha256": "9e5f87f0abba9cc1c6ab744ad4ef838ae7746cf81ee4f347a847a23a31862b71"
+  },
+  {
+    "path": "static-source-excerpts.json",
+    "bytes": 36329,
+    "sha256": "0ad4bf2708ea754068dd427bf1b724fafb1bd025a6a41a931bea0013bc453c81"
+  },
+  {
+    "path": "live-flag-search.stdout.txt",
+    "bytes": 210,
+    "sha256": "c8fd2861445344a4520c14bc625c9e17c70aad998f2c8da37cc0fb44ca06a90e"
+  },
+  {
+    "path": "live-flag-search.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "static-audit-receipt.json",
+    "bytes": 480,
+    "sha256": "66a2450728b10cca722aab014a029fde0fa1f7e3bc13cf2f74fa249d418aba19"
+  }
+]

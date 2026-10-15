@@ -1,0 +1,18 @@
+{
+  "mode": "with-artificial-outer-profile",
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-02/run-20261015T001700Z-codex/provider-boundary.sb",
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-GATE-ENVIRONMENT-01/run-20261015T011500Z-codex/pytest_entry.py",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-GATE-ENVIRONMENT-01/run-20261015T011500Z-codex/with-artificial-outer-profile"
+  ],
+  "cwd": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+  "started": "2026-10-15T01:18:08.444800+00:00",
+  "finished": "2026-10-15T01:18:09.036941+00:00",
+  "exit_code": 1,
+  "product_sandbox_enabled": true,
+  "source_binding_unchanged": true
+}

@@ -1,0 +1,8 @@
+{
+  "supersedes_only": "result.json.audit_close_method descriptive sentence",
+  "corrected_audit_close_method": "NOT_INSTRUMENTED; read-only SQLite integrity after forced process exit was ok. Completed application shutdown was NOT observed.",
+  "reason": "The harness stored an unconditional descriptive string even when hook_shutdown and application_shutdown were false. The original result and executed harness are preserved.",
+  "overall_verdict": "FAIL",
+  "additional_finding": "The health request lazily initialized ModelManager. Its logs show ChromaDB at candidate checkout .antigravity/vault_data/.chroma and PermissionGate project_root at the candidate checkout, outside the owned configured project. This is a separate downstream path from the corrected startup hook/audit paths.",
+  "reexecution": false
+}

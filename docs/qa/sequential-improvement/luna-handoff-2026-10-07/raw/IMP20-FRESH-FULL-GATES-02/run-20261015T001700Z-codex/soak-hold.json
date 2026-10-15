@@ -1,0 +1,7 @@
+{
+  "status": "HOLD_CURRENT_CANDIDATE",
+  "candidate": "7360c78544abeea41e38c65faa6eba2610a8a33b",
+  "reason": "Source inspection found startup RAG/IDE/default vault root ignores config.paths.project_root. The configured root regression and isolated repair are IMP20-STARTUP-PROJECT-ROOT-01.",
+  "scope": "Formal gate results still belong to this candidate. A formal PASS does not resolve this separately identified startup root defect.",
+  "resume": "Use a newly reviewed and source-bound repaired candidate and its new required gates. Do not start soak on this candidate."
+}

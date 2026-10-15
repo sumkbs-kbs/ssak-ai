@@ -1,0 +1,17 @@
+{
+  "parent_manifest_entries": 158,
+  "parent_manifest_mismatches": [],
+  "parent_manifest_sha256": "fef293cc0115b3a1eb249f93f0b1c71f58ff2b22ebe1cbe081ef5dd097a85bff",
+  "executed_harness_matches": true,
+  "current_sources_match": {
+    "src/antigravity_k/api/server.py": true,
+    "tests/test_lifespan_agency_root_contract.py": true,
+    "tests/test_lifespan_configured_project_root.py": true
+  },
+  "result_source_chain_matches": true,
+  "request_count": 1,
+  "http_response_bytes": 0,
+  "curl_failure_nonempty": true,
+  "failure_preserved": true,
+  "attempt_02_included": false
+}

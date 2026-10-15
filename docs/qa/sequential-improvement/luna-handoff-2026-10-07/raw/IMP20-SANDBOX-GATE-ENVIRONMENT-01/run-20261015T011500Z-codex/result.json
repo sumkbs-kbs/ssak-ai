@@ -1,0 +1,49 @@
+{
+  "verdict": "CONFIRMED_SCOPED_OUTER_SEATBELT_INTERFERENCE",
+  "scenarios": [
+    {
+      "mode": "with-artificial-outer-profile",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 1,
+      "socket_connect_or_bind_events": 0,
+      "product_sandbox_exec_calls": 1,
+      "junit": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-GATE-ENVIRONMENT-01/run-20261015T011500Z-codex/with-artificial-outer-profile/junit.xml",
+      "receipt": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-GATE-ENVIRONMENT-01/run-20261015T011500Z-codex/with-artificial-outer-profile/receipt.json",
+      "audit": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-GATE-ENVIRONMENT-01/run-20261015T011500Z-codex/with-artificial-outer-profile/audit.json"
+    },
+    {
+      "mode": "product-sandbox-only",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "socket_connect_or_bind_events": 0,
+      "product_sandbox_exec_calls": 1,
+      "junit": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-GATE-ENVIRONMENT-01/run-20261015T011500Z-codex/product-sandbox-only/junit.xml",
+      "receipt": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-GATE-ENVIRONMENT-01/run-20261015T011500Z-codex/product-sandbox-only/receipt.json",
+      "audit": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-SANDBOX-GATE-ENVIRONMENT-01/run-20261015T011500Z-codex/product-sandbox-only/audit.json"
+    }
+  ],
+  "source_binding_unchanged": true,
+  "diagnostic_sources_match_formal_checkout": {
+    "tests/test_cr03_sandbox_read_boundary.py": true,
+    "tests/test_cr04_shell_api_boundary.py": true,
+    "tests/conftest.py": true,
+    "src/antigravity_k/engine/sandbox.py": true,
+    "src/antigravity_k/api/routes/agent_tools.py": true
+  },
+  "mechanism": "Product mandatory sandbox-exec exits 71 with sandbox_apply Operation not permitted only under the artificial outer Seatbelt layer; the same reviewed print-only test passes with the product sandbox retained and no artificial outer profile.",
+  "not_claimed": [
+    "All CR03 or CR04 cases pass",
+    "UV isolated interpreter is verified",
+    "Formal Python gate passes",
+    "Full 23 gate pass",
+    "A replacement full-suite safety boundary was implemented"
+  ],
+  "known_warning": "asyncio_mode unknown because diagnostic disables plugin autoload; one warning per run",
+  "process_limit_observation": "Product ps-based process budget yielded 64 under the outer layer and 760 without it. Both use the same code; failure is sandbox_apply before Python payload, not a Python import or ulimit failure."
+}

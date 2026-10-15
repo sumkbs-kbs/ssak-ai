@@ -1,0 +1,96 @@
+2026-10-15 10:29:51,345 INFO uvicorn.error Started server process [95849]
+2026-10-15 10:29:51,346 INFO uvicorn.error Waiting for application startup.
+2026-10-15 10:29:51,362 INFO antigravity_k.config 설정 검증 통과: 문제 없음
+2026-10-15 10:29:51,362 INFO antigravity_k.engine.hook_event_bus [HookEventBus] Initialized at /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/attempt-02/private-runtime/project_root/vault_data/hooks, start_offset=0
+2026-10-15 10:29:51,362 INFO antigravity_k.api.server [Startup] HookEventBus initialized
+2026-10-15 10:29:51,365 INFO antigravity_k.engine.audit_db [AuditDb] Initialized at /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/attempt-02/private-runtime/project_root/vault_data/audit.sqlite3
+2026-10-15 10:29:51,366 INFO antigravity_k.api.server [Startup] AuditDb initialized
+2026-10-15 10:29:51,367 INFO antigravity_k.engine.panel_activity_tracker [PanelActivityTracker] HookEventBus에 연결 완료
+2026-10-15 10:29:51,367 INFO antigravity_k.api.server [Startup] PanelActivityTracker initialized
+2026-10-15 10:29:51,369 INFO antigravity_k.engine.event_bus [EventBus] HookEventBus 듀얼 싱크 브릿지 설정 완료
+2026-10-15 10:29:51,369 INFO antigravity_k.api.server [Startup] EventBus dual-sync bridge established
+2026-10-15 10:29:51,376 INFO antigravity_k.api.server [RAG] Background indexing started
+2026-10-15 10:29:51,381 INFO antigravity_k.api.server [RAG] Background indexing complete: 1 files indexed
+2026-10-15 10:29:51,381 INFO antigravity_k.engine.ide_server Optional IDE unavailable: code-server executable not found in PATH.
+2026-10-15 10:29:51,381 INFO antigravity_k.api.server [Startup] IDE Server initialized on port 8080
+2026-10-15 10:29:51,381 INFO antigravity_k.api.server [Startup] API Cache periodic cleanup started (interval=300s)
+2026-10-15 10:29:51,381 INFO antigravity_k.api.server [Startup] Scheduled job loop started (interval=15s)
+2026-10-15 10:29:51,408 INFO uvicorn.error Application startup complete.
+2026-10-15 10:29:51,409 INFO uvicorn.error Uvicorn running on http://127.0.0.1:49730 (Press CTRL+C to quit)
+2026-10-15 10:29:51,419 INFO antigravity_k.ops http.request.started
+2026-10-15 10:29:51,420 INFO antigravity_k.api.dependencies Lazy initializing ModelManager...
+2026-10-15 10:29:51,435 INFO antigravity_k.model_router 콤보 로드: collective-council (3개 모델, collective)
+2026-10-15 10:29:51,435 INFO antigravity_k.model_router 콤보 로드: orchestrator-swarm (5개 모델, fallback)
+2026-10-15 10:29:51,435 INFO antigravity_k.model_router 콤보 로드: reasoning-swarm (5개 모델, fallback)
+2026-10-15 10:29:51,435 INFO antigravity_k.model_router 콤보 로드: coding-swarm (5개 모델, fallback)
+2026-10-15 10:29:51,435 INFO antigravity_k.model_router 콤보 로드: vision-swarm (4개 모델, fallback)
+2026-10-15 10:29:51,435 INFO antigravity_k.model_router 콤보 로드: critic-swarm (5개 모델, fallback)
+2026-10-15 10:29:51,435 WARNING antigravity_k.model_calibration 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/attempt-02/private-runtime/data/benchmarks/local-model-stable-simple.json
+2026-10-15 10:29:51,435 WARNING antigravity_k.model_calibration 모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/attempt-02/private-runtime/data/benchmarks/local-model-frontier.json
+2026-10-15 10:30:06,413 INFO antigravity_k.engine.memory_provider Memory provider registered: builtin (external=False)
+2026-10-15 10:30:06,413 INFO antigravity_k.engine.memory_provider Memory provider registered: episodic (external=False)
+2026-10-15 10:30:06,413 INFO antigravity_k.engine.memory_provider Memory provider registered: working_memory (external=False)
+2026-10-15 10:30:06,413 INFO antigravity_k.engine.memory_provider Memory provider registered: global (external=False)
+2026-10-15 10:30:06,414 INFO antigravity_k.engine.memory_provider Memory provider registered: project (external=False)
+2026-10-15 10:30:06,414 INFO antigravity_k.engine.memory_provider Memory provider registered: memory_service (external=False)
+2026-10-15 10:30:06,414 INFO antigravity_k.engine.memory_provider Memory provider registered: wiki (external=False)
+2026-10-15 10:30:06,414 INFO antigravity_k.engine.memory_provider Memory provider registered: gbrain (external=False)
+2026-10-15 10:30:06,414 INFO antigravity_k.engine.memory_provider Memory provider registered: project_vector (external=False)
+2026-10-15 10:30:06,414 INFO antigravity_k.engine.memory_provider Memory provider registered: search_cache (external=False)
+2026-10-15 10:30:06,436 INFO antigravity_k.engine.vault Initialized Git repository at /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/attempt-02/private-runtime/project_root/.antigravity/vault_data
+2026-10-15 10:30:06,448 INFO antigravity_k.engine.vector_store Initialized ChromaDB VectorStore at /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/attempt-02/private-runtime/project_root/.antigravity/vault_data/.chroma, collection: vault_notes
+2026-10-15 10:30:06,467 INFO antigravity_k.tools.permission_gate PermissionGate initialized: mode=auto-pilot, project_root=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/attempt-02/private-runtime/project_root
+2026-10-15 10:30:06,468 INFO antigravity_k.tools.permission_gate PermissionGate initialized: mode=auto-pilot, project_root=/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/attempt-02/private-runtime/project_root
+2026-10-15 10:30:06,469 INFO antigravity_k.engine.mode_manager [ModeManager] 초기화 완료 (mode=interactive)
+2026-10-15 10:30:06,615 INFO antigravity_k.tools.tool_registry Installed tool: computer_use [computer_use/critical] icon=🖥️
+2026-10-15 10:30:06,615 INFO antigravity_k.tools.tool_registry Installed tool: system_control [computer_use/high] icon=⚙️
+2026-10-15 10:30:06,615 INFO antigravity_k.tools.tool_registry Installed tool: interactive_pty [system/medium] icon=📟
+2026-10-15 10:30:06,615 INFO antigravity_k.tools.tool_registry Installed tool: hex_dump [search/safe] icon=🔍
+2026-10-15 10:30:06,615 INFO antigravity_k.tools.tool_registry Installed tool: run_docker_bash [code_exec/high] icon=🐳
+2026-10-15 10:30:06,615 INFO antigravity_k.tools.tool_registry Installed tool: read_file [file_io/safe] icon=📄
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: replace_file_content [file_io/low] icon=✏️
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: multi_replace_file_content [file_io/low] icon=⚡
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: run_bash_command [code_exec/high] icon=⚡
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: write_file [file_io/low] icon=📝
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: edit_file [file_io/low] icon=✂️
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: apply_patch [file_io/medium] icon=🔧
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: glob_search [search/safe] icon=🔍
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: grep_search [search/safe] icon=🔎
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: list_directory [search/safe] icon=📂
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: read_hash_file [file_io/safe] icon=📄
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: hashline_edit [file_io/low] icon=✏️
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: git_status [search/safe] icon=📊
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: git_diff [search/safe] icon=📋
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: git_commit [code_exec/medium] icon=💾
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: git_log [search/safe] icon=📜
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: run_tests [code_exec/medium] icon=🧪
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: auto_lint [code_exec/low] icon=🔍
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: create_pr [code_exec/high] icon=🔀
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: impact_analyzer [search/safe] icon=🕸️
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: config_model_roster [system/high] icon=⚙️
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: read_context_artifact [search/safe] icon=📚
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: agent_spawn [code_exec/medium] icon=🤖
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: cowork_delegate [system/safe] icon=🤝
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: trigger_self_evolution [code_exec/high] icon=🧬
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: write_artifact [file_io/safe] icon=📄
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: fetch_dom [search/safe] icon=🌐
+2026-10-15 10:30:06,616 INFO antigravity_k.tools.tool_registry Installed tool: web_search [search/safe] icon=🔍
+2026-10-15 10:30:06,616 INFO antigravity_k.engine.tool_executor Registered 33 tools via ToolRegistry
+2026-10-15 10:30:06,625 INFO antigravity_k.orchestrator.setup [Orchestrator] State Graph 엔진 활성화 완료
+2026-10-15 10:30:06,627 INFO antigravity_k.orchestrator.setup [Orchestrator] Artifact Engine 활성화 완료
+2026-10-15 10:30:06,627 INFO antigravity_k.orchestrator.setup [Orchestrator] FactAppender 활성화 완료
+2026-10-15 10:30:06,632 INFO antigravity_k.orchestrator.setup [Orchestrator] Self-Evolution Coordinator 활성화 완료
+2026-10-15 10:30:06,632 INFO antigravity_k.engine.session_manager Created new session: 7dccf6ef_a5c5a72f249540e09a3846fb76d317a8
+2026-10-15 10:30:06,640 INFO antigravity_k.engine.vector_store Initialized ChromaDB VectorStore at /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/primary-startup/attempt-02/private-runtime/project_root/.antigravity/rag_vectors, collection: project_code
+2026-10-15 10:30:07,458 WARNING antigravity_k.model_router [openai/gpt-4o] 라우팅 정책에 의해 제외(cost_cap_exceeded) — 콤보 폴백 체인에서 제거됨
+2026-10-15 10:30:07,458 WARNING antigravity_k.model_router [llama3.2-vision:11b] 라우팅 정책에 의해 제외(local_parameter_floor_not_met) — 콤보 폴백 체인에서 제거됨
+2026-10-15 10:30:07,459 INFO antigravity_k.ops http.request.completed
+2026-10-15 10:30:07,459 INFO uvicorn.access 127.0.0.1:49733 - "GET /health HTTP/1.1" 200
+2026-10-15 10:30:07,560 INFO uvicorn.error Shutting down
+2026-10-15 10:30:07,663 INFO uvicorn.error Waiting for application shutdown.
+2026-10-15 10:30:07,663 INFO antigravity_k.api.server Server shutting down — cancelling application background tasks...
+2026-10-15 10:30:07,663 INFO antigravity_k.api.server [Shutdown] browser sessions: closed=0 max_active=2
+2026-10-15 10:30:07,663 INFO antigravity_k.engine.hook_event_bus [HookEventBus] Shut down
+2026-10-15 10:30:07,664 INFO antigravity_k.api.server Shutdown complete: 0 tasks cancelled.
+2026-10-15 10:30:07,664 INFO uvicorn.error Application shutdown complete.
+2026-10-15 10:30:07,664 INFO uvicorn.error Finished server process [95849]

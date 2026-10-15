@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-01/run-20261014T234000Z-codex/provider-boundary.sb",
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_lifespan_configured_project_root.py",
+    "tests/test_lifespan_agency_root_contract.py",
+    "tests/test_startup_storage_roots_contract.py",
+    "tests/test_rag_incremental.py",
+    "tests/test_rag_provenance.py",
+    "tests/test_startup_security.py",
+    "--basetemp",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-01/private-runtime/pytest",
+    "--junitxml",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-01/junit.xml"
+  ],
+  "exit_code": 0,
+  "source_binding_unchanged": true,
+  "elapsed_seconds": 6.953313082998648
+}

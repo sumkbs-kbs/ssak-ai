@@ -1,0 +1,76 @@
+{
+  "scope": "original failed primary-startup attempt only; private-runtime and attempt-02 excluded",
+  "parent_manifest_sha256": "fef293cc0115b3a1eb249f93f0b1c71f58ff2b22ebe1cbe081ef5dd097a85bff",
+  "artifacts": [
+    {
+      "path": "run_once.py",
+      "bytes": 11005,
+      "sha256": "168b5668909099d58f346fe332305aea76c1a38a5015ac62f8a4a55cd02b96a4"
+    },
+    {
+      "path": "acceptance.md",
+      "bytes": 3298,
+      "sha256": "638232d4b073be099221cea464e1cf2fd264cb2bfb6a7d547fd85e4637661c37"
+    },
+    {
+      "path": "execution-binding.json",
+      "bytes": 2643,
+      "sha256": "ae0fb5c3cd2503e8c1c5c4cd8db3edd53751d2cfc36c3d786851a58116076781"
+    },
+    {
+      "path": "launch.json",
+      "bytes": 765,
+      "sha256": "a5a1b8064e54e14b0457b9463c1d0aa99857306d035c5d7addcebd05a56809f1"
+    },
+    {
+      "path": "result.json",
+      "bytes": 2723,
+      "sha256": "457fde724698f8b709bad1e330ee74b4514e14d780888f22860075f135f541d7"
+    },
+    {
+      "path": "health.http.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "health.stderr.txt",
+      "bytes": 77,
+      "sha256": "c68e5456777d2bdab775c8ed35a1b75dc4c00ee0628e4a941862711b85a0108f"
+    },
+    {
+      "path": "server.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "server.stderr.txt",
+      "bytes": 6008,
+      "sha256": "1d2fe81aa751c9bfcd2a2ec6ff2b412581784ba6b3ecbd4a826bbedc01d17eca"
+    },
+    {
+      "path": "qa-correction.json",
+      "bytes": 817,
+      "sha256": "9bac50209be0397ed3cecc5c7d2875c1e17708dfdce533a7c4edd2029f9b6a64"
+    },
+    {
+      "path": "IMP20-STARTUP-PROJECT-ROOT-01-manual-qa.md",
+      "bytes": 4709,
+      "sha256": "3fab9ee227059928878a72e15f53cd8f7844cb004eb5b142dc82fbd8d9f2d531"
+    },
+    {
+      "path": "handoff-ko.md",
+      "bytes": 3046,
+      "sha256": "9b76a8f413ee6483500a32b58067a45ae205176b267ad5034f17da2de29b34b2"
+    },
+    {
+      "path": "stored-evidence-check.json",
+      "bytes": 583,
+      "sha256": "dd53b7a4d3906fb8cec0c773a3ef8734be4703afe676ec6ee520efed4cbb9539"
+    },
+    {
+      "path": "finalize_saved_evidence.py",
+      "bytes": 2679,
+      "sha256": "341771d7f0d27a5d83918c3791a89a7bd0804ae830b8f0c5a4c292743afc5fe7"
+    }
+  ]
+}

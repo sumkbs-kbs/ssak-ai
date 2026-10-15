@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "scripts/ga_gate_verify.py",
+    "--report",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-02/run-20261015T001700Z-codex/gate-report.json",
+    "--manifest",
+    "scripts/commercial_ga_gates.json",
+    "--expected-sha",
+    "7360c78544abeea41e38c65faa6eba2610a8a33b"
+  ],
+  "exit_code": 1
+}

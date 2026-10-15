@@ -1,0 +1,43 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-01/run-20261014T234000Z-codex/provider-boundary.sb",
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-c",
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/pyproject.toml",
+    "-p",
+    "doctor_guard",
+    "-q",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DOCTOR-GATE-FIXTURE-01/run-20261015T011500Z-codex/order-preservation/overlay/tests/test_doctor.py::TestDoctorCommand::test_doctor_uses_capability_probe_for_local_model_health",
+    "--basetemp",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DOCTOR-GATE-FIXTURE-01/run-20261015T011500Z-codex/order-preservation/private-runtime/pytest",
+    "--junitxml",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DOCTOR-GATE-FIXTURE-01/run-20261015T011500Z-codex/order-preservation/junit.xml"
+  ],
+  "exit_code": 0,
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "1",
+    "time": "0.453",
+    "timestamp": "2026-10-15T10:24:11.999245+09:00",
+    "hostname": "MrKui-MacBookPro.local"
+  },
+  "guard": {
+    "blocked_connect": 0,
+    "mock_connect_ex": 1,
+    "blocked_bind": 0,
+    "blocked_listen": 0
+  },
+  "prior_manifest_entries_unchanged": 64,
+  "prior_manifest_itself_unchanged": true,
+  "current_source_unchanged": true,
+  "test_uses_original_preimage": true,
+  "scope": "One original preimage test execution with full gate env and sort_keys=False; no static checks repeated."
+}

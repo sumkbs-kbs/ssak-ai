@@ -1,0 +1,12 @@
+{
+  "nodeid": "tests/test_lifespan_agency_root_contract.py::test_actual_lifespan_agency_storage_root[absolute]",
+  "argv": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-01/private-runtime/pytest/test_actual_lifespan_agency_st0/probe.py",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-01/private-runtime/pytest/test_actual_lifespan_agency_st0",
+    "absolute"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/green-01/private-runtime/pytest/test_actual_lifespan_agency_st0",
+  "returncode": 0,
+  "probe_sha256": "0c7aebcb5b752ba46d00ac6ce38cd946405d38990c051f0625626cc848b02503"
+}

@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+date: Thu, 15 Oct 2026 01:29:51 GMT
+server: uvicorn
+content-length: 161
+content-type: application/json
+x-content-type-options: nosniff
+x-frame-options: DENY
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: geolocation=(), microphone=(), camera=(), payment=()
+content-security-policy: default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' ws: wss: http: https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+x-request-id: 70fed49b6f66
+
+{"status":"ok","version":"0.1.0","build":{"version":"0.1.0","build_id":null,"built_at":null,"channel":null},"backends":[],"rag_index_files":0,"cov_active":false}

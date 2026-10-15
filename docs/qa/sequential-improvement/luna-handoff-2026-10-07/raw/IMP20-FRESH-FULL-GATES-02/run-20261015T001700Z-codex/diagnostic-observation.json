@@ -1,0 +1,17 @@
+{
+  "scope": "Passive duration triage during the single full Python gate; no acceptance verdict inferred",
+  "candidate": "7360c78544abeea41e38c65faa6eba2610a8a33b",
+  "python_pid": 59941,
+  "native_sample": {
+    "command": ["/usr/bin/sample", "59941", "1", "1", "-file", "python-live-sample.txt"],
+    "exit_code": 0,
+    "observed_at": "2026-10-15T00:38:07.530Z",
+    "requested_duration_seconds": 1,
+    "effect": "Observational native stack sampling; no signal-based test interruption or source change"
+  },
+  "other_observations": [
+    "Read-only ps process-tree/CPU checks and lsof path metadata",
+    "Owned pytest temporary directory mtimes progressed through R19 a1, a2, a3 cases at roughly129-second intervals",
+    "Temporary directory creation and CPU activity do not prove test acceptance"
+  ]
+}

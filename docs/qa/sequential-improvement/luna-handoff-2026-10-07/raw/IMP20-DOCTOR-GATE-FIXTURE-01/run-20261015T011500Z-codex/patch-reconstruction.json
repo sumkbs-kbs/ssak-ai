@@ -1,0 +1,7 @@
+{
+  "byte_identical": true,
+  "target": "tests/test_doctor.py",
+  "before_sha256": "dde2ffaa24215d86f87969c2c78dfe3a1b2add44616fdede48c459c0ac36cd70",
+  "after_sha256": "261e0b7a3b124b6668401bb1766d19244d6c23c6a540fffe25052ee22afb6e57",
+  "exit_code": 0
+}

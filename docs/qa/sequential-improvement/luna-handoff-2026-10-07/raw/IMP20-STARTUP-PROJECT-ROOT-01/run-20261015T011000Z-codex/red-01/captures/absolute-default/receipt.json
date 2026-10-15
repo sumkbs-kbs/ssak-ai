@@ -1,0 +1,25 @@
+{
+  "rag_roots": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai"
+  ],
+  "ide_roots": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai"
+  ],
+  "hook_roots": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/vault_data"
+  ],
+  "audit_roots": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/vault_data"
+  ],
+  "bridge_roots": [
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/red-01/private-runtime/pytest/test_lifespan_uses_configured_0/owned project"
+  ],
+  "forbidden": [],
+  "configured_root": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-STARTUP-PROJECT-ROOT-01/run-20261015T011000Z-codex/red-01/private-runtime/pytest/test_lifespan_uses_configured_0/owned project",
+  "source_root": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+  "server_sha256": "6b5945cefe9d39294a1a3372bf812e9e5d28bd6e190f59846a6b4ce81a7655a7",
+  "ide_started": true,
+  "hook_closed": true,
+  "audit_closed": true,
+  "ide_closed": true
+}

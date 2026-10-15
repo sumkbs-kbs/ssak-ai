@@ -1,0 +1,2 @@
+Would reformat: tests/test_lifespan_configured_project_root.py
+1 file would be reformatted, 2 files already formatted

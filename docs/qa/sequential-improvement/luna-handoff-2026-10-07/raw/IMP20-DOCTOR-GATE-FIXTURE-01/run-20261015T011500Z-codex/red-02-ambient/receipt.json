@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-01/run-20261014T234000Z-codex/provider-boundary.sb",
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "doctor_guard",
+    "-q",
+    "tests/test_doctor.py::TestDoctorCommand::test_doctor_uses_capability_probe_for_local_model_health",
+    "--basetemp",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DOCTOR-GATE-FIXTURE-01/run-20261015T011500Z-codex/red-02-ambient/private-runtime/pytest",
+    "--junitxml",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-DOCTOR-GATE-FIXTURE-01/run-20261015T011500Z-codex/red-02-ambient/junit.xml"
+  ],
+  "exit_code": 1,
+  "source_unchanged": true
+}

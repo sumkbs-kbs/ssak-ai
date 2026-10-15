@@ -1,0 +1,41 @@
+{
+  "recorded_at": "2026-10-15T01:31:30.609077+00:00",
+  "verdict": "PASS_SCOPED_STARTUP_HEALTH_GRACEFUL_SIGTERM",
+  "raw_harness_verdict": "FAIL",
+  "raw_harness_result_sha256": "7f9e4fa12f5eae0af2ca570ea433ad80ff93e5a8d4ec189d0b0a80c28b5f7a03",
+  "actual_exit": -15,
+  "exit_zero": false,
+  "uvicorn_version": "0.48.0",
+  "uvicorn_source_path": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/uvicorn/server.py",
+  "uvicorn_source_sha256": "7d7937fff1c17f583ea21ff8fce5c8a5bf2d9d3c9a7f1b9646211eb7a49012f3",
+  "reason": "Installed Uvicorn restores signal handlers and re-raises the captured SIGTERM after completing graceful shutdown. The QA predicate requiring exit zero for CLI SIGTERM was incorrect; the observed -15 is retained, not converted to zero.",
+  "checks": {
+    "one_health_get_200": true,
+    "live_storage_paths_exist": true,
+    "startup_completed": true,
+    "rag_tiny_project_one": true,
+    "default_hook_path": true,
+    "default_audit_path": true,
+    "hook_shutdown": true,
+    "application_shutdown": true,
+    "normal_reap": true,
+    "audit_integrity_after_exit": true,
+    "source_unchanged": true
+  },
+  "normal_reap_definition": "Expected captured SIGTERM disposition -15, complete application and hook shutdown logs, no forced kill, reaped child and empty group.",
+  "request_count": 1,
+  "health_http": 200,
+  "elapsed_seconds": 17.823765250001088,
+  "repeated_startup_or_requests_for_reconciliation": 0,
+  "source_binding": {
+    "src/antigravity_k/api/server.py": "0ffb369335863d266f56e2903067610ed3a2d67dea15dd4d746683b7333bb306",
+    "tests/test_lifespan_agency_root_contract.py": "16b6d8cb74f013022648d12ae0bd7cb568ecb2559afca9522bff8f03a81039cf",
+    "tests/test_lifespan_configured_project_root.py": "e6fd37b5b5379b1c0909b1ac26e748df149110717bbba22d753d1b99ea36321f"
+  },
+  "limits": [
+    "The first 5-second health timeout and forced -9 attempt remains FAIL.",
+    "Attempt 02 used an owned project CWD and HOME with a 60-second cold-health budget; it does not certify 5-second readiness from the candidate checkout CWD.",
+    "No product source or successful test was changed or rerun for this correction.",
+    "This is a review of stored observations, not the original harness acceptance PASS, whole23 PASS, soak or release approval."
+  ]
+}

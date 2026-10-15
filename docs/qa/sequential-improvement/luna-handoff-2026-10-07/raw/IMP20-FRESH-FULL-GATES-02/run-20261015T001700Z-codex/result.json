@@ -1,0 +1,23 @@
+{
+  "recorded_at": "2026-10-15T01:27:47.567201+00:00",
+  "head": "7360c78544abeea41e38c65faa6eba2610a8a33b",
+  "status": "FAIL_FRESH_SAME_CANDIDATE_GATES",
+  "summary": {
+    "failed": 1,
+    "passed": 22,
+    "required_failed": 1,
+    "total": 23
+  },
+  "verification_exit": 1,
+  "gate_process_exit": 1,
+  "source_unchanged": true,
+  "fingerprint": "d3573bbe6712d3dc4ad41a3959945187fee9e8f43a5e8e4658a16873e3bafbeb",
+  "required": 23,
+  "exact_selection": true,
+  "new8hsoak": "NOT_RUN",
+  "release_approval": "NOT_ISSUED",
+  "historical_results_merged": false,
+  "known_startup_root_defect": true,
+  "soak_eligible": false,
+  "limits": "Formal gate result at the recorded source and environment. Prior diagnostic/live results and historical ledgers are unchanged; no release or model-quality approval."
+}

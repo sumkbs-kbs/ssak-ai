@@ -1,0 +1,22 @@
+[
+  {
+    "path": "tests/test_doctor.py",
+    "sha256": "dde2ffaa24215d86f87969c2c78dfe3a1b2add44616fdede48c459c0ac36cd70"
+  },
+  {
+    "path": "src/antigravity_k/cli.py",
+    "sha256": "f88b31e943459ee3b1d8fde4cce5ce74e6fc996c6bcd641447ec8cbfc203b8af"
+  },
+  {
+    "path": "src/antigravity_k/engine/provider_capabilities.py",
+    "sha256": "65eb5f5adef480c093bb90e4ce925548106152477f7263e7257a0e21774db8f5"
+  },
+  {
+    "path": "src/antigravity_k/engine/model_registry.py",
+    "sha256": "8febe07ec3e0b00c87b83afd31475727c893885c97f760aadcf3f1409e0e6bda"
+  },
+  {
+    "path": "src/antigravity_k/config.yaml",
+    "sha256": "3948867a6b9ef51fc392e07d0015c45b7f881095942c4cbf64c503fdc08d8025"
+  }
+]
