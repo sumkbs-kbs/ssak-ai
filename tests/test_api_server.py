@@ -652,16 +652,43 @@ def test_task_api_reads_and_resumes_direct_task_through_canonical_runtime(
     runtime.get_task_output.assert_called_once_with("direct_001", owner_subject="loopback")
 
 
-def test_embeddings_endpoint_uses_local_fallback(client: TestClient):
-    payload = {"model": "test-embed-model", "input": "Hello, embeddings!"}
+def test_embeddings_endpoint_rejects_unavailable_model_without_fallback(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import sys
+    from types import ModuleType
+    from typing import Never
 
-    response = client.post("/v1/embeddings", json=payload)
+    from antigravity_k.api.dependencies import get_embedding_engine
+    from antigravity_k.engine.embeddings import EmbeddingEngine
 
-    assert response.status_code == 200
+    model_name = "unavailable-embed-model"
+    factory_models: list[str] = []
+
+    def failing_factory(name: str) -> Never:
+        factory_models.append(name)
+        raise RuntimeError("controlled-loader-failure")
+
+    module = ModuleType("sentence_transformers")
+    setattr(module, "SentenceTransformer", failing_factory)
+    monkeypatch.setitem(sys.modules, "sentence_transformers", module)
+    engine = EmbeddingEngine()
+    monkeypatch.setitem(app.dependency_overrides, get_embedding_engine, lambda: engine)
+    payload = {"model": model_name, "input": "Hello, embeddings!"}
+
+    with patch.object(engine, "_fallback_embedding", return_value=[0.25, -0.5]) as fallback:
+        response = client.post("/v1/embeddings", json=payload)
+        fallback.assert_not_called()
+
+    assert response.status_code == 503
     data = _response_json(response)
-    assert data["object"] == "list"
-    assert data["model"] == "test-embed-model"
-    embeddings = _as_list(data["data"])
-    assert len(embeddings) == 1
-    assert len(_as_list(_as_object(embeddings[0])["embedding"])) == 1536
-    assert cast(int, _as_object(data["usage"])["total_tokens"]) > 0
+    assert data["detail"] == {
+        "code": "embedding_model_unavailable",
+        "model": model_name,
+        "message": f"Embedding model '{model_name}' could not be loaded.",
+    }
+    assert data["ok"] is False
+    assert data["error"] == "http_503"
+    assert "data" not in data and "embedding" not in data
+    assert "controlled-loader-failure" not in json.dumps(data)
+    assert factory_models == [model_name]
