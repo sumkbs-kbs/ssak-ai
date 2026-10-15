@@ -59,7 +59,7 @@ async def lifespan(app: FastAPI):
     )
 
     # Startup — Sidabari 패턴 기반 서브시스템 초기화
-    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+    project_root = str(config.paths.project_root)
     # CR-14 F-45: hermetic e2e 는 공유 `vault_data/hooks`(15MB·동시 기록자)를 피해야 한다.
     # 기본값은 기존과 같다(`<project_root>/vault_data`). `AGK_HOOK_VAULT_DIR` 이 있으면
     # HookEventBus·AuditDb 만 그 아래로 돌린다 — 출하 경로를 바꾸지 않는 격리 구멍이다.

@@ -113,7 +113,7 @@ try:
                 receipt["persisted_events"]=rows
             app.state.rag_index_thread.join(timeout=2)
             assert not app.state.rag_index_thread.is_alive()
-            assert receipt["rag_roots"]==[source_root] and receipt["ide_roots"]==[source_root]
+            assert receipt["rag_roots"]==[str(configured)] and receipt["ide_roots"]==[str(configured)]
     asyncio.run(run())
     assert receipt["hook_shutdown"] and receipt["audit_shutdown"] and receipt["ide_shutdown"]
     assert not receipt["denied_mutations"] and not receipt["socket_attempts"] and not receipt["forbidden_imports"]
