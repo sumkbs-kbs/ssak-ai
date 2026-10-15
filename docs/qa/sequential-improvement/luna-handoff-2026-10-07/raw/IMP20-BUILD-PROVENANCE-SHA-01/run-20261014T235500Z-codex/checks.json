@@ -1,0 +1,40 @@
+[
+  {
+    "name": "dashboard-unit",
+    "command": [
+      "pnpm",
+      "run",
+      "test",
+      "--",
+      "--reporter=verbose"
+    ],
+    "cwd": "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/dashboard",
+    "exit_code": 0,
+    "elapsed_seconds": 11.54956087499977,
+    "pin_sha256": "02ee1e209cce0701becb8934f09dee2aab7d4471c3c74758cbc3bb9830b7ac4f"
+  },
+  {
+    "name": "build-first",
+    "command": [
+      "pnpm",
+      "run",
+      "build"
+    ],
+    "cwd": "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/dashboard",
+    "exit_code": 0,
+    "elapsed_seconds": 27.995238874999814,
+    "pin_sha256": "02ee1e209cce0701becb8934f09dee2aab7d4471c3c74758cbc3bb9830b7ac4f"
+  },
+  {
+    "name": "build-reproduce",
+    "command": [
+      "pnpm",
+      "run",
+      "build"
+    ],
+    "cwd": "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/dashboard",
+    "exit_code": 0,
+    "elapsed_seconds": 27.446976374999394,
+    "pin_sha256": "02ee1e209cce0701becb8934f09dee2aab7d4471c3c74758cbc3bb9830b7ac4f"
+  }
+]

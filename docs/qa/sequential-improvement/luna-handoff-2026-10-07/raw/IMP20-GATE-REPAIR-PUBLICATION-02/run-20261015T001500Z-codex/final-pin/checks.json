@@ -1,0 +1,38 @@
+[
+  {
+    "name": "provenance-tests",
+    "command": [
+      "pnpm",
+      "exec",
+      "vitest",
+      "run",
+      "src/utils/buildStamp.provenance.test.ts",
+      "--reporter=verbose"
+    ],
+    "exit_code": 0,
+    "seconds": 0.8871225000002596,
+    "pin_sha256": "5bfa355e892bee451ef8c9d11823663850da117c838f69c3d5f3fc892ab52d33"
+  },
+  {
+    "name": "build",
+    "command": [
+      "pnpm",
+      "run",
+      "build"
+    ],
+    "exit_code": 0,
+    "seconds": 24.16826833399955,
+    "pin_sha256": "5bfa355e892bee451ef8c9d11823663850da117c838f69c3d5f3fc892ab52d33"
+  },
+  {
+    "name": "build-reproduce",
+    "command": [
+      "pnpm",
+      "run",
+      "build"
+    ],
+    "exit_code": 0,
+    "seconds": 23.98450899999989,
+    "pin_sha256": "5bfa355e892bee451ef8c9d11823663850da117c838f69c3d5f3fc892ab52d33"
+  }
+]

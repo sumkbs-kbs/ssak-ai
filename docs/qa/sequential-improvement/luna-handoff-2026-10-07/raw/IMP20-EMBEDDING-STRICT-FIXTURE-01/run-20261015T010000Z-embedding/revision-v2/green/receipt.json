@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/guarded_pytest.py",
+    "green"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/green/runtime",
+  "exit_code": 0,
+  "elapsed_seconds": 2.671721935272217,
+  "source_sha256": {
+    "tests/test_api_server.py": "ca0d78899a0191dbe47e14f9bff88a478f01e6d770abf90c0286011019bef7a2",
+    "tests/test_embeddings_model_contract.py": "8cc10be711d036cda641f02f2b82fdd2d4b4f32880cd1e8a2b18500115cfab41",
+    "src/antigravity_k/engine/embeddings.py": "3522ff04d2df755bfeab8dadc1eaa9339b309db46b7c927efba50b9ad998b0cb",
+    "src/antigravity_k/api/routes/models_api.py": "9a381eaad83443b3becaf60d36f1fd87f2b989930766095c24596b6936e2b69d",
+    "owned_test": "ca0d78899a0191dbe47e14f9bff88a478f01e6d770abf90c0286011019bef7a2"
+  }
+}

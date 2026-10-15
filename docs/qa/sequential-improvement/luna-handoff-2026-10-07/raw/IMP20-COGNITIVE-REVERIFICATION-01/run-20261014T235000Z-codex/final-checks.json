@@ -1,0 +1,47 @@
+[
+  {
+    "name": "lint",
+    "command": [
+      "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+      "-m",
+      "ruff",
+      "check",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-COGNITIVE-REVERIFICATION-01/run-20261014T235000Z-codex/verify.py",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-COGNITIVE-REVERIFICATION-01/run-20261014T235000Z-codex/finalize.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "format",
+    "command": [
+      "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+      "-m",
+      "ruff",
+      "format",
+      "--check",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-COGNITIVE-REVERIFICATION-01/run-20261014T235000Z-codex/verify.py",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-COGNITIVE-REVERIFICATION-01/run-20261014T235000Z-codex/finalize.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "diff",
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "--",
+      "docs/ssak-ai-core/evidence/digest_reverification.json",
+      "docs/ssak-ai-core/evidence/digest_drift.json"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "memory_compile",
+    "files": [
+      "verify.py",
+      "finalize.py"
+    ],
+    "exit_code": 0
+  }
+]

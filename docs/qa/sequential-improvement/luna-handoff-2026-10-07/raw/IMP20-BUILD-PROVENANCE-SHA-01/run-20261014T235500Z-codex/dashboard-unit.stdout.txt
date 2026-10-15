@@ -1,0 +1,9 @@
+
+ RUN  v4.1.11 /Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/dashboard
+
+
+ Test Files  122 passed (122)
+      Tests  1244 passed (1244)
+   Start at  08:50:29
+   Duration  10.48s (transform 6.69s, setup 18.40s, import 21.41s, tests 35.81s, environment 75.59s)
+

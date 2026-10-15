@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/cognitive/test_evidence_gate.py",
+    "--basetemp",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-COGNITIVE-REVERIFICATION-01/run-20261014T235000Z-codex/supplement-20261014T235420Z/private-runtime/pytest",
+    "--junitxml",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-COGNITIVE-REVERIFICATION-01/run-20261014T235000Z-codex/supplement-20261014T235420Z/junit.xml"
+  ],
+  "cwd": "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai",
+  "exit_code": 0,
+  "source_binding": "source-before.json"
+}

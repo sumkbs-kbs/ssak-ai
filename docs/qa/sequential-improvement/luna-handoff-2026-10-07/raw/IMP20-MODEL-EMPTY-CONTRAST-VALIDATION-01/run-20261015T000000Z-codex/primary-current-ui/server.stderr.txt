@@ -1,0 +1,12 @@
+INFO:     Started server process [52160]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:60749 (Press CTRL+C to quit)
+모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-MODEL-EMPTY-CONTRAST-VALIDATION-01/run-20261015T000000Z-codex/primary-current-ui/private-runtime/data/benchmarks/local-model-stable-simple.json
+모델 품질 benchmark artifact를 읽지 못했습니다: /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-MODEL-EMPTY-CONTRAST-VALIDATION-01/run-20261015T000000Z-codex/primary-current-ui/private-runtime/data/benchmarks/local-model-frontier.json
+Recovered scalar skill metadata from invalid YAML: /Users/mr.k/.agents/skills/codebase-memory/SKILL.md
+[llama3.2-vision:11b] 라우팅 정책에 의해 제외(local_parameter_floor_not_met) — 콤보 폴백 체인에서 제거됨
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [52160]

@@ -1,0 +1,36 @@
+--- a/tests/test_api_server.py
++++ b/tests/test_api_server.py
+@@ -657,14 +657,15 @@
+ ) -> None:
+     import sys
+     from types import ModuleType
++    from typing import Never
+ 
+     from antigravity_k.api.dependencies import get_embedding_engine
+-    from antigravity_k.engine.embeddings import EmbeddingEngine, _EmbeddingModel
++    from antigravity_k.engine.embeddings import EmbeddingEngine
+ 
+     model_name = "unavailable-embed-model"
+     factory_models: list[str] = []
+ 
+-    def failing_factory(name: str) -> _EmbeddingModel:
++    def failing_factory(name: str) -> Never:
+         factory_models.append(name)
+         raise RuntimeError("controlled-loader-failure")
+ 
+@@ -675,7 +676,7 @@
+     monkeypatch.setitem(app.dependency_overrides, get_embedding_engine, lambda: engine)
+     payload = {"model": model_name, "input": "Hello, embeddings!"}
+ 
+-    with patch.object(engine, "_fallback_embedding", wraps=engine._fallback_embedding) as fallback:
++    with patch.object(engine, "_fallback_embedding", return_value=[0.25, -0.5]) as fallback:
+         response = client.post("/v1/embeddings", json=payload)
+         fallback.assert_not_called()
+ 
+@@ -689,5 +690,5 @@
+     assert data["ok"] is False
+     assert data["error"] == "http_503"
+     assert "data" not in data and "embedding" not in data
+-    assert "controlled-loader-failure" not in response.text
++    assert "controlled-loader-failure" not in json.dumps(data)
+     assert factory_models == [model_name]

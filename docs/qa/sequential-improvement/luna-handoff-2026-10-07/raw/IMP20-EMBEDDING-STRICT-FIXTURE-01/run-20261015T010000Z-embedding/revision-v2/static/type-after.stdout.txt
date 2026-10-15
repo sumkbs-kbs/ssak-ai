@@ -1,0 +1,2574 @@
+
+{
+    "version": "1.39.9",
+    "time": "1792022450349",
+    "generalDiagnostics": [
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"headers\" is unknown",
+            "range": {
+                "start": {
+                    "line": 113,
+                    "character": 16
+                },
+                "end": {
+                    "line": 113,
+                    "character": 25
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"update\" is unknown",
+            "range": {
+                "start": {
+                    "line": 113,
+                    "character": 16
+                },
+                "end": {
+                    "line": 113,
+                    "character": 32
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 122,
+                    "character": 4
+                },
+                "end": {
+                    "line": 122,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"get\" is partially unknown\n  Type of \"get\" is \"(url: Unknown, *, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 122,
+                    "character": 15
+                },
+                "end": {
+                    "line": 122,
+                    "character": 25
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 123,
+                    "character": 11
+                },
+                "end": {
+                    "line": 123,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 124,
+                    "character": 26
+                },
+                "end": {
+                    "line": 124,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 132,
+                    "character": 4
+                },
+                "end": {
+                    "line": 132,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"get\" is partially unknown\n  Type of \"get\" is \"(url: Unknown, *, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 132,
+                    "character": 15
+                },
+                "end": {
+                    "line": 132,
+                    "character": 25
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 133,
+                    "character": 11
+                },
+                "end": {
+                    "line": 133,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 134,
+                    "character": 26
+                },
+                "end": {
+                    "line": 134,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 142,
+                    "character": 4
+                },
+                "end": {
+                    "line": 142,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"get\" is partially unknown\n  Type of \"get\" is \"(url: Unknown, *, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 142,
+                    "character": 15
+                },
+                "end": {
+                    "line": 142,
+                    "character": 25
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 144,
+                    "character": 11
+                },
+                "end": {
+                    "line": 144,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"headers\" is unknown",
+            "range": {
+                "start": {
+                    "line": 145,
+                    "character": 26
+                },
+                "end": {
+                    "line": 145,
+                    "character": 42
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"text\" is unknown",
+            "range": {
+                "start": {
+                    "line": 146,
+                    "character": 22
+                },
+                "end": {
+                    "line": 146,
+                    "character": 35
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"lower\" is unknown",
+            "range": {
+                "start": {
+                    "line": 146,
+                    "character": 22
+                },
+                "end": {
+                    "line": 146,
+                    "character": 41
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 154,
+                    "character": 8
+                },
+                "end": {
+                    "line": 154,
+                    "character": 16
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 154,
+                    "character": 19
+                },
+                "end": {
+                    "line": 154,
+                    "character": 46
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 156,
+                    "character": 11
+                },
+                "end": {
+                    "line": 156,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 157,
+                    "character": 26
+                },
+                "end": {
+                    "line": 157,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 165,
+                    "character": 8
+                },
+                "end": {
+                    "line": 165,
+                    "character": 16
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"request\" is partially unknown\n  Type of \"request\" is \"(method: str, url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 165,
+                    "character": 19
+                },
+                "end": {
+                    "line": 165,
+                    "character": 49
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 167,
+                    "character": 11
+                },
+                "end": {
+                    "line": 167,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 179,
+                    "character": 4
+                },
+                "end": {
+                    "line": 179,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 179,
+                    "character": 15
+                },
+                "end": {
+                    "line": 179,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 184,
+                    "character": 11
+                },
+                "end": {
+                    "line": 184,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 196,
+                    "character": 4
+                },
+                "end": {
+                    "line": 196,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 196,
+                    "character": 15
+                },
+                "end": {
+                    "line": 196,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 201,
+                    "character": 11
+                },
+                "end": {
+                    "line": 201,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 212,
+                    "character": 4
+                },
+                "end": {
+                    "line": 212,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 212,
+                    "character": 15
+                },
+                "end": {
+                    "line": 212,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 217,
+                    "character": 11
+                },
+                "end": {
+                    "line": 217,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 221,
+                    "character": 4
+                },
+                "end": {
+                    "line": 221,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 221,
+                    "character": 15
+                },
+                "end": {
+                    "line": 221,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 223,
+                    "character": 11
+                },
+                "end": {
+                    "line": 223,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 227,
+                    "character": 4
+                },
+                "end": {
+                    "line": 227,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 227,
+                    "character": 15
+                },
+                "end": {
+                    "line": 227,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 229,
+                    "character": 11
+                },
+                "end": {
+                    "line": 229,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"alpha\" is unknown",
+            "range": {
+                "start": {
+                    "line": 241,
+                    "character": 8
+                },
+                "end": {
+                    "line": 241,
+                    "character": 13
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 241,
+                    "character": 16
+                },
+                "end": {
+                    "line": 241,
+                    "character": 27
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"beta\" is unknown",
+            "range": {
+                "start": {
+                    "line": 249,
+                    "character": 8
+                },
+                "end": {
+                    "line": 249,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 249,
+                    "character": 15
+                },
+                "end": {
+                    "line": 249,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 258,
+                    "character": 15
+                },
+                "end": {
+                    "line": 258,
+                    "character": 32
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 259,
+                    "character": 15
+                },
+                "end": {
+                    "line": 259,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 260,
+                    "character": 30
+                },
+                "end": {
+                    "line": 260,
+                    "character": 35
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 261,
+                    "character": 30
+                },
+                "end": {
+                    "line": 261,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"scoped\" is unknown",
+            "range": {
+                "start": {
+                    "line": 263,
+                    "character": 8
+                },
+                "end": {
+                    "line": 263,
+                    "character": 14
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"get\" is partially unknown\n  Type of \"get\" is \"(url: Unknown, *, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 263,
+                    "character": 17
+                },
+                "end": {
+                    "line": 263,
+                    "character": 27
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 264,
+                    "character": 15
+                },
+                "end": {
+                    "line": 264,
+                    "character": 33
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 265,
+                    "character": 47
+                },
+                "end": {
+                    "line": 265,
+                    "character": 53
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"cancel\" is unknown",
+            "range": {
+                "start": {
+                    "line": 268,
+                    "character": 8
+                },
+                "end": {
+                    "line": 268,
+                    "character": 14
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 268,
+                    "character": 17
+                },
+                "end": {
+                    "line": 268,
+                    "character": 28
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 268,
+                    "character": 65
+                },
+                "end": {
+                    "line": 268,
+                    "character": 70
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 269,
+                    "character": 15
+                },
+                "end": {
+                    "line": 269,
+                    "character": 33
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 270,
+                    "character": 41
+                },
+                "end": {
+                    "line": 270,
+                    "character": 47
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"remove\" is unknown",
+            "range": {
+                "start": {
+                    "line": 272,
+                    "character": 8
+                },
+                "end": {
+                    "line": 272,
+                    "character": 14
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"delete\" is partially unknown\n  Type of \"delete\" is \"(url: Unknown, *, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 272,
+                    "character": 17
+                },
+                "end": {
+                    "line": 272,
+                    "character": 30
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 272,
+                    "character": 67
+                },
+                "end": {
+                    "line": 272,
+                    "character": 72
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 273,
+                    "character": 15
+                },
+                "end": {
+                    "line": 273,
+                    "character": 33
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 274,
+                    "character": 30
+                },
+                "end": {
+                    "line": 274,
+                    "character": 36
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"scoped_after_remove\" is unknown",
+            "range": {
+                "start": {
+                    "line": 276,
+                    "character": 8
+                },
+                "end": {
+                    "line": 276,
+                    "character": 27
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"get\" is partially unknown\n  Type of \"get\" is \"(url: Unknown, *, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 276,
+                    "character": 30
+                },
+                "end": {
+                    "line": 276,
+                    "character": 40
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 277,
+                    "character": 15
+                },
+                "end": {
+                    "line": 277,
+                    "character": 46
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 278,
+                    "character": 30
+                },
+                "end": {
+                    "line": 278,
+                    "character": 49
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 332,
+                    "character": 4
+                },
+                "end": {
+                    "line": 332,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 332,
+                    "character": 15
+                },
+                "end": {
+                    "line": 332,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 334,
+                    "character": 11
+                },
+                "end": {
+                    "line": 334,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 335,
+                    "character": 26
+                },
+                "end": {
+                    "line": 335,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 370,
+                    "character": 4
+                },
+                "end": {
+                    "line": 370,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 370,
+                    "character": 15
+                },
+                "end": {
+                    "line": 370,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 372,
+                    "character": 11
+                },
+                "end": {
+                    "line": 372,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 376,
+                    "character": 4
+                },
+                "end": {
+                    "line": 376,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 376,
+                    "character": 15
+                },
+                "end": {
+                    "line": 376,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 378,
+                    "character": 11
+                },
+                "end": {
+                    "line": 378,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 383,
+                    "character": 4
+                },
+                "end": {
+                    "line": 383,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 383,
+                    "character": 15
+                },
+                "end": {
+                    "line": 383,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 385,
+                    "character": 11
+                },
+                "end": {
+                    "line": 385,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 389,
+                    "character": 4
+                },
+                "end": {
+                    "line": 389,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 389,
+                    "character": 15
+                },
+                "end": {
+                    "line": 389,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 391,
+                    "character": 11
+                },
+                "end": {
+                    "line": 391,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 399,
+                    "character": 4
+                },
+                "end": {
+                    "line": 399,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"get\" is partially unknown\n  Type of \"get\" is \"(url: Unknown, *, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 399,
+                    "character": 15
+                },
+                "end": {
+                    "line": 399,
+                    "character": 25
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 401,
+                    "character": 11
+                },
+                "end": {
+                    "line": 401,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"text\" is unknown",
+            "range": {
+                "start": {
+                    "line": 402,
+                    "character": 29
+                },
+                "end": {
+                    "line": 402,
+                    "character": 42
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 414,
+                    "character": 4
+                },
+                "end": {
+                    "line": 414,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 414,
+                    "character": 15
+                },
+                "end": {
+                    "line": 414,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 416,
+                    "character": 11
+                },
+                "end": {
+                    "line": 416,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_content\"",
+            "range": {
+                "start": {
+                    "line": 417,
+                    "character": 32
+                },
+                "end": {
+                    "line": 417,
+                    "character": 40
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 433,
+                    "character": 4
+                },
+                "end": {
+                    "line": 433,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 433,
+                    "character": 15
+                },
+                "end": {
+                    "line": 433,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 435,
+                    "character": 11
+                },
+                "end": {
+                    "line": 435,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_content\"",
+            "range": {
+                "start": {
+                    "line": 436,
+                    "character": 32
+                },
+                "end": {
+                    "line": 436,
+                    "character": 40
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 460,
+                    "character": 4
+                },
+                "end": {
+                    "line": 460,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 460,
+                    "character": 15
+                },
+                "end": {
+                    "line": 460,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 462,
+                    "character": 11
+                },
+                "end": {
+                    "line": 462,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_content\"",
+            "range": {
+                "start": {
+                    "line": 463,
+                    "character": 32
+                },
+                "end": {
+                    "line": 463,
+                    "character": 40
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 482,
+                    "character": 4
+                },
+                "end": {
+                    "line": 482,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 482,
+                    "character": 15
+                },
+                "end": {
+                    "line": 482,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 484,
+                    "character": 11
+                },
+                "end": {
+                    "line": 484,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_content\"",
+            "range": {
+                "start": {
+                    "line": 485,
+                    "character": 32
+                },
+                "end": {
+                    "line": 485,
+                    "character": 40
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 497,
+                    "character": 4
+                },
+                "end": {
+                    "line": 497,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 497,
+                    "character": 15
+                },
+                "end": {
+                    "line": 497,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 502,
+                    "character": 11
+                },
+                "end": {
+                    "line": 502,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 503,
+                    "character": 26
+                },
+                "end": {
+                    "line": 503,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 516,
+                    "character": 4
+                },
+                "end": {
+                    "line": 516,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 516,
+                    "character": 15
+                },
+                "end": {
+                    "line": 516,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 518,
+                    "character": 11
+                },
+                "end": {
+                    "line": 518,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 519,
+                    "character": 26
+                },
+                "end": {
+                    "line": 519,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 529,
+                    "character": 4
+                },
+                "end": {
+                    "line": 529,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 529,
+                    "character": 15
+                },
+                "end": {
+                    "line": 529,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 531,
+                    "character": 11
+                },
+                "end": {
+                    "line": 531,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 532,
+                    "character": 26
+                },
+                "end": {
+                    "line": 532,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 546,
+                    "character": 4
+                },
+                "end": {
+                    "line": 546,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 546,
+                    "character": 15
+                },
+                "end": {
+                    "line": 546,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 551,
+                    "character": 11
+                },
+                "end": {
+                    "line": 551,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 552,
+                    "character": 37
+                },
+                "end": {
+                    "line": 552,
+                    "character": 45
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"cancel_verdict\" is unknown",
+            "range": {
+                "start": {
+                    "line": 567,
+                    "character": 12
+                },
+                "end": {
+                    "line": 567,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"obj\" in function \"setattr\"",
+            "range": {
+                "start": {
+                    "line": 567,
+                    "character": 12
+                },
+                "end": {
+                    "line": 567,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"cancel_verdict\" for class \"_RuntimeDouble\"\n  Attribute \"cancel_verdict\" is unknown",
+            "range": {
+                "start": {
+                    "line": 567,
+                    "character": 20
+                },
+                "end": {
+                    "line": 567,
+                    "character": 34
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 570,
+                    "character": 4
+                },
+                "end": {
+                    "line": 570,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 570,
+                    "character": 15
+                },
+                "end": {
+                    "line": 570,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 572,
+                    "character": 11
+                },
+                "end": {
+                    "line": 572,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 573,
+                    "character": 26
+                },
+                "end": {
+                    "line": 573,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"cancel_verdict\" is unknown",
+            "range": {
+                "start": {
+                    "line": 574,
+                    "character": 4
+                },
+                "end": {
+                    "line": 574,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"assert_called_once_with\" is unknown",
+            "range": {
+                "start": {
+                    "line": 574,
+                    "character": 4
+                },
+                "end": {
+                    "line": 574,
+                    "character": 50
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"cancel_verdict\" for class \"_RuntimeDouble\"\n  Attribute \"cancel_verdict\" is unknown",
+            "range": {
+                "start": {
+                    "line": 574,
+                    "character": 12
+                },
+                "end": {
+                    "line": 574,
+                    "character": 26
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"cancel_verdict\" is unknown",
+            "range": {
+                "start": {
+                    "line": 581,
+                    "character": 12
+                },
+                "end": {
+                    "line": 581,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"obj\" in function \"setattr\"",
+            "range": {
+                "start": {
+                    "line": 581,
+                    "character": 12
+                },
+                "end": {
+                    "line": 581,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"cancel_verdict\" for class \"_RuntimeDouble\"\n  Attribute \"cancel_verdict\" is unknown",
+            "range": {
+                "start": {
+                    "line": 581,
+                    "character": 20
+                },
+                "end": {
+                    "line": 581,
+                    "character": 34
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 584,
+                    "character": 4
+                },
+                "end": {
+                    "line": 584,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 584,
+                    "character": 15
+                },
+                "end": {
+                    "line": 584,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 586,
+                    "character": 11
+                },
+                "end": {
+                    "line": 586,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 587,
+                    "character": 26
+                },
+                "end": {
+                    "line": 587,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"cancel_verdict\" is unknown",
+            "range": {
+                "start": {
+                    "line": 595,
+                    "character": 12
+                },
+                "end": {
+                    "line": 595,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"obj\" in function \"setattr\"",
+            "range": {
+                "start": {
+                    "line": 595,
+                    "character": 12
+                },
+                "end": {
+                    "line": 595,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"cancel_verdict\" for class \"_RuntimeDouble\"\n  Attribute \"cancel_verdict\" is unknown",
+            "range": {
+                "start": {
+                    "line": 595,
+                    "character": 20
+                },
+                "end": {
+                    "line": 595,
+                    "character": 34
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 598,
+                    "character": 4
+                },
+                "end": {
+                    "line": 598,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 598,
+                    "character": 15
+                },
+                "end": {
+                    "line": 598,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 600,
+                    "character": 11
+                },
+                "end": {
+                    "line": 600,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 601,
+                    "character": 56
+                },
+                "end": {
+                    "line": 601,
+                    "character": 64
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 616,
+                    "character": 4
+                },
+                "end": {
+                    "line": 616,
+                    "character": 12
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 616,
+                    "character": 15
+                },
+                "end": {
+                    "line": 616,
+                    "character": 26
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 618,
+                    "character": 11
+                },
+                "end": {
+                    "line": 618,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 619,
+                    "character": 26
+                },
+                "end": {
+                    "line": 619,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status\" is unknown",
+            "range": {
+                "start": {
+                    "line": 640,
+                    "character": 4
+                },
+                "end": {
+                    "line": 640,
+                    "character": 10
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"get\" is partially unknown\n  Type of \"get\" is \"(url: Unknown, *, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 640,
+                    "character": 13
+                },
+                "end": {
+                    "line": 640,
+                    "character": 23
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"tasks\" is unknown",
+            "range": {
+                "start": {
+                    "line": 641,
+                    "character": 4
+                },
+                "end": {
+                    "line": 641,
+                    "character": 9
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"get\" is partially unknown\n  Type of \"get\" is \"(url: Unknown, *, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 641,
+                    "character": 12
+                },
+                "end": {
+                    "line": 641,
+                    "character": 22
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"output\" is unknown",
+            "range": {
+                "start": {
+                    "line": 642,
+                    "character": 4
+                },
+                "end": {
+                    "line": 642,
+                    "character": 10
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"get\" is partially unknown\n  Type of \"get\" is \"(url: Unknown, *, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 642,
+                    "character": 13
+                },
+                "end": {
+                    "line": 642,
+                    "character": 23
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"resumed\" is unknown",
+            "range": {
+                "start": {
+                    "line": 643,
+                    "character": 4
+                },
+                "end": {
+                    "line": 643,
+                    "character": 11
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 643,
+                    "character": 14
+                },
+                "end": {
+                    "line": 643,
+                    "character": 25
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 645,
+                    "character": 26
+                },
+                "end": {
+                    "line": 645,
+                    "character": 32
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 646,
+                    "character": 26
+                },
+                "end": {
+                    "line": 646,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 647,
+                    "character": 26
+                },
+                "end": {
+                    "line": 647,
+                    "character": 32
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 648,
+                    "character": 26
+                },
+                "end": {
+                    "line": 648,
+                    "character": 33
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"response\" is unknown",
+            "range": {
+                "start": {
+                    "line": 679,
+                    "character": 8
+                },
+                "end": {
+                    "line": 679,
+                    "character": 16
+                }
+            },
+            "rule": "reportUnknownVariableType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"post\" is partially unknown\n  Type of \"post\" is \"(url: Unknown, *, content: Unknown | None = None, data: Mapping[str, str | Iterable[str] | bytes] | None = None, files: Unknown | None = None, json: Any = None, params: Unknown | None = None, headers: Unknown | None = None, cookies: Unknown | None = None, auth: Unknown = httpx._client.USE_CLIENT_DEFAULT, follow_redirects: bool | Unknown = httpx._client.USE_CLIENT_DEFAULT, timeout: Unknown = httpx._client.USE_CLIENT_DEFAULT, extensions: dict[str, Any] | None = None) -> Unknown\"",
+            "range": {
+                "start": {
+                    "line": 679,
+                    "character": 19
+                },
+                "end": {
+                    "line": 679,
+                    "character": 30
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Type of \"status_code\" is unknown",
+            "range": {
+                "start": {
+                    "line": 682,
+                    "character": 11
+                },
+                "end": {
+                    "line": 682,
+                    "character": 31
+                }
+            },
+            "rule": "reportUnknownMemberType"
+        },
+        {
+            "file": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/revision-v2/postimage/test_api_server.py",
+            "severity": "warning",
+            "message": "Argument type is unknown\n  Argument corresponds to parameter \"response\" in function \"_response_json\"",
+            "range": {
+                "start": {
+                    "line": 683,
+                    "character": 26
+                },
+                "end": {
+                    "line": 683,
+                    "character": 34
+                }
+            },
+            "rule": "reportUnknownArgumentType"
+        }
+    ],
+    "summary": {
+        "filesAnalyzed": 1,
+        "errorCount": 4,
+        "warningCount": 156,
+        "informationCount": 0,
+        "timeInSec": 0.58
+    }
+}

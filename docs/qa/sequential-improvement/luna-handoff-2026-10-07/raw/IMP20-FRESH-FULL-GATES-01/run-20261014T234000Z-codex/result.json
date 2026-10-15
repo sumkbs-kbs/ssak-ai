@@ -1,0 +1,26 @@
+{
+  "status": "DIAGNOSTIC_FAILED_SUPERSEDED",
+  "candidate": {
+    "dirty": false,
+    "sha": "302337877766a540a21dd42c61605dc590e4026b",
+    "tree_fingerprint": "8044be61484ece2b4eb1e7f4c007f3962bfebe4b08d98f3761308cd98e8f63da",
+    "tree_fingerprint_scope": "code (docs/ and .omo/ excluded)"
+  },
+  "summary": {
+    "failed": 3,
+    "passed": 20,
+    "required_failed": 3,
+    "total": 23
+  },
+  "python_suite": "INTENTIONALLY_INTERRUPTED_NOT_PASSED_355_PASS_9_FAIL_17_DESELECTED",
+  "known_additional_scoped_failure": "Legacy embedding fallback contract503!=200, reproduced in an owned same-source copy; absent from the interrupted full-suite count",
+  "failed_gates": [
+    "python-tests",
+    "dashboard-test",
+    "accessibility-e2e"
+  ],
+  "outer_launcher_exit": 1,
+  "source_unchanged": true,
+  "soak": "NOT_RUN",
+  "release": "NOT_APPROVED"
+}

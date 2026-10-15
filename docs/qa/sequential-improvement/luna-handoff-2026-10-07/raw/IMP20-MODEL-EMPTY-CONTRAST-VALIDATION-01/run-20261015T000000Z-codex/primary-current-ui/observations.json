@@ -1,0 +1,17 @@
+{
+  "scope": "Primary agent current CSS/bundle visible notice review before final provenance repin",
+  "url": "http://127.0.0.1:60749/models",
+  "viewport": [1280, 720],
+  "text": "해당 조건에 맞는 로컬 모델을 찾을 수 없습니다.",
+  "color": "rgb(160, 160, 160)",
+  "body_background": "rgb(32, 32, 32)",
+  "root_background": "rgb(32, 32, 32)",
+  "css_sha256": "c8892443e9221aa4fb02804e58465687073a5303e43ae0daec0256d22892da2c",
+  "screenshots": ["models-dark.png", "models-dark-final.png"],
+  "final_screenshot": "models-dark-final.png",
+  "light_theme": "NOT_OBSERVED_IN_PRIMARY_BROWSER",
+  "mobile": "COVERED_BY_SEPARATE_ACCESSIBILITY35_NOT_PRIMARY_SCREENSHOT",
+  "inference_submission": "NONE",
+  "tab_cleanup": "CLOSED",
+  "note": "Settings and palette were inspected for a visible theme control; no preference/authentication/provider setting was changed. The intermediate screenshot may show scan-in-progress. Final computed text is the completed empty-state notice. No provider/native call count is inferred from the OS boundary alone."
+}

@@ -1,0 +1,14 @@
+ruff (legacy alias)......................................................Passed
+ruff format..............................................................Passed
+trim trailing whitespace.................................................Passed
+fix end of files.........................................................Passed
+check yaml...........................................(no files to check)Skipped
+check toml...........................................(no files to check)Skipped
+check json...............................................................Passed
+check for added large files..............................................Passed
+detect private key.......................................................Passed
+check for merge conflicts................................................Passed
+check for case conflicts.................................................Passed
+mixed line ending........................................................Passed
+mypy.................................................(no files to check)Skipped
+- hook id: mypy

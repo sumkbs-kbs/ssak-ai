@@ -1,0 +1,152 @@
+[
+  {
+    "path": "migration-record.commit.stdout.txt",
+    "bytes": 578,
+    "sha256": "889598a201a1a7d207c90f8cfb3e50a137674890b22162710ddd6951d9c452a5"
+  },
+  {
+    "path": "empty-notice.commit.stdout.txt",
+    "bytes": 3124,
+    "sha256": "d1cc97bcb11af9e1bd8ef18fc1f29d306f326ceb42948fd5b7e8b9b961efa996"
+  },
+  {
+    "path": "source-binding.json",
+    "bytes": 7414,
+    "sha256": "63103261fb28ed6b1803f54a87e1536a0f79f521ad0756d8047cdb886dc213e1"
+  },
+  {
+    "path": "commit-receipts.json",
+    "bytes": 2790,
+    "sha256": "aa58ea8ee45c13a0b6618d7485a8d66541a342fd125121b5fbc3f18ff32b322d"
+  },
+  {
+    "path": "embedding.commit.stdout.txt",
+    "bytes": 583,
+    "sha256": "64127cf03fb78072603c40fa5c6bef0c1c799748a79c62dd0791899fcfd134b1"
+  },
+  {
+    "path": "migration-record.commit.stderr.txt",
+    "bytes": 1260,
+    "sha256": "33b61ec1228ff1be8f1c3746442dd70f897a032b6ea4542e83afb348f747e811"
+  },
+  {
+    "path": "empty-notice.commit.stderr.txt",
+    "bytes": 1056,
+    "sha256": "57b5bfccf261c47c1efabedcc0bca7add745b9954df2c168b3d05270ef28be15"
+  },
+  {
+    "path": "record_publication.py",
+    "bytes": 2023,
+    "sha256": "7a476d38bd3aff12d16165500ea1449edf7f8b5c99391b99eeac49e1e4bfb423"
+  },
+  {
+    "path": "commit_owned.py",
+    "bytes": 2031,
+    "sha256": "b6706ef9c6cd2362f9154cbaec5606464d89e42016cfca18589b8816d29081fc"
+  },
+  {
+    "path": "embedding.commit.stderr.txt",
+    "bytes": 1260,
+    "sha256": "bb2c1ce8ac0bdda9056fb133b06c23903d6ab32201f25164bf8d87faa660123e"
+  },
+  {
+    "path": "final-pin/build.stderr.txt",
+    "bytes": 355,
+    "sha256": "e2424adf7eb503968ec3f5ad6ae4aeb225b89443f2d22cac8ded94099419ca0c"
+  },
+  {
+    "path": "final-pin/build-reproduce.stdout.txt",
+    "bytes": 12664,
+    "sha256": "067337d2d2e7245439a03c222917489736ee2756210c83756b69ccc1fc1103ad"
+  },
+  {
+    "path": "final-pin/pre-commit-v2.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "final-pin/pre-commit.json",
+    "bytes": 2095,
+    "sha256": "b63da186ef4686f5d9f688c472269a880d5f6c293ba5614a3f585008ce477aca"
+  },
+  {
+    "path": "final-pin/pre-commit.stdout.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "final-pin/pre-commit-v2.json",
+    "bytes": 2206,
+    "sha256": "a0a9261a9eaccb642885d77f3b79ea7a302022366efa20dcdc7bdc300c9aeabe"
+  },
+  {
+    "path": "final-pin/commit.stdout.txt",
+    "bytes": 2968,
+    "sha256": "3ef04215b6ec8698780eaa3a3aed689f5ec4cd383ebf1b2e8b398de7002cfdd8"
+  },
+  {
+    "path": "final-pin/provenance-tests.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "final-pin/bundle-reproduction.json",
+    "bytes": 19847,
+    "sha256": "c6756ba10565fc142bc25020f1cc055bf5a3cb92cbf729bd80b6c5d0633043fe"
+  },
+  {
+    "path": "final-pin/checks.json",
+    "bytes": 819,
+    "sha256": "a162f733ebb50fcc77ccc580765f187158164f923e770eeb1086c1f93be4fd23"
+  },
+  {
+    "path": "final-pin/commit.json",
+    "bytes": 138,
+    "sha256": "ed4be191ae5877e5f69d12d14037e75cab87d0925b0493c88346810304d213bf"
+  },
+  {
+    "path": "final-pin/build.stdout.txt",
+    "bytes": 12664,
+    "sha256": "dd9cd52c09813d8a8addd652bc92f6df10536a08c3a313c94c8bdefcb386546b"
+  },
+  {
+    "path": "final-pin/check_and_commit_pin.py",
+    "bytes": 1773,
+    "sha256": "1c7c5d89b66d9da3f35b057e8be676ae001980eeae098254d906623fe74666ef"
+  },
+  {
+    "path": "final-pin/task-only.patch",
+    "bytes": 751968,
+    "sha256": "2a12aef0fa3921ee4d7c130b0f92833e680e98492e6364c8cfb105657901972a"
+  },
+  {
+    "path": "final-pin/run_checks.py",
+    "bytes": 2776,
+    "sha256": "c34e9619f101b5d59394c9f48ff79feaeb36be1c74da64dda8a4f79c74793a57"
+  },
+  {
+    "path": "final-pin/pre-commit.stderr.txt",
+    "bytes": 103,
+    "sha256": "767e9f0007dafb413478364805a53d1cd14b8e276e92b8607b466703489bcf07"
+  },
+  {
+    "path": "final-pin/build-reproduce.stderr.txt",
+    "bytes": 355,
+    "sha256": "e2424adf7eb503968ec3f5ad6ae4aeb225b89443f2d22cac8ded94099419ca0c"
+  },
+  {
+    "path": "final-pin/pre-commit-v2.stdout.txt",
+    "bytes": 1056,
+    "sha256": "492ab65f33e7a1f472087767a7d6cba8347ed288afd02c9a0d6c8bfef94864fc"
+  },
+  {
+    "path": "final-pin/commit.stderr.txt",
+    "bytes": 1056,
+    "sha256": "57b5bfccf261c47c1efabedcc0bca7add745b9954df2c168b3d05270ef28be15"
+  },
+  {
+    "path": "final-pin/provenance-tests.stdout.txt",
+    "bytes": 691,
+    "sha256": "72d2fb54400371d1a80698173240b2d02acafcb34c8ddd9b31900f36dd33f4c4"
+  }
+]

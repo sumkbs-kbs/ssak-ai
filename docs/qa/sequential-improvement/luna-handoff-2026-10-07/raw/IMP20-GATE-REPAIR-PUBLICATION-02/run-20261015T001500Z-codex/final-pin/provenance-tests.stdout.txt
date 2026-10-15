@@ -1,0 +1,12 @@
+
+ RUN  v4.1.11 /Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/dashboard
+
+ ✓ src/utils/buildStamp.provenance.test.ts > 번들 provenance 핀 (CR-14 F-12) > 파일 이름이 계약이다 0ms
+ ✓ src/utils/buildStamp.provenance.test.ts > 번들 provenance 핀 (CR-14 F-12) > 커밋된 핀에서 실제 소스 리비전을 읽는다 0ms
+ ✓ src/utils/buildStamp.provenance.test.ts > 번들 provenance 핀 (CR-14 F-12) > 빌드 시각은 미기록(null)을 허용한다 — 추측값으로 채우지 않는다 0ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  09:05:58
+   Duration  470ms (transform 17ms, setup 82ms, import 10ms, tests 1ms, environment 320ms)
+

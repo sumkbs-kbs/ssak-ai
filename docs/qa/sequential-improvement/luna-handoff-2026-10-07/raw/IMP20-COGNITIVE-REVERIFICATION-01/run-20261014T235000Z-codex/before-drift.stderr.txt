@@ -1,0 +1,2 @@
+[FAIL] artifact 가 최신이 아니다(counts, docs, pins 불일치) — 파일이 바뀌었으면 다시 측정해야 한다
+[FAIL] 재확인 뒤에 파일이 또 바뀌어 그 재확인이 무효인 항목: T12_migration.md:src/antigravity_k/engine/cognitive/migration.py

@@ -1,0 +1,59 @@
+[
+  {
+    "name": "embedding",
+    "paths": [
+      "tests/test_api_server.py"
+    ],
+    "message": "test: align public embeddings with the strict model contract",
+    "exit_code": 0,
+    "seconds": 1.162634708999576,
+    "head": "beaa1c16c46aa8b5b90d8faf450f902d7a0ef8e3"
+  },
+  {
+    "name": "migration-record",
+    "paths": [
+      "docs/ssak-ai-core/evidence/digest_drift.json",
+      "docs/ssak-ai-core/evidence/digest_reverification.json"
+    ],
+    "message": "docs: reverify migration after fixed SQL query hardening",
+    "exit_code": 0,
+    "seconds": 0.9439875830003075,
+    "head": "3c76c1db5563b97b840ec19df86a9ab9c552a269"
+  },
+  {
+    "name": "empty-notice",
+    "paths": [
+      "dashboard/build-provenance.json",
+      "dashboard/src/styles/index.css",
+      "src/antigravity_k/dashboard_dist/assets/AgentPage-BAX6kPAN.js",
+      "src/antigravity_k/dashboard_dist/assets/AgentStartPage-DIsNV8V3.js",
+      "src/antigravity_k/dashboard_dist/assets/ChatPage-C4nUgcQP.js",
+      "src/antigravity_k/dashboard_dist/assets/CommandPalette-9XAHjBGy.js",
+      "src/antigravity_k/dashboard_dist/assets/DataExtractionPage-BJNP3GBS.js",
+      "src/antigravity_k/dashboard_dist/assets/DiffViewer-D2qQrDo3.js",
+      "src/antigravity_k/dashboard_dist/assets/FolderBrowser-C393zCh5.js",
+      "src/antigravity_k/dashboard_dist/assets/GitPage-DUoTCaZr.js",
+      "src/antigravity_k/dashboard_dist/assets/HistoryPage-DyC9GtJv.js",
+      "src/antigravity_k/dashboard_dist/assets/ModelHubPage-B2vbtNvu.js",
+      "src/antigravity_k/dashboard_dist/assets/MonacoEditorWrapper-CTTE2mFk.js",
+      "src/antigravity_k/dashboard_dist/assets/MultiTerminalPanel-BTS_CmQA.js",
+      "src/antigravity_k/dashboard_dist/assets/PinModal-572vTs4s.js",
+      "src/antigravity_k/dashboard_dist/assets/PluginPage-dUMMFLP0.js",
+      "src/antigravity_k/dashboard_dist/assets/PluginPanelRoutes-D17DY-0J.js",
+      "src/antigravity_k/dashboard_dist/assets/SettingsPage-CWBA2Lni.js",
+      "src/antigravity_k/dashboard_dist/assets/Sidebar-DVNL5DMY.js",
+      "src/antigravity_k/dashboard_dist/assets/SkillsPage-CssmvIbR.js",
+      "src/antigravity_k/dashboard_dist/assets/StudioPage-CMDAbIrQ.js",
+      "src/antigravity_k/dashboard_dist/assets/SystemTelemetricsBar-CDBUyns9.js",
+      "src/antigravity_k/dashboard_dist/assets/SystemTelemetricsBar-DzZYp9dt.js",
+      "src/antigravity_k/dashboard_dist/assets/gitStore-CW0_f63j.js",
+      "src/antigravity_k/dashboard_dist/assets/index-B64vj3p7.js",
+      "src/antigravity_k/dashboard_dist/assets/index-BB1sud9N.css",
+      "src/antigravity_k/dashboard_dist/index.html"
+    ],
+    "message": "fix: keep empty model notices readable in the theme",
+    "exit_code": 0,
+    "seconds": 0.7817996249996213,
+    "head": "8585d8fbcac3589d7baeb614302ed184062095f8"
+  }
+]

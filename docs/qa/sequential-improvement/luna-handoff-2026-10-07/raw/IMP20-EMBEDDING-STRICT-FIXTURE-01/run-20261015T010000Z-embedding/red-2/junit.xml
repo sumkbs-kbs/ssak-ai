@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.278" timestamp="2026-10-15T08:44:19.598420+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="preimage.test_api_server" name="test_embeddings_endpoint_uses_local_fallback" file="preimage/test_api_server.py" line="654" time="0.028"><failure message="assert 503 == 200&#10; +  where 503 = &lt;Response [503 Service Unavailable]&gt;.status_code">client = &lt;starlette.testclient.TestClient object at 0x126a4fcb0&gt;
+
+    def test_embeddings_endpoint_uses_local_fallback(client: TestClient):
+        payload = {"model": "test-embed-model", "input": "Hello, embeddings!"}
+    
+        response = client.post("/v1/embeddings", json=payload)
+    
+&gt;       assert response.status_code == 200
+E       assert 503 == 200
+E        +  where 503 = &lt;Response [503 Service Unavailable]&gt;.status_code
+
+../../preimage/test_api_server.py:660: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,27 @@
+{
+  "name": "Ssak-Ai",
+  "short_name": "Ssak-Ai",
+  "description": "로컬 AI 엔지니어링 에이전트 대시보드 — Local AI Engineering Agent Dashboard",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0b10",
+  "theme_color": "#7c6aef",
+  "orientation": "any",
+  "categories": ["developer-tools", "productivity", "ai"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "lang": "ko-KR",
+  "dir": "ltr"
+}

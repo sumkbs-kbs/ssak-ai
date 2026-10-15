@@ -45,7 +45,7 @@
 
 관리API purge는 기능 `6f0bd05d`로 수정·푸시했습니다. 실제 인증 ASGI 요청은 전후 각3회이며 auth purge는 각각1회입니다. 전500/부분 삭제는 유지하고 후200에서 A graph·graph-vector·project-vector0, B graph/vector/파일 및 outside/globalGBrain 보존을 확인했습니다. 별도 새 process에서도 A0과 B2/1/2를 확인했습니다. Clean 신규9/인접47, 최종fixture9, ROOT56 및 정적4가 통과했고 ROOT의 기존 lifecycle lock과 staged97/독립src-tests1250개를 보존했습니다. ASGI/lifespanOFF·3D 삭제 fixture이며 concurrent session선택·모델품질·cross-provider atomic 삭제를 증명하지 않습니다. 주세션 검수 완료, 독립 검수 미실행입니다. 다음 브라우저 검증은 ROOT의 기존 frontend38개 변경을 인지하고 현재 소스의 소유 빌드 사본을 사용합니다.
 
-최신 우선순위7은 **선행 수리 검수·게시 완료 후 새 전량 게이트 준비 중**이며 **NEXT_TASK=IMP20-FRESH-FULL-GATES-01**입니다. 이식 가능한 soak 경로 7개 회귀와 앞선 후보 빌드·SBOM 동결은 완료했습니다. 타입 오류64건과 기존 runtime 선행 변경을 `d868ec50`에 게시한 뒤, 독립 검수에서 발견한 원본 Git 읽기 경계 결함을 `1c872d6d`로 수정·승인·푸시했습니다. 기존 broad343통과/8실패/1skip 및 원본 검수 거절은 보존합니다.
+최신 우선순위7은 **두 번째 선행 수리 독립 검수·게시 완료 후 새 전량 게이트 준비 중**이며 **NEXT_TASK=IMP20-FRESH-FULL-GATES-02**입니다. 이식 가능한 soak 경로 7개 회귀와 앞선 후보 빌드·SBOM 동결은 완료했습니다. 타입 오류64건과 기존 runtime 선행 변경을 `d868ec50`에 게시한 뒤, 독립 검수에서 발견한 원본 Git 읽기 경계 결함을 `1c872d6d`로 수정·승인·푸시했습니다. 기존 broad343통과/8실패/1skip 및 원본 검수 거절은 보존합니다.
 
 동일 `d868ec50`의 전량23개 진단은 **15 PASS / 8 FAIL**로 종료했습니다. 전체 Python 실행은 7117통과/136실패/127오류로 중단돼 PASS가 아닙니다. 빈 설정과 자식 인터프리터 선택, soak selftest 출력 경로 간섭을 확인했습니다. `b91fa86c`는 자식 실행 환경·selftest·no-wait 경계를 수정해 독립 승인·푸시했고, 패키지 기본 설정의 영향81개와 실제 isolated Uvicorn API9개 회귀가 통과했습니다.
 
@@ -54,6 +54,10 @@
 2026-10-14T23:12:46Z 기준 [선행 수리 검수](raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/independent-review.md)는 `481a634..f3a42e6f`를 범위 승인했고 원격 HEAD도 `f3a42e6f`입니다. 요청 보존·실제 저장소 purge fixture, pytest 탐색 경계, 비활성 기본값·CLI discovery, 접근성 게이트 서버 소유권, 역사 판정/문서 계약을 게시했습니다. 문서101통과/기존 역사 보고서1skip, 서버 소유권 정적24통과, 실제 asyncio API9통과는 각각의 범위입니다. ROOT의 별도 변경 fixture3개는 보존했으므로 그 사본까지 후보와 같다고 주장하지 않습니다.
 
 실제 브라우저 첫 진단은 접근성33통과/2실패, witnesses18통과/12실패, ambient11통과/5실패였습니다. 후속 관련57건은56통과/uptime1실패였고, uptime 수정 후 해당 브라우저1건과 단위12건이 통과했습니다. 이들을 새57건 전량 성공으로 합산하지 않습니다. 최종 번들106개 파일은 표준 재빌드와 바이트가 같았습니다. 경로/API fixture4실패→4통과 및 새 의존성 SBOM 회귀27통과와 함께 [후속 검수](raw/IMP20-GATE-PREREQUISITES-PUBLICATION-01/run-20261014T231300Z-codex/independent-review-a7.md)에서 범위 승인됐고 `a7c1dc2f`까지 푸시했습니다. 주세션은 최종 후보 화면에서 상태 표시·검색 포커스/닫기·대화 화면 진입을 확인했습니다. WebSocket 재접속 흔적은 별도 미평가 한계로 남겼습니다. ROOT의 독립 수정 UI·번들은 보존했고 같은 후보라고 주장하지 않습니다. 다음은 새 후보의 전량23개 검증이며 신규8시간 soak는 NOT_RUN, 전체 GA·출시 승인은 미완료입니다. 사용자의 staged97개와 역사 원장은 보존합니다.
+
+2026-10-15T00:14Z 현재, 첫 새 후보 `30233787`의 [전량23개 진단](raw/IMP20-FRESH-FULL-GATES-01/run-20261014T234000Z-codex/result.json)은 **20 PASS / 3 FAIL**입니다. Python은 9실패/355통과/17제외 시점에 의도적으로 중단됐으므로 전체 Python 통과가 아닙니다. dashboard-unit은 1243통과/1실패, 접근성은 33통과/2실패였습니다. 앞선 `d868ec50`의 15 PASS / 8 FAIL은 별도 역사 진단으로 유지합니다.
+
+후속 후보 `1e9dfb87b185f3d20792d3f4bff4a25189947c15`는 [독립 검수에서 선행 수리 범위를 승인](raw/IMP20-GATE-REPAIR-PUBLICATION-02/run-20261015T001500Z-codex/independent-review.md)받았고 ROOT 통합·푸시 후 원격 SHA를 확인했습니다. strict embedding의 503·fallback 금지 회귀, migration 근거 연결, 빈 모델 안내문 대비, 실제 Git SHA 빌드 출처를 수정했습니다. 범위별 검증은 embedding 5개, cognitive 145개와 별도 evidence gate 36개, 현재 소스에 새로 묶인 migration 30개, 접근성 35개, 최종 provenance 3개 통과입니다. 최종 번들 106개는 표준 재빌드와 바이트가 일치했습니다. 각 실행의 근거는 별도로 유지하며 이 수치를 새 전량 게이트 성공으로 합산하지 않습니다. 기존 테스트 파일의 타입 오류 4건/경고 156건은 잔존하며 추가 진단은 0건입니다. ROOT의 독립 UI·번들 수정과 staged97은 보존했습니다. **두 번째 새 전량23개는 NOT_RUN, 신규8시간 soak는 NOT_RUN**이며 전체 IMP-09 PARTIAL·역사 원장 NOT_RECOVERED를 유지합니다.
 
 ## 역사 스냅샷 — 2026-10-07 원문 보존
 

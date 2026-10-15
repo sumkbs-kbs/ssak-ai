@@ -1,0 +1,77 @@
+[
+  {
+    "path": "build.stderr.txt",
+    "bytes": 355,
+    "sha256": "e2424adf7eb503968ec3f5ad6ae4aeb225b89443f2d22cac8ded94099419ca0c"
+  },
+  {
+    "path": "accessibility.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "checks.json",
+    "bytes": 1210,
+    "sha256": "5a83a08a62c0e61ddf6a0181d159df578dd9eda2e839a74b89511be1ce4acc1a"
+  },
+  {
+    "path": "build.stdout.txt",
+    "bytes": 12664,
+    "sha256": "eaa27abfe999fbaab6a6f0ea0ddef1865735897982b87f0dc8ef4ef3a53522aa"
+  },
+  {
+    "path": "run_validation.py",
+    "bytes": 3811,
+    "sha256": "b3f9c1bc053cb9411ffc374da02c441bcae419c73e1b23f356d0ca29e8e0494f"
+  },
+  {
+    "path": "accessibility.stdout.txt",
+    "bytes": 6065,
+    "sha256": "862f8bb75c95cd5ea25933f013e0da246ae1ebb3ddb00879481ace5caaf65849"
+  },
+  {
+    "path": "bundle-manifest.json",
+    "bytes": 20145,
+    "sha256": "af38264e4a523bbfa64f98ce5526bf9627b402add0f5ff90f7bd4c30e4fd143f"
+  },
+  {
+    "path": "primary-current-ui/serve_current.py",
+    "bytes": 3496,
+    "sha256": "f56c5c14164201b59f4ce8ed10db5d94337e1b802c99ee6c5052c0973cc53364"
+  },
+  {
+    "path": "primary-current-ui/models-dark-final.png",
+    "bytes": 41357,
+    "sha256": "48dd54a2dd6c8781c1ec8c06b0c50d45c15e58ebe212bd949caaf9fbd601ad84"
+  },
+  {
+    "path": "primary-current-ui/server.stderr.txt",
+    "bytes": 1204,
+    "sha256": "9aba9c421be7c2a043291390a5ff37bc643d7c977f48791f9e281e3cb026f4f7"
+  },
+  {
+    "path": "primary-current-ui/server.json",
+    "bytes": 587,
+    "sha256": "da454e3aa122463ef55a103bf0ab3be30010fc1a6bb3ab5cf5d704404721f517"
+  },
+  {
+    "path": "primary-current-ui/cleanup.json",
+    "bytes": 35,
+    "sha256": "839774dfc61058414cd924ca17b886d92185723e5eb479678ee29c68adeed237"
+  },
+  {
+    "path": "primary-current-ui/observations.json",
+    "bytes": 1063,
+    "sha256": "f19c23e33b19d3fee32ebf6856013159830e739aaff683a7884d61f84e0b7df9"
+  },
+  {
+    "path": "primary-current-ui/server.stdout.txt",
+    "bytes": 4336,
+    "sha256": "6d686a9aac7bfd2e7f327c60ece4692f84965ef538c11999bc0c46f9620fde45"
+  },
+  {
+    "path": "primary-current-ui/models-dark.png",
+    "bytes": 40496,
+    "sha256": "ad61b79886470ab130439438eeab5080b773f92f2d36f985a9ff1aca9a4cd777"
+  }
+]

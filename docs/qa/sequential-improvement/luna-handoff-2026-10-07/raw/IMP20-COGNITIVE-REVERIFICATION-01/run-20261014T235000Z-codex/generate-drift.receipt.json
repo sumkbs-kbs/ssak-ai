@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "scripts/digest_drift.py"
+  ],
+  "cwd": "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai",
+  "exit_code": 0
+}

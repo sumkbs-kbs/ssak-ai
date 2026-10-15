@@ -1,0 +1,7 @@
+{
+  "docs/ssak-ai-core/evidence/T12_migration.md": "c0ac4ed1a1efb88003a96b63035861bad2c1cbe1f7876fb508730849c58e084c",
+  "tests/cognitive/test_migration.py": "067c335d195cfb0f686ee7d423abb028d873c6a88f1d9321e6938a3fec385820",
+  "tests/cognitive/test_migration_snapshot_lineage.py": "380b62abc771499dabfb75b9f57968ea535606e91863c76a068357de9d4ac1b4",
+  "src/antigravity_k/engine/cognitive/migration.py": "75339cd046e0b0d7525c7b255670eba45bcc47dc8bcf1441caeff3535205137a",
+  "docs/ssak-ai-core/ARCHITECTURE_REVIEW.md": "96ad8624eefd23a9f9f4614dc4571f09203470edee479ae568548b370643c670"
+}

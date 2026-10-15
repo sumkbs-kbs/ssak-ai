@@ -1,0 +1,37 @@
+{
+  "status": "COMPLETE_SCOPED_REGISTRY_REVERIFICATION",
+  "independent_review": "PENDING",
+  "candidate": "302337877766a540a21dd42c61605dc590e4026b",
+  "pytest": {
+    "passed": 145,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "before_counts": {
+    "match": 8,
+    "reverified": 41,
+    "drift": 0,
+    "stale_reverification": 1,
+    "missing": 0
+  },
+  "after_counts": {
+    "match": 8,
+    "reverified": 42,
+    "drift": 0,
+    "stale_reverification": 0,
+    "missing": 0
+  },
+  "changed_registry_rows": 1,
+  "changed_product_or_test_files": 0,
+  "historical_T12_doc_test_row_and_pin": "PRESERVED",
+  "prior_evidence": "prior-evidence-validation.json",
+  "scope": "scope-verification.json",
+  "initial_attempt": "145 setup errors from absent basetemp parent; source and logs preserved; fixed helper setup and reran full selector",
+  "initial_static_check": "Ruff lint passed; format check failed, then helper formatted. Initial command output observed in session; not separately captured as raw file.",
+  "limits": [
+    "Prior migration test execution bytes not separately pinned by old receipt",
+    "No historical live/model/56961-row migration renewal",
+    "No full23 gates or GA approval; no commit/push by worker"
+  ]
+}

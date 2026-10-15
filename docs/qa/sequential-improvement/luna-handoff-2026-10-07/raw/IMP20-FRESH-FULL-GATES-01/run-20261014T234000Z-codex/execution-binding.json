@@ -1,0 +1,38 @@
+{
+  "recorded_at": "2026-10-14T23:36:19.069813+00:00",
+  "candidate": {
+    "head": "302337877766a540a21dd42c61605dc590e4026b",
+    "working_fingerprint": "8044be61484ece2b4eb1e7f4c007f3962bfebe4b08d98f3761308cd98e8f63da",
+    "commit_fingerprint": "8044be61484ece2b4eb1e7f4c007f3962bfebe4b08d98f3761308cd98e8f63da"
+  },
+  "manifest_sha256": "7ec8fc7b17c5aac4eb37f83a33c0bc5f82e590a42c4e088550c0407f6cd95690",
+  "runner_sha256": "87e2a948235f2a468e7aec068966a69e32ecd5a31811785f70f42e97f9969aeb",
+  "provider_boundary_sha256": "f11c2d4bc0994a91346f107010f77ca304d09fdea2261b947c44d636078ca52b",
+  "isolated_config_sha256": "ff2f72f30b350f3f0054e8552e1457503b647e40bc905dac705f80062f1b5b64",
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-01/run-20261014T234000Z-codex/provider-boundary.sb",
+    "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/bin/python",
+    "-B",
+    "scripts/ga_gate.py",
+    "--manifest",
+    "scripts/commercial_ga_gates.json",
+    "--output",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-01/run-20261014T234000Z-codex/gate-report.json"
+  ],
+  "cwd": "/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai",
+  "selected": 23,
+  "merge": false,
+  "reserved_base_bound_not_listening": "http://127.0.0.1:56927",
+  "auto_discovery": true,
+  "provider_home_weight_reads_denied": [
+    "/Users/mr.k/.cache/huggingface/hub",
+    "/Users/mr.k/models",
+    "/Users/mr.k/Library/Application Support/LM Studio/models",
+    "/Users/mr.k/.ollama/models",
+    "/Users/mr.k/.lmstudio/models"
+  ],
+  "build_stamp_environment_overrides": false,
+  "notes": "OS policy inherited across sanitized subprocess environments. Audit/install Internet and gate-owned dynamic localhost listeners are permitted. Policy control does not count all denied attempts or establish model quality."
+}

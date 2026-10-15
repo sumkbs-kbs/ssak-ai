@@ -1,0 +1,17 @@
+[WARNING] Unstaged files detected.
+[INFO] Stashing unstaged files to /Users/mr.k/.cache/pre-commit/patch1792022658-53579.
+ruff (legacy alias)..................................(no files to check)Skipped
+ruff format..........................................(no files to check)Skipped
+trim trailing whitespace.................................................Passed
+fix end of files.........................................................Passed
+check yaml...........................................(no files to check)Skipped
+check toml...........................................(no files to check)Skipped
+check json...............................................................Passed
+check for added large files..............................................Passed
+detect private key.......................................................Passed
+check for merge conflicts................................................Passed
+check for case conflicts.................................................Passed
+mixed line ending........................................................Passed
+mypy.................................................(no files to check)Skipped
+- hook id: mypy
+[INFO] Restored changes from /Users/mr.k/.cache/pre-commit/patch1792022658-53579.

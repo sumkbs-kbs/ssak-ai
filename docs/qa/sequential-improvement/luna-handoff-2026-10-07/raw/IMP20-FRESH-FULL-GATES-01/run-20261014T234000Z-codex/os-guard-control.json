@@ -1,0 +1,8 @@
+{
+  "exit_code": 0,
+  "stdout": "{\"blocked\": {\"errno\": 1, \"type\": \"PermissionError\"}, \"allowed\": \"connected\"}\n",
+  "stderr": "",
+  "profile": "(version 1)(allow default)(deny network-outbound (remote tcp \"localhost:56904\"))",
+  "blocked_listener_accepts": 0,
+  "allowed_listener_accepts": 1
+}

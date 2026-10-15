@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Ssak-Ai — Cold-blooded engineering for warm-blooded users" />
+  <title>Ssak-Ai — Cold-blooded engineering</title>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#080908" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+
+  <!--
+    CR-09(F05): 필수 렌더링은 third-party CDN에 의존하지 않는다.
+    이전에는 Google Fonts CSS, highlight.js CDN CSS(11.9.0), mermaid CDN script,
+    diff2html CDN CSS를 head에서 불러왔다 → 오프라인/차단 환경에서 폰트·코드 하이라이트·
+    다이어그램이 깨졌고, mermaid는 큰 동기 스크립트였다. 지금은:
+      · 폰트는 시스템 폰트 스택으로 대체(styles/index.css의 --font-* 토큰)
+      · 코드 하이라이트 테마는 로컬 번들(highlight.js/styles/tokyo-night-dark.css)
+      · mermaid는 다이어그램이 실제로 보일 때만 동적 import(src/utils/mermaidRuntime.ts)
+      · diff2html CSS는 사용처가 없어 제거
+  -->
+  <script type="module" crossorigin src="/assets/index-sLSztALV.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-DGepVjUc.js">
+  <link rel="modulepreload" crossorigin href="/assets/query-A7IZoX4L.js">
+  <link rel="modulepreload" crossorigin href="/assets/monaco-BFTLt2th.js">
+  <link rel="modulepreload" crossorigin href="/assets/api-client-CqP3qBtM.js">
+  <link rel="modulepreload" crossorigin href="/assets/markdown-core-By2QBcMA.js">
+  <link rel="modulepreload" crossorigin href="/assets/markdown-highlight-BJzv_rz9.js">
+  <link rel="stylesheet" crossorigin href="/assets/monaco-CB2SckMT.css">
+  <link rel="stylesheet" crossorigin href="/assets/markdown-highlight-BOrLfbqO.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-zis69KZQ.css">
+</head>
+<body>
+  <div id="root"></div>
+  <div id="toast-container"></div>
+</body>
+</html>

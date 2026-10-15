@@ -1,0 +1,2 @@
+ERROR: found no collectors for /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/preimage/test_api_server.py::test_embeddings_endpoint_uses_local_fallback
+

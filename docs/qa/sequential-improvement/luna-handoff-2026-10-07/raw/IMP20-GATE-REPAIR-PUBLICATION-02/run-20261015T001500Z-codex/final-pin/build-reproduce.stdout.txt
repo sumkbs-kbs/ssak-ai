@@ -1,0 +1,108 @@
+vite v6.4.3 building for production...
+transforming...
+✓ 3752 modules transformed.
+rendering chunks...
+computing gzip size...
+../src/antigravity_k/dashboard_dist/index.html                                                2.31 kB │ gzip:     1.13 kB
+../src/antigravity_k/dashboard_dist/assets/codicon-Brq4_Ui5.ttf                             140.96 kB
+../src/antigravity_k/dashboard_dist/assets/editor.worker-DCKwvLbM.js                        274.13 kB
+../src/antigravity_k/dashboard_dist/assets/json.worker-BF9eV5mS.js                          406.18 kB
+../src/antigravity_k/dashboard_dist/assets/html.worker-DhJ4VZMp.js                          715.95 kB
+../src/antigravity_k/dashboard_dist/assets/css.worker-CqwWTjeG.js                         1,053.32 kB
+../src/antigravity_k/dashboard_dist/assets/ts.worker-DTZAwq0V.js                          7,043.07 kB
+../src/antigravity_k/dashboard_dist/assets/StudioPage-BOMokbYs.css                            0.32 kB │ gzip:     0.18 kB
+../src/antigravity_k/dashboard_dist/assets/markdown-highlight-BOrLfbqO.css                    1.27 kB │ gzip:     0.63 kB
+../src/antigravity_k/dashboard_dist/assets/terminal-Beg8tuEN.css                              3.97 kB │ gzip:     1.64 kB
+../src/antigravity_k/dashboard_dist/assets/monaco-CB2SckMT.css                              162.39 kB │ gzip:    25.00 kB
+../src/antigravity_k/dashboard_dist/assets/index-BB1sud9N.css                               308.23 kB │ gzip:    49.02 kB
+../src/antigravity_k/dashboard_dist/assets/array-BKyUJesY.js                                  0.09 kB │ gzip:     0.10 kB
+../src/antigravity_k/dashboard_dist/assets/clone-DT63R8Fc.js                                  0.09 kB │ gzip:     0.11 kB
+../src/antigravity_k/dashboard_dist/assets/channel-Bfilth_T.js                                0.12 kB │ gzip:     0.13 kB
+../src/antigravity_k/dashboard_dist/assets/init-Gi6I4Gst.js                                   0.15 kB │ gzip:     0.13 kB
+../src/antigravity_k/dashboard_dist/assets/Tableau10-B-NsZVaP.js                              0.19 kB │ gzip:     0.18 kB
+../src/antigravity_k/dashboard_dist/assets/wsTicket-DM6Fs73A.js                               0.32 kB │ gzip:     0.25 kB
+../src/antigravity_k/dashboard_dist/assets/monacoRuntime-Abf8-6rg.js                          0.53 kB │ gzip:     0.32 kB
+../src/antigravity_k/dashboard_dist/assets/flowDiagram-v2-1d953310-DGYAAKLR.js                0.87 kB │ gzip:     0.50 kB
+../src/antigravity_k/dashboard_dist/assets/GlassPanel-DLeiStl6.js                             0.89 kB │ gzip:     0.49 kB
+../src/antigravity_k/dashboard_dist/assets/PluginPanelRoutes-DeaNoaCq.js                      0.91 kB │ gzip:     0.52 kB
+../src/antigravity_k/dashboard_dist/assets/line-IlFWQMpK.js                                   0.95 kB │ gzip:     0.47 kB
+../src/antigravity_k/dashboard_dist/assets/QuantBadge-DAYoQoyd.js                             1.15 kB │ gzip:     0.72 kB
+../src/antigravity_k/dashboard_dist/assets/ordinal-Cboi1Yqb.js                                1.19 kB │ gzip:     0.57 kB
+../src/antigravity_k/dashboard_dist/assets/NotFoundPage-4U7ANElA.js                           1.29 kB │ gzip:     0.75 kB
+../src/antigravity_k/dashboard_dist/assets/svgDrawCommon-148a3cd9-DrobqgJR.js                 1.35 kB │ gzip:     0.58 kB
+../src/antigravity_k/dashboard_dist/assets/useModalDialog-BDPTTdGe.js                         1.57 kB │ gzip:     0.78 kB
+../src/antigravity_k/dashboard_dist/assets/diffParser-CCnX8YVz.js                             1.65 kB │ gzip:     0.60 kB
+../src/antigravity_k/dashboard_dist/assets/path-CbwjOpE9.js                                   2.28 kB │ gzip:     0.99 kB
+../src/antigravity_k/dashboard_dist/assets/PinModal-B3WuDay2.js                               2.79 kB │ gzip:     1.48 kB
+../src/antigravity_k/dashboard_dist/assets/gitApi-C1re3z8B.js                                 2.87 kB │ gzip:     1.15 kB
+../src/antigravity_k/dashboard_dist/assets/OutputPanel-BOPnoW3o.js                            3.19 kB │ gzip:     1.46 kB
+../src/antigravity_k/dashboard_dist/assets/fileStore-CnJhCUP-.js                              3.37 kB │ gzip:     1.29 kB
+../src/antigravity_k/dashboard_dist/assets/gitStore-BFl259lV.js                               3.39 kB │ gzip:     1.02 kB
+../src/antigravity_k/dashboard_dist/assets/arc-C8dPcu4c.js                                    3.47 kB │ gzip:     1.50 kB
+../src/antigravity_k/dashboard_dist/assets/utils-SELG1YgQ.js                                  3.47 kB │ gzip:     1.50 kB
+../src/antigravity_k/dashboard_dist/assets/PluginPage-BoAEKIrA.js                             3.75 kB │ gzip:     1.54 kB
+../src/antigravity_k/dashboard_dist/assets/SystemTelemetricsBar-CAISCLX_.js                   4.07 kB │ gzip:     1.87 kB
+../src/antigravity_k/dashboard_dist/assets/createText-aed3d8b3-DFPdCfpD.js                    4.08 kB │ gzip:     1.80 kB
+../src/antigravity_k/dashboard_dist/assets/wikiStore-CYkxOvnt.js                              4.12 kB │ gzip:     1.43 kB
+../src/antigravity_k/dashboard_dist/assets/KeyboardShortcutsModal-CB7vshO9.js                 4.51 kB │ gzip:     1.72 kB
+../src/antigravity_k/dashboard_dist/assets/MultiTerminalPanel-NhzIYIq2.js                     4.71 kB │ gzip:     2.04 kB
+../src/antigravity_k/dashboard_dist/assets/MonacoEditorWrapper-CcMbKFRF.js                    4.82 kB │ gzip:     2.21 kB
+../src/antigravity_k/dashboard_dist/assets/stateDiagram-v2-2041ed4f-BxiQ_Deu.js               5.00 kB │ gzip:     2.39 kB
+../src/antigravity_k/dashboard_dist/assets/classDiagram-v2-604399ef-CYSXKgaK.js               5.13 kB │ gzip:     2.28 kB
+../src/antigravity_k/dashboard_dist/assets/AgentStartPage-DNBTsRmH.js                         6.18 kB │ gzip:     2.64 kB
+../src/antigravity_k/dashboard_dist/assets/MutationDashboardPage-BU86GQCB.js                  8.31 kB │ gzip:     2.86 kB
+../src/antigravity_k/dashboard_dist/assets/infoDiagram-a29d40f1-BSGGrzHL.js                   8.69 kB │ gzip:     3.29 kB
+../src/antigravity_k/dashboard_dist/assets/classDiagram-f62afe4f-snpionSh.js                  9.34 kB │ gzip:     2.92 kB
+../src/antigravity_k/dashboard_dist/assets/JobOperationsPage-Bi23QGks.js                      9.36 kB │ gzip:     3.06 kB
+../src/antigravity_k/dashboard_dist/assets/DiffViewer-DZVDFeTK.js                             9.39 kB │ gzip:     3.48 kB
+../src/antigravity_k/dashboard_dist/assets/ModelHubPage-3gsoSmaV.js                           9.77 kB │ gzip:     3.53 kB
+../src/antigravity_k/dashboard_dist/assets/styles-f932cba9-CEnp8PW2.js                       10.07 kB │ gzip:     3.69 kB
+../src/antigravity_k/dashboard_dist/assets/stateDiagram-43e79a5f-CH5chVyI.js                 10.22 kB │ gzip:     3.56 kB
+../src/antigravity_k/dashboard_dist/assets/linear-CDzq8NoY.js                                10.32 kB │ gzip:     4.30 kB
+../src/antigravity_k/dashboard_dist/assets/CommandPalette-D42-bCEi.js                        10.44 kB │ gzip:     4.24 kB
+../src/antigravity_k/dashboard_dist/assets/Sidebar-D7vPgQIO.js                               11.27 kB │ gzip:     3.90 kB
+../src/antigravity_k/dashboard_dist/assets/index-9bae90f3-DD7rad39.js                        11.99 kB │ gzip:     4.13 kB
+../src/antigravity_k/dashboard_dist/assets/FolderBrowser-CvFZ9Pd4.js                         12.86 kB │ gzip:     4.00 kB
+../src/antigravity_k/dashboard_dist/assets/HistoryPage-CGD_CuiD.js                           13.61 kB │ gzip:     4.91 kB
+../src/antigravity_k/dashboard_dist/assets/WikiPage-Dln9KoNM.js                              14.12 kB │ gzip:     4.30 kB
+../src/antigravity_k/dashboard_dist/assets/pieDiagram-c941bede-tvg4DWT0.js                   15.11 kB │ gzip:     5.69 kB
+../src/antigravity_k/dashboard_dist/assets/graph-B67kwa0Q.js                                 17.60 kB │ gzip:     6.26 kB
+../src/antigravity_k/dashboard_dist/assets/GitPage-DSKhtkny.js                               19.38 kB │ gzip:     5.25 kB
+../src/antigravity_k/dashboard_dist/assets/sankeyDiagram-c3ef121a-BB_RnnOe.js                21.32 kB │ gzip:     7.77 kB
+../src/antigravity_k/dashboard_dist/assets/StudioPage-CQtVDiCc.js                            21.46 kB │ gzip:     7.03 kB
+../src/antigravity_k/dashboard_dist/assets/DataExtractionPage-D3YwChWQ.js                    21.69 kB │ gzip:     6.77 kB
+../src/antigravity_k/dashboard_dist/assets/journeyDiagram-95396277-yKh3iXFM.js               21.75 kB │ gzip:     7.68 kB
+../src/antigravity_k/dashboard_dist/assets/flowDiagram-1629c991-DgVEz7Ie.js                  22.23 kB │ gzip:     7.22 kB
+../src/antigravity_k/dashboard_dist/assets/timeline-definition-7545f45a-Bpq4yEV6.js          22.71 kB │ gzip:     7.95 kB
+../src/antigravity_k/dashboard_dist/assets/requirementDiagram-53bda41b-BXn0_k8M.js           24.72 kB │ gzip:     8.51 kB
+../src/antigravity_k/dashboard_dist/assets/styles-455b33cd-DpI_LorN.js                       26.44 kB │ gzip:     8.46 kB
+../src/antigravity_k/dashboard_dist/assets/query-A7IZoX4L.js                                 28.62 kB │ gzip:     8.69 kB
+../src/antigravity_k/dashboard_dist/assets/dompurify-5AjVNlXF.js                             28.92 kB │ gzip:    11.14 kB
+../src/antigravity_k/dashboard_dist/assets/quadrantDiagram-cf8b8fe0-DACcchmR.js              29.52 kB │ gzip:     8.39 kB
+../src/antigravity_k/dashboard_dist/assets/layout-BVxO7_Vk.js                                29.64 kB │ gzip:    10.60 kB
+../src/antigravity_k/dashboard_dist/assets/erDiagram-5d81789a-h8ri88va.js                    30.78 kB │ gzip:    10.02 kB
+../src/antigravity_k/dashboard_dist/assets/SkillsPage-NpjEzOHo.js                            34.08 kB │ gzip:     9.37 kB
+../src/antigravity_k/dashboard_dist/assets/edges-b2856ca0-H66WSLbJ.js                        34.40 kB │ gzip:     8.92 kB
+../src/antigravity_k/dashboard_dist/assets/xychartDiagram-3f383b91-Dn1JLppU.js               37.42 kB │ gzip:    10.48 kB
+../src/antigravity_k/dashboard_dist/assets/blockDiagram-868be97b-BgXtciM5.js                 37.86 kB │ gzip:    12.04 kB
+../src/antigravity_k/dashboard_dist/assets/styles-fcc2142b-C3otSGLU.js                       37.87 kB │ gzip:    12.59 kB
+../src/antigravity_k/dashboard_dist/assets/gitGraphDiagram-f01e8bc2-Bv2PRGYh.js              38.84 kB │ gzip:    11.63 kB
+../src/antigravity_k/dashboard_dist/assets/index-C6r2i9-a.js                                 44.02 kB │ gzip:    15.56 kB
+../src/antigravity_k/dashboard_dist/assets/flowDb-185abca5-CEyJcBgl.js                       46.78 kB │ gzip:    15.29 kB
+../src/antigravity_k/dashboard_dist/assets/ganttDiagram-3b0b3873-Bb-iehay.js                 60.57 kB │ gzip:    20.63 kB
+../src/antigravity_k/dashboard_dist/assets/AgentPage-CMeLbiAX.js                             61.34 kB │ gzip:    18.43 kB
+../src/antigravity_k/dashboard_dist/assets/c4Diagram-3f4bdde3-qahwP9M-.js                    68.52 kB │ gzip:    19.22 kB
+../src/antigravity_k/dashboard_dist/assets/SettingsPage-BgYbL5mw.js                          68.55 kB │ gzip:    18.67 kB
+../src/antigravity_k/dashboard_dist/assets/sequenceDiagram-82a5b84f-DAZoTj08.js              84.22 kB │ gzip:    24.26 kB
+../src/antigravity_k/dashboard_dist/assets/ChatPage-BH_anFOH.js                             127.11 kB │ gzip:    39.47 kB
+../src/antigravity_k/dashboard_dist/assets/api-client-CqP3qBtM.js                           130.50 kB │ gzip:    36.10 kB
+../src/antigravity_k/dashboard_dist/assets/markdown-highlight-BJzv_rz9.js                   174.34 kB │ gzip:    53.00 kB
+../src/antigravity_k/dashboard_dist/assets/vendor-DGepVjUc.js                               232.91 kB │ gzip:    74.61 kB
+../src/antigravity_k/dashboard_dist/assets/mermaid.core-BFN3ANe0.js                         237.70 kB │ gzip:    64.48 kB
+../src/antigravity_k/dashboard_dist/assets/katex-C5jXJg4s.js                                261.33 kB │ gzip:    77.57 kB
+../src/antigravity_k/dashboard_dist/assets/terminal-DZLKAyTX.js                             284.45 kB │ gzip:    70.66 kB
+../src/antigravity_k/dashboard_dist/assets/markdown-core-By2QBcMA.js                        394.91 kB │ gzip:   119.94 kB
+../src/antigravity_k/dashboard_dist/assets/mindmap-definition-e4c1d938--OSUWvgW.js          544.13 kB │ gzip:   170.41 kB
+../src/antigravity_k/dashboard_dist/assets/flowchart-elk-definition-6df44142-BJz_Mlzq.js  1,452.06 kB │ gzip:   444.33 kB
+../src/antigravity_k/dashboard_dist/assets/monaco-BFTLt2th.js                             4,504.93 kB │ gzip: 1,159.14 kB
+✓ built in 20.35s

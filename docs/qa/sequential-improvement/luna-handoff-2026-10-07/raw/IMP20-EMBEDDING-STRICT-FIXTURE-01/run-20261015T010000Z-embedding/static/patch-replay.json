@@ -1,0 +1,12 @@
+{
+  "command": [
+    "git",
+    "-C",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/static/replay",
+    "apply",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-EMBEDDING-STRICT-FIXTURE-01/run-20261015T010000Z-embedding/task-only.patch"
+  ],
+  "exit_code": 0,
+  "stderr": "",
+  "byte_identical": true
+}

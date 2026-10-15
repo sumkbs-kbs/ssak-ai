@@ -1,0 +1,176 @@
+{
+  "base": "302337877766a540a21dd42c61605dc590e4026b",
+  "head": "1e9dfb87b185f3d20792d3f4bff4a25189947c15",
+  "current": [
+    {
+      "path": "dashboard/build-provenance.json",
+      "bytes": 97,
+      "sha256": "5bfa355e892bee451ef8c9d11823663850da117c838f69c3d5f3fc892ab52d33"
+    },
+    {
+      "path": "dashboard/src/styles/index.css",
+      "bytes": 356405,
+      "sha256": "c8892443e9221aa4fb02804e58465687073a5303e43ae0daec0256d22892da2c"
+    },
+    {
+      "path": "docs/ssak-ai-core/evidence/digest_drift.json",
+      "bytes": 17387,
+      "sha256": "5b8da88129051bca751ae859b7e55569385d616c19a3f980215cfbbf344af47c"
+    },
+    {
+      "path": "docs/ssak-ai-core/evidence/digest_reverification.json",
+      "bytes": 35563,
+      "sha256": "6a618e1f70dd68f35114e5b7d3ece73a7fb92a60edb6c8f25d22fb053d208a59"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/AgentPage-CMeLbiAX.js",
+      "bytes": 61339,
+      "sha256": "ee7b0a6b6778a63207abc026db2e1cb41adda5e9fb16f2d57aa1c5bab2f53c3a"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/AgentStartPage-DNBTsRmH.js",
+      "bytes": 6180,
+      "sha256": "4b89260f6e7c14c11ca241a5f711c9366913eb2d4f39270093692dc55ce39737"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/ChatPage-BH_anFOH.js",
+      "bytes": 127111,
+      "sha256": "0aa241d559eceba1242801fbed641b4c5ab4d63c9f77a84b3f6fb1e0c942963e"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/CommandPalette-D42-bCEi.js",
+      "bytes": 10441,
+      "sha256": "f0ccfbaa6b052280a3e6a682f0b4aa3fd5fa2471f3ce438f838f96a3140e754d"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/DataExtractionPage-D3YwChWQ.js",
+      "bytes": 21689,
+      "sha256": "495d24d200018f86e1b96b9e10c71ffedaa7d1cd22f144b32ff06e3d267a4721"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/DiffViewer-DZVDFeTK.js",
+      "bytes": 9394,
+      "sha256": "b0af3265f42ef2a1403437252c9ffe9637aac404c787a47d6c7d33ba1607b5b7"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/FolderBrowser-CvFZ9Pd4.js",
+      "bytes": 12863,
+      "sha256": "22f17d50618765d03fd368a402071a035d55959c7f7c73fd6ba5ff719093937f"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/GitPage-DSKhtkny.js",
+      "bytes": 19379,
+      "sha256": "19cb09ac72fb253aa3a62e59ff79aed69400ca527f67c63853e9f29015e006cf"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/HistoryPage-CGD_CuiD.js",
+      "bytes": 13613,
+      "sha256": "0a0884c6c3bd658b00c3364eba8fd5cf39c8bba3865297ec60a4f285d37fb1ca"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/ModelHubPage-3gsoSmaV.js",
+      "bytes": 9774,
+      "sha256": "689a536348553e54137eef5fe4c9692eebc9e8e533d272f094ff584ab5fa06aa"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/MonacoEditorWrapper-CcMbKFRF.js",
+      "bytes": 4824,
+      "sha256": "306c691419780b4d5953073cb66e6a35e4c436d0f024a5a81392d6c731be90a3"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/MultiTerminalPanel-NhzIYIq2.js",
+      "bytes": 4705,
+      "sha256": "ed457bb205c10ef0df4183dd0c860c16ae2ea9fbbe1114c1cf08d0bde666693d"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/PinModal-B3WuDay2.js",
+      "bytes": 2790,
+      "sha256": "1b3e415f0ac7fe739b0ad80b37fb3214580554c1c861dca81ff90b532ddb3667"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/PluginPage-BoAEKIrA.js",
+      "bytes": 3753,
+      "sha256": "ff3648dd77a706531e8b78c6ba9145115dad5def1fbcb590faa953a7245db1b8"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/PluginPanelRoutes-DeaNoaCq.js",
+      "bytes": 911,
+      "sha256": "af02d14c2b6c5f04cfa7331b0f6fc43ac0d2648f010f83845dfd3bcae7eb569b"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/SettingsPage-BgYbL5mw.js",
+      "bytes": 68552,
+      "sha256": "3aed740475de280648e6cd325f4435916ac69d4fe453a80d103cd99bdb31e97f"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/Sidebar-D7vPgQIO.js",
+      "bytes": 11271,
+      "sha256": "cfd5d4cb2be85fac447c2fb97cff910d0549801746982d69577df3ec2d2ae9c8"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/SkillsPage-NpjEzOHo.js",
+      "bytes": 34075,
+      "sha256": "0d3f995b5c65bbde682715e647ee19abe41a2b718517641acf5e46a931bd414b"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/StudioPage-CQtVDiCc.js",
+      "bytes": 21460,
+      "sha256": "16dab92647dda72e45dd610015320dfbf6dea4b1af67901016c6fe4973b22094"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/SystemTelemetricsBar-CAISCLX_.js",
+      "bytes": 4069,
+      "sha256": "19a6a4585a5c3c09e722149ac4c7de0279cb4caed7f87320ad536326fb493438"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/gitStore-BFl259lV.js",
+      "bytes": 3387,
+      "sha256": "4b140bbc5d4d6f76dd23f488696024afe4542004d536ff210dfc8ef195816530"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/index-BB1sud9N.css",
+      "bytes": 308230,
+      "sha256": "60f89fc51432fd8509d13bd3e7f83412d3bd95d226ccd1695dcedc24394a6bf6"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/assets/index-C6r2i9-a.js",
+      "bytes": 44024,
+      "sha256": "f4ce28e734e6c8c596977ff31d0405ded07bf12cddb5c966f5ab96a26ef0787e"
+    },
+    {
+      "path": "src/antigravity_k/dashboard_dist/index.html",
+      "bytes": 2313,
+      "sha256": "68d49356079c4e731fed22ae247126e993d0438b7f2aef5559157642ce8c83b5"
+    },
+    {
+      "path": "tests/test_api_server.py",
+      "bytes": 25701,
+      "sha256": "ca0d78899a0191dbe47e14f9bff88a478f01e6d770abf90c0286011019bef7a2"
+    }
+  ],
+  "removed": [
+    "src/antigravity_k/dashboard_dist/assets/AgentPage-B0zSaAVP.js",
+    "src/antigravity_k/dashboard_dist/assets/AgentStartPage-I8T0DrNU.js",
+    "src/antigravity_k/dashboard_dist/assets/ChatPage-D-AcEZni.js",
+    "src/antigravity_k/dashboard_dist/assets/CommandPalette-CPdigqUY.js",
+    "src/antigravity_k/dashboard_dist/assets/DataExtractionPage-Bd94LSEg.js",
+    "src/antigravity_k/dashboard_dist/assets/DiffViewer-CHCCAZmx.js",
+    "src/antigravity_k/dashboard_dist/assets/FolderBrowser-BDpgL9km.js",
+    "src/antigravity_k/dashboard_dist/assets/GitPage-CrJKrogs.js",
+    "src/antigravity_k/dashboard_dist/assets/HistoryPage-JeheRaqX.js",
+    "src/antigravity_k/dashboard_dist/assets/ModelHubPage-32OYbkUv.js",
+    "src/antigravity_k/dashboard_dist/assets/MonacoEditorWrapper-C9DhzIcF.js",
+    "src/antigravity_k/dashboard_dist/assets/MultiTerminalPanel-DzbZam-9.js",
+    "src/antigravity_k/dashboard_dist/assets/PinModal-C5j1zP0V.js",
+    "src/antigravity_k/dashboard_dist/assets/PluginPage-j1ZD5RNo.js",
+    "src/antigravity_k/dashboard_dist/assets/PluginPanelRoutes-C40g6212.js",
+    "src/antigravity_k/dashboard_dist/assets/SettingsPage-D5Ol1ENS.js",
+    "src/antigravity_k/dashboard_dist/assets/Sidebar-BW8xMK6z.js",
+    "src/antigravity_k/dashboard_dist/assets/SkillsPage-qY3NkU-g.js",
+    "src/antigravity_k/dashboard_dist/assets/StudioPage-C1mAzZqB.js",
+    "src/antigravity_k/dashboard_dist/assets/SystemTelemetricsBar-DzZYp9dt.js",
+    "src/antigravity_k/dashboard_dist/assets/gitStore-C71pHiHh.js",
+    "src/antigravity_k/dashboard_dist/assets/index-sLSztALV.js",
+    "src/antigravity_k/dashboard_dist/assets/index-zis69KZQ.css"
+  ]
+}

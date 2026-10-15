@@ -1,0 +1,14 @@
+[
+  {
+    "path": "src/antigravity_k/engine/cognitive/migration.py",
+    "sha256": "75339cd046e0b0d7525c7b255670eba45bcc47dc8bcf1441caeff3535205137a"
+  },
+  {
+    "path": "tests/cognitive/test_migration.py",
+    "sha256": "067c335d195cfb0f686ee7d423abb028d873c6a88f1d9321e6938a3fec385820"
+  },
+  {
+    "path": "tests/cognitive/test_migration_snapshot_lineage.py",
+    "sha256": "380b62abc771499dabfb75b9f57968ea535606e91863c76a068357de9d4ac1b4"
+  }
+]

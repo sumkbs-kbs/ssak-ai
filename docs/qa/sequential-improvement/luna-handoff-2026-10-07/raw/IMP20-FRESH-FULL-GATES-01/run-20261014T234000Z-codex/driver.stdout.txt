@@ -1,0 +1,23 @@
+[python-ruff] uv run --isolated --frozen --extra dev --extra rag --extra documents ruff check src/ tests/ scripts/
+[python-format] uv run --isolated --frozen --extra dev --extra rag --extra documents ruff format --check src/ tests/ scripts/
+[python-mypy] uv run --isolated --frozen --extra dev --extra rag --extra documents mypy src/
+[python-basedpyright] uv run --isolated --frozen --extra dev --extra rag --extra documents basedpyright src/ scripts/ --level error
+[python-tests] uv run --isolated --frozen --extra dev --extra rag --extra documents pytest tests/ -m not benchmark -v --tb=short
+[python-benchmark] uv run --isolated --frozen --extra dev --extra rag --extra documents pytest tests/ -m benchmark -v --tb=short
+[dashboard-install] pnpm install --frozen-lockfile
+[dashboard-lint] pnpm run lint
+[dashboard-typecheck] pnpm run typecheck
+[dashboard-test] pnpm run test -- --reporter=verbose
+[dashboard-build] pnpm run build
+[package-build] uv build --no-sources
+[docker-build] docker build --tag antigravity-k:ga-gate .
+[sbom-generate] uv run --isolated --frozen python -m antigravity_k.engine.release_sbom generate --project-root . --release-root src/antigravity_k/release
+[dependency-audit-python] bash scripts/audit_python_dependencies.sh
+[dependency-audit-dashboard] pnpm audit --prod --audit-level high
+[security-bandit] uv run --isolated --frozen --extra dev bandit -r src/antigravity_k -ll -x src/antigravity_k/engine/secret_scanner.py
+[master-e2e] uv run --isolated --frozen python scripts/run_full_system_e2e_test.py
+[api-e2e] uv run --isolated --frozen --extra dev --extra rag pytest tests/test_e2e_smoke.py -q -rs --tb=short
+[accessibility-e2e] uv run --isolated --frozen --extra dev --extra rag --extra documents python scripts/run_dashboard_e2e_ambient.py --spec e2e/tests/accessibility.spec.ts
+[dashboard-e2e-witnesses] pnpm exec playwright test e2e/tests/cr\d+- --project=chromium --reporter=list
+[dashboard-e2e-ambient] uv run --isolated --frozen --extra dev --extra rag --extra documents python scripts/run_dashboard_e2e_ambient.py
+[clean-machine-runtime] bash scripts/verify_clean_machine.sh

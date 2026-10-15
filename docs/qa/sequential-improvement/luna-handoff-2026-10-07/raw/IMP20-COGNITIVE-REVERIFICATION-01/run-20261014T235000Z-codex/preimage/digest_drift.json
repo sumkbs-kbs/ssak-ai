@@ -1,0 +1,536 @@
+{
+  "command": [
+    "python",
+    "scripts/digest_drift.py"
+  ],
+  "source_head": "f6f3f4eb",
+  "counts": {
+    "match": 8,
+    "reverified": 42,
+    "drift": 0,
+    "stale_reverification": 0,
+    "missing": 0
+  },
+  "docs": {
+    "T01a_typed_model.md": {
+      "match": 0,
+      "reverified": 4,
+      "drift": 0,
+      "stale_reverification": 0,
+      "missing": 0
+    },
+    "T01b_protection.md": {
+      "match": 0,
+      "reverified": 5,
+      "drift": 0,
+      "stale_reverification": 0,
+      "missing": 0
+    },
+    "T02_canonical_store.md": {
+      "match": 0,
+      "reverified": 4,
+      "drift": 0,
+      "stale_reverification": 0,
+      "missing": 0
+    },
+    "T03_T04_context_brain.md": {
+      "match": 0,
+      "reverified": 4,
+      "drift": 0,
+      "stale_reverification": 0,
+      "missing": 0
+    },
+    "T05_governance.md": {
+      "match": 1,
+      "reverified": 3,
+      "drift": 0,
+      "stale_reverification": 0,
+      "missing": 0
+    },
+    "T06_commit.md": {
+      "match": 1,
+      "reverified": 2,
+      "drift": 0,
+      "stale_reverification": 0,
+      "missing": 0
+    },
+    "T07_actions.md": {
+      "match": 0,
+      "reverified": 2,
+      "drift": 0,
+      "stale_reverification": 0,
+      "missing": 0
+    },
+    "T08_T09_episode.md": {
+      "match": 0,
+      "reverified": 3,
+      "drift": 0,
+      "stale_reverification": 0,
+      "missing": 0
+    },
+    "T10_learning.md": {
+      "match": 1,
+      "reverified": 2,
+      "drift": 0,
+      "stale_reverification": 0,
+      "missing": 0
+    },
+    "T11_surface.md": {
+      "match": 3,
+      "reverified": 5,
+      "drift": 0,
+      "stale_reverification": 0,
+      "missing": 0
+    },
+    "T12_migration.md": {
+      "match": 1,
+      "reverified": 2,
+      "drift": 0,
+      "stale_reverification": 0,
+      "missing": 0
+    },
+    "T13_growth.md": {
+      "match": 1,
+      "reverified": 3,
+      "drift": 0,
+      "stale_reverification": 0,
+      "missing": 0
+    },
+    "T13_live_pilot.md": {
+      "match": 0,
+      "reverified": 3,
+      "drift": 0,
+      "stale_reverification": 0,
+      "missing": 0
+    }
+  },
+  "pins": [
+    {
+      "doc": "T01a_typed_model.md",
+      "path": "docs/ssak-ai-core/contracts/record-entities.schema.json",
+      "recorded": "051d63e1",
+      "actual": "90f526b5d71d2f3aee598cfebe5325b14c03878ebc11728920970fe8369b7343",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T01a_typed_model.md",
+      "path": "src/antigravity_k/engine/cognitive/models.py",
+      "recorded": "65abe58b",
+      "actual": "1bae5123d3b8e13ff6f88a43ce67d54335de4ad7bf575b114fc83703f7927cc5",
+      "status": "reverified",
+      "reverified_on": "2026-10-15"
+    },
+    {
+      "doc": "T01a_typed_model.md",
+      "path": "src/antigravity_k/engine/cognitive/references.py",
+      "recorded": "f678df28",
+      "actual": "8887785ef432dba2ce98681a5b220dadb2577a3aa80fb12b3901e0aedb0e49d4",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T01a_typed_model.md",
+      "path": "tests/cognitive/test_models.py",
+      "recorded": "abe6237b",
+      "actual": "b0db21cd95dfd3c333727fd57a0a516fb2b9727b1ce6e74428b34805c638666c",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T01b_protection.md",
+      "path": "src/antigravity_k/engine/cognitive/protected_targets.py",
+      "recorded": "090bc97f",
+      "actual": "d18548cfa59870667f5080b92bb218c6b7b7bb1ec310bc40a287f143bc9ceea8",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T01b_protection.md",
+      "path": "src/antigravity_k/engine/cognitive/store.py",
+      "recorded": "26a65e6f",
+      "actual": "58a02a89cd66fca9ab4430ce6db0f042156d758ba35a3b1a163f0303fa777b78",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T01b_protection.md",
+      "path": "src/antigravity_k/tools/permission_gate.py",
+      "recorded": "ca51e2b9",
+      "actual": "5a1a118081f1b00f815e29804ea9d88f366a2e725d852057c0caf463d6f189f9",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T01b_protection.md",
+      "path": "tests/cognitive/test_protection.py",
+      "recorded": "b5774397",
+      "actual": "b3a4490a7d2cfa840553dfd343d157d7447807442fa06b5c687dc852d2254335",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T01b_protection.md",
+      "path": "tests/test_tool_sandbox_coverage.py",
+      "recorded": "8244251f",
+      "actual": "6ec637ab70ed86de3a6586af565a0098f295c0efdea7a7fcdefda9d12165908a",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T02_canonical_store.md",
+      "path": "src/antigravity_k/engine/cognitive/legacy_adapter.py",
+      "recorded": "cc972338",
+      "actual": "dba13d0f5102bb3ab7b30b703932f41df7895edeb6ebe9d4cd09705b627b5279",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T02_canonical_store.md",
+      "path": "src/antigravity_k/engine/cognitive/store.py",
+      "recorded": "2172a9b6",
+      "actual": "58a02a89cd66fca9ab4430ce6db0f042156d758ba35a3b1a163f0303fa777b78",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T02_canonical_store.md",
+      "path": "tests/cognitive/test_legacy_adapter.py",
+      "recorded": "77a22b03",
+      "actual": "da55738b7603c5bb5cc3f747bfaa33a86801e73f79e61623b6a7ac63779ec5f3",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T02_canonical_store.md",
+      "path": "tests/cognitive/test_store.py",
+      "recorded": "de5d411c",
+      "actual": "fe9f11b1884f8d352a7bab1dd806e96f8d148a431b74c45efb4ade1e9eaff9a1",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T03_T04_context_brain.md",
+      "path": "src/antigravity_k/engine/cognitive/brain.py",
+      "recorded": "d6e3e45c",
+      "actual": "422cb28624be5c166c130f4a6705d81dc4b3c0a989da3d1f44578dc1fea2e393",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T03_T04_context_brain.md",
+      "path": "src/antigravity_k/engine/cognitive/context.py",
+      "recorded": "0e506935",
+      "actual": "28e234993067f8f8a64d0ee63a5a2b928b55ae1e75390eb1d2e755c7562fbb50",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T03_T04_context_brain.md",
+      "path": "tests/cognitive/test_brain.py",
+      "recorded": "2781dbc1",
+      "actual": "544e3104813aa282dea796390b089cef0131db4c606535c088501713d16b6def",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T03_T04_context_brain.md",
+      "path": "tests/cognitive/test_context.py",
+      "recorded": "1a1dd559",
+      "actual": "976e665754b6c4d6b6056a5c24a607f3d421391aa72cb900e9c23b937da1d6d0",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T05_governance.md",
+      "path": "src/antigravity_k/engine/cognitive/authority.py",
+      "recorded": "3c36ad73a365752d",
+      "actual": "7317a39d7c40f65cbce3232d33a3954a36d6f5f541b5fde032fd14b7a5a83ecb",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T05_governance.md",
+      "path": "src/antigravity_k/engine/cognitive/governance.py",
+      "recorded": "ec4f7ff6d35433b5",
+      "actual": "4fd1aaf79d7c8303e219a774d589aa81c7d9543aedff5b6cf20ba2ac2874a250",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T05_governance.md",
+      "path": "src/antigravity_k/engine/tool_executor.py",
+      "recorded": "8de05c5fb47e26cd",
+      "actual": "8de05c5fb47e26cd73b88ff9a9f81cc60cec218570245b0eea322d0b01e3953c",
+      "status": "match",
+      "reverified_on": ""
+    },
+    {
+      "doc": "T05_governance.md",
+      "path": "tests/cognitive/test_governance.py",
+      "recorded": "07f0b4a8b504f8e7",
+      "actual": "c1869c01d8f56cd1ffed057c86d675ab62638619b1ad8b97f92c9ed4d2517d3c",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T06_commit.md",
+      "path": "src/antigravity_k/engine/cognitive/decisions.py",
+      "recorded": "444bf04c7b67edbd",
+      "actual": "29c6528a152c02ae6724e38c454be9efa6b961d36aa68c4a5e93998239af2ef0",
+      "status": "reverified",
+      "reverified_on": "2026-09-23"
+    },
+    {
+      "doc": "T06_commit.md",
+      "path": "src/antigravity_k/engine/cognitive/readiness.py",
+      "recorded": "ddbc74bd21874212",
+      "actual": "6198600aadcf695ac8c42868400d2a88f1d1391049f529133ae72461114f14f4",
+      "status": "reverified",
+      "reverified_on": "2026-09-23"
+    },
+    {
+      "doc": "T06_commit.md",
+      "path": "tests/cognitive/test_readiness.py",
+      "recorded": "f0efa9bbbda0f43d",
+      "actual": "f0efa9bbbda0f43de9e201a62bd6a7a8440c5f2d4d9656eea912a16c9f0e03ad",
+      "status": "match",
+      "reverified_on": ""
+    },
+    {
+      "doc": "T07_actions.md",
+      "path": "src/antigravity_k/engine/cognitive/actions.py",
+      "recorded": "894ea5abc6c72426",
+      "actual": "285c28dfaf8c0b0c2b92e6d9f31be70b2b6b7a9174ce009e464beef889d40e84",
+      "status": "reverified",
+      "reverified_on": "2026-10-15"
+    },
+    {
+      "doc": "T07_actions.md",
+      "path": "tests/cognitive/test_actions.py",
+      "recorded": "17a26582fe953c2a",
+      "actual": "520372eaf6d6ecd7d9958640a7a52f2ae2a437faed16a9ce919bcf71c794d01c",
+      "status": "reverified",
+      "reverified_on": "2026-10-01"
+    },
+    {
+      "doc": "T08_T09_episode.md",
+      "path": "src/antigravity_k/engine/cognitive/experience.py",
+      "recorded": "a9279ef1bcd51fc5",
+      "actual": "6649051f932ffb4b5ee1912a6e25c5d0cbe2441984b069f696d28957bb19991d",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T08_T09_episode.md",
+      "path": "src/antigravity_k/engine/cognitive/runtime.py",
+      "recorded": "f77646f20a310a89",
+      "actual": "0ff93d8ee9e32b1f0b01dca53069c166baf2569a39545faca2674adfc4ee2683",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T08_T09_episode.md",
+      "path": "tests/cognitive/test_episode.py",
+      "recorded": "20e686601a1603e1",
+      "actual": "71c4f7d7887bec8bfb2d74bb89df356118fc51c971fec103e996c9abb512b732",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T10_learning.md",
+      "path": "src/antigravity_k/engine/cognitive/learning.py",
+      "recorded": "d6b9234b66d421d9",
+      "actual": "8b4b7b78ff36e8a5cceb606d2c3f52fbad8d753187bcc9d767f91e1e6f687d0b",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T10_learning.md",
+      "path": "src/antigravity_k/engine/cognitive/policy_store.py",
+      "recorded": "869458c3bd958d39",
+      "actual": "9da4dd3323d4bbb828f18399ea98265198050654c9efacea561d664829b134a3",
+      "status": "reverified",
+      "reverified_on": "2026-09-27"
+    },
+    {
+      "doc": "T10_learning.md",
+      "path": "tests/cognitive/test_learning.py",
+      "recorded": "0b8e81c6c2934c83",
+      "actual": "0b8e81c6c2934c8376a9f99b8163b3b1f099b15172d9f37aafd56362bf316cec",
+      "status": "match",
+      "reverified_on": ""
+    },
+    {
+      "doc": "T11_surface.md",
+      "path": "scripts/measure_cognitive_surface.py",
+      "recorded": "76d3a88b1b517171",
+      "actual": "40d6155c8c36e3a1aa8d10671888502c04f8ac6e15f430ce3dc72600bcadfb4f",
+      "status": "reverified",
+      "reverified_on": "2026-10-15"
+    },
+    {
+      "doc": "T11_surface.md",
+      "path": "scripts/measure_feature_off_regression.py",
+      "recorded": "47c4369bbe122426",
+      "actual": "47c4369bbe1224263f8b391b6a424f7ae405c8917236662f5ff968ec69253287",
+      "status": "match",
+      "reverified_on": ""
+    },
+    {
+      "doc": "T11_surface.md",
+      "path": "src/antigravity_k/api/routes/__init__.py",
+      "recorded": "0c2c63bf72948d6a",
+      "actual": "90cab572c83a3b75e9d014a62cfbdd21b639795bd7b28f9e8a0e363af7b5f117",
+      "status": "reverified",
+      "reverified_on": "2026-10-04"
+    },
+    {
+      "doc": "T11_surface.md",
+      "path": "src/antigravity_k/api/routes/cognitive_surface_api.py",
+      "recorded": "1302f8118555fbc5",
+      "actual": "bfcf54e35487a8d5c54f076757ecb4f86a0852148c1f683f3ff5b284c9ec96b9",
+      "status": "reverified",
+      "reverified_on": "2026-10-01"
+    },
+    {
+      "doc": "T11_surface.md",
+      "path": "src/antigravity_k/cli.py",
+      "recorded": "80b5da5ebd9a5a57",
+      "actual": "f88b31e943459ee3b1d8fde4cce5ce74e6fc996c6bcd641447ec8cbfc203b8af",
+      "status": "reverified",
+      "reverified_on": "2026-10-04"
+    },
+    {
+      "doc": "T11_surface.md",
+      "path": "src/antigravity_k/engine/cognitive_surface.py",
+      "recorded": "2d77ecce28d8748e",
+      "actual": "d1f9533cb1f2eecb49b770af2efd810e730afad3bea294c21e2b7e5600b54d79",
+      "status": "reverified",
+      "reverified_on": "2026-10-01"
+    },
+    {
+      "doc": "T11_surface.md",
+      "path": "tests/cognitive/test_feature_off_regression.py",
+      "recorded": "9871541e5e6c50b3",
+      "actual": "9871541e5e6c50b3f707d8a4a28b1dbf786d9efc69716c539d24cbc3b3b96baf",
+      "status": "match",
+      "reverified_on": ""
+    },
+    {
+      "doc": "T11_surface.md",
+      "path": "tests/test_cognitive_surface_api.py",
+      "recorded": "2cccfed8d5f499c1",
+      "actual": "2cccfed8d5f499c10989eedb7f14749775a8b95dbd9e5831adbe7512cc3cd1e2",
+      "status": "match",
+      "reverified_on": ""
+    },
+    {
+      "doc": "T12_migration.md",
+      "path": "scripts/migrate_legacy_to_canonical.py",
+      "recorded": "23df5ed576da56a2",
+      "actual": "23df5ed576da56a2bfa4b6c8aa1f53f06fa1846f0e6255addaa717a5c9d706cd",
+      "status": "match",
+      "reverified_on": ""
+    },
+    {
+      "doc": "T12_migration.md",
+      "path": "src/antigravity_k/engine/cognitive/migration.py",
+      "recorded": "f45e974f01a6e124",
+      "actual": "5ea53f88a9544baed6d58da672b9a63f595d766b4f5114d942ff7656908307a9",
+      "status": "reverified",
+      "reverified_on": "2026-10-01"
+    },
+    {
+      "doc": "T12_migration.md",
+      "path": "tests/cognitive/test_migration.py",
+      "recorded": "ea48c4080eb65f42",
+      "actual": "067c335d195cfb0f686ee7d423abb028d873c6a88f1d9321e6938a3fec385820",
+      "status": "reverified",
+      "reverified_on": "2026-10-01"
+    },
+    {
+      "doc": "T13_growth.md",
+      "path": "scripts/benchmark_cognitive_growth.py",
+      "recorded": "2a1e2ecf7d5008c0",
+      "actual": "07b94e056b0289ade4e2ffcf62c685017167728bad5dc86d8c7acc4faf5d9f2f",
+      "status": "reverified",
+      "reverified_on": "2026-10-01"
+    },
+    {
+      "doc": "T13_growth.md",
+      "path": "src/antigravity_k/engine/cognitive/growth.py",
+      "recorded": "f2a5dd011c622d9b",
+      "actual": "6670b19c4dd0dde983e610aabc45e23ba60f1024e7048143e99e589b73755385",
+      "status": "reverified",
+      "reverified_on": "2026-10-15"
+    },
+    {
+      "doc": "T13_growth.md",
+      "path": "src/antigravity_k/engine/growth_fixture_tools.py",
+      "recorded": "2f18506a765d4645",
+      "actual": "2f18506a765d4645063db4663fa55dc530f4e4f73fa23b2f97d43b0a901a137b",
+      "status": "match",
+      "reverified_on": ""
+    },
+    {
+      "doc": "T13_growth.md",
+      "path": "tests/cognitive/test_growth.py",
+      "recorded": "aef0c66a21a554d3",
+      "actual": "03156c1f3c8e119533bd170e4454966fc248b218e4e265278f3adda7f6036e0a",
+      "status": "reverified",
+      "reverified_on": "2026-10-01"
+    },
+    {
+      "doc": "T13_live_pilot.md",
+      "path": "scripts/benchmark_cognitive_growth.py",
+      "recorded": "9fda14440f9938a7",
+      "actual": "07b94e056b0289ade4e2ffcf62c685017167728bad5dc86d8c7acc4faf5d9f2f",
+      "status": "reverified",
+      "reverified_on": "2026-10-01"
+    },
+    {
+      "doc": "T13_live_pilot.md",
+      "path": "src/antigravity_k/engine/cognitive/live_pilot.py",
+      "recorded": "f15d923940d22fd7",
+      "actual": "e81c990e15b5c47b0db933f3f60805ca648ed419940d546fc324192c7da0acd2",
+      "status": "reverified",
+      "reverified_on": "2026-10-15"
+    },
+    {
+      "doc": "T13_live_pilot.md",
+      "path": "tests/cognitive/test_live_pilot.py",
+      "recorded": "49eb5ad5387b1ce5",
+      "actual": "452b68a4fef2fd434c4e92a6d27a642f557e79bc07e040efa3fe5d29389075e6",
+      "status": "reverified",
+      "reverified_on": "2026-10-01"
+    }
+  ],
+  "probe": {
+    "cases": 9,
+    "failures": [],
+    "ok": true
+  },
+  "floors": [
+    {
+      "label": "pin",
+      "observed": 50,
+      "minimum": 1,
+      "margin": 49,
+      "why": "2026-09-23 기준 관측: 증거 문서 13개가 파일에 digest 를 박아 pin 50개(그대로 28 · 재확인 22). 하한을 1로 둔 것은 ‘얼마나 많이 보나’ 가 아니라 ‘패턴이 죽어 0이 됐나’ 를 잡기 위해서다."
+    },
+    {
+      "label": "pin 을 박은 문서",
+      "observed": 13,
+      "minimum": 1,
+      "margin": 12,
+      "why": "2026-09-23 기준 관측: pin 을 박은 문서 13개. 문서 집합이 통째로 안 읽히면 ‘움직임 0’ 으로 보이므로 그 순간을 잡는다."
+    }
+  ],
+  "coverage": {
+    "pins": 50,
+    "docs": 13,
+    "min_pins": 1,
+    "min_docs": 1
+  }
+}

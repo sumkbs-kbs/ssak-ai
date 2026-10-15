@@ -1,0 +1,17 @@
+{
+  "command": [
+    "uv",
+    "sync",
+    "--frozen",
+    "--extra",
+    "dev",
+    "--extra",
+    "rag",
+    "--extra",
+    "documents"
+  ],
+  "exit_code": 0,
+  "seconds": 1.1463242919999175,
+  "shared_frozen_download_cache_only": true,
+  "own_venv": "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/.venv"
+}

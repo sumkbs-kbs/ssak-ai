@@ -1,0 +1,32 @@
+[
+  {
+    "path": "verify.py",
+    "bytes": 2306,
+    "sha256": "319e57d48c99683ae7352643d9360cbab4a11bc4911c78df8a8a946ad734d384"
+  },
+  {
+    "path": "source-binding.json",
+    "bytes": 451,
+    "sha256": "5aec4f9b2ba71576ed4975bc3f2237d8b39c056c6397ecf156bbf7ad2748feaf"
+  },
+  {
+    "path": "stdout.txt",
+    "bytes": 99,
+    "sha256": "b4735707293def15c179d0b4fbdf9621865bc42aae03423644b562585c52e29d"
+  },
+  {
+    "path": "stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "junit.xml",
+    "bytes": 3987,
+    "sha256": "16e85b3f13fb2dd82c20d80881f4443bb7a494beebcbda8df0cf953c2f9be68e"
+  },
+  {
+    "path": "receipt.json",
+    "bytes": 1092,
+    "sha256": "b5f566b5596d468f88814ede5e33d45cba1cf5ef1b4452d2acab0829a63b55fb"
+  }
+]

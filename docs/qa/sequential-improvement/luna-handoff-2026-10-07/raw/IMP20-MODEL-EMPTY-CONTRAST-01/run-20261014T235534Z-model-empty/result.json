@@ -1,0 +1,26 @@
+{
+  "status": "IMPLEMENTED_STATIC_VERIFIED_BROWSER_PENDING",
+  "invocation": "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/.venv/bin/python /Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-MODEL-EMPTY-CONTRAST-01/run-20261014T235534Z-model-empty/record_evidence.py",
+  "source": "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/dashboard/src/styles/index.css",
+  "preimage_sha256": "afc4ee5398bc3abc072433f3c835493ebbaae2cf380937d08e9611af1d27ac7d",
+  "postimage_sha256": "c8892443e9221aa4fb02804e58465687073a5303e43ae0daec0256d22892da2c",
+  "observable": "Exactly one color declaration changed; all other source bytes identical",
+  "selector": ".model-empty-notice",
+  "color": "var(--text-muted)",
+  "source_tokens": {
+    "dark_text": "#a0a0a0",
+    "dark_background": "#202020",
+    "light_text": "#5d6470"
+  },
+  "static_contrast_ratios": {
+    "dark_base_before": 3.3702117667365203,
+    "dark_base_after": 6.23073636043623,
+    "light_token_on_reference_white": 5.962063909275079
+  },
+  "contrast_limit": "Static base CSS arithmetic only; white is a reference background, not an observed light runtime. Browser cascade and current bundle await parent validation.",
+  "git_diff_check_exit": 0,
+  "actual_http_or_model_calls": 0,
+  "bundle_build": "NOT_RUN_PARENT_OWNED",
+  "biome": "NOT_INSTALLED_PREEXISTING_USER_DECLINED",
+  "graph": "search_code returned project not indexed; prior 300-second index timeout supplied by parent; exact known files used"
+}

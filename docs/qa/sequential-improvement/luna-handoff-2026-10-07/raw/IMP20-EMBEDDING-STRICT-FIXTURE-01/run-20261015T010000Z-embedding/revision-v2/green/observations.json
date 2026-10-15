@@ -1,0 +1,44 @@
+{
+  "counts": {
+    "network_attempts": 0,
+    "listen_attempts": 0,
+    "process_attempts": 0
+  },
+  "responses": [
+    {
+      "method": "POST",
+      "path": "/v1/embeddings",
+      "request": "{\"model\":\"unavailable-embed-model\",\"input\":\"Hello, embeddings!\"}",
+      "status": 503,
+      "response": "{\"ok\":false,\"error\":\"http_503\",\"detail\":{\"code\":\"embedding_model_unavailable\",\"model\":\"unavailable-embed-model\",\"message\":\"Embedding model 'unavailable-embed-model' could not be loaded.\"},\"correlation_id\":\"244a0e5d2118\"}"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/embeddings",
+      "request": "{\"model\":\"nomic-embed-text:latest\",\"input\":[\"SSAK_EM01_MODEL_IDENTITY_PROBE\"]}",
+      "status": 503,
+      "response": "{\"detail\":{\"code\":\"embedding_model_unavailable\",\"model\":\"nomic-embed-text:latest\",\"message\":\"Embedding model 'nomic-embed-text:latest' could not be loaded.\"}}"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/embeddings",
+      "request": "{\"model\":\"nomic-embed-text:latest\",\"input\":[\"SSAK_EM01_MODEL_IDENTITY_PROBE\"]}",
+      "status": 503,
+      "response": "{\"ok\":false,\"error\":\"http_503\",\"detail\":{\"code\":\"embedding_model_unavailable\",\"model\":\"nomic-embed-text:latest\",\"message\":\"Embedding model 'nomic-embed-text:latest' could not be loaded.\"},\"correlation_id\":\"28f7fe67dfdb\"}"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/embeddings",
+      "request": "{\"model\":\"nomic-embed-text:latest\",\"input\":[\"SSAK_EM01_MODEL_IDENTITY_PROBE\"]}",
+      "status": 503,
+      "response": "{\"detail\":{\"code\":\"embedding_model_unavailable\",\"model\":\"nomic-embed-text:latest\",\"message\":\"Embedding model 'nomic-embed-text:latest' could not be loaded.\"}}"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/embeddings",
+      "request": "{\"model\":\"nomic-embed-text:latest\",\"input\":[\"first input\",\"second input\"]}",
+      "status": 200,
+      "response": "{\"object\":\"list\",\"data\":[{\"object\":\"embedding\",\"embedding\":[0.25,-0.5],\"index\":0},{\"object\":\"embedding\",\"embedding\":[0.75,1.0],\"index\":1}],\"model\":\"nomic-embed-text:latest\",\"usage\":{\"prompt_tokens\":5,\"completion_tokens\":0,\"total_tokens\":5}}"
+    }
+  ]
+}

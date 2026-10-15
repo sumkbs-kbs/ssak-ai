@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="0.875" timestamp="2026-10-15T08:44:02.957936+09:00" hostname="MrKui-MacBookPro.local"><testcase classname="" name="preimage.test_api_server" file="preimage/test_api_server.py" time="0.000"><error message="collection failure">../../preimage/test_api_server.py:10: in &lt;module&gt;
+    from antigravity_k.api.server import app
+/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/api/server.py:533: in &lt;module&gt;
+    from antigravity_k.api.routes import api_router
+/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/api/routes/__init__.py:10: in &lt;module&gt;
+    from . import agency_api, artifact_api
+/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/api/routes/agency_api.py:8: in &lt;module&gt;
+    from antigravity_k.api.dependencies import get_agent_runtime
+/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/api/dependencies.py:29: in &lt;module&gt;
+    from antigravity_k.engine.scheduled_job_service import ScheduledJobService
+/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/src/antigravity_k/engine/scheduled_job_service.py:14: in &lt;module&gt;
+    from croniter import croniter
+/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/croniter/__init__.py:1: in &lt;module&gt;
+    from . import croniter as cron_m
+/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/croniter/croniter.py:54: in &lt;module&gt;
+    if is_32bit():
+       ^^^^^^^^^^
+/Users/mr.k/.codex/worktrees/candidate-git-boundary/Ssak-Ai/.venv/lib/python3.13/site-packages/croniter/croniter.py:32: in is_32bit
+    architecture = platform.architecture()[0]
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/platform.py:794: in architecture
+    fileout = _syscmd_file(executable, '')
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/platform.py:743: in _syscmd_file
+    output = subprocess.check_output(['file', '-b', target],
+/Users/mr.k/miniforge3/lib/python3.13/subprocess.py:472: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Users/mr.k/miniforge3/lib/python3.13/subprocess.py:554: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/mr.k/miniforge3/lib/python3.13/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Users/mr.k/miniforge3/lib/python3.13/subprocess.py:1859: in _execute_child
+    sys.audit("subprocess.Popen", executable, args, cwd, env)
+../../guarded_pytest.py:37: in audit
+    raise AssertionError(f"Unexpected process operation: {event}")
+E   AssertionError: Unexpected process operation: subprocess.Popen</error></testcase></testsuite></testsuites>

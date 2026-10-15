@@ -1,0 +1,33 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "pnpm",
+      "run",
+      "build"
+    ],
+    "cwd": "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/dashboard",
+    "exit_code": 0,
+    "elapsed_seconds": 26.716202583000268,
+    "css_sha256": "c8892443e9221aa4fb02804e58465687073a5303e43ae0daec0256d22892da2c",
+    "pin_sha256": "02ee1e209cce0701becb8934f09dee2aab7d4471c3c74758cbc3bb9830b7ac4f"
+  },
+  {
+    "name": "accessibility",
+    "command": [
+      "/usr/bin/sandbox-exec",
+      "-f",
+      "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-01/run-20261014T234000Z-codex/provider-boundary.sb",
+      "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/.venv/bin/python",
+      "-B",
+      "scripts/run_dashboard_e2e_ambient.py",
+      "--spec",
+      "e2e/tests/accessibility.spec.ts"
+    ],
+    "cwd": "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai",
+    "exit_code": 0,
+    "elapsed_seconds": 46.805035458999555,
+    "css_sha256": "c8892443e9221aa4fb02804e58465687073a5303e43ae0daec0256d22892da2c",
+    "pin_sha256": "02ee1e209cce0701becb8934f09dee2aab7d4471c3c74758cbc3bb9830b7ac4f"
+  }
+]

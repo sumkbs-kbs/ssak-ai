@@ -1,0 +1,36 @@
+[detached HEAD 1e9dfb87] build: pin dashboard to its committed source revision
+ Committer: Mr.K <mr.k@MrKui-MacBookPro.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly:
+
+    git config --global user.name "Your Name"
+    git config --global user.email you@example.com
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 24 files changed, 28 insertions(+), 28 deletions(-)
+ rename src/antigravity_k/dashboard_dist/assets/{AgentPage-BAX6kPAN.js => AgentPage-CMeLbiAX.js} (99%)
+ rename src/antigravity_k/dashboard_dist/assets/{AgentStartPage-DIsNV8V3.js => AgentStartPage-DNBTsRmH.js} (98%)
+ rename src/antigravity_k/dashboard_dist/assets/{ChatPage-C4nUgcQP.js => ChatPage-BH_anFOH.js} (99%)
+ rename src/antigravity_k/dashboard_dist/assets/{CommandPalette-9XAHjBGy.js => CommandPalette-D42-bCEi.js} (99%)
+ rename src/antigravity_k/dashboard_dist/assets/{DataExtractionPage-BJNP3GBS.js => DataExtractionPage-D3YwChWQ.js} (99%)
+ rename src/antigravity_k/dashboard_dist/assets/{DiffViewer-D2qQrDo3.js => DiffViewer-DZVDFeTK.js} (99%)
+ rename src/antigravity_k/dashboard_dist/assets/{FolderBrowser-C393zCh5.js => FolderBrowser-CvFZ9Pd4.js} (99%)
+ rename src/antigravity_k/dashboard_dist/assets/{GitPage-DUoTCaZr.js => GitPage-DSKhtkny.js} (99%)
+ rename src/antigravity_k/dashboard_dist/assets/{HistoryPage-DyC9GtJv.js => HistoryPage-CGD_CuiD.js} (99%)
+ rename src/antigravity_k/dashboard_dist/assets/{ModelHubPage-B2vbtNvu.js => ModelHubPage-3gsoSmaV.js} (99%)
+ rename src/antigravity_k/dashboard_dist/assets/{MonacoEditorWrapper-CTTE2mFk.js => MonacoEditorWrapper-CcMbKFRF.js} (96%)
+ rename src/antigravity_k/dashboard_dist/assets/{MultiTerminalPanel-BTS_CmQA.js => MultiTerminalPanel-NhzIYIq2.js} (98%)
+ rename src/antigravity_k/dashboard_dist/assets/{PinModal-572vTs4s.js => PinModal-B3WuDay2.js} (97%)
+ rename src/antigravity_k/dashboard_dist/assets/{PluginPage-dUMMFLP0.js => PluginPage-BoAEKIrA.js} (98%)
+ rename src/antigravity_k/dashboard_dist/assets/{PluginPanelRoutes-D17DY-0J.js => PluginPanelRoutes-DeaNoaCq.js} (92%)
+ rename src/antigravity_k/dashboard_dist/assets/{SettingsPage-CWBA2Lni.js => SettingsPage-BgYbL5mw.js} (99%)
+ rename src/antigravity_k/dashboard_dist/assets/{Sidebar-DVNL5DMY.js => Sidebar-D7vPgQIO.js} (98%)
+ rename src/antigravity_k/dashboard_dist/assets/{SkillsPage-CssmvIbR.js => SkillsPage-NpjEzOHo.js} (99%)
+ rename src/antigravity_k/dashboard_dist/assets/{StudioPage-CMDAbIrQ.js => StudioPage-CQtVDiCc.js} (99%)
+ rename src/antigravity_k/dashboard_dist/assets/{SystemTelemetricsBar-CDBUyns9.js => SystemTelemetricsBar-CAISCLX_.js} (95%)
+ rename src/antigravity_k/dashboard_dist/assets/{gitStore-CW0_f63j.js => gitStore-BFl259lV.js} (98%)
+ rename src/antigravity_k/dashboard_dist/assets/{index-B64vj3p7.js => index-C6r2i9-a.js} (94%)

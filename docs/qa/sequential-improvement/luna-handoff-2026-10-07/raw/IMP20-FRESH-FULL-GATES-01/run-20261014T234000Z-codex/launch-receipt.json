@@ -1,0 +1,18 @@
+{
+  "exit_code": 1,
+  "reaped": true,
+  "timed_out_or_interrupted": false,
+  "elapsed_seconds": 1337.2919345,
+  "before": {
+    "head": "302337877766a540a21dd42c61605dc590e4026b",
+    "working_fingerprint": "8044be61484ece2b4eb1e7f4c007f3962bfebe4b08d98f3761308cd98e8f63da",
+    "commit_fingerprint": "8044be61484ece2b4eb1e7f4c007f3962bfebe4b08d98f3761308cd98e8f63da"
+  },
+  "after": {
+    "head": "302337877766a540a21dd42c61605dc590e4026b",
+    "working_fingerprint": "8044be61484ece2b4eb1e7f4c007f3962bfebe4b08d98f3761308cd98e8f63da",
+    "commit_fingerprint": "8044be61484ece2b4eb1e7f4c007f3962bfebe4b08d98f3761308cd98e8f63da",
+    "status": ""
+  },
+  "candidate_unchanged": true
+}

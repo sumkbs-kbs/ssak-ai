@@ -1,0 +1,42 @@
+[
+  {
+    "path": "checks.json",
+    "bytes": 791,
+    "sha256": "4c055768557fdaf77b47411ca8171cb522fb6f500a8984ec99edb528c73cfdac"
+  },
+  {
+    "path": "junit.xml",
+    "bytes": 4705,
+    "sha256": "3af682999734582cc4d4393f268469142ed0a36f616c022703b12e03a7b74bb7"
+  },
+  {
+    "path": "pytest.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "pytest.stdout.txt",
+    "bytes": 111,
+    "sha256": "691a7c355044667a754e2f964f1d0d013c25c7c0a64dfca897eb67b8e3dc8592"
+  },
+  {
+    "path": "result.json",
+    "bytes": 331,
+    "sha256": "2307c44ff65c2db4e4ac7e0ef88ba827c9b7c8e24db71d5257834b3a65ae82a0"
+  },
+  {
+    "path": "source-after.json",
+    "bytes": 1040,
+    "sha256": "d654db67e45d427782ccc2e0e768cf1fac96c2482182281ebd371e96933487d8"
+  },
+  {
+    "path": "source-before.json",
+    "bytes": 1040,
+    "sha256": "d654db67e45d427782ccc2e0e768cf1fac96c2482182281ebd371e96933487d8"
+  },
+  {
+    "path": "verify_evidence_gate.py",
+    "bytes": 3726,
+    "sha256": "abd0254d7cf0a6781db0f6329c79cd4fdedee08ccee235c28cde5f59c7428dd2"
+  }
+]

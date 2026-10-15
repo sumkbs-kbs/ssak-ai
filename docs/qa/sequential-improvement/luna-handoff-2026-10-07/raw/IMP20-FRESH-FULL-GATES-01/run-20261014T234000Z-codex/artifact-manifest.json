@@ -1,0 +1,82 @@
+[
+  {
+    "path": "launch-receipt.json",
+    "bytes": 685,
+    "sha256": "e9a1d5f1a59e0fd335ffb40121da569b49c6db90b8472483937f05e226186a1f"
+  },
+  {
+    "path": "integrate_publication.py",
+    "bytes": 658,
+    "sha256": "7aef0316b3cff75cad5b9a9fc3dbb2ed6546490d216e98fdf08ad3417cb8a92c"
+  },
+  {
+    "path": "result.json",
+    "bytes": 852,
+    "sha256": "e6293c240b2c219c284e782c4e0e97fad364d13649818c0bedf45a3a18a36bba"
+  },
+  {
+    "path": "driver.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "os-guard-control.json",
+    "bytes": 308,
+    "sha256": "50230a2ced104390a423665bed080f4b10674003e0417cf422521d10e2445e92"
+  },
+  {
+    "path": "provider-boundary.sb",
+    "bytes": 519,
+    "sha256": "f11c2d4bc0994a91346f107010f77ca304d09fdea2261b947c44d636078ca52b"
+  },
+  {
+    "path": "finalize_diagnostic.py",
+    "bytes": 1480,
+    "sha256": "75dfca2949d423ffaf9f5a4eef8da6070b918f8dcf11bacbfda86a0088b45397"
+  },
+  {
+    "path": "integration-receipt-a7.json",
+    "bytes": 560,
+    "sha256": "154d10cd12abb0e04b122c4df79428a6c5b87c502f0a773ecddb73edfc1d4007"
+  },
+  {
+    "path": "probe_os_provider_guard.py",
+    "bytes": 2061,
+    "sha256": "8f328075fe70fda5fcce786110df5e4674d6faf892c92013605697958e4fd2f2"
+  },
+  {
+    "path": "README.md",
+    "bytes": 1562,
+    "sha256": "1c63d1b74f9286c88177a784cf70f35ec13c70d9385c55ade8466cecd0ffe4b1"
+  },
+  {
+    "path": "gate-report.json",
+    "bytes": 801545,
+    "sha256": "a055cc16e063c98068bb79051544c494e6a42994887114d019d38b1531968f6d"
+  },
+  {
+    "path": "execution-binding.json",
+    "bytes": 2037,
+    "sha256": "7dd5cf2a7f7b1883ed1fd9938c1abac8cc04a436e062cc2a0356377308da5bcb"
+  },
+  {
+    "path": "driver.stdout.txt",
+    "bytes": 2119,
+    "sha256": "826c6bc1c1c47a63683660da8fb442659f8911bd66b82fa8eedace578441d87c"
+  },
+  {
+    "path": "launch.json",
+    "bytes": 135,
+    "sha256": "650ea23f31a580237373fdbaaca3006756582d70d078fab73e33a786a8ca5458"
+  },
+  {
+    "path": "python-interruption-decision.md",
+    "bytes": 868,
+    "sha256": "3d29169879b048e5cc05a0011377c28ef5c7c6a70efa59b1f5709df141b1e5db"
+  },
+  {
+    "path": "run_full_gates.py",
+    "bytes": 7577,
+    "sha256": "87e2a948235f2a468e7aec068966a69e32ecd5a31811785f70f42e97f9969aeb"
+  }
+]

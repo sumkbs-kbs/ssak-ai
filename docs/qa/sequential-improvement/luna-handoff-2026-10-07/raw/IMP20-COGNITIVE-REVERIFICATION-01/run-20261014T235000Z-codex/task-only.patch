@@ -1,0 +1,42 @@
+diff --git a/docs/ssak-ai-core/evidence/digest_drift.json b/docs/ssak-ai-core/evidence/digest_drift.json
+index 99e2497d..e9d668c8 100644
+--- a/docs/ssak-ai-core/evidence/digest_drift.json
++++ b/docs/ssak-ai-core/evidence/digest_drift.json
+@@ -3,7 +3,7 @@
+     "python",
+     "scripts/digest_drift.py"
+   ],
+-  "source_head": "f6f3f4eb",
++  "source_head": "30233787",
+   "counts": {
+     "match": 8,
+     "reverified": 42,
+@@ -437,9 +437,9 @@
+       "doc": "T12_migration.md",
+       "path": "src/antigravity_k/engine/cognitive/migration.py",
+       "recorded": "f45e974f01a6e124",
+-      "actual": "5ea53f88a9544baed6d58da672b9a63f595d766b4f5114d942ff7656908307a9",
++      "actual": "75339cd046e0b0d7525c7b255670eba45bcc47dc8bcf1441caeff3535205137a",
+       "status": "reverified",
+-      "reverified_on": "2026-10-01"
++      "reverified_on": "2026-10-15"
+     },
+     {
+       "doc": "T12_migration.md",
+diff --git a/docs/ssak-ai-core/evidence/digest_reverification.json b/docs/ssak-ai-core/evidence/digest_reverification.json
+index cceed96e..9e27ce8a 100644
+--- a/docs/ssak-ai-core/evidence/digest_reverification.json
++++ b/docs/ssak-ai-core/evidence/digest_reverification.json
+@@ -241,9 +241,9 @@
+     {
+       "doc": "T12_migration.md",
+       "path": "src/antigravity_k/engine/cognitive/migration.py",
+-      "verified_digest": "5ea53f88a9544baed6d58da672b9a63f595d766b4f5114d942ff7656908307a9",
+-      "verified_on": "2026-10-01",
+-      "method": "ruff-format whitespace-only reformat by pre-commit hook on 2026-09-27; AST verified identical to the frozen bytes that passed integrated QA (1,125 passed) and the v8 live run; no semantic change"
++      "verified_digest": "75339cd046e0b0d7525c7b255670eba45bcc47dc8bcf1441caeff3535205137a",
++      "verified_on": "2026-10-15",
++      "method": "Reviewed commit 367863ce SQL hardening: fixed queries for agency_events, agency_objectives and agency_objective_tasks replace interpolated identifiers while preserving selected columns, ordering and read-only migration behavior. Independently verified the IMP19 Bandit packet's 27 file sizes/SHA-256, six production source bindings and JUnit/receipt linkage: 141 recorded regressions passed, including 30 migration cases. Current migration source and both migration test files match that commit. The prior receipt pins production source, not separate test execution bytes. This is scoped source/regression reverification, not renewal of the historical 56,961-row rehearsal, live results or release approval. Original T12 pin/document and test registry row remain unchanged. Evidence: docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-COGNITIVE-REVERIFICATION-01/run-20261014T235000Z-codex/prior-evidence-validation.json; original packet: docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP19-BANDIT-GATE-CLOSURE-01/run-20261014T173200Z-codex."
+     },
+     {
+       "doc": "T12_migration.md",

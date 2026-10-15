@@ -1,0 +1,87 @@
+[
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-REPAIR-PUBLICATION-02/run-20261015T001500Z-codex/publish_packets.py",
+    "bytes": 5159,
+    "sha256": "e966b8e6b50e4bc11b6de9826f362abb32b8c4028c6b5e20f9432ac05bf6578c"
+  },
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-REPAIR-PUBLICATION-02/run-20261015T001500Z-codex/integrate_round2.py",
+    "bytes": 771,
+    "sha256": "f41e0de8801e9a99e603ca2d5841247be02c758bb096d11a84164161b04ab22b"
+  },
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-REPAIR-PUBLICATION-02/run-20261015T001500Z-codex/integration-receipt-a7.json",
+    "bytes": 558,
+    "sha256": "e977ac1b217751dd7a48c0dab72810a694b7c86b6ad491ce24e80ffbc9c02c70"
+  },
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-REPAIR-PUBLICATION-02/run-20261015T001500Z-codex/remote-verification.json",
+    "bytes": 129,
+    "sha256": "ab8c03a206b0620c6fe5e4bbfe4043681067d5c6060eba8cff223a5c3ceb1287"
+  },
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-REPAIR-PUBLICATION-02/run-20261015T001500Z-codex/independent-review.md",
+    "bytes": 7023,
+    "sha256": "bd96a3a9ed728c4e655526d4e73dd7f06bda08e96e61f6204e842b6beff02c31"
+  },
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-REPAIR-PUBLICATION-02/run-20261015T001500Z-codex/handoff-ko.md",
+    "bytes": 3001,
+    "sha256": "5568132862e8a3e6075304e6dc3c2056dbb80d0e5cce6a8767389b9628925031"
+  },
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-REPAIR-PUBLICATION-02/run-20261015T001500Z-codex/migration-current/verify.py",
+    "bytes": 2306,
+    "sha256": "319e57d48c99683ae7352643d9360cbab4a11bc4911c78df8a8a946ad734d384"
+  },
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-REPAIR-PUBLICATION-02/run-20261015T001500Z-codex/migration-current/source-binding.json",
+    "bytes": 451,
+    "sha256": "5aec4f9b2ba71576ed4975bc3f2237d8b39c056c6397ecf156bbf7ad2748feaf"
+  },
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-REPAIR-PUBLICATION-02/run-20261015T001500Z-codex/migration-current/stdout.txt",
+    "bytes": 99,
+    "sha256": "b4735707293def15c179d0b4fbdf9621865bc42aae03423644b562585c52e29d"
+  },
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-REPAIR-PUBLICATION-02/run-20261015T001500Z-codex/migration-current/stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-REPAIR-PUBLICATION-02/run-20261015T001500Z-codex/migration-current/junit.xml",
+    "bytes": 3987,
+    "sha256": "16e85b3f13fb2dd82c20d80881f4443bb7a494beebcbda8df0cf953c2f9be68e"
+  },
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-REPAIR-PUBLICATION-02/run-20261015T001500Z-codex/migration-current/receipt.json",
+    "bytes": 1092,
+    "sha256": "b5f566b5596d468f88814ede5e33d45cba1cf5ef1b4452d2acab0829a63b55fb"
+  },
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-GATE-REPAIR-PUBLICATION-02/run-20261015T001500Z-codex/migration-current/artifact-manifest.json",
+    "bytes": 816,
+    "sha256": "c2a9ba6b9eb5b098f8f2c9aef7114d153aa0f7100df38263fc1d93e950545bc1"
+  },
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-BUILD-PROVENANCE-SHA-01/run-20261014T235500Z-codex/setup_python_environment.py",
+    "bytes": 1025,
+    "sha256": "8775d2e07aa3388a8c976b43afd1c82ccec79e97fa3093e0f080a0f6f929339f"
+  },
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-BUILD-PROVENANCE-SHA-01/run-20261014T235500Z-codex/python-setup.stdout.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-BUILD-PROVENANCE-SHA-01/run-20261014T235500Z-codex/python-setup.stderr.txt",
+    "bytes": 3702,
+    "sha256": "cb31087120cf46ce555ab8826898f42b5ce7c4b43408d4b61ac050412c36b559"
+  },
+  {
+    "path": "docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-BUILD-PROVENANCE-SHA-01/run-20261014T235500Z-codex/python-setup.json",
+    "bytes": 321,
+    "sha256": "154db4eb36513ab3d52af7192d172b4b7478d36f1d82946a5e915f796fc30235"
+  }
+]

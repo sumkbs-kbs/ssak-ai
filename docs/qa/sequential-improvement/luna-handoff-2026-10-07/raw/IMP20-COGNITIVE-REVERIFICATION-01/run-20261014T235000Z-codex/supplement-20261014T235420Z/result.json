@@ -1,0 +1,13 @@
+{
+  "status": "PASS_SCOPED",
+  "total": 36,
+  "passed": 36,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "prior_145_tests_repeated": false,
+  "original_artifacts_unchanged": 37,
+  "source_bindings_unchanged": 9,
+  "product_test_edits": 0,
+  "scope": "Only tests/cognitive/test_evidence_gate.py; no historical or full23 claim"
+}

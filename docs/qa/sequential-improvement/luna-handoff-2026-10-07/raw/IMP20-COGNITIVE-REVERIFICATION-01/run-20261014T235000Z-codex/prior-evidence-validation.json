@@ -1,0 +1,10 @@
+{
+  "manifest_rows_verified": 27,
+  "source_bindings_verified": 6,
+  "junit_total": 141,
+  "migration_cases": 30,
+  "junit_sha256": "5591077cdfde6fe4cbd002a0d65628f2f858fbb9b9f47ca7597743911035e7ca",
+  "migration_sha256": "75339cd046e0b0d7525c7b255670eba45bcc47dc8bcf1441caeff3535205137a",
+  "test_and_migration_commit_367863ce_equal_current": true,
+  "limit": "Prior source binding pins production files only; test execution bytes were not separately pinned. Existing JUnit is scoped regression evidence, not historical live renewal."
+}

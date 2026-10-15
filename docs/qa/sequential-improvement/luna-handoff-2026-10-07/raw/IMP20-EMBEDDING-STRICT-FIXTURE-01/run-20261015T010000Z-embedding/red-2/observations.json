@@ -1,0 +1,16 @@
+{
+  "counts": {
+    "network_attempts": 0,
+    "listen_attempts": 0,
+    "process_attempts": 0
+  },
+  "responses": [
+    {
+      "method": "POST",
+      "path": "/v1/embeddings",
+      "request": "{\"model\":\"test-embed-model\",\"input\":\"Hello, embeddings!\"}",
+      "status": 503,
+      "response": "{\"ok\":false,\"error\":\"http_503\",\"detail\":{\"code\":\"embedding_model_unavailable\",\"model\":\"test-embed-model\",\"message\":\"Embedding model 'test-embed-model' could not be loaded.\"},\"correlation_id\":\"22677c1d3cac\"}"
+    }
+  ]
+}

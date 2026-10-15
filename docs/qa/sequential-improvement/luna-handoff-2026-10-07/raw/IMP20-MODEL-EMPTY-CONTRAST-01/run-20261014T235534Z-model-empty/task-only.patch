@@ -1,0 +1,11 @@
+--- a/dashboard/src/styles/index.css
++++ b/dashboard/src/styles/index.css
+@@ -16587,7 +16587,7 @@
+ .model-empty-notice {
+   padding: 12px 8px;
+   font-size: 12px;
+-  color: #6b7280;
++  color: var(--text-muted);
+   text-align: center;
+   line-height: 1.4;
+ }

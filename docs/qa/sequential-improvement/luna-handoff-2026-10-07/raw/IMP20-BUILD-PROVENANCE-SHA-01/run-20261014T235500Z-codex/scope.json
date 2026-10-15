@@ -1,0 +1,9 @@
+{
+  "source_commit": "a7c1dc2f8fe4959dbc6a6df47bb2a628d35c449c",
+  "dashboard_source_changed": false,
+  "build_stamp_override": false,
+  "patched_paths": [
+    "dashboard/build-provenance.json",
+    "src/antigravity_k/dashboard_dist/**"
+  ]
+}

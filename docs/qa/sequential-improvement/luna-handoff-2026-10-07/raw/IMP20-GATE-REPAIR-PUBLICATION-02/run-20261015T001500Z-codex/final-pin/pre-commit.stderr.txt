@@ -1,0 +1,1 @@
+/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/.venv/bin/python: No module named pre_commit
