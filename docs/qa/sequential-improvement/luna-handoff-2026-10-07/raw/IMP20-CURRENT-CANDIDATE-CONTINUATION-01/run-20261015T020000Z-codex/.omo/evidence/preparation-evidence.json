@@ -1,0 +1,45 @@
+{
+  "status": "READY_NOT_LAUNCHED",
+  "scenario": "Compile prepared programs in memory and inspect AST/source bindings without importing or running them",
+  "invocation": [
+    "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/.venv/bin/python",
+    "-I",
+    "-B",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-CURRENT-CANDIDATE-CONTINUATION-01/run-20261015T020000Z-codex/validate_preparation.py"
+  ],
+  "cwd": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-CURRENT-CANDIDATE-CONTINUATION-01/run-20261015T020000Z-codex",
+  "actual_exit": 0,
+  "binary_observable": "actual_exit == 0 and all 22 checks true",
+  "captured_artifact": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-CURRENT-CANDIDATE-CONTINUATION-01/run-20261015T020000Z-codex/.omo/evidence/preparation.stdout.json",
+  "checks": {
+    "in_memory_compile_both_programs": true,
+    "every_frozen_input_matches_bytes": true,
+    "wrapper_matches_plan": true,
+    "one_shot_launch_and_supervisor_claims": true,
+    "detached_caffeinate_stdout_stderr": true,
+    "gate_wait_original_sum_plus_1200": true,
+    "partial_json_wait_bounded_30s": true,
+    "finalizer_once_existing_result_reuse": true,
+    "soak_helper_once_isolated_assigned_python": true,
+    "official_verify_once_exact_report_and_8h": true,
+    "actual_child_pid_exit_receipts": true,
+    "strict_gate_checks_and_no_merge": true,
+    "source_current_commit_head_equality": true,
+    "real_duration_six_scenarios_required": true,
+    "collector_exit_is_acceptance_condition": true,
+    "no_controller_gate_or_collector_dispatch_in_supervisor": true,
+    "collector_proxy_runs_real_collector_exactly_once": true,
+    "collector_proxy_preserves_environment_and_streams": true,
+    "collector_proxy_claim_and_actual_negative_exit": true,
+    "collector_proxy_source_bound_to_execution_and_commit": true,
+    "helper_has_formal_judge_hook_and_exact_proxy": true,
+    "nothing_launched_by_preparation": true
+  },
+  "runtime_scenarios": "NOT_RUN; no gate/controller/model/HTTP/collector launched by this preparation",
+  "files_sha256": {
+    "continuation.py": "c059345f03fc7eb6416aad583b3d20b413405b4b0f89ba853ef1be46cef6d85d",
+    "collector_proxy.py": "c3a10b0ff2f121599310e719688566ec12c53ba1edd5bef676f27566526b57ae",
+    "prepared-plan.json": "e92bbde87fb5327f11c319437583fc0ba49eef559205865e3e52a338def219f4",
+    "validate_preparation.py": "60e1e45a4579fb0c6d56ec5cc812f7c417a8e4ccf5e463f47d05119c65db2984"
+  }
+}

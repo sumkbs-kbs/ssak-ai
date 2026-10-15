@@ -1,0 +1,8 @@
+{
+  "command_interpreter": "python3",
+  "actual_exit": 1,
+  "error": "ImportError: cannot import name 'UTC' from 'datetime'",
+  "observed_interpreter": "Apple CommandLineTools Python 3.9",
+  "phase": "module import before publication side effects",
+  "resolution": "Use the assigned WT3 .venv/bin/python interpreter; do not modify the frozen candidate or rerun any gate."
+}

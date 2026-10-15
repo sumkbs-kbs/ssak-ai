@@ -1,0 +1,19 @@
+{
+  "recorded_at": "2026-10-15T02:11:03.840963+00:00",
+  "state_snapshot": {
+    "recorded_at": "2026-10-15T02:03:12.167867+00:00",
+    "status": "WAITING_GATES",
+    "supervisor_pid": 4172,
+    "timeout_seconds": 44400
+  },
+  "state_snapshot_sha256": "d53082b0ef7d9e7144590d210b1b4e114f0f8e26582e82799b624159878c5e82",
+  "gate_summary_snapshot": {
+    "failed": 0,
+    "passed": 4,
+    "required_failed": 0,
+    "total": 4
+  },
+  "runtime_result": "NOT_OBSERVED",
+  "release_approval": "NOT_ISSUED",
+  "limits": "Historical snapshot only. Read the live owned state/result for later transitions. Preparation checks do not prove runtime outcomes."
+}

@@ -1,0 +1,65 @@
+{
+  "status": "READY_NOT_LAUNCHED",
+  "repo": "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai",
+  "fresh": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-03/run-20261015T014000Z-codex",
+  "soak_helper": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-CURRENT-CANDIDATE-SOAK-01/run-20261015T020000Z-codex/start_soak_once.py",
+  "head": "58d941b340a29a8717dcfbc87348b8542fe0bd77",
+  "fingerprint": "777f0f3a7c86b629b1fb2083f09ccae0caf975685f34bc47dfa98e0537467768",
+  "gate_wait_seconds": 44400,
+  "poll_seconds": 30,
+  "soak_wait_seconds": 43800,
+  "child_timeouts_seconds": {
+    "finalizer": 600,
+    "soak_helper": 1800,
+    "official_final_verify": 600
+  },
+  "gate_checks": [
+    "process_ok",
+    "source_unchanged",
+    "manifest_unchanged",
+    "exact_selection",
+    "commands_unchanged",
+    "report_binding",
+    "freeze_unchanged",
+    "harness_unchanged",
+    "all_passed",
+    "verifier_passed"
+  ],
+  "scenarios": [
+    "SC-1-task-cas-race",
+    "SC-2-conversation-cas",
+    "SC-3-registry-flock",
+    "SC-4-kill-9-recovery",
+    "SC-5-load-latency",
+    "SC-6-soak"
+  ],
+  "input_sha256": {
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-03/run-20261015T014000Z-codex/finalize.py": "5199e86cfa6cd0d5531998e0be7f50c6b7e4ace119fe70c4709a9c51a31c2d98",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-03/run-20261015T014000Z-codex/run_full_gates.py": "53e1246893f9dc28caa07b3a418e8dea23d030ec80079f7912d3e8cc55b9a939",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-03/run-20261015T014000Z-codex/start_once.py": "4e4df605c5d866490c2dd31e92b397f54335ca971841ce4cf9ca908be7eadeaa",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-03/run-20261015T014000Z-codex/preparation-inputs.json": "658a18c406947fc97cf3f466f9e8e00e775782f25d1bee3efd8e737af2217ebc",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-FRESH-FULL-GATES-03/run-20261015T014000Z-codex/candidate-freeze.json": "8dd385dea622370ca80469a3cd484124de400fc6382a82215f8d4084f3d51cf1",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-CURRENT-CANDIDATE-SOAK-01/run-20261015T020000Z-codex/start_soak_once.py": "0b529e92543e320137bb00280c2a6186e0ce96a365baeee6b72f31d37c26f677",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-CURRENT-CANDIDATE-CONTINUATION-01/run-20261015T020000Z-codex/collector_proxy.py": "c3a10b0ff2f121599310e719688566ec12c53ba1edd5bef676f27566526b57ae",
+    "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/scripts/ga_gate.py": "bd2b0b82a53e46be0616e1c9a1f7865ea1526de03157b06096f014b994ccb245",
+    "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/scripts/ga_gate_verify.py": "fe2bf0dc290406fc5c21e2de6cbda6d5bdda36e0213122df93599378ebb097c8",
+    "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/scripts/commercial_ga_gates.json": "7ec8fc7b17c5aac4eb37f83a33c0bc5f82e590a42c4e088550c0407f6cd95690",
+    "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/scripts/soak_control.sh": "708d82469a9cef545484d62300590f58775ca918e6d929348198f885422cbdbd",
+    "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/scripts/collect_soak_result.py": "8be46a123ea95582481ef5e56c2085d594d3b1418b7de85550acc6ab9e8ccfb7",
+    "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/scripts/val02_staging.py": "a67695013fdeb3d3de803ebe1a589266171c36d84be69ff6fdc05e756c6a6940",
+    "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/docs/qa/2026-09-16-followup/nx10/run_nx10_soak.sh": "1af5361a95078e8e648729102aa691a3ad434873cb0c8f13b6d9e7ba651ad486"
+  },
+  "wrapper_sha256": "c059345f03fc7eb6416aad583b3d20b413405b4b0f89ba853ef1be46cef6d85d",
+  "launch_command": [
+    "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/.venv/bin/python",
+    "-I",
+    "-B",
+    "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-CURRENT-CANDIDATE-CONTINUATION-01/run-20261015T020000Z-codex/continuation.py",
+    "--launch"
+  ],
+  "ownership": "Parent will not manually finalize after launch. Reuse an already existing FRESH3 result. Arbitrary noncooperating concurrent finalizers are outside the lock contract.",
+  "timeout_semantics": "Record UNOBSERVED; never retry effectful steps or kill unrelated/existing work. Owned child may outlive wait timeout; receipt preserves actual PID and unknown exit.",
+  "scope": "Current HEAD58 full23 and real 28800s SC1-6 storage soak only. No GA/release/activation approval.",
+  "launch_state": "NOT_RUN",
+  "release_approval": "NOT_ISSUED"
+}

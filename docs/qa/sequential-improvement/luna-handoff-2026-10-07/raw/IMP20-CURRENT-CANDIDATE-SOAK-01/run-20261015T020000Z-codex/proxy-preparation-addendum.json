@@ -1,0 +1,19 @@
+{
+  "recorded_at": "2026-10-15T02:00:24.037185+00:00",
+  "status": "PREPARED_WITH_COLLECTOR_EXIT_RECEIPT_NOT_RUN",
+  "old_preparation_preserved": [
+    "prepared-plan.json",
+    "preparation-evidence.json",
+    "pre-proxy/start_soak_once.py"
+  ],
+  "old_helper_sha256": "670af16e5fc9476d354196305f1a0b1e122d448fe154386c4f92072caaa93f58",
+  "current_helper_sha256": "0b529e92543e320137bb00280c2a6186e0ce96a365baeee6b72f31d37c26f677",
+  "proxy_sha256": "c3a10b0ff2f121599310e719688566ec12c53ba1edd5bef676f27566526b57ae",
+  "delta": "Only a fixed source-bound collector receipt proxy is connected through the existing NX10_JUDGE extension. The real collector, its cwd, inputs, thresholds, stdout/stderr and exit are retained. It runs once and persists actual child exit before propagating it.",
+  "supersedes_prepared_plan_collection_instruction": "Do not execute a second manual collector. Existing detached harvest owns the single invocation through the receipt adapter. The continuation waits for recovery JSON and actual collector-receipt.json.",
+  "compile_current_helper_and_proxy": true,
+  "controller_runs": 0,
+  "collector_runs": 0,
+  "model_or_http_requests": 0,
+  "limits": "Original 21 read-only preparation checks belong to the original helper hash. This additive delta check is not an execution or a rerun of those checks. Pre-proxy archive is historical and must not be launched."
+}

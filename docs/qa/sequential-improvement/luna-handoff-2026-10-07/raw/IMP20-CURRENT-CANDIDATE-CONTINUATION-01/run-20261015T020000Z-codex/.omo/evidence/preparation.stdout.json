@@ -1,0 +1,29 @@
+{
+  "scope": "Static preparation only; runtime scenarios NOT_RUN",
+  "checks": {
+    "in_memory_compile_both_programs": true,
+    "every_frozen_input_matches_bytes": true,
+    "wrapper_matches_plan": true,
+    "one_shot_launch_and_supervisor_claims": true,
+    "detached_caffeinate_stdout_stderr": true,
+    "gate_wait_original_sum_plus_1200": true,
+    "partial_json_wait_bounded_30s": true,
+    "finalizer_once_existing_result_reuse": true,
+    "soak_helper_once_isolated_assigned_python": true,
+    "official_verify_once_exact_report_and_8h": true,
+    "actual_child_pid_exit_receipts": true,
+    "strict_gate_checks_and_no_merge": true,
+    "source_current_commit_head_equality": true,
+    "real_duration_six_scenarios_required": true,
+    "collector_exit_is_acceptance_condition": true,
+    "no_controller_gate_or_collector_dispatch_in_supervisor": true,
+    "collector_proxy_runs_real_collector_exactly_once": true,
+    "collector_proxy_preserves_environment_and_streams": true,
+    "collector_proxy_claim_and_actual_negative_exit": true,
+    "collector_proxy_source_bound_to_execution_and_commit": true,
+    "helper_has_formal_judge_hook_and_exact_proxy": true,
+    "nothing_launched_by_preparation": true
+  },
+  "passed": 22,
+  "total": 22
+}

@@ -1,0 +1,78 @@
+{
+  "recorded_at": "2026-10-15T01:50:20.755564+00:00",
+  "status": "PASS_PREPARATION_ONLY",
+  "scenario": "Compile launcher in memory and inspect live frozen-source protocol without importing or calling launcher",
+  "invocation": "/Users/mr.k/.codex/worktrees/gate-contract-repair/Ssak-Ai/.venv/bin/python -I -B - (preparation source inspection; tool transcript retains full stdin)",
+  "binary_observable": "all preparation checks true; no soak/ directory; source clean HEAD58 and fp equality",
+  "checks": {
+    "memory_compile": true,
+    "candidate_clean": true,
+    "candidate_head": true,
+    "candidate_fingerprint": true,
+    "measurement_blobs": true,
+    "manifest_pinned": true,
+    "fresh_path_exists": true,
+    "old_hold_exists": true,
+    "soak_output_absent": true,
+    "controller_run_preflight": true,
+    "controller_default_60s": true,
+    "controller_default_133ops": true,
+    "controller_machine_process_check": true,
+    "controller_space_check": true,
+    "runner_six_scenarios": true,
+    "launcher_no_assert_bypass": true,
+    "launcher_no_parent_env_copy": true,
+    "launcher_controller_commands_once": true,
+    "launcher_no_preflight_command": true,
+    "launcher_final_verify_min28800": true,
+    "prepared_plan_json_valid": true
+  },
+  "source_snapshot": {
+    "head": "58d941b340a29a8717dcfbc87348b8542fe0bd77",
+    "status": "",
+    "working_fingerprint": "777f0f3a7c86b629b1fb2083f09ccae0caf975685f34bc47dfa98e0537467768",
+    "commit_fingerprint": "777f0f3a7c86b629b1fb2083f09ccae0caf975685f34bc47dfa98e0537467768"
+  },
+  "measurement_sources": {
+    "scripts/soak_control.sh": {
+      "working_sha256": "708d82469a9cef545484d62300590f58775ca918e6d929348198f885422cbdbd",
+      "commit_sha256": "708d82469a9cef545484d62300590f58775ca918e6d929348198f885422cbdbd"
+    },
+    "scripts/val02_staging.py": {
+      "working_sha256": "a67695013fdeb3d3de803ebe1a589266171c36d84be69ff6fdc05e756c6a6940",
+      "commit_sha256": "a67695013fdeb3d3de803ebe1a589266171c36d84be69ff6fdc05e756c6a6940"
+    },
+    "scripts/collect_soak_result.py": {
+      "working_sha256": "8be46a123ea95582481ef5e56c2085d594d3b1418b7de85550acc6ab9e8ccfb7",
+      "commit_sha256": "8be46a123ea95582481ef5e56c2085d594d3b1418b7de85550acc6ab9e8ccfb7"
+    },
+    "docs/qa/2026-09-16-followup/nx10/run_nx10_soak.sh": {
+      "working_sha256": "1af5361a95078e8e648729102aa691a3ad434873cb0c8f13b6d9e7ba651ad486",
+      "commit_sha256": "1af5361a95078e8e648729102aa691a3ad434873cb0c8f13b6d9e7ba651ad486"
+    }
+  },
+  "launcher_pure_loc": 127,
+  "files": {
+    "start_soak_once.py": {
+      "bytes": 9834,
+      "sha256": "670af16e5fc9476d354196305f1a0b1e122d448fe154386c4f92072caaa93f58"
+    },
+    "handoff.md": {
+      "bytes": 5551,
+      "sha256": "2a49343c72f6b1369e3a69517f3ed3cf160f93e83319b7488bf024d95eaeb549"
+    },
+    "prepared-plan.json": {
+      "bytes": 2057,
+      "sha256": "0f25811f8b5ddf3f97230cf8bef3b35d985a2b99046ed8cf581c0fe15f3ddcd0"
+    }
+  },
+  "fresh_terminal_result_present": false,
+  "limitations": [
+    "No launcher/controller execution",
+    "No behavioral runtime guard tests",
+    "No model/HTTP/provider/native requests",
+    "Soak metrics UNOBSERVED",
+    "No release or activation authority"
+  ],
+  "artifact_path": "/Users/mr.k/program/coding/ssak_comp/Ssak-Ai/docs/qa/sequential-improvement/luna-handoff-2026-10-07/raw/IMP20-CURRENT-CANDIDATE-SOAK-01/run-20261015T020000Z-codex/preparation-evidence.json"
+}
