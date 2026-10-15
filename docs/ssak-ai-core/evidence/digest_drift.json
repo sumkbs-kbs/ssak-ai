@@ -3,7 +3,7 @@
     "python",
     "scripts/digest_drift.py"
   ],
-  "source_head": "f6f3f4eb",
+  "source_head": "30233787",
   "counts": {
     "match": 8,
     "reverified": 42,
@@ -437,9 +437,9 @@
       "doc": "T12_migration.md",
       "path": "src/antigravity_k/engine/cognitive/migration.py",
       "recorded": "f45e974f01a6e124",
-      "actual": "5ea53f88a9544baed6d58da672b9a63f595d766b4f5114d942ff7656908307a9",
+      "actual": "75339cd046e0b0d7525c7b255670eba45bcc47dc8bcf1441caeff3535205137a",
       "status": "reverified",
-      "reverified_on": "2026-10-01"
+      "reverified_on": "2026-10-15"
     },
     {
       "doc": "T12_migration.md",
