@@ -1914,7 +1914,7 @@ class ToolLoopEngine:
                 processed = stream_proc.process_flush_text("")
                 if processed:
                     emissions.append(processed)
-                if turn_constraints.no_tools and parse_error_count > 0:
+                if (turn_constraints.no_tools or turn_constraints.provided_memory_only) and parse_error_count > 0:
                     rejected_by_user_constraint = True
                 if accept_tool_calls and not pending_tool_calls:
                     recovered_tool_call = self._qwen_scratchpad_tool_call(
@@ -2274,6 +2274,11 @@ class ToolLoopEngine:
                 if not constraint_recovery_requested and step < max_steps:
                     constraint_recovery_requested = True
                     retry_count += 1
+                    if turn_constraints.provided_memory_only:
+                        yield ProgressChunk(
+                            "\n🛡️ 현재 요청은 이미 제공된 기억만으로 답하는 작업이므로 도구 호출을 차단했습니다. "
+                            "같은 문맥으로 답변을 이어갑니다.\n"
+                        )
                     instruction = (
                         turn_constraints.guidance() + "\nReturn the final chat answer without prohibited calls."
                     )

@@ -379,6 +379,10 @@ class OrchestratorAgent:
 
     def _build_tool_prompt(self, task_type: str = "") -> str:
         """도구 목록을 프롬프트에 주입합니다. few-shot 예시 포함."""
+        if current_turn_tool_constraints().provided_memory_only:
+            # This turn needs no capability contract, examples or tool schemas.
+            # The immutable original-user constraint is bound by ToolLoopEngine.
+            return ""
         tool_section = (
             "## Tool Usage Instructions\n"
             "You are a function calling AI model. You may call one or more functions to assist with the user query.\n"
