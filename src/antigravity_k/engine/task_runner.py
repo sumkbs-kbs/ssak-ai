@@ -96,6 +96,12 @@ TaskContext: TypeAlias = dict[str, object]
 TaskInfo: TypeAlias = dict[str, object]
 
 
+class _TaskCheckpointPersistenceError(RuntimeError):
+    def __init__(self, task_id: str) -> None:
+        self.task_id: str = task_id
+        super().__init__(f"Pause checkpoint could not be persisted for task {task_id}.")
+
+
 def _request_restricts_bookkeeping() -> bool:
     """Read both authoritative restrictions before a request leaves its thread."""
     return get_access_mode() is AccessMode.READ_ONLY or not request_allows_side_effects()
@@ -809,6 +815,9 @@ class BackgroundTaskRunner:
         # PermissionGate/tool path resolution use it as the canonical root.
         worktree_binding_token = self._bind_worktree_context(task)
         vault_engine = self.vault_engine
+        output_parts = [initial_output] if initial_output else []
+        step = initial_step
+        joiner = ResumeJoiner(initial_output)
         try:
             if orchestrator is None:
                 raise ValueError("Orchestrator is required for task execution")
@@ -870,14 +879,11 @@ class BackgroundTaskRunner:
                 except ContextSnapshotStoreError as error:
                     logger.warning("Initial task context snapshot failed: %s", error, exc_info=True)
 
-            output_parts = [initial_output] if initial_output else []
-            step = initial_step
             # r33/r37: on resume the orchestrator re-emits display events (mode/CEO banners, the 🧭
             # compaction notice). In the resume prelude they are control events, not body: they are
             # recorded as execution events and never spliced into the body at the pause cursor. The
             # first body text is stitched by ResumeJoiner (cursor-aware, char counts, exact restart only).
             resume_prelude = bool(initial_output)
-            joiner = ResumeJoiner(initial_output)
             from antigravity_k.engine import tool_execution_journal as tej
 
             # r35: restore contract — previous context restored on every exit path (incl. early returns).
@@ -886,7 +892,7 @@ class BackgroundTaskRunner:
             raw_plan_state = task.context.setdefault(tps.PLAN_STATE_KEY, {})
             plan_state = raw_plan_state if isinstance(raw_plan_state, dict) else None
             with (
-                tej.task_scope(task.task_id, bool(initial_output)),
+                tej.task_scope(task.task_id, claim_status == TaskStatus.RESUMING),
                 _resume_prefix_scope(task.task_id, initial_output),
                 tps.bind_plan_state(plan_state),
             ):
@@ -913,18 +919,20 @@ class BackgroundTaskRunner:
                             is_progress = False
                         case unreachable:
                             assert_never(unreachable)
-                    if not is_progress:
-                        if resume_prelude:
-                            kind = resume_control_kind(chunk)
-                            if kind is not None:
-                                if kind != "blank":
-                                    _ = self.state_store.append_execution_event(
-                                        task.task_id,
-                                        "task.resume.control_event",
-                                        json.dumps({"kind": kind}, sort_keys=True),
-                                    )
+                    if resume_prelude:
+                        kind = resume_control_kind(chunk)
+                        if kind is not None:
+                            if kind != "blank":
+                                _ = self.state_store.append_execution_event(
+                                    task.task_id,
+                                    "task.resume.control_event",
+                                    json.dumps({"kind": kind}, sort_keys=True),
+                                )
+                            if not is_progress:
                                 continue
+                        elif not is_progress:
                             resume_prelude = False
+                    if not is_progress:
                         if not joiner.decided:
                             # Buffered content counts as a body step and is flushed before pause.
                             chunk = joiner.feed(chunk)
@@ -965,7 +973,8 @@ class BackgroundTaskRunner:
                         # then CAS running->paused. resume_task continues from this checkpoint.
                         task.output = "".join(output_parts)
                         task.updated_at = datetime.now(UTC).isoformat()
-                        self._save_checkpoint(task.task_id, step, task.context, task.output)
+                        if not self._save_checkpoint(task.task_id, step, task.context, task.output):
+                            raise _TaskCheckpointPersistenceError(task.task_id)
                         if self._update_db_status(task.task_id, TaskStatus.PAUSED, output=task.output):
                             task.status = TaskStatus.PAUSED
                             paused_checkpoint = self.state_store.get_last_checkpoint(task.task_id)
@@ -1071,14 +1080,31 @@ class BackgroundTaskRunner:
 
         except Exception as e:
             if task.status != TaskStatus.DONE:
+                tail = joiner.flush()
+                if tail:
+                    output_parts.append(tail)
+                task.output = "".join(output_parts)
+                try:
+                    state_record = self.state_store.get_task(task.task_id)
+                except sqlite3.Error:
+                    # A recovery read must not replace the original stream failure.
+                    state_record = None
+                    logger.warning("Task state lookup failed during failure recovery: %s", task.task_id, exc_info=True)
+                if state_record is not None and state_record["status"] not in {
+                    TaskStatus.DONE,
+                    TaskStatus.FAILED,
+                    TaskStatus.CANCELLED,
+                }:
+                    self._save_checkpoint(task.task_id, step, task.context, task.output)
                 self._rollback_snapshot(task, cast(VaultEnginePort | None, vault_engine))
             task.status = TaskStatus.FAILED
             task.error = str(e)
             task.updated_at = datetime.now(UTC).isoformat()
-            if not self._update_db_status(task.task_id, TaskStatus.FAILED, error=str(e)):
+            if not self._update_db_status(task.task_id, TaskStatus.FAILED, output=task.output, error=str(e)):
                 record = self.state_store.get_task(task.task_id)
                 if record is not None:
                     task.status = parse_task_status(record["status"])
+                    task.output = record["output"] or ""
                     task.error = record["error"]
             self._record_task_outcome(task, target_model, started_at, "failed")
             logger.exception("Background task failed: %s, error", task.task_id)
