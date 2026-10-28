@@ -23,7 +23,7 @@ from antigravity_k.engine.task_state_store import (
     current_task_execution_context,
 )
 from antigravity_k.engine.task_state_types import InvalidTaskTransitionError, TaskTransitionConflictError
-from antigravity_k.engine.tool_policy import tool_policy_denial
+from antigravity_k.engine.tool_policy import REQUEST_TOOL_POLICY_KEY, snapshot_tool_policy, tool_policy_denial
 from antigravity_k.engine.turn_tool_constraints import TurnToolConstraints
 
 TaskOutcomeRecorder = Callable[[TaskOutcome], TaskOutcome | None]
@@ -266,6 +266,7 @@ class DirectTaskExecution:
             checkpoint_context.update(
                 execution_context_to_task_context(request_context.model_copy(update={"task_id": task_id}))
             )
+        checkpoint_context[REQUEST_TOOL_POLICY_KEY] = snapshot_tool_policy()
         if mode != "max_execution":
             state_store.save_checkpoint(
                 task_id,

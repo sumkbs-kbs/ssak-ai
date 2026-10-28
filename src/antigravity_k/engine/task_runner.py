@@ -28,7 +28,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, Protocol, TypeAlias, TypedDict, assert_never, cast, final, runtime_checkable
 
-from pydantic import JsonValue, TypeAdapter
+from pydantic import JsonValue, TypeAdapter, ValidationError
 
 from antigravity_k.engine.access_mode import AccessMode, get_access_mode
 from antigravity_k.engine.benchmark_harness import TaskOutcome
@@ -59,7 +59,17 @@ from antigravity_k.engine.task_state_types import (
     parse_task_status,
 )
 from antigravity_k.engine.task_steering import TaskSteeringQueue, TaskSteeringResult
-from antigravity_k.engine.tool_policy import request_allows_side_effects
+from antigravity_k.engine.tool_policy import (
+    REQUEST_TOOL_POLICY_KEY,
+    InvalidToolPolicySnapshotError,
+    bind_tool_policy,
+    get_tool_policy,
+    narrow_tool_policy,
+    parse_tool_policy_snapshot,
+    request_allows_side_effects,
+    serialize_tool_policy,
+    snapshot_tool_policy,
+)
 from antigravity_k.engine.worktree_manager import WorktreeManager
 
 if TYPE_CHECKING:
@@ -588,6 +598,7 @@ class BackgroundTaskRunner:
             task_id: 고유 태스크 ID
         """
         task_context = dict(context or {})
+        task_context[REQUEST_TOOL_POLICY_KEY] = snapshot_tool_policy()
         # ContextVars are not inherited by the worker thread. Replace any client
         # value with the server's decision and persist the restriction for resume.
         task_context[_BOOKKEEPING_READ_ONLY] = _request_restricts_bookkeeping()
@@ -850,6 +861,7 @@ class BackgroundTaskRunner:
             from antigravity_k.engine import task_plan_state as tps
 
             model_context = tps.context_without_plan_state(task.context) if task.context else {}
+            model_context.pop(REQUEST_TOOL_POLICY_KEY, None)
             if model_context:
                 context_str = json.dumps(model_context, ensure_ascii=False)
                 messages.append(
@@ -1349,7 +1361,12 @@ class BackgroundTaskRunner:
         binding: AbstractContextManager[None] = nullcontext()
         if isinstance(orchestrator, TaskExecutionBindingPort):
             binding = orchestrator.bind_task_execution(task.task_id, self.state_store)
-        with binding:
+        policy_binding: AbstractContextManager[None] = nullcontext()
+        if REQUEST_TOOL_POLICY_KEY in task.context:
+            policy_binding = bind_tool_policy(
+                parse_tool_policy_snapshot(_JSON_VALUE_ADAPTER.validate_python(task.context[REQUEST_TOOL_POLICY_KEY]))
+            )
+        with policy_binding, binding:
             port = cast(OrchestratorPort, orchestrator)
             while True:
                 if self._apply_pending_steering(task, messages):
@@ -1539,15 +1556,28 @@ class BackgroundTaskRunner:
                 checkpoint_step = max(step, checkpoint["step"])
                 try:
                     previous_context = cast(object, json.loads(checkpoint["context_json"]))
-                except (json.JSONDecodeError, TypeError):
-                    previous_context = None
+                except (json.JSONDecodeError, TypeError) as error:
+                    raise InvalidToolPolicySnapshotError from error
                 if isinstance(previous_context, dict):
                     previous_context_map = cast(dict[str, object], previous_context)
+                    if REQUEST_TOOL_POLICY_KEY in previous_context_map:
+                        saved_policy = parse_tool_policy_snapshot(
+                            _JSON_VALUE_ADAPTER.validate_python(previous_context_map[REQUEST_TOOL_POLICY_KEY])
+                        )
+                        checkpoint_context[REQUEST_TOOL_POLICY_KEY] = serialize_tool_policy(
+                            narrow_tool_policy(saved_policy, get_tool_policy())
+                        )
+                    elif get_tool_policy() is not None:
+                        checkpoint_context[REQUEST_TOOL_POLICY_KEY] = snapshot_tool_policy()
+                    else:
+                        checkpoint_context.pop(REQUEST_TOOL_POLICY_KEY, None)
                     tool_loop = previous_context_map.get("tool_loop")
                     if isinstance(tool_loop, dict):
                         # ToolLoop persists producer state directly. A resumed
                         # task's in-memory copy must not overwrite its newer evidence.
                         checkpoint_context["tool_loop"] = tool_loop
+                else:
+                    raise InvalidToolPolicySnapshotError
             self.state_store.save_checkpoint(
                 task_id,
                 checkpoint_step,
@@ -1712,11 +1742,24 @@ class BackgroundTaskRunner:
         record = self.state_store.get_task(task_id, owner_subject=owner_subject)
         if not record:
             return False
+        checkpoint_context = checkpoint["context"]
+        if REQUEST_TOOL_POLICY_KEY in checkpoint_context:
+            try:
+                saved_policy = parse_tool_policy_snapshot(
+                    _JSON_VALUE_ADAPTER.validate_python(checkpoint_context[REQUEST_TOOL_POLICY_KEY])
+                )
+            except (InvalidToolPolicySnapshotError, ValidationError):
+                logger.warning("Invalid saved request tool policy for task %s", task_id)
+                return False
+            checkpoint_context[REQUEST_TOOL_POLICY_KEY] = serialize_tool_policy(
+                narrow_tool_policy(saved_policy, get_tool_policy())
+            )
+        elif get_tool_policy() is not None:
+            checkpoint_context[REQUEST_TOOL_POLICY_KEY] = snapshot_tool_policy()
         if not self.state_store.prepare_resume(task_id, owner_subject=owner_subject):
             return False
 
         # 체크포인트 컨텍스트로 새 태스크 생성
-        checkpoint_context = checkpoint["context"]
         # A missing/invalid legacy decision cannot prove permission. A new
         # restriction can narrow a resume; current full access cannot lift one.
         checkpoint_context[_BOOKKEEPING_READ_ONLY] = (

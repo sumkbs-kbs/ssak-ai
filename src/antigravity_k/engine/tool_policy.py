@@ -12,7 +12,12 @@ contextvar 기반이므로 요청 스레드풀 컨텍스트 안에서만 유효�
 from __future__ import annotations
 
 import contextvars
+from collections.abc import Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass, field
+from typing import Annotated, Final, TypedDict
+
+from pydantic import BaseModel, ConfigDict, Field, JsonValue, StrictBool, StrictStr, ValidationError
 
 from antigravity_k.tools.base_tool import RiskLevel
 
@@ -28,6 +33,77 @@ class ToolPolicy:
 
 
 _tool_policy_var: contextvars.ContextVar[ToolPolicy | None] = contextvars.ContextVar("agk_tool_policy", default=None)
+REQUEST_TOOL_POLICY_KEY: Final = "_request_tool_policy"
+
+
+class ToolPolicySnapshot(TypedDict):
+    version: int
+    denied_tools: list[str]
+    allowed_mcp_servers: list[str] | None
+    safe_only: bool
+
+
+class _StoredToolPolicy(BaseModel):
+    model_config = ConfigDict(strict=True, extra="forbid", frozen=True)
+
+    version: Annotated[int, Field(strict=True, ge=1, le=1)]
+    denied_tools: list[StrictStr]
+    allowed_mcp_servers: list[StrictStr] | None
+    safe_only: StrictBool
+
+
+class InvalidToolPolicySnapshotError(ValueError):
+    def __init__(self) -> None:
+        super().__init__("Stored request tool policy is invalid.")
+
+
+def get_tool_policy() -> ToolPolicy | None:
+    """Return the immutable policy bound by the server for this execution."""
+    return _tool_policy_var.get()
+
+
+def snapshot_tool_policy() -> ToolPolicySnapshot:
+    """Capture server authority independently of client or model task context."""
+    return serialize_tool_policy(get_tool_policy() or ToolPolicy())
+
+
+def serialize_tool_policy(policy: ToolPolicy) -> ToolPolicySnapshot:
+    """Serialize a server-resolved policy without losing an empty MCP selection."""
+    return {
+        "version": 1,
+        "denied_tools": sorted(policy.denied_tools),
+        "allowed_mcp_servers": None if policy.allowed_mcp_servers is None else sorted(policy.allowed_mcp_servers),
+        "safe_only": policy.safe_only,
+    }
+
+
+def narrow_tool_policy(saved: ToolPolicy, current: ToolPolicy | None) -> ToolPolicy:
+    """Intersect permissions; a later request can add restrictions, never lift them."""
+    if current is None:
+        return saved
+    servers = saved.allowed_mcp_servers
+    if servers is None:
+        servers = current.allowed_mcp_servers
+    elif current.allowed_mcp_servers is not None:
+        servers = servers & current.allowed_mcp_servers
+    return ToolPolicy(
+        denied_tools=saved.denied_tools | current.denied_tools,
+        allowed_mcp_servers=servers,
+        safe_only=saved.safe_only or current.safe_only,
+    )
+
+
+def parse_tool_policy_snapshot(raw: JsonValue) -> ToolPolicy:
+    """Reject malformed saved authority rather than infer a weaker policy."""
+    try:
+        saved = _StoredToolPolicy.model_validate(raw)
+    except ValidationError as error:
+        raise InvalidToolPolicySnapshotError from error
+    return ToolPolicy(
+        denied_tools=frozenset(saved.denied_tools),
+        allowed_mcp_servers=None if saved.allowed_mcp_servers is None else frozenset(saved.allowed_mcp_servers),
+        safe_only=saved.safe_only,
+    )
 
 
 def set_tool_policy(policy: ToolPolicy | None) -> contextvars.Token[ToolPolicy | None]:
@@ -38,6 +114,16 @@ def set_tool_policy(policy: ToolPolicy | None) -> contextvars.Token[ToolPolicy |
 def reset_tool_policy(token: contextvars.Token[ToolPolicy | None]) -> None:
     """Restore the previous tool policy captured by :func:`set_tool_policy`."""
     _tool_policy_var.reset(token)
+
+
+@contextmanager
+def bind_tool_policy(policy: ToolPolicy | None) -> Iterator[None]:
+    """Bind saved authority for a worker and restore its ambient context on exit."""
+    token = set_tool_policy(policy)
+    try:
+        yield
+    finally:
+        reset_tool_policy(token)
 
 
 def request_allows_side_effects() -> bool:
