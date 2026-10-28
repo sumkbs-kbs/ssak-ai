@@ -10,6 +10,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Protocol, TypedDict, cast, final
 
+from antigravity_k.engine.embedding_guard import EmbeddingNotReadyError
+
 
 class _RowLike(Protocol):
     def keys(self) -> list[str]: ...
@@ -151,6 +153,7 @@ class MemoryService:
 
         self.db_path = db_path
         self._vector_store: _VectorStoreLike | None = None
+        self.vector_status = "unknown"
         self._init_db()
 
     @property
@@ -158,10 +161,14 @@ class MemoryService:
         """VectorStore를 지연 로드합니다."""
         if self._vector_store is None:
             try:
+                from antigravity_k.engine.project_embedding_binding import configured_embedding_binding
                 from antigravity_k.engine.vector_store import VectorStore
 
                 vector_path = f"{self.db_path}.vectors"
-                self._vector_store = VectorStore(persist_directory=vector_path)
+                # r30: approved binding (AGK_RAG_EMBEDDING=ollama) or explicit not-ready; never implicit.
+                self._vector_store = VectorStore(
+                    persist_directory=vector_path, embedding_binding=configured_embedding_binding()
+                )
                 logger.info("VectorStore initialized for hybrid search")
             except Exception:
                 logger.exception("VectorStore init failed, keyword-only mode")
@@ -218,7 +225,12 @@ class MemoryService:
         # 벡터 임베딩 자동 생성
         if self.vector_store is not None:
             embed_text = f"{topic} {content}"
-            _ = self.vector_store.store_embedding("knowledge_items", item_id, embed_text)
+            try:
+                _ = self.vector_store.store_embedding("knowledge_items", item_id, embed_text)
+            except EmbeddingNotReadyError as exc:
+                # r29: no implicit/default embedding; keep the row, report vector side not ready.
+                self.vector_status = f"not_ready: {exc}"
+                logger.warning("Knowledge %s stored keyword-only; vector embedding not ready", item_id)
 
         logger.info("Knowledge added on topic: %s (id=%s)", topic, item_id)
         return item_id
@@ -245,10 +257,17 @@ class MemoryService:
         """
         if mode == "keyword" or self.vector_store is None:
             return self._keyword_search(query, top_k)
-        elif mode == "vector":
-            return self._vector_search(query, top_k)
-        else:  # hybrid
+        try:
+            if mode == "vector":
+                return self._vector_search(query, top_k)
             return self._hybrid_search(query, top_k)
+        except EmbeddingNotReadyError as exc:
+            # r29: explicit degraded mode, marked in every result (never a silent vector success).
+            self.vector_status = f"not_ready: {exc}"
+            results = self._keyword_search(query, top_k)
+            for r in results:
+                r["_search_mode"] = "keyword (vector not ready)"
+            return results
 
     def _keyword_search(self, query: str, top_k: int) -> list[dict[str, object]]:
         """기존 LIKE 기반 키워드 검색."""

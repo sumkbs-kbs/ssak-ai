@@ -241,7 +241,10 @@ class DatasetIngestor:
                 data=json.dumps(data).encode("utf-8"),
                 headers={"Content-Type": "application/json"},
             )
-            with safe_urlopen(req, timeout=60) as resp:
+            from antigravity_k.engine.direct_model_call import guard_direct_model_call
+
+            _timeout = guard_direct_model_call(str(data["model"]), "curriculum_judge", prompt, timeout=60)
+            with safe_urlopen(req, timeout=_timeout) as resp:
                 result = _as_mapping(cast(object, json.loads(resp.read().decode("utf-8"))))
                 raw_content = result.get("response", "")
                 content = raw_content if isinstance(raw_content, str) else ""
@@ -480,7 +483,10 @@ class CurriculumGenerator:
             data=json.dumps(data).encode("utf-8"),
             headers={"Content-Type": "application/json"},
         )
-        with safe_urlopen(req, timeout=120) as resp:
+        from antigravity_k.engine.direct_model_call import guard_direct_model_call
+
+        _timeout = guard_direct_model_call(str(data["model"]), "curriculum_generate", prompt, timeout=120)
+        with safe_urlopen(req, timeout=_timeout) as resp:
             result = _as_mapping(cast(object, json.loads(resp.read().decode("utf-8"))))
             raw_content = result.get("response", "")
             content = raw_content if isinstance(raw_content, str) else ""

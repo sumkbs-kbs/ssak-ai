@@ -37,6 +37,10 @@ from typing import Self, cast
 
 import pytest
 
+from tests._legacy_fake_embedding import legacy_fake_binding  # noqa: F401  # r29 explicit fake binding
+
+pytestmark = pytest.mark.usefixtures("legacy_fake_binding")
+
 # ─── 프로젝트 루트 탐색 ──────────────────────────────────────────
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

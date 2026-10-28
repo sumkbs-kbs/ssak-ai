@@ -61,7 +61,7 @@ def _install_stub_orchestrator(
     else:
         monkeypatch.setattr(dependencies, "get_model_manager", lambda: MagicMock())
     monkeypatch.setattr(dependencies, "_build_project_vault", lambda _root: None)
-    monkeypatch.setattr(dependencies, "_attach_project_rag_indexer", lambda _o, _root: None)
+    monkeypatch.setattr(dependencies, "_attach_project_rag_indexer", lambda _o, _root, *, embedding_binding=None: None)
 
 
 class _CalibrationMock(Protocol):

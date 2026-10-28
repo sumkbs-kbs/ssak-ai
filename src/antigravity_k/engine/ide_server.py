@@ -2,11 +2,26 @@
 
 import logging
 import os
+import shutil
+import socket
 import subprocess
 import threading
 from typing import Final, final
 
 logger = logging.getLogger(__name__)
+
+IDE_AUTOSTART_ENV: Final = "AGK_IDE_SERVER_AUTOSTART"
+
+
+def ide_autostart_requested() -> bool:
+    """Dev default keeps autostart on; only an explicit off value (the DMG launcher sets 0) disables it."""
+    return os.environ.get(IDE_AUTOSTART_ENV, "").strip().lower() not in {"0", "false", "no", "off"}
+
+
+def _port_in_use(port: int) -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.settimeout(0.5)
+        return sock.connect_ex(("127.0.0.1", port)) == 0
 
 
 @final
@@ -25,6 +40,7 @@ class IDEServer:
         self.workspace_dir: Final = workspace_dir
         self.process: subprocess.Popen[bytes] | None = None
         self._lock: Final = threading.Lock()
+        self.status: str = "not_started"
 
     def start(self) -> None:
         """Start the embedded code-server (IDE) process."""
@@ -60,6 +76,24 @@ class IDEServer:
                 logger.info("Optional IDE unavailable: code-server executable not found in PATH.")
                 # We do not raise here to prevent crashing the main orchestrator if code-server is missing
                 self.process = None
+
+    def start_if_available(self) -> str:
+        """Start code-server only after preflight checks; never touch an occupied port.
+
+        Returns:
+            str: "running", "not_installed", "port_in_use" or "failed".
+
+        """
+        if shutil.which("code-server") is None:
+            self.status = "not_installed"
+            logger.info("Optional IDE unavailable: code-server is not installed.")
+        elif _port_in_use(self.port):
+            self.status = "port_in_use"
+            logger.warning("Optional IDE not started: port %s is already in use by another service.", self.port)
+        else:
+            self.start()
+            self.status = "running" if self.is_running() else "failed"
+        return self.status
 
     def stop(self) -> None:
         """Stop the embedded code-server and release resources."""

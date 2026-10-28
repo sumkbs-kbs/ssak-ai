@@ -1,6 +1,9 @@
 import os
 import struct
-import tempfile
+import subprocess
+import sys
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
@@ -8,13 +11,45 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from starlette.requests import Request
 
-_TEST_HOME = Path(tempfile.mkdtemp(prefix="agk-voice-test-home-"))
-os.environ["HOME"] = str(_TEST_HOME)
-
 from antigravity_k.api.routes import voice_api
 from antigravity_k.engine.scheduled_job_service import ScheduledJobService
 from antigravity_k.engine.scheduled_job_store import ScheduledJobStore
 from antigravity_k.engine.voice_service import VoiceService
+
+
+@contextmanager
+def _temporary_home(home: Path) -> Iterator[Path]:
+    """HOME 을 이 시험 범위에서만 임시 폴더로 바꾸고, 끝나면 원래 값으로 되돌린다."""
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setenv("HOME", str(home))
+        yield home
+
+
+@pytest.fixture(autouse=True)
+def _isolated_home(tmp_path: Path) -> Iterator[Path]:
+    home = tmp_path / "home"
+    home.mkdir()
+    with _temporary_home(home) as active:
+        yield active
+
+
+def test_temporary_home_is_restored_after_the_scope(tmp_path: Path) -> None:
+    before = os.environ.get("HOME")
+    inner = tmp_path / "inner-home"
+    inner.mkdir()
+    with _temporary_home(inner):
+        assert os.environ["HOME"] == str(inner)
+    assert os.environ.get("HOME") == before
+
+
+def test_importing_this_module_does_not_change_the_session_home() -> None:
+    root = Path(__file__).resolve().parents[1]
+    code = (
+        "import os, sys; before = os.environ.get('HOME'); sys.path.insert(0, sys.argv[1]); "
+        "import tests.test_voice_api; assert os.environ.get('HOME') == before, (before, os.environ.get('HOME'))"
+    )
+    result = subprocess.run([sys.executable, "-c", code, str(root)], capture_output=True, text=True, timeout=120)
+    assert result.returncode == 0, result.stderr
 
 
 class TranscriberSpy:

@@ -21,7 +21,9 @@ import httpx
 from httpcore._backends.auto import AutoBackend
 
 from .crawler_policy import LegalTermsPolicy, RobotsRateLimitPolicy
-from .egress_policy import validate_httpx_request, validate_httpx_request_async
+from .egress_policy import validate_scrape_httpx_request_async
+from .egress_policy import validate_search_httpx_request as validate_httpx_request
+from .egress_policy import validate_search_httpx_request_async as validate_httpx_request_async
 from .search_auth import SEARCH_TOKEN_ENV, search_auth_headers
 from .search_conflicts import source_conflict_sets
 from .search_quality_evaluator import (
@@ -750,7 +752,7 @@ class PageScraper:
             self._client = httpx.AsyncClient(
                 transport=self._transport,
                 timeout=10.0,
-                event_hooks={"request": [validate_httpx_request_async]},
+                event_hooks={"request": [validate_scrape_httpx_request_async]},
                 follow_redirects=False,
                 headers={"User-Agent": "Mozilla/5.0 (compatible; Ssak-Ai/1.0)"},
             )

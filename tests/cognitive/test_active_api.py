@@ -29,6 +29,18 @@ from antigravity_k.tools.permission_gate import PermissionGate
 from antigravity_k.tools.tool_registry import ToolRegistry
 from tests.cognitive.test_surface import ACTIVE_PROJECT_ID, StubThink, active_settings, episode_request
 
+
+@pytest.fixture(autouse=True)
+def _r39_explicit_autopilot():
+    """r39: PermissionGate() without a mode no longer implies auto-pilot (default is balanced).
+    This module's assertions were written for auto-pilot, so they now run under the EXPLICIT opt-in."""
+    from antigravity_k.engine.access_mode import ExecutionPolicy, set_execution_policy
+
+    set_execution_policy(ExecutionPolicy.AUTO_PILOT)
+    yield
+    set_execution_policy(None)
+
+
 BASE = "/api/cognitive/surface/active"
 
 

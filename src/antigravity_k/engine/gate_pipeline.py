@@ -411,6 +411,23 @@ class CostBudgetGate:
         return tool_name in llm_tools
 
 
+def _ask_each_time_tools() -> frozenset[str]:
+    """r41: every tool the security policy declares ASK_EACH_TIME is governed by ApprovalGate.
+
+    The real app wires no policy_engine, so the declaration alone enforced nothing for
+    memory_write, store_knowledge, run_tests, auto_lint, cowork_delegate,
+    send_command_input, interactive_pty and run_docker_bash.
+    """
+    from antigravity_k.engine.security_policy import _SEEDED_DEFAULTS, PermissionState
+
+    always = {"db_migration", "deploy", "create_pr", "git_push", "payment"}
+    return frozenset(
+        tool
+        for tool, state in _SEEDED_DEFAULTS.items()
+        if state == PermissionState.ASK_EACH_TIME and tool not in always
+    )
+
+
 class ApprovalGate:
     """도구별 승인 정책 게이트.
 
@@ -434,18 +451,29 @@ class ApprovalGate:
     )
 
     # 자동 승인 제외 시 승인 필요 (IronClaw ApprovalRequirement::UnlessAutoApproved)
-    UNLESS_AUTO_APPROVED: frozenset[str] = frozenset(
-        {
-            "run_bash_command",
-            "run_persistent_command",
-            "write_file",
-            "edit_file",
-            "multi_replace_file_content",
-            "replace_file_content",
-            "git_commit",
-            "agent_spawn",
-            "computer_use",
-        },
+    UNLESS_AUTO_APPROVED: frozenset[str] = (
+        frozenset(
+            {
+                "run_bash_command",
+                "run_persistent_command",
+                "write_file",
+                # r36: write_artifact writes into the project artifacts/ dir; it previously had no
+                # approval requirement on the real path (PermissionGate runs auto-pilot after
+                # set_project_root), so it is governed exactly like write_file.
+                "write_artifact",
+                "edit_file",
+                "multi_replace_file_content",
+                "replace_file_content",
+                "git_commit",
+                "agent_spawn",
+                "computer_use",
+                # r40: security_policy declares web_scrape ASK_EACH_TIME, but the real app passes no
+                # policy_engine (SecurityPolicyGate no-op) and web_scrape is RiskLevel.SAFE, so it ran
+                # without any approval. Govern it here so the declared contract is actually enforced.
+                "web_scrape",
+            },
+        )
+        | _ask_each_time_tools()
     )
 
     def name(self) -> str:
@@ -500,8 +528,8 @@ class ApprovalGate:
 
         # 자동 승인 가능 도구
         if tool in self.UNLESS_AUTO_APPROVED:
-            if tool in ctx.auto_approved_tools:
-                return GateDecision(gate_name=self.name())
+            # r41: naming a tool in the prompt (expected_tools / auto_approved_tools) is NOT
+            # approval. The former contracted-tool exemption let a prompt bypass ASK_EACH_TIME.
 
             if ctx.execution_mode == "autonomous":
                 # Autonomous 모드에서는 UnlessAutoApproved도 허용

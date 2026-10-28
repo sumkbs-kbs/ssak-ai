@@ -249,8 +249,11 @@ class OllamaEvaluationInference:
                 },
             },
         )
+        from antigravity_k.engine.direct_model_call import guard_direct_model_call
+
+        timeout = guard_direct_model_call(model, f"finetune_eval:{kind.value}", case.prompt, timeout=300)
         try:
-            response = self.request_opener(request, 300)
+            response = self.request_opener(request, timeout)
             raw = response.read().decode("utf-8")
         except OSError as error:
             raise EvaluationInferenceError(f"Ollama {kind.value} evaluation failed: {error}") from error

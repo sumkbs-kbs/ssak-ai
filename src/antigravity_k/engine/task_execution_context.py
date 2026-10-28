@@ -69,6 +69,27 @@ _task_execution_context: ContextVar[TaskExecutionContext | None] = ContextVar(
 )
 
 
+# r36: output already delivered before a pause/restart. The runner sets it while streaming a resumed
+# task so a terminal write from inside the loop (tool_loop "done"/"paused") keeps the prior output
+# instead of replacing it with only the resumed segment (intA8: 648 chars -> 35 chars).
+resume_output_prefix: ContextVar[tuple[str, str]] = ContextVar("resume_output_prefix", default=("", ""))
+
+
+def with_resume_prefix(task_id: str, output: str) -> str:
+    owner, prefix = resume_output_prefix.get()
+    if owner != task_id or not prefix or output.startswith(prefix):
+        return output
+    return prefix + output
+
+
+def runner_owns_terminal(task_id: str) -> bool:
+    """r36: True while BackgroundTaskRunner streams this task. The runner then owns the DONE write,
+    which must come after the graph's cov_verify/code_review/quality_check stages (a loop-back may
+    re-execute) and must carry the full streamed output, not only the tool-loop segment."""
+    owner, _prefix = resume_output_prefix.get()
+    return bool(task_id) and owner == task_id
+
+
 def current_task_execution_context() -> TaskExecutionContext | None:
     return _task_execution_context.get()
 
@@ -88,5 +109,8 @@ __all__ = [
     "TaskExecutionContext",
     "TaskStateStoreProtocol",
     "bind_task_execution_context",
+    "resume_output_prefix",
+    "runner_owns_terminal",
+    "with_resume_prefix",
     "current_task_execution_context",
 ]

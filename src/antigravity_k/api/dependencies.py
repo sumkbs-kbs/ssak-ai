@@ -233,10 +233,21 @@ def _attach_project_rag_indexer(
     orchestrator: OrchestratorAgent, project_root: str, *, embedding_binding: ProjectEmbeddingBinding | None = None
 ) -> None:
     """Wire a real per-project RAGIndexer with vectors under the project root."""
+    from antigravity_k.engine.project_embedding_binding import project_rag_policy
     from antigravity_k.engine.project_memory_paths import project_rag_vector_dir
     from antigravity_k.engine.rag_indexer import RAGIndexer
     from antigravity_k.engine.vector_store import VectorStore
 
+    mode, reason = project_rag_policy()
+    if mode == "disabled" or (mode == "enabled" and embedding_binding is None):
+        setattr(orchestrator, "_rag_indexer", None)
+        setattr(orchestrator, "_project_rag_unavailable_reason", reason if mode == "disabled" else "binding_not_ready")
+        logger.info("Project RAG not attached for %s: %s", project_root, reason)
+        return
+    if embedding_binding is not None:
+        from antigravity_k.engine.project_embedding_binding import bound_rag_project_root
+
+        project_root = bound_rag_project_root(project_root)
     rag_dir = project_rag_vector_dir(project_root)
     try:
         vector_store: object | None
@@ -252,6 +263,55 @@ def _attach_project_rag_indexer(
         logger.exception("Project RAG VectorStore init failed for %s", project_root)
         vector_store = None
     setattr(orchestrator, "_rag_indexer", RAGIndexer(project_root=project_root, vector_store=vector_store))
+
+
+#: Startup-state vs RAG-readiness contract (r31). Keyed by project id; values:
+#: ``attached`` (bound indexer wired — the only state that may be reported RAG-ready),
+#: ``initial_setup_pending`` (RAG requested, but only the implicit cwd default project exists and
+#: it is not inside the allowed root: startup/auth/registration continue, RAG is never ready),
+#: ``binding_not_ready`` / ``disabled`` / ``legacy`` (see ``project_rag_policy``).
+#: An explicitly created/chosen project outside the allowed root is *not* recorded here: it still
+#: raises ``ProjectEmbeddingBindingError`` from ``bound_rag_project_root``.
+_PROJECT_RAG_STATES: dict[str, str] = {}
+
+
+def project_rag_state(project_id: str | None = None) -> str:
+    """Return the recorded project-RAG state (``"unknown"`` before a runtime was built)."""
+    if project_id is None:
+        try:
+            from antigravity_k.engine.project_registry import get_project_registry
+
+            project_id = get_project_registry().get_active_project().id
+        except Exception:
+            return "unknown"
+    return _PROJECT_RAG_STATES.get(project_id, "unknown")
+
+
+def _attach_rag_or_mark_setup_pending(orchestrator: OrchestratorAgent, project_id: str, project_root: str) -> None:
+    from antigravity_k.engine.project_embedding_binding import (
+        IMPLICIT_DEFAULT_PROJECT_ID,
+        bound_rag_root_status,
+        configured_embedding_binding,
+        project_rag_policy,
+    )
+
+    binding = configured_embedding_binding()
+    if binding is not None and project_id == IMPLICIT_DEFAULT_PROJECT_ID:
+        status = bound_rag_root_status(project_root)
+        if status != "ok":
+            setattr(orchestrator, "_rag_indexer", None)
+            setattr(orchestrator, "_project_rag_unavailable_reason", "initial_setup_pending")
+            _PROJECT_RAG_STATES[project_id] = "initial_setup_pending"
+            logger.warning(
+                "Project RAG initial setup pending: implicit default project is not a bound RAG root (%s)", status
+            )
+            return
+    _attach_project_rag_indexer(orchestrator, project_root, embedding_binding=binding)
+    if getattr(orchestrator, "_rag_indexer", None) is not None and binding is not None:
+        _PROJECT_RAG_STATES[project_id] = "attached"
+    else:
+        mode, _reason = project_rag_policy()
+        _PROJECT_RAG_STATES[project_id] = "binding_not_ready" if mode == "enabled" else mode
 
 
 def _build_project_slash_registry(
@@ -313,7 +373,7 @@ def _build_project_runtime(project_id: str, project_root: str) -> ProjectRuntime
         memory_manager=memory_manager,
         project_id=project_id,
     )
-    _attach_project_rag_indexer(orchestrator, project_root)
+    _attach_rag_or_mark_setup_pending(orchestrator, project_id, project_root)
     task_runner = get_task_runner()
     benchmark_harness = get_benchmark_harness()
     agent_runtime = AgentRuntime(

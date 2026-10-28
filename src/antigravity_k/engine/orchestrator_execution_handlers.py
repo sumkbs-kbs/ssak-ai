@@ -103,6 +103,7 @@ def max_execute_handler(ctx: StateContext, orch: _OrchestratorLike) -> Generator
                 ctx.task_type,
                 ctx.max_steps,
                 ctx.target_model,
+                evaluation_user_task=ctx.user_message,
             )
             ctx.agent_output = tool_loop.last_output
             if tool_loop.approval_required:
@@ -166,6 +167,7 @@ def max_execute_handler(ctx: StateContext, orch: _OrchestratorLike) -> Generator
             ctx.task_type,
             ctx.max_steps,
             ctx.target_model,
+            evaluation_user_task=ctx.user_message,
         )
         ctx.agent_output = tool_loop.last_output
         if tool_loop.approval_required:
@@ -207,15 +209,27 @@ def pipeline_execute_handler(ctx: StateContext, orch: _OrchestratorLike) -> Gene
     pipeline = _pipeline_steps(_analysis_value(ctx, "pipeline", []))
     yield ProgressChunk("\n\n🚀 **멀티 스텝 파이프라인 시작**\n")
 
+    from antigravity_k.engine import task_plan_state as tps
+
+    plan_id = tps.plan_id_for(_analysis_value(ctx, "pipeline", []))
     current_messages = list(ctx.custom_messages)
     last_output = ""
-    for step_info in pipeline:
+    for step_index, step_info in enumerate(pipeline):
         raw_step_num = step_info.get("step", 0)
         step_num = raw_step_num if isinstance(raw_step_num, int) else 0
         raw_agent_role = step_info.get("agent", "WORKER")
         agent_role = raw_agent_role if isinstance(raw_agent_role, str) else "WORKER"
         raw_task_desc = step_info.get("task", "")
         task_desc = raw_task_desc if isinstance(raw_task_desc, str) else ""
+
+        done_output = tps.completed_step_output(plan_id, step_index)
+        if done_output is not None:
+            # r38: completed before the pause/restart — restore its output, do not regenerate it.
+            yield ProgressChunk(f"\n\n---\n**[Step {step_num}] {agent_role}**: (completed before resume)\n")
+            last_output = done_output
+            if done_output:
+                current_messages.append({"role": "assistant", "content": f"[{agent_role} 완료]: " + done_output})
+            continue
 
         yield ProgressChunk(f"\n\n---\n**[Step {step_num}] {agent_role}**: {task_desc}\n\n")
 
@@ -246,6 +260,7 @@ def pipeline_execute_handler(ctx: StateContext, orch: _OrchestratorLike) -> Gene
             ctx.transition_to(AgentState.COMPLETE)
             return
 
+        tps.mark_step_completed(plan_id, step_index, tool_loop.last_output or "")
         if tool_loop.last_output:
             current_messages.append(
                 {

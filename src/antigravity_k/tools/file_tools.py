@@ -887,8 +887,24 @@ class GlobSearchTool(BaseTool):
         max_results = cast(int, kwargs.get("max_results", 50))
 
         try:
+            # r30 P0: `root` is not a PATH_ARG key, so resolve it here under the bound project root
+            # (absolute / `..` / symlink-out roots are denied) and drop matches that escape it.
+            from antigravity_k.tools.tool_path import (
+                ToolPathError,
+                contained_paths,
+                effective_project_root,
+                is_sensitive_path,
+                resolve_tool_path,
+            )
+
+            project_root = effective_project_root(root if root and os.path.isabs(root) else None)
+            try:
+                root = resolve_tool_path(root or ".", project_root)
+            except ToolPathError as exc:
+                return f"Error: [DENIED] Tool path escapes project root: {exc.raw_path or exc}"
             full_pattern = os.path.join(root, pattern)
-            matches = glob_module.glob(full_pattern, recursive=True)
+            matches = contained_paths(glob_module.glob(full_pattern, recursive=True), project_root)
+            matches = [m for m in matches if not is_sensitive_path(m)]
 
             # 수정 시간순 정렬 (최신 우선) — Claw Code 패턴
             file_info: list[_FileInfo] = []
@@ -1050,12 +1066,24 @@ class GrepSearchTool(BaseTool):
         results: list[str] = []
 
         try:
+            from antigravity_k.tools.tool_path import contained_paths, effective_project_root, is_sensitive_path
+
+            # r30 P0: `path` is already resolved under the project root by the registry; the
+            # `include` pattern and symlinked directories can still reach outside it, so every
+            # candidate file is re-contained, and secret-named files are never searched.
+            boundary = effective_project_root(path if os.path.isdir(path) else os.path.dirname(path) or ".")
             if os.path.isfile(path):
                 files = [path]
             else:
                 glob_pattern = os.path.join(path, "**", include or "*")
                 files = glob_module.glob(glob_pattern, recursive=True)
                 files = [f for f in files if os.path.isfile(f)]
+            from antigravity_k.tools import verified_read
+
+            explicit_secret = os.path.isfile(path) and is_sensitive_path(path)
+            contained = contained_paths(files, boundary)
+            files = [f for f in contained if explicit_secret or not is_sensitive_path(f)]
+            skipped_secret = len(contained) - len(files)
 
             for file_path in files:
                 if len(results) >= max_results:
@@ -1063,20 +1091,30 @@ class GrepSearchTool(BaseTool):
 
                 # 바이너리 파일 스킵
                 try:
-                    with open(file_path, encoding="utf-8", errors="ignore") as f:
-                        for line_num, line in enumerate(f, 1):
-                            if len(results) >= max_results:
-                                break
-                            if pattern.search(line):
-                                rel_path = os.path.relpath(file_path, path) if os.path.isdir(path) else file_path
-                                results.append(f"{rel_path}:{line_num}: {line.rstrip()}")
+                    text = verified_read.read_text(file_path, errors="ignore")
+                except verified_read.SecretReadRefused as exc:
+                    return f"Error searching: {exc}"
+                except verified_read.VerifiedReadError:
+                    continue
+                try:
+                    for line_num, line in enumerate(text.splitlines(keepends=True), 1):
+                        if len(results) >= max_results:
+                            break
+                        if pattern.search(line):
+                            rel_path = os.path.relpath(file_path, path) if os.path.isdir(path) else file_path
+                            results.append(f"{rel_path}:{line_num}: {line.rstrip()}")
                 except (OSError, UnicodeDecodeError):
                     continue
 
+            note = (
+                f"\n({skipped_secret} secret-named file(s) not searched; reading one needs explicit per-file approval)"
+                if skipped_secret
+                else ""
+            )
             if not results:
-                return f"No matches found for '{query}' in {path}"
+                return f"No matches found for '{query}' in {path}{note}"
 
-            header = f"Found {len(results)} matches:"
+            header = f"Found {len(results)} matches:{note}"
             return header + "\n" + "\n".join(results)
         except Exception as e:
             logger.exception("Unhandled exception")

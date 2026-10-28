@@ -131,7 +131,9 @@ class TestGBrainAddNode:
 
         assert gbrain.graph.has_node("node_1")
         assert gbrain.graph.nodes["node_1"]["label"] == "test_label"
-        assert gbrain.collection.count() == 1
+        # r29: no approved embedding binding for gbrain -> vector side is explicitly not ready
+        # (previously Chroma's default ONNX model was downloaded and used implicitly).
+        assert gbrain.collection is None and gbrain.vector_not_ready_reason
         gbrain.close()
 
     def test_add_node_without_metadata(self, tmp_path: Path) -> None:
@@ -152,10 +154,8 @@ class TestGBrainAddNode:
             metadata={"str_key": "val", "int_key": 42, "list_key": [1, 2, 3]},
         )
 
-        result = gbrain.collection.get(ids=["node_1"])
-        assert result["metadatas"][0]["str_key"] == "val"
-        assert result["metadatas"][0]["int_key"] == 42
-        assert "list_key" not in result["metadatas"][0]
+        assert gbrain.graph.nodes["node_1"]["label"] == "test_label"
+        assert gbrain.collection is None  # r29: no vector write without an approved binding
         gbrain.close()
 
     def test_add_node_duplicate_id_updates(self, tmp_path: Path) -> None:
@@ -170,27 +170,11 @@ class TestGBrainAddNode:
         assert gbrain.graph.nodes["node_1"]["content"] == "content b"
         gbrain.close()
 
-    def test_failed_vector_upsert_does_not_count_or_keep_graph_change(
-        self,
-        tmp_path: Path,
-        monkeypatch: pytest.MonkeyPatch,
-    ) -> None:
-        _require_chromadb()
+    def test_no_vector_write_without_binding_keeps_graph_only(self, tmp_path: Path) -> None:
+        """r29: replaces the default-embedding upsert failure test; there is no implicit vector write."""
         gbrain = _new_gbrain(tmp_path / "gbrain_vector_failure")
-        collection = cast(object, gbrain.collection)
-        upsert = cast(Callable[..., object], getattr(collection, "upsert"))
-
-        def fail_upsert(**_kwargs: object) -> object:
-            raise RuntimeError("simulated Chroma failure")
-
-        monkeypatch.setattr(collection, "upsert", fail_upsert)
-        with pytest.raises(RuntimeError, match="simulated Chroma failure"):
-            gbrain.add_node("not-committed", "label", "content")
-
-        assert not gbrain.graph.has_node("not-committed")
-        assert gbrain.reward_tick == 0
-        assert gbrain.reward_score("not-committed", "not-committed") == 0.0
-        monkeypatch.setattr(collection, "upsert", upsert)
+        gbrain.add_node("graph-only", "label", "content")
+        assert gbrain.graph.has_node("graph-only") and gbrain.collection is None
         gbrain.close()
 
 
@@ -401,41 +385,16 @@ class TestGBrainAddEdge:
 
 
 class TestGBrainSearchSemantic:
-    def test_search_returns_results(self, tmp_path: Path) -> None:
-        _require_chromadb()
+    def test_search_without_binding_is_explicit_not_ready(self, tmp_path: Path) -> None:
+        """r29: no empty-success result and no Chroma default ONNX fallback."""
+        from antigravity_k.engine.embedding_guard import EmbeddingNotReadyError
+
         gbrain = _new_gbrain(tmp_path / "gbrain_search")
         gbrain.add_node("n1", "concept", "machine learning overview")
-        gbrain.add_node("n2", "concept", "deep learning techniques")
-
-        results = gbrain.search_semantic("machine learning", limit=5)
-        assert len(results) >= 1
-        gbrain.close()
-
-    def test_search_empty_collection_returns_empty(self, tmp_path: Path) -> None:
-        _require_chromadb()
-        gbrain = _new_gbrain(tmp_path / "gbrain_search_empty")
-        results = gbrain.search_semantic("anything")
-        assert results == []
-        gbrain.close()
-
-    def test_search_with_label_filter(self, tmp_path: Path) -> None:
-        _require_chromadb()
-        gbrain = _new_gbrain(tmp_path / "gbrain_search_filter")
-        gbrain.add_node("n1", "concept", "neural networks")
-        gbrain.add_node("n2", "preference", "dark mode")
-
-        results = gbrain.search_semantic("networks", filter_label="concept")
-        assert len(results) >= 1
-        assert results[0]["label"] == "concept"
-        gbrain.close()
-
-    def test_search_with_filter_no_match(self, tmp_path: Path) -> None:
-        _require_chromadb()
-        gbrain = _new_gbrain(tmp_path / "gbrain_search_nomatch")
-        gbrain.add_node("n1", "concept", "neural networks")
-
-        results = gbrain.search_semantic("networks", filter_label="nonexistent")
-        assert len(results) == 0
+        with pytest.raises(EmbeddingNotReadyError):
+            _ = gbrain.search_semantic("machine learning", limit=5)
+        with pytest.raises(EmbeddingNotReadyError):
+            _ = gbrain.search_semantic("networks", filter_label="concept")
         gbrain.close()
 
 

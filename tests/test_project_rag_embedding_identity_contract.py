@@ -23,7 +23,6 @@ from antigravity_k.engine.embeddings import EmbeddingEngine, EmbeddingModelUnava
 from antigravity_k.engine.model_registry import ModelRegistry
 from antigravity_k.engine.project_embedding_binding import (
     DIMENSIONS_METADATA_KEY,
-    IDENTITY_METADATA_KEY,
     ProjectEmbeddingBinding,
     ProjectEmbeddingBindingError,
 )
@@ -504,9 +503,12 @@ def test_explicit_factory_failure_surfaces_but_legacy_fallback_remains(case: Cas
         raise RuntimeError("owned vector constructor failure")
 
     monkeypatch.setattr(module, "VectorStore", fail)
+    project = case.root / "allowed-project"
+    project.mkdir()
+    monkeypatch.setenv("AGK_RAG_ALLOWED_ROOT", str(case.root))
     orchestrator = cast(OrchestratorAgent, cast(object, SimpleNamespace()))
     with pytest.raises(RuntimeError, match="constructor failure"):
-        _attach_project_rag_indexer(orchestrator, str(case.root), embedding_binding=case.binding())
+        _attach_project_rag_indexer(orchestrator, str(project), embedding_binding=case.binding())
     assert not hasattr(orchestrator, "_rag_indexer")
     _attach_project_rag_indexer(orchestrator, str(case.root))
     assert getattr(orchestrator, "_rag_indexer").vector_store is None
@@ -598,16 +600,15 @@ def test_delete_native_failure_does_not_advance_bound_manifest(case: Case, monke
     assert indexer.sync() == 0 and store.get_stats()["count"] == 0
 
 
-def test_legacy_constructor_and_default_callback_path_remain_opt_in_only(case: Case, monkeypatch: pytest.MonkeyPatch):
-    def deterministic(self, input):
-        return [[1.0, 2.0, 3.0] for _ in input]
+def test_legacy_unbound_constructor_never_uses_default_embedding(case: Case, monkeypatch: pytest.MonkeyPatch):
+    """r29: the unbound constructor no longer falls back to Chroma's default (ONNX) embedding."""
+    from antigravity_k.engine.embedding_guard import EmbeddingNotReadyError
 
-    monkeypatch.setattr(DefaultEmbeddingFunction, "__call__", deterministic)
+    used: list[str] = []
+    monkeypatch.setattr(DefaultEmbeddingFunction, "__call__", lambda self, input: used.append("default") or [])
     with VectorStore(str(case.root / "legacy-default")) as legacy:
-        legacy.upsert_chunks([chunk()])
-        assert legacy.search("legacy", 1)
-        assert legacy.collection is not None
-        assert IDENTITY_METADATA_KEY not in (legacy.collection.metadata or {})
-    assert case.engine.calls == []
-    assert case.native[0]["embeddings"] is None
-    assert case.native[1]["query_texts"] == ["legacy"]
+        with pytest.raises(EmbeddingNotReadyError):
+            legacy.upsert_chunks([chunk()])
+        with pytest.raises(EmbeddingNotReadyError):
+            legacy.search("legacy", 1)
+    assert used == [] and case.engine.calls == []

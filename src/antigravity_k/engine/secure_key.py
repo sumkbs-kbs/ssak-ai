@@ -114,6 +114,20 @@ _KDF_VERSIONS: dict[int, _KdfParams] = {
 }
 
 
+_TEST_KEYCHAIN_ENV = "AGK_TEST_KEYCHAIN_BACKEND"
+
+
+def _keychain_disabled_for_test() -> bool:
+    """Explicit test-only switch: ``AGK_TEST_KEYCHAIN_BACKEND=disabled``.
+
+    Only the exact value ``disabled`` turns it on; unset (the product default) keeps
+    the normal Keychain policy. When on, the real macOS Keychain is never read or
+    written (no ``security`` subprocess). Machine-seed resolution then continues with
+    the existing non-Keychain sources; nothing is stored in plaintext as a fallback.
+    """
+    return os.environ.get(_TEST_KEYCHAIN_ENV, "") == "disabled"
+
+
 def _get_keychain_seed() -> str | None:
     """MacOS 키체인에서 머신 시드를 조회합니다.
 
@@ -121,6 +135,9 @@ def _get_keychain_seed() -> str | None:
 
     조용히 None을 반환합니다.
     """
+    if _keychain_disabled_for_test():
+        logger.warning("Keychain read skipped: %s=disabled (test-only mode)", _TEST_KEYCHAIN_ENV)
+        return None
     import platform
 
     if platform.system() != "Darwin":
@@ -158,6 +175,9 @@ def _set_keychain_seed(seed: str) -> bool:
 
     이미 존재하면 업데이트합니다(-U 플래그).
     """
+    if _keychain_disabled_for_test():
+        logger.warning("Keychain write skipped: %s=disabled (test-only mode)", _TEST_KEYCHAIN_ENV)
+        return False
     import platform
 
     if platform.system() != "Darwin":

@@ -45,6 +45,10 @@ class PermissionDecision:
     # WS-02: path inspected by the gate (same absolute path tools must open).
     inspected_path: str | None = None
     executed_path: str | None = None
+    #: r40: "risk_level" only when the PROMPT/ALLOW comes purely from the risk x mode map (no path,
+    #: secret, capability or cache reason). Only such a PROMPT may be satisfied by the same
+    #: standard approval evidence the GatePipeline verified; every other PROMPT needs its own.
+    basis: str = ""
 
     @property
     def allows_execution(self) -> bool:

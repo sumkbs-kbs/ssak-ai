@@ -125,7 +125,16 @@ def test_store_reopen_preserves_task_and_event_resume_state(
     assert reopened_record["status"] == "done"
     assert reopened_record["prompt"] == before_status["prompt"]
     assert len(reopened_record["output"]) == before_status["output_length"]
-    assert reopened_store.list_execution_events(task_id) == [_record(event) for event in before.events]
+    # 저장소는 생산자가 쓴 payload_json 문자열을 그대로 보존하고 API 는 파싱한 payload 를 준다.
+    # 문자열 직렬화 형식(공백)이 아니라 같은 이벤트·같은 의미인지 비교한다 — task.status 도 포함.
+    reopened_events = reopened_store.list_execution_events(task_id)
+    assert [_semantic(record) for record in reopened_events] == [_semantic(_record(event)) for event in before.events]
+    status_events = [json.loads(r["payload_json"]) for r in reopened_events if r["event_type"] == "task.status"]
+    assert status_events, "상태 전이 이벤트가 재개방 후에도 보존돼야 한다"
+    assert status_events[-1]["to_status"] == "done"
+    assert status_events[-1]["terminal"] is True
+    assert [e["to_version"] for e in status_events] == list(range(1, len(status_events) + 1))
+    assert TaskStateStore(db_path).list_execution_events(task_id) == reopened_events  # 읽기는 이벤트를 만들지 않는다
 
 
 def test_legacy_and_v2_events_have_replay_parity(tmp_path: Path) -> None:
@@ -188,6 +197,12 @@ def _status(client: TestClient, task_id: str) -> TaskStatusResponse:
     response = client.get(f"/api/tasks/{task_id}/status")
     assert response.status_code == 200
     return TaskStatusResponse.model_validate(response.json())
+
+
+def _semantic(record: ExecutionEventRecord) -> tuple[object, ...]:
+    data: dict[str, object] = dict(record)
+    payload = json.loads(str(data.pop("payload_json")))
+    return (tuple(sorted(data.items())), json.dumps(payload, sort_keys=True))
 
 
 def _record(event: TaskEvent) -> ExecutionEventRecord:

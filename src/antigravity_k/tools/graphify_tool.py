@@ -137,7 +137,10 @@ class GraphifyTool(BaseTool):
             rows = build_file_index_rows(graph, files, symbols_per_file=10)
             if not rows:
                 return f"No matching files or symbols found for '{query}'."
-            return f"Retrieved {len(rows)} relevant files:\n" + "\n".join(f"- {r}" for r in rows)
+            return (
+                f"Retrieved {len(rows)} relevant files (search_mode=keyword; semantic ranking not ready: "
+                "no approved embedding binding):\n" + "\n".join(f"- {r}" for r in rows)
+            )
 
         if action == "query":
             hits = query_graph(graph, query, limit=top_k)

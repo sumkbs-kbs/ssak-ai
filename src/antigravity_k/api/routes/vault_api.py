@@ -43,7 +43,89 @@ class VaultTreeNode(TypedDict, total=False):
     size: int
 
 
-VaultDependency = Annotated[VaultEngine | None, Depends(get_vault_engine)]
+def _resolve_vault_project_id(request: Request) -> str | None:
+    """r36: the project whose vault the Wiki/vault routes operate on.
+
+    The chat orchestrator reads past_memory from the *project-scoped* vault, while the
+    dashboard Wiki posts /api/vault/* with no project identity; resolving those requests
+    to the process-cwd ambient vault meant a saved memo could never reach past_memory
+    (r36 trace: write -> $HOME/.antigravity-k/vault_data, read -> <project>/.antigravity/vault_data).
+    Order: explicit X-AGK-Project-Id header / ``project_id`` query -> session active-project
+    binding -> the registry's active project (the project the UI shows as current).
+    The implicit cwd default project keeps the ambient vault (unchanged behaviour)."""
+    from antigravity_k.api.project_binding import SESSION_ID_HEADER, get_session_active_project
+
+    explicit = (request.headers.get("X-AGK-Project-Id") or request.query_params.get("project_id") or "").strip()
+    binding = get_session_active_project(request.headers.get(SESSION_ID_HEADER))
+    if explicit:
+        # r37: an explicit id is validated (registered, root under the allowed bases) and must
+        # agree with the current request/session project context. A wrong id is an error, never a
+        # silent fallback to the default/ambient vault.
+        _validate_explicit_vault_project(explicit, binding.project_id if binding is not None else None)
+        return explicit
+    if binding is not None:
+        return binding.project_id
+    try:
+        from antigravity_k.engine.project_embedding_binding import IMPLICIT_DEFAULT_PROJECT_ID
+        from antigravity_k.engine.project_registry import get_project_registry
+
+        active = get_project_registry().get_active_project()
+    except Exception:  # noqa: BLE001  # noqa: BROAD_EXCEPT_OK - registry unavailable -> ambient vault
+        logger.warning("vault project resolution: registry unavailable; using ambient vault")
+        return None
+    return None if active.id == IMPLICIT_DEFAULT_PROJECT_ID else active.id
+
+
+def _validate_explicit_vault_project(project_id: str, session_project_id: str | None) -> str:
+    """r37: existence + allowed-root + request-context check for an explicit vault project id.
+
+    Returns the canonical project root. Raises 404 (unknown id), 403 (root outside the allowed
+    bases) or 409 (disagrees with the session binding / bound request context)."""
+    from antigravity_k.api.contracts.errors import ExecutionContextError, ProjectNotFoundError
+    from antigravity_k.api.project_binding import get_request_project_id
+    from antigravity_k.engine.request_execution_context import resolve_canonical_project_root
+
+    try:
+        _record, canonical = resolve_canonical_project_root(project_id)
+    except ProjectNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="vault project not found") from exc
+    except ExecutionContextError as exc:
+        raise HTTPException(status_code=403, detail="vault project root not allowed") from exc
+    bound = get_request_project_id()
+    for current in (bound, session_project_id):
+        if current and current != project_id:
+            raise HTTPException(status_code=409, detail="vault project_id does not match the current project context")
+    return canonical
+
+
+def _project_vault_engine(
+    request: Request,
+    ambient: Annotated[VaultEngine | None, Depends(get_vault_engine)],
+) -> VaultEngine | None:
+    from antigravity_k.engine.project_embedding_binding import IMPLICIT_DEFAULT_PROJECT_ID
+
+    project_id = _resolve_vault_project_id(request)
+    if not project_id or project_id == IMPLICIT_DEFAULT_PROJECT_ID:
+        # implicit default project -> ambient vault, resolved through DI (dependency overrides apply)
+        return ambient
+    # r37: a resolved project must reach *its* store; no silent ambient fallback on failure.
+    from antigravity_k.api.dependencies import acquire_project_runtime
+    from antigravity_k.engine.request_execution_context import resolve_canonical_project_root
+
+    try:
+        _record, canonical = resolve_canonical_project_root(project_id)
+        runtime = acquire_project_runtime(project_id=project_id, project_root=canonical)
+    except HTTPException:
+        raise
+    except Exception as exc:  # noqa: BLE001  # noqa: BROAD_EXCEPT_OK - fail closed, no fallback
+        logger.warning("vault project runtime unavailable for resolved project; refusing fallback")
+        raise HTTPException(status_code=503, detail="project vault unavailable") from exc
+    if runtime.vault_engine is None:
+        raise HTTPException(status_code=503, detail="project vault unavailable")
+    return runtime.vault_engine
+
+
+VaultDependency = Annotated[VaultEngine | None, Depends(_project_vault_engine)]
 
 
 async def _parse_json_body(request: Request, model: type[_ModelT]) -> _ModelT:
@@ -249,3 +331,41 @@ def search_notes(q: str, engine: VaultDependency):
     except (ValueError, KeyError) as e:
         logger.error("Search error: %s", e)
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/vault/embedding-status")
+def vault_embedding_status(probe: bool = False):
+    """로컬 Ollama 임베딩 상태. 기본은 읽기 전용(/api/tags)이며 probe=true일 때만 임베딩 1회."""
+    from antigravity_k.engine.embedding_readiness import check_embedding_readiness
+    from antigravity_k.engine.model_registry import ModelRegistry
+    from antigravity_k.engine.project_embedding_binding import RAG_EMBEDDING_ENV
+
+    binding_enabled = os.environ.get(RAG_EMBEDDING_ENV, "").strip().casefold() == "ollama"
+    registry = ModelRegistry()
+    profile = registry.get_default("embedding")
+    if profile is None:
+        return {
+            "state": "model_missing",
+            "rag_ready": False,
+            "model": "",
+            "message": "임베딩 모델이 설정되지 않았습니다.",
+            "model_present": False,
+            "embedding_verified": False,
+            "app_rag_binding": binding_enabled,
+            "app_rag_ready": False,
+        }
+    from antigravity_k.api.dependencies import project_rag_state
+
+    result = dict(check_embedding_readiness(profile, registry, probe=probe))
+    present = result["state"] not in {"ollama_unreachable", "model_missing"}
+    verified = result["state"] == "ready"
+    project_state = project_rag_state()
+    result.update(
+        model_present=present,
+        embedding_verified=verified,
+        app_rag_binding=binding_enabled,
+        project_rag_state=project_state,
+        # RAG-ready requires the active project's bound indexer; setup-pending is never ready.
+        app_rag_ready=verified and binding_enabled and project_state == "attached",
+    )
+    return result

@@ -73,7 +73,8 @@ class TestBrowseAndList:
         names = [cast(str, e["name"]) for e in items]
         assert "subdir" in names
         assert ".secret" not in names
-        assert body["parent"] is not None  # tmp 하위라 부모 존재
+        # r29: workspace root is the browse root; its parent lies outside allowed roots -> not offered.
+        assert body["parent"] is None
 
     def test_list_returns_relative_paths_sorted_dirs_first(self, client: TestClient, workspace: Path) -> None:
         (workspace / "zdir").mkdir()

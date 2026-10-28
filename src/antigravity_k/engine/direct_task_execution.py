@@ -24,6 +24,7 @@ from antigravity_k.engine.task_state_store import (
 )
 from antigravity_k.engine.task_state_types import InvalidTaskTransitionError, TaskTransitionConflictError
 from antigravity_k.engine.tool_policy import tool_policy_denial
+from antigravity_k.engine.turn_tool_constraints import TurnToolConstraints
 
 TaskOutcomeRecorder = Callable[[TaskOutcome], TaskOutcome | None]
 
@@ -249,9 +250,22 @@ class DirectTaskExecution:
 
         state_store = task_runner.state_store
         task_id = f"direct_{uuid.uuid4().hex[:12]}"
-        _ = state_store.create_task(task_id, prompt, "pending", datetime.now(UTC).isoformat())
+        from antigravity_k.api.project_binding import (
+            execution_context_to_task_context,
+            get_bound_request_execution_context,
+        )
+
+        request_context = get_bound_request_execution_context()
+        owner_subject = request_context.actor_subject if request_context is not None else "loopback"
+        _ = state_store.create_task(
+            task_id, prompt, "pending", datetime.now(UTC).isoformat(), owner_subject=owner_subject
+        )
         expected_tools = self._explicit_tool_contract(prompt)
-        checkpoint_context = {"expected_tools": expected_tools} if expected_tools else {}
+        checkpoint_context: dict[str, object] = {"expected_tools": expected_tools} if expected_tools else {}
+        if request_context is not None:
+            checkpoint_context.update(
+                execution_context_to_task_context(request_context.model_copy(update={"task_id": task_id}))
+            )
         if mode != "max_execution":
             state_store.save_checkpoint(
                 task_id,
@@ -271,7 +285,20 @@ class DirectTaskExecution:
         if not isinstance(tool_registry, ToolRegistryPort):
             return []
         tool_names = tool_registry.get_names()
+        constraints = TurnToolConstraints.from_request(prompt)
+        if constraints.no_tools:
+            return []
         lowered_prompt = prompt.casefold()
+        active_prompt = lowered_prompt
+        for tool_name in tool_names:
+            escaped_name = re.escape(tool_name.casefold())
+            named_call = (
+                rf"(?<!`)`{escaped_name}`(?!`)(?=\s*(?:"
+                r"(?:도구)?(?:로|으로)|(?:도구)?(?:을|를)\s*(?:호출|사용|실행)|"
+                r"tool\s+to\s+(?:read|open|write|run|search|execute)\b))"
+            )
+            active_prompt = re.sub(named_call, tool_name.casefold(), active_prompt)
+        active_prompt = _QUOTED_SEARCH_MATERIAL.sub(" ", active_prompt)
         search_clauses = re.split(
             r"[.!?;\n]|\b(?:and|but)\b|하고|하되", _QUOTED_SEARCH_MATERIAL.sub(" ", lowered_prompt)
         )
@@ -291,7 +318,7 @@ class DirectTaskExecution:
                     for clause in search_clauses
                 )
             else:
-                requested = re.search(pattern, lowered_prompt) is not None
+                requested = constraints.denial(tool_name) is None and re.search(pattern, active_prompt) is not None
             if requested:
                 contracted.append(tool_name)
         return contracted

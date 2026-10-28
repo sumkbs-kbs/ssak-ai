@@ -355,7 +355,12 @@ def test_ollama_inference_selects_exact_candidate_model() -> None:
     assert payload["model"] == "tuned-model:latest"
     assert payload["think"] is False
     assert payload["messages"] == [{"role": "user", "content": "answer"}]
-    assert opener.timeouts == [300.0]
+    # The backend still asks for 300 s; the direct-model-call guard (approved per-request cap,
+    # LLM_REQUEST_TIMEOUT_CAP_S) bounds it. Pin both: the requested value and the cap applied.
+    from antigravity_k.engine.direct_model_call import LLM_REQUEST_TIMEOUT_CAP_S
+
+    assert opener.timeouts == [min(300.0, LLM_REQUEST_TIMEOUT_CAP_S)]
+    assert LLM_REQUEST_TIMEOUT_CAP_S == 120.0
 
 
 def test_evaluate_candidates_uses_backend_adapter(tmp_path: Path) -> None:

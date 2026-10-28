@@ -311,7 +311,10 @@ class SkillAutoLearner:
                     data=json.dumps(data).encode("utf-8"),
                     headers={"Content-Type": "application/json"},
                 )
-                with safe_urlopen(req, timeout=60) as resp:
+                from antigravity_k.engine.direct_model_call import guard_direct_model_call
+
+                _timeout = guard_direct_model_call(str(data["model"]), "skill_auto_learner", prompt, timeout=60)
+                with safe_urlopen(req, timeout=_timeout) as resp:
                     result = cast(object, json.loads(resp.read().decode("utf-8")))
                     if isinstance(result, dict):
                         result_map = cast(dict[str, object], cast(object, result))

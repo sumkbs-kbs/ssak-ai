@@ -86,6 +86,10 @@ def shell_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[tuple
 
     prior_access_mode = get_access_mode()
     set_access_mode(AccessMode.FULL_ACCESS)
+    # r39: FULL_ACCESS alone no longer implies auto-pilot. These tests exercise the explicit opt-in.
+    from antigravity_k.engine.access_mode import ExecutionPolicy, set_execution_policy
+
+    set_execution_policy(ExecutionPolicy.AUTO_PILOT)
     mode_manager = get_mode_manager()
     prior_execution_mode = mode_manager.current_mode
 
@@ -94,6 +98,7 @@ def shell_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[tuple
             yield client, workspace
     finally:
         set_access_mode(prior_access_mode)
+        set_execution_policy(None)
         _restore_execution_mode(mode_manager, prior_execution_mode)
         get_session_project_bindings().reset_all()
         reset_bound_request_execution_context()

@@ -25,6 +25,7 @@ PATH_ARG_KEYS: tuple[str, ...] = (
     "target",
     "dir_path",
     "cwd",
+    "root",  # r30 P0: glob_search root must be contained like every other path arg
 )
 
 SHELL_CWD_TOOLS: frozenset[str] = frozenset(
@@ -140,6 +141,49 @@ def _is_under_root(resolved: str, root_real: str) -> bool:
         return True
     prefix = root_real.rstrip(os.sep) + os.sep
     return resolved.startswith(prefix)
+
+
+# r30 P0: one sensitive-name rule for read tools (read_file/grep/glob/list) and context file selection.
+# In-project files matching these names are not auto-read; read_file routes them to the existing
+# approval path, and search/summary tools skip them. Names only — contents are never inspected.
+_SENSITIVE_EXACT: frozenset[str] = frozenset(
+    {".netrc", ".npmrc", ".pypirc", "credentials.json", "id_rsa", "id_dsa", "id_ecdsa", "id_ed25519"}
+)
+_SENSITIVE_SUFFIXES: tuple[str, ...] = (".pem", ".key", ".p12", ".pfx", ".keystore", ".jks")
+_SENSITIVE_ALLOWED: frozenset[str] = frozenset({".env.example", ".env.sample", ".env.template"})
+
+
+def is_sensitive_path(path: str) -> bool:
+    """True when the basename (or any directory part) names secret material (.env*, keys, .ssh)."""
+    parts = [part for part in str(path).replace("\\", "/").split("/") if part]
+    if not parts:
+        return False
+    if any(part in {".ssh", ".gnupg", ".aws"} for part in parts[:-1]):
+        return True
+    name = parts[-1].lower()
+    if name in _SENSITIVE_ALLOWED:
+        return False
+    if name == ".env" or name.startswith(".env."):
+        return True
+    if name in _SENSITIVE_EXACT or any(name.startswith(f"{base}.") for base in ("id_rsa", "id_ed25519")):
+        return True
+    return name.endswith(_SENSITIVE_SUFFIXES)
+
+
+def contained_paths(paths: list[str], root: str) -> list[str]:
+    """Keep only paths whose realpath stays under ``root`` (symlink-out / ``..`` pattern escapes dropped)."""
+    root_real = os.path.realpath(os.path.abspath(root))
+    kept: list[str] = []
+    for candidate in paths:
+        try:
+            # realpath() resolves symlinks before `..`; abspath() first would normalize
+            # `link/../x` lexically and hide a symlink-out escape (r30 finding).
+            resolved = os.path.realpath(candidate)
+        except OSError:
+            continue
+        if _is_under_root(resolved, root_real):
+            kept.append(candidate)
+    return kept
 
 
 def resolve_tool_path(raw_path: str, project_root: str) -> str:

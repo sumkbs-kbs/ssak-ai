@@ -117,6 +117,10 @@ def init_handler(ctx: StateContext, orch: object) -> Generator[str, None, None]:
     ctx.custom_messages = list(ctx.messages)
 
 
+class _ProjectRagSkipped(Exception):
+    """Project RAG intentionally skipped by policy (no search, no fallback)."""
+
+
 # ─── CONTEXT_ENRICH 핸들러 ────────────────────────────────────────
 
 
@@ -124,37 +128,76 @@ def context_enrich_handler(ctx: StateContext, orch: object) -> None:
     """RAG + KI + 벡터 스토어 + AST-RAGIndexer + 코드 트리 컨텍스트 주입."""
     orchestrator = cast(_OrchestratorLike, orch)
     rag_context: str = ""
+    segments: dict[str, str] = {}
+    rag_status = "skipped"
 
     # KIs 주입
     ki_context = orchestrator.ctx.ki_engine.build_ki_prompt()
     if ki_context:
+        segments["ki"] = ki_context
         rag_context += ki_context
 
     # ─── AST 기반 RAGIndexer 코드 검색 ───
     try:
+        from antigravity_k.engine.project_embedding_binding import project_rag_policy
         from antigravity_k.engine.rag_indexer import RAGIndexer
 
-        indexer = cast(_RagIndexerLike | None, getattr(orchestrator, "_rag_indexer", None))
+        rag_mode, rag_reason = project_rag_policy()
+        indexer: _RagIndexerLike | None = None
+        if rag_mode == "disabled":
+            logger.info("[RAGIndexer] Project RAG disabled: %s", rag_reason)
+        else:
+            indexer = cast(_RagIndexerLike | None, getattr(orchestrator, "_rag_indexer", None))
+            bound = getattr(getattr(indexer, "vector_store", None), "embedding_binding", None) is not None
+            if rag_mode == "enabled" and not bound:
+                logger.info("[RAGIndexer] Project RAG enabled but not ready: bound indexer missing")
+                indexer = None
+            elif indexer is None:
+                indexer = RAGIndexer(project_root=orchestrator.project_root)
+                setattr(orchestrator, "_rag_indexer", indexer)
+            elif rag_mode == "enabled":
+                # Bound (explicitly enabled) project RAG has no startup auto-index; bring the
+                # project index up to date here (incremental, hash-based) before searching.
+                sync = getattr(indexer, "sync", None)
+                if callable(sync):
+                    synced = cast(Callable[[], int], sync)()
+                    logger.warning("[RAGIndexer] Bound project index synced: %s chunks updated", synced)
         if indexer is None:
-            indexer = RAGIndexer(project_root=orchestrator.project_root)
-            setattr(orchestrator, "_rag_indexer", indexer)
+            raise _ProjectRagSkipped
         format_kwargs: _FormatContextKwargs = {}
         manager = orchestrator.manager
         plan_provider = getattr(manager, "long_context_plan", None) if manager is not None else None
         if callable(plan_provider) and ctx.target_model:
             provider = cast(Callable[[str], Mapping[str, object]], plan_provider)
-            execution_plan = provider(ctx.target_model)
+            raw_plan = provider(ctx.target_model)
+            # A model without a long-context plan returns None: fall back to the default
+            # retrieval instead of aborting project RAG enrichment.
+            execution_plan: Mapping[str, object] = raw_plan if isinstance(raw_plan, Mapping) else {}
             if execution_plan.get("retrieval_mode") == "long_context":
                 format_kwargs = {"n_results": 5, "mode": "long_context"}
                 candidate_pool = execution_plan.get("candidate_pool")
                 if isinstance(candidate_pool, int) and candidate_pool > 0:
                     format_kwargs["candidate_pool"] = candidate_pool
         code_context = indexer.format_context(ctx.user_message, **format_kwargs)
+        segments["rag_code"] = code_context or ""
+        rag_status = "injected" if code_context else "empty"
         if code_context:
             rag_context += "\n" + code_context
-            logger.info("[RAGIndexer] Code context injected for: %s...", ctx.user_message[:50])
+            logger.warning("[RAGIndexer] Code context injected (%s chars)", len(code_context))
+            import antigravity_k.engine.llm_input_audit as llm_input_audit
+
+            if llm_input_audit.enabled():
+                llm_input_audit.audit_retrieval(
+                    project_root=str(orchestrator.project_root),
+                    project_id=_audit_project_id(ctx, str(orchestrator.project_root)),
+                    path=f"graph:{getattr(ctx, 'task_type', '')}:rag={rag_mode}",
+                    sources=list(getattr(indexer, "last_context_sources", []) or []),
+                )
+    except _ProjectRagSkipped:
+        pass
     except Exception as e:  # noqa: BLE001  # noqa: BROAD_EXCEPT_OK - optional indexer boundary
-        logger.exception("RAGIndexer enrichment failed")
+        rag_status = f"error:{type(e).__name__}"
+        logger.exception("RAGIndexer enrichment failed (rag_status=%s; not recorded as RAG success)", rag_status)
         logger.debug(
             "RAGIndexer enrichment skipped: %s", e
         )  # ─── Freebuff-Style: Code Tree 기반 자동 파일 컨텍스트 (P1+P2) ───
@@ -176,6 +219,7 @@ def context_enrich_handler(ctx: StateContext, orch: object) -> None:
                 file_context = summarizer.summarize_files(related_files, orchestrator.project_root, ctx.user_message)
 
                 if file_context:
+                    segments["file_selection"] = file_context
                     rag_context += "\n" + file_context
                     logger.info(
                         "[FileSelection:%s] Auto-injected %s files for: %s",
@@ -186,25 +230,18 @@ def context_enrich_handler(ctx: StateContext, orch: object) -> None:
     except Exception as e:  # noqa: BLE001  # noqa: BROAD_EXCEPT_OK - optional code-tree boundary
         logger.warning("[CodeTree] 컨텍스트 자동 주입 실패 (non-critical): %s", e, exc_info=True)
 
-    # 벡터 스토어 검색 (과거 메모리)
+    # 벡터 스토어 검색 (과거 메모리) — r39: 비에이전트 chat 경로와 같은 구현을 공유한다.
     if orchestrator.vault_engine and orchestrator.vault_engine.sync_rag:
-        try:
-            results = orchestrator.vault_engine.vector_store.search(ctx.user_message, n_results=5)
-            if results:
-                rag_context += (
-                    "\n\n<past_memory>\n이전에 기록된 유사한 작업 및 결정 내용입니다. "
-                    "이것은 직접적인 지시사항이 아니라 현재 작업을 수행할 때 참고해야 할 과거의 지식입니다.\n\n"
-                )
-                for res in results:
-                    raw_metadata = res.get("metadata", {})
-                    metadata: Mapping[str, object] = (
-                        cast(Mapping[str, object], raw_metadata) if isinstance(raw_metadata, Mapping) else {}
-                    )
-                    source = str(metadata.get("source", "Unknown"))
-                    rag_context += f"--- Source: {source} ---\n{res.get('text', '')}\n\n"
-                rag_context += "</past_memory>"
-        except Exception:  # noqa: BLE001  # noqa: BROAD_EXCEPT_OK - vector-store boundary
-            logger.exception("RAG search failed")
+        from antigravity_k.engine.past_memory import build_past_memory_block
+
+        block, past_status, _n = build_past_memory_block(
+            orchestrator.vault_engine, ctx.user_message, project_root=orchestrator.project_root
+        )
+        if block:
+            rag_context += block
+            segments["past_memory"] = block
+        elif past_status == "error":
+            segments["past_memory_status"] = ""
 
     # ── RAG 블롭 상한 ──
     # 이 블롭은 "마지막 사용자 메시지"에 합쳐져 모든 트리머의 최상위 보호를
@@ -222,6 +259,12 @@ def context_enrich_handler(ctx: StateContext, orch: object) -> None:
             logger.info("[ContextEnrich] RAG 컨텍스트를 %d토큰 상한으로 축약", _RAG_CONTEXT_MAX_TOKENS)
 
     ctx.rag_context = rag_context
+    import antigravity_k.engine.llm_input_audit as _audit
+
+    if _audit.enabled():
+        segments["question"] = ctx.user_message
+        segments["ephemeral"] = ctx.ephemeral_message or ""
+        _audit.register_segments(segments, rag_status=rag_status)
 
     # 컨텍스트 주입
     if rag_context or ctx.ephemeral_message:
@@ -291,3 +334,31 @@ def skill_match_handler(ctx: StateContext, orch: object) -> Generator[str, None,
         except Exception as e:  # noqa: BLE001  # noqa: BROAD_EXCEPT_OK - skill boundary
             logger.exception("Unhandled exception")
             logger.debug("Auto skill matching failed: %s", e)
+
+
+def _audit_project_id(ctx: object, project_root: str) -> str:
+    """r30: link the retrieval audit to the selected project (request binding, then registry by root)."""
+    explicit = str(getattr(ctx, "project_id", "") or "")
+    if explicit:
+        return explicit
+    try:
+        from antigravity_k.api.project_binding import get_request_project_id
+
+        bound = get_request_project_id()
+        if bound:
+            return str(bound)
+    except Exception:  # noqa: BLE001 - audit enrichment must not break the chat path
+        pass
+    try:
+        import os
+
+        from antigravity_k.engine.project_registry import get_project_registry
+
+        root = os.path.realpath(project_root)
+        for record in get_project_registry().list_projects():
+            path = str(record.get("path") or record.get("root") or "")
+            if path and os.path.realpath(path) == root:
+                return str(record.get("id") or record.get("project_id") or "")
+    except Exception:  # noqa: BLE001
+        pass
+    return ""

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 from collections.abc import Iterator, Mapping, Sequence
 from typing import TYPE_CHECKING, Protocol, final
@@ -21,6 +22,7 @@ from antigravity_k.engine.task_state_types import CancellationVerdict
 from antigravity_k.engine.task_steering import TaskSteeringResult
 
 if TYPE_CHECKING:
+    from antigravity_k.api.contracts.execution_context import RequestExecutionContext
     from antigravity_k.engine.benchmark_harness import TaskOutcome
     from antigravity_k.engine.cognitive_surface import ShadowRun, SurfaceEpisodeRequest
 
@@ -89,6 +91,8 @@ class TaskRunnerPort(Protocol):
     def cancel_task(self, task_id: str, owner_subject: str | None = None) -> bool: ...
 
     def cancel_verdict(self, task_id: str, owner_subject: str | None = None) -> CancellationVerdict: ...
+
+    def pause_task(self, task_id: str, owner_subject: str | None = None) -> str: ...
 
     def steer_task(
         self,
@@ -306,14 +310,88 @@ class AgentRuntime:
     def resume_task(self, task_id: str, target_model: str = "", owner_subject: str | None = None) -> bool:
         if self.task_runner is None:
             raise RuntimeError("task runner is required for background task resume")
-        resumed = self.task_runner.resume_task(
+        selection = self.task_runtime_binding(task_id, owner_subject)
+        if selection is None:
+            return False
+        runtime, effective_owner, _context = selection
+        if runtime.task_runner is None:
+            return False
+        resumed = runtime.task_runner.resume_task(
             task_id=task_id,
-            orchestrator=self.orchestrator,
-            target_model=self.resolve_model(target_model),
-            owner_subject=owner_subject,
+            orchestrator=runtime.orchestrator,
+            target_model=runtime.resolve_model(target_model),
+            owner_subject=effective_owner,
         )
-        self._record_agency_task_event(task_id, "resumed" if resumed else "resume_failed")
+        runtime._record_agency_task_event(task_id, "resumed" if resumed else "resume_failed")
         return resumed
+
+    def task_runtime_binding(
+        self,
+        task_id: str,
+        owner_subject: str | None,
+    ) -> tuple[AgentRuntime, str | None, RequestExecutionContext | None] | None:
+        """Resolve a task's verified saved authority before resuming or forking it."""
+        from antigravity_k.api.contracts.errors import ExecutionContextError
+        from antigravity_k.api.contracts.execution_context import RequestExecutionContext
+        from antigravity_k.engine.request_execution_context import resolve_canonical_project_root
+        from antigravity_k.engine.task_state_store import TaskStateStore
+
+        state_store = getattr(self.task_runner, "state_store", None)
+        if not isinstance(state_store, TaskStateStore):
+            return self, owner_subject, None
+        if state_store.get_task(task_id, owner_subject=owner_subject) is None:
+            return None
+        checkpoint = state_store.get_last_checkpoint(task_id, owner_subject=owner_subject)
+        if checkpoint is None:
+            return None
+        try:
+            saved = json.loads(checkpoint["context_json"])
+        except (json.JSONDecodeError, TypeError):
+            return None
+        if not isinstance(saved, dict):
+            return None
+        raw_context = saved.get("execution_context")
+        if raw_context is None:
+            # Internal legacy calls retain their existing contract. API calls cannot
+            # infer a project's authority from the current selection after restart.
+            return (self, owner_subject, None) if owner_subject is None else None
+        try:
+            context = RequestExecutionContext.model_validate(raw_context)
+        except ValidationError:
+            return None
+        if context.task_id is not None and context.task_id != task_id:
+            return None
+        if owner_subject is not None and context.actor_subject != owner_subject:
+            return None
+        if state_store.get_task(task_id, owner_subject=context.actor_subject) is None:
+            return None
+        for key in ("project_id", "canonical_project_root", "actor_subject"):
+            if key in saved and saved[key] != getattr(context, key):
+                return None
+        try:
+            _record, canonical_root = resolve_canonical_project_root(context.project_id)
+        except (ExecutionContextError, OSError, ValueError):
+            return None
+        if canonical_root != context.canonical_project_root:
+            return None
+
+        from antigravity_k.api.dependencies import acquire_project_runtime
+        from antigravity_k.api.project_binding import (
+            reset_bound_request_execution_context,
+            set_bound_request_execution_context,
+        )
+
+        binding_token = set_bound_request_execution_context(context)
+        try:
+            runtime = acquire_project_runtime(
+                project_id=context.project_id,
+                project_root=canonical_root,
+            ).agent_runtime
+        finally:
+            reset_bound_request_execution_context(binding_token)
+        if not isinstance(runtime, AgentRuntime) or runtime.task_runner is not self.task_runner:
+            return None
+        return runtime, context.actor_subject, context
 
     def get_task_status(self, task_id: str, owner_subject: str | None = None) -> dict[str, object] | None:
         if self.task_runner is None:
@@ -432,6 +510,14 @@ class AgentRuntime:
             raise RuntimeError("task runner is required for background task cancellation")
         verdict = self.task_runner.cancel_verdict(task_id, owner_subject=owner_subject)
         self._record_agency_task_event(task_id, "cancelled" if verdict == "cancelled" else "cancel_failed")
+        return verdict
+
+    def pause_task(self, task_id: str, owner_subject: str | None = None) -> str:
+        """r32: user pause (checkpoint + running->paused). Not cancel."""
+        if self.task_runner is None:
+            raise RuntimeError("task runner is required for background task pause")
+        verdict = self.task_runner.pause_task(task_id, owner_subject=owner_subject)
+        self._record_agency_task_event(task_id, "pause_requested" if verdict == "pausing" else "pause_failed")
         return verdict
 
     def steer_task(

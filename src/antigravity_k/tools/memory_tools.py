@@ -40,7 +40,7 @@ class StoreKnowledgeTool(BaseTool):
 
     category: ToolCategory = ToolCategory.SYSTEM
     render_in: RenderIn = RenderIn.CONTEXTUAL
-    risk_level: RiskLevel = RiskLevel.SAFE
+    risk_level: RiskLevel = RiskLevel.LOW
     icon: str = "💾"
     tags: list[str] = ["memory", "knowledge", "save", "store"]
     _name: str
@@ -79,6 +79,7 @@ class StoreKnowledgeTool(BaseTool):
 
     def _get_vector_store(self) -> _VectorStoreLike:
         if not self._vector_store:
+            from antigravity_k.engine.project_embedding_binding import configured_embedding_binding_or_none
             from antigravity_k.engine.vector_store import VectorStore
 
             db_path = os.path.join(self.project_root, ".antigravity", "vault_data")
@@ -87,6 +88,7 @@ class StoreKnowledgeTool(BaseTool):
                 VectorStore(
                     persist_directory=db_path,
                     collection_name="agent_knowledge",
+                    embedding_binding=configured_embedding_binding_or_none(),
                 ),
             )
         return self._vector_store
@@ -200,6 +202,7 @@ class SearchKnowledgeTool(BaseTool):
 
     def _get_vector_store(self) -> _VectorStoreLike:
         if not self._vector_store:
+            from antigravity_k.engine.project_embedding_binding import configured_embedding_binding_or_none
             from antigravity_k.engine.vector_store import VectorStore
 
             db_path = os.path.join(self.project_root, ".antigravity", "vault_data")
@@ -208,6 +211,7 @@ class SearchKnowledgeTool(BaseTool):
                 VectorStore(
                     persist_directory=db_path,
                     collection_name="agent_knowledge",
+                    embedding_binding=configured_embedding_binding_or_none(),
                 ),
             )
         return self._vector_store

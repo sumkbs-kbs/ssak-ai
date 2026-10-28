@@ -182,7 +182,7 @@ class TaskOutputResponse(BaseModel):
 
 
 class TaskActionResponse(BaseModel):
-    status: Literal["cancelled", "resumed"]
+    status: Literal["cancelled", "resumed", "pausing"]
     task_id: str
 
 

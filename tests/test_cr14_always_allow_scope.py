@@ -236,7 +236,7 @@ class TestUnconsentedRunsAreCounted:
             TOOL, {"command": "ls"}, "실행"
         )
 
-        assert proceed is True
+        assert proceed is not None  # r40: always-allow sentinel evidence
         assert request_id == ""
         grant = manager.always_allowed_grants()[0]
         assert grant.auto_approved_count == 1

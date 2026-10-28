@@ -15,6 +15,11 @@ from typing import TYPE_CHECKING, Protocol, TypeAlias, cast, final
 import networkx as nx
 from filelock import SoftFileLock
 
+from antigravity_k.engine.embedding_guard import NO_BINDING_REASON, EmbeddingNotReadyError
+
+if TYPE_CHECKING:
+    from antigravity_k.engine.project_embedding_binding import ProjectEmbeddingBinding
+
 logger = logging.getLogger(__name__)
 
 GraphAttributes = dict[str, str | int | float | bool]
@@ -197,11 +202,14 @@ class GBrain:
     # Selection/search consumers must not read reward as ranking authority.
     REWARD_SELECTION_CONSUMERS = ()  # empty: no production path ranks by reward_score
 
-    def __init__(self, storage_dir: str | None = None):
+    def __init__(self, storage_dir: str | None = None, embedding_binding: "ProjectEmbeddingBinding | None" = None):
         """Initialize the GBrain.
 
         Args:
             storage_dir: Explicit path, ahead of AGK_GBRAIN_DIR and the default home path.
+            embedding_binding: Approved embedding binding for the vector side (r30). When omitted the
+                configured binding (``AGK_RAG_EMBEDDING=ollama``) is used; without one the vector side
+                stays explicitly not-ready (never Chroma's implicit default embedding).
 
         """
         self._mutation_lock = threading.RLock()
@@ -235,6 +243,8 @@ class GBrain:
         db_path.mkdir(exist_ok=True)
 
         self.chroma_client: _ChromaClient | None = None
+        self.vector_not_ready_reason: str | None = None
+        self.embedding_binding: ProjectEmbeddingBinding | None = None
         self.collection: _CollectionBoundary = cast(_CollectionBoundary, cast(object, None))
 
         if _chroma_available and chromadb is not None and Settings is not None:
@@ -245,17 +255,37 @@ class GBrain:
                     path=str(db_path),
                     settings=settings_factory(anonymized_telemetry=False),
                 )
-                self.collection = cast(
-                    _CollectionBoundary,
-                    cast(object, self.chroma_client.get_or_create_collection(name="gbrain_nodes")),
-                )
-            except Exception:
+                # r29: never open a collection with Chroma's implicit default embedding function
+                # (it downloaded ONNX all-MiniLM in r28). r30: use the approved binding when present.
+                binding = embedding_binding
+                if binding is None:
+                    from antigravity_k.engine.project_embedding_binding import configured_embedding_binding
+
+                    try:
+                        binding = configured_embedding_binding()
+                    except Exception as exc:  # misconfigured binding => explicit not-ready, not a substitute
+                        self.vector_not_ready_reason = f"embedding binding not ready: {exc}"
+                if binding is not None:
+                    from antigravity_k.engine.gbrain_vector import BoundGBrainCollection
+
+                    self.collection = cast(
+                        _CollectionBoundary, cast(object, BoundGBrainCollection.open(self.chroma_client, binding))
+                    )
+                    self.embedding_binding = binding
+                elif self.vector_not_ready_reason is None:
+                    self.vector_not_ready_reason = NO_BINDING_REASON
+                if self.vector_not_ready_reason is not None:
+                    logger.warning("[GBrain] vector search not ready: %s", self.vector_not_ready_reason)
+            except Exception as exc:
                 logger.exception("[GBrain] chromadb 초기화 실패, 벡터 검색을 비활성화합니다.")
+                self.collection = cast(_CollectionBoundary, cast(object, None))
+                self.vector_not_ready_reason = f"vector store init failed: {type(exc).__name__}"
         else:
             logger.warning(
                 "[GBrain] chromadb 비활성화 (%s). 벡터 검색 없이 그래프 메모리만 동작합니다.",
                 type(_chroma_import_error).__name__,
             )
+            self.vector_not_ready_reason = "chromadb unavailable"
 
         # 비동기 백그라운드 저장을 위한 스레드 풀
         self._save_lock = threading.Lock()
@@ -542,6 +572,8 @@ class GBrain:
         filter_label: str | None,
     ) -> list[GraphAttributes]:
         collection = _collection_or_none(self)
+        if collection is None and self.vector_not_ready_reason is not None:
+            raise EmbeddingNotReadyError("GBrain.search_semantic")
         if collection is None or collection.count() == 0:
             return []
 

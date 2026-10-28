@@ -10,6 +10,8 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import logging
+import math
 import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field
@@ -328,16 +330,35 @@ def load_graph(path: Path) -> KnowledgeGraph:
     return g
 
 
+logger = logging.getLogger(__name__)
+SEMANTIC_DISABLED_REASON = "no approved embedding binding for graphify (local sentence-transformers disabled)"
+
+
 def embedding_retrieve(
     graph: KnowledgeGraph,
     question: str,
     top_k: int = 12,
     model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
 ) -> list[GraphNode]:
-    """Retrieve relevant graph nodes using sentence-transformers cosine similarity."""
+    """Retrieve relevant graph nodes by cosine similarity through the approved embedding binding.
+
+    r30: only the configured binding (``AGK_RAG_EMBEDDING=ollama`` -> local Ollama
+    nomic-embed-text) may embed. Local SentenceTransformer loading stays disabled (no implicit model
+    download). Without a binding this returns no semantic hits and ``hybrid_retrieve`` degrades to
+    keyword ranking (logged; ``last_retrieval_mode`` records it). ``model_name`` is ignored.
+    """
+    global last_retrieval_mode
+    _ = model_name
+    from antigravity_k.engine.project_embedding_binding import configured_embedding_binding
+
     try:
-        from sentence_transformers import SentenceTransformer, util
-    except ImportError:
+        binding = configured_embedding_binding()
+    except Exception as exc:
+        logger.warning("graphify semantic retrieval not ready: %s", exc)
+        binding = None
+    if binding is None:
+        last_retrieval_mode = "keyword (semantic not ready)"
+        logger.warning("graphify embedding_retrieve disabled: %s", SEMANTIC_DISABLED_REASON)
         return []
 
     file_docs: dict[str, list[str]] = {}
@@ -347,22 +368,28 @@ def embedding_retrieve(
             file_docs.setdefault(n.file, []).append(f"{n.kind} {n.name}")
             file_nodes.setdefault(n.file, []).append(n)
     if not file_docs:
+        last_retrieval_mode = "semantic (empty graph)"
         return []
+    files = list(file_docs.keys())
+    docs = [" ".join(file_docs[f])[:2000] for f in files]
+    doc_vectors = binding.embed(docs)
+    query_vector = binding.embed([question], query=True, observed_dimensions=len(doc_vectors[0]))[0]
 
-    try:
-        files = list(file_docs.keys())
-        docs = [" ".join(file_docs[f]) for f in files]
-        model = SentenceTransformer(model_name)
-        doc_emb = model.encode(docs, convert_to_tensor=True, show_progress_bar=False)
-        q_emb = model.encode([question], convert_to_tensor=True, show_progress_bar=False)
-        sims = util.cos_sim(q_emb, doc_emb)[0]
-        ranked = sorted(range(len(files)), key=lambda i: float(sims[i]), reverse=True)[:top_k]
-        out: list[GraphNode] = []
-        for i in ranked:
-            out.extend(file_nodes[files[i]][:10])
-        return out
-    except Exception:
-        return []
+    def _cos(a: list[float], b: list[float]) -> float:
+        dot = sum(x * y for x, y in zip(a, b, strict=True))
+        na = math.sqrt(sum(x * x for x in a))
+        nb = math.sqrt(sum(y * y for y in b))
+        return dot / (na * nb) if na and nb else 0.0
+
+    ranked = sorted(range(len(files)), key=lambda i: _cos(query_vector, doc_vectors[i]), reverse=True)[:top_k]
+    out: list[GraphNode] = []
+    for i in ranked:
+        out.extend(file_nodes[files[i]][:10])
+    last_retrieval_mode = "semantic (approved binding)"
+    return out
+
+
+last_retrieval_mode = "unknown"
 
 
 def hybrid_retrieve(
@@ -378,8 +405,10 @@ def hybrid_retrieve(
         for n in hits:
             if n.file not in emb_files:
                 emb_files.append(n.file)
-    except Exception:
-        pass
+    except Exception as exc:
+        global last_retrieval_mode
+        last_retrieval_mode = f"keyword (semantic failed: {type(exc).__name__})"
+        logger.warning("graphify semantic retrieval failed; keyword ranking only: %s", type(exc).__name__)
 
     raw_words = question.replace("?", " ").replace("-", " ").replace("_", " ").replace("/", " ").split()
     keywords = [w.lower() for w in raw_words if len(w) > 2]

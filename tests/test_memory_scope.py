@@ -217,7 +217,7 @@ def test_dependency_orchestrator_receives_shared_memory_manager(tmp_path: Path, 
         "build_project_memory_manager",
         lambda _root, _session, **_kw: manager,
     )
-    monkeypatch.setattr(dependencies, "_attach_project_rag_indexer", lambda _o, _root: None)
+    monkeypatch.setattr(dependencies, "_attach_project_rag_indexer", lambda _o, _root, *, embedding_binding=None: None)
     monkeypatch.setattr(dependencies, "get_task_runner", lambda: MagicMock(), raising=False)
     monkeypatch.setattr(dependencies, "_build_project_job_service", lambda _rt, _root: None, raising=False)
     dependencies.reset_runtime_dependencies()

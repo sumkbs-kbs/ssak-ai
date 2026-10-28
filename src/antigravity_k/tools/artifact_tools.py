@@ -30,7 +30,9 @@ class WriteArtifactTool(BaseTool):
 
     category: ToolCategory = ToolCategory.FILE_IO
     render_in: RenderIn = RenderIn.CONTEXTUAL
-    risk_level: RiskLevel = RiskLevel.SAFE
+    # r36: a write tool. SAFE made PermissionGate auto-ALLOW, contradicting security_policy
+    # (write_artifact: ASK_EACH_TIME). MEDIUM = same class as write_file -> PROMPT unless auto-pilot.
+    risk_level: RiskLevel = RiskLevel.MEDIUM
     icon: str = "📄"
     tags: list[str] = ["artifact", "markdown", "write", "document", "plan"]
 
@@ -88,7 +90,9 @@ class WriteArtifactTool(BaseTool):
             },
             "required": ["artifact_name", "content"],
         }
-        self.project_root: str = project_root or os.getcwd()
+        # r36: no silent cwd fallback. Root = request/task-bound project root, else explicit root.
+        self._explicit_root: str | None = project_root
+        self.project_root: str = project_root or ""
 
     @property
     @override
@@ -149,13 +153,39 @@ class WriteArtifactTool(BaseTool):
                 artifact_name += ".md"
 
         try:
-            artifacts_dir = os.path.join(self.project_root, "artifacts")
+            from antigravity_k.tools.tool_path import effective_project_root
+
+            bound = None
+            try:
+                from antigravity_k.api.project_binding import get_request_project_root
+
+                bound = get_request_project_root()
+            except Exception:
+                bound = None
+            if not bound and not self._explicit_root:
+                return "Error: write_artifact has no bound project root; refusing to write into the process cwd."
+            root = effective_project_root(self._explicit_root)
+            artifacts_dir = os.path.join(root, "artifacts")
             os.makedirs(artifacts_dir, exist_ok=True)
 
             file_path = os.path.join(artifacts_dir, artifact_name)
 
-            with open(file_path, "w", encoding="utf-8") as f:
-                _ = f.write(content)
+            # r35: the real app write path. Same journal + race-free write as ArtifactEngine:
+            # intent/executed records per (task, name), dir_fd-relative atomic replace (no symlink
+            # follow), resume skips a completed write, an unknown state is HELD (never auto-rerun).
+            from antigravity_k.engine import tool_execution_journal as tej
+
+            outcome, exec_id = tej.journaled_write(artifacts_dir, file_path, content)
+            if outcome == "held_unknown":
+                return (
+                    f"Error: artifact '{artifact_name}' is in an unknown state (exec {exec_id}); "
+                    "the write was NOT repeated. Human review required."
+                )
+            if outcome == "skipped_completed":
+                return (
+                    f"[ARTIFACT ALREADY WRITTEN: {artifact_name}] completed earlier in this task "
+                    f"(exec {exec_id}); not written again."
+                )
 
             # This special format will be parsed by the frontend to render the artifact UI
             metadata = _as_map(kwargs.get("ArtifactMetadata", {}))
@@ -165,6 +195,19 @@ class WriteArtifactTool(BaseTool):
             result_str = (
                 f"[ARTIFACT GENERATED: {artifact_name} (Type: {art_type})]\nSuccessfully saved to {file_path}. "
             )
+            # r42: verified facts come from re-reading the written file (no symlink follow).
+            try:
+                import hashlib
+
+                fd = os.open(file_path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+                with os.fdopen(fd, "rb") as fh:
+                    written = fh.read()
+                result_str += (
+                    f"\n[VERIFIED FILE] sha256={hashlib.sha256(written).hexdigest()} bytes={len(written)} "
+                    "(computed from the written file; quote these values, do not estimate)"
+                )
+            except OSError:
+                result_str += "\n[VERIFIED FILE] unavailable (file could not be re-read); do not state a hash or size."
             if req_feedback:
                 result_str += "\n[PLANNING_MODE: WAITING_FOR_USER_APPROVAL]"
 

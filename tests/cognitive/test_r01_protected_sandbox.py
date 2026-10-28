@@ -15,6 +15,18 @@ from antigravity_k.tools.permission_gate import PermissionGate, protection_actio
 from antigravity_k.tools.tool_contracts import Permission
 from tests.cognitive.test_protection import approval_for
 
+
+@pytest.fixture(autouse=True)
+def _r39_explicit_autopilot():
+    """r39: PermissionGate() without a mode no longer implies auto-pilot (default is balanced).
+    This module's assertions were written for auto-pilot, so they now run under the EXPLICIT opt-in."""
+    from antigravity_k.engine.access_mode import ExecutionPolicy, set_execution_policy
+
+    set_execution_policy(ExecutionPolicy.AUTO_PILOT)
+    yield
+    set_execution_policy(None)
+
+
 pytestmark = pytest.mark.skipif(
     os.uname().sysname != "Darwin",
     reason="R01 OS boundary scenarios require macOS seatbelt in this checkout",

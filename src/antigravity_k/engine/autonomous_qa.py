@@ -509,8 +509,11 @@ class AutonomousQAEngine:
                 except Exception:
                     logger.warning("ModelManager vision analysis failed, HTTP fallback", exc_info=True)
 
+            from antigravity_k.engine.direct_model_call import guard_direct_model_call
+
+            _timeout = guard_direct_model_call(self.vision_model, "autonomous_qa", prompt, timeout=120.0)
             async with httpx.AsyncClient(
-                timeout=120.0,
+                timeout=_timeout,
                 event_hooks={"request": [validate_httpx_request_async]},
             ) as client:
                 resp = await client.post(
@@ -575,8 +578,11 @@ class AutonomousQAEngine:
                 except Exception:
                     logger.warning("ModelManager code-fix generation failed, HTTP fallback", exc_info=True)
 
+            from antigravity_k.engine.direct_model_call import guard_direct_model_call
+
+            _timeout = guard_direct_model_call(self.coding_model, "autonomous_qa", prompt, timeout=120.0)
             async with httpx.AsyncClient(
-                timeout=120.0,
+                timeout=_timeout,
                 event_hooks={"request": [validate_httpx_request_async]},
             ) as client:
                 resp = await client.post(

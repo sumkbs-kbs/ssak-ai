@@ -115,7 +115,15 @@ class ReadFileTool(BaseTool):
         if not file_path or not os.path.exists(file_path):
             return f"Error: File not found at {file_path}"
         try:
-            with open(file_path, encoding="utf-8") as f:
+            from antigravity_k.tools import verified_read
+
+            try:
+                text = verified_read.read_text(os.fspath(file_path))
+            except verified_read.VerifiedReadError as exc:
+                return f"Error reading file: {exc}"
+            import io
+
+            with io.StringIO(text) as f:
                 if start_line or end_line:
                     lines = f.readlines()
                     total = len(lines)
@@ -530,6 +538,14 @@ class ListDirectoryTool(BaseTool):
         if not os.path.isdir(path):
             return f"Error: '{path}' is not a directory."
 
+        from antigravity_k.tools.tool_path import contained_paths, effective_project_root
+
+        # r30 P0: a symlinked directory pointing outside the project is shown but never entered.
+        boundary = effective_project_root(path)
+
+        def _inside(candidate: str) -> bool:
+            return bool(contained_paths([candidate], boundary))
+
         def _format_size(size: float) -> str:
             for unit in ["B", "KB", "MB", "GB"]:
                 if size < 1024:
@@ -557,6 +573,9 @@ class ListDirectoryTool(BaseTool):
 
             for d in dirs:
                 full = os.path.join(dir_path, d)
+                if not _inside(full):
+                    items.append(f"{'  ' * depth}📁 {d}/ (outside project — not listed)")
+                    continue
                 child_count = (
                     len([x for x in os.listdir(full) if x not in IGNORE and not x.startswith(".")])
                     if os.path.isdir(full)

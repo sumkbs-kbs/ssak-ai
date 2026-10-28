@@ -264,7 +264,7 @@ def _wire_from_parts(
         project_id=project_id,
         conversation_id=pick("conversation_id", default=conversation_id or "conv_unspecified"),
         conversation_revision=max(0, rev),
-        actor_subject=pick("actor_subject", default=actor_subject or "anonymous"),
+        actor_subject=actor_subject or "anonymous",
         session_id=session_id,
         model_id=pick("model_id", "model", default=model_id or "default"),
         correlation_id=pick("correlation_id", default=correlation_id),
@@ -327,7 +327,7 @@ def resolve_project_execution_context(
                         **dict(nested),
                         "project_id": explicit_project,
                         "session_id": _as_text(nested.get("session_id")) or resolved_session,
-                        "actor_subject": _as_text(nested.get("actor_subject")) or actor_subject,
+                        "actor_subject": actor_subject or "anonymous",
                         "model_id": _as_text(nested.get("model_id")) or model_id or "default",
                         "request_id": _as_text(nested.get("request_id"))
                         or request_id

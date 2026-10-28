@@ -81,13 +81,26 @@ class FileSummarizer:
             if not os.path.isabs(rel_path):
                 abs_path = os.path.join(project_root, rel_path)
 
+            from antigravity_k.tools.tool_path import contained_paths, is_sensitive_path
+
+            # r30 P0: summaries never open files outside the project root or secret-named files.
+            if not contained_paths([abs_path], project_root) or is_sensitive_path(abs_path):
+                context_parts.append(f"\n📄 **{rel_path}** _(범위 밖 또는 민감 파일 — 제외)_")
+                continue
             if not os.path.isfile(abs_path):
                 context_parts.append(f"\n📄 **{rel_path}** _(파일 없음)_")
                 continue
 
+            # r35: same common policy as read_file — verified fd read (O_NOFOLLOW chain from the
+            # project root, regular file only, secret-named targets refused without a grant), and the
+            # realpath is name-checked too so an innocent-named symlink cannot alias a secret file.
+            from antigravity_k.tools import verified_read
+
+            if is_sensitive_path(os.path.realpath(abs_path)):
+                context_parts.append(f"\n📄 **{rel_path}** _(범위 밖 또는 민감 파일 — 제외)_")
+                continue
             try:
-                with open(abs_path, encoding="utf-8", errors="ignore") as f:
-                    content = f.read()
+                content = verified_read.read_text_under(abs_path, project_root, errors="ignore")
             except Exception:
                 context_parts.append(f"\n📄 **{rel_path}** _(읽기 실패)_")
                 continue

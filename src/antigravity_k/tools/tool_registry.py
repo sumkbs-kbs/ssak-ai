@@ -13,6 +13,7 @@ tiptap-vuetify의 TiptapVuetifyPlugin.install() 패턴에서 영감:
 - 신규 도구 플러그인은 install()만 구현하면 자동 통합
 """
 
+import dataclasses
 import importlib
 import logging
 import pkgutil
@@ -33,6 +34,14 @@ logger = logging.getLogger(__name__)
 
 type JsonValue = None | bool | int | float | str | list[JsonValue] | dict[str, JsonValue]
 JsonObject: TypeAlias = dict[str, JsonValue]
+
+
+class ApprovalUse(Protocol):
+    """r40: trusted-executor handle over one server-side approval evidence (never from tool args)."""
+
+    def verify(self) -> str: ...
+
+    def consume(self) -> str: ...
 
 
 class _ToolFactory(Protocol):
@@ -256,7 +265,18 @@ class ToolRegistry:
         tool_name: str,
         args: Mapping[str, object],
         objective: str = "",
+        approval_use: ApprovalUse | None = None,
     ) -> tuple[Permission, str]:
+        perm, result, _ = self.execute_with_permission_detail(tool_name, args, objective, approval_use)
+        return perm, result
+
+    def execute_with_permission_detail(
+        self,
+        tool_name: str,
+        args: Mapping[str, object],
+        objective: str = "",
+        approval_use: ApprovalUse | None = None,
+    ) -> tuple[Permission, str, PermissionDecision | None]:
         """권한 검증 후 도구를 실행합니다 (Claw Code PermissionPolicy 패턴).
 
         WS-02: path args are rewritten to absolute paths under the request
@@ -277,32 +297,73 @@ class ToolRegistry:
             return (
                 Permission.DENY,
                 f"[DENIED] Tool path escapes project root: {exc.raw_path or exc}",
+                None,
             )
 
         decision = self.authorize(tool_name, rewritten_args, objective=objective)
         if resolutions and decision.inspected_path is None:
             # Attach first resolved path for callers/audit correlation.
             primary = resolutions[0]
-            decision = PermissionDecision(
-                spec=decision.spec,
-                permission=decision.permission,
-                source=decision.source,
-                reason=decision.reason,
+            decision = dataclasses.replace(
+                decision,
                 inspected_path=primary.inspected_path,
                 executed_path=primary.executed_path,
             )
-        if not decision.allows_execution:
+        bound_by_evidence = False
+        if decision.requires_approval and approval_use is not None and decision.basis == "risk_level":
+            # r40: the PermissionGate independently verifies the SAME server-side evidence the
+            # GatePipeline verified (identical action+scope). Only a plain risk-level PROMPT may be
+            # satisfied this way; DENY, path/secret/capability PROMPTs are never relaxed.
+            why = approval_use.verify()
+            if why:
+                return (
+                    Permission.PROMPT,
+                    f"[APPROVAL REQUIRED] approval evidence not valid for this action ({why})",
+                    decision,
+                )
+            bound_by_evidence = True
+        if not decision.allows_execution and not bound_by_evidence:
             label = "APPROVAL REQUIRED" if decision.requires_approval else "DENIED"
-            return decision.permission, f"[{label}] {decision.reason}"
+            return decision.permission, f"[{label}] {decision.reason}", decision
 
         tool = self.get(tool_name)
         if tool is None:
-            return Permission.DENY, f"Error: Tool '{tool_name}' not found."
+            return Permission.DENY, f"Error: Tool '{tool_name}' not found.", decision
         exec_args: dict[str, object] = dict(rewritten_args)
         if tool_name == "run_bash_command":
             exec_args["_execution_permit"] = getattr(tool, "_execution_permit", None)
-        result = tool(**exec_args)
-        return Permission.ALLOW, result
+        from antigravity_k.tools import verified_read
+
+        grant_token = None
+        if decision.source == "secret_target_approval" and decision.inspected_path:
+            ident = self._permission_gate.consume_secret_grant(tool_name, decision.inspected_path)
+            if ident is None:
+                return (
+                    Permission.PROMPT,
+                    "[APPROVAL REQUIRED] secret-file approval already used or missing",
+                    decision,
+                )
+            grant_token = verified_read.APPROVED_TARGET.set((decision.inspected_path, ident))
+        if approval_use is not None:
+            # r40: consume exactly once, atomically, at the actual start of execution (after every
+            # check and the path rewrite). A lost race / mismatch / expiry -> no execution.
+            why = approval_use.consume()
+            if why:
+                if grant_token is not None:
+                    verified_read.APPROVED_TARGET.reset(grant_token)
+                return (
+                    Permission.PROMPT,
+                    f"[APPROVAL REQUIRED] approval evidence could not be consumed ({why})",
+                    decision,
+                )
+        root_token = verified_read.READ_ROOT.set(root)
+        try:
+            result = tool(**exec_args)
+        finally:
+            verified_read.READ_ROOT.reset(root_token)
+            if grant_token is not None:
+                verified_read.APPROVED_TARGET.reset(grant_token)
+        return Permission.ALLOW, result, decision
 
     def authorize(
         self,
@@ -386,7 +447,20 @@ class ToolRegistry:
         if not tool:
             return f"Error: Tool '{tool_name}' not found."
 
-        self._permission_gate.record_approval(tool_name, tool.risk_level.value)
+        # r40: no tool-level approval cache here any more — one approval must not silently allow later,
+        # different executions of the same tool (record_approval stays available to explicit callers).
+        # r34: a secret-named target gets a one-shot grant bound to the file identity captured at
+        # PROMPT time (no pending PROMPT => no grant => fail closed).
+        try:
+            from antigravity_k.tools.tool_path import is_sensitive_path
+
+            root = effective_project_root(self._permission_gate.project_root)
+            rewritten, _ = rewrite_tool_args(tool_name, args, root)
+            raw = rewritten.get("file_path") or rewritten.get("path") or rewritten.get("target")
+            if isinstance(raw, str) and is_sensitive_path(raw):
+                _ = self._permission_gate.approve_secret_target(tool_name, self._permission_gate.resolve_for_tool(raw))
+        except ToolPathError:
+            pass
         _, result = self.execute_with_permission(tool_name, args, objective="approved tool execution")
         return result
 

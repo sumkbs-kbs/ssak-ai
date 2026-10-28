@@ -930,14 +930,14 @@ class TestToolLoopEnginePostLoopChecks:
 
         # When: post-loop checks run with that execution evidence present.
         _ = list(
-            _post_loop_checks(
-                engine,
+            engine._post_loop_checks(
                 [{"role": "user", "content": ""}],
                 "code",
                 "초안 5050",
                 "sum_to를 실행해줘",
                 "qwen3.6:latest",
                 evidence_context=evidence_context,
+                executed_tools=("run_bash_command",),
             )
         )
 

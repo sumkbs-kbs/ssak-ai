@@ -16,6 +16,9 @@ from pathlib import Path
 import pytest
 
 from antigravity_k.engine.rag_indexer import RAGIndexer
+from tests._legacy_fake_embedding import legacy_fake_binding  # noqa: F401  # r29 explicit fake binding
+
+pytestmark = pytest.mark.usefixtures("legacy_fake_binding")
 
 chromadb = pytest.importorskip("chromadb", reason="RAG-01 acceptance requires the rag extra")
 

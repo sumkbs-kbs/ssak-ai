@@ -14,6 +14,9 @@ from mcp.client.session import ClientSession
 from mcp.client.stdio import StdioServerParameters, stdio_client
 from mcp.shared.message import SessionMessage
 
+from .egress_policy import validate_egress_url
+from .mcp_http_policy import create_mcp_http_client
+
 logger = logging.getLogger(__name__)
 
 
@@ -27,6 +30,7 @@ class _LegacySseClient(Protocol):
         timeout: float = 5,
         sse_read_timeout: float = 300,
         auth: httpx.Auth | None = None,
+        httpx_client_factory: Callable[..., httpx.AsyncClient] = create_mcp_http_client,
     ) -> AbstractAsyncContextManager[
         tuple[
             MemoryObjectReceiveStream[SessionMessage | Exception],
@@ -44,6 +48,7 @@ class _LegacyStreamableHttpClient(Protocol):
         timeout: float | timedelta = 30,
         sse_read_timeout: float | timedelta = 300,
         auth: httpx.Auth | None = None,
+        httpx_client_factory: Callable[..., httpx.AsyncClient] = create_mcp_http_client,
     ) -> AbstractAsyncContextManager[
         tuple[
             MemoryObjectReceiveStream[SessionMessage | Exception],
@@ -80,7 +85,15 @@ def streamablehttp_client(
         Callable[[], str | None],
     ]
 ]:
-    return _legacy_streamable_http_client()(url, headers, timeout, sse_read_timeout, auth)
+    _ = validate_egress_url(url)
+    return _legacy_streamable_http_client()(
+        url,
+        headers=headers,
+        timeout=timeout,
+        sse_read_timeout=sse_read_timeout,
+        auth=auth,
+        httpx_client_factory=create_mcp_http_client,
+    )
 
 
 def sse_client(
@@ -96,7 +109,15 @@ def sse_client(
         MemoryObjectSendStream[SessionMessage],
     ]
 ]:
-    return _legacy_sse_client()(url, headers=headers, timeout=timeout, sse_read_timeout=sse_read_timeout, auth=auth)
+    _ = validate_egress_url(url)
+    return _legacy_sse_client()(
+        url,
+        headers=headers,
+        timeout=timeout,
+        sse_read_timeout=sse_read_timeout,
+        auth=auth,
+        httpx_client_factory=create_mcp_http_client,
+    )
 
 
 class MCPSessionManager:
@@ -125,10 +146,9 @@ class MCPSessionManager:
     ) -> ClientSession:
         """Connect to an MCP server over stdio."""
         logger.info(
-            "Connecting to MCP server '%s' using command: %s %s",
+            "Connecting to MCP server '%s' over stdio (%d arguments)",
             server_name,
-            command,
-            " ".join(args),
+            len(args),
         )
 
         stack = AsyncExitStack()
@@ -150,7 +170,7 @@ class MCPSessionManager:
             return session
 
         except Exception as e:
-            logger.error("Failed to connect to MCP server '%s': %s", server_name, e)
+            logger.error("Failed to connect to MCP server '%s' (%s)", server_name, type(e).__name__)
             await stack.aclose()
             if server_name in self.exit_stacks:
                 del self.exit_stacks[server_name]
@@ -167,7 +187,8 @@ class MCPSessionManager:
         auth: httpx.Auth | None = None,
     ) -> ClientSession:
         """Connect to an MCP server using the current Streamable HTTP transport."""
-        logger.info("Connecting to MCP server '%s' over Streamable HTTP: %s", server_name, url)
+        _ = validate_egress_url(url)
+        logger.info("Connecting to MCP server '%s' over Streamable HTTP", server_name)
 
         stack = AsyncExitStack()
         self.exit_stacks[server_name] = stack
@@ -197,9 +218,9 @@ class MCPSessionManager:
 
         except Exception as e:
             logger.error(
-                "Failed to connect to MCP server '%s' over Streamable HTTP: %s",
+                "Failed to connect to MCP server '%s' over Streamable HTTP (%s)",
                 server_name,
-                e,
+                type(e).__name__,
             )
             await stack.aclose()
             if server_name in self.exit_stacks:
@@ -222,7 +243,8 @@ class MCPSessionManager:
 
         Prefer connect_streamable_http for new remote servers.
         """
-        logger.info("Connecting to MCP server '%s' over legacy SSE: %s", server_name, url)
+        _ = validate_egress_url(url)
+        logger.info("Connecting to MCP server '%s' over legacy SSE", server_name)
 
         stack = AsyncExitStack()
         self.exit_stacks[server_name] = stack
@@ -250,7 +272,7 @@ class MCPSessionManager:
             return session
 
         except Exception as e:
-            logger.error("Failed to connect to MCP server '%s' over SSE: %s", server_name, e)
+            logger.error("Failed to connect to MCP server '%s' over SSE (%s)", server_name, type(e).__name__)
             await stack.aclose()
             if server_name in self.exit_stacks:
                 del self.exit_stacks[server_name]

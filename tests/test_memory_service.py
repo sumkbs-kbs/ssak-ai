@@ -21,6 +21,9 @@ from unittest.mock import MagicMock
 import pytest
 
 from antigravity_k.knowledge.memory_service import MemoryService
+from tests._legacy_fake_embedding import legacy_fake_binding  # noqa: F401  # r29 explicit fake binding
+
+pytestmark = pytest.mark.usefixtures("legacy_fake_binding")
 
 
 class _MockMethod(Protocol):

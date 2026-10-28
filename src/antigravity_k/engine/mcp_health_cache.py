@@ -386,14 +386,14 @@ async def probe_configured_servers(
             latency_ms = (time.perf_counter() - started) * 1000.0
             entry = health.record_failure(
                 name,
-                str(exc),
+                f"MCP health probe failed ({type(exc).__name__})",
                 transport=transport,
                 latency_ms=round(latency_ms, 1),
                 source=source_label,
                 command=command,
             )
             results.append(entry.to_dict())
-            logger.info("MCP health probe failed for %s: %s", name, exc)
+            logger.info("MCP health probe failed for %s (%s)", name, type(exc).__name__)
         finally:
             try:
                 await manager.cleanup()

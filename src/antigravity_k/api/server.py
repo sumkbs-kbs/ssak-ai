@@ -41,6 +41,34 @@ from contextlib import asynccontextmanager
 limiter = Limiter(key_func=get_remote_address, default_limits=["300/minute"])
 
 
+def _start_rag_auto_index(app: FastAPI, project_root: str) -> None:
+    try:
+        from antigravity_k.engine.rag_indexer import RAGIndexer
+
+        def _run_index() -> None:
+            try:
+                indexer = RAGIndexer(project_root=project_root)
+                count = indexer.index_project()
+                logger.info("[RAG] Background indexing complete: %s files indexed", count)
+            except Exception:
+                logger.exception("[RAG] Background indexing failed")
+
+        active_indexer = getattr(app.state, "rag_index_thread", None)
+        if not isinstance(active_indexer, threading.Thread) or not active_indexer.is_alive():
+            index_thread = threading.Thread(
+                target=_run_index,
+                name="antigravity-rag-index",
+                daemon=True,
+            )
+            app.state.rag_index_thread = index_thread
+            index_thread.start()
+            logger.info("[RAG] Background indexing started")
+        else:
+            logger.info("[RAG] Background indexing already running")
+    except Exception:
+        logger.exception("[RAG] Auto-index startup skipped")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan.
@@ -113,41 +141,25 @@ async def lifespan(app: FastAPI):
     except Exception:
         logger.exception("[Startup] EventBus bridge skipped")
 
-    # 5) RAG 자동 인덱싱 (기존)
-    try:
-        from antigravity_k.engine.rag_indexer import RAGIndexer
-
-        def _run_index() -> None:
-            try:
-                indexer = RAGIndexer(project_root=project_root)
-                count = indexer.index_project()
-                logger.info("[RAG] Background indexing complete: %s files indexed", count)
-            except Exception:
-                logger.exception("[RAG] Background indexing failed")
-
-        active_indexer = getattr(app.state, "rag_index_thread", None)
-        if not isinstance(active_indexer, threading.Thread) or not active_indexer.is_alive():
-            index_thread = threading.Thread(
-                target=_run_index,
-                name="antigravity-rag-index",
-                daemon=True,
-            )
-            app.state.rag_index_thread = index_thread
-            index_thread.start()
-            logger.info("[RAG] Background indexing started")
-        else:
-            logger.info("[RAG] Background indexing already running")
-    except Exception:
-        logger.exception("[RAG] Auto-index startup skipped")
+    # 5) RAG 자동 인덱싱 (기존). 명시적 임베딩 바인딩(AGK_RAG_EMBEDDING)이 켜져 있으면 시작 시
+    # 자동 색인을 하지 않는다 — 바인딩 사용은 명시적 색인/검색 요청으로만 임베딩을 보낸다.
+    if os.environ.get("AGK_RAG_EMBEDDING", "").strip().casefold() == "ollama":
+        logger.info("[RAG] Startup auto-index skipped: explicit embedding binding is enabled")
+    else:
+        _start_rag_auto_index(app, project_root)
 
     # 6) IDE Server (code-server Web IDE)
     try:
-        from antigravity_k.engine.ide_server import IDEServer
+        from antigravity_k.engine.ide_server import IDE_AUTOSTART_ENV, IDEServer, ide_autostart_requested
 
-        ide_server = IDEServer(port=8080, workspace_dir=project_root)
-        ide_server.start()
-        app.state.ide_server = ide_server
-        logger.info("[Startup] IDE Server initialized on port 8080")
+        if ide_autostart_requested():
+            ide_server = IDEServer(port=8080, workspace_dir=project_root)
+            app.state.ide_status = ide_server.start_if_available()
+            app.state.ide_server = ide_server
+            logger.info("[Startup] IDE Server status: %s", app.state.ide_status)
+        else:
+            app.state.ide_status = "disabled"
+            logger.info("[Startup] IDE Server autostart disabled by %s", IDE_AUTOSTART_ENV)
     except Exception:
         logger.exception("[Startup] IDE Server init skipped")
 
@@ -204,6 +216,14 @@ async def lifespan(app: FastAPI):
         _ = _scheduled_job_task.cancel()
     # Shutdown
     logger.info("Server shutting down — cancelling application background tasks...")
+    try:
+        from antigravity_k.engine import call_ledger as _call_ledger
+
+        _aborted = _call_ledger.abort_open("server_shutdown")
+        if _aborted:
+            logger.warning("[Shutdown] %s in-flight model call(s) recorded as aborted_unknown (not re-sent)", _aborted)
+    except Exception:
+        logger.exception("[Shutdown] call ledger abort marking failed")
     background_tasks = cast(
         set[asyncio.Task[object]],
         getattr(app.state, "background_tasks", cast(set[asyncio.Task[object]], set())),
@@ -274,6 +294,17 @@ async def lifespan(app: FastAPI):
 
 from antigravity_k import __version__
 
+# 외부 문서 메타데이터 — FastAPI 생성자 인자가 아니라(0.115 에는 openapi_external_docs 가 없고,
+# 비표준 키워드는 최신 버전에서 TypeError) 아래 `_custom_openapi` 에서 공식 OpenAPI 확장 방식으로 넣는다.
+OPENAPI_EXTERNAL_DOCS: dict[str, str] = {
+    "description": "온보딩 가이드",
+    "url": "https://github.com/ssak-comp/Ssak-Ai/blob/main/ONBOARDING.md",
+}
+
+from antigravity_k.api.log_redaction import install as _install_log_redaction  # noqa: E402
+
+_install_log_redaction()
+
 app = FastAPI(
     title="Ssak-Ai API",
     description=(
@@ -307,10 +338,6 @@ app = FastAPI(
         {"url": "http://localhost:8000", "description": "로컬 개발 서버"},
         {"url": "https://api.ssak-ai.dev", "description": "프로덕션 서버"},
     ],
-    externalDocs={
-        "description": "온보딩 가이드",
-        "url": "https://github.com/ssak-comp/Ssak-Ai/blob/main/ONBOARDING.md",
-    },
     # 태그 메타데이터 — Swagger UI에서 그룹 설명 표시
     openapi_tags=[
         {"name": "chat", "description": "채팅 및 LLM 추론 엔드포인트 (OpenAI 호환)"},
@@ -594,6 +621,7 @@ def _custom_openapi():
         },
     }
     openapi_schema["security"] = [{"OAuth2Password": []}]
+    openapi_schema["externalDocs"] = dict(OPENAPI_EXTERNAL_DOCS)
 
     app.openapi_schema = openapi_schema
     return app.openapi_schema
@@ -734,6 +762,11 @@ app.add_exception_handler(SessionPersistenceError, session_persistence_exception
 from antigravity_k.api.contracts.shell import ShellBoundaryError  # noqa: E402
 
 app.add_exception_handler(ShellBoundaryError, global_exception_handler)
+# r30: typed API errors (e.g. ConversationNotFoundError 404) were reaching only the base Exception
+# handler, which re-raises after responding ("Exception in ASGI application" per stale-id probe).
+from antigravity_k.api.contracts.errors import APIError as _TypedAPIError  # noqa: E402
+
+app.add_exception_handler(_TypedAPIError, global_exception_handler)
 app.add_exception_handler(Exception, global_exception_handler)
 
 import httpx

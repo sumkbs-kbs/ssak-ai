@@ -3,33 +3,42 @@
 import asyncio
 import json
 import logging
-from typing import Annotated
+from typing import Annotated, cast
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 
 from antigravity_k.api.dependencies import get_agent_runtime
-from antigravity_k.api.routes.session_state import get_active_session, reset_active_session
+from antigravity_k.api.routes.session_state import (
+    active_response_snapshot,
+    begin_active_response,
+    ensure_active_response_available,
+)
+from antigravity_k.api.routes.session_state import (
+    reset_active_session as reset_active_session,
+)
 
 router = APIRouter()
 logger = logging.getLogger("antigravity_k.api.routes.agent_stream")
 
 
 @router.get("/api/agent/active")
-async def get_active_agent():
+async def get_active_agent(request: Request = cast(Request, None)):
     """Return the currently active agent session if any."""
-    session = get_active_session()
+    session = active_response_snapshot(request)
+    assert session is not None
     if session.is_active:
         return {
             "active": True,
             "q": session.q,
-            "history": session.history,
+            "history": list(session.history),
         }
     return {"active": False}
 
 
 @router.get("/api/stream_agent")
 async def stream_agent(
+    request: Request = cast(Request, None),
     q: Annotated[str | None, Query(description="User prompt to the agent")] = None,
     reconnect: bool = False,
 ):
@@ -39,26 +48,40 @@ async def stream_agent(
     """
     from starlette.concurrency import iterate_in_threadpool
 
+    initial = active_response_snapshot(request) if reconnect else None
+    execution_context = None
+    if not reconnect and q:
+        if request is not None:
+            from antigravity_k.api.project_binding import SESSION_ID_HEADER, resolve_project_execution_context
+
+            actor = getattr(request.state, "auth_subject", None)
+            actor = actor.strip() if isinstance(actor, str) and actor.strip() else "anonymous"
+            execution_context = resolve_project_execution_context(
+                project_id=request.query_params.get("project_id"),
+                session_id=request.query_params.get("session_id"),
+                header_session_id=request.headers.get(SESSION_ID_HEADER),
+                actor_subject=actor,
+                bind=True,
+            )
+        ensure_active_response_available(execution_context)
+
     async def event_generator():
-        active_session = get_active_session()
-        # If reconnecting to an active session
-        if reconnect and active_session.is_active:
-            # Yield history first
-            for chunk in active_session.history:
-                yield f"data: {json.dumps({'text': chunk})}\n\n"
-
-            # Then poll for new chunks until done
-            last_idx = len(active_session.history)
-            while active_session.is_active:
-                if len(active_session.history) > last_idx:
-                    for chunk in active_session.history[last_idx:]:
-                        yield f"data: {json.dumps({'text': chunk})}\n\n"
-                    last_idx = len(active_session.history)
+        if reconnect:
+            assert initial is not None
+            snapshot = initial
+            last_idx = 0
+            while snapshot is not None and snapshot.is_active:
+                for chunk in snapshot.history[last_idx:]:
+                    yield f"data: {json.dumps({'text': chunk})}\n\n"
+                last_idx = len(snapshot.history)
                 await asyncio.sleep(0.5)
-
-            if active_session.error:
-                yield f"data: {json.dumps({'error': active_session.error})}\n\n"
-            elif active_session.done:
+                snapshot = active_response_snapshot(request, generation=initial.generation)
+            if snapshot is not None:
+                for chunk in snapshot.history[last_idx:]:
+                    yield f"data: {json.dumps({'text': chunk})}\n\n"
+            if snapshot is not None and snapshot.error:
+                yield f"data: {json.dumps({'error': snapshot.error})}\n\n"
+            elif snapshot is not None and snapshot.done:
                 yield f"data: {json.dumps({'done': True})}\n\n"
             return
 
@@ -66,11 +89,11 @@ async def stream_agent(
             yield f"data: {json.dumps({'error': 'Missing query'})}\n\n"
             return
 
-        # Start new session — 바인딩 재할당 대신 동일 객체를 리셋한다
-        # (값 복사 임포트 소비자의 stale 바인딩 방지)
-        _ = reset_active_session()
-        active_session.is_active = True
-        active_session.q = q
+        try:
+            active_session = begin_active_response(execution_context, q)
+        except HTTPException as exc:
+            yield f"data: {json.dumps({'error': exc.detail})}\n\n"
+            return
 
         try:
             # Instantiate orchestrator

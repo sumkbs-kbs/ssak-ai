@@ -19,7 +19,7 @@ from urllib.parse import quote_plus
 import httpx
 
 from .base_tool import BaseTool, RenderIn, RiskLevel, ToolCategory
-from .egress_policy import validate_httpx_request
+from .egress_policy import validate_search_httpx_request as validate_httpx_request  # r36: search send boundary (incl. retries/fallbacks)
 from .search_auth import SEARCH_TOKEN_ENV, search_auth_headers
 from .ssak_search_provider import search_with_bundled_provider, settings_snapshot
 from .web_search_cache import _generate_fallback_queries
@@ -137,6 +137,10 @@ class WebSearchTool(BaseTool):
         if not isinstance(query_value, str) or not query_value:
             return "Error: Missing query"
         query = query_value
+        # r35: B1 real run showed fast_search reaching the network while AGK_SEARCH_ENABLED=false.
+        # Refuse BEFORE any engine/scraper is touched.
+        if web_search_disabled():
+            return "Error: web search is disabled (AGK_SEARCH_ENABLED=false / AGK_SEARCH_OFFLINE=1); no request sent."
 
         depth = kwargs.get("depth", "standard")
         is_deep = depth == "deep"
@@ -722,3 +726,11 @@ __all__ = [
     "WebSearchTool",
     "_deduplicate_results",
 ]
+
+
+
+def web_search_disabled() -> bool:
+    """True when external web search must not send any request (r35; r36 delegates to egress_policy)."""
+    from .egress_policy import search_egress_disabled
+
+    return search_egress_disabled()

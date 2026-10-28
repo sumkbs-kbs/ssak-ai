@@ -418,7 +418,10 @@ class MetaArchitect:
             data=json.dumps(data).encode("utf-8"),
             headers={"Content-Type": "application/json"},
         )
-        with safe_urlopen(req, timeout=180) as resp:
+        from antigravity_k.engine.direct_model_call import guard_direct_model_call
+
+        timeout = guard_direct_model_call(model, "meta_architect", prompt, timeout=180)
+        with safe_urlopen(req, timeout=timeout) as resp:
             result = _as_mapping(_load_json(resp.read().decode("utf-8")))
             content = _as_str(result.get("response"))
             return re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL).strip()

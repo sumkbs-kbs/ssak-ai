@@ -749,6 +749,11 @@ class OllamaProvider(BaseInferenceProvider):
         think_enabled = bool(kwargs.get("think", False))
         if not think_enabled:
             api_msgs = self._suppress_model_thinking(loaded.profile.name, api_msgs)
+        import antigravity_k.engine.llm_input_audit as llm_input_audit
+
+        llm_input_audit.audit_wire_messages(
+            model=str(loaded.profile.name), provider="ollama", purpose="generate", messages=api_msgs
+        )
         data = {
             "model": loaded.profile.name,
             "stream": False,
@@ -956,6 +961,12 @@ class OllamaProvider(BaseInferenceProvider):
         profile = resolve_sampling_profile(kwargs.get("task_type"))
         if thinking_config is None and "temperature" not in kwargs:
             temperature = profile.temperature
+
+        import antigravity_k.engine.llm_input_audit as llm_input_audit
+
+        llm_input_audit.audit_wire_messages(
+            model=str(model_name), provider="ollama", purpose="stream", messages=api_msgs
+        )
 
         data: dict[str, object] = {
             "model": model_name,

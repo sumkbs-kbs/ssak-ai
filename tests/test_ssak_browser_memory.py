@@ -60,6 +60,9 @@ from antigravity_k.tools.browser_task_memory import (
     scrub_url,
     site_of,
 )
+from tests._legacy_fake_embedding import legacy_fake_binding  # noqa: F401  # r29 explicit fake binding
+
+pytestmark = pytest.mark.usefixtures("legacy_fake_binding")
 
 SITE = "https://shop.example"
 OTHER_SITE = "https://bank.example"
@@ -306,14 +309,14 @@ class TestMinimization:
 
     def test_secret_in_evidence_is_refused_not_redacted(self, memory: BrowserTaskMemory) -> None:
         with pytest.raises(MemoryRefusal) as raised:
-            record(memory, evidence=["✓ 토큰 ghp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 저장"])
+            record(memory, evidence=["✓ 토큰 " + "ghp_" + "a" * 40 + " 저장"])
         assert raised.value.code == SECRET_IN_BODY
         assert memory.stats()["total"] == 0
 
     def test_secret_in_the_goal_is_caught_by_the_body_scan(self, memory: BrowserTaskMemory) -> None:
         """근거 한 줄 검사는 goal 을 지나치지 않는다 — 조립된 본문 검사가 그 자리를 지킨다."""
         with pytest.raises(MemoryRefusal) as raised:
-            record(memory, goal="토큰 sk-abcdefghijklmnopqrstuvwxyz0123456789 를 쓴다")
+            record(memory, goal="토큰 " + "sk-" + "abcdefghijklmnopqrstuvwxyz0123456789" + " 를 쓴다")
         assert raised.value.code == SECRET_IN_BODY
         assert memory.stats()["total"] == 0
 
@@ -693,11 +696,13 @@ class TestServiceIntegration:
         _ = record(memory, goal="장바구니에 담기", evidence=["✓ 근거"])
         # 저장 뒤에 사람이 손으로 넣은 비밀도 소거 경로가 덮는다(운영 경로의 마지막 안전망).
         with sqlite3.connect(db) as conn:
-            _ = conn.execute("UPDATE browser_task_memory SET body = body || ' sk-abcdefghijklmnopqrstuvwxyz0123'")
+            _ = conn.execute(
+                "UPDATE browser_task_memory SET body = body || ' " + "sk-" + "abcdefghijklmnopqrstuvwxyz0123'"
+            )
             conn.commit()
         assert service.redact_all() >= 1
         stored = memory.export(owner="alice", include_revoked=True)
-        assert stored and "sk-abcdefghijklmnopqrstuvwxyz0123" not in json.dumps(stored, ensure_ascii=False)
+        assert stored and "sk-" + "abcdefghijklmnopqrstuvwxyz0123" not in json.dumps(stored, ensure_ascii=False)
 
     def test_real_index_delete_removes_only_that_entry(self, tmp_path: Path) -> None:
         """chromadb 가 있는 환경에서 `delete_embedding` 이 그 항목만 지우는지 본다."""

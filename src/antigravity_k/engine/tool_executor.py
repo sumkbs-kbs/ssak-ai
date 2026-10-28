@@ -11,9 +11,17 @@ import logging
 import os
 import re
 import time
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from typing import TYPE_CHECKING, Protocol, TypedDict, cast, final
 
+from pydantic import JsonValue
+
+from antigravity_k.engine import task_tool_contract as _task_contract
+from antigravity_k.engine.approval_manager import (
+    LAYER_STANDARD,
+    ApprovalEvidence,
+    get_approval_manager,
+)
 from antigravity_k.engine.failure_classifier import (
     ClassifiedFailure,
     RecoveryAction,
@@ -24,7 +32,7 @@ from antigravity_k.engine.immune_system import ImmuneSystem
 from antigravity_k.engine.task_state_store import current_task_execution_context
 from antigravity_k.engine.tool_policy import tool_policy_denial as _tool_policy_denial
 from antigravity_k.tools.permission_gate import PermissionGate
-from antigravity_k.tools.tool_contracts import Permission
+from antigravity_k.tools.tool_contracts import Permission, PermissionDecision
 from antigravity_k.tools.tool_path import effective_project_root
 from antigravity_k.tools.tool_registry import ToolRegistry
 
@@ -52,7 +60,11 @@ def result_indicates_failure(result: object) -> bool:
         return True
     text = result if isinstance(result, str) else str(result)
     stripped = text.strip()
-    if stripped.startswith("Error") or stripped.startswith("❌ ["):
+    if (
+        stripped.startswith("Error")
+        or stripped.startswith("❌ [")
+        or stripped.startswith("There was an error when executing the function:")
+    ):
         return True
     exit_match = re.search(r"\[exit_code=(\d+)\]", stripped)
     return exit_match is not None and exit_match.group(1) != "0"
@@ -247,6 +259,9 @@ class ToolExecutor:
             guardrail_prechecked: True면 RateLimitGate의 before_call을 건너뛴다
                           (tool_loop가 이미 평가한 allow-path). 직접 호출 경로는 False 유지.
         """
+        import antigravity_k.engine.llm_input_audit as llm_input_audit
+
+        llm_input_audit.audit_tool(name=name, stage="execute_requested")
         try:
             if name not in self.tool_registry:
                 return (
@@ -254,6 +269,11 @@ class ToolExecutor:
                     f"Here's the error traceback: Unknown tool '{name}'\n"
                     f"Please call this function again with a valid tool name within XML tags <tool_call></tool_call>"
                 )
+
+            # ─── r41: 작업별 허용 도구 목록 + 완료 호출 재사용 (실행 경계에서 강제) ───
+            contract_block = self._task_contract_check(name, args)
+            if contract_block is not None:
+                return contract_block
 
             # ─── 요청 단위 도구 정책 (대시보드 Search/Code/MCP 칩) ───
             policy_tool = self.tool_registry.get_tool(name)
@@ -300,6 +320,7 @@ class ToolExecutor:
                         f"Please reconsider your approach."
                     )
 
+            approval_use: "_BoundApprovalUse | None" = None
             # ─── Phase 1 D3: GatePipeline 우선순위 게이트 평가 ───
             if self.gate_pipeline is not None:
                 from antigravity_k.engine.gate_pipeline import GateContext
@@ -328,9 +349,13 @@ class ToolExecutor:
                     # Pause = 사용자 승인 필요 — ApprovalManager에 요청을 등록해
                     # 대시보드/승인 API로 처리 가능하게 한다. '항상 허용' 도구나
                     # 소비 대기 중인 일회성 승인(재시도)이면 즉시 실행한다.
-                    proceed, approval_request_id = self._register_approval_request(name, args, gate_decision)
-                    if proceed:
-                        pass  # 승인 확정 — 아래 실행 단계로 진행
+                    # r40: the gate VERIFIES server-side evidence (does not consume it); consumption
+                    # happens once, atomically, at the real execution start inside the registry.
+                    gate_evidence, approval_request_id = self._register_approval_request(name, args, gate_decision)
+                    proceed = gate_evidence is not None
+                    llm_input_audit.audit_tool(name=name, stage="approval_granted" if proceed else "approval_pending")
+                    if gate_evidence is not None:
+                        approval_use = _BoundApprovalUse(self, name, args, gate_evidence)
                     else:
                         request_note = f" (승인 요청 ID: {approval_request_id}) " if approval_request_id else " "
                         return (
@@ -344,10 +369,11 @@ class ToolExecutor:
             if error_msg:
                 return error_msg
 
-            perm, result = self.tool_registry.execute_with_permission(
+            perm, result, perm_decision = self._execute_registry(
                 name,
                 args,
-                objective=objective or self.current_objective,
+                objective or self.current_objective,
+                approval_use,
             )
 
             if perm == Permission.DENY:
@@ -361,11 +387,56 @@ class ToolExecutor:
                 # 레지스트리 권한 게이트(PROMPT)도 승인 시스템과 연동한다 —
                 # '항상 허용'/소비 대기 일회성 승인이 있으면 승인 실행하고,
                 # 없으면 승인 요청을 등록해 사용자가 API/대시보드로 결정한다.
-                proceed, approval_request_id = self._register_approval_request(name, args, f"{name} 실행 승인")
-                if proceed:
+                # r40: which approval this PROMPT needs. A plain risk-level PROMPT shares the
+                # "standard" layer with the ApprovalGate; secret/path/capability PROMPTs need their
+                # own separate ("strict:*") approval which the gate's evidence never satisfies.
+                basis = perm_decision.basis if perm_decision is not None else ""
+                layer = (
+                    LAYER_STANDARD if basis == "risk_level" else f"strict:{getattr(perm_decision, 'source', 'unknown')}"
+                )
+                if approval_use is not None and layer == LAYER_STANDARD:
+                    # evidence existed but failed verification/consumption -> re-approval, record cause
+                    logger.warning("r40 approval evidence rejected for %s: %s", name, result[:160])
+                ev, approval_request_id = self._register_approval_request(
+                    name,
+                    args,
+                    f"{name} 실행 승인",
+                    layer=layer,
+                    skip_evidence=approval_use is not None and layer == LAYER_STANDARD,
+                )
+                proceed = ev is not None
+                llm_input_audit.audit_tool(name=name, stage="approval_granted" if proceed else "approval_pending")
+                if ev is _ALWAYS_ALLOW_EVIDENCE:
+                    # '항상 허용' (user-granted, tool-wide; pre-r40 behaviour kept, open risk)
                     approved_result = str(self.tool_registry.execute_approved(name, args))
                     self._post_execute(name, args, approved_result, permission=perm)
                     return approved_result
+                if proceed and ev is not None:
+                    if layer == LAYER_STANDARD:
+                        perm2, approved_result, _ = self._execute_registry(
+                            name, args, objective or self.current_objective, _BoundApprovalUse(self, name, args, ev)
+                        )
+                    else:
+                        # strict layer: consume this separate evidence at execution start, then the
+                        # registry's own secret/inode grant path runs (execute_approved).
+                        why = get_approval_manager().consume_evidence(
+                            ev, name, self._approval_binding_now(name, args), layer
+                        )
+                        if why:
+                            perm2, approved_result = Permission.PROMPT, f"[APPROVAL REQUIRED] ({why})"
+                        else:
+                            perm2, approved_result = (
+                                Permission.ALLOW,
+                                str(self.tool_registry.execute_approved(name, args)),
+                            )
+                    if perm2 == Permission.ALLOW:
+                        self._post_execute(name, args, approved_result, permission=perm)
+                        return approved_result
+                    self._record_tool_call(name, args, approved_result, permission=perm2)
+                    return (
+                        f"[APPROVAL REQUIRED] {approved_result} Please stop executing tools immediately and ask the "
+                        f"user for permission. Wait for their 'Yes' before retrying."
+                    )
                 self._record_tool_call(name, args, result, permission=perm)
                 request_note = f" (승인 요청 ID: {approval_request_id}) " if approval_request_id else " "
                 return (
@@ -397,7 +468,9 @@ class ToolExecutor:
         name: str,
         args: dict[str, object],
         reason: object,
-    ) -> tuple[bool, str]:
+        layer: str = LAYER_STANDARD,
+        skip_evidence: bool = False,
+    ) -> tuple[ApprovalEvidence | None, str]:
         """게이트 일시정지를 승인 시스템에 등록한다.
 
         반환: (즉시 실행 여부, 승인 요청 ID — 등록 실패 시 빈 문자열).
@@ -410,53 +483,108 @@ class ToolExecutor:
         try:
             from antigravity_k.engine.approval_manager import (
                 ApprovalStatus,
+                approval_binding,
+                describe_write_target,
                 get_approval_manager,
             )
 
             manager = get_approval_manager()
+            json_args = _json_args(args)
+            # r37: 실행 시점의 실제 대상(요청 바인딩 루트 우선)으로 바인딩을 재계산한다.
+            approval_root = self._approval_project_root()
+            binding = approval_binding(name, json_args, describe_write_target(name, json_args, approval_root))
 
-            # 재시도 우선: 이미 승인된 일회성 허가가 있으면 새 요청 없이 소비
-            if manager.consume_one_time_approval(name):
-                return True, ""
+            # r40: 승인 증빙은 서버 내부 기록에서만 찾는다(도구 인자·모델 출력은 증빙이 될 수 없다).
+            # 여기서는 검증만 하고 소비하지 않는다 — 소비는 실제 실행 시작 시점에 한 번.
+            if not skip_evidence:
+                evidence = manager.find_approved_evidence(name, binding, layer)
+                if evidence is not None:
+                    return evidence, evidence.request_id
 
             # '항상 허용'은 새 요청/일시정지 없이 즉시 실행 — 단, **동의 없이 실행된 횟수**를
             # 부여 기록에 남긴다(F-33: 보이지 않는 자동 승인은 감사할 수 없다).
-            if manager.is_always_allowed(name):
+            # r40: '항상 허용'은 standard 층에만 적용되고, 실행 시 소비할 증빙이 없으므로 기존처럼
+            # 즉시 진행한다(ALWAYS_ALLOW 경로는 이번 결속 범위 밖 — 열린 위험으로 기록).
+            if manager.is_always_allowed(name) and layer == LAYER_STANDARD:
                 manager.record_auto_approval(name)
-                return True, ""
+                return _ALWAYS_ALLOW_EVIDENCE, ""
 
-            from pydantic import JsonValue
-
-            json_args: dict[str, JsonValue] = {
-                key: value if isinstance(value, (str, int, float, bool)) or value is None else str(value)
-                for key, value in args.items()
-            }
             description = (
                 str(getattr(reason, "reason", "")) if not isinstance(reason, str) else reason
             ) or f"{name} 실행"
 
             # 동일 도구의 PENDING 요청이 있으면 재사용 (중복 등록·UI 스팸 방지)
             for pending_request in manager.get_pending():
-                if pending_request.tool_name == name:
+                if (
+                    pending_request.tool_name == name
+                    and pending_request.binding == binding
+                    and pending_request.scope.get("layer") == layer
+                ):
                     self._broadcast_approval_required(name, pending_request.request_id, description)
-                    return False, pending_request.request_id
+                    return None, pending_request.request_id
 
             request = manager.request_approval(
                 tool_name=name,
                 tool_args=json_args,
                 description=description,
-                project_root=str(self.project_root),
+                project_root=approval_root,
+                layer=layer,
             )
             if request.status == ApprovalStatus.ALWAYS_ALLOW:
-                return True, request.request_id
+                return _ALWAYS_ALLOW_EVIDENCE, request.request_id
             self._broadcast_approval_required(name, request.request_id, description)
-            return False, request.request_id
+            return None, request.request_id
         except Exception:
             logger.debug(
                 "approval registration failed — string pause fallback",
                 exc_info=True,
             )
-            return False, ""
+            return None, ""
+
+    def _approval_binding_now(self, name: str, args: Mapping[str, object]) -> str:
+        """r40: recompute the binding right now (real path re-resolved -> link swap is detected)."""
+        from antigravity_k.engine.approval_manager import approval_binding, describe_write_target
+
+        json_args = _json_args(args)
+        return approval_binding(name, json_args, describe_write_target(name, json_args, self._approval_project_root()))
+
+    def _execute_registry(
+        self,
+        name: str,
+        args: dict[str, object],
+        objective: str,
+        approval_use: "_BoundApprovalUse | None",
+    ) -> tuple[Permission, str, PermissionDecision | None]:
+        registry = self.tool_registry
+        from antigravity_k.tools.tool_registry import ToolRegistry
+
+        # the real method only (a Mock/spec'd stand-in or a subclass override cannot claim r40 binding)
+        if (
+            getattr(type(registry), "execute_with_permission_detail", None)
+            is ToolRegistry.execute_with_permission_detail
+        ):
+            if approval_use is not None and approval_use.always_allow:
+                approval_use = None  # '항상 허용': no evidence to consume (open risk, documented)
+            return registry.execute_with_permission_detail(name, args, objective=objective, approval_use=approval_use)
+        # Non-ToolRegistry registries (alternate/legacy implementations) expose only the 2-tuple API.
+        # The evidence is still consumed atomically here, immediately before the call; their PROMPTs
+        # carry no basis and are treated as a separate strict layer (never satisfied by gate evidence).
+        if approval_use is not None and not approval_use.always_allow:
+            why = approval_use.consume()
+            if why:
+                return Permission.PROMPT, f"[APPROVAL REQUIRED] ({why})", None
+        perm, result = registry.execute_with_permission(name, args, objective=objective)
+        return perm, result, None
+
+    def _approval_project_root(self) -> str:
+        """승인 대상 계산용 루트: 실행 경로와 같이 요청/태스크 바인딩 루트를 우선한다."""
+        try:
+            from antigravity_k.api.project_binding import get_request_project_root
+
+            bound = get_request_project_root()
+        except Exception:
+            bound = None
+        return str(bound or self.project_root)
 
     def _broadcast_approval_required(self, name: str, request_id: str, reason: str) -> None:
         """승인 대기(APPROVAL REQUIRED) 상태를 Dashboard에 ApprovalRequired 이벤트로 브로드캐스트합니다.
@@ -478,6 +606,64 @@ class ToolExecutor:
             )
         except Exception:
             logger.exception("Failed to broadcast approval-required event")
+
+    @staticmethod
+    def _side_effect_tools() -> frozenset[str]:
+        from antigravity_k.engine.gate_pipeline import ApprovalGate
+
+        return ApprovalGate.ALWAYS_REQUIRE_APPROVAL | ApprovalGate.UNLESS_AUTO_APPROVED
+
+    def _task_contract_check(self, name: str, args: dict[str, object]) -> str | None:
+        """Executor-boundary enforcement of the task's allowed_tools and completed-call reuse."""
+        context = current_task_execution_context()
+        if context is None:
+            return None
+        store = cast("_task_contract._Store", context.state_store)
+        task_id = context.task_id
+        key = _task_contract.call_key(name, args)
+        if name in self._side_effect_tools():
+            previous = _task_contract.completed_result(store, task_id, key)
+            if previous is not None:
+                logger.info("Task %s: reusing completed result for '%s'", task_id, name)
+                return (
+                    f"[ALREADY COMPLETED] '{name}' with these exact arguments already ran in this task. "
+                    f"It was NOT executed again and no new approval is needed. Previous result:\n{previous}"
+                )
+        allowed = _task_contract.task_allowed_tools(store, task_id)
+        if allowed is None:
+            return None
+        if name not in allowed:
+            logger.info("Task %s: allowlist blocked '%s'", task_id, name)
+            return (
+                f"There was an error when executing the function: {name}\n"
+                f"Here's the error traceback: [BLOCKED] '{name}' is not in this task's allowed tools "
+                f"({', '.join(sorted(allowed)) or 'none'}). No approval was requested.\n"
+                f"Please finish the task with the results you already have."
+            )
+        if _task_contract.completed_count(store, task_id, name) >= allowed[name]:
+            logger.info("Task %s: quota exhausted for '%s'", task_id, name)
+            return (
+                f"There was an error when executing the function: {name}\n"
+                f"Here's the error traceback: [BLOCKED] '{name}' already used its allowed "
+                f"{allowed[name]} call(s) in this task. No approval was requested.\n"
+                f"Please finish the task with the results you already have."
+            )
+        return None
+
+    def _record_task_completion(self, name: str, args: dict[str, object], result: str) -> None:
+        context = current_task_execution_context()
+        if context is None:
+            return
+        try:
+            _task_contract.record_completed(
+                cast("_task_contract._Store", context.state_store),
+                context.task_id,
+                name,
+                _task_contract.call_key(name, args),
+                result,
+            )
+        except Exception:
+            logger.exception("Failed to record completed tool call")
 
     def _user_contracted_tools(self) -> frozenset[str]:
         """Tools the user explicitly named in the active task's prompt.
@@ -580,6 +766,8 @@ class ToolExecutor:
     ) -> None:
         """Post-execution: record history, broadcast file events, track errors."""
         self._record_tool_call(name, args, result, permission=permission)
+        if not result_indicates_failure(result):
+            self._record_task_completion(name, args, result)
 
         if result_indicates_failure(result):
             self._consecutive_errors += 1
@@ -701,98 +889,86 @@ class ToolExecutor:
         return str(result) + rollback_msg
 
     def register_default_tools(self) -> None:
-        """모든 기본 도구를 ToolRegistry에 등록합니다."""
+        """모든 기본 도구를 ToolRegistry에 등록합니다.
+
+        r39: 이전에는 import 전체와 install_many를 한 try로 감싸, 도구 하나의 import/생성 실패가
+        나머지 기본 도구 전부와 MCP·auto-skill 로딩까지 조용히 누락시켰다. 이제 도구별로
+        등록하고 실패를 ``self.registration_failures``(이름 → 예외 타입)에 남긴다.
+        주의: web_scrape·run_persistent_command 등은 이 목록에 없고, 실제 앱에서는
+        ``ToolRegistry.auto_discover``(api/dependencies.py)로 등록된다.
+        """
+        from importlib import import_module as _imp
+
+        specs: list[tuple[str, str, Callable[[type], object]]] = [
+            ("antigravity_k.tools.computer_use", "ComputerUseTool", lambda c: c()),
+            ("antigravity_k.tools.system_control", "SystemControlTool", lambda c: c()),
+            ("antigravity_k.tools.terminal_tools", "InteractivePTYTool", lambda c: c()),
+            ("antigravity_k.tools.binary_tools", "HexDumpTool", lambda c: c()),
+            ("antigravity_k.tools.docker_tools", "DockerBashCommandTool", lambda c: c()),
+            ("antigravity_k.tools.system_tools", "ReadFileTool", lambda c: c()),
+            ("antigravity_k.tools.system_tools", "ReplaceFileContentTool", lambda c: c()),
+            ("antigravity_k.tools.hashline_tools", "MultiReplaceFileContentTool", lambda c: c()),
+            ("antigravity_k.tools.system_tools", "RunBashCommandTool", lambda c: c()),
+            ("antigravity_k.tools.file_tools", "WriteFileTool", lambda c: c()),
+            ("antigravity_k.tools.file_tools", "EditFileTool", lambda c: c()),
+            ("antigravity_k.tools.file_tools", "ApplyPatchTool", lambda c: c()),
+            ("antigravity_k.tools.file_tools", "GlobSearchTool", lambda c: c()),
+            ("antigravity_k.tools.file_tools", "GrepSearchTool", lambda c: c()),
+            ("antigravity_k.tools.system_tools", "ListDirectoryTool", lambda c: c()),
+            ("antigravity_k.tools.hashline_tools", "ReadHashFileTool", lambda c: c()),
+            ("antigravity_k.tools.hashline_tools", "HashlineEditTool", lambda c: c()),
+            ("antigravity_k.tools.git_tools", "GitStatusTool", lambda c: c()),
+            ("antigravity_k.tools.git_tools", "GitDiffTool", lambda c: c()),
+            ("antigravity_k.tools.git_tools", "GitCommitTool", lambda c: c()),
+            ("antigravity_k.tools.git_tools", "GitLogTool", lambda c: c()),
+            ("antigravity_k.tools.ci_tools", "TestRunnerTool", lambda c: c()),
+            ("antigravity_k.tools.ci_tools", "AutoLintTool", lambda c: c()),
+            ("antigravity_k.tools.ci_tools", "PRCreationTool", lambda c: c()),
+            ("antigravity_k.tools.impact_analyzer", "ImpactAnalyzerTool", lambda c: c()),
+            ("antigravity_k.tools.config_editor_tool", "ConfigEditorTool", lambda c: c()),
+            ("antigravity_k.tools.context_artifact_tools", "ReadContextArtifactTool", lambda c: c(self.project_root)),
+            (
+                "antigravity_k.tools.agent_spawn",
+                "AgentSpawnTool",
+                lambda c: c(model_manager=self.manager, tool_registry=self.tool_registry),
+            ),
+            ("antigravity_k.tools.cowork_delegate", "CoworkDelegateTool", lambda c: c(model_manager=self.manager)),
+            (
+                "antigravity_k.tools.self_evolution_tool",
+                "SelfEvolutionTool",
+                lambda c: c(model_manager=cast(_SelfEvolutionModelManagerLike | None, self.manager)),
+            ),
+            ("antigravity_k.tools.artifact_tools", "WriteArtifactTool", lambda c: c(self.project_root)),
+            ("antigravity_k.tools.browser_tools", "BrowserDOMTool", lambda c: c()),
+            ("antigravity_k.tools.web_search", "WebSearchTool", lambda c: c()),
+        ]
+        registry = cast(_ToolRegistryInstallLike, cast(object, self.tool_registry))
+        failures: dict[str, str] = {}
+        for module_name, class_name, build in specs:
+            try:
+                tool_cls = cast(type, getattr(_imp(module_name), class_name))
+                _ = registry.install(build(tool_cls))
+            except Exception as exc:  # noqa: BLE001  # noqa: BROAD_EXCEPT_OK - per-tool registration boundary
+                failures[class_name] = type(exc).__name__
+                logger.exception("Failed to register tool %s", class_name)
+        self.registration_failures: dict[str, str] = failures
+        logger.info(
+            "Registered %s tools via ToolRegistry (default-tool failures: %s)", len(self.tool_registry), len(failures)
+        )
+
+        # MCP 동적 도구 로딩: 감사 통과한 서버만 ToolRegistry에 편입합니다.
         try:
-            from antigravity_k.tools.agent_spawn import AgentSpawnTool
-            from antigravity_k.tools.artifact_tools import WriteArtifactTool
-            from antigravity_k.tools.binary_tools import HexDumpTool
-            from antigravity_k.tools.browser_tools import BrowserDOMTool
-            from antigravity_k.tools.ci_tools import (
-                AutoLintTool,
-                PRCreationTool,
-                TestRunnerTool,
-            )
-            from antigravity_k.tools.computer_use import ComputerUseTool
-            from antigravity_k.tools.config_editor_tool import ConfigEditorTool
-            from antigravity_k.tools.context_artifact_tools import ReadContextArtifactTool
-            from antigravity_k.tools.cowork_delegate import CoworkDelegateTool
-            from antigravity_k.tools.docker_tools import DockerBashCommandTool
-            from antigravity_k.tools.file_tools import (
-                ApplyPatchTool,
-                EditFileTool,
-                GlobSearchTool,
-                GrepSearchTool,
-                WriteFileTool,
-            )
-            from antigravity_k.tools.git_tools import (
-                GitCommitTool,
-                GitDiffTool,
-                GitLogTool,
-                GitStatusTool,
-            )
-            from antigravity_k.tools.hashline_tools import (
-                HashlineEditTool,
-                MultiReplaceFileContentTool,
-                ReadHashFileTool,
-            )
-            from antigravity_k.tools.impact_analyzer import ImpactAnalyzerTool
-            from antigravity_k.tools.self_evolution_tool import SelfEvolutionTool
-            from antigravity_k.tools.system_control import SystemControlTool
-            from antigravity_k.tools.system_tools import (
-                ListDirectoryTool,
-                ReadFileTool,
-                ReplaceFileContentTool,
-                RunBashCommandTool,
-            )
-            from antigravity_k.tools.terminal_tools import InteractivePTYTool
-            from antigravity_k.tools.web_search import WebSearchTool
-
-            registry = cast(_ToolRegistryInstallLike, cast(object, self.tool_registry))
-            _ = registry.install_many(
-                ComputerUseTool(),
-                SystemControlTool(),
-                InteractivePTYTool(),
-                HexDumpTool(),
-                DockerBashCommandTool(),
-                ReadFileTool(),
-                ReplaceFileContentTool(),
-                MultiReplaceFileContentTool(),
-                RunBashCommandTool(),
-                WriteFileTool(),
-                EditFileTool(),
-                ApplyPatchTool(),
-                GlobSearchTool(),
-                GrepSearchTool(),
-                ListDirectoryTool(),
-                ReadHashFileTool(),
-                HashlineEditTool(),
-                GitStatusTool(),
-                GitDiffTool(),
-                GitCommitTool(),
-                GitLogTool(),
-                TestRunnerTool(),
-                AutoLintTool(),
-                PRCreationTool(),
-                ImpactAnalyzerTool(),
-                ConfigEditorTool(),
-                ReadContextArtifactTool(self.project_root),
-                AgentSpawnTool(model_manager=self.manager, tool_registry=self.tool_registry),
-                CoworkDelegateTool(model_manager=self.manager),
-                SelfEvolutionTool(model_manager=cast(_SelfEvolutionModelManagerLike | None, self.manager)),
-                WriteArtifactTool(),
-                BrowserDOMTool(),
-                WebSearchTool(),
-            )
-            logger.info("Registered %s tools via ToolRegistry", len(self.tool_registry))
-
-            # MCP 동적 도구 로딩: 감사 통과한 서버만 ToolRegistry에 편입합니다.
             self._load_mcp_tools()
+        except Exception as exc:  # noqa: BLE001  # noqa: BROAD_EXCEPT_OK - MCP loading boundary
+            failures["<mcp>"] = type(exc).__name__
+            logger.exception("Failed to load MCP tools")
 
-            # Auto-Skill 동적 로딩 (ECA)
+        # Auto-Skill 동적 로딩 (ECA)
+        try:
             self._load_auto_skills()
-
-        except Exception:
-            logger.exception("Failed to register tools")
+        except Exception as exc:  # noqa: BLE001  # noqa: BROAD_EXCEPT_OK - auto-skill boundary
+            failures["<auto_skills>"] = type(exc).__name__
+            logger.exception("Failed to load auto skills")
 
     def _load_auto_skills(self) -> None:
         """auto_skill_ 프리픽스 도구를 동적으로 로드합니다."""
@@ -860,3 +1036,46 @@ class ToolExecutor:
     def reset_error_counter(self) -> None:
         """턴 시작 시 에러 카운터를 리셋합니다."""
         self._consecutive_errors = 0
+
+
+# ─── r40: trusted-executor approval evidence plumbing ────────────────────────
+#: '항상 허용' marker: there is no one-time evidence to consume. Identity-compared only.
+_ALWAYS_ALLOW_EVIDENCE = cast("ApprovalEvidence", object())
+
+
+def _json_args(args: Mapping[str, object]) -> dict[str, JsonValue]:
+    return {
+        key: value if isinstance(value, (str, int, float, bool)) or value is None else str(value)
+        for key, value in args.items()
+    }
+
+
+@final
+class _BoundApprovalUse:
+    """Binds one server-side ApprovalEvidence to one concrete call.
+
+    ``verify``/``consume`` recompute the binding from the call's own args and the *current* real
+    target at the moment they run, so a changed path/content/action/link or scope fails closed.
+    The evidence object never enters tool args, prompts or model-visible text.
+    """
+
+    def __init__(self, executor: ToolExecutor, name: str, args: Mapping[str, object], evidence: ApprovalEvidence):
+        self._executor = executor
+        self._name = name
+        self._args = dict(args)
+        self._evidence = evidence
+        self.always_allow = evidence is _ALWAYS_ALLOW_EVIDENCE
+
+    def verify(self) -> str:
+        if self.always_allow:
+            return ""
+        return get_approval_manager().verify_evidence(
+            self._evidence, self._name, self._executor._approval_binding_now(self._name, self._args)
+        )
+
+    def consume(self) -> str:
+        if self.always_allow:
+            return ""
+        return get_approval_manager().consume_evidence(
+            self._evidence, self._name, self._executor._approval_binding_now(self._name, self._args)
+        )

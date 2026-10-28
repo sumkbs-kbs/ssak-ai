@@ -125,6 +125,9 @@ class LocalOllamaModelPort:
         input_bytes = len(prompt.encode()) + len(json.dumps(payload["format"]).encode())
         if input_bytes + 512 + 2048 > 40960:
             raise LocalModelError("Prompt/schema/output reserve exceeds preregistered context window")
+        from antigravity_k.engine.direct_model_call import guard_direct_model_call
+
+        _ = guard_direct_model_call(self.model_id, "local_live_trial", prompt, timeout=120)
         try:
             with self._client() as client:
                 response = client.post("/api/generate", json=payload)

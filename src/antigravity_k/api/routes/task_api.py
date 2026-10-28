@@ -149,6 +149,13 @@ def fork_task(task_id: str, request: TaskForkRequest, http_request: Request) -> 
     except ValidationError as error:
         raise HTTPException(status_code=409, detail="Task history is not forkable") from error
 
+    saved_context = None
+    if isinstance(runtime, AgentRuntime):
+        binding = runtime.task_runtime_binding(task_id, owner_subject)
+        if binding is None or binding[2] is None:
+            raise HTTPException(status_code=409, detail="Task project binding is not forkable")
+        runtime, _effective_owner, saved_context = binding
+
     events = runtime.list_task_events(task_id, after_sequence=0, limit=1_000, owner_subject=owner_subject)
     last_sequence = events[-1]["sequence"] if events else 0
     fork_context = _TaskForkContext(
@@ -159,6 +166,12 @@ def fork_task(task_id: str, request: TaskForkRequest, http_request: Request) -> 
             source_last_sequence=last_sequence,
         ),
     ).model_dump()
+    if saved_context is not None:
+        from antigravity_k.api.project_binding import execution_context_to_task_context
+
+        fork_context.update(
+            execution_context_to_task_context(saved_context.model_copy(update={"task_id": None})),
+        )
     forked_task_id = runtime.submit_task(
         prompt=request.prompt or source.prompt,
         context=fork_context,
@@ -206,6 +219,21 @@ def cancel_background_task(task_id: str, request: Request) -> TaskActionResponse
     if verdict != "cancelled":
         raise HTTPException(status_code=404, detail="Task is not active")
     return TaskActionResponse(status="cancelled", task_id=task_id)
+
+
+@router.post("/api/tasks/{task_id}/pause", response_model=TaskActionResponse)
+def pause_background_task(task_id: str, request: Request) -> TaskActionResponse:
+    """r32: user pause — distinct from cancel. Checkpoints at the next chunk boundary and CASes
+    running->paused (no rollback/cleanup); resume continues from that checkpoint."""
+    verdict = _runtime().pause_task(task_id, owner_subject=_auth_subject(request))
+    if verdict == "owned_elsewhere":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Another live process owns this task's execution — pause it there",
+        )
+    if verdict != "pausing":
+        raise HTTPException(status_code=404, detail="Task is not running")
+    return TaskActionResponse(status="pausing", task_id=task_id)
 
 
 @router.post("/api/tasks/{task_id}/resume", response_model=TaskActionResponse)

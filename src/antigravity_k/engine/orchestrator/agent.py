@@ -18,6 +18,8 @@ from antigravity_k.engine.engine_context import EngineContext
 from antigravity_k.engine.long_context_policy import LongContextExecutionPlan, LongContextPlanner
 from antigravity_k.engine.memory_provider import MemoryManager
 from antigravity_k.engine.memory_recorder import MemoryRecorder
+from antigravity_k.engine.tool_policy import request_allows_side_effects, tool_policy_denial
+from antigravity_k.engine.turn_tool_constraints import current_turn_tool_constraints
 from antigravity_k.engine.orchestrator.setup import (
     PLANNING_MODE_BLOCK,
     create_artifact_engine,
@@ -456,8 +458,15 @@ class OrchestratorAgent:
         except Exception:
             schemas_to_render = raw_schemas
 
+        constraints = current_turn_tool_constraints()
         for schema_value in schemas_to_render:
             schema = _object_mapping(schema_value)
+            name = schema.get("name")
+            if isinstance(name, str) and (
+                tool_policy_denial(name, self.tool_registry.get_tool(name)) is not None
+                or constraints.denial(name) is not None
+            ):
+                continue
             params = _object_mapping(schema.get("input_schema", {}))
             required = _string_list(params.get("required"))
             tool_section += f"- **{schema['name']}**: {schema['description']}\n"
@@ -558,12 +567,17 @@ class OrchestratorAgent:
             if hasattr(self.mode_manager, "plan_artifact_path") and self.mode_manager.plan_artifact_path:
                 plan_path = self.mode_manager.plan_artifact_path
 
+            access_instruction = (
+                "2. You have full access to all tools — read, write, execute, and manage files.\n"
+                if request_allows_side_effects()
+                else "2. This request is read-only. Use only the listed permitted tools; do not save, edit, or create files or artifacts.\n"
+            )
             build_prompt = (
                 "\n\n[EXECUTION MODE: BUILD]\n"
                 "You are now in BUILD MODE. The plan has been validated and approved.\n"
                 "1. Execute the tasks defined in the plan using all available tools.\n"
-                "2. You have full access to all tools — read, write, execute, and manage files.\n"
-                "3. Follow the plan's implementation steps in order.\n"
+                + access_instruction
+                + "3. Follow the plan's implementation steps in order.\n"
                 "4. After completing each task, update the task status in the Kanban board.\n"
                 "5. If you encounter unexpected issues, document them and adjust the approach.\n"
             )

@@ -286,24 +286,25 @@ async def list_projects():
 @router.post("/api/projects")
 async def create_project(req: CreateProjectRequest, request: Request):
     """새 프로젝트를 등록하고 해당 작업공간으로 전환합니다."""
+    from antigravity_k.api.contracts.errors import ProjectRootInvalidError
     from antigravity_k.engine.project_registry import get_project_registry
+    from antigravity_k.engine.request_execution_context import validate_project_root_path
 
-    try:
-        target = str(resolve_allowed_path(req.path))
-    except PathSecurityError as exc:
-        cand = Path(req.path).expanduser().resolve()
-        if cand.is_dir() or cand.parent.is_dir():
-            target = str(cand)
-        else:
-            raise HTTPException(
-                status_code=403, detail="Project path is outside the configured workspace roots."
-            ) from exc
-
-    if not (os.path.exists(target) and os.path.isdir(target)):
+    # One allowed-path rule for register/activate/chat/RAG (realpath + configured bases).
+    cand = Path(req.path).expanduser()
+    if not cand.exists():
         try:
-            os.makedirs(target, exist_ok=True)
+            _ = validate_project_root_path(str(cand.parent))
+        except ProjectRootInvalidError as exc:
+            raise HTTPException(status_code=403, detail=exc.detail) from exc
+        try:
+            os.makedirs(cand, exist_ok=True)
         except OSError:
-            raise HTTPException(status_code=400, detail=f"Invalid directory: {target}")
+            raise HTTPException(status_code=400, detail=f"Invalid directory: {cand}")
+    try:
+        target = validate_project_root_path(str(cand))
+    except ProjectRootInvalidError as exc:
+        raise HTTPException(status_code=403, detail=exc.detail) from exc
 
     registry = get_project_registry()
     try:
@@ -362,6 +363,16 @@ async def switch_project(req: SwitchProjectRequest, request: Request):
     if not target_id_or_path:
         raise HTTPException(status_code=400, detail="project_id or path is required")
 
+    from antigravity_k.api.contracts.errors import ProjectRootInvalidError
+    from antigravity_k.engine.request_execution_context import validate_project_root_path
+
+    existing = registry.get_project(target_id_or_path)
+    check_path = existing.path if existing is not None else (req.path or "")
+    if check_path:
+        try:
+            _ = validate_project_root_path(check_path, project_id=existing.id if existing else "")
+        except ProjectRootInvalidError as exc:
+            raise HTTPException(status_code=403, detail=exc.detail) from exc
     project = registry.switch_project(target_id_or_path)
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -442,6 +453,24 @@ async def ingest_workspace(
     return {"ok": True, "message": "Workspace indexing started in background"}
 
 
+def _allowed_browse_bases() -> list[str]:
+    from antigravity_k.api.path_security import configured_allowed_bases
+
+    return [str(b) for b in configured_allowed_bases() if b.is_dir()]
+
+
+def _browse_root_for(target: str, ws_root: str) -> str | None:
+    """Return the allowed root containing ``target`` (realpath), or None."""
+    real = Path(target).resolve()
+    for base in [ws_root, *_allowed_browse_bases()]:
+        try:
+            _ = real.relative_to(Path(base).resolve())
+            return base
+        except ValueError:
+            continue
+    return None
+
+
 @router.get("/api/fs/browse")
 @cached(ttl=5, tags=[TAG_FILESYSTEM])
 async def fs_browse(dir: str = ""):
@@ -464,13 +493,9 @@ async def fs_browse(dir: str = ""):
                 target_dir = str((Path(WORKSPACE_ROOT) / raw).resolve())
             else:
                 target_dir = str(raw.resolve())
-            # 워크스페이스 밖 접근 차단 (보안 계약)
-            try:
-                _ = Path(target_dir).resolve().relative_to(ws_root)
-            except ValueError as exc:
-                raise HTTPException(status_code=403, detail="Access denied outside of workspace root.") from exc
-            except HTTPException:
-                raise
+            # 워크스페이스 및 설정된 허용 루트 밖 접근 차단 (보안 계약; 등록·전환과 같은 realpath 규칙)
+            if _browse_root_for(target_dir, ws_root) is None:
+                raise HTTPException(status_code=403, detail="Access denied outside of workspace and allowed roots.")
 
         if not os.path.exists(target_dir) or not os.path.isdir(target_dir):
             raise HTTPException(status_code=404, detail="Directory not found")
@@ -523,17 +548,27 @@ async def fs_browse(dir: str = ""):
         items.sort(key=lambda x: (not x.get("is_project", False), str(x["name"]).lower()))
 
         parent_dir: str | None = os.path.dirname(target_dir)
-        if target_dir == parent_dir:
+        if parent_dir is None or target_dir == parent_dir or _browse_root_for(parent_dir, ws_root) is None:
             parent_dir = None
 
-        shortcuts = [
-            {"name": "📂 현재 워크스페이스", "path": ws_root},
-            {"name": "🏠 홈 디렉토리", "path": home_dir},
-        ]
+        # r29 contract: shortcuts only point at browseable locations. The user HOME is offered
+        # (labelled as such) only when it is inside an allowed root; it is never widened implicitly.
+        shortcuts = [{"name": "📂 현재 워크스페이스", "path": ws_root, "kind": "workspace"}]
+        for base in _allowed_browse_bases():
+            if base != ws_root:
+                shortcuts.append(
+                    {
+                        "name": f"🗂️ 허용 프로젝트 루트: {os.path.basename(base) or base}",
+                        "path": base,
+                        "kind": "allowed_root",
+                    }
+                )
+        if _browse_root_for(home_dir, ws_root) is not None:
+            shortcuts.append({"name": "🏠 사용자 홈", "path": home_dir, "kind": "home"})
         for candidate in ["program", "coding", "Projects", "Documents", "Desktop", "Downloads"]:
             p = os.path.join(home_dir, candidate)
-            if os.path.isdir(p) and p != ws_root:
-                shortcuts.append({"name": f"📁 {candidate}", "path": p})
+            if os.path.isdir(p) and p != ws_root and _browse_root_for(p, ws_root) is not None:
+                shortcuts.append({"name": f"📁 {candidate}", "path": p, "kind": "home_child"})
 
         return {
             "ok": True,

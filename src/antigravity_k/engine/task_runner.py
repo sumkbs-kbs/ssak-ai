@@ -22,15 +22,17 @@ import threading
 import time
 import uuid
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
-from contextlib import AbstractContextManager, nullcontext
+from contextlib import AbstractContextManager, contextmanager, nullcontext
 from contextvars import Token
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Protocol, TypeAlias, TypedDict, cast, final, runtime_checkable
+from typing import TYPE_CHECKING, Final, Protocol, TypeAlias, TypedDict, assert_never, cast, final, runtime_checkable
 
 from pydantic import JsonValue, TypeAdapter
 
+from antigravity_k.engine.access_mode import AccessMode, get_access_mode
 from antigravity_k.engine.benchmark_harness import TaskOutcome
+from antigravity_k.engine.chat_stream_events import ProgressChunk
 from antigravity_k.engine.secret_scanner import redact, redact_full, redact_url, strip_credentials
 from antigravity_k.engine.task_context_snapshot import (
     ContextSnapshotStoreError,
@@ -57,6 +59,7 @@ from antigravity_k.engine.task_state_types import (
     parse_task_status,
 )
 from antigravity_k.engine.task_steering import TaskSteeringQueue, TaskSteeringResult
+from antigravity_k.engine.tool_policy import request_allows_side_effects
 from antigravity_k.engine.worktree_manager import WorktreeManager
 
 if TYPE_CHECKING:
@@ -87,9 +90,23 @@ def _reset_worktree_context(token: Token[RequestExecutionContext | None] | None)
 logger = logging.getLogger(__name__)
 
 _JSON_VALUE_ADAPTER: TypeAdapter[JsonValue] = TypeAdapter(JsonValue)
+_BOOKKEEPING_READ_ONLY: Final = "_bookkeeping_read_only"
 
 TaskContext: TypeAlias = dict[str, object]
 TaskInfo: TypeAlias = dict[str, object]
+
+
+def _request_restricts_bookkeeping() -> bool:
+    """Read both authoritative restrictions before a request leaves its thread."""
+    return get_access_mode() is AccessMode.READ_ONLY or not request_allows_side_effects()
+
+
+def _task_allows_bookkeeping(task: BackgroundTask) -> bool:
+    """Keep automatic vault effects within the task's captured and current authority."""
+    restricted = task.context.get(_BOOKKEEPING_READ_ONLY) is True or _request_restricts_bookkeeping()
+    if restricted:
+        task.context[_BOOKKEEPING_READ_ONLY] = True
+    return not restricted
 
 
 class CheckpointInfo(TypedDict):
@@ -258,10 +275,14 @@ class BackgroundTask:
         self.created_at = datetime.now(UTC).isoformat()
         self.updated_at = self.created_at
         self.cancel_event = threading.Event()
+        # r32: user pause is NOT cancel — it checkpoints and keeps the worktree/snapshot.
+        self.pause_event = threading.Event()
         self.checkpoints: list[TaskCheckpoint] = []
         self._thread: threading.Thread | None = None
         self.worktree_path: str | None = None
         self.vault_writes: set[str] = set()
+        # r33: output already delivered before a pause/restart; set only by resume_task.
+        self.resume_prior_output: str = ""
 
     def to_dict(self) -> TaskInfo:
         # F-36: 이 태스크는 **이 프로세스가** 실행 중이다 — 소유 사실을 말한다. `resumable` 은
@@ -287,6 +308,206 @@ class BackgroundTask:
 
     def attach_thread(self, thread: threading.Thread) -> None:
         self._thread = thread
+
+
+RESUME_CONTINUE_INSTRUCTION = (
+    "The assistant message above is output already delivered to the user before a pause. "
+    "Continue immediately after its last line. Do not repeat or renumber anything already written, "
+    "do not restart the answer, and do not re-run tool actions that already completed."
+)
+RESUME_PRIOR_OUTPUT_CHARS = 6000
+_BANNER_RE = re.compile(
+    r"^\s*(?:🛡️ \*\*\[정밀 엔지니어링 모드\]\*\*|🚀 \*\*\[빠른 프로토타이핑 모드\]\*\*|🏢|"
+    r"\*\*\[CEO\]\*\* .{0,40}\*\*[A-Z_]+\*\* 위임 [^\n]*)\s*$"
+)
+
+
+def is_orchestrator_banner_chunk(chunk: str) -> bool:
+    """True only for the orchestrator's mode/CEO-delegation banner display events.
+
+    This legacy text classifier is narrower than a stream channel: tool details
+    are not banners. Typed progress is retained separately as execution events.
+    """
+    return bool(_BANNER_RE.match(chunk)) or not chunk.strip()
+
+
+@contextmanager
+def _resume_prefix_scope(task_id: str, prior_output: str) -> Iterator[None]:
+    """r36: runner owns this task's DONE write; prior output is kept on loop terminal writes.
+    Always restored (normal end, exception, early return, generator close)."""
+    from antigravity_k.engine.task_execution_context import resume_output_prefix
+
+    token = resume_output_prefix.set((task_id, prior_output or ""))
+    try:
+        yield
+    finally:
+        resume_output_prefix.reset(token)
+
+
+_CONTROL_NOTICE_RE = re.compile(r"^\s*🧭 [^\n]*\s*$")
+
+
+def resume_control_kind(chunk: str) -> str | None:
+    """r37: classify a resume-prelude chunk as a control/display event (never body text).
+
+    Banners (mode/CEO marker) and the trajectory-compaction notice are display events emitted by
+    the orchestrator as ProgressChunk; they are not part of the answer body, so at the resume
+    cursor they must not be spliced into it. Returns the kind, or None for body text."""
+    if not chunk.strip():
+        return "blank"
+    if _BANNER_RE.match(chunk):
+        return "banner"
+    if _CONTROL_NOTICE_RE.match(chunk):
+        return "compaction_notice"
+    return None
+
+
+_RESUME_REPEAT_RUN = 3
+
+
+def resume_join_issue(prior: str, final: str) -> str | None:
+    """r42: exact-only check that the resumed segment did not restart already-delivered text.
+
+    Flags (a) the new segment's first non-blank line equals the first non-blank line of the prior
+    answer (answer restarted from the top) when that line is not trivially short, or (b) the first
+    ``_RESUME_REPEAT_RUN`` non-blank new lines equal a consecutive run of prior lines. A single
+    repeated sentence (normal repetition) is never flagged. Paraphrased regeneration is NOT
+    detectable by this check (documented limit)."""
+    if not prior or not final.startswith(prior):
+        return "final output does not extend the delivered prefix" if prior and final else None
+    new_lines = [line.strip() for line in final[len(prior) :].splitlines() if line.strip()]
+    prior_lines = [line.strip() for line in prior.splitlines() if line.strip()]
+    if not new_lines or not prior_lines:
+        return None
+    if new_lines[0] == prior_lines[0] and len(prior_lines) > 1 and len(new_lines[0]) >= 12:
+        return "resumed segment restarts the answer from its first line"
+    run = new_lines[:_RESUME_REPEAT_RUN]
+    if len(run) == _RESUME_REPEAT_RUN:
+        for i in range(len(prior_lines) - _RESUME_REPEAT_RUN + 1):
+            if prior_lines[i : i + _RESUME_REPEAT_RUN] == run:
+                return f"resumed segment repeats {_RESUME_REPEAT_RUN} consecutive delivered lines"
+    return None
+
+
+_SAVED_PATH_RE = re.compile(r"Successfully saved to (\S+?)\.?\s")
+_HASH_CLAIM_RE = re.compile(
+    r"(?i)(?:sha[-_ ]?256[^\n`0-9a-f]{0,24}|해시[^\n`0-9a-f]{0,24}|hash[^\n`0-9a-f]{0,24})`?([0-9a-f]{8,64})"
+)
+
+
+def _verified_artifact_block(state_store: object, task_id: str, output: str) -> str:
+    """r42: hash/size of artifacts this task wrote, computed now from the real file."""
+    import hashlib
+
+    from antigravity_k.engine import task_tool_contract as ttc
+
+    if not callable(getattr(state_store, "list_execution_events", None)):
+        return ""
+    paths: list[str] = []
+    try:
+        for record in ttc.completed_records(cast("ttc._Store", state_store), task_id):
+            match = _SAVED_PATH_RE.search(str(record.get("result") or "") + " ")
+            if match and match.group(1) not in paths:
+                paths.append(match.group(1))
+    except Exception:
+        logger.warning("verified artifact scan failed for %s", task_id, exc_info=True)
+        return ""
+    if not paths:
+        return ""
+    lines = ["", "", "---", "**검증된 산출물 정보 (실제 파일에서 계산)**"]
+    verified: list[str] = []
+    for path in paths:
+        try:
+            fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+            with os.fdopen(fd, "rb") as fh:
+                data = fh.read()
+        except OSError as exc:
+            lines.append(f"- `{os.path.basename(path)}`: 확인 불가 ({type(exc).__name__}) — 값을 확정하지 않음")
+            continue
+        digest = hashlib.sha256(data).hexdigest()
+        verified.append(digest)
+        lines.append(
+            f"- `{os.path.basename(path)}`: sha256 `{digest}`, {len(data)} bytes, {len(data.decode('utf-8', 'replace'))} chars"
+        )
+    for claim in sorted({m.group(1).lower() for m in _HASH_CLAIM_RE.finditer(output)}):
+        if not any(d.startswith(claim) for d in verified):
+            lines.append(f"- ⚠ 불일치: 응답 본문의 해시 `{claim}`는 검증값과 다릅니다 (검증값 기준으로 정정).")
+    lines.append("- 응답 본문의 크기·길이 서술은 검증값이 아니며, 위 값이 기준입니다.")
+    return "\n".join(lines) + "\n"
+
+
+@final
+class ResumeJoiner:
+    """r37: stitches the first resumed body text onto the paused output at the streaming cursor.
+
+    All lengths are Python ``str`` character counts (never UTF-8 bytes). The pause cursor may sit
+    mid-line; the resumed model then typically restarts that line. Body chunks are buffered only
+    until the restart can be decided (buffer >= the open partial line, or a newline arrived, or the
+    stream ended); then an *exact* restart of the open partial line (or of the last complete line)
+    is dropped once, and everything else is appended verbatim. Nothing already in ``prior`` is
+    ever deleted, and no text other than an exact boundary restart is removed."""
+
+    def __init__(self, prior: str) -> None:
+        self._prior = prior
+        if prior and not prior.endswith("\n"):
+            self._partial = prior.rsplit("\n", 1)[-1]
+            self._last_full = ""
+        else:
+            self._partial = ""
+            stripped = prior.rstrip("\n")
+            self._last_full = stripped.rsplit("\n", 1)[-1] if stripped else ""
+        self._buffer = ""
+        self._decided = not prior
+        self.dropped_chars = 0
+
+    @property
+    def decided(self) -> bool:
+        return self._decided
+
+    def feed(self, chunk: str) -> str:
+        if self._decided:
+            return chunk
+        self._buffer += chunk
+        need = len(self._partial or self._last_full)
+        if len(self._buffer) < need and "\n" not in self._buffer:
+            return ""
+        return self._decide()
+
+    def flush(self) -> str:
+        if self._decided:
+            return ""
+        return self._decide()
+
+    def _decide(self) -> str:
+        self._decided = True
+        text, self._buffer = self._buffer, ""
+        if self._partial and text.startswith(self._partial):
+            self.dropped_chars = len(self._partial)
+            return text[len(self._partial) :]
+        if self._last_full:
+            first, sep, rest = text.partition("\n")
+            if first.strip() == self._last_full.strip() and (sep or len(first) >= len(self._last_full)):
+                self.dropped_chars = len(first) + len(sep)
+                return rest
+        return text
+
+
+def join_resume_chunk(prior: str, chunk: str) -> str:
+    """r34: first body chunk after resume.
+
+    The pause cursor may sit mid-line (token streaming), so the chunk is appended verbatim —
+    no separator is invented. Only when the prior output ended on a complete line and the
+    model re-emits that exact line first is the repeat dropped (duplicate guard). Banner
+    display events never reach here (filtered by is_orchestrator_banner_chunk), which is what
+    removes the r32 "🏢 1. 🛡️ ..." splice.
+    """
+    if not prior or not prior.endswith("\n"):
+        return chunk
+    last_line = prior.rstrip("\n").rsplit("\n", 1)[-1].strip()
+    first, sep, rest = chunk.partition("\n")
+    if last_line and first.strip() == last_line:
+        return rest if sep else ""
+    return chunk
 
 
 @final
@@ -361,6 +582,20 @@ class BackgroundTaskRunner:
             task_id: 고유 태스크 ID
         """
         task_context = dict(context or {})
+        # ContextVars are not inherited by the worker thread. Replace any client
+        # value with the server's decision and persist the restriction for resume.
+        task_context[_BOOKKEEPING_READ_ONLY] = _request_restricts_bookkeeping()
+        if "allowed_tools" in task_context:
+            # r41: server-side per-task tool allowlist, enforced by ToolExecutor.
+            from antigravity_k.engine.task_tool_contract import normalize_allowed_tools
+
+            allowed = normalize_allowed_tools(task_context["allowed_tools"])
+            task_context["allowed_tools"] = allowed
+            usable = [tool for tool, quota in (allowed or {}).items() if quota > 0]
+            if allowed is not None and not usable:
+                task_context["direct_response"] = True
+            elif usable and not task_context.get("expected_tools"):
+                task_context["expected_tools"] = usable
         if use_worktree:
             task_context["use_worktree"] = True
             _ = task_context.setdefault("persist_context_snapshot", True)
@@ -460,6 +695,27 @@ class BackgroundTaskRunner:
                 _ = task_process_supervisor.cancel_task(task_id)
                 return "cancelled" if updated else "not_active"
         return self.state_store.cancel_if_permitted(task_id, owner_subject=owner_subject)
+
+    def pause_task(self, task_id: str, owner_subject: str | None = None) -> str:
+        """r32: request a user pause of a task running in THIS process.
+
+        Returns "pausing" (signal set; the runner checkpoints and CASes running->paused at the next
+        chunk boundary), "not_active" (unknown/terminal/not running), or "owned_elsewhere".
+        Distinct from cancel: no rollback, no worktree removal, resumable via resume_task.
+        """
+        with self._lock:
+            task = self._tasks.get(task_id)
+            if task is not None and owner_subject is not None and task.owner_subject != owner_subject:
+                task = None
+            if task is not None:
+                if task.status != TaskStatus.RUNNING:
+                    return "not_active"
+                task.pause_event.set()
+                return "pausing"
+        record = self.state_store.get_task(task_id, owner_subject=owner_subject)
+        if record is None:
+            return "not_active"
+        return "owned_elsewhere" if record["status"] == TaskStatus.RUNNING else "not_active"
 
     def steer_task(self, task_id: str, instruction: str, owner_subject: str | None = None) -> TaskSteeringResult | None:
         with self._lock:
@@ -562,7 +818,7 @@ class BackgroundTaskRunner:
             vault_engine = vault_engine or getattr(orchestrator, "vault_engine", None)
 
             is_read_only_benchmark = task.context.get("benchmark_read_only") is True
-            if vault_engine and not is_read_only_benchmark:
+            if vault_engine and not is_read_only_benchmark and _task_allows_bookkeeping(task):
                 try:
                     snapshot_hash = cast(VaultEnginePort, vault_engine).create_snapshot(
                         f"Pre-task checkpoint for {task.task_id}"
@@ -574,11 +830,19 @@ class BackgroundTaskRunner:
                     logger.exception("Failed to create pre-task snapshot")
 
             messages = [{"role": "user", "content": task.prompt}]
+            if task.resume_prior_output:
+                messages = [
+                    {"role": "assistant", "content": task.resume_prior_output[-RESUME_PRIOR_OUTPUT_CHARS:]},
+                    *messages,
+                ]
             restored_snapshot = load_task_context_snapshot(self.state_store, task.task_id)
             if restored_snapshot is not None:
                 messages = [*restored_task_context_messages(restored_snapshot), *messages]
-            if task.context:
-                context_str = json.dumps(task.context, ensure_ascii=False)
+            from antigravity_k.engine import task_plan_state as tps
+
+            model_context = tps.context_without_plan_state(task.context) if task.context else {}
+            if model_context:
+                context_str = json.dumps(model_context, ensure_ascii=False)
                 messages.append(
                     {"role": "system", "content": f"Task execution context: {context_str}"},
                 )
@@ -608,41 +872,135 @@ class BackgroundTaskRunner:
 
             output_parts = [initial_output] if initial_output else []
             step = initial_step
-            for chunk in self._stream_task(task, orchestrator, target_model, messages):
-                if task.cancel_event.is_set():
-                    logger.info("Task %s interrupted by cancel event.", task.task_id)
-                    task.status = TaskStatus.CANCELLED
-                    _ = self._update_db_status(
-                        task.task_id,
-                        TaskStatus.CANCELLED,
-                        error="Task was manually cancelled.",
-                    )
+            # r33/r37: on resume the orchestrator re-emits display events (mode/CEO banners, the 🧭
+            # compaction notice). In the resume prelude they are control events, not body: they are
+            # recorded as execution events and never spliced into the body at the pause cursor. The
+            # first body text is stitched by ResumeJoiner (cursor-aware, char counts, exact restart only).
+            resume_prelude = bool(initial_output)
+            joiner = ResumeJoiner(initial_output)
+            from antigravity_k.engine import tool_execution_journal as tej
 
-                    # Worktree 정리
-                    if task.context.get("use_worktree", False):
-                        try:
-                            self.worktree_manager.remove_worktree(task.task_id)
-                        except Exception:
-                            logger.exception("Failed to cleanup worktree on cancellation")
-                    self._rollback_snapshot(task, cast(VaultEnginePort | None, vault_engine))
-                    self._record_task_outcome(task, target_model, started_at, "cancelled")
-                    return
+            # r35: restore contract — previous context restored on every exit path (incl. early returns).
+            # r38: plan/step state persisted inside task.context (saved by every checkpoint) so a resume
+            # continues from the first incomplete pipeline step instead of re-planning.
+            raw_plan_state = task.context.setdefault(tps.PLAN_STATE_KEY, {})
+            plan_state = raw_plan_state if isinstance(raw_plan_state, dict) else None
+            with (
+                tej.task_scope(task.task_id, bool(initial_output)),
+                _resume_prefix_scope(task.task_id, initial_output),
+                tps.bind_plan_state(plan_state),
+            ):
+                for chunk in self._stream_task(task, orchestrator, target_model, messages):
+                    match chunk:
+                        case ProgressChunk():
+                            is_progress = True
+                            _ = self.state_store.append_execution_event(
+                                task.task_id,
+                                "task.stream.progress",
+                                json.dumps(
+                                    {
+                                        "kind": "progress",
+                                        "text": _redact_vault_text(str(chunk)),
+                                        "source": "ProgressChunk",
+                                        "step": step,
+                                        "resumed": claim_status == TaskStatus.RESUMING,
+                                    },
+                                    ensure_ascii=False,
+                                    sort_keys=True,
+                                ),
+                            )
+                        case str():
+                            is_progress = False
+                        case unreachable:
+                            assert_never(unreachable)
+                    if not is_progress:
+                        if resume_prelude:
+                            kind = resume_control_kind(chunk)
+                            if kind is not None:
+                                if kind != "blank":
+                                    _ = self.state_store.append_execution_event(
+                                        task.task_id,
+                                        "task.resume.control_event",
+                                        json.dumps({"kind": kind}, sort_keys=True),
+                                    )
+                                continue
+                            resume_prelude = False
+                        if not joiner.decided:
+                            # Buffered content counts as a body step and is flushed before pause.
+                            chunk = joiner.feed(chunk)
+                            if joiner.decided and joiner.dropped_chars:
+                                _ = self.state_store.append_execution_event(
+                                    task.task_id,
+                                    "task.resume.joined",
+                                    json.dumps({"dropped_restart_chars": joiner.dropped_chars}, sort_keys=True),
+                                )
+                    if task.cancel_event.is_set():
+                        logger.info("Task %s interrupted by cancel event.", task.task_id)
+                        task.status = TaskStatus.CANCELLED
+                        _ = self._update_db_status(
+                            task.task_id,
+                            TaskStatus.CANCELLED,
+                            error="Task was manually cancelled.",
+                        )
 
-                output_parts.append(chunk)
-                step += 1
+                        # Worktree 정리
+                        if task.context.get("use_worktree", False):
+                            try:
+                                self.worktree_manager.remove_worktree(task.task_id)
+                            except Exception:
+                                logger.exception("Failed to cleanup worktree on cancellation")
+                        self._rollback_snapshot(task, cast(VaultEnginePort | None, vault_engine))
+                        self._record_task_outcome(task, target_model, started_at, "cancelled")
+                        return
 
-                # 매 10스텝마다 자동 체크포인트
-                if step % 10 == 0:
-                    task.output = "".join(output_parts)
-                    task.progress = min(0.95, step / 100)  # 추정 진행률
-                    task.updated_at = datetime.now(UTC).isoformat()
-                    self._save_checkpoint(task.task_id, step, task.context, task.output)
+                    if not is_progress:
+                        output_parts.append(chunk)
+                        step += 1
 
+                    if task.pause_event.is_set():
+                        tail = joiner.flush()
+                        if tail:
+                            output_parts.append(tail)
+                        # r32: user pause — checkpoint at the exact pause point (no rollback, no cleanup),
+                        # then CAS running->paused. resume_task continues from this checkpoint.
+                        task.output = "".join(output_parts)
+                        task.updated_at = datetime.now(UTC).isoformat()
+                        self._save_checkpoint(task.task_id, step, task.context, task.output)
+                        if self._update_db_status(task.task_id, TaskStatus.PAUSED, output=task.output):
+                            task.status = TaskStatus.PAUSED
+                            paused_checkpoint = self.state_store.get_last_checkpoint(task.task_id)
+                            paused_step = paused_checkpoint["step"] if paused_checkpoint is not None else step
+                            _ = self.state_store.append_execution_event(
+                                task.task_id,
+                                "task.paused",
+                                json.dumps({"reason": "user_pause", "step": paused_step}, sort_keys=True),
+                            )
+                            self._record_task_outcome(task, target_model, started_at, "paused")
+                            logger.info("Background task paused by user at step %s: %s", step, task.task_id)
+                            return
+                        task.pause_event.clear()
+
+                    # 매 10스텝마다 자동 체크포인트
+                    if not is_progress and step % 10 == 0:
+                        tail = joiner.flush()
+                        if tail:
+                            output_parts.append(tail)
+                        task.output = "".join(output_parts)
+                        task.progress = min(0.95, step / 100)  # 추정 진행률
+                        task.updated_at = datetime.now(UTC).isoformat()
+                        self._save_checkpoint(task.task_id, step, task.context, task.output)
+
+            tail = joiner.flush()
+            if tail:
+                output_parts.append(tail)
             task.output = "".join(output_parts)
             state_record = self.state_store.get_task(task.task_id)
             if state_record is not None and state_record["status"] == TaskStatus.PAUSED:
                 task.status = TaskStatus.PAUSED
                 task.updated_at = datetime.now(UTC).isoformat()
+                # r32: approval pause must also leave a checkpoint, otherwise resume_task finds none
+                # when fewer than 10 chunks were streamed (root cause of checkpoint_count=0).
+                self._save_checkpoint(task.task_id, step, task.context, task.output)
                 _ = self._update_db_status(task.task_id, TaskStatus.PAUSED, output=task.output)
                 self._record_task_outcome(task, target_model, started_at, "approval_required")
                 logger.info("Background task paused for approval: %s", task.task_id)
@@ -656,6 +1014,28 @@ class BackgroundTaskRunner:
                 self._record_task_outcome(task, target_model, started_at, completion_reason)
                 logger.warning("Background task completed with a failed terminal state: %s", task.task_id)
                 return
+            # r42: a resumed segment that re-emits already-delivered lines verbatim cannot be joined
+            # safely; it is neither trimmed nor reported as success.
+            join_issue = resume_join_issue(initial_output, task.output) if initial_output else None
+            if join_issue:
+                task.status = TaskStatus.FAILED
+                task.error = f"resume_join_unverified: {join_issue}"
+                task.updated_at = datetime.now(UTC).isoformat()
+                _ = self.state_store.append_execution_event(
+                    task.task_id,
+                    "task.resume.join_unverified",
+                    json.dumps({"reason": join_issue, "prior_chars": len(initial_output)}, sort_keys=True),
+                )
+                _ = self._update_db_status(task.task_id, TaskStatus.FAILED, output=task.output, error=task.error)
+                self._record_task_outcome(task, target_model, started_at, "failed")
+                return
+            # r42: file facts shown to the user come from the real file, never from model text.
+            verified_block = _verified_artifact_block(self.state_store, task.task_id, task.output)
+            if verified_block:
+                task.output = task.output + verified_block
+                _ = self.state_store.append_execution_event(
+                    task.task_id, "task.verified_artifacts", json.dumps({"chars": len(verified_block)}, sort_keys=True)
+                )
             validation_error = self._benchmark_validation_error(task)
             if validation_error:
                 task.status = TaskStatus.FAILED
@@ -743,7 +1123,7 @@ class BackgroundTaskRunner:
         Returns a reset token for :func:`_reset_worktree_context`.
         """
         if not task.worktree_path:
-            return None
+            return self._bind_task_project_context(task)
         try:
             from antigravity_k.api.contracts.execution_context import RequestExecutionContext
             from antigravity_k.api.project_binding import (
@@ -894,6 +1274,8 @@ class BackgroundTaskRunner:
         into a full-tree ``git reset --hard`` that would destroy concurrent
         tasks' committed, uncommitted, and untracked changes.
         """
+        if not _task_allows_bookkeeping(task):
+            return
         snapshot_hash = task.context.get("snapshot_hash")
         if not isinstance(snapshot_hash, str) or vault_engine is None:
             return
@@ -910,6 +1292,26 @@ class BackgroundTaskRunner:
                 logger.error("Snapshot rollback was rejected for task %s", task.task_id)
         except Exception:
             logger.exception("Snapshot rollback failed for task %s", task.task_id)
+
+    @staticmethod
+    def _bind_task_project_context(task: "BackgroundTask") -> "Token[RequestExecutionContext | None] | None":
+        """r36: a non-worktree task runs in a fresh thread with no request context, so tools fell
+        back to the process cwd (r35 A2 wrote into the app data dir). Re-bind the immutable
+        execution context stored on the task at submit time (WS-01)."""
+        raw = task.context.get("execution_context")
+        if not isinstance(raw, dict):
+            return None
+        try:
+            from antigravity_k.api.contracts.execution_context import RequestExecutionContext
+            from antigravity_k.api.project_binding import set_bound_request_execution_context
+
+            context = RequestExecutionContext.model_validate(raw)
+            if not context.canonical_project_root:
+                return None
+            return set_bound_request_execution_context(context)
+        except Exception:
+            logger.exception("Task project context binding failed for task %s", task.task_id)
+            return None
 
     def _stream_task(
         self,
@@ -937,6 +1339,12 @@ class BackgroundTaskRunner:
 
     def _apply_pending_steering(self, task: BackgroundTask, messages: list[dict[str, str]]) -> bool:
         pending = self._steering.drain(task.task_id)
+        if pending:
+            # r38: steering changes the request, so a stored plan no longer applies (re-plan as before).
+            from antigravity_k.engine import task_plan_state as tps
+
+            raw_state = task.context.get(tps.PLAN_STATE_KEY)
+            tps.reset_plan_state(raw_state if isinstance(raw_state, dict) else None)
         for request in pending:
             messages.append({"role": "user", "content": f"[Active-turn steering]\n{request.instruction}"})
             _ = self.state_store.append_execution_event(
@@ -1007,15 +1415,19 @@ class BackgroundTaskRunner:
                 task = None
 
         if task:
-            return task.to_dict()
+            info = task.to_dict()
+            # r33: report the stored count (a resumed task's in-memory list starts from one seed).
+            info["checkpoint_count"] = self.state_store.checkpoint_counts([task_id]).get(task_id, 0)
+            return info
 
         record = self.state_store.get_task(task_id, owner_subject=owner_subject)
         if record:
-            return self._record_info(record, has_checkpoint=self.get_last_checkpoint(task_id) is not None)
+            count = self.state_store.checkpoint_counts([task_id]).get(task_id, 0)
+            return self._record_info(record, has_checkpoint=count > 0, checkpoint_count=count)
         return None
 
     @staticmethod
-    def _record_info(record: TaskRecord, *, has_checkpoint: bool) -> TaskInfo:
+    def _record_info(record: TaskRecord, *, has_checkpoint: bool, checkpoint_count: int) -> TaskInfo:
         """DB 행 → 보고용 정보. **파생 필드가 생기는 자리**(F-36).
 
         `status` 는 저장된 값을 **그대로** 말한다(정책을 바꾸지 않는다 — 재시작이 고아 행을
@@ -1034,6 +1446,7 @@ class BackgroundTaskRunner:
             "updated_at": record["updated_at"],
             "completed_at": record["completed_at"],
             "version": record["version"],
+            "checkpoint_count": checkpoint_count,
             "execution_owner": execution_owner_of(raw_status, owner_pid_value),
             "resumable": resumable_task(raw_status, owner_pid_value, has_checkpoint),
         }
@@ -1057,9 +1470,10 @@ class BackgroundTaskRunner:
             if record["task_id"] not in active_ids
         ]
         # 체크포인트 유무는 **한 번의 질의**로 모은다(행마다 질의하면 목록 하나가 N번 질의한다).
-        with_checkpoints = self.state_store.last_checkpoint_steps([str(record["task_id"]) for record in records])
+        counts = self.state_store.checkpoint_counts([str(record["task_id"]) for record in records])
         for record in records:
-            info = self._record_info(record, has_checkpoint=str(record["task_id"]) in with_checkpoints)
+            count = counts.get(str(record["task_id"]), 0)
+            info = self._record_info(record, has_checkpoint=count > 0, checkpoint_count=count)
             info.pop("output_length", None)
             info.pop("completed_at", None)
             results.append(info)
@@ -1087,30 +1501,42 @@ class BackgroundTaskRunner:
             task.join(timeout)
         return self.get_status(task_id)
 
-    def _save_checkpoint(self, task_id: str, step: int, context: TaskContext, output: str) -> None:
+    def _save_checkpoint(self, task_id: str, step: int, context: TaskContext, output: str) -> bool:
         """체크포인트를 DB에 저장합니다."""
         try:
             checkpoint_context = dict(context)
+            checkpoint_step = step
             checkpoint = self.state_store.get_last_checkpoint(task_id)
             if checkpoint is not None:
+                # Completed tool rounds may be ahead of streamed body chunks.
+                # Reuse known progress so this later output wins at the same step.
+                checkpoint_step = max(step, checkpoint["step"])
                 try:
                     previous_context = cast(object, json.loads(checkpoint["context_json"]))
                 except (json.JSONDecodeError, TypeError):
                     previous_context = None
-                if isinstance(previous_context, dict) and "tool_loop" not in checkpoint_context:
+                if isinstance(previous_context, dict):
                     previous_context_map = cast(dict[str, object], previous_context)
                     tool_loop = previous_context_map.get("tool_loop")
                     if isinstance(tool_loop, dict):
+                        # ToolLoop persists producer state directly. A resumed
+                        # task's in-memory copy must not overwrite its newer evidence.
                         checkpoint_context["tool_loop"] = tool_loop
             self.state_store.save_checkpoint(
                 task_id,
-                step,
+                checkpoint_step,
                 json.dumps(checkpoint_context, ensure_ascii=False),
                 output,
             )
-            logger.debug("Checkpoint saved: %s at step %s", task_id, step)
+            logger.debug("Checkpoint saved: %s at step %s", task_id, checkpoint_step)
+            with self._lock:
+                live = self._tasks.get(task_id)
+            if live is not None:
+                live.checkpoints.append(TaskCheckpoint(task_id, checkpoint_step, dict(context), output))
+            return True
         except Exception:
             logger.exception("Checkpoint save failed")
+            return False
 
     def _save_to_vault(
         self,
@@ -1122,6 +1548,8 @@ class BackgroundTaskRunner:
         Orchestrator가 주어지면 LLM을 통해 기억을 정제(Consolidation)합니다.
         target_model이 주어지면 정제에 그 모델을 사용합니다.
         """
+        if not _task_allows_bookkeeping(task):
+            return
         try:
             # W-6: 순환참조 제거 — DI된 vault_engine 또는 orchestrator에서 추출
             orchestrator_vault = (
@@ -1174,6 +1602,8 @@ class BackgroundTaskRunner:
                     manager = cast(ModelManagerPort | None, getattr(orchestrator, "manager", None))
                     if manager is None:
                         raise TypeError("Orchestrator does not provide a model manager")
+                    if not _task_allows_bookkeeping(task):
+                        return
                     response_gen = manager.stream_generate(
                         prompt=summary_prompt,
                         target=summarizer_model,
@@ -1212,6 +1642,8 @@ class BackgroundTaskRunner:
                 "tags": ["task", "history", "memory"],
             }
 
+            if not _task_allows_bookkeeping(task):
+                return
             _ = cast(VaultEnginePort, vault_engine).write_note(
                 relative_path=filename,
                 metadata=metadata,
@@ -1259,20 +1691,31 @@ class BackgroundTaskRunner:
 
         # 체크포인트 컨텍스트로 새 태스크 생성
         checkpoint_context = checkpoint["context"]
+        # A missing/invalid legacy decision cannot prove permission. A new
+        # restriction can narrow a resume; current full access cannot lift one.
+        checkpoint_context[_BOOKKEEPING_READ_ONLY] = (
+            checkpoint_context.get(_BOOKKEEPING_READ_ONLY) is not False or _request_restricts_bookkeeping()
+        )
         checkpoint_step = checkpoint["step"]
         checkpoint_output = checkpoint["output_so_far"]
+        if not self._save_checkpoint(task_id, checkpoint_step, checkpoint_context, checkpoint_output):
+            _ = self._update_db_status(
+                task_id, TaskStatus.FAILED, error="Resume policy checkpoint could not be persisted."
+            )
+            return False
         working_memory = checkpoint_context.get("working_memory", "")
         working_memory_block = (
             f"Working memory state:\n{working_memory}\n"
             if isinstance(working_memory, str) and working_memory.strip()
             else ""
         )
+        # r33: the previous output is model text, not a user request. It goes in as an assistant
+        # turn (see _run_task) so preflight/quality checks evaluate only the user's own request.
         resume_prompt = (
             f"{record['prompt']}\n\n"
             f"[RESUMING FROM CHECKPOINT at step {checkpoint_step}]\n"
             f"{working_memory_block}"
-            f"Previous output:\n{checkpoint_output[-2000:]}\n"
-            f"Continue from where you left off."
+            f"{RESUME_CONTINUE_INSTRUCTION}"
         )
 
         task = BackgroundTask(
@@ -1282,6 +1725,8 @@ class BackgroundTaskRunner:
             owner_subject=owner_subject or "loopback",
         )
         task.output = checkpoint_output
+        task.resume_prior_output = checkpoint_output
+        task.checkpoints.append(TaskCheckpoint(task_id, checkpoint_step, checkpoint_context, checkpoint_output))
 
         with self._lock:
             self._tasks[task_id] = task

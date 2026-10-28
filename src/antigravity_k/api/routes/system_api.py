@@ -2253,6 +2253,11 @@ class _AccessModePayload(BaseModel):
     mode: str = Field(default="full_access")
 
 
+class _ExecutionPolicyPayload(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    policy: str | None = Field(default=None)
+
+
 @router.get("/api/workspace/context")
 async def get_workspace_context() -> dict[str, JsonValue]:
     """Codex/Ssak-Ai 데스크톱 인터페이스를 위한 현재 작업공간 컨텍스트를 반환합니다."""
@@ -2636,3 +2641,36 @@ async def post_access_mode(payload: _AccessModePayload) -> dict[str, JsonValue]:
         "label": mode.label,
         "message": f"실행 권한 모드가 '{mode.label}'(으)로 변경되었습니다.",
     }
+
+
+@router.get("/api/system/execution-policy")
+async def get_execution_policy_route() -> dict[str, JsonValue]:
+    """r39: 무인 실행 정책(파일 접근 범위와 별개)과 실제 적용되는 권한 모드를 반환한다."""
+    from antigravity_k.engine.access_mode import effective_permission_mode, get_execution_policy
+
+    policy = get_execution_policy()
+    return {"ok": True, "policy": policy.value, "label": policy.label, "effective_mode": effective_permission_mode()}
+
+
+@router.post("/api/system/execution-policy")
+async def post_execution_policy_route(payload: _ExecutionPolicyPayload) -> dict[str, JsonValue]:
+    """r39: 사용자가 명시적으로 무인 실행 정책을 선택/해제한다(프로세스 메모리, 전역 설정 파일 불변).
+
+    policy=null 이면 명시 선택을 해제해 환경변수 또는 기본값(balanced)으로 돌아간다.
+    """
+    from antigravity_k.engine.access_mode import (
+        effective_permission_mode,
+        get_execution_policy,
+        parse_execution_policy,
+        set_execution_policy,
+    )
+
+    if payload.policy is None:
+        set_execution_policy(None)
+    else:
+        parsed = parse_execution_policy(payload.policy)
+        if parsed is None:
+            raise HTTPException(status_code=400, detail=f"Unsupported execution policy: {payload.policy}")
+        set_execution_policy(parsed)
+    policy = get_execution_policy()
+    return {"ok": True, "policy": policy.value, "label": policy.label, "effective_mode": effective_permission_mode()}

@@ -26,12 +26,14 @@ from urllib.parse import urlencode, urlparse, urlunparse
 
 import httpx
 
+from antigravity_k.tools.egress_policy import EgressPolicyError, validate_egress_url
+from antigravity_k.tools.mcp_http_policy import mcp_http_request
+
 logger = logging.getLogger("antigravity_k.mcp_oauth")
 
 _VAULT_PREFIX: Final[str] = "mcp_oauth:"
 _DEFAULT_CLIENT_NAME: Final[str] = "Ssak-Ai MCP Client"
 _PENDING_TTL_SECONDS: Final[float] = 600.0
-_HTTP_TIMEOUT: Final[float] = 20.0
 
 HttpGet = Callable[[str, dict[str, str] | None], httpx.Response]
 HttpPostForm = Callable[[str, dict[str, str], dict[str, str] | None], httpx.Response]
@@ -242,7 +244,7 @@ pending_auth_store = PendingAuthStore()
 
 
 def _default_http_get(url: str, headers: dict[str, str] | None = None) -> httpx.Response:
-    return httpx.get(url, headers=headers, timeout=_HTTP_TIMEOUT, follow_redirects=True)
+    return mcp_http_request("GET", url, headers=headers)
 
 
 def _default_http_post_form(
@@ -251,7 +253,14 @@ def _default_http_post_form(
     headers: dict[str, str] | None = None,
 ) -> httpx.Response:
     merged = {"Content-Type": "application/x-www-form-urlencoded", **(headers or {})}
-    return httpx.post(url, data=data, headers=merged, timeout=_HTTP_TIMEOUT, follow_redirects=True)
+    return mcp_http_request("POST", url, data=data, headers=merged)
+
+
+def _validate_oauth_url(url: str) -> None:
+    try:
+        _ = validate_egress_url(url)
+    except EgressPolicyError as exc:
+        raise MCPOAuthError("MCP OAuth destination blocked by egress policy") from exc
 
 
 def _auth_config(server_config: Mapping[str, object]) -> dict[str, object]:
@@ -293,14 +302,15 @@ def discover_protected_resource_metadata(
     last_error: str | None = None
     for candidate in candidates:
         try:
+            _validate_oauth_url(candidate)
             response = getter(candidate, {"Accept": "application/json"})
             if response.status_code == 200:
                 data = response.json()
                 if isinstance(data, dict):
                     return data
-            last_error = f"{candidate} -> HTTP {response.status_code}"
+            last_error = f"HTTP {response.status_code}"
         except Exception as exc:  # noqa: BLE001
-            last_error = f"{candidate} -> {exc}"
+            last_error = type(exc).__name__
             logger.debug("PRM probe failed: %s", last_error)
 
     raise MCPOAuthError(
@@ -316,6 +326,7 @@ def discover_authorization_server_metadata(
     """Discover AS metadata via RFC8414 / OIDC well-known endpoints."""
     getter = http_get or _default_http_get
     issuer = issuer.rstrip("/")
+    _validate_oauth_url(issuer)
     parsed = urlparse(issuer)
     if not parsed.scheme or not parsed.netloc:
         raise MCPOAuthError(f"Invalid authorization server issuer: {issuer!r}")
@@ -334,14 +345,15 @@ def discover_authorization_server_metadata(
     last_error: str | None = None
     for candidate in candidates:
         try:
+            _validate_oauth_url(candidate)
             response = getter(candidate, {"Accept": "application/json"})
             if response.status_code == 200:
                 data = response.json()
                 if isinstance(data, dict) and data.get("authorization_endpoint") and data.get("token_endpoint"):
                     return data
-            last_error = f"{candidate} -> HTTP {response.status_code}"
+            last_error = f"HTTP {response.status_code}"
         except Exception as exc:  # noqa: BLE001
-            last_error = f"{candidate} -> {exc}"
+            last_error = type(exc).__name__
             logger.debug("AS metadata probe failed: %s", last_error)
 
     raise MCPOAuthError(
@@ -414,9 +426,11 @@ def _resolve_client_id(
 
     _ = http_post_form  # reserved for injectable clients in tests
     client_name = str(auth_cfg.get("client_name") or _DEFAULT_CLIENT_NAME)
-    # RFC7591 expects JSON body; use httpx directly for JSON registration.
+    # RFC7591 expects JSON body; keep the same send policy as discovery and tokens.
     try:
-        response = httpx.post(
+        _validate_oauth_url(str(registration_endpoint))
+        response = mcp_http_request(
+            "POST",
             str(registration_endpoint),
             json={
                 "client_name": client_name,
@@ -426,14 +440,13 @@ def _resolve_client_id(
                 "token_endpoint_auth_method": "none",
             },
             headers={"Accept": "application/json"},
-            timeout=_HTTP_TIMEOUT,
         )
     except Exception as exc:  # noqa: BLE001
-        raise MCPOAuthError(f"Dynamic client registration failed: {exc}") from exc
+        raise MCPOAuthError(f"Dynamic client registration failed ({type(exc).__name__})") from exc
 
     if response.status_code not in {200, 201}:
         raise MCPOAuthError(
-            f"Dynamic client registration failed: HTTP {response.status_code} {response.text[:200]}",
+            f"Dynamic client registration failed: HTTP {response.status_code}",
         )
     data = response.json()
     if not isinstance(data, dict) or not data.get("client_id"):
@@ -479,6 +492,7 @@ def start_authorization(
     url = _server_url(server_config)
     if not url.startswith(("http://", "https://")):
         raise MCPOAuthError("OAuth is only supported for HTTP/SSE MCP servers with a url.")
+    _validate_oauth_url(url)
 
     auth_cfg = _auth_config(server_config)
     if client_id:
@@ -493,15 +507,16 @@ def start_authorization(
     issuer = _pick_authorization_server(prm, auth_cfg)
     as_metadata = discover_authorization_server_metadata(issuer, http_get=http_get)
     _require_pkce_support(as_metadata)
+    authorization_endpoint = str(as_metadata["authorization_endpoint"])
+    token_endpoint = str(as_metadata["token_endpoint"])
+    _validate_oauth_url(authorization_endpoint)
+    _validate_oauth_url(token_endpoint)
 
     redirect = redirect_uri or build_default_redirect_uri()
     resolved_client_id, client_secret = _resolve_client_id(auth_cfg, as_metadata, redirect)
     scope = _select_scopes(auth_cfg, prm, www_authenticate)
     verifier, challenge = generate_pkce_pair()
     state = secrets.token_urlsafe(32)
-
-    authorization_endpoint = str(as_metadata["authorization_endpoint"])
-    token_endpoint = str(as_metadata["token_endpoint"])
 
     params: dict[str, str] = {
         "response_type": "code",
@@ -578,19 +593,20 @@ def complete_authorization(
         form["client_secret"] = pending.client_secret
 
     try:
+        _validate_oauth_url(pending.token_endpoint)
         response = poster(pending.token_endpoint, form, {"Accept": "application/json"})
     except Exception as exc:  # noqa: BLE001
-        raise MCPOAuthError(f"Token exchange request failed: {exc}") from exc
+        raise MCPOAuthError(f"Token exchange request failed ({type(exc).__name__})") from exc
 
     if response.status_code != 200:
         raise MCPOAuthError(
-            f"Token exchange failed: HTTP {response.status_code} {response.text[:300]}",
+            f"Token exchange failed: HTTP {response.status_code}",
         )
 
     try:
         payload = response.json()
     except Exception as exc:  # noqa: BLE001
-        raise MCPOAuthError(f"Token response was not JSON: {exc}") from exc
+        raise MCPOAuthError(f"Token response was not JSON ({type(exc).__name__})") from exc
 
     if not isinstance(payload, dict) or not payload.get("access_token"):
         raise MCPOAuthError("Token response missing access_token.")
@@ -649,17 +665,17 @@ def refresh_tokens(
         form["resource"] = current.resource
 
     try:
+        _validate_oauth_url(current.token_endpoint)
         response = poster(current.token_endpoint, form, {"Accept": "application/json"})
     except Exception as exc:  # noqa: BLE001
-        logger.warning("MCP OAuth refresh failed for %s: %s", server_name, exc)
+        logger.warning("MCP OAuth refresh failed for %s (%s)", server_name, type(exc).__name__)
         return None
 
     if response.status_code != 200:
         logger.warning(
-            "MCP OAuth refresh HTTP %s for %s: %s",
+            "MCP OAuth refresh HTTP %s for %s",
             response.status_code,
             server_name,
-            response.text[:200],
         )
         return None
 

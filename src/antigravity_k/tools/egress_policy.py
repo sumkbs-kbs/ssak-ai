@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import time
 import urllib.error
 import urllib.request
@@ -44,6 +45,17 @@ def _is_local_host(hostname: str) -> bool:
     return hostname.casefold() in _LOCAL_HOSTS or hostname.casefold().endswith(".localhost")
 
 
+def _env_true(name: str) -> bool:
+    return str(os.environ.get(name, "")).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def search_egress_disabled() -> bool:
+    """r36: True when external web search must send nothing (AGK_SEARCH_ENABLED=false or AGK_SEARCH_OFFLINE=1)."""
+    if str(os.environ.get("AGK_SEARCH_ENABLED", "true")).strip().lower() in {"0", "false", "no", "off"}:
+        return True
+    return _env_true("AGK_SEARCH_OFFLINE")
+
+
 def validate_egress_url(
     url: str,
     *,
@@ -59,6 +71,9 @@ def validate_egress_url(
         if allow_local:
             return canonical
         raise EgressPolicyError("local egress is disabled for this connector")
+    # r36: process-wide local-only mode (test/offline isolation). Checked before DNS and before any send.
+    if _env_true("AGK_EGRESS_LOCAL_ONLY"):
+        raise EgressPolicyError(f"non-local egress blocked (AGK_EGRESS_LOCAL_ONLY): {hostname}")
 
     if not is_public_http_url(canonical):
         raise EgressPolicyError(f"private or non-public egress blocked: {hostname}")
@@ -127,6 +142,40 @@ async def validate_httpx_request_async(request: httpx.Request) -> None:
     validate_httpx_request(request)
 
 
+def validate_search_egress_url(url: str) -> str:
+    """Send-boundary check for every web-search/scrape request (incl. retries and redirects)."""
+    if search_egress_disabled():
+        raise EgressPolicyError(
+            "web search is disabled (AGK_SEARCH_ENABLED=false / AGK_SEARCH_OFFLINE=1); request not sent"
+        )
+    return validate_egress_url(url)
+
+
+def validate_search_httpx_request(request: httpx.Request) -> None:
+    _ = validate_search_egress_url(str(request.url))
+
+
+async def validate_search_httpx_request_async(request: httpx.Request) -> None:
+    validate_search_httpx_request(request)
+
+
+def validate_scrape_egress_url(url: str) -> str:
+    """r41: send-boundary check for page scraping: search switch AND no local/private target.
+
+    The scraper's pre-check (is_public_http_url) was the only local block; its send hook used
+    allow_local=True, so a redirect/hook path to loopback was allowed at the send layer.
+    """
+    if search_egress_disabled():
+        raise EgressPolicyError(
+            "web search is disabled (AGK_SEARCH_ENABLED=false / AGK_SEARCH_OFFLINE=1); request not sent"
+        )
+    return validate_egress_url(url, allow_local=False)
+
+
+async def validate_scrape_httpx_request_async(request: httpx.Request) -> None:
+    _ = validate_scrape_egress_url(str(request.url))
+
+
 def validate_public_httpx_request(request: httpx.Request) -> None:
     """Reject local/private destinations for untrusted outbound requests."""
     _ = validate_egress_url(str(request.url), allow_local=False)
@@ -138,6 +187,8 @@ async def validate_public_httpx_request_async(request: httpx.Request) -> None:
 
 
 __all__ = [
+    "validate_scrape_egress_url",
+    "validate_scrape_httpx_request_async",
     "EgressPolicyError",
     "safe_urlopen",
     "validate_egress_url",
@@ -145,4 +196,8 @@ __all__ = [
     "validate_httpx_request_async",
     "validate_public_httpx_request",
     "validate_public_httpx_request_async",
+    "search_egress_disabled",
+    "validate_search_egress_url",
+    "validate_search_httpx_request",
+    "validate_search_httpx_request_async",
 ]

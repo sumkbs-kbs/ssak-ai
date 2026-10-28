@@ -6,6 +6,7 @@ from pathlib import Path
 from types import TracebackType
 from typing import Protocol, cast, final
 
+from antigravity_k.engine.embedding_guard import EmbeddingNotReadyError
 from antigravity_k.engine.project_embedding_binding import (
     DIMENSIONS_METADATA_KEY,
     IDENTITY_METADATA_KEY,
@@ -71,7 +72,7 @@ class _CollectionLike(Protocol):
 
 
 class _ClientLike(Protocol):
-    def get_or_create_collection(self, *, name: str) -> _CollectionLike: ...
+    def get_or_create_collection(self, *, name: str, embedding_function: None) -> _CollectionLike: ...
 
     def get_collection(self, *, name: str, embedding_function: None) -> _CollectionLike: ...
 
@@ -185,7 +186,7 @@ class VectorStore:
             else:
                 self._validate_bound_collection(existing)
         if embedding_binding is None:
-            self.collection = client.get_or_create_collection(name=collection_name)
+            self.collection = client.get_or_create_collection(name=collection_name, embedding_function=None)
         elif existing is not None:
             self.collection = existing
         else:
@@ -319,8 +320,7 @@ class VectorStore:
     ) -> None:
         binding = self.embedding_binding
         if binding is None:
-            _ = collection.upsert(ids=ids, documents=documents, metadatas=metadatas)
-            return
+            raise EmbeddingNotReadyError("VectorStore.upsert")
         observed = self._validate_bound_collection(collection)
         vectors = binding.embed(documents, observed_dimensions=observed)
         _ = collection.upsert(ids=ids, documents=documents, metadatas=metadatas, embeddings=vectors)
@@ -485,7 +485,7 @@ class VectorStore:
         """Search for the most relevant chunks given a query string."""
         collection = self._require_collection()
         if self.embedding_binding is None:
-            results = collection.query(query_texts=[query], n_results=n_results)
+            raise EmbeddingNotReadyError("VectorStore.search")
         else:
             if not collection.count():
                 return []

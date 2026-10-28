@@ -73,6 +73,9 @@ logger = logging.getLogger("antigravity_k.api.routes.models")
 @router.get("/v1/health")
 def health_check() -> dict[str, object]:
     """Health Check."""
+    from antigravity_k.engine.intent_observability import snapshot as intent_events_snapshot
+    from antigravity_k.engine.llm_call_budget import snapshot as llm_call_budget_snapshot
+
     manager = get_model_manager()
     info = manager.status() if manager else {}
     backends = info.get("loaded_models", {})
@@ -97,6 +100,8 @@ def health_check() -> dict[str, object]:
         "backends": backends,
         "rag_index_files": rag_files,
         "cov_active": cov_active,
+        "llm_call_budget": llm_call_budget_snapshot(),
+        "intent_events": intent_events_snapshot(),
     }
 
 

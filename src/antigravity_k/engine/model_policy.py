@@ -34,6 +34,14 @@ class ModelRoutingPolicy:
         )
 
     def decide(self, profile: ModelProfile, *, explicit: bool = False) -> ModelPolicyDecision:
+        from antigravity_k.engine.model_allowlist import refusal_reason
+
+        # r34: the approved-model allowlist applies even when the routing policy is disabled.
+        refused = refusal_reason(
+            profile.name, str(getattr(profile, "provider", "") or ""), str(getattr(profile, "api_base", "") or "")
+        )
+        if refused is not None:
+            return ModelPolicyDecision(allowed=False, reason=refused)
         if not self.enabled:
             return ModelPolicyDecision(allowed=True, reason="policy_disabled")
 

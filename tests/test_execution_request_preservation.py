@@ -152,14 +152,20 @@ def test_explicit_qa_delegation_retains_requested_task_and_role(tmp_path: Path) 
     assert ctx.delegate_to == "QA"
 
 
-@pytest.mark.parametrize("mode", ["agent", "max_fallback"])
-def test_retry_keeps_feedback_and_original_conversation(tmp_path: Path, mode: Literal["agent", "max_fallback"]) -> None:
+@pytest.mark.parametrize("mode", ["agent", "max_fallback", "max_error_fallback"])
+def test_retry_keeps_feedback_and_original_conversation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    mode: Literal["agent", "max_fallback", "max_error_fallback"],
+) -> None:
     ctx = _context(retry=True)
     original_messages = [dict(message) for message in ctx.custom_messages]
     orch = _CapturingOrchestrator(tmp_path)
+    if mode == "max_error_fallback":
+        monkeypatch.setattr(orch, "max_engine", _MaxBoundary(fail=True))
     _execute(ctx, orch, mode)
 
-    conversation = _prepared_conversation(orch) if mode == "agent" else orch.prepared[0]
+    conversation = _prepared_conversation(orch)
     assert conversation == original_messages
     assert original_messages[-1]["content"] in orch.manager.prompts[0]
     assert ctx.user_message in orch.manager.prompts[0]

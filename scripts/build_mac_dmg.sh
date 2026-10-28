@@ -120,6 +120,10 @@ LOG_DIR="$HOME/Library/Logs/Ssak-Ai"
 mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/server.log"
 
+# Packaged profile: optional services require an explicit request.
+export AGK_IDE_SERVER_AUTOSTART="${AGK_IDE_SERVER_AUTOSTART:-0}"
+export AGK_PROJECT_RAG_ENABLED="${AGK_PROJECT_RAG_ENABLED:-false}"
+
 # 2. 이미 실행 중인지 확인
 if curl -s -f -m 1 "$SERVER_URL/health" >/dev/null 2>&1 || curl -s -f -m 1 "$SERVER_URL/api/health" >/dev/null 2>&1; then
     osascript -e 'display notification "이미 실행 중인 Ssak-Ai 대시보드를 브라우저에 엽니다." with title "Ssak-Ai"' 2>/dev/null || true
@@ -135,7 +139,7 @@ USER_DATA_DIR="$HOME/.antigravity-k"
 mkdir -p "$USER_DATA_DIR/data" "$USER_DATA_DIR/logs" "$USER_DATA_DIR/models"
 
 # 경로 환경변수 export (모든 쓰기 작업을 사용자 홈 디렉터리로 리디렉션)
-export AGK_PATH_PROJECT_ROOT="$USER_DATA_DIR"
+export AGK_PATH_PROJECT_ROOT="${AGK_PATH_PROJECT_ROOT:-$USER_DATA_DIR}"
 export AGK_PATH_DATA_DIR="$USER_DATA_DIR/data"
 export AGK_PATH_LOGS_DIR="$LOG_DIR"
 export AGK_PATH_MODELS_DIR="$USER_DATA_DIR/models"

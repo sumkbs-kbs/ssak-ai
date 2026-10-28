@@ -10,7 +10,7 @@ import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from antigravity_k.tools.egress_policy import safe_urlopen
+from antigravity_k.tools.egress_policy import safe_urlopen, validate_search_egress_url
 from antigravity_k.tools.search_auth import SEARCH_TOKEN_ENV, search_auth_headers
 
 logger = logging.getLogger(__name__)
@@ -61,6 +61,7 @@ def search(
         method="POST",
     )
     try:
+        _ = validate_search_egress_url(req.full_url if hasattr(req, "full_url") else str(req))  # r36
         with safe_urlopen(req, timeout=timeout) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as error:

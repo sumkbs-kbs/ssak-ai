@@ -399,7 +399,21 @@ class TaskStateStore:
                 )
                 + ((owner_subject,) if owner_subject is not None else ()),
             )
-        return cursor.rowcount == 1
+            if cursor.rowcount != 1:
+                return False
+            # 상태·버전 변경과 대응 task.status 이벤트를 같은 트랜잭션에 기록한다(기존 이벤트 경로 재사용).
+            payload = json.dumps(
+                {
+                    "from_status": raw_status,
+                    "to_status": "resuming",
+                    "from_version": current_version,
+                    "to_version": current_version + 1,
+                    "terminal": False,
+                },
+                sort_keys=True,
+            )
+            _ = append_execution_event(connection, task_id, "task.status", payload)
+        return True
 
     def cancel_if_permitted(
         self,
@@ -501,6 +515,22 @@ class TaskStateStore:
             )
         return {str(_row_value(row, "task_id")): int(cast(int, _row_value(row, "last_step"))) for row in rows}
 
+    def checkpoint_counts(self, task_ids: Sequence[str]) -> dict[str, int]:
+        """r33: stored checkpoint rows per task (absent task -> absent key)."""
+        ordered = [task_id for task_id in dict.fromkeys(task_ids) if task_id]
+        if not ordered:
+            return {}
+        placeholders = ", ".join("?" for _ in ordered)
+        with self._connection() as connection:
+            rows = _fetchall(
+                connection.execute(
+                    "SELECT task_id, COUNT(*) AS n FROM task_checkpoints "  # nosec B608
+                    + f"WHERE task_id IN ({placeholders}) GROUP BY task_id",
+                    tuple(ordered),
+                )
+            )
+        return {str(_row_value(row, "task_id")): int(cast(int, _row_value(row, "n"))) for row in rows}
+
     def save_checkpoint(self, task_id: str, step: int, context_json: str, output: str) -> None:
         with self._connection() as connection:
             _ = connection.execute(
@@ -520,7 +550,7 @@ class TaskStateStore:
             if owner_subject is not None:
                 query += " AND t.owner_subject = ?"
                 params += (owner_subject,)
-            query += " ORDER BY c.step DESC LIMIT 1"
+            query += " ORDER BY c.step DESC, c.id DESC LIMIT 1"
             row = _fetchone(connection.execute(query, params))
         if not row:
             return None

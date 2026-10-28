@@ -13,6 +13,17 @@ from antigravity_k.tools.tool_contracts import Permission
 from tests.cognitive.test_protection import CONSTITUTION_RELATIVE, approval_for, request_for
 
 
+@pytest.fixture(autouse=True)
+def _r39_explicit_autopilot():
+    """r39: PermissionGate() without a mode no longer implies auto-pilot (default is balanced).
+    This module's assertions were written for auto-pilot, so they now run under the EXPLICIT opt-in."""
+    from antigravity_k.engine.access_mode import ExecutionPolicy, set_execution_policy
+
+    set_execution_policy(ExecutionPolicy.AUTO_PILOT)
+    yield
+    set_execution_policy(None)
+
+
 def test_blank_request_digest_cannot_use_bound_approval(tmp_path: Path) -> None:
     guard = ProtectedWriteGuard(tmp_path)
     approval = approval_for(".", action_digest="sha256:original")

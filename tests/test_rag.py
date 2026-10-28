@@ -9,6 +9,9 @@ pytest.importorskip("chromadb", reason="chromadb not installed (install the rag 
 from antigravity_k.engine.chunker import MarkdownChunker
 from antigravity_k.engine.vault import VaultEngine
 from antigravity_k.engine.vector_store import VectorStore
+from tests._legacy_fake_embedding import legacy_fake_binding  # noqa: F401  # r29 explicit fake binding
+
+pytestmark = pytest.mark.usefixtures("legacy_fake_binding")
 
 
 def test_markdown_chunker():

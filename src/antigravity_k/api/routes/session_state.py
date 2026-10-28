@@ -6,9 +6,15 @@ WebSocket 인증 헬퍼를 담는 중립 모듈이다. 라우트 모듈 간에�
 """
 
 import logging
+import threading
+from collections.abc import AsyncGenerator
+from dataclasses import dataclass
+from types import TracebackType
 from typing import TYPE_CHECKING
 
-from fastapi import WebSocket
+from fastapi import HTTPException, Request, WebSocket
+
+from antigravity_k.api.contracts.execution_context import RequestExecutionContext
 
 # ── NX-05: 인증된 WebSocket 연결 레지스트리 ────────────────────────────────
 # NX-10: 구현은 leaf 모듈 `antigravity_k.security.ws_registry` 로 내렸다. 이 모듈은
@@ -30,15 +36,42 @@ logger = logging.getLogger("antigravity_k.api.session_state")
 
 __all__ = [
     "ActiveAgentSession",
+    "ActiveResponseBody",
+    "active_response_snapshot",
     "aclose_authorized_ws",
     "authorized_ws_count",
     "close_authorized_ws_blocking",
     "close_unauthorized_ws",
+    "begin_active_response",
+    "ensure_active_response_available",
+    "finish_active_response",
     "get_active_session",
     "register_authorized_ws",
     "reset_active_session",
     "reset_authorized_ws_registry",
 ]
+
+
+@dataclass(frozen=True)
+class ActiveResponseOwner:
+    actor_subject: str
+    project_id: str
+    canonical_project_root: str
+    session_id: str
+
+    @classmethod
+    def from_context(cls, context: RequestExecutionContext) -> "ActiveResponseOwner":
+        return cls(context.actor_subject, context.project_id, context.canonical_project_root, context.session_id)
+
+
+@dataclass(frozen=True)
+class ActiveResponseSnapshot:
+    generation: int
+    q: str
+    is_active: bool
+    history: tuple[str, ...]
+    done: bool
+    error: str | None
 
 
 class ActiveAgentSession:
@@ -52,9 +85,12 @@ class ActiveAgentSession:
         self.done: bool = False
         self.error: str | None = None
         self.orchestrator: OrchestratorPort | None = None
+        self.owner: ActiveResponseOwner | None = None
+        self.generation: int = 0
 
 
 _active_session = ActiveAgentSession()
+_active_session_lock = threading.RLock()
 
 
 def get_active_session() -> ActiveAgentSession:
@@ -68,13 +104,136 @@ def get_active_session() -> ActiveAgentSession:
 
 def reset_active_session() -> ActiveAgentSession:
     """세션 필드를 초기화하되 싱글톤 객체 정체는 유지합니다."""
-    _active_session.q = ""
-    _active_session.is_active = False
-    _active_session.history.clear()
-    _active_session.done = False
-    _active_session.error = None
-    _active_session.orchestrator = None
-    return _active_session
+    with _active_session_lock:
+        _active_session.q = ""
+        _active_session.is_active = False
+        _active_session.history.clear()
+        _active_session.done = False
+        _active_session.error = None
+        _active_session.orchestrator = None
+        _active_session.owner = None
+        _active_session.generation += 1
+        return _active_session
+
+
+def ensure_active_response_available(context: RequestExecutionContext | None) -> None:
+    """Reject replacement of a running response before route side effects."""
+    with _active_session_lock:
+        if not _active_session.is_active:
+            return
+        owner = ActiveResponseOwner.from_context(context) if context is not None else None
+        if _active_session.owner != owner:
+            raise HTTPException(status_code=404, detail="Active response not found")
+        raise HTTPException(status_code=409, detail="An agent response is already active")
+
+
+def begin_active_response(context: RequestExecutionContext | None, q: str = "") -> ActiveAgentSession:
+    """Atomically claim the singleton; None is reserved for internal legacy callers."""
+    with _active_session_lock:
+        ensure_active_response_available(context)
+        session = reset_active_session()
+        session.owner = ActiveResponseOwner.from_context(context) if context is not None else None
+        session.q = q
+        session.is_active = True
+        return session
+
+
+def finish_active_response(generation: int) -> None:
+    """Only the response that acquired this generation may release it."""
+    with _active_session_lock:
+        if _active_session.generation == generation:
+            _active_session.is_active = False
+
+
+class ActiveResponseBody(AsyncGenerator[str, None]):
+    """Release a claimed response even when headers fail before iteration starts."""
+
+    def __init__(self, body: AsyncGenerator[str, None], generation: int) -> None:
+        self._body = body
+        self._generation = generation
+
+    def __aiter__(self) -> AsyncGenerator[str, None]:
+        return self
+
+    async def __anext__(self) -> str:
+        return await self.asend(None)
+
+    async def asend(self, value: None) -> str:
+        try:
+            return await self._body.asend(value)
+        except StopAsyncIteration:
+            finish_active_response(self._generation)
+            raise
+
+    async def athrow(
+        self,
+        typ: type[BaseException] | BaseException,
+        val: BaseException | None = None,
+        tb: TracebackType | None = None,
+    ) -> str:
+        try:
+            if val is None and tb is None:
+                return await self._body.athrow(typ)
+            return await self._body.athrow(typ, val, tb)
+        except StopAsyncIteration:
+            finish_active_response(self._generation)
+            raise
+
+    async def aclose(self) -> None:
+        await self._body.aclose()
+        finish_active_response(self._generation)
+
+
+def _authorize_active_response(request: Request) -> None:
+    session = _active_session
+    if session.owner is None:
+        if session.is_active or session.q or session.history or session.error:
+            raise HTTPException(status_code=404, detail="Active response not found")
+        return
+    from antigravity_k.api import project_binding
+
+    owner = session.owner
+    actor = getattr(request.state, "auth_subject", None)
+    actor = actor.strip() if isinstance(actor, str) and actor.strip() else "anonymous"
+    session_id = project_binding.extract_session_id_from_payload(
+        {"session_id": request.query_params.get("session_id")},
+        header_session_id=request.headers.get(project_binding.SESSION_ID_HEADER),
+    )
+    project_id = (request.query_params.get("project_id") or "").strip()
+    binding = project_binding.get_session_active_project(session_id)
+    if not project_id and binding is not None:
+        project_id = binding.project_id
+    # Existing reconnect clients omit project_id; the stored server-resolved root
+    # remains authority only after the actor and session match exactly.
+    project_id = project_id or owner.project_id
+    if (
+        actor != owner.actor_subject
+        or session_id != owner.session_id
+        or project_id != owner.project_id
+        or project_binding.get_project_registry().resolve_canonical_root(project_id) != owner.canonical_project_root
+    ):
+        raise HTTPException(status_code=404, detail="Active response not found")
+
+
+def active_response_snapshot(
+    request: Request | None = None,
+    *,
+    generation: int | None = None,
+) -> ActiveResponseSnapshot | None:
+    """Copy only the authorized response generation; never follow a reused singleton.
+
+    HTTP routes always pass Request. A missing request supports existing trusted
+    internal callers and fixtures, which are not an authentication entry point.
+    """
+    with _active_session_lock:
+        if generation is not None and _active_session.generation != generation:
+            return None
+        if request is not None:
+            _authorize_active_response(request)
+        session = _active_session
+        return ActiveResponseSnapshot(
+            session.generation, session.q, session.is_active, tuple(session.history), session.done, session.error
+        )
 
 
 async def close_unauthorized_ws(websocket: WebSocket) -> bool:

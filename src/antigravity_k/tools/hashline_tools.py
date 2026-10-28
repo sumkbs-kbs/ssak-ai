@@ -118,8 +118,12 @@ class ReadHashFileTool(BaseTool):
             return f"Error: File not found at {file_path}"
 
         try:
-            with open(file_path, encoding="utf-8") as f:
-                lines = f.readlines()
+            from antigravity_k.tools import verified_read
+
+            try:
+                lines = verified_read.read_text(file_path).splitlines(keepends=True)
+            except verified_read.VerifiedReadError as exc:
+                return f"Error reading file: {exc}"
 
             hashed_lines: list[str] = []
             for i, line in enumerate(lines):

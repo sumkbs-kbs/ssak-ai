@@ -75,7 +75,8 @@ class IDE:
     def __init__(self,port,workspace_dir):receipt["ide_roots"].append(workspace_dir)
     def start(self):pass
     def stop(self):receipt["ide_shutdown"]=True
-module("antigravity_k.engine.ide_server",IDEServer=IDE)
+IDE.start_if_available=lambda self:(self.start(),"running")[1]
+module("antigravity_k.engine.ide_server",IDEServer=IDE,IDE_AUTOSTART_ENV="AGK_IDE_SERVER_AUTOSTART",ide_autostart_requested=lambda:True)
 module("antigravity_k.tools.ssak_search_runtime",shutdown_ssak_search_runtime=lambda:None)
 module("antigravity_k.tools.browser_session_owner",shutdown_browser_sessions=lambda:None)
 try:

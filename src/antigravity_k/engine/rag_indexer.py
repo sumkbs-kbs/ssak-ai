@@ -118,6 +118,7 @@ class RAGIndexer:
         """
         if batch_size <= 0:
             raise ValueError("batch_size must be positive")
+        self.last_context_sources: list[tuple[str, str]] = []
         self.project_root: str = os.path.abspath(project_root)
         self.vector_store: VectorStoreLike | None = cast(VectorStoreLike | None, vector_store)
         self.batch_size: int = batch_size
@@ -793,9 +794,12 @@ class RAGIndexer:
         if not results:
             return ""
 
+        self.last_context_sources = []
         lines = [
             "<relevant_code>",
             "Cite code evidence with [citation:<source_id>] when relying on these snippets.",
+            "If these snippets already answer the question, answer from them first; if they are "
+            "insufficient, say what is missing and request tools under the normal approval policy.",
         ]
         total_chars = 0
         for r in results:
@@ -817,6 +821,7 @@ class RAGIndexer:
                 break
             lines.append(entry)
             total_chars += len(entry)
+            self.last_context_sources.append((str(source), str(source_id or "")))
 
         lines.append("</relevant_code>")
         return "\n".join(lines)

@@ -412,7 +412,10 @@ class PromptEvolver:
             headers={"Content-Type": "application/json"},
         )
 
-        with safe_urlopen(req, timeout=120) as resp:
+        from antigravity_k.engine.direct_model_call import guard_direct_model_call
+
+        timeout = guard_direct_model_call(model, "prompt_evolver", prompt, timeout=120)
+        with safe_urlopen(req, timeout=timeout) as resp:
             result = _as_mapping(cast(object, json.loads(resp.read())))
             return str(result.get("response", ""))
 

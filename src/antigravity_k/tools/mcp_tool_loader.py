@@ -55,10 +55,11 @@ def _active_policy_denial(name: str, server_name: str) -> str | None:
     try:
         # 도구 계층 → 엔진 정책 모듈(잎) 방향 import: tool_executor 를 끌어오면 순환이 된다.
         from antigravity_k.engine.tool_policy import mcp_server_policy_denial
-    except Exception:  # noqa: BLE001 — 정책 레이어가 없는 경량 실행(스크립트/CLI)에서는 통과
-        logger.debug("tool policy layer unavailable; MCP policy self-check skipped", exc_info=True)
-        return None
-    return mcp_server_policy_denial(name, server_name)
+
+        return mcp_server_policy_denial(name, server_name)
+    except Exception as exc:  # noqa: BLE001 — 정책 확인 실패는 허용으로 바꾸지 않는다.
+        logger.warning("MCP request policy unavailable (%s); request denied", type(exc).__name__)
+        return "MCP request policy unavailable; request denied"
 
 
 def _schema_problem(schema: object) -> str | None:
@@ -178,13 +179,33 @@ class MCPTool(BaseTool):
         return self._schema
 
     @override
+    @override
+    def pre_execute(self, **kwargs: object) -> str | None:
+        """r35: an MCP server reads files with its own process, outside verified_read; a literal
+        secret-named path in the arguments is refused here (no approval path exists for MCP).
+        Directory-wide reads done inside the server are NOT covered (reported residual)."""
+        from .tool_path import is_sensitive_path
+
+        def walk(v: object) -> bool:
+            if isinstance(v, str):
+                return any(is_sensitive_path(tok) for tok in v.replace("\\", "/").split() if tok)
+            if isinstance(v, Mapping):
+                return any(walk(x) for x in cast(Mapping[object, object], v).values())
+            if isinstance(v, (list, tuple)):
+                return any(walk(x) for x in cast("list[object]", v))
+            return False
+
+        if walk(kwargs):
+            return "secret-named path in MCP arguments is not allowed (no verified approval path for MCP)"
+        return super().pre_execute(**kwargs)
+
     def execute(self, **kwargs: object) -> object:
         """도구를 실행하고 typed 결과를 반환한다.
 
         반환값은 `MCPToolOutcome`(str 하위)이라 문자열 소비자는 본문을 그대로 받고,
         호스트는 `is_error`·`structured_content`·`blocks`·`partial` 을 직접 읽는다.
         """
-        logger.info("Executing MCP Tool '%s' with args: %s", self._name, kwargs)
+        logger.info("Executing MCP Tool '%s' (%d arguments)", self._name, len(kwargs))
 
         # 요청 단위 정책을 도구에서도 재확인한다(승인 실행 경로는 ToolExecutor.execute 의
         # 정책 검사를 지나가지 않는다 — MCP 서버 허용 목록 우회 금지).
@@ -214,7 +235,7 @@ class MCPTool(BaseTool):
             try:
                 return self._caller(self._name, dict(kwargs))
             except Exception as exc:  # noqa: BLE001 — 런타임 실패도 typed 오류로 보존한다
-                logger.exception("Managed MCP tool '%s' call failed", self._name)
+                logger.error("Managed MCP tool '%s' call failed (%s)", self._name, type(exc).__name__)
                 return error_outcome(
                     f"MCP tool '{self._name}' on server '{self._server_name}' call failed: {exc}",
                     server_name=self._server_name,
@@ -249,7 +270,7 @@ class MCPTool(BaseTool):
         try:
             result = loop.run_until_complete(client.call_tool(self._name, arguments=kwargs))
         except Exception as exc:  # noqa: BLE001 — 전송/프로토콜 실패도 typed 오류로 보존한다
-            logger.exception("MCP tool '%s' call failed", self._name)
+            logger.error("MCP tool '%s' call failed (%s)", self._name, type(exc).__name__)
             return error_outcome(
                 f"MCP tool '{self._name}' on server '{self._server_name}' call failed: {exc}",
                 server_name=self._server_name,
@@ -575,10 +596,10 @@ class MCPToolLoader:
                 )
 
             except Exception as exc:
-                logger.exception("Error loading tools from '%s'", server_name)
+                logger.error("Error loading tools from '%s' (%s)", server_name, type(exc).__name__)
                 mcp_health_cache.record_failure(
                     server_name,
-                    str(exc),
+                    f"MCP connection failed ({type(exc).__name__})",
                     transport=_transport_for(server_config),
                     source=source,
                     command=str(server_config.get("command") or server_config.get("url") or ""),

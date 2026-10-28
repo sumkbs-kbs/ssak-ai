@@ -124,4 +124,9 @@ def _safe_relative_path(root: Path, candidate_path: str) -> str | None:
         return None
     if not resolved.is_file():
         return None
+    from antigravity_k.tools.tool_path import is_sensitive_path
+
+    # r30 P0: the context summary path follows the same secret-name rule as read_file/grep.
+    if is_sensitive_path(relative.as_posix()):
+        return None
     return relative.as_posix()

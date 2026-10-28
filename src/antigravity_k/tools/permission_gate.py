@@ -35,6 +35,7 @@ from .tool_path import (
     assert_shell_command_paths_in_root,
     effective_project_root,
     extract_apply_patch_paths,
+    is_sensitive_path,
     resolve_tool_path,
 )
 
@@ -60,6 +61,12 @@ WRITE_TOOL_HINTS = (
     "snapshot",
 )
 PATH_ARG_KEYS = ("file_path", "path", "target", "dir_path", "target_path", "src", "dest")
+
+
+SECRET_READ_TOOLS = frozenset({"read_file", "read_hash_file", "grep_search"})
+SECRET_GUARDED_TOOLS = SECRET_READ_TOOLS | frozenset(
+    {"edit_file", "replace_file_content", "multi_replace_file_content", "hashline_edit", "write_file"}
+)
 
 
 def protection_action_digest(tool_name: str, args: Mapping[str, ToolArgument]) -> str:
@@ -113,7 +120,7 @@ class PermissionGate:
     def __init__(
         self,
         project_root: str | None = None,
-        mode: str = "auto-pilot",  # strict | balanced | permissive | auto-pilot
+        mode: str | None = None,  # strict | balanced | permissive | auto-pilot | None(=현재 실행 정책)
         auto_allow_safe: bool = True,
     ) -> None:
         """Initialize the PermissionGate.
@@ -125,7 +132,9 @@ class PermissionGate:
 
         """
         self.project_root: str = os.path.abspath(project_root) if project_root else os.getcwd()
-        self.mode: str = mode
+        # r39: mode를 지정하지 않으면 auto-pilot을 가정하지 않는다. 결정 시점마다
+        # engine.access_mode.effective_permission_mode()(기본 balanced, auto-pilot은 명시 선택 시)를 따른다.
+        self._explicit_mode: str | None = mode
         self.auto_allow_safe: bool = auto_allow_safe
 
         # 도구별 명시적 오버라이드
@@ -133,6 +142,10 @@ class PermissionGate:
 
         # 승인 캐시 (세션 내 반복 승인 방지)
         self._approval_cache: set[str] = set()
+        # r34: per-file secret approvals bound to the inode seen when the user was asked.
+        # r35: identity also carries the sha256 of the content read via the verified fd at PROMPT.
+        self._secret_pending: dict[tuple[str, str], tuple[int, int, str]] = {}
+        self._secret_grants: dict[tuple[str, str], tuple[int, int, str]] = {}
 
         # cognitive protected target(P03) — 헌법/authority/premise/이력 쓰기 allowlist
         self._protection_guard: ProtectedWriteGuard | None = None
@@ -140,17 +153,30 @@ class PermissionGate:
         self._protection_approvals: tuple[HumanApproval, ...] = ()
         self._protection_approval_root: str | None = None
 
-        logger.info("PermissionGate initialized: mode=%s, project_root=%s", mode, self.project_root)
+        logger.info("PermissionGate initialized: mode=%s, project_root=%s", self.mode, self.project_root)
+
+    @property
+    def mode(self) -> str:
+        """명시 mode가 있으면 그것, 없으면 현재 AccessMode·ExecutionPolicy에서 도출한 mode."""
+        if self._explicit_mode is not None:
+            return self._explicit_mode
+        from antigravity_k.engine.access_mode import effective_permission_mode
+
+        return effective_permission_mode()
+
+    @mode.setter
+    def mode(self, value: str | None) -> None:
+        self._explicit_mode = value
 
     def set_project_root(self, new_root: str) -> None:
-        """런타임 중에 프로젝트 루트를 변경하고 권한 모드를 자동화 모드로 설정합니다."""
+        """런타임 중에 프로젝트 루트(작업 대상)를 변경합니다.
+
+        r37: 루트 지정은 작업 대상 선택일 뿐 실행 모드 승인이 아니다. 이전 구현은 여기서
+        mode를 "auto-pilot"으로 강제해 사용자가 고른 모드(strict/balanced 등)를 덮어썼다.
+        이제 기존 mode와 승인 정책을 그대로 유지한다."""
         self.project_root = os.path.abspath(new_root)
-        self.mode = "auto-pilot"  # 사용자의 개입 최소화를 위해 내부 파일 작업 자동 승인
         self._protection_guard = None  # root가 바뀌면 protected root를 다시 계산한다
-        logger.info(
-            "PermissionGate project_root updated to: %s (mode set to auto-pilot)",
-            self.project_root,
-        )
+        logger.info("PermissionGate project_root updated (mode kept: %s)", self.mode)
 
     def set_protection_guard(self, guard: ProtectedWriteGuard | None) -> None:
         """protected target 판정기를 주입한다(None이면 project_root 기준 기본값으로 재생성)."""
@@ -347,6 +373,42 @@ class PermissionGate:
                 except ToolPathError:
                     resolved_path = None
 
+        # 3b. r34: secret-named in-project targets — PROMPT for every content reader/editor,
+        # never satisfied by the tool-level cache or by a permissive mode; one-shot per-file grant.
+        if resolved_path is not None and tool_name in SECRET_GUARDED_TOOLS and is_sensitive_path(resolved_path):
+            key = (tool_name, resolved_path)
+            if key in self._secret_grants:
+                return PermissionDecision(
+                    spec=invocation.spec,
+                    permission=Permission.ALLOW,
+                    source="secret_target_approval",
+                    reason="A one-time approval bound to this exact file was granted.",
+                    inspected_path=resolved_path,
+                    executed_path=resolved_path,
+                )
+            from antigravity_k.tools import verified_read
+
+            try:
+                self._secret_pending[key] = verified_read.identity(resolved_path, self.effective_root())
+            except OSError:
+                if tool_name in SECRET_READ_TOOLS:
+                    return PermissionDecision(
+                        spec=invocation.spec,
+                        permission=Permission.DENY,
+                        source="permission_gate",
+                        reason="The secret-named target's identity cannot be verified; not allowed.",
+                        inspected_path=None,
+                        executed_path=None,
+                    )
+            return PermissionDecision(
+                spec=invocation.spec,
+                permission=Permission.PROMPT,
+                source="permission_gate",
+                reason="Secret-named file in the project: explicit per-file approval required.",
+                inspected_path=resolved_path,
+                executed_path=resolved_path,
+            )
+
         # 4. risk_level 기반 결정
         risk_map = {
             "safe": Permission.ALLOW,
@@ -368,7 +430,11 @@ class PermissionGate:
 
         # 5. 승인 캐시 확인 (같은 도구+패턴 반복 시 자동 승인)
         cache_key = f"{tool_name}:{risk_level}"
-        if decision == Permission.PROMPT and cache_key in self._approval_cache:
+        # r30 P0: a cached tool-level approval never covers a secret-named file (per-path decision).
+        sensitive_read = (
+            tool_name in SECRET_GUARDED_TOOLS and resolved_path is not None and is_sensitive_path(resolved_path)
+        )
+        if decision == Permission.PROMPT and cache_key in self._approval_cache and not sensitive_read:
             logger.debug("Auto-approved from cache: %s", cache_key)
             return PermissionDecision(
                 spec=invocation.spec,
@@ -386,7 +452,20 @@ class PermissionGate:
             reason="The tool risk and path policy determine this permission.",
             inspected_path=resolved_path,
             executed_path=resolved_path,
+            # r40: path-escalated or secret-named PROMPTs are NOT plain risk-level prompts.
+            basis="risk_level" if path_decision != Permission.PROMPT and not sensitive_read else "",
         )
+
+    def approve_secret_target(self, tool_name: str, resolved_path: str) -> bool:
+        """r34: user approved the PROMPT for this exact file; bind to the inode seen at PROMPT time."""
+        ident = self._secret_pending.pop((tool_name, resolved_path), None)
+        if ident is None:
+            return False
+        self._secret_grants[(tool_name, resolved_path)] = ident
+        return True
+
+    def consume_secret_grant(self, tool_name: str, resolved_path: str) -> tuple[int, int, str] | None:
+        return self._secret_grants.pop((tool_name, resolved_path), None)
 
     def record_approval(self, tool_name: str, risk_level: str = "safe") -> None:
         """사용자가 승인한 도구를 캐시에 기록합니다."""
@@ -452,8 +531,12 @@ class PermissionGate:
                 logger.warning("DENIED access to protected path: %s", abs_path)
                 return Permission.DENY
 
-        # Inside project — mode decides write prompting; reads are allow.
+        # Inside project — mode decides write prompting; reads are allow, except secret-named
+        # files (r30 P0): those go through the existing approval path, never silent auto-read.
         if tool_name in ("read_file", "grep_search", "glob_search", "list_directory"):
+            if tool_name in SECRET_READ_TOOLS and is_sensitive_path(abs_path):
+                logger.warning("PROMPT sensitive in-project read: %s", os.path.basename(abs_path))
+                return Permission.PROMPT
             return Permission.ALLOW
 
         if self.mode in ("permissive", "auto-pilot"):
@@ -463,6 +546,8 @@ class PermissionGate:
     def reset_cache(self) -> None:
         """승인 캐시를 초기화합니다."""
         self._approval_cache.clear()
+        self._secret_pending.clear()
+        self._secret_grants.clear()
 
     def to_dict(self) -> dict[str, object]:
         """상태를 직렬화합니다."""

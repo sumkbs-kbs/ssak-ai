@@ -18,10 +18,23 @@ from antigravity_k.engine.tool_call_parser import ToolCall
 from antigravity_k.engine.tool_executor import ToolExecutor
 from antigravity_k.engine.tool_guardrails import ToolCallGuardrailController
 from antigravity_k.engine.tool_loop import ToolLoopEngine
+from antigravity_k.engine.turn_tool_constraints import TurnToolConstraints
 from antigravity_k.tools.artifact_tools import WriteArtifactTool
 from antigravity_k.tools.permission_gate import PermissionGate
 from antigravity_k.tools.system_tools import ReadFileTool, RunBashCommandTool
 from antigravity_k.tools.tool_registry import ToolRegistry
+
+
+@pytest.fixture(autouse=True)
+def _r39_explicit_autopilot():
+    """r39: PermissionGate() without a mode no longer implies auto-pilot (default is balanced).
+    This module's assertions were written for auto-pilot, so they now run under the EXPLICIT opt-in."""
+    from antigravity_k.engine.access_mode import ExecutionPolicy, set_execution_policy
+
+    set_execution_policy(ExecutionPolicy.AUTO_PILOT)
+    yield
+    set_execution_policy(None)
+
 
 NO_FILES: Final = "방금 표의 코드 셀에서 HTML <br> 문자를 빼고 각 행에 단일 Python 할당문 하나만 써주세요. 추가 검색과 파일 변경은 하지 마세요."
 
@@ -389,3 +402,105 @@ async def test_no_search_preserves_other_tool_execution(constraint_orch: MagicMo
     assert allowed[4] is False
     assert "42" in allowed[3]
     assert constraint_orch.ctx.tool_executor.calls == ["read_file"]
+
+
+@pytest.mark.parametrize("prompt", [
+    "파일을 읽지 마세요. 주어진 기억으로 답하세요.",
+    "파일을 다시 읽지 말고 기억으로 답해줘.",
+    "원본 파일을 열지 마세요.",
+    "파일은 읽지마. 답만 줘.",
+    "read_file 도구는 호출하지 마세요.",
+    "read_file은 사용하지 마.",
+    "`read_file` 도구는 호출하지마.",
+    "Do not read files. Use the supplied memory.",
+    "Don't open any files.",
+    "Never re-read the source file.",
+    "Answer without re-reading the source file.",
+    "No file reads.",
+    "Do not call `read_file`.",
+    "Do not use read_file.",
+    "read_file 없이 답해줘.",
+    "먼저 파일을 읽지 마세요.",
+    "Do not read any files in this project.",
+    "Do not read files from disk.",
+    "Do not read any files in this project, answer from memory.",
+])
+def test_explicit_no_file_read_is_narrow_tool_constraint(prompt: str) -> None:
+    constraints = TurnToolConstraints.from_request(prompt)
+    assert constraints.denial("read_file") is not None
+    assert constraints.denial("web_search") is None
+    assert constraints.denial("write_artifact") is None
+
+
+@pytest.mark.parametrize("prompt", [
+    "기억한 코드만 답해줘.",
+    "read_file 도구로 원본 파일을 읽어줘.",
+    "원본 파일의 최신 내용을 다시 확인해줘.",
+    "파일을 읽지 않아도 돼. 필요하면 읽어.",
+    "파일을 읽지 않는 함수를 작성해줘.",
+    "파일을 읽지 말라는 예시를 분석해줘.",
+    'Explain this quote: "Do not read files." Then read README.md.',
+    "```\n파일을 읽지 마세요.\n```\n원본 파일을 읽어줘.",
+    "> 파일을 읽지 마세요.\n원본 파일을 읽어줘.",
+    "다른 파일은 읽지 말고 source.md만 읽어줘.",
+    "Do not read other files; read this file.",
+    "파일 변경은 하지 마세요. 원본을 읽어줘.",
+    "Do not read file.md; read README.md.",
+    "Do not read files named secret.txt; read README.md.",
+    "Do not read files except README.md.",
+    "원본 파일은 읽지 말고 요약본 파일을 읽어줘.",
+    "Do not read the source file; read the summary file.",
+    "Do not read file `secret.txt`; read README.md.",
+    "`secret.txt` 파일은 읽지 말고 README.md를 읽어줘.",
+    "Do not read the file secrets.txt; read README.md.",
+    "Do not read file `LICENSE`; read README.md.",
+    "`LICENSE` 파일은 읽지 말고 README.md를 읽어줘.",
+])
+def test_optional_descriptive_quoted_or_scoped_read_text_is_not_global_ban(prompt: str) -> None:
+    assert TurnToolConstraints.from_request(prompt).denial("read_file") is None
+
+
+def test_named_read_ban_does_not_erase_an_independent_global_tool_ban() -> None:
+    constraints = TurnToolConstraints.from_request("read_file 도구는 호출하지 마세요. 도구를 사용하지 마세요.")
+    assert constraints.denial("read_file") is not None
+    assert constraints.denial("web_search") is not None
+
+
+def test_read_ban_after_another_negative_clause_keeps_both_constraints() -> None:
+    constraints = TurnToolConstraints.from_request("추가 검색 없이 파일을 읽지 마세요.")
+    assert constraints.denial("read_file") is not None
+    assert constraints.denial("web_search") is not None
+    assert constraints.denial("write_artifact") is None
+
+
+def test_forbidden_read_is_not_dispatched_and_attempt_is_recorded(
+    constraint_orch: MagicMock, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from antigravity_k.engine import llm_input_audit
+
+    attempts: list[tuple[str, str]] = []
+    monkeypatch.setattr(llm_input_audit, "audit_tool", lambda *, name, stage: attempts.append((name, stage)))
+    engine = run(constraint_orch, "파일을 읽지 마세요. 기억으로 42만 답해줘.",
+                 [call("read_file", {"file_path": "qa-source.txt"}), "42"])
+    assert constraint_orch.ctx.tool_executor.calls == []
+    assert engine.last_output == "42"
+    assert ("read_file", "blocked_by_user_constraint") in attempts
+    assert ("read_file", "execute_requested") not in attempts
+    second = constraint_orch.manager.stream_generate.call_args_list[1].kwargs["prompt"]
+    assert "without prohibited calls" in second
+    first_schemas = constraint_orch.manager.stream_generate.call_args_list[0].kwargs.get("tools", [])
+    names = {schema["function"]["name"] for schema in first_schemas}
+    assert "read_file" not in names
+    assert "write_artifact" in names
+
+
+@pytest.mark.asyncio
+async def test_direct_dispatch_rechecks_explicit_read_ban_before_real_file_tool(constraint_orch: MagicMock) -> None:
+    engine = ToolLoopEngine(constraint_orch)
+    result = await engine._run_tool_task_async(
+        ToolCall(name="read_file", arguments={"file_path": "qa-source.txt"}),
+        "Do not read files. Answer from the supplied memory.",
+    )
+    assert result[4] is True
+    assert "USER TOOL CONSTRAINT" in result[3]
+    assert constraint_orch.ctx.tool_executor.calls == []

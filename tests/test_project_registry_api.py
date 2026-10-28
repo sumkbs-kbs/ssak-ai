@@ -27,9 +27,11 @@ def test_list_projects_default():
     assert len(active_p) == 1, "There should be exactly one active project"
 
 
-def test_create_and_switch_and_delete_project():
+def test_create_and_switch_and_delete_project(monkeypatch):
     """Full lifecycle: create project, switch to it, verify, and remove."""
     with tempfile.TemporaryDirectory() as tmpdir:
+        # r27: registration follows the same allowed-root rule as chat; allow only this synthetic dir.
+        monkeypatch.setenv("AGK_ALLOWED_ROOTS", os.path.realpath(tmpdir))
         proj_name = f"Test-Project-{os.path.basename(tmpdir)}"
 
         # 1. Create project

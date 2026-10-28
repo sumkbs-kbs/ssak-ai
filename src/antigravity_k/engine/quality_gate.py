@@ -252,6 +252,46 @@ class QualityGate:
                 issues.append(f"코드블록{i + 1} 미완성")
         return score, issues
 
+    @staticmethod
+    def _source_contract_flags(request_lower: str) -> tuple[bool, bool, bool]:
+        code_only_requested = bool(re.search(r"(코드만|code\s+only|only\s+code)", request_lower))
+        source_requested = bool(
+            re.search(
+                r"(?:^|[.!?\n]\s*|\b(?:and|then)\s+)(?:(?:please|can you|could you|would you)\s+)?"
+                + r"(?:write|implement|create|generate|build|make|provide|show|give(?:\s+me)?)\s+"
+                + r"(?:(?:a|an|the|some|new|complete|working|python|javascript|typescript)\s+){0,4}"
+                + r"(?:source(?:\s+code)?|code|implementation|(?:\w+\s+)?(?:function|algorithm|script|program))\b"
+                + r"(?!\s+(?:summary|description|explanation|purpose|result|output)\b|['’]s\b)|"
+                + r"(?:코드|함수|알고리즘|스크립트|프로그램)(?:를|을)?\s*(?:(?:새로|직접|다시)\s+)?"
+                + r"(?:작성(?:해|하)|구현(?:해|하)|만들(?:어|어줘)|짜(?:줘|라)|보여(?:줘|주)|제공(?:해|하))",
+                request_lower,
+            ),
+        )
+        # A badge colour/code name is a stored value, not program source. Keep
+        # explicit programming instructions authoritative even in the same request.
+        identifier_question = bool(
+            re.search(
+                r"(?:배지\s*색상|코드명)[^.!?\n]{0,80}(?:무엇|뭐)|"
+                r"\b(?:what|which)\s+(?:(?:was|is)\s+(?:the\s+)?)?"
+                r"(?:badge\s+colou?r(?:\s+code)?|(?:release\s+)?code\s*name)\b",
+                request_lower,
+            )
+        )
+        programming_context = source_requested or bool(
+            re.search(
+                r"```|\b(?:source\s+code|coding|function|class|method|script|program|algorithm|implement\w*|"
+                r"refactor\w*|bug|debug\w*|compile\w*|unit\s+test|api|endpoint|regex|sql|query|python|"
+                r"javascript|typescript|java|rust|golang|html|css|bash|shell)\b|"
+                r"\.(?:py|js|ts|tsx|go|rs|java|sh|sql|html|css)\b|소스\s*코드|코드\s*블록|함수|"
+                r"알고리즘|클래스|메서드|스크립트|프로그램|구현|리팩터|리팩토링|버그|디버그|컴파일|정규식|쿼리",
+                request_lower,
+            )
+        )
+        identifier_only = code_only_requested and identifier_question and not programming_context
+        code_only_requested = code_only_requested and not identifier_only
+        source_requested = source_requested or code_only_requested
+        return source_requested, code_only_requested, identifier_only
+
     def _check_output_contract(
         self, request: str, output: str, task_type: str, execution_mode: str | None = None
     ) -> tuple[float, list[str]]:
@@ -267,19 +307,7 @@ class QualityGate:
         score = 1.0
         issues: list[str] = []
         request_lower = request.lower()
-        code_only_requested = bool(re.search(r"(코드만|code\s+only|only\s+code)", request_lower))
-        source_requested = code_only_requested or bool(
-            re.search(
-                r"(?:^|[.!?\n]\s*|\b(?:and|then)\s+)(?:(?:please|can you|could you|would you)\s+)?"
-                + r"(?:write|implement|create|generate|build|make|provide|show|give(?:\s+me)?)\s+"
-                + r"(?:(?:a|an|the|some|new|complete|working|python|javascript|typescript)\s+){0,4}"
-                + r"(?:source(?:\s+code)?|code|implementation|(?:\w+\s+)?(?:function|algorithm|script|program))\b"
-                + r"(?!\s+(?:summary|description|explanation|purpose|result|output)\b|['’]s\b)|"
-                + r"(?:코드|함수|알고리즘|스크립트|프로그램)(?:를|을)?\s*(?:(?:새로|직접|다시)\s+)?"
-                + r"(?:작성(?:해|하)|구현(?:해|하)|만들(?:어|어줘)|짜(?:줘|라)|보여(?:줘|주)|제공(?:해|하))",
-                request_lower,
-            ),
-        )
+        source_requested, code_only_requested, identifier_only = self._source_contract_flags(request_lower)
         json_only = bool(
             re.search(
                 r"\bonly(?:\s+\w+){0,3}\s+json\b|\bjson\s+only\b|json(?:으로|\s*형식(?:으로)?)?\s*만",
@@ -311,6 +339,24 @@ class QualityGate:
                 return 0.3, ["요청된 단일 숫자 형식 위반"]
             return score, issues
 
+        plain_contract = None if source_requested else self._plain_value_contract(request, identifier_only)
+        if plain_contract is not None:
+            value = output.strip()
+            if plain_contract == "token":
+                valid = re.fullmatch(r"[+-]?\w+(?:[-.:/+]\w+)*", value) is not None
+                shape = "값 또는 식별자 하나만 일반 텍스트 한 줄로"
+            else:
+                valid = not re.search(
+                    r"[\r\n`]|\*\*|__|^\s*(?:#{1,6}\s|>\s|[-*+]\s|\d+[.)]\s)|\[[^\]]+\]\([^)]*\)",
+                    value,
+                )
+                shape = "요청한 한 줄 값만 일반 텍스트로 (값 안의 공백은 보존하여)"
+            if not valid:
+                return 0.3, [
+                    f"요청된 단일 값 형식 위반: {shape} 답하세요. 설명, 출처, Markdown을 덧붙이지 마세요"
+                ]
+            return score, issues
+
         # PLAN 모드: 코드 블록 체크 건너뜀 (Phase 1 D5)
         if execution_mode == "plan" or task_type == "search":
             return score, issues
@@ -318,8 +364,22 @@ class QualityGate:
         explanation_requested = bool(
             re.search(r"\b(?:explain|describe|what|why|how|purpose)\b|설명|목적|역할|반환값|무엇", request_lower)
         )
+        # r33: the CEO task_type alone is not a code request (a numbered list of greetings got
+        # routed to the coding swarm). Require a code signal in the user's own request.
+        code_signal = bool(
+            re.search(
+                r"```|\b(?:code|coding|function|class|method|script|program|implement\w*|refactor\w*|bug|"
+                r"debug\w*|compile\w*|unit\s+test|api|endpoint|regex|sql|query|python|javascript|typescript|"
+                r"java|rust|golang|html|css|bash|shell)\b|\.(?:py|js|ts|tsx|go|rs|java|sh|sql|html|css)\b|"
+                r"코드|함수|클래스|메서드|스크립트|프로그램|구현|리팩터|리팩토링|버그|디버그|컴파일|테스트\s*코드|정규식|쿼리",
+                request_lower,
+            )
+        )
         asks_for_code = source_requested or (
-            task_type in ("code", "coding", "complex", "complex_step") and not explanation_requested
+            task_type in ("code", "coding", "complex", "complex_step")
+            and not explanation_requested
+            and code_signal
+            and not identifier_only
         )
         if not asks_for_code:
             return score, issues
@@ -365,6 +425,45 @@ class QualityGate:
             issues.append("비교 구조 부족")
 
         return score, issues
+
+    @classmethod
+    def plain_value_contract(cls, request: str) -> str | None:
+        """Describe a direct reply shape without scoring or invoking a verifier."""
+        source_requested, _code_only, identifier_only = cls._source_contract_flags(request.lower())
+        return None if source_requested else cls._plain_value_contract(request, identifier_only)
+
+    @staticmethod
+    def _plain_value_contract(request: str, identifier_only: bool) -> str | None:
+        """Separate explicit identifiers from whole last-line values, not semantics."""
+        direct = re.sub(
+            r"```[\s\S]*?```|~~~[\s\S]*?~~~|`[^`\n]*`|\"[^\"\n]*\"|"
+            r"(?<!\w)'[^'\n]*'|“[^”\n]*”|‘[^’\n]*’|(?m:^\s*>[^\n]*)",
+            "",
+            request.lower(),
+        )
+        if identifier_only and re.search(r"코드만|\bcode\s+only\b|\bonly\s+code\b", direct):
+            return "token"
+        korean_reply = r"(?:답해|답하세요|답하라|답변해|답변하세요|반환해|반환하세요|출력해|출력하세요|알려줘|알려주세요)"
+        english_reply = r"(?:return|reply(?:\s+with)?|answer(?:\s+with)?|respond(?:\s+with)?|output|print)"
+        line_requested = False
+        for clause in re.split(r"[.!?;\n]", direct):
+            if re.search(r"\b(?:do\s+not|don't|never|avoid)\s+" + english_reply + r"\b", clause):
+                continue
+            for kind, korean_value, english_value in (
+                ("token", r"(?:식별자|토큰|코드\s*값|상태\s*코드)", r"(?:identifier|(?:status\s+)?token|code\s+value)"),
+                ("line", r"(?:마지막|최종)\s*줄\s*값", r"last\s+line(?:'s)?\s+value"),
+            ):
+                english_value = r"(?:(?:the|a)\s+)?(?:(?:single|one)\s+)?" + english_value + r"\b"
+                matched = re.search(
+                    korean_value + r"\s*(?:하나|한\s*개)?\s*만\s*(?:(?:정확히|한\s*줄로)\s*)*" + korean_reply,
+                    clause,
+                ) or re.search(english_reply + r"\s+(?:only|just)\s+" + english_value, clause)
+                matched = matched or re.search(english_reply + r"\s+" + english_value + r"\s+only\b", clause)
+                if matched:
+                    if kind == "token":
+                        return kind
+                    line_requested = True
+        return "line" if line_requested else None
 
     def _check_planning_mode(
         self, request: str, output: str, task_type: str, execution_mode: str | None = None
@@ -660,7 +759,8 @@ class QualityGate:
         # 2. 구조 요소 밀도 (heading, list, code block)
         if len(output) > 800:
             headings = len(re.findall(r"^#{1,3}\s", output, re.MULTILINE))
-            lists = len(re.findall(r"^\s*[-*]\s", output, re.MULTILINE))
+            # r33: numbered lists ("1. ", "2) ") are list structure too.
+            lists = len(re.findall(r"^\s*(?:[-*]|\d{1,3}[.)])\s", output, re.MULTILINE))
             code_blocks = len(re.findall(r"```", output))
             tables = len(re.findall(r"^\s*\|.+\|\s*$", output, re.MULTILINE))
             structure_count = headings + lists + code_blocks // 2 + tables

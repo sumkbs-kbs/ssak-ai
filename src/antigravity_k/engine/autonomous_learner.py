@@ -343,7 +343,10 @@ class AutonomousLearner:
                     data=json.dumps(data).encode("utf-8"),
                     headers={"Content-Type": "application/json"},
                 )
-                with safe_urlopen(req, timeout=30) as resp:
+                from antigravity_k.engine.direct_model_call import guard_direct_model_call
+
+                _timeout = guard_direct_model_call(str(data["model"]), "knowledge_gap", prompt, timeout=30)
+                with safe_urlopen(req, timeout=_timeout) as resp:
                     result = _as_json_map(cast(object, json.loads(resp.read().decode("utf-8"))))
                     response_text = _as_text(result.get("response"))
 

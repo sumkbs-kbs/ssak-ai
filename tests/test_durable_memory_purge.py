@@ -89,13 +89,14 @@ def test_gbrain_clear_all_removes_graph_and_vectors(
     monkeypatch.setattr(DefaultEmbeddingFunction, "__call__", synthetic_embedding)
     storage = str(tmp_path / "gbrain")
     with closing(GBrain(storage_dir=storage)) as brain:
-        assert isinstance(brain.collection, Collection)
+        # r29: no default-embedding collection; vector side is explicit not-ready, graph purge still real.
+        assert brain.collection is None and brain.vector_not_ready_reason
+        assert not isinstance(brain.collection, Collection)
         brain.add_node("one", "note", "private knowledge one")
         brain.add_node("two", "note", "private knowledge two")
         brain.add_edge("one", "two", "related")
         assert brain.graph.number_of_nodes() == 2
         assert brain.graph.number_of_edges() == 1
-        assert set(brain.collection.get()["ids"]) == {"one", "two"}
         assert brain.reward_tick == 3
         if closed:
             brain.close()
@@ -105,15 +106,13 @@ def test_gbrain_clear_all_removes_graph_and_vectors(
             assert brain.clear_all() == 2
             assert brain.graph.number_of_nodes() == 0
             assert brain.graph.number_of_edges() == 0
-            assert brain.collection.get()["ids"] == []
             assert brain.reward_tick == 0
             assert brain.clear_all() == 0
 
     with closing(GBrain(storage_dir=storage)) as reopened:
-        assert isinstance(reopened.collection, Collection)
+        assert reopened.collection is None and reopened.vector_not_ready_reason  # r29
         expected_ids = {"one", "two"} if closed else set()
         assert {node["id"] for node in reopened.export_all()} == expected_ids
-        assert set(reopened.collection.get()["ids"]) == expected_ids
         assert reopened.graph.number_of_edges() == int(closed)
         assert reopened.reward_tick == (3 if closed else 0)
 

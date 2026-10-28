@@ -7,6 +7,7 @@ from typing import Annotated, Any, Callable, TypeAlias, cast
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
+import antigravity_k.engine.intent_observability as _intent_obs
 from antigravity_k.api.chat_agent_stream_generator import AgentStreamingResponse
 from antigravity_k.api.contracts.execution_context import RequestExecutionContext
 
@@ -168,6 +169,13 @@ def _has_code_write_signal(text: str) -> bool:
     """
     text_lower = text.lower()
     return any(kw in text_lower for kw in _TDD_ACTION_KEYWORDS)
+
+
+# r34: past-decision / saved-note recall (patterns moved to engine.memory_recall_intent in r38 so
+# the orchestrator CEO gate uses the same detector).
+from antigravity_k.engine.memory_recall_intent import is_memory_recall as _is_memory_recall  # noqa: E402
+from antigravity_k.engine.memory_recall_intent import set_request_recall as _set_request_recall  # noqa: E402
+from antigravity_k.engine.memory_recall_intent import wants_memory_recall as _wants_memory_recall  # noqa: E402
 
 
 def _keyword_intent_fallback(text: str) -> str:
@@ -441,24 +449,26 @@ def _resolve_chat_execution_context(request: Request, body: JsonMap, target_mode
 
 
 @router.get("/v1/chat/completions/reconnect")
-async def chat_reconnect() -> StreamingResponse:
+async def chat_reconnect(request: Request = cast(Request, None)) -> StreamingResponse:
     import asyncio
 
-    from antigravity_k.api.routes.session_state import get_active_session
+    from antigravity_k.api.routes.session_state import active_response_snapshot
     from antigravity_k.engine.chat_stream_events import FinalChunk
 
-    active_session = get_active_session()
+    initial = active_response_snapshot(request)
+    assert initial is not None
 
     async def event_generator() -> AsyncIterator[str]:
-        if not active_session.is_active:
+        if not initial.is_active:
             yield "data: [DONE]\n\n"
             return
 
         last_idx = 0
         last_final: FinalChunk | None = None
-        while True:
-            still_active = active_session.is_active
-            history = tuple(active_session.history)
+        snapshot = initial
+        while snapshot is not None:
+            still_active = snapshot.is_active
+            history = snapshot.history
             if history and isinstance(history[0], FinalChunk) and history[0] is not last_final:
                 last_final = history[0]
                 last_idx = 1
@@ -470,9 +480,10 @@ async def chat_reconnect() -> StreamingResponse:
             if not still_active:
                 break
             await asyncio.sleep(0.5)
+            snapshot = active_response_snapshot(request, generation=initial.generation)
 
-        if active_session.error:
-            data = {"choices": [{"delta": {"content": f"\n\n[Error: {active_session.error}]"}}]}
+        if snapshot is not None and snapshot.error:
+            data = {"choices": [{"delta": {"content": f"\n\n[Error: {snapshot.error}]"}}]}
             yield f"data: {json.dumps(data)}\n\n"
 
         yield "data: [DONE]\n\n"
@@ -559,6 +570,19 @@ async def chat_completions(
     manager: Annotated[ModelManager, Depends(get_model_manager)],
     translator: Annotated[ProtocolTranslator, Depends(get_translator)],
 ) -> object:
+    request.state.active_response_generation = None
+    request.state.active_response_stream_attached = False
+    try:
+        return await _chat_completions(request, manager, translator)
+    finally:
+        generation = request.state.active_response_generation
+        if generation is not None and not request.state.active_response_stream_attached:
+            from antigravity_k.api.routes.session_state import finish_active_response
+
+            finish_active_response(generation)
+
+
+async def _chat_completions(request: Request, manager: ModelManager, translator: ProtocolTranslator) -> object:
     try:
         body = _validate_chat_request_body(cast(object, await request.json()))
     except json.JSONDecodeError:
@@ -640,6 +664,12 @@ async def chat_completions(
     request.state.project_id = execution_context.project_id
     request.state.canonical_project_root = execution_context.canonical_project_root
 
+    if _bool_value(body.get("stream")) and _bool_value(body.get("agent_mode"), default=output_contract is None):
+        from antigravity_k.api.routes.session_state import begin_active_response
+
+        active_session = begin_active_response(execution_context)
+        request.state.active_response_generation = active_session.generation
+
     messages = _messages_value(internal_req.get("messages", []))
 
     # CTX-01: server conversation store is authoritative history when protocol is on.
@@ -716,6 +746,9 @@ async def chat_completions(
     from antigravity_k.engine.self_capability import is_self_capability_request
 
     is_fast_search = False
+    _intent_event: _intent_obs.IntentEvent | None = None
+    # r41: the classifier's MEMORY decision is carried to the past_memory steps (non-agent + agent).
+    _is_memory_request = False
 
     if output_contract is None and not is_tdd_mode and slash_text:
         _skip_intent_classification = False
@@ -732,25 +765,37 @@ async def chat_completions(
             # 날씨/주가/뉴스 등 명확한 검색 의도는 LLM 없이 SEARCH로 확정 — 환각 방지
             _pre_intent = _keyword_intent_fallback(slash_text)
 
-            logger_auto.info("[DEBUG] slash_text=%s pre_intent=%s", repr(slash_text[:60]), _pre_intent)
+            # r33: no raw request text in logs — length only.
+            logger_auto.info("Auto-Intent pre_intent=%s text_len=%d", _pre_intent, len(slash_text))
 
             if _pre_intent == "SEARCH":
                 # 키워드로 SEARCH가 확정되면 LLM 호출 생략
-                logger_auto.info("Auto-Intent (키워드): SEARCH 모드 — '%s'", slash_text[:40])
+                logger_auto.info("Auto-Intent (키워드): SEARCH 모드")
                 is_fast_search = True
+                _intent_event = _intent_obs.record("SEARCH", "keyword", True, "fast_search", len(slash_text))
 
             elif _pre_intent == "TDD":
-                logger_auto.info("Auto-Intent (키워드): TDD 모드 — '%s'", slash_text[:40])
+                logger_auto.info("Auto-Intent (키워드): TDD 모드")
                 is_tdd_mode = True
+                _intent_event = _intent_obs.record("TDD", "keyword", True, "tdd", len(slash_text))
+            elif _is_memory_recall(slash_text):
+                # r34: recall of a past decision/note -> general path (past_memory), never web search.
+                logger_auto.info("Auto-Intent classified: intent=MEMORY source=keyword text_len=%d", len(slash_text))
+                _intent_event = _intent_obs.record("MEMORY", "keyword", True, "memory", len(slash_text))
+                _is_memory_request = True
             else:
                 # 키워드로 판별 불가한 경우에만 LLM 분류 사용
+
+                _intent_source = {"value": "llm", "parse": "none", "reply_len": 0}
 
                 def _classify_intent():
                     prompt = (
                         "You are an autonomous intent router. Analyze the user request and categorize it into ONE of these exactly:\n"  # noqa: E501
                         "1. 'TDD' - requires writing new code, fixing bugs, or implementing software features.\n"
                         "2. 'SEARCH' - simple web search for information (e.g. stock price, weather, news).\n"
-                        "3. 'GENERAL' - simple question, explanation, general chat.\n\n"
+                        "3. 'GENERAL' - simple question, explanation, general chat.\n"
+                        "4. 'MEMORY' - asks about something the user or team previously decided, agreed, saved or noted "
+                        "(answer from saved memory, not the web).\n\n"
                         "Reply EXACTLY with the category name.\n\n"
                         f"User Request: {slash_text[:500]}"
                     )
@@ -762,33 +807,65 @@ async def chat_completions(
                             max_tokens=10,
                             temperature=0.0,
                         )
-                        r = res.lower()
+                        r = str(res).lower()
+                        _intent_source["reply_len"] = len(r)
+                        if "memory" in r:
+                            _intent_source["parse"] = "matched_memory"
+                            return "MEMORY"
                         if "tdd" in r:
+                            _intent_source["parse"] = "matched_tdd"
                             return "TDD"
                         if "search" in r:
+                            _intent_source["parse"] = "matched_search"
                             return "SEARCH"
+                        _intent_source["parse"] = "default_general"
                         return "GENERAL"
                     except Exception as e:
-                        logger_auto.warning("Auto-Intent LLM classification failed: %s", e)
+                        logger_auto.warning("Auto-Intent LLM classification failed: %s", type(e).__name__)
+                        _intent_source["value"] = "keyword_fallback_after_llm_error"
+                        _intent_source["parse"] = "provider_error"
                         return _keyword_intent_fallback(slash_text)
 
                 from starlette.concurrency import run_in_threadpool
 
                 intent = await run_in_threadpool(_classify_intent)
+                # 분류 결과는 성공(GENERAL 포함)도 남긴다 — 실패 로그만으로는 분류가 실제로 실행됐는지
+                # 확인할 수 없다. 원문은 남기지 않는다(길이만).
+                logger_auto.info(
+                    "Auto-Intent classified: intent=%s source=%s text_len=%d",
+                    intent,
+                    _intent_source["value"],
+                    len(slash_text),
+                )
 
+                _follow_up = "general"
                 if intent == "TDD":
                     # 이중 확인 — 코드 '쓰기' 동사 없는 요청의 TDD 오판은 무시한다
                     if _has_code_write_signal(slash_text):
-                        logger_auto.info("Auto-Intent: LLM autonomously enabled TDD mode for: %s", slash_text[:50])
+                        logger_auto.info("Auto-Intent: LLM autonomously enabled TDD mode")
                         is_tdd_mode = True
+                        _follow_up = "tdd"
                     else:
-                        logger_auto.info(
-                            "Auto-Intent: LLM TDD 판정 무시 (코드 신호 없음): %s",
-                            slash_text[:50],
-                        )
+                        _follow_up = "tdd_rejected_no_code_signal"
+                        logger_auto.info("Auto-Intent: LLM TDD 판정 무시 (코드 신호 없음)")
                 elif intent == "SEARCH":
-                    logger_auto.info("Auto-Intent: LLM autonomously enabled FAST SEARCH mode for: %s", slash_text[:50])
+                    logger_auto.info("Auto-Intent: LLM autonomously enabled FAST SEARCH mode")
                     is_fast_search = True
+                    _follow_up = "fast_search"
+                elif intent == "MEMORY":
+                    _is_memory_request = True
+                    _follow_up = "memory"
+                _llm_ok = _intent_source["value"] == "llm"
+                _intent_event = _intent_obs.record(
+                    str(intent),
+                    "llm" if _llm_ok else "llm_error_keyword_fallback",
+                    _llm_ok,
+                    _follow_up,  # type: ignore[arg-type]
+                    len(slash_text),
+                    model=str(target_model or ""),
+                    parse=str(_intent_source["parse"]),
+                    reply_len=int(_intent_source["reply_len"]),
+                )
 
     if request_access_mode is AccessMode.READ_ONLY or (
         body.get("code_mode") is not None and not _bool_value(body.get("code_mode"))
@@ -799,6 +876,22 @@ async def chat_completions(
         body.get("web_search") is not None and not _bool_value(body.get("web_search"))
     ):
         is_fast_search = False
+
+    if is_fast_search:
+        from antigravity_k.tools.web_search_tool import web_search_disabled
+
+        if web_search_disabled():  # r35: never reach the web search engine when search is off
+            is_fast_search = False
+
+    if _is_memory_request and (is_fast_search or is_tdd_mode):
+        _is_memory_request = False  # an explicit search/TDD override wins; recorded via final_path
+    _set_request_recall(_is_memory_request)
+    _intent_obs.finalize(
+        _intent_event,
+        "fast_search"
+        if is_fast_search
+        else ("tdd" if is_tdd_mode else ("memory" if _is_memory_request else "general")),
+    )
 
     if is_fast_search:
         try:
@@ -1074,6 +1167,28 @@ async def chat_completions(
             _project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
             target_file_path = os.path.join(_project_root, target_file_path)
 
+        async def _tdd_compute() -> str:
+            """r34: one TDD run -> final text (shared by stream and stream:false paths)."""
+            engine = OmniTDDEngine(model_manager=manager, coding_model=target_model)
+            report = await engine.run_tdd_loop(prompt, target_file_path=target_file_path)
+
+            if report.status == "passed":
+                meta = f"✅ **TDD Completed Successfully**\n\n- **Winner:** `{report.winner_source}`\n- **Iterations:** {report.total_iterations}\n- **Duration:** {report.duration_ms / 1000:.1f}s\n"  # noqa: E501
+                if report.skipped_racing:
+                    meta += "- **Mode:** Adaptive (local-only, racing skipped)\n"
+                if target_file_path:
+                    meta += f"- **Target Path:** `{target_file_path}` (Saved)\n"
+                meta += "\n---\n\n"
+                # Response Reconstructor 결과 포함 (한국어 설명 + 코드)
+                if report.explanation:
+                    res = meta + report.explanation
+                else:
+                    res = meta + f"```python\n{report.final_code}\n```\n"
+            else:
+                res = f"❌ **TDD Failed**\n\n- **Iterations:** {report.total_iterations}\n- **Error:** {report.error}\n"  # noqa: E501
+
+            return res
+
         async def tdd_event_generator():
             def yield_chunk(text: str, *, status: bool = False) -> str:
                 if _conversation_snapshot is not None:
@@ -1099,24 +1214,7 @@ async def chat_completions(
                     "⏳ Sandboxed generation and testing in progress... (This may take 1-2 minutes)\n\n", status=True
                 )
 
-                engine = OmniTDDEngine(model_manager=manager, coding_model=target_model)
-                report = await engine.run_tdd_loop(prompt, target_file_path=target_file_path)
-
-                if report.status == "passed":
-                    meta = f"✅ **TDD Completed Successfully**\n\n- **Winner:** `{report.winner_source}`\n- **Iterations:** {report.total_iterations}\n- **Duration:** {report.duration_ms / 1000:.1f}s\n"  # noqa: E501
-                    if report.skipped_racing:
-                        meta += "- **Mode:** Adaptive (local-only, racing skipped)\n"
-                    if target_file_path:
-                        meta += f"- **Target Path:** `{target_file_path}` (Saved)\n"
-                    meta += "\n---\n\n"
-                    # Response Reconstructor 결과 포함 (한국어 설명 + 코드)
-                    if report.explanation:
-                        res = meta + report.explanation
-                    else:
-                        res = meta + f"```python\n{report.final_code}\n```\n"
-                else:
-                    res = f"❌ **TDD Failed**\n\n- **Iterations:** {report.total_iterations}\n- **Error:** {report.error}\n"  # noqa: E501
-
+                res = await _tdd_compute()
                 yield yield_chunk(res)
 
                 # 세션에 기록 저장 (프로젝트 단위 컨텍스트 영속성)
@@ -1146,6 +1244,30 @@ async def chat_completions(
                 logger.error("TDD Stream error: %s", e, exc_info=True)
                 yield yield_chunk(f"\n\n[Error: {str(e)}]")
                 yield "data: [DONE]\n\n"
+
+        if not is_stream:
+            # r34: stream:false must honour the documented JSON chat.completion contract
+            # (application/json body), never an SSE stream labelled as a normal response.
+            res = await _tdd_compute()
+            user_msg = _latest_user_text(messages)
+            session_manager.add_turn(
+                [
+                    {"role": "user", "content": user_msg},
+                    {"role": "assistant", "content": res},
+                ]
+            )
+            request.state.conversation_snapshot = _persist_assistant_to_conversation_store(
+                execution_context, _conversation_snapshot, res
+            )
+            internal_resp = {
+                "content": res,
+                "model": target_model,
+                "finish_reason": "stop",
+                "tokens_in": TokenEstimator.estimate_text(prompt),
+                "tokens_out": TokenEstimator.estimate_text(res),
+            }
+            target_format = source_format if source_format != APIFormat.INTERNAL else APIFormat.OPENAI
+            return translator.translate_response(internal_resp, target=target_format)
 
         return StreamingResponse(tdd_event_generator(), media_type="text/event-stream")
 
@@ -1246,16 +1368,16 @@ async def chat_completions(
 
         runtime = get_agent_runtime()
 
-        from antigravity_k.api.routes.session_state import reset_active_session
+        from antigravity_k.api.routes.session_state import ActiveResponseBody, finish_active_response
 
-        # Start new session — shared singleton을 리셋해 사용한다
-        active_session = reset_active_session()
+        generation = request.state.active_response_generation
+        assert isinstance(generation, int)
+        active_session.q = _latest_user_text(messages)
 
         async def event_generator() -> AsyncGenerator[str, None]:
             full_response = ""
             stream_aiter: AsyncGenerator[str, None] | None = None
             try:
-                active_session.is_active = True
                 accepted_frame = _conversation_revision_sse(_conversation_snapshot)
                 if accepted_frame:
                     yield accepted_frame
@@ -1348,13 +1470,23 @@ async def chat_completions(
                 active_session.error = str(failure)
                 yield f"event: error\ndata: {json.dumps({'error': failure.detail()})}\n\n"
             finally:
-                active_session.is_active = False
+                finish_active_response(generation)
                 if stream_aiter is not None:
                     await stream_aiter.aclose()
 
-        return AgentStreamingResponse(event_generator(), media_type="text/event-stream")
+        response = AgentStreamingResponse(
+            cast(AsyncGenerator[str, None], ActiveResponseBody(event_generator(), generation)),
+            media_type="text/event-stream",
+        )
+        request.state.active_response_stream_attached = True
+        return response
 
     # Non-streaming or non-agent mode (fallback to original logic)
+    # r39: 비에이전트(stream 여부 무관) 경로도 기억 회상 질문이면 **요청 프로젝트의** vault에서
+    # past_memory를 검색해 이번 턴 사용자 메시지에 붙인다(r38 eefc22d0d1d0: 이 경로는 검색 0회였다).
+    # ambient/전역 vault로 떨어지지 않도록 execution_context의 project runtime만 쓴다.
+    messages, _past_status = _attach_non_agent_past_memory(messages, execution_context, output_contract is None)
+    request.state.past_memory_status = _past_status
     system_msg = internal_req.get("system", "")
     prompt = ""
     if system_msg:
@@ -1439,3 +1571,47 @@ async def chat_completions(
     except Exception as e:
         logger.error("Generation error: %s", e, exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
+
+
+def _attach_non_agent_past_memory(
+    messages: list[ChatMessage], execution_context: RequestExecutionContext, allowed: bool
+) -> tuple[list[ChatMessage], str]:
+    """r39: non-agent chat path past_memory (status: not_recall|hit|empty|error|disabled|skipped)."""
+    question = _latest_user_text(messages)
+    if not allowed:
+        return messages, "skipped"
+    if not question or not _wants_memory_recall(question):
+        return messages, "not_recall"
+    from antigravity_k.api.dependencies import acquire_project_runtime
+    from antigravity_k.engine import llm_input_audit
+    from antigravity_k.engine.past_memory import build_past_memory_block
+
+    try:
+        vault = acquire_project_runtime(
+            project_id=execution_context.project_id,
+            project_root=execution_context.canonical_project_root,
+        ).vault_engine
+    except Exception as exc:  # noqa: BLE001  # noqa: BROAD_EXCEPT_OK - project runtime boundary
+        logger.warning("non-agent past_memory: project runtime unavailable (%s)", type(exc).__name__)
+        return messages, "error"
+    block, status, count = build_past_memory_block(
+        vault, question, project_root=execution_context.canonical_project_root
+    )
+    logger.info("non-agent past_memory status=%s results=%d", status, count)
+    if llm_input_audit.enabled():
+        segments = {"question": question}
+        if block:
+            segments["past_memory"] = block
+        llm_input_audit.register_segments(segments, rag_status=f"non_agent:{status}")
+    if not block:
+        return messages, status
+    out = list(messages)
+    for idx in range(len(out) - 1, -1, -1):
+        if _string_value(out[idx].get("role")) == "user":
+            content = out[idx].get("content", "")
+            if isinstance(content, str):
+                out[idx] = cast(ChatMessage, {**out[idx], "content": content + block})
+            else:
+                out.insert(idx, cast(ChatMessage, {"role": "system", "content": block.strip()}))
+            break
+    return out, status

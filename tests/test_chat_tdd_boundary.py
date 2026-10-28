@@ -278,3 +278,35 @@ def test_revision_tdd_reports_cas_conflict_without_overwriting_other_answer(
     assert stored.revision == 2
     assert stored.messages[-1].content == "concurrent-result"
     assert response.text.endswith("data: [DONE]\n\n")
+
+
+def test_r34_tdd_stream_false_returns_json_contract_not_sse(tdd_boundary: _TddBoundary) -> None:
+    request = _Request(
+        project_id=tdd_boundary.http.project_id,
+        messages=(_Message(content="Explain a concept"),),
+        tdd_mode=True,
+        code_mode=True,
+        stream=False,
+    )
+    response = _post(tdd_boundary.http, request)
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("application/json")
+    assert "data: " not in response.text and "[DONE]" not in response.text
+    body = response.json()
+    assert body["object"] == "chat.completion"
+    assert "validated-result" in body["choices"][0]["message"]["content"]
+    assert len(tdd_boundary.runner.calls) == 1
+
+
+def test_r34_tdd_stream_true_stays_sse(tdd_boundary: _TddBoundary) -> None:
+    request = _Request(
+        project_id=tdd_boundary.http.project_id,
+        messages=(_Message(content="Explain a concept"),),
+        tdd_mode=True,
+        code_mode=True,
+        stream=True,
+    )
+    response = _post(tdd_boundary.http, request)
+    assert response.headers["content-type"].startswith("text/event-stream")
+    assert response.text.endswith("data: [DONE]\n\n")

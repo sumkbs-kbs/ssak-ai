@@ -240,8 +240,25 @@ class ArtifactEngine:
         filepath = os.path.join(self.artifacts_dir, filename)
 
         try:
-            with open(filepath, "w", encoding="utf-8") as f:
-                _ = f.write(code_content)
+            from antigravity_k.engine import tool_execution_journal as tej
+
+            outcome, exec_id = tej.journaled_write(self.artifacts_dir, filepath, code_content)
+            if outcome == "held_unknown":
+                return {
+                    "success": False,
+                    "filepath": "",
+                    "message": "",
+                    "request_feedback": False,
+                    "error": f"side_effect_unknown: {filename} (exec {exec_id}) held; not rewritten",
+                }
+            if outcome == "skipped_completed":
+                return {
+                    "success": True,
+                    "filepath": filepath,
+                    "message": f"Artifact {filename} already written before resume (exec {exec_id}); not re-executed.",
+                    "request_feedback": False,
+                    "error": "",
+                }
 
             feedback_msg = ""
             if metadata and metadata.request_feedback:

@@ -77,6 +77,13 @@ def _as_pipeline(value: object) -> Sequence[object]:
 
 def ceo_analyze_handler(ctx: StateContext, orch: object) -> Generator[str, None, None]:
     """CEO 태스크 분석."""
+    from antigravity_k.engine import task_plan_state as tps
+
+    restored = tps.stored_analysis()
+    if restored is not None:
+        # r38: resumed task — reuse the checkpointed plan; never re-plan completed work.
+        _apply_analysis(ctx, restored)
+        return
     yield "🏢 "  # CEO 분석 시작 시각 표시
 
     orchestrator = cast(_OrchestratorLike, orch)
@@ -121,6 +128,11 @@ def ceo_analyze_handler(ctx: StateContext, orch: object) -> Generator[str, None,
             yield buffer
         yield "\n</think>\n\n"
 
+    tps.store_analysis(analysis)
+    _apply_analysis(ctx, analysis)
+
+
+def _apply_analysis(ctx: StateContext, analysis: dict[str, object]) -> None:
     ctx.analysis.clear()
     ctx.analysis.update(analysis)
     ctx.task_type = _as_text(analysis.get("task_type"), "simple_chat")
@@ -143,9 +155,41 @@ def ceo_gate_decision(ctx: StateContext) -> AgentState:
     RAG/코드트리 컨텍스트, 자율 학습, 스킬 매칭, 불확실성 추정은 실작업에만
     가치가 있다. 인사·단순 질문이 이 4노드를 순차로 통과하는 것은 순수 낭비다.
     """
-    if ctx.task_type == "simple_chat":
+    from antigravity_k.engine.memory_recall_intent import wants_memory_recall
+
+    # r41: the request's classifier decision (chat.py) is honoured here, not only the regex.
+    # r38: a saved-memo/decision recall must reach CONTEXT_ENRICH (past_memory vault search); the r34
+    # MEMORY intent in chat.py only chose the "general" path and was lost at this simple_chat gate.
+    if (
+        ctx.task_type == "simple_chat"
+        and not needs_project_grounding(ctx.user_message)
+        and not wants_memory_recall(ctx.user_message)
+    ):
         return AgentState.ROUTE
     return AgentState.CONTEXT_ENRICH
+
+
+_PROJECT_GROUNDING_MARKERS = (
+    "프로젝트",
+    "문서",
+    "자료",
+    "project",
+    "document",
+    "docs",
+    "readme",
+)
+
+
+def needs_project_grounding(user_message: str) -> bool:
+    """simple_chat 이라도 사용자가 프로젝트 자료를 명시적으로 묻고, 프로젝트 RAG 가 명시적으로
+    켜진(enabled) 경우에만 CONTEXT_ENRICH 를 거치게 한다. legacy/disabled 와 일반 대화는 그대로."""
+    from antigravity_k.engine.project_embedding_binding import project_rag_policy
+
+    mode, _reason = project_rag_policy()
+    if mode != "enabled":
+        return False
+    lowered = (user_message or "").lower()
+    return any(marker in lowered for marker in _PROJECT_GROUNDING_MARKERS)
 
 
 def pre_route_handler(ctx: StateContext, orch: object) -> Generator[str, None, None]:

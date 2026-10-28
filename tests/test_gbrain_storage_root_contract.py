@@ -98,7 +98,7 @@ try:
         instance.close()
     if scenario=="native_import":
         assert gbrain.global_gbrain.chroma_client is not None
-        assert gbrain.global_gbrain.collection.count()==0
+        assert gbrain.global_gbrain.collection is None and gbrain.global_gbrain.vector_not_ready_reason  # r29: no default-EF collection
         assert (expected/"chroma"/"chroma.sqlite3").is_file()
         receipt["native_collection_count"]=0
     gbrain.global_gbrain.close()

@@ -6,11 +6,24 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 from antigravity_k.engine.cognitive.protected_targets import CONSTITUTION_DOC
 from antigravity_k.engine.sandbox import SandboxRunner
 from antigravity_k.tools.permission_gate import PermissionGate, protection_action_digest
 from antigravity_k.tools.tool_contracts import Permission
 from tests.cognitive.test_protection import approval_for
+
+
+@pytest.fixture(autouse=True)
+def _r39_explicit_autopilot():
+    """r39: PermissionGate() without a mode no longer implies auto-pilot (default is balanced).
+    This module's assertions were written for auto-pilot, so they now run under the EXPLICIT opt-in."""
+    from antigravity_k.engine.access_mode import ExecutionPolicy, set_execution_policy
+
+    set_execution_policy(ExecutionPolicy.AUTO_PILOT)
+    yield
+    set_execution_policy(None)
 
 
 def test_r01_seatbelt_deny_follows_broad_allow(tmp_path: Path) -> None:

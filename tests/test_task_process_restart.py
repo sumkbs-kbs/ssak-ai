@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import multiprocessing
 import threading
-from collections.abc import Buffer, Callable, Generator
+from collections.abc import Buffer, Callable, Generator, Mapping
 from contextlib import contextmanager
 from pathlib import Path
 from typing import ClassVar, Protocol, cast, final
@@ -23,6 +23,8 @@ class _ProcessResult(BaseModel):
     event_sequences: tuple[int, ...]
     event_steps: tuple[int, ...]
     effect_steps: tuple[int, ...]
+    transitions: tuple[tuple[str, int, str, int, bool], ...]
+    record_version: int
 
 
 class _EventPayload(BaseModel):
@@ -118,6 +120,29 @@ class _CheckpointingOrchestrator:
                 _ = threading.Event().wait()
 
 
+class _StatusEventPayload(BaseModel):
+    """`TaskStateStore` 상태 전이(`task.status`) 이벤트 — 생산자 계약의 필드를 모두 요구한다."""
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="forbid")
+
+    from_status: str
+    to_status: str
+    from_version: int
+    to_version: int
+    terminal: bool
+
+
+_EVENT_MODELS: dict[str, type[BaseModel]] = {"worker.chunk": _EventPayload, "task.status": _StatusEventPayload}
+
+
+def _validated_event(event: Mapping[str, object]) -> BaseModel:
+    """이벤트 종류별 모델로 검증한다. 알 수 없는 종류는 조용히 넘기지 않고 실패시킨다."""
+    model = _EVENT_MODELS.get(str(event["event_type"]))
+    if model is None:
+        raise RuntimeError(f"Unexpected execution event type: {event['event_type']}")
+    return model.model_validate_json(str(event["payload_json"]))
+
+
 def _result(runner: _RunnerPort, task_id: str, effects_path: Path, *, resumed: bool) -> _ProcessResult:
     record = runner.state_store.get_task(task_id)
     if record is None:
@@ -128,8 +153,18 @@ def _result(runner: _RunnerPort, task_id: str, effects_path: Path, *, resumed: b
         status=record["status"],
         output=record["output"],
         event_sequences=tuple(event["sequence"] for event in events),
-        event_steps=tuple(_EventPayload.model_validate_json(event["payload_json"]).step for event in events),
+        event_steps=tuple(
+            payload.step
+            for payload in (_validated_event(event) for event in events)
+            if isinstance(payload, _EventPayload)
+        ),
         effect_steps=tuple(int(line) for line in effects_path.read_text(encoding="utf-8").splitlines()),
+        transitions=tuple(
+            (payload.from_status, payload.from_version, payload.to_status, payload.to_version, payload.terminal)
+            for payload in (_validated_event(event) for event in events)
+            if isinstance(payload, _StatusEventPayload)
+        ),
+        record_version=int(record.get("version") or 0),
     )
 
 
@@ -245,6 +280,24 @@ def test_task_resume_survives_real_process_kill_without_duplicate_effects(tmp_pa
     assert recovered.resumed is True
     assert recovered.status == "done"
     assert recovered.output == baseline.output
-    assert recovered.event_sequences == baseline.event_sequences == tuple(range(1, 13))
+    # 개수 고정 대신 의미 검사: 순번 연속·종류별 스키마(_validated_event)·chunk 무손실·전이 정합.
+    for run in (baseline, recovered):
+        assert run.event_sequences == tuple(range(1, len(run.event_sequences) + 1))
+    assert baseline.transitions == (
+        ("pending", 0, "running", 1, False),
+        ("running", 1, "done", 2, True),
+    )
+    # 재개는 문서화된 상태 전이(running→resuming→running)를 모두 남겨야 하고, 버전은 끊기지 않아야 한다.
+    assert recovered.transitions == (
+        ("pending", 0, "running", 1, False),
+        ("running", 1, "resuming", 2, False),
+        ("resuming", 2, "running", 3, False),
+        ("running", 3, "done", 4, True),
+    ), "재개 경로의 상태 이벤트가 문서화된 전이와 다르다"
+    for run in (baseline, recovered):
+        versions = [(item[1], item[3]) for item in run.transitions]
+        assert all(before + 1 == after for before, after in versions)
+        assert all(prev[1] == nxt[0] for prev, nxt in zip(versions, versions[1:], strict=False))
+        assert run.transitions[-1][3] == run.record_version
     assert recovered.event_steps == baseline.event_steps == tuple(range(1, 13))
     assert recovered.effect_steps == baseline.effect_steps == tuple(range(1, 13))

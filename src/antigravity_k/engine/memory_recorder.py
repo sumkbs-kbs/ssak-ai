@@ -15,6 +15,7 @@
 
 import datetime
 import logging
+import os
 import re
 from collections.abc import Callable, Generator, Iterator
 from typing import Protocol, cast
@@ -78,6 +79,14 @@ class MemoryRecorder:
 
     def should_record(self, task_type: str) -> bool:
         """이 태스크 유형이 기억 기록 대상인지 확인합니다."""
+        raw_enabled = os.environ.get("AGK_AGENT_MEMORY_RECORDING_ENABLED")
+        if raw_enabled is not None:
+            enabled = raw_enabled.strip().casefold()
+            if enabled in {"false", "0", "no", "off"}:
+                return False
+            if enabled not in {"true", "1", "yes", "on"}:
+                logger.warning("Invalid AGK_AGENT_MEMORY_RECORDING_ENABLED value; automatic agent Vault recording disabled")
+                return False
         if not request_allows_side_effects() or not self.vault_engine:
             return False
         if not self.vault_engine.sync_rag:

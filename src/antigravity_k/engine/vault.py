@@ -117,7 +117,11 @@ class VaultEngine:
         if self.sync_rag:
             chroma_path = self.vault_path / ".chroma"
             chroma_path.mkdir(parents=True, exist_ok=True)
-            self.vector_store: VectorStore = VectorStore(str(chroma_path))
+            from antigravity_k.engine.project_embedding_binding import configured_embedding_binding_or_none
+
+            self.vector_store: VectorStore = VectorStore(
+                str(chroma_path), embedding_binding=configured_embedding_binding_or_none()
+            )
             self.chunker: MarkdownChunker = MarkdownChunker()
 
     @contextmanager

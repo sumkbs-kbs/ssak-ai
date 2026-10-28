@@ -124,36 +124,13 @@ def _path_within_bases(canonical: str, bases: tuple[Path, ...]) -> bool:
     return False
 
 
-def resolve_canonical_project_root(
-    project_id: str,
-    *,
-    registry: ProjectRegistry | None = None,
-) -> tuple[ProjectRecord, str]:
-    """Map project_id → (record, absolute canonical root).
+def validate_project_root_path(raw_path: str, *, project_id: str = "") -> str:
+    """Single allowed-path rule for project registration, activation, chat and RAG roots.
 
-    Raises typed ARC-01 errors when the project is missing or the root is not a
-    usable directory under the configured allowlist. Escape via ``..``,
-    symlink-out, or unsafe system paths is rejected at this boundary.
+    Returns the realpath (symlinks resolved) when it is an existing directory under the
+    configured trusted bases (``config.paths.project_root`` + ``AGK_ALLOWED_ROOTS``) and not an
+    unsafe system path; otherwise raises :class:`ProjectRootInvalidError`.
     """
-    if not project_id or not str(project_id).strip():
-        raise MissingExecutionContextError(
-            detail="project_id is required",
-            context={"field": "project_id"},
-        )
-
-    reg = registry or get_project_registry()
-    record = reg.get_project(project_id.strip())
-    if record is None:
-        raise ProjectNotFoundError(
-            detail=f"Project not registered: {project_id}",
-            context={"project_id": project_id},
-        )
-
-    # Registry record is authority for project_id → root identity, but the
-    # resolved realpath must still remain under configured trusted bases and
-    # must not be an unsafe system path. Registry paths are intentionally
-    # excluded from the base set so a poisoned entry cannot self-allowlist.
-    raw_path = record.path
     raw_expanded = Path(raw_path).expanduser()
     candidate = raw_expanded.resolve()
     if not candidate.is_dir():
@@ -190,6 +167,39 @@ def resolve_canonical_project_root(
             },
         )
 
+    return canonical
+
+
+def resolve_canonical_project_root(
+    project_id: str,
+    *,
+    registry: ProjectRegistry | None = None,
+) -> tuple[ProjectRecord, str]:
+    """Map project_id → (record, absolute canonical root).
+
+    Raises typed ARC-01 errors when the project is missing or the root is not a
+    usable directory under the configured allowlist. Escape via ``..``,
+    symlink-out, or unsafe system paths is rejected at this boundary.
+    """
+    if not project_id or not str(project_id).strip():
+        raise MissingExecutionContextError(
+            detail="project_id is required",
+            context={"field": "project_id"},
+        )
+
+    reg = registry or get_project_registry()
+    record = reg.get_project(project_id.strip())
+    if record is None:
+        raise ProjectNotFoundError(
+            detail=f"Project not registered: {project_id}",
+            context={"project_id": project_id},
+        )
+
+    # Registry record is authority for project_id → root identity, but the
+    # resolved realpath must still remain under configured trusted bases and
+    # must not be an unsafe system path. Registry paths are intentionally
+    # excluded from the base set so a poisoned entry cannot self-allowlist.
+    canonical = validate_project_root_path(record.path, project_id=project_id)
     # Symlink-out and ``..`` normalization are covered by realpath + bases check:
     # a registry path that lexically looks local but realpaths outside configured
     # bases (or onto an unsafe system path) is rejected above.

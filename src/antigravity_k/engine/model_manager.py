@@ -17,6 +17,9 @@ from importlib import import_module
 from pathlib import Path
 from typing import TYPE_CHECKING, ContextManager, Protocol, TypeAlias, cast, final, runtime_checkable
 
+from antigravity_k.engine.llm_call_budget import LLMCallBudgetExhausted
+from antigravity_k.engine.model_allowlist import ModelNotAllowedError
+
 if TYPE_CHECKING:
     from antigravity_k.engine.best_of_n_verifier import VerificationOutcome
 
@@ -48,6 +51,16 @@ Message: TypeAlias = dict[str, object]
 Payload: TypeAlias = dict[str, object]
 DynamicValue: TypeAlias = object
 JsonMap: TypeAlias = dict[str, object]
+
+
+#: r30 P0: request-level aliases that mean "the configured default Brain".
+DEFAULT_MODEL_ALIASES: frozenset[str] = frozenset({"default", "auto"})
+
+
+class ModelNotReadyError(ValueError):
+    """No configured, registered model/combo backs the requested target (nothing was sent)."""
+
+    status = "model_not_ready"
 
 
 @runtime_checkable
@@ -636,6 +649,39 @@ class ModelManager:
             return heuristic_score
         return score
 
+    def resolve_target(self, target: str) -> str:
+        """Resolve a request target with ONE rule for explicit names and the default alias (r30 P0).
+
+        Registered model/combo names pass unchanged. ``default``/``auto``/empty resolve only to the
+        configured ``agent_models.default`` (or the registry's configured ``defaults.default``) when
+        that is registered. There is no fallback to a discovered/latest/other-provider model: when
+        nothing is configured the call fails before sending with :class:`ModelNotReadyError`.
+        """
+        from antigravity_k.engine.llm_call_budget import record_resolution_failure
+
+        name = (target or "").strip()
+        if name and (self.router.get_combo(name) or self._registry.model_exists(name)):
+            return name
+        if name and name.lower() not in DEFAULT_MODEL_ALIASES:
+            return name  # explicit unknown names keep the existing route_single() error/discovery path
+        raw = _as_json_map(cast(object, getattr(self._registry, "_raw", {})))
+        agent_models = raw.get("agent_models", {})
+        configured = agent_models.get("default") if isinstance(agent_models, dict) else None
+        candidates: list[str] = [configured] if isinstance(configured, str) and configured else []
+        registry_default = self._registry.get_default("default")
+        if registry_default is not None:
+            candidates.append(registry_default.name)
+        for candidate in candidates:
+            if self.router.get_combo(candidate) or self._registry.model_exists(candidate):
+                return candidate
+        reason = (
+            f"default Brain not ready: configured default {configured!r} is not registered"
+            if candidates
+            else "default Brain not ready: agent_models.default is not configured"
+        )
+        record_resolution_failure(name or "default", reason)
+        raise ModelNotReadyError(reason)
+
     def generate(self, prompt: str, target: str, **kwargs: DynamicValue) -> str:
         """텍스트 생성 수행.
 
@@ -649,6 +695,7 @@ class ModelManager:
 
         """
         collective_internal = bool(kwargs.pop("_collective_internal", False))
+        target = self.resolve_target(target)
         if not self.router.get_combo(target) and not self._registry.model_exists(target):
             _ = self.discover_local_models()
         combo = self.router.get_combo(target)
@@ -676,6 +723,9 @@ class ModelManager:
             logger.error("추론 실패 (모든 모델 비가용): %s", e)
             raise
 
+        from antigravity_k.engine.model_allowlist import check_send
+
+        check_send(used_model, str(getattr(profile, "provider", "") or ""), str(getattr(profile, "api_base", "") or ""))
         try:
             loaded = self.get(used_model)
             response_text = self._do_generate(loaded, prompt, **kwargs)
@@ -701,6 +751,8 @@ class ModelManager:
                 return escalated
             return response_text
 
+        except (LLMCallBudgetExhausted, ModelNotAllowedError):
+            raise  # not sent: no failure record, no combo fallback, no substitute model
         except Exception as e:
             latency_ms = (time.time() - start_time) * 1000
             error_msg = str(e)
@@ -785,6 +837,7 @@ class ModelManager:
     def stream_generate(self, prompt: str, target: str, **kwargs: DynamicValue) -> Iterator[str]:
         """텍스트 생성 수행 (스트리밍)."""
         collective_internal = bool(kwargs.pop("_collective_internal", False))
+        target = self.resolve_target(target)
         if not self.router.get_combo(target) and not self._registry.model_exists(target):
             _ = self.discover_local_models()
         combo = self.router.get_combo(target)
@@ -825,6 +878,9 @@ class ModelManager:
         # never concatenate a partial primary answer with the fallback reply.
         # Single-model targets still stream live.
         pending_chunks: list[str] = []
+        from antigravity_k.engine.model_allowlist import check_send
+
+        check_send(used_model, str(getattr(profile, "provider", "") or ""), str(getattr(profile, "api_base", "") or ""))
         try:
             loaded = self.get(used_model)
 
@@ -859,6 +915,8 @@ class ModelManager:
                 tokens_out=tokens_out,
             )
 
+        except (LLMCallBudgetExhausted, ModelNotAllowedError):
+            raise  # not sent: no failure record, no combo fallback, no substitute model
         except Exception as e:
             latency_ms = (time.time() - start_time) * 1000
             error_msg = str(e)
@@ -1194,36 +1252,67 @@ class ModelManager:
         멀티 프로바이더 지원: loaded.profile.provider에 따라 적절한 프로바이더로 위임.
         Anthropic 직접 SDK 호출은 _uses_anthropic_direct가 True일 때만 유지.
         """
-        # Anthropic 직접 SDK 호출 (OpenRouter 경유가 아닌 Claude 전용)
-        if self._uses_anthropic_direct(loaded):
-            result = ""
-            for chunk in self._do_anthropic_stream(loaded, prompt, **kwargs):
-                result += chunk
-            return result
+        from antigravity_k.engine.llm_call_budget import charge, last_ledger_reservation, model_input_text, settle
 
-        # per-model provider 기반 위임 (ollama/openrouter/nim/mlx)
-        provider = self._get_provider(loaded)
-        if provider is not None:
-            provider_kwargs = self._provider_kwargs(loaded, kwargs)
-            return provider.generate(loaded, prompt, **provider_kwargs)
-
-        # 폴백: 레거시 인라인 경로 (provider 결정 실패 시)
-        return self._do_ollama_generate(loaded, prompt, **kwargs)
+        _ = charge(
+            loaded.profile.name,
+            "generate",
+            model_input_text(prompt, kwargs.get("raw_messages")),
+            provider=str(getattr(loaded.profile, "provider", "") or ""),
+            endpoint=str(getattr(loaded.profile, "api_base", "") or ""),
+        )
+        ledger_n = last_ledger_reservation()
+        try:
+            # Anthropic 직접 SDK 호출 (OpenRouter 경유가 아닌 Claude 전용)
+            if self._uses_anthropic_direct(loaded):
+                result = ""
+                for chunk in self._do_anthropic_stream(loaded, prompt, **kwargs):
+                    result += chunk
+            else:
+                # per-model provider 기반 위임 (ollama/openrouter/nim/mlx)
+                provider = self._get_provider(loaded)
+                if provider is not None:
+                    provider_kwargs = self._provider_kwargs(loaded, kwargs)
+                    result = provider.generate(loaded, prompt, **provider_kwargs)
+                else:
+                    # 폴백: 레거시 인라인 경로 (provider 결정 실패 시)
+                    result = self._do_ollama_generate(loaded, prompt, **kwargs)
+        except BaseException:
+            settle(ledger_n, "failed")
+            raise
+        settle(ledger_n, "succeeded")
+        return result
 
     def _do_stream_generate(self, loaded: LoadedModel, prompt: str, **kwargs: DynamicValue) -> Iterator[str]:
         """내부 텍스트 생성 로직 (스트리밍) — per-model provider 위임 (작업 2)."""
-        if self._uses_anthropic_direct(loaded):
-            yield from self._do_anthropic_stream(loaded, prompt, **kwargs)
-            return
+        from antigravity_k.engine.llm_call_budget import charge, last_ledger_reservation, model_input_text, settle
 
-        provider = self._get_provider(loaded)
-        if provider is not None:
-            provider_kwargs = self._provider_kwargs(loaded, kwargs)
-            yield from provider.stream_generate(loaded, prompt, **provider_kwargs)
-            return
-
-        # 폴백: 레거시 인라인 경로
-        yield from self._do_ollama_stream(loaded, prompt, **kwargs)
+        _ = charge(
+            loaded.profile.name,
+            "stream_generate",
+            model_input_text(prompt, kwargs.get("raw_messages")),
+            provider=str(getattr(loaded.profile, "provider", "") or ""),
+            endpoint=str(getattr(loaded.profile, "api_base", "") or ""),
+        )
+        ledger_n = last_ledger_reservation()
+        try:
+            if self._uses_anthropic_direct(loaded):
+                yield from self._do_anthropic_stream(loaded, prompt, **kwargs)
+            else:
+                provider = self._get_provider(loaded)
+                if provider is not None:
+                    provider_kwargs = self._provider_kwargs(loaded, kwargs)
+                    yield from provider.stream_generate(loaded, prompt, **provider_kwargs)
+                else:
+                    # 폴백: 레거시 인라인 경로
+                    yield from self._do_ollama_stream(loaded, prompt, **kwargs)
+        except GeneratorExit:
+            settle(ledger_n, "aborted_unknown")  # consumer stopped mid-stream; provider may have run it
+            raise
+        except BaseException:
+            settle(ledger_n, "failed")
+            raise
+        settle(ledger_n, "succeeded")
 
     def _provider_kwargs(self, loaded: LoadedModel, kwargs: JsonMap) -> JsonMap:
         if "execution_plan" in kwargs:

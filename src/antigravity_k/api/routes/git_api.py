@@ -279,7 +279,14 @@ async def git_status(path: Annotated[str, Query(description="Repository path")] 
     """Get git status with structured file changes."""
     try:
         # Status short
-        status_output = _git(["status", "--short", "--branch"], cwd=path)
+        try:
+            status_output = _git(["status", "--short", "--branch"], cwd=path)
+        except HTTPException as exc:
+            # r30: a registered project that is simply not a git repository is a normal state,
+            # not a bad request (the dashboard polls this; r29 logged repeated 400s).
+            if exc.status_code == 400 and "not a git repository" in str(exc.detail).lower():
+                return {"ok": False, "is_repo": False, "error": "not_a_git_repository"}
+            raise
 
         # Parse files
         lines = status_output.split("\n")

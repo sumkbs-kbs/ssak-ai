@@ -31,7 +31,7 @@ from antigravity_k.api.contracts.shell import (
     ShellTimeoutError,
 )
 from antigravity_k.config import config
-from antigravity_k.engine.access_mode import AccessMode, get_access_mode
+from antigravity_k.engine.access_mode import get_access_mode
 from antigravity_k.engine.approval_manager import (
     ApprovalStatus,
     get_approval_manager,
@@ -315,23 +315,23 @@ async def _guard_browser_route(route: object, request: object) -> None:
 
 # ─── CR-04: 실행 경계 — 권한 모드와 요청 root 스냅샷 ────────────────────
 #
-# 이전 구현은 `mode="auto-pilot"`을 상수로 고정해, 사용자가 대시보드에서 선택한
-# 실행 권한 모드(전체 액세스 / 읽기 전용)를 무시하고 high-risk 도구(셸 실행)를
-# 항상 자동 승인했다. 이제는 현재 요청의 기존 권한 모드에서 모드를 도출한다:
-#  - FULL_ACCESS(사용자가 명시적으로 허용)  → auto-pilot: high-risk 도구 자동 승인
-#  - READ_ONLY(읽기 전용)                   → balanced: high-risk 도구는 ASK(prompt)
+# r39 계약 변경(숨기지 않음): r38까지는 FULL_ACCESS → auto-pilot(high-risk 도구 자동 승인),
+# READ_ONLY → balanced 였고 AccessMode 기본값이 FULL_ACCESS라 기본 설치에서 셸이 무인 승인됐다.
+# 이제 FULL_ACCESS는 파일 접근 범위일 뿐이며 무인 실행 여부는 별도 ExecutionPolicy
+# (engine/access_mode.py, 기본 BALANCED, auto-pilot은 명시 선택 시에만)로 정한다:
+#  - READ_ONLY                         → balanced
+#  - FULL_ACCESS + BALANCED(기본)       → balanced: high-risk 도구는 ASK(prompt)
+#  - FULL_ACCESS + 명시적 AUTO_PILOT     → auto-pilot
 # 별도 승인 workflow가 없는 동기 API이므로 ASK는 실행 없이 403을 반환한다
 # (allow로 승격하지 않는다). DENY도 실행 0회다.
-_PERMISSION_MODE_BY_ACCESS_MODE: dict[AccessMode, str] = {
-    AccessMode.FULL_ACCESS: "auto-pilot",
-    AccessMode.READ_ONLY: "balanced",
-}
 _SHELL_TOOL_NAME = "run_bash_command"
 
 
 def _permission_mode() -> str:
     """현재 요청의 기존 권한 모드 → PermissionGate 모드."""
-    return _PERMISSION_MODE_BY_ACCESS_MODE.get(get_access_mode(), "balanced")
+    from antigravity_k.engine.access_mode import effective_permission_mode
+
+    return effective_permission_mode()
 
 
 def _shell_request_root(req: "ShellRunRequest", request: Request) -> str:
@@ -1360,9 +1360,12 @@ async def vision_analyze(req: VisionAnalyzeRequest, request: Request):
         except Exception:
             logger.warning("Managed vision route failed, HTTP fallback", exc_info=True)
 
-        # Ollama 멀티모달 API 호출
+        # Ollama 멀티모달 API 호출 — r30: same pre-send budget/audit boundary as managed calls
+        from antigravity_k.engine.direct_model_call import guard_direct_model_call
+
+        _timeout = guard_direct_model_call(str(req.model), "vision_fallback", str(req.prompt), timeout=120.0)
         async with httpx.AsyncClient(
-            timeout=120.0,
+            timeout=_timeout,
             event_hooks={"request": [validate_httpx_request_async]},
         ) as client:
             response = await client.post(

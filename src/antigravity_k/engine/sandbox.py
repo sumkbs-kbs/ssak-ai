@@ -32,6 +32,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
+# r35: seatbelt regex mirror of tool_path.is_sensitive_path (names only; hard-link aliases are a
+# documented residual). Over-blocks .env.example in the shell, which is the safe direction.
+SECRET_NAME_REGEXES: tuple[str, ...] = (
+    r'(regex #"/\.env(\.[^/]*)?$")',
+    r'(regex #"\.(pem|key|p12|pfx|keystore|jks)$")',
+    r'(regex #"/(\.netrc|\.npmrc|\.pypirc|credentials\.json)$")',
+    r'(regex #"/id_(rsa|dsa|ecdsa|ed25519)(\.[^/]*)?$")',
+    r'(regex #"/\.(ssh|gnupg|aws)(/|$)")',
+)
+
 from antigravity_k.engine.limited_process_runner import LimitedProcessRunner
 
 logger = logging.getLogger("antigravity_k.sandbox")
@@ -59,11 +69,24 @@ def _realpath_forms(path: str) -> list[str]:
     return forms
 
 
+def _read_allow_forms(path: str) -> list[str]:
+    """Canonical form of an allowed read path, plus the link node itself for symlinks.
+
+    A symlink node keeps its canonical parent and own name, so seatbelt can
+    read the link while following it; the link's target is still allowed
+    only through its realpath.
+    """
+    absolute = os.path.abspath(path)
+    forms = [os.path.realpath(absolute)]
+    if os.path.islink(absolute):
+        forms.append(os.path.join(os.path.realpath(os.path.dirname(absolute)), os.path.basename(absolute)))
+    return forms
+
+
 def restricted_denied_roots() -> list[str]:
     """restrict_reads에서 차단할 루트 목록(정렬·중복 제거)."""
     roots: list[str] = []
-    user_tree = _user_tree_denied_root()
-    if user_tree:
+    for user_tree in _user_tree_denied_roots():
         roots.extend(_realpath_forms(user_tree))
     for denied in RESTRICTED_DENIED_ROOTS:
         roots.extend(_realpath_forms(denied))
@@ -100,6 +123,30 @@ def _user_tree_denied_root() -> str | None:
     if parent and parent not in ("", "/"):
         return parent
     return home
+
+
+def _user_tree_denied_roots() -> list[str]:
+    """User-tree roots to deny: from ``HOME`` and from the account database.
+
+    ``HOME`` can be overridden (test harnesses, launchers). A nested override such
+    as ``~/work/testhome`` would otherwise shrink the denied tree to ``~/work`` and
+    leave the real account tree readable, so the passwd home directory is always
+    denied as well. This only adds deny roots; re-allow rules are unchanged.
+    """
+    roots: list[str] = []
+    from_env = _user_tree_denied_root()
+    if from_env:
+        roots.append(from_env)
+    try:
+        import pwd
+
+        account_home = pwd.getpwuid(os.getuid()).pw_dir
+    except (ImportError, KeyError, OSError):
+        account_home = ""
+    if account_home and account_home != "/":
+        parent = os.path.dirname(account_home.rstrip("/"))
+        roots.append(parent if parent not in ("", "/") else account_home)
+    return list(dict.fromkeys(roots))
 
 
 @dataclass
@@ -207,6 +254,38 @@ def _workspace_pytest_argv(args: list[str], workspace: str, addopts: str) -> lis
     return [*args[:boundary], *options, *args[boundary:]]
 
 
+def _interpreter_symlink_hops(executable: str, *, max_hops: int = 16) -> list[str]:
+    """Return every symlink node crossed while resolving the interpreter path.
+
+    Seatbelt checks reads on each symlink it follows, not only on the final
+    target. uv venv interpreters point through a minor-version link directory
+    (``.../python/cpython-3.13-<platform>`` -> ``cpython-3.13.13-<platform>``),
+    so allowing only the resolved tree makes ``exec`` of the venv interpreter
+    fail with EPERM. Only the link nodes themselves are returned (callers allow
+    them as exact paths); sibling trees stay denied.
+    """
+    hops: list[str] = []
+    pending = [executable]
+    seen: set[str] = set()
+    while pending and len(seen) < max_hops:
+        path = pending.pop()
+        if path in seen:
+            continue
+        seen.add(path)
+        parts = path.split(os.sep)
+        for index in range(2, len(parts) + 1):
+            prefix = os.sep.join(parts[:index])
+            if prefix and os.path.islink(prefix):
+                hops.append(prefix)
+                target = os.readlink(prefix)
+                if not os.path.isabs(target):
+                    target = os.path.join(os.path.dirname(prefix), target)
+                rest = os.sep.join(parts[index:])
+                pending.append(os.path.normpath(os.path.join(target, rest) if rest else target))
+                break
+    return hops
+
+
 def _python_runtime_read_paths() -> list[str]:
     """Return interpreter locations a sandboxed Python needs to boot.
 
@@ -218,6 +297,7 @@ def _python_runtime_read_paths() -> list[str]:
     """
     exe_real = os.path.realpath(os.path.abspath(sys.executable))
     paths = {
+        *_interpreter_symlink_hops(os.path.abspath(sys.executable)),
         sys.prefix,
         sys.base_prefix,
         os.path.realpath(sys.prefix),
@@ -298,7 +378,7 @@ class SandboxRunner:
         self.restrict_reads: bool = restrict_reads
         self.require_sandbox: bool = require_sandbox
         self.read_allow_paths: tuple[str, ...] = tuple(
-            os.path.realpath(os.path.abspath(p)) for p in read_allow_paths if p
+            dict.fromkeys(form for p in read_allow_paths if p for form in _read_allow_forms(p))
         )
         if protected_write_deny_paths is None:
             from antigravity_k.engine.cognitive.protected_targets import (
@@ -504,11 +584,16 @@ class SandboxRunner:
             for p in allowed:
                 read_rules.append(f'(allow file-read* (literal "{p}"))')
                 read_rules.append(f'(allow file-read* (subpath "{p}"))')
+            # r35: secret-named files stay unreadable/unwritable even inside re-allowed roots
+            # (same name policy as tool_path.is_sensitive_path; seatbelt: later rule wins).
+            read_rules.extend(f"(deny file-read* {rx})" for rx in SECRET_NAME_REGEXES)
             read_section = "\n".join(read_rules)
             # restrict 모드: 쓰기도 root만. /tmp, /var/folders 전체 쓰기 허용 제거.
             deny = self._protected_write_deny_section()
-            write_section = f'(allow file-write* (subpath "{root}"))\n(allow file-write* (literal "/dev/null"))' + (
-                f"\n{deny}" if deny else ""
+            write_section = (
+                f'(allow file-write* (subpath "{root}"))\n(allow file-write* (literal "/dev/null"))'
+                + (f"\n{deny}" if deny else "")
+                + "".join(f"\n(deny file-write* {rx})" for rx in SECRET_NAME_REGEXES)
             )
         else:
             read_section = "(allow file-read*)"
