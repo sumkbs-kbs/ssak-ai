@@ -3,7 +3,19 @@ from __future__ import annotations
 import re
 from typing import Final
 
-from scrapling.parser import Selector
+from lxml.html import HtmlElement, HTMLParser, fromstring
+
+# r30 (1B): direct lxml parsing with the parser settings scrapling used (recover, no comments,
+# no CDATA, no huge trees, no network). Removes the scrapling -> tld dependency chain.
+_PARSER: Final[HTMLParser] = HTMLParser(
+    recover=True,
+    remove_blank_text=True,
+    remove_comments=True,
+    compact=True,
+    huge_tree=False,
+    default_doctype=True,
+    strip_cdata=True,
+)
 
 _DROPPED_TAGS: Final[frozenset[str]] = frozenset(
     {
@@ -65,14 +77,19 @@ _HIDDEN_STYLE: Final[re.Pattern[str]] = re.compile(
 )
 
 
-def _is_semantic(node: Selector) -> bool:
-    return node.tag in {"article", "main"} or str(node.attrib.get("role", "")).strip().lower() == "main"
+def _tag(node: HtmlElement) -> str:
+    return node.tag if isinstance(node.tag, str) else ""
 
 
-def _is_excluded(node: Selector) -> bool:
+def _is_semantic(node: HtmlElement) -> bool:
+    return _tag(node) in {"article", "main"} or str(node.attrib.get("role", "")).strip().lower() == "main"
+
+
+def _is_excluded(node: HtmlElement) -> bool:
     attributes = node.attrib
     return (
-        node.tag in _DROPPED_TAGS
+        not isinstance(node.tag, str)
+        or node.tag in _DROPPED_TAGS
         or "hidden" in attributes
         or str(attributes.get("aria-hidden", "")).strip().lower() == "true"
         or _HIDDEN_STYLE.search(str(attributes.get("style", ""))) is not None
@@ -80,16 +97,24 @@ def _is_excluded(node: Selector) -> bool:
     )
 
 
-def _render_node(node: Selector, *, preserve_whitespace: bool = False) -> str:
-    if node.tag == "#text":
-        text = str(node.text)
-        return text if preserve_whitespace else re.sub(r"\s+", " ", text)
+def _text(text: str | None, preserve_whitespace: bool) -> str:
+    if not text:
+        return ""
+    return text if preserve_whitespace else re.sub(r"\s+", " ", text)
+
+
+def _render_node(node: HtmlElement, *, preserve_whitespace: bool = False) -> str:
+    """Render one element; its ``tail`` belongs to the parent and is added by the caller."""
     if _is_excluded(node):
         return ""
     if node.tag == "br":
         return "\n"
     preserve = preserve_whitespace or node.tag == "pre"
-    content = "".join(_render_node(child, preserve_whitespace=preserve) for child in node.xpath("./node()"))
+    pieces = [_text(node.text, preserve)]
+    for child in node:
+        pieces.append(_render_node(child, preserve_whitespace=preserve))
+        pieces.append(_text(child.tail, preserve))
+    content = "".join(pieces)
     if node.tag in {"td", "th"}:
         return content.strip() + "\t"
     if node.tag in _BLOCK_TAGS:
@@ -114,8 +139,9 @@ def html_to_text(html_text: str, max_chars: int = 5000) -> str:
     if _HTML_MARKUP.search(html_text) is None:
         return re.sub(r"\s+", " ", html_text).strip()[:max_chars]
 
-    document = Selector(html_text, adaptive=False, huge_tree=False)
-    candidates = document.xpath("descendant-or-self::*[self::article or self::main or @role='main']")
+    body = html_text.strip().replace("\x00", "") or "<html/>"
+    document = fromstring(body, parser=_PARSER)
+    candidates: list[HtmlElement] = document.xpath("descendant-or-self::*[self::article or self::main or @role='main']")
     roots = [
         node
         for node in candidates
@@ -125,6 +151,6 @@ def html_to_text(html_text: str, max_chars: int = 5000) -> str:
     parts = [_clean_layout(_render_node(root)) for root in roots]
     content = "\n\n".join(part for part in parts if part)
     if not content:
-        bodies = document.xpath("//body")
+        bodies: list[HtmlElement] = document.xpath("//body")
         content = _clean_layout("\n\n".join(_render_node(body) for body in bodies or [document]))
     return content[:max_chars]
