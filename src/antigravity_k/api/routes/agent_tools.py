@@ -70,6 +70,8 @@ from antigravity_k.tools.browser_session_owner import (
 from antigravity_k.tools.egress_policy import EgressPolicyError, validate_egress_url, validate_httpx_request_async
 from antigravity_k.tools.permission_gate import PermissionGate
 from antigravity_k.tools.tool_contracts import Permission, PermissionDecision, ToolInvocation, ToolSpec
+from antigravity_k.tools.verified_read import VerifiedReadError, read_text_under
+from antigravity_k.tools.verified_write import VerifiedWriteError, write_text_under
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -416,8 +418,8 @@ def _enforce_shell_permission(*, root: str, command: str, cwd: str) -> None:
         )
 
 
-def _require_allowed(tool_name: str, args: dict[str, object], risk_level: str) -> None:
-    decision = _permission_gate().decide(
+def _require_allowed(tool_name: str, args: dict[str, object], risk_level: str, *, root: str | None = None) -> None:
+    decision = _permission_gate(root).decide(
         ToolInvocation(ToolSpec(name=tool_name, risk_level=risk_level, category="api"), args),
     )
     if decision.permission != Permission.ALLOW:
@@ -439,8 +441,8 @@ def _resolve_project_cwd(cwd: str | None, *, root: str | None = None) -> str:
     return str(candidate)
 
 
-def _resolve_project_path(path: str) -> str:
-    project_root = Path(config.paths.project_root).resolve()
+def _resolve_project_path(path: str, *, root: str | None = None) -> str:
+    project_root = Path(root or config.paths.project_root).resolve()
     raw_path = Path(path).expanduser()
     candidate = (raw_path if raw_path.is_absolute() else project_root / raw_path).resolve()
     try:
@@ -486,13 +488,15 @@ class ShellRunRequest(BaseModel):
 @router.post("/api/agent/tools/fs/read")
 def read_file(req: FileReadRequest):
     """지정된 파일의 내용을 읽어옵니다."""
-    path = _resolve_project_path(req.path)
-    _require_allowed("read_file", {"path": path}, "safe")
+    root = str(Path(config.paths.project_root).resolve())
+    path = _resolve_project_path(req.path, root=root)
+    _require_allowed("read_file", {"path": path}, "safe", root=root)
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail="File not found")
     try:
-        with open(path, encoding="utf-8") as f:
-            return {"ok": True, "content": f.read()}
+        return {"ok": True, "content": read_text_under(path, root)}
+    except VerifiedReadError as e:
+        raise HTTPException(status_code=403, detail="File path could not be verified") from e
     except (OSError, UnicodeDecodeError) as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -500,15 +504,18 @@ def read_file(req: FileReadRequest):
 @router.post("/api/agent/tools/fs/write")
 def write_file(req: FileWriteRequest):
     """파일을 생성하거나 덮어씁니다."""
-    path = _resolve_project_path(req.path)
-    _require_allowed("write_file", {"path": path}, "medium")
+    root = str(Path(config.paths.project_root).resolve())
+    path = _resolve_project_path(req.path, root=root)
+    _require_allowed("write_file", {"path": path}, "medium", root=root)
     if os.path.exists(path) and not req.overwrite:
         raise HTTPException(status_code=400, detail="File exists, use overwrite=True")
     try:
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, "w", encoding="utf-8") as f:
-            _ = f.write(req.content)
+        write_text_under(path, root, req.content, overwrite=req.overwrite)
         return {"ok": True, "path": path}
+    except VerifiedWriteError as e:
+        raise HTTPException(status_code=403, detail="File path could not be verified") from e
+    except FileExistsError as e:
+        raise HTTPException(status_code=400, detail="File exists, use overwrite=True") from e
     except OSError as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -49,15 +49,12 @@ def supported() -> bool:
 
 def _components(path: str, root: str) -> list[str]:
     absolute = os.path.abspath(path)
-    base = None
-    for cand in (os.path.abspath(root), os.path.realpath(root)):
-        try:
-            if os.path.commonpath([absolute, cand]) == cand:
-                base = cand
-                break
-        except ValueError:
-            continue
-    if base is None:
+    base = os.path.abspath(root)
+    try:
+        inside_root = os.path.commonpath([absolute, base]) == base
+    except ValueError:
+        inside_root = False
+    if not inside_root:
         raise VerifiedReadError(f"outside root: {os.path.basename(path)}")
     rel = os.path.relpath(absolute, base)
     parts = [p for p in rel.split(os.sep) if p not in ("", ".")]
@@ -71,8 +68,9 @@ def open_verified(path: str, root: str) -> tuple[int, Identity]:
         raise VerifiedReadError("verified open unsupported on this platform; refusing")
     parts = _components(path, root)
     dir_flags = os.O_RDONLY | os.O_NOFOLLOW | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_CLOEXEC", 0)
-    cur = os.open(os.path.realpath(root), os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_CLOEXEC", 0))
+    cur = -1
     try:
+        cur = os.open(os.path.abspath(root), dir_flags)
         for comp in parts[:-1]:
             nxt = os.open(comp, dir_flags, dir_fd=cur)
             os.close(cur)
@@ -85,7 +83,8 @@ def open_verified(path: str, root: str) -> tuple[int, Identity]:
     except OSError as exc:
         raise VerifiedReadError(f"verified open refused ({exc.strerror}): {os.path.basename(path)}") from exc
     finally:
-        os.close(cur)
+        if cur >= 0:
+            os.close(cur)
     st = os.fstat(fd)
     if not stat.S_ISREG(st.st_mode):
         os.close(fd)

@@ -18,9 +18,12 @@ from pydantic import BaseModel
 from antigravity_k.api.path_security import PathSecurityError, resolve_allowed_path
 from antigravity_k.engine.api_cache import TAG_FILESYSTEM, api_cache, cached
 from antigravity_k.engine.project_registry import RegistrySaveError
+from antigravity_k.engine.request_execution_context import resolve_canonical_project_root
 from antigravity_k.engine.vault import VaultEngine
 from antigravity_k.tools.permission_gate import PermissionGate
 from antigravity_k.tools.tool_contracts import Permission, ToolInvocation, ToolSpec
+from antigravity_k.tools.verified_read import VerifiedReadError, read_text_under
+from antigravity_k.tools.verified_write import VerifiedWriteError, write_text_under
 
 logger = logging.getLogger(__name__)
 
@@ -88,24 +91,32 @@ def get_workspace_root() -> str:
     return WORKSPACE_ROOT
 
 
-def _permission_gate() -> PermissionGate:
-    return PermissionGate(project_root=WORKSPACE_ROOT, mode="auto-pilot")
+def _permission_gate(root: str | None = None) -> PermissionGate:
+    return PermissionGate(project_root=root if root is not None else WORKSPACE_ROOT, mode="auto-pilot")
 
 
-def _require_allowed(tool_name: str, args: Mapping[str, str], risk_level: str) -> None:
-    decision = _permission_gate().decide(
+def _require_allowed(tool_name: str, args: Mapping[str, str], risk_level: str, *, root: str | None = None) -> None:
+    decision = _permission_gate(root).decide(
         ToolInvocation(ToolSpec(name=tool_name, risk_level=risk_level, category="api"), args),
     )
     if decision.permission != Permission.ALLOW:
         raise HTTPException(status_code=403, detail=f"Permission denied for {tool_name}: {decision.permission.value}")
 
 
-def _resolve_workspace_path(path: str) -> str:
-    root = Path(WORKSPACE_ROOT).resolve()
+def _filesystem_root(project_id: str | None, request: Request) -> str:
+    selected = project_id if project_id is not None else request.headers.get("X-AGK-Project-Id")
+    if selected is None:
+        return str(Path(WORKSPACE_ROOT).resolve())
+    _record, root = resolve_canonical_project_root(selected)
+    return root
+
+
+def _resolve_workspace_path(path: str, root: str | None = None) -> str:
+    base = Path(root if root is not None else WORKSPACE_ROOT).resolve()
     raw_path = Path(path).expanduser()
-    candidate = (raw_path if raw_path.is_absolute() else root / raw_path).resolve()
+    candidate = (raw_path if raw_path.is_absolute() else base / raw_path).resolve()
     try:
-        _ = candidate.relative_to(root)
+        _ = candidate.relative_to(base)
     except ValueError as exc:
         raise HTTPException(status_code=403, detail="Access denied outside of workspace root.") from exc
     return str(candidate)
@@ -135,7 +146,13 @@ class SwitchProjectRequest(BaseModel):
     path: str | None = None
 
 
-class MkdirRequest(BaseModel):
+class ProjectFilesystemRequest(BaseModel):
+    """명시한 프로젝트는 등록부에서 검증하고 생략한 요청은 기존 작업 폴더를 사용한다."""
+
+    project_id: str | None = None
+
+
+class MkdirRequest(ProjectFilesystemRequest):
     """Mkdirrequest.
 
     Bases: BaseModel
@@ -144,7 +161,7 @@ class MkdirRequest(BaseModel):
     path: str
 
 
-class DeleteRequest(BaseModel):
+class DeleteRequest(ProjectFilesystemRequest):
     """Deleterequest.
 
     Bases: BaseModel
@@ -153,7 +170,7 @@ class DeleteRequest(BaseModel):
     path: str
 
 
-class WriteFileRequest(BaseModel):
+class WriteFileRequest(ProjectFilesystemRequest):
     """Writefilerequest.
 
     Bases: BaseModel
@@ -163,7 +180,7 @@ class WriteFileRequest(BaseModel):
     content: str
 
 
-class RenameRequest(BaseModel):
+class RenameRequest(ProjectFilesystemRequest):
     """Renamerequest.
 
     Bases: BaseModel
@@ -173,7 +190,7 @@ class RenameRequest(BaseModel):
     new_name: str
 
 
-class SearchRequest(BaseModel):
+class SearchRequest(ProjectFilesystemRequest):
     """Searchrequest.
 
     Bases: BaseModel
@@ -184,9 +201,9 @@ class SearchRequest(BaseModel):
 
 
 @router.get("/api/fs/workspace")
-async def get_workspace():
+async def get_workspace(request: Request, project_id: str | None = None):
     """Retrieve workspace."""
-    return {"ok": True, "workspace": WORKSPACE_ROOT}
+    return {"ok": True, "workspace": _filesystem_root(project_id, request)}
 
 
 @router.post("/api/fs/workspace")
@@ -585,14 +602,15 @@ async def fs_browse(dir: str = ""):
 
 
 @router.post("/api/fs/mkdir")
-async def fs_mkdir(req: MkdirRequest):
+async def fs_mkdir(req: MkdirRequest, request: Request):
     """지정된 경로에 새 디렉토리를 생성합니다."""
     try:
         if req.path in {".", ""}:
             raise HTTPException(status_code=400, detail="Invalid path for folder creation")
 
-        target_dir = _resolve_workspace_path(req.path)
-        _require_allowed("fs_mkdir", {"path": target_dir}, "medium")
+        root = _filesystem_root(req.project_id, request)
+        target_dir = _resolve_workspace_path(req.path, root)
+        _require_allowed("fs_mkdir", {"path": target_dir}, "medium", root=root)
 
         if os.path.exists(target_dir):
             return {"ok": False, "detail": "Folder already exists"}
@@ -609,14 +627,15 @@ async def fs_mkdir(req: MkdirRequest):
 
 
 @router.delete("/api/fs/delete")
-async def fs_delete(req: DeleteRequest):
+async def fs_delete(req: DeleteRequest, request: Request):
     """지정된 파일 또는 디렉토리를 삭제합니다."""
     try:
         if req.path in {".", ""}:
             raise HTTPException(status_code=400, detail="Cannot delete workspace root")
 
-        target_path = _resolve_workspace_path(req.path)
-        _require_allowed("fs_delete", {"path": target_path}, "high")
+        root = _filesystem_root(req.project_id, request)
+        target_path = _resolve_workspace_path(req.path, root)
+        _require_allowed("fs_delete", {"path": target_path}, "high", root=root)
 
         if not os.path.exists(target_path):
             return {"ok": False, "detail": "Path does not exist"}
@@ -637,12 +656,12 @@ async def fs_delete(req: DeleteRequest):
 
 
 @router.get("/api/fs/list")
-@cached(ttl=15, tags=[TAG_FILESYSTEM])
-async def fs_list(dir: str = ".") -> FilesystemListResponse:
-    """디렉토리 목록을 반환합니다 (WORKSPACE_ROOT로 제한)."""
+async def fs_list(request: Request, dir: str = ".", project_id: str | None = None) -> FilesystemListResponse:
+    """요청에서 선택한 프로젝트 폴더 안의 디렉토리 목록을 반환합니다."""
     try:
-        target_dir = _resolve_workspace_path(dir)
-        _require_allowed("fs_list", {"path": target_dir}, "safe")
+        root = _filesystem_root(project_id, request)
+        target_dir = _resolve_workspace_path(dir, root)
+        _require_allowed("fs_list", {"path": target_dir}, "safe", root=root)
 
         if not os.path.exists(target_dir) or not os.path.isdir(target_dir):
             return {"ok": False, "items": []}
@@ -654,7 +673,7 @@ async def fs_list(dir: str = ".") -> FilesystemListResponse:
             items.append(
                 {
                     "name": entry.name,
-                    "path": os.path.relpath(entry.path, WORKSPACE_ROOT),
+                    "path": os.path.relpath(entry.path, root),
                     "is_dir": entry.is_dir(),
                 },
             )
@@ -669,37 +688,33 @@ async def fs_list(dir: str = ".") -> FilesystemListResponse:
 
 
 @router.post("/api/fs/write")
-async def fs_write(req: WriteFileRequest):
+async def fs_write(req: WriteFileRequest, request: Request):
     """파일 내용을 저장합니다 (POST /api/fs/write)."""
     try:
-        target_file = _resolve_workspace_path(req.path)
-        _require_allowed("fs_write", {"path": target_file}, "medium")
-
-        target_dir = os.path.dirname(target_file)
-        os.makedirs(target_dir, exist_ok=True)
-
-        _ = await asyncio.to_thread(
-            Path(target_file).write_text,
-            req.content,
-            encoding="utf-8",
-        )
+        root = _filesystem_root(req.project_id, request)
+        target_file = _resolve_workspace_path(req.path, root)
+        _require_allowed("fs_write", {"path": target_file}, "medium", root=root)
+        await asyncio.to_thread(write_text_under, target_file, root, req.content)
 
         logger.info("파일 저장 완료: %s", req.path)
         # Invalidate filesystem cache on write
         _ = await api_cache.invalidate_tag(TAG_FILESYSTEM)
         return {"ok": True, "path": req.path}
+    except VerifiedWriteError as exc:
+        raise HTTPException(status_code=403, detail="File write could not be verified.") from exc
     except OSError as e:
         logger.error("FS write error: %s", e)
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/api/fs/rename")
-async def fs_rename(req: RenameRequest):
+async def fs_rename(req: RenameRequest, request: Request):
     """파일/폴더 이름을 변경합니다 (POST /api/fs/rename)."""
     try:
-        target_path = _resolve_workspace_path(req.path)
-        new_path = _resolve_workspace_path(os.path.join(os.path.dirname(target_path), req.new_name))
-        _require_allowed("fs_rename", {"path": target_path, "new_path": new_path}, "medium")
+        root = _filesystem_root(req.project_id, request)
+        target_path = _resolve_workspace_path(req.path, root)
+        new_path = _resolve_workspace_path(os.path.join(os.path.dirname(target_path), req.new_name), root)
+        _require_allowed("fs_rename", {"path": target_path, "new_path": new_path}, "medium", root=root)
 
         if not os.path.exists(target_path):
             raise HTTPException(status_code=404, detail="Path does not exist")
@@ -711,7 +726,7 @@ async def fs_rename(req: RenameRequest):
         logger.info("파일 이름 변경: %s → %s", req.path, req.new_name)
         _ = await api_cache.invalidate_tag(TAG_FILESYSTEM)
 
-        rel_new_path = os.path.relpath(new_path, WORKSPACE_ROOT)
+        rel_new_path = os.path.relpath(new_path, root)
         return {"ok": True, "path": rel_new_path, "old_path": req.path, "new_name": req.new_name}
     except HTTPException:
         raise
@@ -798,24 +813,21 @@ def _should_ignore(path: str) -> bool:
     return ext in _IGNORE_EXTS
 
 
-def _search_in_file(file_path: str, query: str, max_matches: int = 50) -> list[FileMatch]:
+def _search_in_file(file_path: str, query: str, root: str, max_matches: int = 50) -> list[FileMatch]:
     """Search for query in a single file. Returns list of {line, content}."""
     matches: list[FileMatch] = []
     try:
         size = os.path.getsize(file_path)
         if size > _MAX_FILE_SIZE or size == 0:
             return []
-        with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-            for line_no, line in enumerate(f, 1):
-                if query.lower() in line.lower():
-                    matches.append(
-                        {
-                            "line": line_no,
-                            "content": line.rstrip("\n"),
-                        }
-                    )
-                    if len(matches) >= max_matches:
-                        break
+        content = read_text_under(file_path, root, errors="ignore")
+        if len(content.encode("utf-8")) > _MAX_FILE_SIZE:
+            return []
+        for line_no, line in enumerate(content.splitlines(), 1):
+            if query.lower() in line.lower():
+                matches.append({"line": line_no, "content": line})
+                if len(matches) >= max_matches:
+                    break
     except (OSError, UnicodeDecodeError):
         pass
     return matches
@@ -836,9 +848,9 @@ def _walk_and_search(root: str, query: str, max_results: int = 100) -> list[File
                 if _should_ignore(full_path):
                     continue
 
-                matches = _search_in_file(full_path, query)
+                matches = _search_in_file(full_path, query, root)
                 if matches:
-                    rel_path = os.path.relpath(full_path, WORKSPACE_ROOT)
+                    rel_path = os.path.relpath(full_path, root)
                     results.append(
                         {
                             "file_path": rel_path,
@@ -856,7 +868,7 @@ def _walk_and_search(root: str, query: str, max_results: int = 100) -> list[File
 
 
 @router.post("/api/fs/search")
-async def fs_search(req: SearchRequest) -> FilesystemSearchResponse:
+async def fs_search(req: SearchRequest, request: Request) -> FilesystemSearchResponse:
     """워크스페이스 파일 내용에서 검색합니다 (POST /api/fs/search).
 
     Case-insensitive, binary/.git/node_modules 제외, 1MB 파일 제한.
@@ -866,7 +878,9 @@ async def fs_search(req: SearchRequest) -> FilesystemSearchResponse:
         raise HTTPException(status_code=400, detail="Query must be at least 2 characters")
 
     try:
-        results = _walk_and_search(WORKSPACE_ROOT, query, max_results=req.max_results)
+        root = _filesystem_root(req.project_id, request)
+        _require_allowed("fs_search", {"path": root}, "safe", root=root)
+        results = _walk_and_search(root, query, max_results=req.max_results)
         total_matches = sum(r["match_count"] for r in results)
         return {
             "ok": True,
@@ -881,21 +895,23 @@ async def fs_search(req: SearchRequest) -> FilesystemSearchResponse:
 
 
 @router.get("/api/fs/read")
-@cached(ttl=30, tags=[TAG_FILESYSTEM])
-async def fs_read(file: str):
+async def fs_read(request: Request, file: str, project_id: str | None = None):
     """파일 내용을 반환합니다."""
     try:
-        target_file = _resolve_workspace_path(file)
-        _require_allowed("fs_read", {"path": target_file}, "safe")
+        root = _filesystem_root(project_id, request)
+        target_file = _resolve_workspace_path(file, root)
+        _require_allowed("fs_read", {"path": target_file}, "safe", root=root)
 
         if not os.path.exists(target_file) or not os.path.isfile(target_file):
             raise HTTPException(status_code=404, detail="File not found.")
 
-        content = await asyncio.to_thread(Path(target_file).read_text, encoding="utf-8")
+        content = await asyncio.to_thread(read_text_under, target_file, root)
 
         return {"ok": True, "content": content}
     except UnicodeDecodeError:
         raise HTTPException(status_code=400, detail="Cannot read binary file.")
+    except VerifiedReadError as exc:
+        raise HTTPException(status_code=403, detail="File read could not be verified.") from exc
     except HTTPException:
         raise
     except OSError as e:
