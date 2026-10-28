@@ -52,11 +52,11 @@ def test_safe_urlopen_validates_request_before_open(monkeypatch: pytest.MonkeyPa
     request = Request("http://127.0.0.1:11434/api/tags")
     opened: list[str] = []
 
-    def fake_urlopen(target: str | Request, *_args: object, **_kwargs: object) -> str:
+    def fake_urlopen(_opener: object, target: str | Request, *_args: object, **_kwargs: object) -> str:
         opened.append(target.full_url if isinstance(target, Request) else target)
         return "response"
 
-    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    monkeypatch.setattr("urllib.request.OpenerDirector.open", fake_urlopen)
     assert safe_urlopen(request, timeout=2) == "response"
     assert opened == [request.full_url]
 
@@ -82,6 +82,15 @@ async def test_async_httpx_hook_is_awaitable_and_validates_request():
 class TestSafeUrlopenRetry:
     """일시적 HTTP 오류(429/5xx) 재시도 + Retry-After 백오프 검증."""
 
+    @pytest.fixture(autouse=True)
+    def _synthetic_public_dns(self, monkeypatch):
+        def resolve(url: str) -> tuple[str, tuple[str, ...]] | None:
+            if url == "https://openrouter.ai/api/v1/x":
+                return url, ("192.0.2.53",)
+            return None
+
+        monkeypatch.setattr("antigravity_k.tools.egress_policy.resolve_public_http_url_sync", resolve)
+
     def test_retries_on_429_then_succeeds(self, monkeypatch):
         import urllib.error
 
@@ -90,13 +99,13 @@ class TestSafeUrlopenRetry:
         calls = {"n": 0}
         sleeps: list[float] = []
 
-        def fake_urlopen(target, timeout=None):
+        def fake_urlopen(_opener, target, timeout=None):
             calls["n"] += 1
             if calls["n"] == 1:
                 raise urllib.error.HTTPError(str(target), 429, "Too Many Requests", hdrs=None, fp=None)
             return object()
 
-        monkeypatch.setattr(egress_policy.urllib.request, "urlopen", fake_urlopen)
+        monkeypatch.setattr(egress_policy.urllib.request.OpenerDirector, "open", fake_urlopen)
         monkeypatch.setattr(egress_policy, "_retry_sleep", lambda s: sleeps.append(s))
         # 공개 호스트 URL 사용
         req = egress_policy.urllib.request.Request("https://openrouter.ai/api/v1/x")
@@ -112,7 +121,7 @@ class TestSafeUrlopenRetry:
 
         sleeps: list[float] = []
 
-        def fake_urlopen(target, timeout=None):
+        def fake_urlopen(_opener, target, timeout=None):
             raise urllib.error.HTTPError(
                 str(target),
                 503,
@@ -121,7 +130,7 @@ class TestSafeUrlopenRetry:
                 fp=None,
             )
 
-        monkeypatch.setattr(egress_policy.urllib.request, "urlopen", fake_urlopen)
+        monkeypatch.setattr(egress_policy.urllib.request.OpenerDirector, "open", fake_urlopen)
         monkeypatch.setattr(egress_policy, "_retry_sleep", lambda s: sleeps.append(s))
         req = egress_policy.urllib.request.Request("https://openrouter.ai/api/v1/x")
 
@@ -137,11 +146,11 @@ class TestSafeUrlopenRetry:
 
         calls = {"n": 0}
 
-        def fake_urlopen(target, timeout=None):
+        def fake_urlopen(_opener, target, timeout=None):
             calls["n"] += 1
             raise urllib.error.HTTPError(str(target), 404, "Not Found", hdrs=None, fp=None)
 
-        monkeypatch.setattr(egress_policy.urllib.request, "urlopen", fake_urlopen)
+        monkeypatch.setattr(egress_policy.urllib.request.OpenerDirector, "open", fake_urlopen)
         monkeypatch.setattr(egress_policy, "_retry_sleep", lambda s: None)
         req = egress_policy.urllib.request.Request("https://openrouter.ai/api/v1/x")
 

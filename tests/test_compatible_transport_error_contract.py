@@ -53,7 +53,7 @@ def compat_case(product, monkeypatch, request):
     record = manager.tracker.record
     add = SessionManager.add_turn
 
-    def terminal(target, **kwargs):
+    def terminal(_opener, target, **kwargs):
         state["wire"].append(
             {"url": target.full_url, "body": json.loads(target.data), "timeout": kwargs.get("timeout")}
         )
@@ -71,7 +71,7 @@ def compat_case(product, monkeypatch, request):
         return add(self, *args, **kwargs)
 
     monkeypatch.setattr(inference_providers, "safe_urlopen", egress_policy.safe_urlopen)
-    monkeypatch.setattr(egress_policy.urllib.request, "urlopen", terminal)
+    monkeypatch.setattr(egress_policy.urllib.request.OpenerDirector, "open", terminal)
     monkeypatch.setattr(egress_policy, "_retry_sleep", state["sleeps"].append)
     monkeypatch.setattr(manager.tracker, "record", record_usage)
     monkeypatch.setattr(SessionManager, "add_turn", add_turn)

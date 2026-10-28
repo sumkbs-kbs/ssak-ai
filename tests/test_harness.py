@@ -317,7 +317,7 @@ class TestRunApiTestSync:
         harness = TestHarness(base_url="http://test:8000")
         intent = TestIntent(id="health_api", intent="health", category="api", priority=1)
 
-        with patch("urllib.request.urlopen") as mock_urlopen:
+        with patch("urllib.request.OpenerDirector.open") as mock_urlopen:
             mock_resp = _MockHttpResponse(b'{"status": "ok"}')
             mock_urlopen.return_value = mock_resp
 
@@ -329,7 +329,7 @@ class TestRunApiTestSync:
         harness = TestHarness(base_url="http://test:8000")
         intent = TestIntent(id="health_api", intent="health", category="api", priority=1)
 
-        with patch("urllib.request.urlopen") as mock_urlopen:
+        with patch("urllib.request.OpenerDirector.open") as mock_urlopen:
             mock_resp = _MockHttpResponse(b'{"status": "error"}')
             mock_urlopen.return_value = mock_resp
 
@@ -340,7 +340,7 @@ class TestRunApiTestSync:
         harness = TestHarness(base_url="http://test:8000")
         intent = TestIntent(id="models_api", intent="models", category="api", priority=1)
 
-        with patch("urllib.request.urlopen") as mock_urlopen:
+        with patch("urllib.request.OpenerDirector.open") as mock_urlopen:
             mock_resp = _MockHttpResponse(b'{"data": [{"id": "gpt-4"}]}')
             mock_urlopen.return_value = mock_resp
 
@@ -352,7 +352,7 @@ class TestRunApiTestSync:
         harness = TestHarness(base_url="http://test:8000")
         intent = TestIntent(id="models_api", intent="models", category="api", priority=1)
 
-        with patch("urllib.request.urlopen") as mock_urlopen:
+        with patch("urllib.request.OpenerDirector.open") as mock_urlopen:
             mock_resp = _MockHttpResponse(b'{"data": []}')
             mock_urlopen.return_value = mock_resp
 
@@ -366,7 +366,7 @@ class TestRunApiTestSync:
         harness = TestHarness(base_url="http://test:8000")
         intent = TestIntent(id="vision_analyze", intent="vision", category="api", priority=2)
 
-        with patch("urllib.request.urlopen") as mock_urlopen:
+        with patch("urllib.request.OpenerDirector.open") as mock_urlopen:
             mock_urlopen.side_effect = urllib.error.HTTPError(
                 "http://test/api",
                 400,
@@ -387,7 +387,7 @@ class TestRunApiTestSync:
         intent = TestIntent(id="vision_analyze", intent="vision", category="api", priority=2)
 
         body = b'{"error": "No screenshot provided"}'
-        with patch("urllib.request.urlopen") as mock_urlopen:
+        with patch("urllib.request.OpenerDirector.open") as mock_urlopen:
             mock_urlopen.side_effect = urllib.error.HTTPError(
                 "http://test/api",
                 500,
@@ -404,7 +404,7 @@ class TestRunApiTestSync:
         harness = TestHarness(base_url="http://test:8000")
         intent = TestIntent(id="external_brain_list", intent="brains", category="api", priority=2)
 
-        with patch("urllib.request.urlopen") as mock_urlopen:
+        with patch("urllib.request.OpenerDirector.open") as mock_urlopen:
             mock_resp = _MockHttpResponse(b'{"brains": [{"name": "gemini"}, {"name": "chatgpt"}, {"name": "local"}]}')
             mock_urlopen.return_value = mock_resp
 
@@ -416,7 +416,7 @@ class TestRunApiTestSync:
         harness = TestHarness(base_url="http://test:8000")
         intent = TestIntent(id="external_brain_list", intent="brains", category="api", priority=2)
 
-        with patch("urllib.request.urlopen") as mock_urlopen:
+        with patch("urllib.request.OpenerDirector.open") as mock_urlopen:
             mock_resp = _MockHttpResponse(b'{"brains": [{"name": "gemini"}]}')
             mock_urlopen.return_value = mock_resp
 
@@ -438,7 +438,7 @@ class TestRunApiTestSync:
         harness = TestHarness(base_url="http://test:8000")
         intent = TestIntent(id="health_api", intent="health", category="api", priority=1)
 
-        with patch("urllib.request.urlopen", side_effect=urllib.error.URLError("connection refused")):
+        with patch("urllib.request.OpenerDirector.open", side_effect=urllib.error.URLError("connection refused")):
             result = _run_api_test_sync(harness, intent)
             assert result.status == TestStatus.FAILED
             assert "connection refused" in result.message
@@ -581,7 +581,7 @@ class TestFileExplorer:
             query_selector=AsyncMock(return_value=object()),
         )
 
-        with patch("urllib.request.urlopen") as mock_urlopen:
+        with patch("urllib.request.OpenerDirector.open") as mock_urlopen:
             mock_resp = _MockHttpResponse(b'{"files": []}')
             mock_urlopen.return_value = mock_resp
 
@@ -601,7 +601,7 @@ class TestFileExplorer:
             query_selector=AsyncMock(return_value=object()),
         )
 
-        with patch("urllib.request.urlopen", side_effect=urllib.error.URLError("API error")):
+        with patch("urllib.request.OpenerDirector.open", side_effect=urllib.error.URLError("API error")):
             import asyncio
 
             result = asyncio.run(_test_file_explorer(harness, page, intent))

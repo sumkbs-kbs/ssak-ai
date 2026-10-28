@@ -118,13 +118,13 @@ def test_real_tool_loop_holds_incomplete_tools_and_never_replays(terminal_case, 
     manager = client.contract_manager
     first = wire(CALL, done=completed_first)
     responses = [first, wire(ERROR)]
-    terminal = egress_policy.urllib.request.urlopen
+    terminal = egress_policy.urllib.request.OpenerDirector.open
 
-    def next_response(target, **kwargs):
+    def next_response(opener, target, **kwargs):
         state["outcome"] = [responses[min(len(state["wire"]), 1)]]
-        return terminal(target, **kwargs)
+        return terminal(opener, target, **kwargs)
 
-    monkeypatch.setattr(egress_policy.urllib.request, "urlopen", next_response)
+    monkeypatch.setattr(egress_policy.urllib.request.OpenerDirector, "open", next_response)
     sentinel = tmp_path / "sentinel"
     sentinel.write_text("owned read-only sentinel")
     dispatch = []

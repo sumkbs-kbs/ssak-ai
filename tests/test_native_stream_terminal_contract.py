@@ -34,7 +34,7 @@ def stream_case(product, monkeypatch, request):
     original_add = SessionManager.add_turn
     state = {"responses": [], "wire": [], "raw": [], "usage": [], "persisted": [], "sleeps": []}
 
-    def terminal(request, **kwargs):
+    def terminal(_opener, request, **kwargs):
         state["wire"].append(json.loads(request.data))
         result = state["responses"].pop(0)
         state["raw"].append(result.hex() if isinstance(result, bytes) else type(result).__name__)
@@ -53,7 +53,7 @@ def stream_case(product, monkeypatch, request):
     from antigravity_k.engine.provider_adapters import inference_providers
 
     monkeypatch.setattr(inference_providers, "safe_urlopen", egress_policy.safe_urlopen)
-    monkeypatch.setattr(egress_policy.urllib.request, "urlopen", terminal)
+    monkeypatch.setattr(egress_policy.urllib.request.OpenerDirector, "open", terminal)
     monkeypatch.setattr(egress_policy, "_retry_sleep", state["sleeps"].append)
     monkeypatch.setattr(manager.tracker, "record", record)
     monkeypatch.setattr(SessionManager, "add_turn", add)

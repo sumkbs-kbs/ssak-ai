@@ -158,11 +158,11 @@ def test_default_httpx_hook_allows_local_ollama_carve_out() -> None:
 def test_safe_urlopen_validates_before_urlopen(monkeypatch: pytest.MonkeyPatch) -> None:
     opened: list[str] = []
 
-    def boom(target: object, *_a: object, **_k: object) -> None:
+    def boom(_opener: object, target: object, *_a: object, **_k: object) -> None:
         opened.append("opened")
         raise AssertionError("urlopen must not run after policy failure")
 
-    monkeypatch.setattr("urllib.request.urlopen", boom)
+    monkeypatch.setattr("urllib.request.OpenerDirector.open", boom)
     with pytest.raises(EgressPolicyError):
         _ = safe_urlopen("http://192.168.0.9/secret", allow_local=False, timeout=1)
     assert opened == []
@@ -171,11 +171,11 @@ def test_safe_urlopen_validates_before_urlopen(monkeypatch: pytest.MonkeyPatch) 
 def test_safe_urlopen_opens_only_after_policy_pass(monkeypatch: pytest.MonkeyPatch) -> None:
     opened: list[str] = []
 
-    def fake_urlopen(target: str | Request, *_a: object, **_k: object) -> str:
+    def fake_urlopen(_opener: object, target: str | Request, *_a: object, **_k: object) -> str:
         opened.append(target.full_url if isinstance(target, Request) else target)
         return "ok"
 
-    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    monkeypatch.setattr("urllib.request.OpenerDirector.open", fake_urlopen)
     assert safe_urlopen("http://127.0.0.1:11434/api/tags", allow_local=True, timeout=1) == "ok"
     assert opened == ["http://127.0.0.1:11434/api/tags"]
 

@@ -282,6 +282,8 @@ def network_available(env: Mapping[str, str] | None = None, *, force_probe: bool
     """
     global _network_probe_cache
     source = env if env is not None else os.environ
+    if str(source.get("AGK_EGRESS_LOCAL_ONLY", "") or "").strip().lower() in {"1", "true", "yes", "on"}:
+        return False
     raw = str(source.get(OFFLINE_ENV, "") or "").strip().lower()
     if raw in {"1", "true", "yes", "on"}:
         return False

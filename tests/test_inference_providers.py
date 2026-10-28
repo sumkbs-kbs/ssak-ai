@@ -103,7 +103,7 @@ def test_ollama_native_tools_are_sent_and_emitted_as_tool_call():
 
     with patch.object(provider, "_resolve_endpoint", return_value=("http://localhost:11434/v1", "ollama")):
         with patch(
-            "antigravity_k.engine.provider_adapters.inference_providers.urllib.request.urlopen",
+            "antigravity_k.engine.provider_adapters.inference_providers.urllib.request.OpenerDirector.open",
             return_value=request_context,
         ) as urlopen:
             chunks = list(
@@ -166,7 +166,7 @@ def test_ollama_single_native_tool_json_content_is_synthesized_as_a_tool_call():
     with (
         patch.object(provider, "_resolve_endpoint", return_value=("http://localhost:11434/v1", "ollama")),
         patch(
-            "antigravity_k.engine.provider_adapters.inference_providers.urllib.request.urlopen",
+            "antigravity_k.engine.provider_adapters.inference_providers.urllib.request.OpenerDirector.open",
             return_value=request_context,
         ),
     ):
@@ -372,7 +372,7 @@ def test_ollama_native_tool_rejection_falls_back_to_xml_prompt():
 
     with patch.object(provider, "_resolve_endpoint", return_value=("http://localhost:11434/v1", "ollama")):
         with patch(
-            "antigravity_k.engine.provider_adapters.inference_providers.urllib.request.urlopen",
+            "antigravity_k.engine.provider_adapters.inference_providers.urllib.request.OpenerDirector.open",
             side_effect=[
                 HTTPError(
                     "http://localhost:11434/api/chat",

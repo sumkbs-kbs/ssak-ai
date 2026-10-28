@@ -168,12 +168,12 @@ def test_native_failure_through_real_safe_helper_has_no_retry(transport_case, mo
     sleeps = []
     error = HTTPError("http://127.0.0.1:11434/api/chat", 503, "private", Message(), None)
 
-    def terminal(request, **kwargs):
+    def terminal(_opener, request, **kwargs):
         attempts.append(request.full_url)
         raise error
 
     monkeypatch.setattr(inference_providers, "safe_urlopen", egress_policy.safe_urlopen)
-    monkeypatch.setattr(egress_policy.urllib.request, "urlopen", terminal)
+    monkeypatch.setattr(egress_policy.urllib.request.OpenerDirector, "open", terminal)
     monkeypatch.setattr(egress_policy, "_retry_sleep", sleeps.append)
     response = client.post("/v1/chat/completions", json=body)
     assert response.status_code == 502
@@ -189,11 +189,11 @@ def test_safe_helper_no_retry_preserves_original_http_error(monkeypatch):
     calls, sleeps = [], []
     error = HTTPError("http://127.0.0.1/api/chat", 503, "private", Message(), None)
 
-    def terminal(*args, **kwargs):
+    def terminal(_opener, *args, **kwargs):
         calls.append(args)
         raise error
 
-    monkeypatch.setattr(egress_policy.urllib.request, "urlopen", terminal)
+    monkeypatch.setattr(egress_policy.urllib.request.OpenerDirector, "open", terminal)
     monkeypatch.setattr(egress_policy, "_retry_sleep", sleeps.append)
     with pytest.raises(HTTPError) as captured:
         egress_policy.safe_urlopen(Request(error.url, data=b"{}"), max_retries=0)
@@ -207,11 +207,11 @@ def test_safe_helper_default_get_keeps_two_retries(monkeypatch):
     calls, sleeps = [], []
     error = HTTPError("http://127.0.0.1/health", 503, "private", Message(), None)
 
-    def terminal(*args, **kwargs):
+    def terminal(_opener, *args, **kwargs):
         calls.append(args)
         raise error
 
-    monkeypatch.setattr(egress_policy.urllib.request, "urlopen", terminal)
+    monkeypatch.setattr(egress_policy.urllib.request.OpenerDirector, "open", terminal)
     monkeypatch.setattr(egress_policy, "_retry_sleep", sleeps.append)
     with pytest.raises(HTTPError) as captured:
         egress_policy.safe_urlopen(error.url)
@@ -223,7 +223,9 @@ def test_safe_helper_no_retry_still_blocks_private_destination(monkeypatch):
     from antigravity_k.tools import egress_policy
 
     calls = []
-    monkeypatch.setattr(egress_policy.urllib.request, "urlopen", lambda *args, **kwargs: calls.append(args))
+    monkeypatch.setattr(
+        egress_policy.urllib.request.OpenerDirector, "open", lambda _opener, *args, **kwargs: calls.append(args)
+    )
     with pytest.raises(egress_policy.EgressPolicyError):
         egress_policy.safe_urlopen("http://10.0.0.1/private", max_retries=0)
     assert calls == []
