@@ -625,6 +625,7 @@ class BrowserSurfingAgent:
             },
             risk_level=decision.risk,
             description=summary,
+            actor_subject=browser_owner.subject,
         )
         if manager_request.status is not ApprovalStatus.PENDING:
             return (

@@ -416,7 +416,7 @@ class ApprovalManager:
         self._pending: dict[str, ApprovalRequest] = {}
         self._futures: dict[str, asyncio.Future[ApprovalStatus]] = {}
         # "항상 허용"된 도구들 — 부여 시각·근거·자동 승인 횟수를 함께 보존한다(F-33).
-        self._always_allowed: dict[str, AlwaysAllowGrant] = {}
+        self._always_allowed: dict[tuple[str, str], AlwaysAllowGrant] = {}
         self._consumed_approvals: set[str] = set()  # 소비된 일회성 승인 요청 ID
         # r40: evidence verify/consume is atomic across threads (concurrent tool calls).
         self._lock = threading.Lock()
@@ -425,29 +425,47 @@ class ApprovalManager:
         self._event_loop: asyncio.AbstractEventLoop | None = None
         self._review_provider: ApprovalReviewProvider = review_provider or ApprovalReviewEngine()
 
-    def is_always_allowed(self, tool_name: str) -> bool:
-        """해당 도구가 '항상 허용'으로 설정되었는지 확인."""
-        return tool_name in self._always_allowed
+    def is_always_allowed(self, tool_name: str, *, actor_subject: str | None = None) -> bool:
+        """현재 사용자에게 해당 도구의 '항상 허용' 부여가 있는지 확인."""
+        actor = current_approval_scope()["actor"] if actor_subject is None else actor_subject
+        with self._lock:
+            return (actor, tool_name) in self._always_allowed
 
-    def always_allowed_grants(self) -> list[AlwaysAllowGrant]:
+    def always_allowed_grants(self, *, actor_subject: str | None = None) -> list[AlwaysAllowGrant]:
         """'항상 허용' 부여 목록(부여 순).
 
-        부여는 도구 단위이고 프로세스 수명 동안 유지된다 — 사용자가 그것을 **읽고 되돌릴 수**
-        있어야 한다(F-33: 보이지 않는 영구 부여는 동의가 아니다).
+        부여는 사용자·도구 단위이고 프로세스 수명 동안 유지된다. 사용자 생략은 내부 감사용
+        전체 조회이며, HTTP 경로는 반드시 인증된 사용자를 지정한다.
         """
-        return sorted(self._always_allowed.values(), key=lambda grant: grant.granted_at)
+        with self._lock:
+            grants = [
+                grant
+                for (actor, _tool), grant in self._always_allowed.items()
+                if actor_subject is None or actor == actor_subject
+            ]
+            return sorted(grants, key=lambda grant: grant.granted_at)
 
-    def record_auto_approval(self, tool_name: str) -> None:
+    def record_auto_approval(self, tool_name: str, *, actor_subject: str | None = None) -> None:
         """'항상 허용' 부여로 **동의 없이** 실행된 횟수를 기록한다.
 
         부여가 없으면 아무것도 하지 않는다(순수 조회인 `is_always_allowed` 와 분리한다 —
         조회가 감사 기록을 바꾸면 세는 값이 조회 횟수가 된다).
         """
-        grant = self._always_allowed.get(tool_name)
-        if grant is None:
-            return
-        grant.auto_approved_count += 1
-        grant.last_auto_approved_at = time.time()
+        self.consume_always_allowed(tool_name, actor_subject=actor_subject)
+
+    def consume_always_allowed(self, tool_name: str, *, actor_subject: str | None = None) -> bool:
+        """부여 확인과 실행 횟수 기록을 철회와 같은 잠금에서 처리한다.
+
+        성공한 소비 뒤의 철회는 이미 실행을 시작한 호출을 취소하지 않는다.
+        """
+        actor = current_approval_scope()["actor"] if actor_subject is None else actor_subject
+        with self._lock:
+            grant = self._always_allowed.get((actor, tool_name))
+            if grant is None:
+                return False
+            grant.auto_approved_count += 1
+            grant.last_auto_approved_at = time.time()
+            return True
 
     def consume_one_time_approval(self, tool_name: str, binding: str | None = None) -> bool:
         """일회성 승인(APPROVED)을 소비한다.
@@ -486,6 +504,8 @@ class ApprovalManager:
         description: str = "",
         project_root: str | None = None,
         layer: str = LAYER_STANDARD,
+        *,
+        actor_subject: str | None = None,
     ) -> ApprovalRequest:
         """새로운 승인 요청을 생성합니다.
 
@@ -495,14 +515,23 @@ class ApprovalManager:
             risk_level: 위험도 (safe/low/medium/high/critical)
             description: 사람이 읽을 수 있는 설명
             project_root: diff 생성용 프로젝트 루트
+            actor_subject: 요청 문맥이 없는 내부 경로가 넘기는 서버 확인 사용자
 
         Returns:
             ApprovalRequest (PENDING 상태)
         """
+        scope = current_approval_scope(layer)
+        if actor_subject is not None:
+            if not actor_subject.strip() or actor_subject == "anonymous":
+                raise ValueError("승인 요청에는 확인된 사용자가 필요합니다")
+            scope["actor"] = actor_subject
         # "항상 허용"된 도구는 자동 승인 — r41: standard 층에만. strict(비밀·경로·권한) 층 요청은
         # 도구 단위 '항상 허용'으로 자동 통과하지 않는다(이전에는 execute_approved 로 우회됨).
-        if self.is_always_allowed(tool_name) and layer == LAYER_STANDARD and tool_name not in NO_ALWAYS_ALLOW_TOOLS:
-            self.record_auto_approval(tool_name)
+        if (
+            layer == LAYER_STANDARD
+            and tool_name not in NO_ALWAYS_ALLOW_TOOLS
+            and self.consume_always_allowed(tool_name, actor_subject=scope["actor"])
+        ):
             return ApprovalRequest(
                 request_id="auto-" + uuid.uuid4().hex[:8],
                 tool_name=tool_name,
@@ -511,6 +540,7 @@ class ApprovalManager:
                 description=description,
                 status=ApprovalStatus.ALWAYS_ALLOW,
                 resolved_at=time.time(),
+                scope=scope,
             )
 
         # diff 미리보기 생성 (파일 편집 도구)
@@ -528,7 +558,7 @@ class ApprovalManager:
             timeout_sec=self._default_timeout,
             target=_public_target(target),
             binding=binding,
-            scope=current_approval_scope(layer),
+            scope=scope,
         )
         request.auto_review = self._safe_review(request)
 
@@ -561,7 +591,9 @@ class ApprovalManager:
                 reviewer="policy-fail-closed",
             )
 
-    def resolve(self, request_id: str, decision: ApprovalDecision) -> bool:
+    def resolve(
+        self, request_id: str, decision: ApprovalDecision, *, actor_subject: str | None = None
+    ) -> bool:
         """사용자의 결정을 처리합니다.
 
         Args:
@@ -574,6 +606,12 @@ class ApprovalManager:
         request = self._pending.get(request_id)
         if request is None or request.status != ApprovalStatus.PENDING:
             logger.warning("[Approval] 알 수 없거나 이미 해결된 요청: %s", request_id)
+            return False
+        if actor_subject is not None and (
+            not actor_subject.strip()
+            or actor_subject == "anonymous"
+            or request.scope.get("actor", "") != actor_subject
+        ):
             return False
         if decision == ApprovalDecision.ALWAYS_ALLOW and (
             request.tool_name in NO_ALWAYS_ALLOW_TOOLS or request.scope.get("layer", LAYER_STANDARD) != LAYER_STANDARD
@@ -595,12 +633,13 @@ class ApprovalManager:
             request.status = ApprovalStatus.DENIED
         elif decision == ApprovalDecision.ALWAYS_ALLOW:
             request.status = ApprovalStatus.ALWAYS_ALLOW
-            # 부여는 **도구 하나**를 덮는다(인자·경로·프로젝트 무관) — 그 사실과 근거를 남긴다.
-            self._always_allowed[request.tool_name] = AlwaysAllowGrant(
-                tool_name=request.tool_name,
-                granted_at=request.resolved_at,
-                granted_for=request.description,
-            )
+            # 같은 사용자의 도구 하나를 덮는다(인자·경로·프로젝트 무관).
+            with self._lock:
+                self._always_allowed[(request.scope.get("actor", ""), request.tool_name)] = AlwaysAllowGrant(
+                    tool_name=request.tool_name,
+                    granted_at=request.resolved_at,
+                    granted_for=request.description,
+                )
             logger.info("[Approval] '항상 허용' 부여: %s (근거: %s)", request.tool_name, request.description)
 
         # 대기 중인 Future 해결
@@ -676,13 +715,23 @@ class ApprovalManager:
             logger.debug("[Approval] 해결된 요청 %s개 정리", cleared)
         return cleared
 
-    def reset_always_allowed(self) -> list[str]:
+    def reset_always_allowed(self, *, actor_subject: str | None = None) -> list[str]:
         """'항상 허용' 목록 초기화.
 
         반환값은 **되돌린 도구 이름들**이다 — 해제가 무엇을 되돌렸는지 응답이 말할 수 있어야 한다.
         """
-        revoked = [grant.tool_name for grant in self.always_allowed_grants()]
-        self._always_allowed.clear()
+        with self._lock:
+            selected = sorted(
+                (
+                    (key, grant)
+                    for key, grant in self._always_allowed.items()
+                    if actor_subject is None or key[0] == actor_subject
+                ),
+                key=lambda item: item[1].granted_at,
+            )
+            revoked = [grant.tool_name for _key, grant in selected]
+            for key, _grant in selected:
+                del self._always_allowed[key]
         logger.info("[Approval] '항상 허용' 목록 초기화: %s", ", ".join(revoked) or "(없음)")
         return revoked
 
@@ -708,6 +757,7 @@ class ApprovalManager:
             if (
                 other.tool_name == request.tool_name
                 and other.binding == binding
+                and other.scope == request.scope
                 and other.status in (ApprovalStatus.DENIED, ApprovalStatus.TIMEOUT)
                 and (other.resolved_at or 0) > (request.resolved_at or 0)
             ):

@@ -4,9 +4,11 @@ from typing import cast
 
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
 from httpx import Response
+from starlette.middleware.base import RequestResponseEndpoint
+from starlette.responses import Response as StarletteResponse
 
 from antigravity_k.api.routes import approval_api
 from antigravity_k.api.routes.approval_api import router
@@ -18,6 +20,7 @@ from antigravity_k.engine.approval_manager import (
 )
 
 JsonObject = dict[str, object]
+TEST_ACTOR = "approval-unit-user"
 
 
 class _FakeManager:
@@ -37,21 +40,32 @@ class _FakeManager:
         _ = request_id
         return self.request
 
-    def resolve(self, request_id: str, decision: ApprovalDecision) -> bool:
+    def resolve(
+        self, request_id: str, decision: ApprovalDecision, *, actor_subject: str | None = None
+    ) -> bool:
+        assert actor_subject == TEST_ACTOR
         self.resolve_calls.append((request_id, decision))
         return self.resolve_result
 
-    def reset_always_allowed(self) -> list[str]:
+    def reset_always_allowed(self, *, actor_subject: str | None = None) -> list[str]:
+        assert actor_subject == TEST_ACTOR
         self.reset_calls += 1
         return sorted(self.always_allowed_keys)
 
-    def always_allowed_grants(self) -> list[AlwaysAllowGrant]:
+    def always_allowed_grants(self, *, actor_subject: str | None = None) -> list[AlwaysAllowGrant]:
+        assert actor_subject == TEST_ACTOR
         return list(self.grants)
 
 
 @pytest.fixture
 def client() -> TestClient:
     app = FastAPI()
+
+    @app.middleware("http")
+    async def install_test_actor(request: Request, call_next: RequestResponseEndpoint) -> StarletteResponse:
+        request.state.auth_subject = TEST_ACTOR
+        return await call_next(request)
+
     app.include_router(router)
     return TestClient(app)
 
@@ -77,7 +91,7 @@ class TestListPending:
 
     def test_with_items(self, client: TestClient, monkeypatch: MonkeyPatch) -> None:
         manager = _FakeManager()
-        manager.pending = [ApprovalRequest("req-1", "write_file", {})]
+        manager.pending = [ApprovalRequest("req-1", "write_file", {}, scope={"actor": TEST_ACTOR})]
         _install_manager(monkeypatch, manager)
 
         response = client.get("/api/approval/pending")
@@ -91,7 +105,7 @@ class TestListPending:
 class TestGetRequest:
     def test_found(self, client: TestClient, monkeypatch: MonkeyPatch) -> None:
         manager = _FakeManager()
-        manager.request = ApprovalRequest("req-1", "write_file", {})
+        manager.request = ApprovalRequest("req-1", "write_file", {}, scope={"actor": TEST_ACTOR})
         _install_manager(monkeypatch, manager)
 
         response = client.get("/api/approval/req-1")
@@ -113,7 +127,9 @@ class TestResolveApproval:
     def test_approve(self, client: TestClient, monkeypatch: MonkeyPatch) -> None:
         manager = _FakeManager()
         manager.resolve_result = True
-        manager.request = ApprovalRequest("req-1", "write_file", {}, status=ApprovalStatus.APPROVED)
+        manager.request = ApprovalRequest(
+            "req-1", "write_file", {}, status=ApprovalStatus.APPROVED, scope={"actor": TEST_ACTOR}
+        )
         _install_manager(monkeypatch, manager)
 
         response = client.post("/api/approval/req-1/resolve", json={"decision": "approve"})
@@ -201,3 +217,44 @@ class TestResetAlwaysAllowed:
         data = _json(response)
         assert data["revoked"] == []
         assert "0건" in cast(str, data["message"])
+
+
+@pytest.mark.parametrize(
+    ("method", "path"),
+    [
+        ("GET", "/api/approval/pending"),
+        ("GET", "/api/approval/always-allowed"),
+        ("GET", "/api/approval/req-1"),
+        ("POST", "/api/approval/req-1/resolve"),
+        ("POST", "/api/approval/reset-always-allowed"),
+    ],
+)
+def test_routes_require_verified_actor_without_auth_middleware(
+    method: str, path: str, monkeypatch: MonkeyPatch
+) -> None:
+    manager = _FakeManager()
+    _install_manager(monkeypatch, manager)
+    app = FastAPI()
+    app.include_router(router)
+    with TestClient(app) as unauthenticated:
+        response = unauthenticated.request(method, path, json={"decision": "approve", "actor_subject": TEST_ACTOR})
+    assert response.status_code == 401
+    assert manager.resolve_calls == []
+    assert manager.reset_calls == 0
+
+
+def test_ownerless_request_is_hidden_and_cannot_be_claimed(client: TestClient, monkeypatch: MonkeyPatch) -> None:
+    manager = _FakeManager()
+    ownerless = ApprovalRequest("req-1", "write_file", {})
+    manager.pending = [ownerless]
+    manager.request = ownerless
+    manager.resolve_result = True
+    _install_manager(monkeypatch, manager)
+
+    assert _json(client.get("/api/approval/pending"))["pending"] == []
+    assert client.get("/api/approval/req-1").status_code == 404
+    response = client.post(
+        "/api/approval/req-1/resolve", json={"decision": "approve", "actor_subject": TEST_ACTOR}
+    )
+    assert response.status_code == 404
+    assert manager.resolve_calls == []

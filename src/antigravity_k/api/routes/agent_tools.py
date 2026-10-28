@@ -754,6 +754,7 @@ async def _screen_browser_effect(
         },
         risk_level=decision.risk,
         description=summary,
+        actor_subject=_browser_owner(request).subject,
     )
     if manager_request.status is not ApprovalStatus.PENDING:
         raise HTTPException(
@@ -1015,11 +1016,16 @@ async def browser_action(req: BrowserActionRequest, request: Request):
 
 # ─── 브라우저 효과 승인·비밀 handle(task 18) ────────────────────
 @router.get("/api/agent/tools/browser/approval/pending")
-async def list_browser_approvals() -> dict[str, object]:
+async def list_browser_approvals(request: Request) -> dict[str, object]:
     """대기 중인 브라우저 효과 승인. **서버가 발급한** 요청만 나온다(모델이 만든 것은 없다)."""
     gate = get_browser_approval_gate()
-    pending = gate.list_pending()
-    return {"pending": [item.to_dict() for item in pending], "count": len(pending), "gate": gate.describe()}
+    owner_key = _browser_owner(request).key
+    pending = [item for item in gate.list_pending() if item.binding.owner_key == owner_key]
+    return {
+        "pending": [item.to_dict() for item in pending],
+        "count": len(pending),
+        "gate": {"ttl_seconds": gate.ttl_seconds, "pending": len(pending)},
+    }
 
 
 @router.post("/api/agent/tools/browser/approval/{request_id}/grant")
@@ -1033,6 +1039,7 @@ async def grant_browser_approval(request_id: str, request: Request) -> dict[str,
     requirement = gate.pending(request_id)
     if requirement is None:
         raise HTTPException(status_code=404, detail="unknown or already used browser approval request")
+    _require_browser_approval_owner(requirement.binding, request)
     manager_request = get_approval_manager().get_request(request_id)
     if manager_request is None:
         raise HTTPException(status_code=404, detail="unknown browser approval request")
@@ -1061,21 +1068,22 @@ async def grant_browser_approval(request_id: str, request: Request) -> dict[str,
 
 
 @router.post("/api/agent/tools/browser/approval/{request_id}/withdraw")
-async def withdraw_browser_approval(request_id: str) -> dict[str, object]:
+async def withdraw_browser_approval(request_id: str, request: Request) -> dict[str, object]:
     """사람이 거절했거나 끝난 요청을 대기 목록에서 뺀다.
 
     거절의 **기록**은 ApprovalManager 가 갖는다(그 경로가 감사 대상이다). 여기서는 발급되지
     않은 승인이 TTL(60초)까지 화면에 남아 사용자에게 되묻는 일만 막는다.
     """
-    withdrawn = get_browser_approval_gate().withdraw(request_id)
+    gate = get_browser_approval_gate()
+    requirement = gate.pending(request_id)
+    if requirement is not None:
+        _require_browser_approval_owner(requirement.binding, request)
+    withdrawn = gate.withdraw(request_id)
     return {"ok": True, "request_id": request_id, "withdrawn": withdrawn}
 
 
-def _live_state_binding(recorded: ApprovalBinding, request: Request) -> ApprovalBinding:
-    """승인 기록에서 **동일성 축**은 그대로 두고 상태 축(origin·generation)만 지금 것으로 바꾼다.
-
-    요청자가 다른 사용자면 여기서 거절한다 — 남의 승인 창을 자기 것으로 바꿔 발급받는 길을 막는다.
-    """
+def _require_browser_approval_owner(recorded: ApprovalBinding, request: Request) -> None:
+    """다른 사용자는 승인 상태나 페이지를 조회하기 전에 거절한다."""
     owner = _browser_owner(request)
     if owner.key != recorded.owner_key:
         raise HTTPException(
@@ -1086,6 +1094,12 @@ def _live_state_binding(recorded: ApprovalBinding, request: Request) -> Approval
                 details={"changed": ["owner_key"]},
             ).to_dict(),
         )
+
+
+def _live_state_binding(recorded: ApprovalBinding, request: Request) -> ApprovalBinding:
+    """승인 동일성은 유지하고, 같은 소유자의 현재 주소와 관찰 세대만 갱신한다."""
+    _require_browser_approval_owner(recorded, request)
+    owner = _browser_owner(request)
     state = browser_sessions.get(_browser_session_id(request))
     page_url = str(getattr(state.page, "url", "") or "")
     observer = _browser_observer(request, state, with_sandbox=False)

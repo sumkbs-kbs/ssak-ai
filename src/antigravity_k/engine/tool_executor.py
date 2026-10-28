@@ -20,6 +20,7 @@ from antigravity_k.engine import task_tool_contract as _task_contract
 from antigravity_k.engine.approval_manager import (
     LAYER_STANDARD,
     ApprovalEvidence,
+    current_approval_scope,
     get_approval_manager,
 )
 from antigravity_k.engine.failure_classifier import (
@@ -406,11 +407,6 @@ class ToolExecutor:
                 )
                 proceed = ev is not None
                 llm_input_audit.audit_tool(name=name, stage="approval_granted" if proceed else "approval_pending")
-                if ev is _ALWAYS_ALLOW_EVIDENCE:
-                    # '항상 허용' (user-granted, tool-wide; pre-r40 behaviour kept, open risk)
-                    approved_result = str(self.tool_registry.execute_approved(name, args))
-                    self._post_execute(name, args, approved_result, permission=perm)
-                    return approved_result
                 if proceed and ev is not None:
                     if layer == LAYER_STANDARD:
                         perm2, approved_result, _ = self._execute_registry(
@@ -501,12 +497,8 @@ class ToolExecutor:
                 if evidence is not None:
                     return evidence, evidence.request_id
 
-            # '항상 허용'은 새 요청/일시정지 없이 즉시 실행 — 단, **동의 없이 실행된 횟수**를
-            # 부여 기록에 남긴다(F-33: 보이지 않는 자동 승인은 감사할 수 없다).
-            # r40: '항상 허용'은 standard 층에만 적용되고, 실행 시 소비할 증빙이 없으므로 기존처럼
-            # 즉시 진행한다(ALWAYS_ALLOW 경로는 이번 결속 범위 밖 — 열린 위험으로 기록).
+            # 항상 허용도 실제 실행 직전에 소유자와 부여 존속을 다시 확인한다.
             if manager.is_always_allowed(name) and layer == LAYER_STANDARD:
-                manager.record_auto_approval(name)
                 return _ALWAYS_ALLOW_EVIDENCE, ""
 
             description = (
@@ -518,7 +510,7 @@ class ToolExecutor:
                 if (
                     pending_request.tool_name == name
                     and pending_request.binding == binding
-                    and pending_request.scope.get("layer") == layer
+                    and pending_request.scope == current_approval_scope(layer)
                 ):
                     self._broadcast_approval_required(name, pending_request.request_id, description)
                     return None, pending_request.request_id
@@ -563,13 +555,11 @@ class ToolExecutor:
             getattr(type(registry), "execute_with_permission_detail", None)
             is ToolRegistry.execute_with_permission_detail
         ):
-            if approval_use is not None and approval_use.always_allow:
-                approval_use = None  # '항상 허용': no evidence to consume (open risk, documented)
             return registry.execute_with_permission_detail(name, args, objective=objective, approval_use=approval_use)
         # Non-ToolRegistry registries (alternate/legacy implementations) expose only the 2-tuple API.
         # The evidence is still consumed atomically here, immediately before the call; their PROMPTs
         # carry no basis and are treated as a separate strict layer (never satisfied by gate evidence).
-        if approval_use is not None and not approval_use.always_allow:
+        if approval_use is not None:
             why = approval_use.consume()
             if why:
                 return Permission.PROMPT, f"[APPROVAL REQUIRED] ({why})", None
@@ -1065,9 +1055,14 @@ class _BoundApprovalUse:
         self._args = dict(args)
         self._evidence = evidence
         self.always_allow = evidence is _ALWAYS_ALLOW_EVIDENCE
+        self._scope = current_approval_scope()
 
     def verify(self) -> str:
         if self.always_allow:
+            if current_approval_scope() != self._scope:
+                return "approval_scope_changed"
+            if not get_approval_manager().is_always_allowed(self._name):
+                return "always_allow_revoked"
             return ""
         return get_approval_manager().verify_evidence(
             self._evidence, self._name, self._executor._approval_binding_now(self._name, self._args)
@@ -1075,7 +1070,9 @@ class _BoundApprovalUse:
 
     def consume(self) -> str:
         if self.always_allow:
-            return ""
+            if current_approval_scope() != self._scope:
+                return "approval_scope_changed"
+            return "" if get_approval_manager().consume_always_allowed(self._name) else "always_allow_revoked"
         return get_approval_manager().consume_evidence(
             self._evidence, self._name, self._executor._approval_binding_now(self._name, self._args)
         )

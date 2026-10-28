@@ -14,7 +14,7 @@ attempt-023/024 는 `ApprovalManager` 의 '항상 허용' 상태를 제품의 �
 
 이 파일은 그 다섯 요구를 제품 경로에서 고정한다:
 
-  R1. 부여 범위는 **도구 전체**이고(인자·경로·프로젝트 무관), UI 진술이 그 범위를 정확히 말한다.
+  R1. 같은 사용자에게 부여 범위는 **도구 전체**이고(인자·경로·프로젝트 무관), UI가 그 범위를 말한다.
   R2. 부여는 **읽을 수 있다**(매니저 API + 라우트, `/{request_id}` 에 가려지지 않는다).
   R3. 부여는 **되돌릴 수 있고**, 해제가 무엇을 되돌렸는지 말한다.
   R4. 부여는 **언제·무엇에 대해** 주어졌는지 보존한다(만료는 프로세스 수명 — 세션 한정이 아니다).
@@ -30,9 +30,16 @@ from typing import cast
 from unittest.mock import MagicMock
 
 import pytest
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
+from starlette.middleware.base import RequestResponseEndpoint
+from starlette.responses import Response
 
+from antigravity_k.api.contracts.execution_context import RequestExecutionContext
+from antigravity_k.api.project_binding import (
+    reset_bound_request_execution_context,
+    set_bound_request_execution_context,
+)
 from antigravity_k.api.routes import approval_api
 from antigravity_k.api.routes.approval_api import router
 from antigravity_k.engine.approval_manager import (
@@ -43,10 +50,11 @@ from antigravity_k.engine.approval_manager import (
     get_approval_manager,
     reset_approval_manager,
 )
-from antigravity_k.engine.tool_executor import ToolExecutor
+from antigravity_k.engine.tool_executor import ToolExecutor, _BoundApprovalUse
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 TOOL = "run_bash_command"
+TEST_ACTOR = "always-allow-unit-user"
 
 
 @pytest.fixture()
@@ -57,12 +65,33 @@ def manager() -> Iterator[ApprovalManager]:
 
 
 @pytest.fixture()
-def client(manager: ApprovalManager, monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]:
-    """라우트 표를 그대로 쓴 실제 앱 + 실제 매니저."""
+def client(manager: ApprovalManager, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Iterator[TestClient]:
+    """합성 인증 사용자의 라우트와 실제 매니저를 연결한다."""
     monkeypatch.setattr(approval_api, "get_approval_manager", lambda: manager)
+    context = RequestExecutionContext(
+        request_id="always-allow-unit-request",
+        project_id="always-allow-unit-project",
+        canonical_project_root=str(tmp_path),
+        conversation_id="always-allow-unit-conversation",
+        conversation_revision=0,
+        actor_subject=TEST_ACTOR,
+        session_id="always-allow-unit-session",
+        model_id="synthetic-unused-model",
+    )
+    token = set_bound_request_execution_context(context)
     app = FastAPI()
+
+    @app.middleware("http")
+    async def install_test_actor(request: Request, call_next: RequestResponseEndpoint) -> Response:
+        request.state.auth_subject = TEST_ACTOR
+        return await call_next(request)
+
     app.include_router(router)
-    yield TestClient(app)
+    try:
+        with TestClient(app) as test_client:
+            yield test_client
+    finally:
+        reset_bound_request_execution_context(token)
 
 
 def _grant(manager: ApprovalManager, tool: str = TOOL, description: str = f"{TOOL} 실행") -> None:
@@ -75,6 +104,26 @@ def _grant(manager: ApprovalManager, tool: str = TOOL, description: str = f"{TOO
 
 
 class TestGrantScopeAndRecord:
+    def test_explicit_server_actor_owns_grant_and_auto_approval(self, manager: ApprovalManager) -> None:
+        request = manager.request_approval(TOOL, {"command": "echo synthetic"}, actor_subject="synthetic-owner")
+        assert request.scope["actor"] == "synthetic-owner"
+        assert not manager.resolve(request.request_id, ApprovalDecision.ALWAYS_ALLOW, actor_subject="synthetic-other")
+        assert request.status == ApprovalStatus.PENDING
+        assert manager.resolve(request.request_id, ApprovalDecision.ALWAYS_ALLOW, actor_subject="synthetic-owner")
+
+        repeated = manager.request_approval(TOOL, {"command": "echo again"}, actor_subject="synthetic-owner")
+        assert repeated.status == ApprovalStatus.ALWAYS_ALLOW
+        assert repeated.scope["actor"] == "synthetic-owner"
+        other = manager.request_approval(TOOL, {"command": "echo synthetic"}, actor_subject="synthetic-other")
+        assert other.status == ApprovalStatus.PENDING
+        assert manager.always_allowed_grants(actor_subject="synthetic-other") == []
+        assert manager.reset_always_allowed(actor_subject="synthetic-other") == []
+        own = manager.always_allowed_grants(actor_subject="synthetic-owner")
+        assert len(own) == 1
+        assert own[0].auto_approved_count == 1
+        assert manager.reset_always_allowed(actor_subject="synthetic-owner") == [TOOL]
+        assert manager.always_allowed_grants() == []
+
     def test_grant_covers_the_whole_tool_not_the_approved_call(self, manager: ApprovalManager) -> None:
         """동의한 것은 `echo hello` 한 번이지만 부여는 도구 전체를 덮는다 — UI 가 그렇게 말해야 한다."""
         _grant(manager)
@@ -123,7 +172,7 @@ class TestGrantScopeAndRecord:
         assert ApprovalManager().is_always_allowed(TOOL) is False
 
     def test_grant_is_process_wide_not_session_scoped(self) -> None:
-        """싱글턴이므로 다른 세션·다른 프로젝트가 같은 부여를 본다 — 범위가 프로세스임을 고정한다."""
+        """같은 사용자는 세션·프로젝트가 달라도 같은 프로세스의 부여를 본다."""
         reset_approval_manager()
         try:
             first = get_approval_manager()
@@ -205,6 +254,39 @@ class TestGrantIsRevocable:
 
 
 class TestUnconsentedRunsAreCounted:
+    def test_auto_request_requires_successful_consumption_after_revocation(
+        self, manager: ApprovalManager, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        _grant(manager)
+        grant = manager.always_allowed_grants()[0]
+        consume = manager.consume_always_allowed
+
+        def revoke_before_consume(tool_name: str, *, actor_subject: str | None = None) -> bool:
+            assert manager.reset_always_allowed(actor_subject=actor_subject) == [TOOL]
+            return consume(tool_name, actor_subject=actor_subject)
+
+        monkeypatch.setattr(manager, "is_always_allowed", lambda tool_name, *, actor_subject=None: True)
+        monkeypatch.setattr(manager, "consume_always_allowed", revoke_before_consume)
+        request = manager.request_approval(TOOL, {"command": "echo synthetic"})
+
+        assert request.status == ApprovalStatus.PENDING
+        assert manager.get_pending() == [request]
+        assert grant.auto_approved_count == 0
+        assert manager.always_allowed_grants() == []
+
+    def test_consumption_checks_owner_and_revocation(self, manager: ApprovalManager) -> None:
+        request = manager.request_approval(TOOL, {"command": "echo synthetic"}, actor_subject="synthetic-owner")
+        assert manager.resolve(request.request_id, ApprovalDecision.ALWAYS_ALLOW, actor_subject="synthetic-owner")
+        grant = manager.always_allowed_grants(actor_subject="synthetic-owner")[0]
+
+        assert not manager.consume_always_allowed(TOOL, actor_subject="synthetic-other")
+        assert grant.auto_approved_count == 0
+        assert manager.consume_always_allowed(TOOL, actor_subject="synthetic-owner")
+        assert grant.auto_approved_count == 1
+        assert manager.reset_always_allowed(actor_subject="synthetic-owner") == [TOOL]
+        assert not manager.consume_always_allowed(TOOL, actor_subject="synthetic-owner")
+        assert grant.auto_approved_count == 1
+
     def test_manager_counts_each_auto_approved_request(self, manager: ApprovalManager) -> None:
         _grant(manager)
 
@@ -220,12 +302,13 @@ class TestUnconsentedRunsAreCounted:
         manager.record_auto_approval("write_file")
         assert manager.always_allowed_grants() == []
 
-    def test_executor_records_the_run_it_lets_through(
+    def test_executor_counts_when_bound_approval_is_consumed(
         self, manager: ApprovalManager, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """게이트를 우회해 실행된 호출이 부여 기록에 남는다(집행 지점의 계측)."""
+        """승인 등록·확인은 세지 않고, 실행 경계에서 승인을 소비할 때 센다."""
         _grant(manager)
         monkeypatch.setattr("antigravity_k.engine.approval_manager.get_approval_manager", lambda: manager)
+        monkeypatch.setattr("antigravity_k.engine.tool_executor.get_approval_manager", lambda: manager)
 
         executor = ToolExecutor(
             tool_registry=cast(MagicMock, MagicMock()),
@@ -239,6 +322,11 @@ class TestUnconsentedRunsAreCounted:
         assert proceed is not None  # r40: always-allow sentinel evidence
         assert request_id == ""
         grant = manager.always_allowed_grants()[0]
+        assert grant.auto_approved_count == 0
+        approval_use = _BoundApprovalUse(executor, TOOL, {"command": "ls"}, proceed)
+        assert approval_use.verify() == ""
+        assert grant.auto_approved_count == 0
+        assert approval_use.consume() == ""
         assert grant.auto_approved_count == 1
         # 자동 승인 경로는 새 요청을 만들지 않는다 — 남은 대기열이 비어 있어야 한다.
         assert manager.get_pending() == []
