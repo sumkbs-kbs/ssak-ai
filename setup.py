@@ -18,6 +18,13 @@ class _CleanPackageDataBuild(build_py):
         build_root = Path(self.build_lib).resolve()
         if build_root == Path(build_root.anchor) or build_root == Path.cwd().resolve():
             raise RuntimeError(f"Unsafe package-data build root: {build_root}")
+        project_root = Path(__file__).resolve().parent
+        source_package = Path(self.get_package_dir("antigravity_k"))
+        if not source_package.is_absolute():
+            source_package = project_root / source_package
+        source_package = source_package.resolve()
+        if build_root.is_relative_to(source_package) or source_package.is_relative_to(build_root):
+            raise RuntimeError(f"Package-data build root overlaps package source: {build_root}")
         package_root = build_root / "antigravity_k"
         if package_root.is_symlink() or (package_root.exists() and not package_root.is_dir()):
             raise RuntimeError(f"Unsafe package build root: {package_root}")
