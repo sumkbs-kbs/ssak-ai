@@ -4,6 +4,7 @@ import asyncio
 import json
 import logging
 import os
+import shlex
 from collections.abc import Mapping
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, ClassVar, cast, final, override
@@ -188,7 +189,14 @@ class MCPTool(BaseTool):
 
         def walk(v: object) -> bool:
             if isinstance(v, str):
-                return any(is_sensitive_path(tok) for tok in v.replace("\\", "/").split() if tok)
+                normalized = v.replace("\\", "/")
+                tokens = normalized.split()
+                try:
+                    tokens.extend(shlex.split(normalized, comments=False, posix=True))
+                except ValueError:
+                    # An unfinished quote must not hide a literal secret path.
+                    tokens.extend(normalized.replace('"', "").replace("'", "").split())
+                return any(is_sensitive_path(tok) for tok in tokens if tok)
             if isinstance(v, Mapping):
                 return any(walk(x) for x in cast(Mapping[object, object], v).values())
             if isinstance(v, (list, tuple)):
