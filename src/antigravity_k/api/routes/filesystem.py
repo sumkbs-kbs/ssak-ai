@@ -7,7 +7,6 @@ I-6 리팩터링: server.py에서 분리된 /api/fs/* 및 /api/workspace/* 라�
 import asyncio
 import logging
 import os
-import shutil
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Annotated, Any, Protocol, TypedDict, runtime_checkable
@@ -22,6 +21,13 @@ from antigravity_k.engine.request_execution_context import resolve_canonical_pro
 from antigravity_k.engine.vault import VaultEngine
 from antigravity_k.tools.permission_gate import PermissionGate
 from antigravity_k.tools.tool_contracts import Permission, ToolInvocation, ToolSpec
+from antigravity_k.tools.verified_filesystem import (
+    VerifiedFilesystemError,
+    delete_path_under,
+    list_directory_under,
+    make_directory_under,
+    rename_path_under,
+)
 from antigravity_k.tools.verified_read import VerifiedReadError, read_text_under
 from antigravity_k.tools.verified_write import VerifiedWriteError, write_text_under
 
@@ -612,15 +618,16 @@ async def fs_mkdir(req: MkdirRequest, request: Request):
         target_dir = _resolve_workspace_path(req.path, root)
         _require_allowed("fs_mkdir", {"path": target_dir}, "medium", root=root)
 
-        if os.path.exists(target_dir):
+        if not make_directory_under(target_dir, root):
             return {"ok": False, "detail": "Folder already exists"}
 
-        os.makedirs(target_dir, exist_ok=True)
         # Invalidate filesystem cache on directory creation
         _ = await api_cache.invalidate_tag(TAG_FILESYSTEM)
         return {"ok": True, "path": target_dir}
     except HTTPException:
         raise
+    except VerifiedFilesystemError as exc:
+        raise HTTPException(status_code=403, detail="Directory creation could not be verified.") from exc
     except OSError as e:
         logger.error("FS mkdir error: %s", e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -637,19 +644,16 @@ async def fs_delete(req: DeleteRequest, request: Request):
         target_path = _resolve_workspace_path(req.path, root)
         _require_allowed("fs_delete", {"path": target_path}, "high", root=root)
 
-        if not os.path.exists(target_path):
+        if not delete_path_under(target_path, root):
             return {"ok": False, "detail": "Path does not exist"}
-
-        if os.path.isdir(target_path):
-            shutil.rmtree(target_path)
-        else:
-            os.remove(target_path)
 
         # Invalidate filesystem cache on delete
         _ = await api_cache.invalidate_tag(TAG_FILESYSTEM)
         return {"ok": True, "path": target_path}
     except HTTPException:
         raise
+    except VerifiedFilesystemError as exc:
+        raise HTTPException(status_code=403, detail="File deletion could not be verified.") from exc
     except OSError as e:
         logger.error("FS delete error: %s", e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -663,18 +667,19 @@ async def fs_list(request: Request, dir: str = ".", project_id: str | None = Non
         target_dir = _resolve_workspace_path(dir, root)
         _require_allowed("fs_list", {"path": target_dir}, "safe", root=root)
 
-        if not os.path.exists(target_dir) or not os.path.isdir(target_dir):
+        entries = list_directory_under(target_dir, root)
+        if entries is None:
             return {"ok": False, "items": []}
 
         items: list[dict[str, str | bool]] = []
-        for entry in os.scandir(target_dir):
+        for entry in entries:
             if entry.name.startswith("."):
                 continue
             items.append(
                 {
                     "name": entry.name,
-                    "path": os.path.relpath(entry.path, root),
-                    "is_dir": entry.is_dir(),
+                    "path": os.path.relpath(os.path.join(target_dir, entry.name), root),
+                    "is_dir": entry.is_dir,
                 },
             )
 
@@ -682,6 +687,8 @@ async def fs_list(request: Request, dir: str = ".", project_id: str | None = Non
         return {"ok": True, "items": items}
     except HTTPException:
         raise
+    except VerifiedFilesystemError as exc:
+        raise HTTPException(status_code=403, detail="Directory listing could not be verified.") from exc
     except OSError as e:
         logger.error("FS list error: %s", e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -716,13 +723,9 @@ async def fs_rename(req: RenameRequest, request: Request):
         new_path = _resolve_workspace_path(os.path.join(os.path.dirname(target_path), req.new_name), root)
         _require_allowed("fs_rename", {"path": target_path, "new_path": new_path}, "medium", root=root)
 
-        if not os.path.exists(target_path):
-            raise HTTPException(status_code=404, detail="Path does not exist")
-
-        if os.path.exists(new_path):
+        if not rename_path_under(target_path, new_path, root):
             return {"ok": False, "detail": "A file or folder with that name already exists"}
 
-        os.rename(target_path, new_path)
         logger.info("파일 이름 변경: %s → %s", req.path, req.new_name)
         _ = await api_cache.invalidate_tag(TAG_FILESYSTEM)
 
@@ -730,6 +733,10 @@ async def fs_rename(req: RenameRequest, request: Request):
         return {"ok": True, "path": rel_new_path, "old_path": req.path, "new_name": req.new_name}
     except HTTPException:
         raise
+    except VerifiedFilesystemError as exc:
+        raise HTTPException(status_code=403, detail="File rename could not be verified.") from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="Path does not exist") from exc
     except OSError as e:
         logger.error("FS rename error: %s", e)
         raise HTTPException(status_code=500, detail=str(e))

@@ -60,7 +60,7 @@ WRITE_TOOL_HINTS = (
     "restore",
     "snapshot",
 )
-PATH_ARG_KEYS = ("file_path", "path", "target", "dir_path", "target_path", "src", "dest")
+PATH_ARG_KEYS = ("file_path", "path", "target", "dir_path", "target_path", "src", "dest", "new_path")
 
 
 SECRET_READ_TOOLS = frozenset({"read_file", "read_hash_file", "grep_search"})
