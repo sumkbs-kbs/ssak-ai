@@ -17,6 +17,11 @@ FACT = "R43-SYNTH-BADGE-4812"
         "지난번에 정한 배지 색상 코드는 무엇이었나요? 코드만 답해줘.",
         "What badge colour code did we agree on for the offsite? Return code only.",
         "우리가 정한 릴리스 코드명은 무엇이었지? 코드만 답해줘.",
+        "우리가 저장한 프로젝트 badge_code 기억은 무엇이었지? 코드만 답해줘.",
+        "우리가 기록한 프로젝트 region_id는 무엇이었지? 코드만 답해줘.",
+        "What did we save as our project badge code? Return code only.",
+        "read_file로 notes.txt 파일을 실제로 읽고, 마지막 줄 코드만 답해줘.",
+        "Read notes.txt and return the last line code only.",
     ],
 )
 def test_identifier_only_answer_does_not_require_program_source(task_type: str, user_request: str) -> None:
@@ -37,6 +42,10 @@ def test_identifier_only_answer_does_not_require_program_source(task_type: str, 
         "What badge colour code did we agree on? Debug it. Code only.",
         "우리가 정한 릴리스 코드명을 확인하고, 그 값을 출력하는 Python 프로그램을 작성해. 코드만 답해줘.",
         "배지 색상을 보여주는 버튼을 만들어. 코드만 답해줘.",
+        "우리가 저장한 badge_code를 반환하는 함수를 작성해. 코드만 답해줘.",
+        "Recall our stored Python function. Return code only.",
+        "마지막 줄 코드를 생성하는 Python 함수를 작성해. 코드만 답해줘.",
+        "What did we save as our project code? Then implement a validator. Code only.",
         "코드만 답해줘.",
     ],
 )

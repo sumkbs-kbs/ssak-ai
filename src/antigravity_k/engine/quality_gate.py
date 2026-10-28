@@ -254,6 +254,8 @@ class QualityGate:
 
     @staticmethod
     def _source_contract_flags(request_lower: str) -> tuple[bool, bool, bool]:
+        from antigravity_k.engine.memory_recall_intent import is_memory_recall
+
         code_only_requested = bool(re.search(r"(코드만|code\s+only|only\s+code)", request_lower))
         source_requested = bool(
             re.search(
@@ -267,10 +269,12 @@ class QualityGate:
                 request_lower,
             ),
         )
-        # A badge colour/code name is a stored value, not program source. Keep
+        # Saved-value recall, including badge colours/code names, is not program source. Keep
         # explicit programming instructions authoritative even in the same request.
-        identifier_question = bool(
+        identifier_question = is_memory_recall(request_lower) or bool(
             re.search(
+                r"(?:마지막|최종)\s*줄(?:의)?\s*(?:코드|식별자|토큰)(?:\s*값)?\s*만|"
+                r"\b(?:last|final)\s+line(?:[’\']s)?\s+(?:code|identifier|token)\b|"
                 r"(?:배지\s*색상|코드명)[^.!?\n]{0,80}(?:무엇|뭐)|"
                 r"\b(?:what|which)\s+(?:(?:was|is)\s+(?:the\s+)?)?"
                 r"(?:badge\s+colou?r(?:\s+code)?|(?:release\s+)?code\s*name)\b",
