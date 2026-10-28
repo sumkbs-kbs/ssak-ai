@@ -1714,8 +1714,13 @@ class BackgroundTaskRunner:
         """마지막 체크포인트를 조회합니다."""
         checkpoint = self.state_store.get_last_checkpoint(task_id, owner_subject=owner_subject)
         if checkpoint:
-            raw_context = cast(object, json.loads(checkpoint["context_json"]))
-            context = cast(TaskContext, raw_context) if isinstance(raw_context, dict) else {}
+            try:
+                raw_context = cast(object, json.loads(checkpoint["context_json"]))
+            except (json.JSONDecodeError, TypeError):
+                return None
+            if not isinstance(raw_context, dict):
+                return None
+            context = cast(TaskContext, raw_context)
             return {
                 "task_id": checkpoint["task_id"],
                 "step": checkpoint["step"],
